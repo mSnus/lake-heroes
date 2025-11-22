@@ -7,6 +7,7 @@ import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { Dice } from './game/Dice';
 import { GameMenu } from './components/GameMenu';
+import { PlayerStatsTable } from './components/PlayerStatsTable';
 
 interface MenuState {
   type: 'main' | 'upgrade-list' | 'buy' | 'fee-or-fight' | 'wait' | 'move-result';
@@ -16,6 +17,10 @@ interface MenuState {
 }
 
 const BOARD_TILE_COUNT = 40;
+
+function getRandomOf<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 function App() {
   const [board, setBoard] = useState<Board | null>(null);
@@ -32,7 +37,7 @@ function App() {
       const tilesData = await tilesResp.json();
       const playersResp = await fetch('/players.json');
       const playersData = await playersResp.json();
-      const tiles = tilesData.map((t: any) => new Tile(t));
+      const tiles = Array.from({length: 40}, () => new Tile(getRandomOf(tilesData)));
       const players = playersData.map((p: any) => new Player(p));
       setBoard(new Board(tiles, players));
       setMenu({ type: 'main' });
@@ -254,8 +259,9 @@ function App() {
           minHeight: '100vh'
         }}
       >
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
           {board && <BoardCanvas board={board} />}
+          {board && <PlayerStatsTable board={board} />}
         </div>
         <div style={{minWidth:240}}>
           {(board && menu && renderGameMenu()) || <div style={{minWidth:240}}></div>}
