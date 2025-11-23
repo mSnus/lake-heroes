@@ -1,0 +1,151 @@
+import React from 'react';
+import { Board } from '../game/Board';
+import { MenuState } from '../types/menuState';
+import { GameMenu } from './GameMenu';
+import { buyTile } from '../actions/buyTile';
+import { payFee } from '../actions/payFee';
+import { fightTile } from '../actions/fightTile';
+import { upgradeTile } from '../actions/upgradeTile';
+import { rollAndMove } from '../actions/rollAndMove';
+import { afterMoveLogic } from '../actions/afterMoveLogic';
+import { endTurn } from '../actions/endTurn';
+
+interface GameMenuRendererProps {
+  board: Board;
+  menu: MenuState;
+  setMenu: (menu: MenuState) => void;
+  setBoard: (board: Board) => void;
+}
+
+export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
+  board,
+  menu,
+  setMenu,
+  setBoard,
+}) => {
+  const activePlayer = board.activePlayer;
+
+  const handleEndTurn = () => endTurn(board, setBoard, setMenu);
+
+  if (menu.type === 'main') {
+    return (
+      <GameMenu
+        title={`Player: ${activePlayer.name}`}
+        items={[
+          { label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) },
+          {
+            label: 'Roll Dice & Move',
+            onClick: () => rollAndMove(board, setBoard, setMenu),
+          },
+        ]}
+      >
+        <div>
+          Gold: {activePlayer.gold}, Units: {activePlayer.units}
+        </div>
+      </GameMenu>
+    );
+  }
+
+  if (menu.type === 'upgrade-list') {
+    const owned = activePlayer.ownedTiles.filter((idx) => {
+      const tile = board.tiles[idx];
+      const nextLvl = (tile.level + 1) as 2 | 3;
+      const price = tile.upgradePrices[String(nextLvl)];
+      return (
+        tile.owner === activePlayer.name &&
+        tile.level < 3 &&
+        price &&
+        activePlayer.gold >= price.gold &&
+        activePlayer.units >= price.units
+      );
+    });
+    return (
+      <GameMenu
+        title="Upgrade Tile"
+        items={owned
+          .map((idx) => {
+            const tile = board.tiles[idx];
+            const nextLvl = (tile.level + 1) as 2 | 3;
+            const price = tile.upgradePrices[String(nextLvl)];
+            return {
+              label: `${tile.name} (Level ${tile.level}→${nextLvl}) — ${price.gold} GP, ${price.units} U`,
+              onClick: () => upgradeTile(idx, board, setBoard, handleEndTurn),
+            };
+          })
+          .concat([{ label: 'Cancel', onClick: () => setMenu({ type: 'main' }) }])}
+      >
+        {owned.length === 0 && <div>No upgradeable tiles available</div>}
+      </GameMenu>
+    );
+  }
+
+  if (menu.type === 'move-result') {
+    return (
+      <GameMenu
+        title="Move Result"
+        items={[{ label: 'Continue', onClick: () => afterMoveLogic(board, setMenu, handleEndTurn) }]}
+      >
+        <div>
+          {activePlayer.name} rolled <b>{menu.diceRoll}</b>!<br />
+          Moved to tile <b>{activePlayer.position + 1}</b>
+          {menu.passedStart && (
+            <>
+              <br />
+              <span>Passed start: +500 GP, +5 U</span>
+            </>
+          )}
+        </div>
+      </GameMenu>
+    );
+  }
+
+  if (menu.type === 'buy') {
+    const tile = board.tiles[menu.tileIdx!];
+    return (
+      <GameMenu
+        title="Buy Tile"
+        items={[
+          {
+            label: `Buy ${tile.name} (${tile.priceGold} GP, ${tile.priceUnits} U)`,
+            onClick: () => buyTile(menu, board, setBoard, handleEndTurn),
+          },
+          { label: 'Pass', onClick: handleEndTurn },
+        ]}
+      />
+    );
+  }
+
+  if (menu.type === 'fee-or-fight') {
+    const tile = board.tiles[menu.tileIdx!];
+    const tileLevel = tile.level;
+    const fee = tile.bonuses[String(tileLevel)] || 0;
+    const defence = tile.defences[String(tileLevel)] || 0;
+    const canFight = activePlayer.units > defence;
+    const items = [
+      {
+        label: `Pay Fee (${fee} GP)`,
+        onClick: () => payFee(menu, board, setBoard, handleEndTurn),
+      },
+    ];
+    if (canFight) {
+      items.push({
+        label: `Fight (cost: ${defence} U)`,
+        onClick: () => fightTile(menu, board, setBoard, setMenu, handleEndTurn),
+      });
+    }
+    items.push({ label: 'Cancel', onClick: handleEndTurn });
+    return (
+      <GameMenu title="Pay or Fight" items={items}>
+        <div>
+          This tile is owned by {tile.owner}.<br />
+          Fee: {fee} GP
+          <br />
+          Defence: {defence} U
+        </div>
+      </GameMenu>
+    );
+  }
+
+  return null;
+};
+
