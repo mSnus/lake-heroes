@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Board } from '../game/Board';
 import groupsData from '../settings/groups.json';
+import diamondUrl from '../assets/diamond-mono.svg';
 
 interface BoardCanvasProps {
   board: Board;
@@ -19,9 +20,51 @@ const GAP_PX = 16; // ~1rem
 const ICON_RADIUS = 9; // px (diameter 18)
 const CANVAS_WIDTH = BOARD_WIDTH * TILE_WIDTH;
 const CANVAS_HEIGHT = BOARD_HEIGHT * TILE_HEIGHT;
+const DIAMOND_SIZE = 14; // marker icon size in px
+const DIAMOND_GAP = 4; // gap between markers
+const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [iconsReady, setIconsReady] = React.useState(false);
+
+  // Load diamond image once
+  const diamondImgRef = useRef<HTMLImageElement | null>(null);
+  useEffect(() => {
+    const img = new Image();
+    img.src = diamondUrl as unknown as string;
+    img.onload = () => setIconsReady((v) => !v); // trigger a re-render to draw markers
+    diamondImgRef.current = img;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cache for tinted diamonds by color
+  const tintedCacheRef = useRef<Map<string, HTMLCanvasElement>>(new Map());
+
+  function getTintedDiamond(color: string): HTMLCanvasElement | null {
+    const img = diamondImgRef.current;
+    if (!img) return null;
+    const key = `${color}|${DIAMOND_SIZE}`;
+    const cached = tintedCacheRef.current.get(key);
+    if (cached) return cached;
+
+    // Draw the svg to an offscreen canvas and tint it with the given color
+    const off = document.createElement('canvas');
+    off.width = DIAMOND_SIZE;
+    off.height = DIAMOND_SIZE;
+    const octx = off.getContext('2d');
+    if (!octx) return null;
+    // Draw SVG scaled to fit
+    octx.drawImage(img, 0, 0, DIAMOND_SIZE, DIAMOND_SIZE);
+    // Tint using source-in so the alpha from the image acts as mask
+    octx.globalCompositeOperation = 'source-in';
+    octx.fillStyle = color;
+    octx.fillRect(0, 0, DIAMOND_SIZE, DIAMOND_SIZE);
+    octx.globalCompositeOperation = 'source-over';
+
+    tintedCacheRef.current.set(key, off);
+    return off;
+  }
 
   // Build lookup for groups by name
   const groupsByName: Record<string, { name: string; icon: string; color: string }> = React.useMemo(() => {
@@ -201,6 +244,25 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         ctx.textAlign = 'left';
         ctx.textBaseline = 'alphabetic';
       }
+
+      // Draw tile level markers (diamonds) for owned tiles at the bottom
+      if (tile && tile.owner) {
+        const owner = board.players.find((p) => p.name === tile.owner);
+        const color = owner?.color || '#444';
+        const diamond = getTintedDiamond(color);
+        if (diamond) {
+          const count = Math.max(0, Math.min(3, tile.level));
+          if (count > 0) {
+            const totalWidth = count * DIAMOND_SIZE + (count - 1) * DIAMOND_GAP;
+            const startX = x + (TILE_WIDTH - totalWidth) / 2;
+            const drawY = y + TILE_HEIGHT - DIAMOND_BOTTOM_PADDING - DIAMOND_SIZE;
+            for (let d = 0; d < count; d++) {
+              const dx = startX + d * (DIAMOND_SIZE + DIAMOND_GAP);
+              ctx.drawImage(diamond, dx, drawY);
+            }
+          }
+        }
+      }
     }
 
     // Draw player tokens
@@ -226,7 +288,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       ctx.fillText(player.name, centerX, centerY + 20);
       ctx.textAlign = 'left';
     });
-  }, [board]);
+  }, [board, iconsReady]);
 
   return <canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} ref={canvasRef} />;
 };
