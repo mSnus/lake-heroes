@@ -13,6 +13,7 @@ export class Player {
   units: number;
   ownedTiles: number[];
   position: number;
+  turnsToSkip: number;
 
   constructor(params: PlayerParams) {
     this.name = params.name;
@@ -21,5 +22,6 @@ export class Player {
     this.units = params.units;
     this.position = params.position;
     this.ownedTiles = [];
+    this.turnsToSkip = 0;
   }
 }

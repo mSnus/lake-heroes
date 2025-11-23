@@ -1,11 +1,11 @@
 import { Board } from '../game/Board';
 import { Dice } from '../game/Dice';
-import { MenuState } from '../types/menuState';
+import { toast } from 'react-toastify';
 
 export function handleTreasureBox(
   board: Board | null,
   setBoard: (board: Board) => void,
-  setMenu: (menu: MenuState) => void
+  endTurn: () => void
 ) {
   if (!board) return;
   const dice = new Dice();
@@ -14,11 +14,7 @@ export function handleTreasureBox(
   const player = board.activePlayer;
   player.gold += goldReward;
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
-  setMenu({
-    type: 'move-result',
-    diceRoll: roll,
-    passedStart: false,
-    specialReward: { type: 'gold', amount: goldReward },
-  });
+  toast.success(`${player.name} found treasure! Rolled ${roll}, received ${goldReward} GP!`);
+  endTurn();
 }
 

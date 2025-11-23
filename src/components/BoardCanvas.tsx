@@ -5,9 +5,9 @@ interface BoardCanvasProps {
   board: Board;
 }
 
-const TILE_COUNT = 40;
-const BOARD_WIDTH = 12; // horizontal tiles
-const BOARD_HEIGHT = 10; // vertical tiles
+const TILE_COUNT = 20;
+const BOARD_WIDTH = 7; // horizontal tiles
+const BOARD_HEIGHT = 5; // vertical tiles
 const TILE_WIDTH = 80;
 const TILE_HEIGHT = 60;
 const CANVAS_WIDTH = BOARD_WIDTH * TILE_WIDTH;
@@ -44,19 +44,19 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     return { emoji, textPart1, textPart2 };
   }
 
-  // Calculate tile position in rectangular path (12x10)
+  // Calculate tile position in rectangular path (7x5 = 20 tiles)
   function getTilePosition(tileIndex: number): { x: number; y: number } {
     const i = tileIndex % TILE_COUNT;
-    // Top row: 0-11 (12 tiles, left to right)
+    // Top row: 0-6 (7 tiles, left to right)
     if (i < BOARD_WIDTH) {
       return { x: i * TILE_WIDTH, y: 0 };
     }
-    // Right side: 12-20 (9 tiles, top to bottom, excluding top-right corner)
+    // Right side: 7-10 (4 tiles, top to bottom, excluding top-right corner)
     if (i < BOARD_WIDTH + BOARD_HEIGHT - 1) {
       const rightIndex = i - BOARD_WIDTH;
       return { x: (BOARD_WIDTH - 1) * TILE_WIDTH, y: (rightIndex + 1) * TILE_HEIGHT };
     }
-    // Bottom row: 21-31 (11 tiles, right to left, excluding bottom-right corner)
+    // Bottom row: 11-16 (6 tiles, right to left, excluding bottom-right corner)
     if (i < BOARD_WIDTH + BOARD_HEIGHT - 1 + BOARD_WIDTH - 1) {
       const bottomIndex = i - (BOARD_WIDTH + BOARD_HEIGHT - 1);
       return {
@@ -64,7 +64,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         y: (BOARD_HEIGHT - 1) * TILE_HEIGHT,
       };
     }
-    // Left side: 32-39 (8 tiles, bottom to top, excluding both corners)
+    // Left side: 17-19 (3 tiles, bottom to top, excluding both corners)
     const leftIndex = i - (BOARD_WIDTH + BOARD_HEIGHT - 1 + BOARD_WIDTH - 1);
     return {
       x: 0,

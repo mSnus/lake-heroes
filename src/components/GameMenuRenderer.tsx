@@ -35,7 +35,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
           { label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) },
           {
             label: 'Roll Dice & Move',
-            onClick: () => rollAndMove(board, setBoard, setMenu),
+            onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
           },
         ]}
       >
@@ -80,32 +80,12 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'move-result') {
-    // If special reward, Continue just ends turn (special tile already handled)
-    const continueAction = menu.specialReward
-      ? handleEndTurn
-      : () => afterMoveLogic(board, setBoard, setMenu, handleEndTurn);
-
+    // Only used for Prison - show message and end turn
     return (
-      <GameMenu title="Move Result" items={[{ label: 'Continue', onClick: continueAction }]}>
+      <GameMenu title="Prison" items={[{ label: 'Continue', onClick: handleEndTurn }]}>
         <div>
-          {activePlayer.name} rolled <b>{menu.diceRoll}</b>!<br />
-          Moved to tile <b>{activePlayer.position + 1}</b>
-          {menu.passedStart && (
-            <>
-              <br />
-              <span>Passed start: +500 GP, +5 U</span>
-            </>
-          )}
-          {menu.specialReward && (
-            <>
-              <br />
-              <span>
-                {menu.specialReward.type === 'gold'
-                  ? `Treasure found: +${menu.specialReward.amount} GP`
-                  : `Recruited units: +${menu.specialReward.amount} U`}
-              </span>
-            </>
-          )}
+          {activePlayer.name} landed on Prison!<br />
+          Next turn will be skipped.
         </div>
       </GameMenu>
     );

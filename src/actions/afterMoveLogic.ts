@@ -13,7 +13,12 @@ export function afterMoveLogic(
   const tile = board.tiles[tileIdx];
 
   // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
-  if (tile.name.includes('Treasure box') || tile.name.includes('Rogue camp')) {
+  if (
+    tile.name.includes('Treasure box') ||
+    tile.name.includes('Rogue camp') ||
+    tile.name.includes('Prison') ||
+    tile.name.includes('King Castle')
+  ) {
     endTurn();
     return;
   }

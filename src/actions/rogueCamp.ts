@@ -1,11 +1,11 @@
 import { Board } from '../game/Board';
 import { Dice } from '../game/Dice';
-import { MenuState } from '../types/menuState';
+import { toast } from 'react-toastify';
 
 export function handleRogueCamp(
   board: Board | null,
   setBoard: (board: Board) => void,
-  setMenu: (menu: MenuState) => void
+  endTurn: () => void
 ) {
   if (!board) return;
   const dice = new Dice();
@@ -14,11 +14,7 @@ export function handleRogueCamp(
   const player = board.activePlayer;
   player.units += unitsReward;
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
-  setMenu({
-    type: 'move-result',
-    diceRoll: roll,
-    passedStart: false,
-    specialReward: { type: 'units', amount: unitsReward },
-  });
+  toast.success(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`);
+  endTurn();
 }
 
