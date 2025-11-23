@@ -28,6 +28,16 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   const handleEndTurn = () => endTurn(board, setBoard, setMenu);
 
   if (menu.type === 'main') {
+    // Determine if the player has at least one upgradeable tile and enough resources
+    const hasUpgradeable = activePlayer.ownedTiles.some((idx) => {
+      const tile = board.tiles[idx];
+      if (!tile || tile.owner !== activePlayer.name) return false;
+      if (tile.level >= 3) return false;
+      const nextLvl = (tile.level + 1) as 2 | 3;
+      const price = tile.upgradePrices[String(nextLvl)];
+      return !!price && activePlayer.gold >= price.gold && activePlayer.units >= price.units;
+    });
+
     return (
       <GameMenu
         title={
@@ -49,8 +59,8 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
           </div>
         }
         items={[
-          // Show upgrade button only if the player owns at least one tile
-          ...(activePlayer.ownedTiles.length > 0
+          // Show upgrade button only if the player has any upgradeable tile and enough resources
+          ...(hasUpgradeable
             ? [{ label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) }]
             : []),
           {

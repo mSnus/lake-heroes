@@ -1,6 +1,6 @@
 import { Board } from '../game/Board';
 import { Dice } from '../game/Dice';
-import { toast } from 'react-toastify';
+import { say } from '../utils/say';
 
 export function handleTreasureBox(
   board: Board | null,
@@ -14,7 +14,7 @@ export function handleTreasureBox(
   const player = board.activePlayer;
   player.gold += goldReward;
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
-  toast.success(`${player.name} found treasure! Rolled ${roll}, received ${goldReward} GP!`);
+  say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward} GP!`, 'success');
   endTurn();
 }
 

@@ -1,6 +1,6 @@
 import { Board } from '../game/Board';
 import { Dice } from '../game/Dice';
-import { toast } from 'react-toastify';
+import { say } from '../utils/say';
 
 export function handleRogueCamp(
   board: Board | null,
@@ -14,7 +14,7 @@ export function handleRogueCamp(
   const player = board.activePlayer;
   player.units += unitsReward;
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
-  toast.success(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`);
+  say(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`, 'success');
   endTurn();
 }
 

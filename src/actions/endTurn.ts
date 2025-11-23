@@ -1,6 +1,6 @@
 import { Board } from '../game/Board';
 import { MenuState } from '../types/menuState';
-import { toast } from 'react-toastify';
+import { say } from '../utils/say';
 
 export function endTurn(
   board: Board | null,
@@ -14,7 +14,7 @@ export function endTurn(
   if (currentPlayer.turnsToSkip > 0) {
     currentPlayer.turnsToSkip--;
     setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
-    toast.warning(`Turn of ${currentPlayer.name} is skipped`);
+    say(`Turn of ${currentPlayer.name} is skipped`, 'warning');
     // Move to next player
     board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
     setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));

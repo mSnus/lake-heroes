@@ -6,7 +6,7 @@ import { handleRogueCamp } from './rogueCamp';
 import { handlePrison } from './prison';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
-import { toast } from 'react-toastify';
+import { say } from '../utils/say';
 
 const BOARD_TILE_COUNT = 20;
 
@@ -27,7 +27,7 @@ export function rollAndMove(
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
 
   // Show dice roll as toast
-  toast.info(`${player.name} rolled ${roll}!`);
+  say(`${player.name} rolled ${roll}!`, 'info');
 
   // Check for passing start
   if (passedStart) {

@@ -1,6 +1,6 @@
 import { Board } from '../game/Board';
 import { MenuState } from '../types/menuState';
-import { toast } from 'react-toastify';
+import { say } from '../utils/say';
 
 export function handlePrison(
   board: Board | null,
@@ -11,7 +11,7 @@ export function handlePrison(
   const player = board.activePlayer;
   player.turnsToSkip = 1;
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
-  toast.warning(`${player.name} landed on Prison! Next turn will be skipped.`);
+  say(`${player.name} landed on Prison! Next turn will be skipped.`, 'warning');
   setMenu({ type: 'move-result', diceRoll: 0, passedStart: false });
 }
 
