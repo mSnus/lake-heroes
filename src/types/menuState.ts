@@ -3,6 +3,7 @@ export interface MenuState {
   tileIdx?: number;
   diceRoll?: number;
   passedStart?: boolean;
+  specialReward?: { type: 'gold' | 'units'; amount: number };
 }
 
 

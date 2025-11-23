@@ -108,7 +108,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
         // Line 1: Emoji (bigger font)
         if (emoji) {
-          ctx.font = '24px Arial';
+          ctx.font = '22px Arial';
           ctx.textAlign = 'center';
           ctx.fillText(emoji, centerX, currentY);
           currentY += 20;

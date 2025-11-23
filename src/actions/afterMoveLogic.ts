@@ -3,6 +3,7 @@ import { MenuState } from '../types/menuState';
 
 export function afterMoveLogic(
   board: Board | null,
+  setBoard: (board: Board) => void,
   setMenu: (menu: MenuState) => void,
   endTurn: () => void
 ) {
@@ -10,6 +11,13 @@ export function afterMoveLogic(
   const player = board.activePlayer;
   const tileIdx = player.position;
   const tile = board.tiles[tileIdx];
+
+  // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
+  if (tile.name.includes('Treasure box') || tile.name.includes('Rogue camp')) {
+    endTurn();
+    return;
+  }
+
   // Not ownable or already owned by player
   if (!tile.isOwnable || tile.owner === player.name) {
     endTurn();

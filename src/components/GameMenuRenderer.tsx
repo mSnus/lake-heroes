@@ -80,11 +80,13 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'move-result') {
+    // If special reward, Continue just ends turn (special tile already handled)
+    const continueAction = menu.specialReward
+      ? handleEndTurn
+      : () => afterMoveLogic(board, setBoard, setMenu, handleEndTurn);
+
     return (
-      <GameMenu
-        title="Move Result"
-        items={[{ label: 'Continue', onClick: () => afterMoveLogic(board, setMenu, handleEndTurn) }]}
-      >
+      <GameMenu title="Move Result" items={[{ label: 'Continue', onClick: continueAction }]}>
         <div>
           {activePlayer.name} rolled <b>{menu.diceRoll}</b>!<br />
           Moved to tile <b>{activePlayer.position + 1}</b>
@@ -92,6 +94,16 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
             <>
               <br />
               <span>Passed start: +500 GP, +5 U</span>
+            </>
+          )}
+          {menu.specialReward && (
+            <>
+              <br />
+              <span>
+                {menu.specialReward.type === 'gold'
+                  ? `Treasure found: +${menu.specialReward.amount} GP`
+                  : `Recruited units: +${menu.specialReward.amount} U`}
+              </span>
             </>
           )}
         </div>
