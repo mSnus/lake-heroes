@@ -24,7 +24,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" \"public/**/*.{json,html}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" \"public/**/*.{json,html}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" \"public/**/*.{json,html}\"",
+    "export:tiles": "node scripts/export-tiles-csv.js"
   },
   "eslintConfig": {
     "extends": [

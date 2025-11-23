@@ -1,0 +1,24 @@
+index,group,name,isOwnable,bonusType,priceGold,priceUnits,upgrade2_gold,upgrade2_units,upgrade3_gold,upgrade3_units,bonus1,bonus2,bonus3,defence1,defence2,defence3
+1,"Mills","💧 Water mill","true","gold",200,5,300,5,500,10,100,200,300,10,15,30
+2,"Mills","🌬️ Windmill","true","gold",240,6,360,6,600,12,120,240,360,12,18,36
+3,"Mills","🧱 Brick factory","true","gold",240,6,360,6,600,12,120,240,360,12,18,36
+4,"Farms","🐷 Pig farm","true","gold",150,5,200,1,300,3,50,100,200,5,10,15
+5,"Farms","🐄 Cow farm","true","gold",180,6,240,1,360,4,60,120,240,6,12,18
+6,"Farms","🐑 Sheep farm","true","gold",195,7,260,1,390,4,65,130,260,7,13,20
+7,"Fields","🌾 Wheat field","true","gold",150,5,200,1,300,3,50,100,200,5,10,15
+8,"Fields","🥬 Cabbage field","true","gold",250,5,200,1,300,3,50,100,200,5,10,15
+9,"Fields","🍎 Fruit garden","true","gold",350,5,200,1,300,3,50,100,200,5,10,15
+10,"Camps","🏹 Archers","true","units",150,5,200,1,300,3,50,100,200,5,10,15
+11,"Camps","🔪 Rogues","true","units",150,5,200,1,300,3,50,100,200,5,10,15
+12,"Camps","🗡️ Swordsmen","true","units",150,5,200,1,300,3,50,100,200,5,10,15
+13,"Towers","🏹 Archer tower","true","units",150,5,200,1,300,3,50,100,200,5,10,15
+14,"Towers","💣 Arquebus tower","true","units",150,5,200,1,300,3,50,100,200,5,10,15
+15,"Towers","💣💣 Cannon tower","true","units",150,5,200,1,300,3,50,100,200,5,10,15
+16,"Manufacture","🍇 Grapes","true","gold",150,5,200,1,300,3,50,100,200,5,10,15
+17,"Manufacture","🐟 Fish","true","gold",150,5,200,1,300,3,50,100,200,5,10,15
+18,"Manufacture","🦫 Fur","true","gold",150,5,200,1,300,3,50,100,200,5,10,15
+19,"Special","🪙 Treasure box","false","",0,0,0,0,0,0,0,0,0,0,0,0
+20,"Special","🏘️ Freelancers' camp","false","",0,0,0,0,0,0,0,0,0,0,0,0
+21,"Special","🏰 King Castle","false","",0,0,0,0,0,0,0,0,0,0,0,0
+22,"Special","🛡️ Prison","false","",0,0,0,0,0,0,0,0,0,0,0,0
+23,"Special"," 🐈 Sphynx","false","",0,0,0,0,0,0,0,0,0,0,0,0
