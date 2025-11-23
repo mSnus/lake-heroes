@@ -4,6 +4,7 @@ import { MenuState } from '../types/menuState';
 import { handleTreasureBox } from './treasureBox';
 import { handleRogueCamp } from './rogueCamp';
 import { handlePrison } from './prison';
+import { handleSphynx } from './sphynx';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { say } from '../utils/say';
@@ -46,6 +47,10 @@ export function rollAndMove(
   }
   if (tile.name.includes('Prison')) {
     handlePrison(board, setBoard, setMenu);
+    return;
+  }
+  if (tile.name.includes('Sphynx')) {
+    handleSphynx(board, setBoard, endTurn);
     return;
   }
 
