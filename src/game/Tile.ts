@@ -9,6 +9,12 @@ export interface TileParams {
   upgradePrices: { [level: string]: { gold: number; units: number } };
   bonuses: { [level: string]: number };
   defences: { [level: string]: number };
+  /**
+   * What type of bonus this tile yields when fees/bonuses are applied.
+   * Optional to keep backward compatibility with existing data.
+   * Camps and Towers → 'units'; other ownable tiles → 'gold'.
+   */
+  bonusType?: 'units' | 'gold';
 }
 
 export class Tile {
@@ -22,6 +28,7 @@ export class Tile {
   defences: { [level: string]: number };
   owner?: string;
   level: UpgradeLevel;
+  bonusType?: 'units' | 'gold';
 
   constructor(params: TileParams) {
     this.group = params.group;
@@ -34,6 +41,7 @@ export class Tile {
     this.defences = params.defences;
     this.owner = undefined;
     this.level = 1;
+    this.bonusType = params.bonusType;
   }
 
   isOwned(): boolean {

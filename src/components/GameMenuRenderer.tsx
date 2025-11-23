@@ -7,7 +7,6 @@ import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
 import { upgradeTile } from '../actions/upgradeTile';
 import { rollAndMove } from '../actions/rollAndMove';
-import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { endTurn } from '../actions/endTurn';
 
 interface GameMenuRendererProps {

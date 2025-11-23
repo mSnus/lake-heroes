@@ -3,6 +3,7 @@
     "group": "Mills",
     "name": "💧 Water mill",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 200,
     "priceUnits": 5,
     "upgradePrices": {
@@ -30,6 +31,7 @@
     "group": "Mills",
     "name": "🌬️ Windmill",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 240,
     "priceUnits": 6,
     "upgradePrices": {
@@ -57,6 +59,7 @@
     "group": "Mills",
     "name": "🧱 Brick factory",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 240,
     "priceUnits": 6,
     "upgradePrices": {
@@ -84,6 +87,7 @@
     "group": "Farms",
     "name": "🐷 Pig farm",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -111,6 +115,7 @@
     "group": "Farms",
     "name": "🐄 Cow farm",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 180,
     "priceUnits": 6,
     "upgradePrices": {
@@ -138,6 +143,7 @@
     "group": "Farms",
     "name": "🐑 Sheep farm",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 195,
     "priceUnits": 7,
     "upgradePrices": {
@@ -165,6 +171,7 @@
     "group": "Fields",
     "name": "🌾 Wheat field",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -192,6 +199,7 @@
     "group": "Fields",
     "name": "🥬 Cabbage field",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 250,
     "priceUnits": 5,
     "upgradePrices": {
@@ -219,6 +227,7 @@
     "group": "Fields",
     "name": "🍎 Fruit garden",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 350,
     "priceUnits": 5,
     "upgradePrices": {
@@ -246,6 +255,7 @@
     "group": "Camps",
     "name": "🏹 Archers",
     "isOwnable": true,
+    "bonusType": "units",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -273,6 +283,7 @@
     "group": "Camps",
     "name": "\uD83D\uDD2A Rogues",
     "isOwnable": true,
+    "bonusType": "units",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -300,6 +311,7 @@
     "group": "Camps",
     "name": "🗡️ Swordsmen",
     "isOwnable": true,
+    "bonusType": "units",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -327,6 +339,7 @@
     "group": "Towers",
     "name": "🏹 Archer tower",
     "isOwnable": true,
+    "bonusType": "units",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -354,6 +367,7 @@
     "group": "Towers",
     "name": "💣 Arquebus tower",
     "isOwnable": true,
+    "bonusType": "units",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -381,6 +395,7 @@
     "group": "Towers",
     "name": "💣💣 Cannon tower",
     "isOwnable": true,
+    "bonusType": "units",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -408,6 +423,7 @@
     "group": "Manufacture",
     "name": "🍇 Grapes",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -435,6 +451,7 @@
     "group": "Manufacture",
     "name": "🐟 Fish",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {
@@ -462,6 +479,7 @@
     "group": "Manufacture",
     "name": "🦫 Fur",
     "isOwnable": true,
+    "bonusType": "gold",
     "priceGold": 150,
     "priceUnits": 5,
     "upgradePrices": {

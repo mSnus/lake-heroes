@@ -39,9 +39,9 @@
 
 .game-menu {
   position: fixed;
-  right: 32px;
+  left: 50%;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
   width: 250px;
   background: #222838cc;
   color: white;
