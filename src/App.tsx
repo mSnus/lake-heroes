@@ -248,7 +248,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>War of the Seven Kingdoms</h1>
+      <h1>Heroes of the Lake</h1>
       <header
         className="App-header"
         style={{

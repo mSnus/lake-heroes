@@ -1,7 +1,7 @@
 [
   {
-    "group": "Mills",
-    "name": "Water mill",
+    "group": "🏭 Mills",
+    "name": "💧🏭 Water mill",
     "isOwnable": true,
     "priceGold": 200,
     "priceUnits": 5,
@@ -10,8 +10,8 @@
     "defences": { "1": 10, "2": 15, "3": 30 }
   },
   {
-    "group": "Mills",
-    "name": "Windmill",
+    "group": "🏭 Mills",
+    "name": "🌬️🏭 Windmill",
     "isOwnable": true,
     "priceGold": 240,
     "priceUnits": 6,
@@ -20,8 +20,8 @@
     "defences": { "1": 12, "2": 18, "3": 36 }
   },
   {
-    "group": "Farms",
-    "name": "Pig farm",
+    "group": "🚜 Farms",
+    "name": "🐷 Pig farm",
     "isOwnable": true,
     "priceGold": 150,
     "priceUnits": 5,
@@ -30,8 +30,8 @@
     "defences": { "1": 5, "2": 10, "3": 15 }
   },
   {
-    "group": "Farms",
-    "name": "Cow farm",
+    "group": "🚜 Farms",
+    "name": "🐄 Cow farm",
     "isOwnable": true,
     "priceGold": 180,
     "priceUnits": 6,
@@ -40,8 +40,8 @@
     "defences": { "1": 6, "2": 12, "3": 18 }
   },
   {
-    "group": "Farms",
-    "name": "Sheep farm",
+    "group": "🚜 Farms",
+    "name": "🐑 Sheep farm",
     "isOwnable": true,
     "priceGold": 195,
     "priceUnits": 7,
@@ -50,8 +50,8 @@
     "defences": { "1": 7, "2": 13, "3": 20 }
   },
   {
-    "group": "Fields",
-    "name": "Wheat field",
+    "group": "🌾 Fields",
+    "name": "🌾 Wheat field",
     "isOwnable": true,
     "priceGold": 150,
     "priceUnits": 5,
@@ -60,8 +60,8 @@
     "defences": { "1": 5, "2": 10, "3": 15 }
   },
   {
-    "group": "Fields",
-    "name": "Cabbage field",
+    "group": "🌾 Fields",
+    "name": "🥬 Cabbage field",
     "isOwnable": true,
     "priceGold": 150,
     "priceUnits": 5,
@@ -70,8 +70,38 @@
     "defences": { "1": 5, "2": 10, "3": 15 }
   },
   {
-    "group": "Fields",
-    "name": "Fruit garden",
+    "group": "🌾 Fields",
+    "name": "🍎 Fruit garden",
+    "isOwnable": true,
+    "priceGold": 150,
+    "priceUnits": 5,
+    "upgradePrices": { "2": { "gold": 200, "units": 1 }, "3": { "gold": 300, "units": 3 } },
+    "bonuses": { "1": 50, "2": 100, "3": 200 },
+    "defences": { "1": 5, "2": 10, "3": 15 }
+  },
+  {
+    "group": "⛺ Camp",
+    "name": "🏹 Archery yard",
+    "isOwnable": true,
+    "priceGold": 150,
+    "priceUnits": 5,
+    "upgradePrices": { "2": { "gold": 200, "units": 1 }, "3": { "gold": 300, "units": 3 } },
+    "bonuses": { "1": 50, "2": 100, "3": 200 },
+    "defences": { "1": 5, "2": 10, "3": 15 }
+  },
+  {
+    "group": "⛺ Camp",
+    "name": "🔨 Blacksmith",
+    "isOwnable": true,
+    "priceGold": 150,
+    "priceUnits": 5,
+    "upgradePrices": { "2": { "gold": 200, "units": 1 }, "3": { "gold": 300, "units": 3 } },
+    "bonuses": { "1": 50, "2": 100, "3": 200 },
+    "defences": { "1": 5, "2": 10, "3": 15 }
+  },
+  {
+    "group": "⛺ Camp",
+    "name": "🗡️ Spear yard",
     "isOwnable": true,
     "priceGold": 150,
     "priceUnits": 5,
