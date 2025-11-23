@@ -7,6 +7,7 @@ import { Player } from './game/Player';
 import { Board } from './game/Board';
 import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
+import { say } from './utils/say';
 import { PlayerStatsTable } from './components/PlayerStatsTable';
 import { GameMenuRenderer } from './components/GameMenuRenderer';
 import { MenuState } from './types/menuState';
@@ -124,7 +125,14 @@ function App() {
     function loadGameData() {
       const saved = loadFromStorage('board-state', null);
       if (saved) {
-        setBoard(Object.assign(new Board([], []), saved));
+        const restored = Object.assign(new Board([], []), saved) as Board;
+        setBoard(restored);
+        setMenu({ type: 'main' });
+        // Announce starting player's turn if not skipped
+        const first = restored.activePlayer;
+        if (!first.turnsToSkip || first.turnsToSkip <= 0) {
+          say(`${first.name}'s turn`, 'info');
+        }
         return;
       }
 
@@ -135,8 +143,14 @@ function App() {
       // Map to Tile instances; leave blanks as undefined
       const tiles = placedTemplates.map((t) => (t ? new Tile(t) : (undefined as any))) as unknown as Tile[];
       const players = (playersData as any[]).map((p: any) => new Player(p));
-      setBoard(new Board(tiles, players));
+      const initialBoard = new Board(tiles, players);
+      setBoard(initialBoard);
       setMenu({ type: 'main' });
+      // Announce starting player's turn if not skipped
+      const first = initialBoard.activePlayer;
+      if (!first.turnsToSkip || first.turnsToSkip <= 0) {
+        say(`${first.name}'s turn`, 'info');
+      }
     }
     loadGameData();
   }, []);

@@ -18,6 +18,11 @@ export function endTurn(
     // Move to next player
     board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
     setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+    // Announce next player's turn (not skipped)
+    const nextPlayer = board.activePlayer;
+    if (nextPlayer.turnsToSkip <= 0) {
+      say(`${nextPlayer.name}'s turn`, 'info');
+    }
     setMenu({ type: 'main' });
     return;
   }
@@ -25,6 +30,11 @@ export function endTurn(
   // Normal turn end
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+  // Announce new active player's turn
+  const nextPlayer = board.activePlayer;
+  if (nextPlayer.turnsToSkip <= 0) {
+    say(`${nextPlayer.name}'s turn`, 'info');
+  }
   setMenu({ type: 'main' });
 }
 
