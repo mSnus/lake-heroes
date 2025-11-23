@@ -2,6 +2,7 @@ import React from 'react';
 import { Board } from '../game/Board';
 import { MenuState } from '../types/menuState';
 import { GameMenu } from './GameMenu';
+import { TileCard } from './TileCard';
 import { buyTile } from '../actions/buyTile';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
@@ -23,6 +24,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   setBoard,
 }) => {
   const activePlayer = board.activePlayer;
+  const currentTile = board.tiles[activePlayer.position];
 
   const handleEndTurn = () => endTurn(board, setBoard, setMenu);
 
@@ -67,7 +69,9 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
             onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
           },
         ]}
-      />
+      >
+        <TileCard tile={currentTile} />
+      </GameMenu>
     );
   }
 
@@ -99,7 +103,10 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
           })
           .concat([{ label: 'Cancel', onClick: () => setMenu({ type: 'main' }) }])}
       >
-        {owned.length === 0 && <div>No upgradeable tiles available</div>}
+        <>
+          {owned.length === 0 && <div>No upgradeable tiles available</div>}
+          <TileCard tile={currentTile} />
+        </>
       </GameMenu>
     );
   }
@@ -108,10 +115,13 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     // Only used for Prison - show message and end turn
     return (
       <GameMenu title="Prison" items={[{ label: 'Continue', onClick: handleEndTurn }]}>
-        <div>
-          {activePlayer.name} landed on Prison!<br />
-          Next turn will be skipped.
-        </div>
+        <>
+          <div>
+            {activePlayer.name} landed on Prison!<br />
+            Next turn will be skipped.
+          </div>
+          <TileCard tile={currentTile} />
+        </>
       </GameMenu>
     );
   }
@@ -128,7 +138,9 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
           },
           { label: 'Pass', onClick: handleEndTurn },
         ]}
-      />
+      >
+        <TileCard tile={tile} />
+      </GameMenu>
     );
   }
 
@@ -150,12 +162,15 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     ];
     return (
       <GameMenu title="Pay or Fight" items={items}>
-        <div>
-          This tile is owned by {tile.owner}.<br />
-          Fee: {fee} GP
-          <br />
-          Defence: {defence} U
-        </div>
+        <>
+          <div>
+            This tile is owned by {tile.owner}.<br />
+            Fee: {fee} GP
+            <br />
+            Defence: {defence} U
+          </div>
+          <TileCard tile={tile} />
+        </>
       </GameMenu>
     );
   }
