@@ -10,7 +10,7 @@ export class Board {
   constructor(tiles: Tile[], players: Player[]) {
     this.tiles = tiles;
     this.players = players;
-    this.playerOrder = this.shuffle(Array.from({length: players.length}, (_, i) => i));
+    this.playerOrder = this.shuffle(Array.from({ length: players.length }, (_, i) => i));
     this.activePlayerIndex = 0;
   }
 

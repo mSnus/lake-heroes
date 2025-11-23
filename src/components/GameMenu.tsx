@@ -18,7 +18,12 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
       <h3>{title}</h3>
       <div>
         {items.map((item, i) => (
-          <button key={i} onClick={item.onClick} disabled={item.disabled} style={{ display: 'block', margin: '8px 0', width: '100%' }}>
+          <button
+            key={i}
+            onClick={item.onClick}
+            disabled={item.disabled}
+            style={{ display: 'block', margin: '8px 0', width: '100%' }}
+          >
             {item.label}
           </button>
         ))}

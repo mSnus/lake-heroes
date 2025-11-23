@@ -37,7 +37,7 @@ function App() {
       const tilesData = await tilesResp.json();
       const playersResp = await fetch('/players.json');
       const playersData = await playersResp.json();
-      const tiles = Array.from({length: 40}, () => new Tile(getRandomOf(tilesData)));
+      const tiles = Array.from({ length: 40 }, () => new Tile(getRandomOf(tilesData)));
       const players = playersData.map((p: any) => new Player(p));
       setBoard(new Board(tiles, players));
       setMenu({ type: 'main' });
@@ -94,7 +94,7 @@ function App() {
     const player = board.activePlayer;
     const oldPos = player.position;
     const newPos = (oldPos + roll) % BOARD_TILE_COUNT;
-    const passedStart = (oldPos + roll) >= BOARD_TILE_COUNT;
+    const passedStart = oldPos + roll >= BOARD_TILE_COUNT;
     player.position = newPos;
     if (passedStart) {
       player.gold += 500;
@@ -104,7 +104,12 @@ function App() {
     setMenu({ type: 'move-result', diceRoll: roll, passedStart });
   }
 
-  function buyTile(menu: MenuState | null, board: Board | null, setBoard: any, endTurn: () => void) {
+  function buyTile(
+    menu: MenuState | null,
+    board: Board | null,
+    setBoard: any,
+    endTurn: () => void
+  ) {
     if (!board || !menu) return;
     const tile = board.tiles[menu.tileIdx!];
     const player = board.activePlayer;
@@ -123,7 +128,7 @@ function App() {
     const tile = board.tiles[menu.tileIdx!];
     const player = board.activePlayer;
     const tileLevel = tile.level;
-    const owner = board.players.find(p => p.name === tile.owner);
+    const owner = board.players.find((p) => p.name === tile.owner);
     const fee = tile.bonuses[String(tileLevel)] || 0;
     if (player.gold >= fee && owner) {
       player.gold -= fee;
@@ -133,7 +138,13 @@ function App() {
     endTurn();
   }
 
-  function fightTile(menu: MenuState | null, board: Board | null, setBoard: any, setMenu: any, endTurn: () => void) {
+  function fightTile(
+    menu: MenuState | null,
+    board: Board | null,
+    setBoard: any,
+    setMenu: any,
+    endTurn: () => void
+  ) {
     if (!board || !menu) return;
     const tile = board.tiles[menu.tileIdx!];
     const player = board.activePlayer;
@@ -144,8 +155,8 @@ function App() {
       tile.level = 1;
       tile.owner = undefined;
       // Remove from previous owner's ownedTiles
-      board.players.forEach(p => {
-        p.ownedTiles = p.ownedTiles.filter(idx => idx !== menu.tileIdx);
+      board.players.forEach((p) => {
+        p.ownedTiles = p.ownedTiles.filter((idx) => idx !== menu.tileIdx);
       });
       setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
       // If now affordable, offer to buy; else end turn
@@ -181,52 +192,82 @@ function App() {
     if (!board || !menu) return null;
     const activePlayer = board.activePlayer;
     if (menu.type === 'main') {
-      return <GameMenu title={`Player: ${activePlayer.name}`}
-        items={[
-          { label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) },
-          { label: 'Roll Dice & Move', onClick: onRollAndMove }
-        ]}
-      >
-        <div>Gold: {activePlayer.gold}, Units: {activePlayer.units}</div>
-      </GameMenu>;
+      return (
+        <GameMenu
+          title={`Player: ${activePlayer.name}`}
+          items={[
+            { label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) },
+            { label: 'Roll Dice & Move', onClick: onRollAndMove },
+          ]}
+        >
+          <div>
+            Gold: {activePlayer.gold}, Units: {activePlayer.units}
+          </div>
+        </GameMenu>
+      );
     }
     if (menu.type === 'upgrade-list') {
-      const owned = activePlayer.ownedTiles.filter(idx => {
+      const owned = activePlayer.ownedTiles.filter((idx) => {
         const tile = board.tiles[idx];
         const nextLvl = (tile.level + 1) as 2 | 3;
         const price = tile.upgradePrices[String(nextLvl)];
-        return tile.owner === activePlayer.name && tile.level < 3 && price && activePlayer.gold >= price.gold && activePlayer.units >= price.units;
+        return (
+          tile.owner === activePlayer.name &&
+          tile.level < 3 &&
+          price &&
+          activePlayer.gold >= price.gold &&
+          activePlayer.units >= price.units
+        );
       });
-      return <GameMenu title="Upgrade Tile"
-        items={owned.map(idx => {
-          const tile = board.tiles[idx];
-          const nextLvl = (tile.level + 1) as 2 | 3;
-          const price = tile.upgradePrices[String(nextLvl)];
-          return {
-            label: `${tile.name} (Level ${tile.level}→${nextLvl}) — ${price.gold} GP, ${price.units} U`,
-            onClick: () => upgradeTile(idx, board, setBoard, endTurn)
-          };
-        }).concat([{ label: 'Cancel', onClick: () => setMenu({ type: 'main' }) }])}
-      >
-        {owned.length === 0 && <div>No upgradeable tiles available</div>}
-      </GameMenu>;
+      return (
+        <GameMenu
+          title="Upgrade Tile"
+          items={owned
+            .map((idx) => {
+              const tile = board.tiles[idx];
+              const nextLvl = (tile.level + 1) as 2 | 3;
+              const price = tile.upgradePrices[String(nextLvl)];
+              return {
+                label: `${tile.name} (Level ${tile.level}→${nextLvl}) — ${price.gold} GP, ${price.units} U`,
+                onClick: () => upgradeTile(idx, board, setBoard, endTurn),
+              };
+            })
+            .concat([{ label: 'Cancel', onClick: () => setMenu({ type: 'main' }) }])}
+        >
+          {owned.length === 0 && <div>No upgradeable tiles available</div>}
+        </GameMenu>
+      );
     }
     if (menu.type === 'move-result') {
-      return <GameMenu title="Move Result" items={[{ label: 'Continue', onClick: afterMoveLogic }]}
-      >
-        <div>
-          {activePlayer.name} rolled <b>{menu.diceRoll}</b>!<br/>
-          Moved to tile <b>{activePlayer.position + 1}</b>
-          {menu.passedStart && <><br/><span>Passed start: +500 GP, +5 U</span></>}
-        </div>
-      </GameMenu>;
+      return (
+        <GameMenu title="Move Result" items={[{ label: 'Continue', onClick: afterMoveLogic }]}>
+          <div>
+            {activePlayer.name} rolled <b>{menu.diceRoll}</b>!<br />
+            Moved to tile <b>{activePlayer.position + 1}</b>
+            {menu.passedStart && (
+              <>
+                <br />
+                <span>Passed start: +500 GP, +5 U</span>
+              </>
+            )}
+          </div>
+        </GameMenu>
+      );
     }
     if (menu.type === 'buy') {
       const tile = board.tiles[menu.tileIdx!];
-      return <GameMenu title="Buy Tile" items={[
-        { label: `Buy ${tile.name} (${tile.priceGold} GP, ${tile.priceUnits} U)`, onClick: () => buyTile(menu, board, setBoard, endTurn) },
-        { label: 'Pass', onClick: endTurn }
-      ]}/>;
+      return (
+        <GameMenu
+          title="Buy Tile"
+          items={[
+            {
+              label: `Buy ${tile.name} (${tile.priceGold} GP, ${tile.priceUnits} U)`,
+              onClick: () => buyTile(menu, board, setBoard, endTurn),
+            },
+            { label: 'Pass', onClick: endTurn },
+          ]}
+        />
+      );
     }
     if (menu.type === 'fee-or-fight') {
       const tile = board.tiles[menu.tileIdx!];
@@ -235,13 +276,24 @@ function App() {
       const defence = tile.defences[String(tileLevel)] || 0;
       const canFight = activePlayer.units > defence;
       let items = [
-        { label: `Pay Fee (${fee} GP)`, onClick: () => payFee(menu, board, setBoard, endTurn) }
+        { label: `Pay Fee (${fee} GP)`, onClick: () => payFee(menu, board, setBoard, endTurn) },
       ];
-      if (canFight) items.push({ label: `Fight (cost: ${defence} U)`, onClick: () => fightTile(menu, board, setBoard, setMenu, endTurn) });
+      if (canFight)
+        items.push({
+          label: `Fight (cost: ${defence} U)`,
+          onClick: () => fightTile(menu, board, setBoard, setMenu, endTurn),
+        });
       items.push({ label: 'Cancel', onClick: endTurn });
-      return <GameMenu title="Pay or Fight" items={items}>
-        <div>This tile is owned by {tile.owner}.<br/>Fee: {fee} GP<br/>Defence: {defence} U</div>
-      </GameMenu>;
+      return (
+        <GameMenu title="Pay or Fight" items={items}>
+          <div>
+            This tile is owned by {tile.owner}.<br />
+            Fee: {fee} GP
+            <br />
+            Defence: {defence} U
+          </div>
+        </GameMenu>
+      );
     }
     return null;
   }
@@ -256,15 +308,23 @@ function App() {
           flexDirection: 'row',
           alignItems: 'flex-start',
           justifyContent: 'center',
-          minHeight: '100vh'
+          minHeight: '100vh',
         }}
       >
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+          }}
+        >
           {board && <BoardCanvas board={board} />}
           {board && <PlayerStatsTable board={board} />}
         </div>
-        <div style={{minWidth:240}}>
-          {(board && menu && renderGameMenu()) || <div style={{minWidth:240}}></div>}
+        <div style={{ minWidth: 240 }}>
+          {(board && menu && renderGameMenu()) || <div style={{ minWidth: 240 }}></div>}
         </div>
       </header>
     </div>
