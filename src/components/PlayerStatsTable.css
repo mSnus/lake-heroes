@@ -1,0 +1,49 @@
+.player-stats-container {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.player-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  color: #333;
+  font-size: 14px;
+}
+
+.player-stats-header {
+  background-color: #333;
+  color: white;
+  text-align: center;
+}
+
+.player-stats-header-cell {
+  padding: 12px;
+  border: 1px solid #555;
+  text-align: center;
+}
+
+.player-stats-row {
+  background-color: #fff;
+}
+
+.player-stats-row-alt {
+  background-color: #f9f9f9;
+}
+
+.player-stats-cell {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.player-stats-cell-right {
+  text-align: right;
+}
+
+.player-stats-name {
+  font-weight: bold;
+}
+

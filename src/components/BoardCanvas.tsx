@@ -8,8 +8,8 @@ interface BoardCanvasProps {
 const TILE_COUNT = 40;
 const BOARD_WIDTH = 12; // horizontal tiles
 const BOARD_HEIGHT = 10; // vertical tiles
-const TILE_WIDTH = 50;
-const TILE_HEIGHT = 40;
+const TILE_WIDTH = 80;
+const TILE_HEIGHT = 60;
 const CANVAS_WIDTH = BOARD_WIDTH * TILE_WIDTH;
 const CANVAS_HEIGHT = BOARD_HEIGHT * TILE_HEIGHT;
 
@@ -74,7 +74,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
       // Draw tile name
       if (tile?.name) {
-        ctx.font = '8px Arial';
+        ctx.font = '10px Arial';
         ctx.fillText(tile.name.substring(0, 10), x + 2, y + 24);
       }
     }

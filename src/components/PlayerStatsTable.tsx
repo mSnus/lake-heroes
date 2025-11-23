@@ -1,5 +1,6 @@
 import React from 'react';
 import { Board } from '../game/Board';
+import './PlayerStatsTable.css';
 
 interface PlayerStatsTableProps {
   board: Board;
@@ -7,24 +8,14 @@ interface PlayerStatsTableProps {
 
 export const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({ board }) => {
   return (
-    <div style={{ marginTop: '20px', width: '100%', maxWidth: '800px' }}>
-      <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          backgroundColor: '#f5f5f5',
-          borderRadius: '8px',
-          overflow: 'hidden',
-        }}
-      >
+    <div className="player-stats-container">
+      <table className="player-stats-table">
         <thead>
-          <tr style={{ backgroundColor: '#333', color: 'white' }}>
-            <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #555' }}>Name</th>
-            <th style={{ padding: '12px', textAlign: 'right', border: '1px solid #555' }}>Gold</th>
-            <th style={{ padding: '12px', textAlign: 'right', border: '1px solid #555' }}>Units</th>
-            <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #555' }}>
-              Owned Tiles
-            </th>
+          <tr className="player-stats-header">
+            <th className="player-stats-header-cell">Name</th>
+            <th className="player-stats-header-cell">Gold</th>
+            <th className="player-stats-header-cell">Units</th>
+            <th className="player-stats-header-cell">Owned Tiles</th>
           </tr>
         </thead>
         <tbody>
@@ -38,24 +29,19 @@ export const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({ board }) => 
                 .join(', ') || 'None';
 
             return (
-              <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+              <tr
+                key={idx}
+                className={idx % 2 === 0 ? 'player-stats-row' : 'player-stats-row-alt'}
+              >
                 <td
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    fontWeight: 'bold',
-                    color: player.color,
-                  }}
+                  className="player-stats-cell player-stats-name"
+                  style={{ color: player.color }}
                 >
                   {player.name}
                 </td>
-                <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'right' }}>
-                  {player.gold}
-                </td>
-                <td style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'right' }}>
-                  {player.units}
-                </td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>{ownedTilesText}</td>
+                <td className="player-stats-cell player-stats-cell-right">{player.gold}</td>
+                <td className="player-stats-cell player-stats-cell-right">{player.units}</td>
+                <td className="player-stats-cell">{ownedTilesText}</td>
               </tr>
             );
           })}
