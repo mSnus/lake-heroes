@@ -16,6 +16,34 @@ const CANVAS_HEIGHT = BOARD_HEIGHT * TILE_HEIGHT;
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Extract emoji and text parts from tile name
+  function parseTileName(name: string): { emoji: string; textPart1: string; textPart2: string } {
+    // Find where text starts (first letter or number after potential emoji)
+    let textStart = 0;
+    for (let i = 0; i < name.length; i++) {
+      const char = name[i];
+      const code = char.charCodeAt(0);
+      // Check if it's a letter (A-Z, a-z) or number (0-9)
+      if (
+        (code >= 65 && code <= 90) ||
+        (code >= 97 && code <= 122) ||
+        (code >= 48 && code <= 57)
+      ) {
+        textStart = i;
+        break;
+      }
+    }
+    const emoji = name.substring(0, textStart).trim();
+    const text = name.substring(textStart).trim();
+
+    // Split text by space
+    const spaceIndex = text.indexOf(' ');
+    const textPart1 = spaceIndex > 0 ? text.substring(0, spaceIndex) : text;
+    const textPart2 = spaceIndex > 0 ? text.substring(spaceIndex + 1) : '';
+
+    return { emoji, textPart1, textPart2 };
+  }
+
   // Calculate tile position in rectangular path (12x10)
   function getTilePosition(tileIndex: number): { x: number; y: number } {
     const i = tileIndex % TILE_COUNT;
@@ -72,10 +100,37 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       ctx.fillStyle = '#000000';
       ctx.fillText(String(i + 1), x + 2, y + 12);
 
-      // Draw tile name
+      // Draw tile name in 3 lines: emoji, text part 1, text part 2
       if (tile?.name) {
-        ctx.font = '10px Arial';
-        ctx.fillText(tile.name.substring(0, 10), x + 2, y + 24);
+        const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
+        const centerX = x + TILE_WIDTH / 2;
+        let currentY = y + 20;
+
+        // Line 1: Emoji (bigger font)
+        if (emoji) {
+          ctx.font = '24px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(emoji, centerX, currentY);
+          currentY += 20;
+        }
+
+        // Line 2: First part of text
+        if (textPart1) {
+          ctx.font = '9px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(textPart1, centerX, currentY);
+          currentY += 12;
+        }
+
+        // Line 3: Second part of text (if exists)
+        if (textPart2) {
+          ctx.font = '9px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(textPart2, centerX, currentY);
+        }
+
+        // Reset text alignment
+        ctx.textAlign = 'left';
       }
     }
 

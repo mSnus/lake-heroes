@@ -1,7 +1,7 @@
 [
   {
     "group": "🏭 Mills",
-    "name": "💧🏭 Water mill",
+    "name": "💧 Water mill",
     "isOwnable": true,
     "priceGold": 200,
     "priceUnits": 5,
@@ -11,7 +11,7 @@
   },
   {
     "group": "🏭 Mills",
-    "name": "🌬️🏭 Windmill",
+    "name": "🌬️ Windmill",
     "isOwnable": true,
     "priceGold": 240,
     "priceUnits": 6,
