@@ -137,20 +137,17 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     const tileLevel = tile.level;
     const fee = tile.bonuses[String(tileLevel)] || 0;
     const defence = tile.defences[String(tileLevel)] || 0;
-    const canFight = activePlayer.units > defence;
     const items = [
       {
         label: `Pay Fee (${fee} GP)`,
         onClick: () => payFee(menu, board, setBoard, handleEndTurn),
       },
-    ];
-    if (canFight) {
-      items.push({
+      {
         label: `Fight (cost: ${defence} U)`,
         onClick: () => fightTile(menu, board, setBoard, setMenu, handleEndTurn),
-      });
-    }
-    items.push({ label: 'Cancel', onClick: handleEndTurn });
+        disabled: activePlayer.units < defence,
+      },
+    ];
     return (
       <GameMenu title="Pay or Fight" items={items}>
         <div>

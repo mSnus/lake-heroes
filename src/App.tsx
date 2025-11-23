@@ -148,7 +148,7 @@ function App() {
 
   return (
     <div className="App">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <header
         className="App-header"
         style={{
