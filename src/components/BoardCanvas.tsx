@@ -1,20 +1,36 @@
 import React, { useRef, useEffect } from 'react';
 import { Board } from '../game/Board';
+import groupsData from '../settings/groups.json';
 
 interface BoardCanvasProps {
   board: Board;
 }
 
-const TILE_COUNT = 20;
-const BOARD_WIDTH = 7; // horizontal tiles
-const BOARD_HEIGHT = 5; // vertical tiles
-const TILE_WIDTH = 80;
-const TILE_HEIGHT = 60;
+const TILE_COUNT = 24;
+const BOARD_WIDTH = 8; // horizontal tiles
+const BOARD_HEIGHT = 6; // vertical tiles
+const TILE_WIDTH = 120;
+const TILE_HEIGHT = 100;
+const TITLE_BAR_HEIGHT = 28; // px
+const TITLE_FONT = 'bold 12px Arial';
+const BODY_FONT = '9px Arial';
+const EMOJI_FONT = '22px Arial';
+const GAP_PX = 16; // ~1rem
+const ICON_RADIUS = 9; // px (diameter 18)
 const CANVAS_WIDTH = BOARD_WIDTH * TILE_WIDTH;
 const CANVAS_HEIGHT = BOARD_HEIGHT * TILE_HEIGHT;
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Build lookup for groups by name
+  const groupsByName: Record<string, { name: string; icon: string; color: string }> = React.useMemo(() => {
+    const map: Record<string, { name: string; icon: string; color: string }> = {};
+    (groupsData as any[]).forEach((g: any) => {
+      if (g && g.name) map[g.name] = { name: g.name, icon: g.icon, color: g.color };
+    });
+    return map;
+  }, []);
 
   // Extract emoji and text parts from tile name
   function parseTileName(name: string): { emoji: string; textPart1: string; textPart2: string } {
@@ -95,6 +111,54 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       ctx.lineWidth = 1;
       ctx.strokeRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 
+      // Title bar by group (skip for Special tiles)
+      const hasTitle = !!tile && tile.group !== 'Special';
+      if (tile && hasTitle) {
+        const grp = groupsByName[tile.group];
+        const barColor = grp?.color || '#EAEAEA';
+
+        // Bar background
+        ctx.fillStyle = barColor;
+        ctx.fillRect(x, y, TILE_WIDTH, TITLE_BAR_HEIGHT);
+
+        // Prepare text metrics for centering
+        ctx.font = TITLE_FONT;
+        const titleText = grp?.name || tile.group || '';
+        const textMetrics = ctx.measureText(titleText);
+        const textWidth = textMetrics.width;
+        const iconDiameter = ICON_RADIUS * 2;
+        const totalWidth = iconDiameter + GAP_PX + textWidth;
+        const startX = x + (TILE_WIDTH - totalWidth) / 2;
+        const centerY = y + TITLE_BAR_HEIGHT / 2;
+
+        // Draw icon circle
+        const circleCx = startX + ICON_RADIUS;
+        ctx.beginPath();
+        ctx.arc(circleCx, centerY, ICON_RADIUS, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#333333';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Draw emoji inside the circle
+        if (grp?.icon) {
+          ctx.font = '14px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#000000';
+          ctx.fillText(grp.icon, circleCx, centerY);
+        }
+
+        // Draw title text
+        ctx.font = TITLE_FONT;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#000000';
+        const textX = startX + iconDiameter + GAP_PX;
+        ctx.fillText(titleText, textX, centerY);
+      }
+
       // Draw tile number
       ctx.font = '10px Arial';
       ctx.fillStyle = '#000000';
@@ -104,33 +168,38 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       if (tile?.name) {
         const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
         const centerX = x + TILE_WIDTH / 2;
-        let currentY = y + 20;
 
-        // Line 1: Emoji (bigger font)
-        if (emoji) {
-          ctx.font = '22px Arial';
-          ctx.textAlign = 'center';
-          ctx.fillText(emoji, centerX, currentY);
-          currentY += 20;
-        }
+        // Compute available content box (below title if present)
+        const contentTop = y + (hasTitle ? TITLE_BAR_HEIGHT : 0);
+        const contentHeight = TILE_HEIGHT - (hasTitle ? TITLE_BAR_HEIGHT : 0);
 
-        // Line 2: First part of text
-        if (textPart1) {
-          ctx.font = '9px Arial';
-          ctx.textAlign = 'center';
-          ctx.fillText(textPart1, centerX, currentY);
-          currentY += 12;
-        }
+        // Build render lines with fonts and line heights
+        type Line = { text: string; font: string; height: number };
+        const lines: Line[] = [];
+        if (emoji) lines.push({ text: emoji, font: EMOJI_FONT, height: 20 });
+        if (textPart1) lines.push({ text: textPart1, font: BODY_FONT, height: 12 });
+        if (textPart2) lines.push({ text: textPart2, font: BODY_FONT, height: 12 });
 
-        // Line 3: Second part of text (if exists)
-        if (textPart2) {
-          ctx.font = '9px Arial';
-          ctx.textAlign = 'center';
-          ctx.fillText(textPart2, centerX, currentY);
-        }
+        // Total block height
+        const totalHeight = lines.reduce((sum, l) => sum + l.height, 0);
+
+        // Start drawing from vertical center of available space
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        let offset = -totalHeight / 2;
+        const midY = contentTop + contentHeight / 2;
+
+        lines.forEach((l) => {
+          ctx.font = l.font;
+          // position line center
+          const lineCenterY = midY + offset + l.height / 2;
+          ctx.fillText(l.text, centerX, lineCenterY);
+          offset += l.height;
+        });
 
         // Reset text alignment
         ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
       }
     }
 

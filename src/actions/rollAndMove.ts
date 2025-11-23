@@ -5,6 +5,7 @@ import { handleTreasureBox } from './treasureBox';
 import { handleRogueCamp } from './rogueCamp';
 import { handlePrison } from './prison';
 import { passStart } from './passStart';
+import { afterMoveLogic } from './afterMoveLogic';
 import { toast } from 'react-toastify';
 
 const BOARD_TILE_COUNT = 20;
@@ -48,7 +49,7 @@ export function rollAndMove(
     return;
   }
 
-  // Normal move - go directly to afterMoveLogic
-  endTurn();
+  // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
+  afterMoveLogic(board, setBoard, setMenu, endTurn);
 }
 

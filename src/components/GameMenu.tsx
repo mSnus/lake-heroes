@@ -7,7 +7,7 @@ interface MenuItem {
 }
 
 interface GameMenuProps {
-  title: string;
+  title: React.ReactNode; // allow rich headers (e.g., colored circle + name)
   items: MenuItem[];
   children?: React.ReactNode;
 }

@@ -30,19 +30,35 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   if (menu.type === 'main') {
     return (
       <GameMenu
-        title={`Player: ${activePlayer.name}`}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span
+              aria-label={`Player color`}
+              title={`Player color`}
+              style={{
+                display: 'inline-block',
+                width: 16,
+                height: 16,
+                borderRadius: '50%',
+                backgroundColor: activePlayer.color,
+                border: '2px solid #000',
+                boxSizing: 'border-box',
+              }}
+            />
+            <span>{activePlayer.name}</span>
+          </div>
+        }
         items={[
-          { label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) },
+          // Show upgrade button only if the player owns at least one tile
+          ...(activePlayer.ownedTiles.length > 0
+            ? [{ label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) }]
+            : []),
           {
             label: 'Roll Dice & Move',
             onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
           },
         ]}
-      >
-        <div>
-          Gold: {activePlayer.gold}, Units: {activePlayer.units}
-        </div>
-      </GameMenu>
+      />
     );
   }
 
