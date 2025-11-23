@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Mills",
+    "icon": "🏭",
+    "color": "#FFD166"
+  },
+  {
+    "name": "Farms",
+    "icon": "🚜",
+    "color": "#8eb279"
+  },
+  {
+    "name": "Fields",
+    "icon": "🌾",
+    "color": "#78df7b"
+  },
+  {
+    "name": "Camps",
+    "icon": "⛺",
+    "color": "#74b6bd"
+  },
+  {
+    "name": "Manufacture",
+    "icon": "🪓",
+    "color": "#F9CFF2"
+  },
+  {
+    "name": "Towers",
+    "icon": "🗼",
+    "color": "#616d76"
+  },
+  {
+    "name": "Special",
+    "icon": "⭐",
+    "color": "#E0E0FF"
+  }
+]

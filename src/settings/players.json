@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Mike",
+    "color": "#FF4444",
+    "gold": 250,
+    "units": 10,
+    "position": 0
+  },
+  {
+    "name": "Inma",
+    "color": "#4444FF",
+    "gold": 250,
+    "units": 10,
+    "position": 0
+  }
+]
