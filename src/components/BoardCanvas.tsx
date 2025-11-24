@@ -34,6 +34,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const boardHeight = isMobile ? 8 : 6; // tiles vertically
   const tileWidth = TILE_WIDTH / ratioX;
   const tileHeight = TILE_HEIGHT / ratioY;
+  const titleBarHeight = TITLE_BAR_HEIGHT / ratioY;
   const CANVAS_WIDTH = boardWidth * tileWidth;
   const CANVAS_HEIGHT = boardHeight * tileHeight;
 
@@ -173,7 +174,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
         // Bar background
         ctx.fillStyle = barColor;
-        ctx.fillRect(x, y, tileWidth, TITLE_BAR_HEIGHT);
+        ctx.fillRect(x, y, tileWidth, titleBarHeight);
 
         // Prepare text metrics for centering
         ctx.font = TITLE_FONT;
@@ -183,17 +184,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         const iconDiameter = ICON_RADIUS * 2;
         const totalWidth = iconDiameter + GAP_PX + textWidth;
         const startX = x + (tileWidth - totalWidth) / 2;
-        const centerY = y + TITLE_BAR_HEIGHT / 2;
+        const centerX = x + tileWidth / 2;
+        const centerY = y + titleBarHeight / 2;
 
         // Draw icon circle
-        const circleCx = startX + ICON_RADIUS;
-        ctx.beginPath();
-        ctx.arc(circleCx, centerY, ICON_RADIUS, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        ctx.strokeStyle = '#333333';
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        const circleCx = isMobile? centerX : startX + ICON_RADIUS;
 
         // Draw emoji inside the circle
         if (grp?.icon) {
@@ -204,19 +199,17 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           ctx.fillText(grp.icon, circleCx, centerY);
         }
 
-        // Draw title text
-        ctx.font = TITLE_FONT;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#000000';
-        const textX = startX + iconDiameter + GAP_PX;
-        ctx.fillText(titleText, textX, centerY);
-      }
 
-      // Draw tile number
-      ctx.font = '10px Arial';
-      ctx.fillStyle = '#000000';
-      ctx.fillText(String(i + 1), x + 2, y + 12);
+        // Draw title text
+        if (!isMobile) {
+          ctx.font = TITLE_FONT;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#000000';
+          const textX = startX + iconDiameter + GAP_PX;
+          ctx.fillText(titleText, textX, centerY);
+        }
+      }
 
       // Draw tile name in 3 lines: emoji, text part 1, text part 2
       if (tile?.name) {
@@ -224,8 +217,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         const centerX = x + tileWidth / 2;
 
         // Compute available content box (below title if present)
-        const contentTop = y + (hasTitle ? TITLE_BAR_HEIGHT : 0);
-        const contentHeight = tileHeight - (hasTitle ? TITLE_BAR_HEIGHT : 0);
+        const contentTop = y + (hasTitle ? titleBarHeight : 0);
+        const contentHeight = tileHeight - (hasTitle ? titleBarHeight : 0);
 
         // Build render lines with fonts and line heights
         type Line = { text: string; font: string; height: number };
@@ -245,6 +238,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
         lines.forEach((l) => {
           ctx.font = l.font;
+          ctx.fillStyle = '#000000';
           // position line center
           const lineCenterY = midY + offset + l.height / 2;
           ctx.fillText(l.text, centerX, lineCenterY);

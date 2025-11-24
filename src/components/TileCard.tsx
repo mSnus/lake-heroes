@@ -68,48 +68,52 @@ export const TileCard: React.FC<TileCardProps> = ({ tile }) => {
         </strong>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        Bonus: {bonusType === 'gold' ? 'Gold' : 'Units'}
-      </div>
+      {tile.isOwnable && (
+        <div>
+          <div style={{ marginBottom: 8 }}>
+            Bonus: {bonusType === 'gold' ? 'Gold' : 'Units'}
+          </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Lvl</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Price</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Bonus</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Defence</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ padding: '4px 6px' }}>1</td>
-              <td style={{ padding: '4px 6px' }}>{priceLvl1}</td>
-              <td style={{ padding: '4px 6px' }}>
-                {bonus(1)} {bonusType === 'gold' ? 'GP' : 'U'}
-              </td>
-              <td style={{ padding: '4px 6px' }}>{defence(1)} U</td>
-            </tr>
-            <tr>
-              <td style={{ padding: '4px 6px' }}>2</td>
-              <td style={{ padding: '4px 6px' }}>{priceLvl2}</td>
-              <td style={{ padding: '4px 6px' }}>
-                {bonus(2)} {bonusType === 'gold' ? 'GP' : 'U'}
-              </td>
-              <td style={{ padding: '4px 6px' }}>{defence(2)} U</td>
-            </tr>
-            <tr>
-              <td style={{ padding: '4px 6px' }}>3</td>
-              <td style={{ padding: '4px 6px' }}>{priceLvl3}</td>
-              <td style={{ padding: '4px 6px' }}>
-                {bonus(3)} {bonusType === 'gold' ? 'GP' : 'U'}
-              </td>
-              <td style={{ padding: '4px 6px' }}>{defence(3)} U</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+              <tr>
+                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Lvl</th>
+                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Price</th>
+                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Bonus</th>
+                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Defence</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td style={{ padding: '4px 6px' }}>1</td>
+                <td style={{ padding: '4px 6px' }}>{priceLvl1}</td>
+                <td style={{ padding: '4px 6px' }}>
+                  {bonus(1)} {bonusType === 'gold' ? 'GP' : 'U'}
+                </td>
+                <td style={{ padding: '4px 6px' }}>{defence(1)} U</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '4px 6px' }}>2</td>
+                <td style={{ padding: '4px 6px' }}>{priceLvl2}</td>
+                <td style={{ padding: '4px 6px' }}>
+                  {bonus(2)} {bonusType === 'gold' ? 'GP' : 'U'}
+                </td>
+                <td style={{ padding: '4px 6px' }}>{defence(2)} U</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '4px 6px' }}>3</td>
+                <td style={{ padding: '4px 6px' }}>{priceLvl3}</td>
+                <td style={{ padding: '4px 6px' }}>
+                  {bonus(3)} {bonusType === 'gold' ? 'GP' : 'U'}
+                </td>
+                <td style={{ padding: '4px 6px' }}>{defence(3)} U</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
