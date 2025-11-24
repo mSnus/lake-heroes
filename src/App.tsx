@@ -162,37 +162,28 @@ function App() {
 
   return (
     <div className="App">
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
-      <header
-        className="App-header"
+      <ToastContainer position="top-right" autoClose={3500} hideProgressBar={false} />
+
+      <div
         style={{
+          flex: 1,
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          minHeight: '100vh',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
         }}
       >
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-          }}
-        >
-          {board && <BoardCanvas board={board} />}
-          {board && <PlayerStatsTable board={board} />}
-        </div>
-        <div style={{ minWidth: 240 }}>
-          {board && menu ? (
-            <GameMenuRenderer board={board} menu={menu} setMenu={setMenu} setBoard={setBoard} />
-          ) : (
-            <div style={{ minWidth: 240 }}></div>
-          )}
-        </div>
-      </header>
+        {board && <BoardCanvas board={board} />}
+        {board && <PlayerStatsTable board={board} />}
+      </div>
+      <div style={{ minWidth: 240 }}>
+        {board && menu ? (
+          <GameMenuRenderer board={board} menu={menu} setMenu={setMenu} setBoard={setBoard} />
+        ) : (
+          <div style={{ minWidth: 240 }}></div>
+        )}
+      </div>
+
       {/* Reset Game button fixed at the bottom */}
       <div
         style={{

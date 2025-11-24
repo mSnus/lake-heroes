@@ -2,14 +2,13 @@ import React, { useRef, useEffect } from 'react';
 import { Board } from '../game/Board';
 import groupsData from '../settings/groups.json';
 import diamondUrl from '../assets/diamond-mono.svg';
+import { useMediaQuery } from 'react-responsive';
 
 interface BoardCanvasProps {
   board: Board;
 }
 
 const TILE_COUNT = 24;
-const BOARD_WIDTH = 8; // horizontal tiles
-const BOARD_HEIGHT = 6; // vertical tiles
 const TILE_WIDTH = 120;
 const TILE_HEIGHT = 100;
 const TITLE_BAR_HEIGHT = 28; // px
@@ -18,8 +17,7 @@ const BODY_FONT = '9px Arial';
 const EMOJI_FONT = '22px Arial';
 const GAP_PX = 16; // ~1rem
 const ICON_RADIUS = 9; // px (diameter 18)
-const CANVAS_WIDTH = BOARD_WIDTH * TILE_WIDTH;
-const CANVAS_HEIGHT = BOARD_HEIGHT * TILE_HEIGHT;
+// Canvas size will be computed at runtime based on device (mobile vs desktop)
 const DIAMOND_SIZE = 14; // marker icon size in px
 const DIAMOND_GAP = 4; // gap between markers
 const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
@@ -27,6 +25,17 @@ const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [iconsReady, setIconsReady] = React.useState(false);
+
+  // Switch layout for mobile: vertical (6x8) on mobile, horizontal (8x6) otherwise
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const ratioX = isMobile ? 1.8 : 1;
+  const ratioY = isMobile ? 1.2 : 1;
+  const boardWidth = isMobile ? 6 : 8; // tiles horizontally
+  const boardHeight = isMobile ? 8 : 6; // tiles vertically
+  const tileWidth = TILE_WIDTH / ratioX;
+  const tileHeight = TILE_HEIGHT / ratioY;
+  const CANVAS_WIDTH = boardWidth * tileWidth;
+  const CANVAS_HEIGHT = boardHeight * tileHeight;
 
   // Load diamond image once
   const diamondImgRef = useRef<HTMLImageElement | null>(null);
@@ -103,39 +112,41 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     return { emoji, textPart1, textPart2 };
   }
 
-  // Calculate tile position in rectangular path (7x5 = 20 tiles)
+  // Calculate tile position along the rectangular perimeter path
   function getTilePosition(tileIndex: number): { x: number; y: number } {
     const i = tileIndex % TILE_COUNT;
-    // Top row: 0-6 (7 tiles, left to right)
-    if (i < BOARD_WIDTH) {
-      return { x: i * TILE_WIDTH, y: 0 };
+    // Top row: 0..boardWidth-1 (left to right)
+    if (i < boardWidth) {
+      return { x: i * tileWidth, y: 0 };
     }
-    // Right side: 7-10 (4 tiles, top to bottom, excluding top-right corner)
-    if (i < BOARD_WIDTH + BOARD_HEIGHT - 1) {
-      const rightIndex = i - BOARD_WIDTH;
-      return { x: (BOARD_WIDTH - 1) * TILE_WIDTH, y: (rightIndex + 1) * TILE_HEIGHT };
+    // Right side: next boardHeight-1 tiles (top to bottom, excluding top-right corner)
+    if (i < boardWidth + boardHeight - 1) {
+      const rightIndex = i - boardWidth;
+      return { x: (boardWidth - 1) * tileWidth, y: (rightIndex + 1) * tileHeight };
     }
-    // Bottom row: 11-16 (6 tiles, right to left, excluding bottom-right corner)
-    if (i < BOARD_WIDTH + BOARD_HEIGHT - 1 + BOARD_WIDTH - 1) {
-      const bottomIndex = i - (BOARD_WIDTH + BOARD_HEIGHT - 1);
+    // Bottom row: next boardWidth-1 tiles (right to left, excluding bottom-right corner)
+    if (i < boardWidth + boardHeight - 1 + boardWidth - 1) {
+      const bottomIndex = i - (boardWidth + boardHeight - 1);
       return {
-        x: (BOARD_WIDTH - 2 - bottomIndex) * TILE_WIDTH,
-        y: (BOARD_HEIGHT - 1) * TILE_HEIGHT,
+        x: (boardWidth - 2 - bottomIndex) * tileWidth,
+        y: (boardHeight - 1) * tileHeight,
       };
     }
-    // Left side: 17-19 (3 tiles, bottom to top, excluding both corners)
-    const leftIndex = i - (BOARD_WIDTH + BOARD_HEIGHT - 1 + BOARD_WIDTH - 1);
+    // Left side: remaining tiles (bottom to top, excluding both corners)
+    const leftIndex = i - (boardWidth + boardHeight - 1 + boardWidth - 1);
     return {
       x: 0,
-      y: (BOARD_HEIGHT - 2 - leftIndex) * TILE_HEIGHT,
+      y: (boardHeight - 2 - leftIndex) * tileHeight,
     };
   }
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpiRatio = window.devicePixelRatio;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    // ctx.scale(dpiRatio, dpiRatio);
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Draw tiles
@@ -147,12 +158,12 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       ctx.fillStyle = tile?.owner
         ? board.players.find((p) => p.name === tile.owner)?.color + '33' || '#ffffff'
         : '#ffffff';
-      ctx.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+      ctx.fillRect(x, y, tileWidth, tileHeight);
 
       // Draw tile border
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+      ctx.strokeRect(x, y, tileWidth, tileHeight);
 
       // Title bar by group (skip for Special tiles)
       const hasTitle = !!tile && tile.group !== 'Special';
@@ -162,7 +173,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
         // Bar background
         ctx.fillStyle = barColor;
-        ctx.fillRect(x, y, TILE_WIDTH, TITLE_BAR_HEIGHT);
+        ctx.fillRect(x, y, tileWidth, TITLE_BAR_HEIGHT);
 
         // Prepare text metrics for centering
         ctx.font = TITLE_FONT;
@@ -171,7 +182,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         const textWidth = textMetrics.width;
         const iconDiameter = ICON_RADIUS * 2;
         const totalWidth = iconDiameter + GAP_PX + textWidth;
-        const startX = x + (TILE_WIDTH - totalWidth) / 2;
+        const startX = x + (tileWidth - totalWidth) / 2;
         const centerY = y + TITLE_BAR_HEIGHT / 2;
 
         // Draw icon circle
@@ -210,11 +221,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       // Draw tile name in 3 lines: emoji, text part 1, text part 2
       if (tile?.name) {
         const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
-        const centerX = x + TILE_WIDTH / 2;
+        const centerX = x + tileWidth / 2;
 
         // Compute available content box (below title if present)
         const contentTop = y + (hasTitle ? TITLE_BAR_HEIGHT : 0);
-        const contentHeight = TILE_HEIGHT - (hasTitle ? TITLE_BAR_HEIGHT : 0);
+        const contentHeight = tileHeight - (hasTitle ? TITLE_BAR_HEIGHT : 0);
 
         // Build render lines with fonts and line heights
         type Line = { text: string; font: string; height: number };
@@ -254,8 +265,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           const count = Math.max(0, Math.min(3, tile.level));
           if (count > 0) {
             const totalWidth = count * DIAMOND_SIZE + (count - 1) * DIAMOND_GAP;
-            const startX = x + (TILE_WIDTH - totalWidth) / 2;
-            const drawY = y + TILE_HEIGHT - DIAMOND_BOTTOM_PADDING - DIAMOND_SIZE;
+            const startX = x + (tileWidth - totalWidth) / 2;
+            const drawY = y + tileHeight - DIAMOND_BOTTOM_PADDING - DIAMOND_SIZE;
             for (let d = 0; d < count; d++) {
               const dx = startX + d * (DIAMOND_SIZE + DIAMOND_GAP);
               ctx.drawImage(diamond, dx, drawY);
@@ -269,8 +280,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     board.players.forEach((player) => {
       const pos = player.position % TILE_COUNT;
       const { x, y } = getTilePosition(pos);
-      const centerX = x + TILE_WIDTH / 2;
-      const centerY = y + TILE_HEIGHT / 2;
+      const centerX = x + tileWidth / 2;
+      const centerY = y + tileHeight / 2;
 
       // Draw player circle
       ctx.beginPath();
@@ -288,7 +299,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       ctx.fillText(player.name, centerX, centerY + 20);
       ctx.textAlign = 'left';
     });
-  }, [board, iconsReady]);
+  }, [board, iconsReady, boardWidth, boardHeight, CANVAS_WIDTH, CANVAS_HEIGHT]);
 
   return <canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} ref={canvasRef} />;
 };
