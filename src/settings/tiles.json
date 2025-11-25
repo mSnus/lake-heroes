@@ -32,7 +32,7 @@
     "name": "🌬️ Windmill",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 240,
+    "priceGold": 250,
     "priceUnits": 6,
     "upgradePrices": {
       "2": {
@@ -60,7 +60,7 @@
     "name": "🧱 Brick factory",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 240,
+    "priceGold": 300,
     "priceUnits": 6,
     "upgradePrices": {
       "2": {
@@ -256,7 +256,7 @@
     "name": "🏹 Archers",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 150,
+    "priceGold": 250,
     "priceUnits": 5,
     "upgradePrices": {
       "2": {
@@ -284,7 +284,7 @@
     "name": "\uD83D\uDD2A Rogues",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 150,
+    "priceGold": 350,
     "priceUnits": 5,
     "upgradePrices": {
       "2": {
@@ -312,7 +312,7 @@
     "name": "🗡️ Swordsmen",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 150,
+    "priceGold": 450,
     "priceUnits": 5,
     "upgradePrices": {
       "2": {

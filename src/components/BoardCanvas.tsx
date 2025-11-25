@@ -2,32 +2,36 @@ import React, { useRef, useEffect } from 'react';
 import { Board } from '../game/Board';
 import groupsData from '../settings/groups.json';
 import diamondUrl from '../assets/diamond-mono.svg';
+import mapUrl from '../assets/map5.png';
 import { useMediaQuery } from 'react-responsive';
-
+import {
+  TILE_COUNT,
+  TILE_WIDTH,
+  TILE_HEIGHT,
+  TITLE_BAR_HEIGHT,
+  TITLE_FONT,
+  BODY_FONT,
+  EMOJI_FONT,
+  GAP_PX,
+  ICON_RADIUS,
+  DIAMOND_SIZE,
+  DIAMOND_GAP,
+  DIAMOND_BOTTOM_PADDING,
+  getTilePosition,
+  isMobileLayout,
+  parseTileName,
+} from './board/common';
+import { drawPlayers } from './board/players';
 interface BoardCanvasProps {
   board: Board;
 }
-
-const TILE_COUNT = 24;
-const TILE_WIDTH = 120;
-const TILE_HEIGHT = 100;
-const TITLE_BAR_HEIGHT = 28; // px
-const TITLE_FONT = 'bold 12px Arial';
-const BODY_FONT = '9px Arial';
-const EMOJI_FONT = '22px Arial';
-const GAP_PX = 16; // ~1rem
-const ICON_RADIUS = 9; // px (diameter 18)
-// Canvas size will be computed at runtime based on device (mobile vs desktop)
-const DIAMOND_SIZE = 14; // marker icon size in px
-const DIAMOND_GAP = 4; // gap between markers
-const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [iconsReady, setIconsReady] = React.useState(false);
 
   // Switch layout for mobile: vertical (6x8) on mobile, horizontal (8x6) otherwise
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = isMobileLayout();
   const ratioX = isMobile ? 1.8 : 1;
   const ratioY = isMobile ? 1.2 : 1;
   const boardWidth = isMobile ? 6 : 8; // tiles horizontally
@@ -40,11 +44,20 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
   // Load diamond image once
   const diamondImgRef = useRef<HTMLImageElement | null>(null);
+  const mapImgRef = useRef<HTMLImageElement | null>(null);
+  const [mapReady, setMapReady] = React.useState(false);
+
   useEffect(() => {
     const img = new Image();
     img.src = diamondUrl as unknown as string;
-    img.onload = () => setIconsReady((v) => !v); // trigger a re-render to draw markers
+    img.onload = () => setIconsReady(true); // trigger a re-render to draw markers
     diamondImgRef.current = img;
+
+    const mapImg = new Image();
+    mapImg.src = mapUrl as unknown as string;
+    mapImg.onload = () => setMapReady(true);
+    mapImgRef.current = mapImg;
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -62,10 +75,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     const off = document.createElement('canvas');
     off.width = DIAMOND_SIZE;
     off.height = DIAMOND_SIZE;
+
     const octx = off.getContext('2d');
     if (!octx) return null;
+
     // Draw SVG scaled to fit
     octx.drawImage(img, 0, 0, DIAMOND_SIZE, DIAMOND_SIZE);
+
     // Tint using source-in so the alpha from the image acts as mask
     octx.globalCompositeOperation = 'source-in';
     octx.fillStyle = color;
@@ -77,69 +93,30 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   }
 
   // Build lookup for groups by name
-  const groupsByName: Record<string, { name: string; icon: string; color: string }> = React.useMemo(() => {
-    const map: Record<string, { name: string; icon: string; color: string }> = {};
-    (groupsData as any[]).forEach((g: any) => {
-      if (g && g.name) map[g.name] = { name: g.name, icon: g.icon, color: g.color };
-    });
-    return map;
-  }, []);
+  const groupsByName: Record<string, { name: string; icon: string; color: string }> =
+    React.useMemo(() => {
+      const map: Record<string, { name: string; icon: string; color: string }> = {};
+      (groupsData as any[]).forEach((g: any) => {
+        if (g && g.name) map[g.name] = { name: g.name, icon: g.icon, color: g.color };
+      });
+      return map;
+    }, []);
 
-  // Extract emoji and text parts from tile name
-  function parseTileName(name: string): { emoji: string; textPart1: string; textPart2: string } {
-    // Find where text starts (first letter or number after potential emoji)
-    let textStart = 0;
-    for (let i = 0; i < name.length; i++) {
-      const char = name[i];
-      const code = char.charCodeAt(0);
-      // Check if it's a letter (A-Z, a-z) or number (0-9)
-      if (
-        (code >= 65 && code <= 90) ||
-        (code >= 97 && code <= 122) ||
-        (code >= 48 && code <= 57)
-      ) {
-        textStart = i;
-        break;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpiRatio = window.devicePixelRatio;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    // Draw background map if loaded
+    if (mapImgRef.current) {
+      try {
+        ctx.drawImage(mapImgRef.current, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      } catch (e) {
+        // drawing can fail in some browsers if image isn't fully ready, ignore silently
       }
     }
-    const emoji = name.substring(0, textStart).trim();
-    const text = name.substring(textStart).trim();
-
-    // Split text by space
-    const spaceIndex = text.indexOf(' ');
-    const textPart1 = spaceIndex > 0 ? text.substring(0, spaceIndex) : text;
-    const textPart2 = spaceIndex > 0 ? text.substring(spaceIndex + 1) : '';
-
-    return { emoji, textPart1, textPart2 };
-  }
-
-  // Calculate tile position along the rectangular perimeter path
-  function getTilePosition(tileIndex: number): { x: number; y: number } {
-    const i = tileIndex % TILE_COUNT;
-    // Top row: 0..boardWidth-1 (left to right)
-    if (i < boardWidth) {
-      return { x: i * tileWidth, y: 0 };
-    }
-    // Right side: next boardHeight-1 tiles (top to bottom, excluding top-right corner)
-    if (i < boardWidth + boardHeight - 1) {
-      const rightIndex = i - boardWidth;
-      return { x: (boardWidth - 1) * tileWidth, y: (rightIndex + 1) * tileHeight };
-    }
-    // Bottom row: next boardWidth-1 tiles (right to left, excluding bottom-right corner)
-    if (i < boardWidth + boardHeight - 1 + boardWidth - 1) {
-      const bottomIndex = i - (boardWidth + boardHeight - 1);
-      return {
-        x: (boardWidth - 2 - bottomIndex) * tileWidth,
-        y: (boardHeight - 1) * tileHeight,
-      };
-    }
-    // Left side: remaining tiles (bottom to top, excluding both corners)
-    const leftIndex = i - (boardWidth + boardHeight - 1 + boardWidth - 1);
-    return {
-      x: 0,
-      y: (boardHeight - 2 - leftIndex) * tileHeight,
-    };
-  }
+  }, [mapReady, CANVAS_WIDTH, CANVAS_HEIGHT]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -155,10 +132,18 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       const { x, y } = getTilePosition(i);
       const tile = board.tiles[i];
 
+      ctx.beginPath();
+      ctx.arc(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2, TILE_WIDTH / 4, 0, 2 * Math.PI);
+      ctx.fillStyle = '#77d6caff';
+      ctx.fill();
+      ctx.strokeStyle = '#33333333';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
       // Draw tile background
       ctx.fillStyle = tile?.owner
-        ? board.players.find((p) => p.name === tile.owner)?.color + '33' || '#ffffff'
-        : '#ffffff';
+        ? board.players.find((p) => p.name === tile.owner)?.color + '33' || '#ffffff30'
+        : '#ffffff30';
       ctx.fillRect(x, y, tileWidth, tileHeight);
 
       // Draw tile border
@@ -188,7 +173,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         const centerY = y + titleBarHeight / 2;
 
         // Draw icon circle
-        const circleCx = isMobile? centerX : startX + ICON_RADIUS;
+        const circleCx = isMobile ? centerX : startX + ICON_RADIUS;
 
         // Draw emoji inside the circle
         if (grp?.icon) {
@@ -198,7 +183,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           ctx.fillStyle = '#000000';
           ctx.fillText(grp.icon, circleCx, centerY);
         }
-
 
         // Draw title text
         if (!isMobile) {
@@ -271,28 +255,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     }
 
     // Draw player tokens
-    board.players.forEach((player) => {
-      const pos = player.position % TILE_COUNT;
-      const { x, y } = getTilePosition(pos);
-      const centerX = x + tileWidth / 2;
-      const centerY = y + tileHeight / 2;
-
-      // Draw player circle
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
-      ctx.fillStyle = player.color;
-      ctx.fill();
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Draw player name below
-      ctx.font = '9px Arial';
-      ctx.fillStyle = '#000000';
-      ctx.textAlign = 'center';
-      ctx.fillText(player.name, centerX, centerY + 20);
-      ctx.textAlign = 'left';
-    });
+    drawPlayers(board, ctx);
   }, [board, iconsReady, boardWidth, boardHeight, CANVAS_WIDTH, CANVAS_HEIGHT]);
 
   return <canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} ref={canvasRef} />;
