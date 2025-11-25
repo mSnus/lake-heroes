@@ -102,72 +102,51 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       return map;
     }, []);
 
+  // Main draw effect: draw background first (only if mapReady), then draw tiles / players.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dpiRatio = window.devicePixelRatio;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    // Draw background map if loaded
-    if (mapImgRef.current) {
+
+    // Clear canvas then draw background so BG becomes the first layer.
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    if (mapImgRef.current && mapReady) {
       try {
         ctx.drawImage(mapImgRef.current, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       } catch (e) {
-        // drawing can fail in some browsers if image isn't fully ready, ignore silently
+        // ignore transient draw errors
       }
     }
-  }, [mapReady, CANVAS_WIDTH, CANVAS_HEIGHT]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const dpiRatio = window.devicePixelRatio;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    // ctx.scale(dpiRatio, dpiRatio);
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Draw tiles
     for (let i = 0; i < TILE_COUNT; i++) {
       const { x, y } = getTilePosition(i);
       const tile = board.tiles[i];
+      const grp = groupsByName[tile.group];
+      const barColor = grp?.color || '#EAEAEA';
 
       ctx.beginPath();
       ctx.arc(x + TILE_WIDTH / 2, y + TILE_HEIGHT / 2, TILE_WIDTH / 4, 0, 2 * Math.PI);
-      ctx.fillStyle = '#77d6caff';
-      ctx.fill();
-      ctx.strokeStyle = '#33333333';
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-
-      // Draw tile background
       ctx.fillStyle = tile?.owner
         ? board.players.find((p) => p.name === tile.owner)?.color + '33' || '#ffffff30'
         : '#ffffff30';
-      ctx.fillRect(x, y, tileWidth, tileHeight);
+      ctx.fill();
 
-      // Draw tile border
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, tileWidth, tileHeight);
+      ctx.strokeStyle = barColor;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
 
       // Title bar by group (skip for Special tiles)
       const hasTitle = !!tile && tile.group !== 'Special';
       if (tile && hasTitle) {
-        const grp = groupsByName[tile.group];
-        const barColor = grp?.color || '#EAEAEA';
-
-        // Bar background
-        ctx.fillStyle = barColor;
-        ctx.fillRect(x, y, tileWidth, titleBarHeight);
-
         // Prepare text metrics for centering
         ctx.font = TITLE_FONT;
-        const titleText = grp?.name || tile.group || '';
-        const textMetrics = ctx.measureText(titleText);
-        const textWidth = textMetrics.width;
+
         const iconDiameter = ICON_RADIUS * 2;
-        const totalWidth = iconDiameter + GAP_PX + textWidth;
+        const totalWidth = iconDiameter;
         const startX = x + (tileWidth - totalWidth) / 2;
         const centerX = x + tileWidth / 2;
         const centerY = y + titleBarHeight / 2;
@@ -183,16 +162,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           ctx.fillStyle = '#000000';
           ctx.fillText(grp.icon, circleCx, centerY);
         }
-
-        // Draw title text
-        if (!isMobile) {
-          ctx.font = TITLE_FONT;
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'middle';
-          ctx.fillStyle = '#000000';
-          const textX = startX + iconDiameter + GAP_PX;
-          ctx.fillText(titleText, textX, centerY);
-        }
       }
 
       // Draw tile name in 3 lines: emoji, text part 1, text part 2
@@ -201,7 +170,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         const centerX = x + tileWidth / 2;
 
         // Compute available content box (below title if present)
-        const contentTop = y + (hasTitle ? titleBarHeight : 0);
+        const contentTop = y + (hasTitle ? titleBarHeight : 0) - 10;
         const contentHeight = tileHeight - (hasTitle ? titleBarHeight : 0);
 
         // Build render lines with fonts and line heights
@@ -256,7 +225,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
     // Draw player tokens
     drawPlayers(board, ctx);
-  }, [board, iconsReady, boardWidth, boardHeight, CANVAS_WIDTH, CANVAS_HEIGHT]);
+  }, [board, iconsReady, boardWidth, boardHeight, CANVAS_WIDTH, CANVAS_HEIGHT, mapReady]);
 
   return <canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} ref={canvasRef} />;
 };

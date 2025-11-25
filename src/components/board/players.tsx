@@ -15,20 +15,20 @@ export function drawPlayers(board, ctx) {
     const pos = player.position % TILE_COUNT;
     const { x, y } = getTilePosition(pos);
     const centerX = x + tileWidth / 2;
-    const centerY = y + tileHeight / 2;
+    const centerY = y + tileHeight / 2 + 30; // slightly lower than center
 
     // Draw player circle
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
+    ctx.arc(centerX, centerY, 9, 0, 2 * Math.PI);
     ctx.fillStyle = player.color;
     ctx.fill();
-    ctx.strokeStyle = '#000000';
+    ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Draw player name below
-    ctx.font = '9px Arial';
-    ctx.fillStyle = '#000000';
+    ctx.font = '10px Arial';
+    ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
     ctx.fillText(player.name, centerX, centerY + 20);
     ctx.textAlign = 'left';
