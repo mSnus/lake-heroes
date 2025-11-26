@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { Board } from '../game/Board';
 import groupsData from '../settings/groups.json';
-import mapUrl from '../assets/map5.png';
+import mapUrlH from '../assets/map-h.png';
+import mapUrlV from '../assets/map-v.png';
+
 import {
   TILE_COUNT,
   TILE_WIDTH,
@@ -14,6 +16,7 @@ import {
   getTilePosition,
   isMobileLayout,
   parseTileName,
+  BODY_MOBILE_FONT,
 } from './board/common';
 
 interface BoardCanvasProps {
@@ -21,26 +24,25 @@ interface BoardCanvasProps {
 }
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
-  // Switch layout for mobile: vertical (6x8) on mobile, horizontal (8x6) otherwise
   const isMobile = isMobileLayout();
-  const ratioX = isMobile ? 1.8 : 1;
-  const ratioY = isMobile ? 1.2 : 1;
-  const boardWidth = isMobile ? 6 : 8; // tiles horizontally
-  const boardHeight = isMobile ? 8 : 6; // tiles vertically
-  const tileWidth = Math.round(TILE_WIDTH / ratioX);
-  const tileHeight = Math.round(TILE_WIDTH / ratioY);
-  const titleBarHeight = Math.round(TITLE_BAR_HEIGHT / ratioY);
-  const CANVAS_WIDTH = '1024px';
-  const CANVAS_HEIGHT = '584px';
+  const ratio = isMobile ? 2 : 1;
+  const offsetX = isMobile ? 10 : 0;
+  const offsetY = isMobile ? 8 : 0;
+  const tileWidth = Math.round(TILE_WIDTH / ratio);
+  const tileHeight = Math.round(TILE_WIDTH / ratio);
+  const titleBarHeight = Math.round(TITLE_BAR_HEIGHT / ratio);
+  const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '64rem';
+  const CANVAS_HEIGHT = isMobileLayout() ? '175vw' : '36.5625rem';
 
   const [mapReady, setMapReady] = React.useState(false);
+  const mapUrl = isMobile ? (mapUrlV as unknown as string) : (mapUrlH as unknown as string);
 
   // Preload map so tiles render only after background is ready
   useEffect(() => {
     const img = new Image();
-    img.src = mapUrl as unknown as string;
+    img.src = isMobile ? (mapUrlV as unknown as string) : (mapUrlH as unknown as string);
     img.onload = () => setMapReady(true);
-  }, []);
+  }, [isMobile]);
 
   // groups lookup
   const groupsByName: Record<string, { name: string; icon: string; color: string }> =
@@ -52,6 +54,49 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       return map;
     }, []);
 
+  const renderPlayer = (player: any, i: number) => {
+    const tileNumber = player.position % TILE_COUNT;
+
+    const pos = getTilePosition(tileNumber);
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          gap: 6,
+          position: 'absolute',
+          top: pos.y - offsetY + '%',
+          left: pos.x - offsetX + '%',
+        }}
+      >
+        <div
+          key={player.name}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: 'relative',
+          }}
+        >
+          <div
+            id={`player-${player.name}`}
+            style={{
+              width: 18,
+              height: 18,
+              borderRadius: 9,
+              background: player.color,
+              border: '.125rem solid #fff',
+              position: 'absolute',
+
+              zIndex: 500,
+            }}
+          />
+          <div style={{ fontSize: 10, color: '#fff' }}>{player.name}</div>
+        </div>
+      </div>
+    );
+  };
+
   // Render a single tile as HTML/CSS
   const renderTile = (tile: any, i: number) => {
     const grp = tile?.group ? groupsByName[tile.group] : undefined;
@@ -62,11 +107,12 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       marginLeft: tileWidth * 0.1,
       minHeight: titleBarHeight,
       display: 'flex',
-      background: !hasTitle ? 'transparent' : grp?.color || '#EAEAEA',
+      background: grp?.color || '#EAEAEA',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: '50%',
-      font: TITLE_FONT,
+      borderRadius: '4px',
+      padding: '2px 8px',
+      font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
     };
 
     const contentStyle: React.CSSProperties = {
@@ -76,7 +122,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       alignItems: 'center',
       justifyContent: 'center',
       textAlign: 'center',
-      font: BODY_FONT,
+      font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
       gap: 2,
     };
 
@@ -102,9 +148,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       }
     }
 
-    // players on this tile
-    const playersOnTile = board.players.filter((p) => p.position % TILE_COUNT === i);
-
     const pos = getTilePosition(i);
 
     return (
@@ -116,7 +159,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           height: tileHeight,
           boxSizing: 'border-box',
           border:
-            '1px solid ' + tile?.owner
+            '.0625rem solid ' + tile?.owner
               ? board.players.find((p) => p.name === tile.owner)?.color
               : 'rgba(0,0,0,0.3)',
           display: 'flex',
@@ -124,18 +167,15 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           justifyContent: 'space-between',
           background: tile?.owner
             ? board.players.find((p) => p.name === tile.owner)?.color + '40'
-            : 'rgba(255,255,255,0.2)',
-          overflow: 'hidden',
-          borderRadius: '100%',
+            : 'transparent',
+          overflow: 'visible',
+          filter: 'drop-shadow(2px 4px 6px black)',
           position: 'absolute',
-          top: pos.y + 'px',
-          left: pos.x + 'px',
-          zIndex: i*10 + 1,
+          top: pos.y - offsetY + '%',
+          left: pos.x - offsetX + '%',
+          zIndex: i * 10 + 1,
         }}
       >
-        <div style={titleStyle}>{i}</div>
-        {grp?.icon}
-
         <div style={contentStyle}>
           {tile?.name &&
             (() => {
@@ -143,8 +183,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
               return (
                 <>
                   {emoji && <div style={{ font: EMOJI_FONT }}>{emoji}</div>}
-                  {textPart1 && <div>{textPart1}</div>}
-                  {textPart2 && <div>{textPart2}</div>}
+                  {
+                    <div style={titleStyle}>
+                      {textPart1} {isMobileLayout() ? '' : textPart2}
+                    </div>
+                  }
                 </>
               );
             })()}
@@ -160,56 +203,30 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center' }}>{diamonds}</div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {playersOnTile.map((p) => (
-              <div
-                key={p.name}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  position: 'relative',
-                }}
-              >
-                <div
-                  style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: 9,
-                    background: p.color,
-                    border: '2px solid #fff',
-                    position: 'relative',
-                    top: 20,
-                  }}
-                />
-                <div style={{ fontSize: 10, color: '#fff' }}>{p.name}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     );
   };
 
-  // grid wrapper style with background map
   const wrapperStyle: React.CSSProperties = {
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
+    display: 'block',
+    position: 'relative',
+    overflow: 'hidden',
+  };
+
+  const bgStyle: React.CSSProperties = {
+    width: CANVAS_WIDTH,
+    height: CANVAS_HEIGHT,
     backgroundImage: `url(${mapUrl as unknown as string})`,
-    backgroundSize: 'cover',
+    backgroundSize: '110%',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     display: 'block',
-    alignItems: 'center',
-    justifyContent: 'center',
     position: 'relative',
-  };
-
-  const gridStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${boardWidth}, ${tileWidth}px)`,
-    gridTemplateRows: `repeat(${boardHeight}, ${tileHeight}px)`,
-    gap: 0,
+    top: '-9%',
+    zIndex: 0,
   };
 
   // Render nothing until map loaded so BG is first layer and tiles render after it
@@ -220,6 +237,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   return (
     <div style={wrapperStyle}>
       {Array.from({ length: TILE_COUNT }).map((_, i) => renderTile(board.tiles[i], i))}
+      {Array.from({ length: board.players.length }).map((_, i) =>
+        renderPlayer(board.players[i], i)
+      )}
+      <div style={bgStyle}></div>
     </div>
   );
 };

@@ -7,12 +7,12 @@
   {
     "name": "Farms",
     "icon": "🚜",
-    "color": "#8eb279"
+    "color": "#aaec84"
   },
   {
     "name": "Fields",
     "icon": "🌾",
-    "color": "#78df7b"
+    "color": "#e3f667"
   },
   {
     "name": "Camps",
@@ -22,7 +22,7 @@
   {
     "name": "Manufacture",
     "icon": "🪓",
-    "color": "#F9CFF2"
+    "color": "#7e6d50"
   },
   {
     "name": "Towers",

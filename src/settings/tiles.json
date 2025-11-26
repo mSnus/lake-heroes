@@ -253,7 +253,7 @@
   },
   {
     "group": "Camps",
-    "name": "🏹 Archers",
+    "name": "🏹 Bows",
     "isOwnable": true,
     "bonusType": "units",
     "priceGold": 250,
@@ -281,7 +281,7 @@
   },
   {
     "group": "Camps",
-    "name": "\uD83D\uDD2A Rogues",
+    "name": "🗡️ Knives",
     "isOwnable": true,
     "bonusType": "units",
     "priceGold": 350,
@@ -309,7 +309,7 @@
   },
   {
     "group": "Camps",
-    "name": "🗡️ Swordsmen",
+    "name": "🗡️ Swords",
     "isOwnable": true,
     "bonusType": "units",
     "priceGold": 450,

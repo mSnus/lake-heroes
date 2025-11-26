@@ -7,6 +7,7 @@ export const TITLE_BAR_HEIGHT = 20; // px
 
 export const TITLE_FONT = 'bold 12px Arial';
 export const BODY_FONT = '9px Arial';
+export const BODY_MOBILE_FONT = '14px Arial';
 export const EMOJI_FONT = '22px Arial';
 
 export const GAP_PX = 16; // ~1rem
@@ -91,4 +92,13 @@ export function parseTileName(name: string): {
   const textPart2 = spaceIndex > 0 ? text.substring(spaceIndex + 1) : '';
 
   return { emoji, textPart1, textPart2 };
+}
+
+export function shuffle<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
