@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import './assets/dice.css';
 import { Tile } from './game/Tile';
 import { Player } from './game/Player';
 import { Board } from './game/Board';
@@ -14,9 +15,8 @@ import { MenuState } from './types/menuState';
 import tilesData from './settings/tiles.json';
 import playersData from './settings/players.json';
 import { buildTileLayoutFromTemplates } from './components/board/layout';
-import {isMobileLayout} from './components/board/common';
-
-
+import { isMobileLayout } from './components/board/common';
+import { DiceWidget } from './components/DiceWidget';
 
 function App() {
   const [board, setBoard] = useState<Board | null>(null);
@@ -42,7 +42,9 @@ function App() {
       const placedTemplates = buildTileLayoutFromTemplates(allTemplates);
 
       // Map to Tile instances; leave blanks as undefined
-      const tiles = placedTemplates.map((t) => (t ? new Tile(t) : (undefined as any))) as unknown as Tile[];
+      const tiles = placedTemplates.map((t) =>
+        t ? new Tile(t) : (undefined as any)
+      ) as unknown as Tile[];
       const players = (playersData as any[]).map((p: any) => new Player(p));
       const initialBoard = new Board(tiles, players);
       setBoard(initialBoard);
@@ -60,10 +62,13 @@ function App() {
     if (board) saveToStorage('board-state', board);
   }, [board]);
 
-
   return (
     <div className="App">
-      <ToastContainer position={isMobileLayout() ? "bottom-center" : "top-right"} autoClose={3500} hideProgressBar={true} />
+      <ToastContainer
+        position={isMobileLayout() ? 'bottom-center' : 'top-right'}
+        autoClose={3500}
+        hideProgressBar={true}
+      />
 
       <div
         style={{
@@ -74,6 +79,7 @@ function App() {
           justifyContent: 'flex-start',
         }}
       >
+        <DiceWidget />
         {board && <BoardCanvas board={board} />}
         {board && <PlayerStatsTable board={board} />}
       </div>

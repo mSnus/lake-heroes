@@ -281,7 +281,7 @@
   },
   {
     "group": "Camps",
-    "name": "🗡️ Knives",
+    "name": "🔪 Knives",
     "isOwnable": true,
     "bonusType": "units",
     "priceGold": 350,

@@ -1,5 +1,10 @@
 export class Dice {
   roll(): number {
-    return Math.floor(Math.random() * 6) + 1;
+    const result = Math.floor(Math.random() * 6) + 1;
+    // emit a global event so UI can show the dice
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('diceRolled', { detail: result }));
+    }
+    return result;
   }
 }

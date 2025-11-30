@@ -61,6 +61,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
     return (
       <div
+        key={i}
         style={{
           display: 'flex',
           gap: 6,
@@ -139,9 +140,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
             style={{
               width: DIAMOND_SIZE,
               height: DIAMOND_SIZE,
+              marginTop: '-30px',
               background: color,
               transform: 'rotate(45deg)',
               marginLeft: d === 0 ? 0 : DIAMOND_GAP,
+              border: 'solid 1px #ffffff55',
             }}
           />
         );
@@ -165,9 +168,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: tile?.owner
-            ? board.players.find((p) => p.name === tile.owner)?.color + '40'
-            : 'transparent',
           overflow: 'visible',
           filter: 'drop-shadow(2px 4px 6px black)',
           position: 'absolute',
