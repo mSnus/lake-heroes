@@ -1,5 +1,3 @@
-export type UpgradeLevel = 1 | 2 | 3;
-
 export interface TileParams {
   group: string;
   name: string;
@@ -23,11 +21,11 @@ export class Tile {
   isOwnable: boolean;
   priceGold: number;
   priceUnits: number;
-  upgradePrices: { [level: string]: { gold: number; units: number } };
-  bonuses: { [level: string]: number };
-  defences: { [level: string]: number };
+  upgradePrices: { [level: number]: { gold: number; units: number } };
+  bonuses: { [level: number]: number };
+  defences: { [level: number]: number };
   owner?: string;
-  level: UpgradeLevel;
+  level: number;
   bonusType?: 'units' | 'gold';
 
   constructor(params: TileParams) {

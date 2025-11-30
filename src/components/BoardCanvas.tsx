@@ -54,20 +54,145 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       return map;
     }, []);
 
+  // Capture initial tiles once so static portion never re-renders when `board` changes
+  const initialTilesRef = useRef<any[] | null>(board.tiles || null);
+  // note: useRef is initialized only on first render, subsequent board changes won't overwrite it
+
+  // Static tile renderer (no dynamic owner markers)
+  const staticTilesJSX = React.useMemo(
+    () => {
+      const tiles = initialTilesRef.current || [];
+      const renderStaticTile = (tile: any, i: number) => {
+        const grp = tile?.group ? groupsByName[tile.group] : undefined;
+        const titleStyle: React.CSSProperties = {
+          height: titleBarHeight,
+          marginLeft: tileWidth * 0.1,
+          minHeight: titleBarHeight,
+          display: 'flex',
+          background: grp?.color || '#EAEAEA',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '4px',
+          padding: '2px 8px',
+          font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
+        };
+
+        const contentStyle: React.CSSProperties = {
+          padding: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
+          gap: 2,
+        };
+
+        const pos = getTilePosition(i);
+
+        return (
+          <div
+            key={`static-${i}`}
+            className="tile"
+            style={{
+              width: tileWidth,
+              height: tileHeight,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              overflow: 'visible',
+              position: 'absolute',
+              top: pos.y - offsetY + '%',
+              left: pos.x - offsetX + '%',
+              zIndex: 1, // static layer
+              pointerEvents: 'none',
+            }}
+          >
+            <div style={contentStyle}>
+              {tile?.name &&
+                (() => {
+                  const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
+                  return (
+                    <>
+                      {emoji && <div style={{ font: EMOJI_FONT }}>{emoji}</div>}
+                      {
+                        <div style={titleStyle}>
+                          {textPart1} {isMobileLayout() ? '' : textPart2}
+                        </div>
+                      }
+                    </>
+                  );
+                })()}
+            </div>
+          </div>
+        );
+      };
+
+      return Array.from({ length: TILE_COUNT }).map((_, i) => renderStaticTile(tiles[i], i));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [
+      /* empty: compute once */
+    ]
+  );
+
+  // Dynamic ownership markers (diamonds) and player markers are rendered from current board
+  const renderOwnershipMarkers = () => {
+    const markers: JSX.Element[] = [];
+    (board.tiles || []).forEach((tile: any, i: number) => {
+      if (!tile || !tile.owner) return;
+      const owner = board.players.find((p) => p.name === tile.owner);
+      const color = owner?.color || '#444';
+      const count = Math.max(0, Math.min(3, tile.level || 1));
+
+      const pos = getTilePosition(i);
+      // container positioned at tile center; diamonds arranged horizontally
+      markers.push(
+        <div
+          key={`marker-${i}`}
+          style={{
+            position: 'absolute',
+            top: pos.y - offsetY + '%',
+            left: pos.x - offsetX + '%',
+            zIndex: 2,
+            display: 'flex',
+            transform: 'translate(-50%,-10%)',
+            gap: DIAMOND_GAP,
+            pointerEvents: 'none',
+          }}
+        >
+          {Array.from({ length: count }).map((_, d) => (
+            <div
+              key={d}
+              style={{
+                width: DIAMOND_SIZE,
+                height: DIAMOND_SIZE,
+                background: color,
+                transform: 'rotate(45deg)',
+                border: 'solid 1px #ffffff55',
+              }}
+            />
+          ))}
+        </div>
+      );
+    });
+    return markers;
+  };
+
   const renderPlayer = (player: any, i: number) => {
     const tileNumber = player.position % TILE_COUNT;
-
     const pos = getTilePosition(tileNumber);
-
     return (
       <div
-        key={i}
+        key={`player-${i}`}
         style={{
           display: 'flex',
           gap: 6,
           position: 'absolute',
           top: pos.y - offsetY + '%',
           left: pos.x - offsetX + '%',
+          zIndex: 3,
+          pointerEvents: 'auto',
         }}
       >
         <div
@@ -88,121 +213,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
               background: player.color,
               border: '.125rem solid #fff',
               position: 'absolute',
-
               zIndex: 500,
             }}
           />
-          <div style={{ fontSize: 10, color: '#fff' }}>{player.name}</div>
-        </div>
-      </div>
-    );
-  };
-
-  // Render a single tile as HTML/CSS
-  const renderTile = (tile: any, i: number) => {
-    const grp = tile?.group ? groupsByName[tile.group] : undefined;
-    const hasTitle = !!tile && tile.group !== 'Special';
-    const titleStyle: React.CSSProperties = {
-      height: titleBarHeight,
-      width: tileWidth * 0.8,
-      marginLeft: tileWidth * 0.1,
-      minHeight: titleBarHeight,
-      display: 'flex',
-      background: grp?.color || '#EAEAEA',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: '4px',
-      padding: '2px 8px',
-      font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
-    };
-
-    const contentStyle: React.CSSProperties = {
-      padding: 4,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
-      gap: 2,
-    };
-
-    // diamonds as small rotated squares tinted by owner color
-    const diamonds = [];
-    if (tile && tile.owner) {
-      const owner = board.players.find((p) => p.name === tile.owner);
-      const color = owner?.color || '#444';
-      const count = Math.max(0, Math.min(3, tile.level));
-      for (let d = 0; d < count; d++) {
-        diamonds.push(
-          <div
-            key={d}
-            style={{
-              width: DIAMOND_SIZE,
-              height: DIAMOND_SIZE,
-              marginTop: '-30px',
-              background: color,
-              transform: 'rotate(45deg)',
-              marginLeft: d === 0 ? 0 : DIAMOND_GAP,
-              border: 'solid 1px #ffffff55',
-            }}
-          />
-        );
-      }
-    }
-
-    const pos = getTilePosition(i);
-
-    return (
-      <div
-        key={i}
-        className="tile"
-        style={{
-          width: tileWidth,
-          height: tileHeight,
-          boxSizing: 'border-box',
-          border:
-            '.0625rem solid ' + tile?.owner
-              ? board.players.find((p) => p.name === tile.owner)?.color
-              : 'rgba(0,0,0,0.3)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          overflow: 'visible',
-          filter: 'drop-shadow(2px 4px 6px black)',
-          position: 'absolute',
-          top: pos.y - offsetY + '%',
-          left: pos.x - offsetX + '%',
-          zIndex: i * 10 + 1,
-        }}
-      >
-        <div style={contentStyle}>
-          {tile?.name &&
-            (() => {
-              const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
-              return (
-                <>
-                  {emoji && <div style={{ font: EMOJI_FONT }}>{emoji}</div>}
-                  {
-                    <div style={titleStyle}>
-                      {textPart1} {isMobileLayout() ? '' : textPart2}
-                    </div>
-                  }
-                </>
-              );
-            })()}
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            padding: 6,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center' }}>{diamonds}</div>
+          <div style={{ fontSize: 10, color: '#fff', marginTop: 22 }}>{player.name}</div>
         </div>
       </div>
     );
@@ -234,13 +248,30 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     return <div style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT, background: '#0000' }} />;
   }
 
+  console.log('BoardCanvas render', board);
+
   return (
     <div style={wrapperStyle}>
-      {Array.from({ length: TILE_COUNT }).map((_, i) => renderTile(board.tiles[i], i))}
-      {Array.from({ length: board.players.length }).map((_, i) =>
-        renderPlayer(board.players[i], i)
-      )}
-      <div style={bgStyle}></div>
+      {/* Static layer: background image + static tiles (computed once) */}
+      <div style={bgStyle} />
+      <div
+        aria-hidden
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}
+      >
+        {staticTilesJSX}
+      </div>
+
+      {/* Dynamic overlays updated on each render */}
+      <div
+        aria-live="polite"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2 }}
+      >
+        {renderOwnershipMarkers()}
+      </div>
+
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 3 }}>
+        {board.players.map((p, i) => renderPlayer(p, i))}
+      </div>
     </div>
   );
 };

@@ -60,53 +60,17 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
           </div>
         }
         items={[
-          // Show upgrade button only if the player has any upgradeable tile and enough resources
-          ...(hasUpgradeable
-            ? [{ label: 'Upgrade Owned Tile', onClick: () => setMenu({ type: 'upgrade-list' }) }]
-            : []),
           {
-            label: 'Roll Dice & Move',
+            label: 'Roll Dice',
             onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
+            action: 'roll-dice',
           },
         ]}
       >
-        <TileCard tile={currentTile} />
-      </GameMenu>
-    );
-  }
-
-  if (menu.type === 'upgrade-list') {
-    const owned = activePlayer.ownedTiles.filter((idx) => {
-      const tile = board.tiles[idx];
-      const nextLvl = (tile.level + 1) as 2 | 3;
-      const price = tile.upgradePrices[String(nextLvl)];
-      return (
-        tile.owner === activePlayer.name &&
-        tile.level < 3 &&
-        price &&
-        activePlayer.gold >= price.gold &&
-        activePlayer.units >= price.units
-      );
-    });
-    return (
-      <GameMenu
-        title="Upgrade Tile"
-        items={owned
-          .map((idx) => {
-            const tile = board.tiles[idx];
-            const nextLvl = (tile.level + 1) as 2 | 3;
-            const price = tile.upgradePrices[String(nextLvl)];
-            return {
-              label: `${tile.name} (Level ${tile.level}→${nextLvl}) — ${price.gold} GP, ${price.units} U`,
-              onClick: () => upgradeTile(idx, board, setBoard, handleEndTurn),
-            };
-          })
-          .concat([{ label: 'Cancel', onClick: () => setMenu({ type: 'main' }) }])}
-      >
-        <>
-          {owned.length === 0 && <div>No upgradeable tiles available</div>}
-          <TileCard tile={currentTile} />
-        </>
+        {currentTile.isOwnable && !currentTile.owner && <TileCard tile={currentTile} />}
+        {currentTile.isOwnable &&
+          currentTile.owner === activePlayer.name &&
+          activePlayer.name + ' owns ' + currentTile.name}
       </GameMenu>
     );
   }
@@ -114,10 +78,14 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   if (menu.type === 'move-result') {
     // Only used for Prison - show message and end turn
     return (
-      <GameMenu title="Prison" items={[{ label: 'Continue', onClick: handleEndTurn }]}>
+      <GameMenu
+        title="Prison"
+        items={[{ action: 'end-turn', label: 'Continue', onClick: handleEndTurn }]}
+      >
         <>
           <div>
-            {activePlayer.name} landed on Prison!<br />
+            {activePlayer.name} landed on Prison!
+            <br />
             Next turn will be skipped.
           </div>
           <TileCard tile={currentTile} />
@@ -133,10 +101,11 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         title="Buy Tile"
         items={[
           {
+            action: 'buy-tile',
             label: `Buy ${tile.name} (${tile.priceGold} GP, ${tile.priceUnits} U)`,
             onClick: () => buyTile(menu, board, setBoard, handleEndTurn),
           },
-          { label: 'Pass', onClick: handleEndTurn },
+          { action: 'end-turn', label: 'Pass', onClick: handleEndTurn },
         ]}
       >
         <TileCard tile={tile} />
@@ -153,11 +122,14 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
       {
         label: `Pay Fee (${fee} GP)`,
         onClick: () => payFee(menu, board, setBoard, handleEndTurn),
+        action: 'pay-fee',
+        disabled: activePlayer.gold < fee,
       },
       {
         label: `Fight (cost: ${defence} U)`,
         onClick: () => fightTile(menu, board, setBoard, setMenu, handleEndTurn),
         disabled: activePlayer.units < defence,
+        action: 'fight',
       },
     ];
     return (
@@ -177,5 +149,3 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
 
   return null;
 };
-
-

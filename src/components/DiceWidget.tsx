@@ -7,19 +7,49 @@ export const DiceWidget: React.FC = () => {
   const [reRoll, setReRoll] = useState(false);
   const diceRef = useRef<HTMLDivElement | null>(null);
   const dice = useRef(new Dice());
+  const animationTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     function onRoll(e: Event) {
       const detail = (e as CustomEvent).detail;
-      const value = typeof detail === 'number' ? detail : (detail && detail.result) || 1;
+      const value = typeof detail === 'number' ? detail : (detail && (detail.result || 1)) || 1;
       setSide(value);
       setVisible(true);
-      // trigger animation class briefly
+
       setReRoll(true);
-      window.setTimeout(() => setReRoll(false), 1600);
+      if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
+      animationTimeoutRef.current = window.setTimeout(() => {
+        setReRoll(false);
+        // notify that dice animation stopped and provide final value
+        window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: value }));
+      }, 1600) as unknown as number;
     }
     window.addEventListener('diceRolled', onRoll as EventListener);
     return () => window.removeEventListener('diceRolled', onRoll as EventListener);
+  }, []);
+
+  useEffect(() => {
+    function onStart(e: Event) {
+      // Start a roll programmatically (this will dispatch `diceRolled` from Dice.roll())
+      const result = dice.current.roll();
+      // Immediate visual state for the widget (Dice.roll will also dispatch diceRolled; handler above will run too)
+      setSide(result);
+      setVisible(true);
+      setReRoll(true);
+      if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
+      animationTimeoutRef.current = window.setTimeout(() => {
+        setReRoll(false);
+        window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: result }));
+      }, 1600) as unknown as number;
+    }
+    window.addEventListener('startDiceRoll', onStart as EventListener);
+    return () => window.removeEventListener('startDiceRoll', onStart as EventListener);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
+    };
   }, []);
 
   function handleClick() {
@@ -29,7 +59,11 @@ export const DiceWidget: React.FC = () => {
     setSide(r);
     setVisible(true);
     setReRoll(true);
-    window.setTimeout(() => setReRoll(false), 1600);
+    if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
+    animationTimeoutRef.current = window.setTimeout(() => {
+      setReRoll(false);
+      window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: r }));
+    }, 1600) as unknown as number;
   }
 
   if (!visible) return null;

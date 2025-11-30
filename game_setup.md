@@ -53,3 +53,5 @@ When player gets to an ownable tile already owned by someone else, the check is 
 If option to pay fees is chosen, the amount in gold is distracted from players account according to the title parameters. If option to fight is chosen, the defence amount is distracted from player's account, the tile level is set to 1 and tile is set to be not owned. After that if that player has enough money to own this tile, he could pay for it and own it.
 
 If player chooses an option to upgrade own tile, he should be present with menu of list of his own tiles for which he has enough resources to spend to upgrade to the next level. Menu should also contain 'Cancel' Button returning him to prevoius menu (roll dice/upgrade) If he chooses to upgrade the tile, corresponding amounts of gold and units are distracted from his account.
+
+When tile is sold, it is set not owned by anyone, and the player receives the amount of gold and units that were used to buy this tile and it's upgrades. The amounts
