@@ -23,6 +23,7 @@ import { Dice } from './game/Dice';
 import { TurnPhase } from './game/Board';
 import { CurrentTile } from './components/CurrentCard';
 import { CurrentPlayer } from './components/CurrentPlayer';
+import { gameStart } from './game/actions/gameStart';
 
 function App() {
   const [board, setBoard] = useState<Board | null>(null);
@@ -51,6 +52,8 @@ function App() {
     function loadGameData() {
       const saved = loadFromStorage('board-state', null);
       if (saved) {
+        say('Restoring saved game...', 'info');
+
         // Rehydrate tiles and players so we preserve class methods (e.g. Tile.isOwned)
         const savedRaw = saved as any;
         const tiles = (savedRaw.tiles || []).map((t: any) =>
@@ -82,6 +85,7 @@ function App() {
         if (!first.turnsToSkip || first.turnsToSkip <= 0) {
           say(`${first.name}'s turn`, 'info');
         }
+
         return;
       }
 
@@ -94,6 +98,7 @@ function App() {
       ) as unknown as Tile[];
       const players = (playersData as any[]).map((p: any) => new Player(p));
       const initialBoard = new Board(tiles, players);
+      gameStart(initialBoard);
 
       setBoard(initialBoard);
       setMenu({ type: 'main' });

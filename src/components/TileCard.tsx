@@ -41,10 +41,6 @@ export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
   const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
   const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;
 
-  if (!tile.isOwnable) {
-    console.log('Tile description:', tile, tile.description);
-  }
-
   return (
     <div className="tile-card">
       <div className="tile-card-header" style={{ background: groupColor }}>

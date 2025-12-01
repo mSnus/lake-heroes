@@ -34,8 +34,8 @@ export function passStart(board: Board | null, setBoard: (board: Board) => void)
   // Build toast message summarizing rewards
   const parts: string[] = [];
   parts.push(`+${baseGold} GP`);
-  if (goldProfit > 0) parts.push(`+${goldProfit} GP from tiles`);
-  if (unitsProfit > 0) parts.push(`+${unitsProfit} U from tiles`);
+  if (goldProfit > 0) parts.push(`+${goldProfit}🟡 from own tiles`);
+  if (unitsProfit > 0) parts.push(`+${unitsProfit}🧍 from own tiles`);
   const summary = parts.join(', ');
   say(`${player.name} passed start: ${summary}`, 'success');
 }

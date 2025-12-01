@@ -2,15 +2,15 @@
   {
     "name": "Mike",
     "color": "#FF4444",
-    "gold": 250,
-    "units": 10,
+    "gold": 0,
+    "units": 0,
     "position": 0
   },
   {
     "name": "Inma",
     "color": "#4444FF",
-    "gold": 250,
-    "units": 10,
+    "gold": 0,
+    "units": 0,
     "position": 0
   }
 ]
