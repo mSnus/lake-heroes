@@ -8,7 +8,6 @@ export const TITLE_BAR_HEIGHT = 20; // px
 export const TITLE_FONT = 'bold 12px Arial';
 export const BODY_FONT = '9px Arial';
 export const BODY_MOBILE_FONT = '14px Arial';
-export const EMOJI_FONT = '22px Arial';
 
 export const GAP_PX = 16; // ~1rem
 
@@ -27,43 +26,24 @@ export function isMobileLayout(): boolean {
 import desktopMap from '../../settings/map.json';
 import mobileMap from '../../settings/map_mobile.json';
 
-type MapSlotPct = { xPct: number; yPct: number };
+type MapSlotPct = {
+  textPos: null; xPct: number; yPct: number 
+};
 const desktopSlots: MapSlotPct[] = desktopMap as any;
 const mobileSlots: MapSlotPct[] = mobileMap as any;
 
 // Calculate tile position using precomputed percent coords (both axes are percentages of board width)
-export function getTilePosition(tileIndex: number): { x: number; y: number } {
+export function getTilePosition(tileIndex: number): { x: number; y: number; textPos: string | null } {
   const isMobile = isMobileLayout();
-
-  const ratioX = isMobile ? 1.8 : 1;
-  const ratioY = isMobile ? 1.2 : 1;
-
-  const tileWidth = TILE_WIDTH / ratioX;
-  const tileHeight = TILE_HEIGHT / ratioY;
-
-  // board layout in tiles
-  const cols = isMobile ? 6 : 8;
-  const rows = isMobile ? 8 : 6;
-
-  const boardPixelWidth = cols * tileWidth;
-  // note: per requirement, y percentage is expressed relative to board width
-  const boardPixelHeight = rows * tileHeight;
 
   const slots = isMobile ? mobileSlots : desktopSlots;
   const idx = tileIndex % TILE_COUNT;
   const slot = slots[idx];
 
-  // If slot is available and has numeric percentages, compute px coords
-  if (slot && typeof slot.xPct === 'number' && typeof slot.yPct === 'number') {
-    const x = slot.xPct;
-    const y = slot.yPct;
-    return { x, y };
-  }
-
-  // Fallback: compute as grid top-left progressive
-  const col = idx % cols;
-  const row = Math.floor(idx / cols);
-  return { x: col * tileWidth, y: row * tileHeight };
+  const x = slot.xPct;
+  const y = slot.yPct;
+  const textPos = slot?.textPos || null;
+  return { x, y, textPos };
 }
 
 // Extract emoji and text parts from tile name

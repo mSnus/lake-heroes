@@ -21,10 +21,11 @@ export async function rollAndMove(
   const dice = new Dice();
   const roll = dice.roll();
   const player = board.activePlayer;
-  const oldPos = player.position;
 
-  // Show dice roll as toast and lock the menu while moving
-  say(`${player.name} rolled ${roll}!`, 'info');
+  const nextTileIdx = (player.position + roll) % BOARD_TILE_COUNT;
+  const nextTile = board.tiles[nextTileIdx];
+
+  say(`${player.name} rolled ${roll} and went to ${nextTile.name}!`, 'info');
   setMenu({ type: 'wait' });
 
   // Step-by-step move with 0.2s delay per tile
@@ -69,4 +70,3 @@ export async function rollAndMove(
   // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
   afterMoveLogic(board, setBoard, setMenu, endTurn);
 }
-

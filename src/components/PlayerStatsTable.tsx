@@ -5,7 +5,7 @@ import { Tile } from '../game/Tile';
 import TileCard from './TileCard';
 import { sellTile } from '../actions/sellTile';
 import { say } from '../utils/say';
-import '../assets/PlayerStatsTable.css';
+import '../styles/PlayerStatsTable.css';
 import { isMobileLayout } from './board/common';
 
 interface Props {
@@ -74,23 +74,12 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
 
   const paneStyle: React.CSSProperties = {
     display: 'flex',
+    flexDirection: isMobileLayout() ? 'column' : 'row',
     gap: 12,
     alignItems: 'flex-start',
     padding: 12,
     width: '100%',
     boxSizing: 'border-box',
-  };
-
-  const leftStyle: React.CSSProperties = {
-    width: isMobileLayout() ? '15vw' : '100px',
-    minWidth: 200,
-    background: '#222',
-    color: '#fff',
-    padding: 12,
-    borderRadius: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
   };
 
   const rightStyle: React.CSSProperties = {
@@ -103,29 +92,7 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
 
   return (
     <div style={paneStyle}>
-      <div style={leftStyle}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 14,
-              background: activePlayer.color,
-              border: '2px solid #fff',
-            }}
-          />
-          <div style={{ fontWeight: 700 }}>{activePlayer.name}</div>
-        </div>
-
-        <div style={{ marginTop: 8 }}>
-          <div>
-            Gold: <strong>{activePlayer.gold ?? 0}</strong>
-          </div>
-          <div>
-            Units: <strong>{activePlayer.units ?? 0}</strong>
-          </div>
-        </div>
-      </div>
+      
 
       <div style={rightStyle}>
         {owned.length === 0 && <div style={{ color: '#888' }}>No owned tiles</div>}
@@ -137,9 +104,9 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
           const canUpgrade =
             currentLevel < maxLevel &&
             tile.upgradePrices &&
-            tile.upgradePrices[String(currentLevel + 1)] &&
-            (activePlayer.gold ?? 0) >= (tile.upgradePrices[String(currentLevel + 1)].gold || 0) &&
-            (activePlayer.units ?? 0) >= (tile.upgradePrices[String(currentLevel + 1)].units || 0);
+            tile.upgradePrices[currentLevel + 1] &&
+            (activePlayer.gold ?? 0) >= (tile.upgradePrices[currentLevel + 1].gold || 0) &&
+            (activePlayer.units ?? 0) >= (tile.upgradePrices[currentLevel + 1].units || 0);
 
           return (
             <div key={idx} style={{ position: 'relative' }}>

@@ -1,0 +1,68 @@
+.current-tile {
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  transform: translate(-50%, -50%);
+  width: 210px;
+  background: transparent;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+  padding: 0;
+  z-index: 100;
+  min-width: 230px;
+  text-align: left;
+}
+
+.tile-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0;
+  background: #fff;
+  font-size: 12px;
+  color: #444;
+  overflow: hidden;
+}
+
+.tile-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px;
+  border-radius: 6px 6px 0 0;
+  justify-content: center;
+}
+
+.tile-card-title {
+  font-weight: 700;
+  text-align: center;
+  font-size: 18px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.tile-card-body {
+  padding: 0px 12px 12px 12px;
+}
+
+.tile-card-table-wrap {
+  overflow-x: hidden;
+}
+
+.tile-card-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+}
+
+.tc-th {
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding: 4px 6px;
+}
+
+.tc-td {
+  padding: 4px 6px;
+  text-wrap: nowrap;
+  text-align: right;
+}

@@ -1,9 +1,10 @@
 import { Board } from '../game/Board';
 import { MenuState } from '../types/menuState';
+import { say } from '../utils/say';
 
 export function afterMoveLogic(
   board: Board | null,
-    setBoard: (board: Board) => void,
+  setBoard: (board: Board) => void,
   setMenu: (menu: MenuState) => void,
   endTurn: () => void
 ) {
@@ -12,7 +13,7 @@ export function afterMoveLogic(
   const tileIdx = player.position;
   const tile = board.tiles[tileIdx];
 
-  console.debug('After move logic for tile:', tile);
+  console.debug('After move logic for player and tile:', player, tile);
 
   // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
   if (!tile.isOwnable) {
@@ -21,11 +22,17 @@ export function afterMoveLogic(
   }
 
   // Ownable, not owned, player can buy
-  if (!tile.isOwned() && player.gold >= tile.priceGold && player.units >= tile.priceUnits) {
-    setMenu({ type: 'buy', tileIdx });
-    return;
+  if (!tile.isOwned()) {
+    if ( player.gold >= tile.priceGold && player.units >= tile.priceUnits) {
+      setMenu({ type: 'buy', tileIdx });
+      return;
+    } else {
+      say(`${player.name} cannot afford to buy ${tile.name}.`, 'warning');
+      endTurn();
+      return;
+    }
   }
-  
+
   // Ownable, owned by someone else
   if (tile.isOwned() && tile.owner !== player.name) {
     setMenu({ type: 'fee-or-fight', tileIdx });
@@ -35,4 +42,3 @@ export function afterMoveLogic(
   // Else, just end turn
   endTurn();
 }
-

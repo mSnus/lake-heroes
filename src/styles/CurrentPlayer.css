@@ -1,0 +1,17 @@
+.player-pane {
+  width: 100vw;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  min-height: 2rem;
+  gap: 12px;
+  align-items: center;
+}
+
+.player-marker-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 14px;
+  border: 2px solid #fff;
+}

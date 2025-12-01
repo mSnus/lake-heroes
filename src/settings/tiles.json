@@ -393,7 +393,7 @@
   },
   {
     "group": "Towers",
-    "name": "💣💣 Cannon tower",
+    "name": "💥 Cannon tower",
     "isOwnable": true,
     "bonusType": "units",
     "priceGold": 150,
@@ -515,7 +515,7 @@
   },
   {
     "group": "Special",
-    "name": "🏘️ Freelancers' camp",
+    "name": "🏘️ Tavern",
     "isOwnable": false,
     "priceGold": 0,
     "priceUnits": 0,

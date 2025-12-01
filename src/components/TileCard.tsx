@@ -1,17 +1,14 @@
 import React from 'react';
 import { Tile } from '../game/Tile';
 import groups from '../settings/groups.json';
-
-interface TileCardProps {
-  tile: Tile | undefined;
-}
+import '../styles/TileCard.css';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
   const hasUnits = units > 0;
-  if (hasGold && hasUnits) return `${gold} GP + ${units} U`;
-  if (hasGold) return `${gold} GP`;
-  if (hasUnits) return `${units} U`;
+  if (hasGold && hasUnits) return `${gold} 🟡 ${units} 🧍`;
+  if (hasGold) return `${gold} 🟡`;
+  if (hasUnits) return `${units} 🧍`;
   return '0';
 };
 
@@ -21,94 +18,70 @@ const getBonusType = (tile: Tile): 'gold' | 'units' => {
   return tile.group === 'Camps' || tile.group === 'Towers' ? 'units' : 'gold';
 };
 
-export const TileCard: React.FC<TileCardProps> = ({ tile }) => {
+export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
   if (!tile) return null;
 
   const groupMeta = (groups as { name: string; icon: string; color: string }[]).find(
-    (g) => g.name === tile.group,
+    (g) => g.name === tile.group
   );
   const groupIcon = groupMeta?.icon ?? '';
   const groupColor = groupMeta?.color ?? '#eee';
   const bonusType = getBonusType(tile);
 
-  const priceLvl1 = fmtPrice(tile.priceGold, tile.priceUnits);
-  const priceLvl2 = fmtPrice(tile.upgradePrices['2']?.gold ?? 0, tile.upgradePrices['2']?.units ?? 0);
-  const priceLvl3 = fmtPrice(tile.upgradePrices['3']?.gold ?? 0, tile.upgradePrices['3']?.units ?? 0);
+  const pricelevel1 = fmtPrice(tile.priceGold, tile.priceUnits);
+  const pricelevel2 = fmtPrice(
+    tile.upgradePrices['2']?.gold ?? 0,
+    tile.upgradePrices['2']?.units ?? 0
+  );
+  const pricelevel3 = fmtPrice(
+    tile.upgradePrices['3']?.gold ?? 0,
+    tile.upgradePrices['3']?.units ?? 0
+  );
 
-  const bonus = (lvl: 1 | 2 | 3) => tile.bonuses[String(lvl)] ?? 0;
-  const defence = (lvl: 1 | 2 | 3) => tile.defences[String(lvl)] ?? 0;
+  const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
+  const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;
 
   return (
-    <div
-      className="tile-card"
-      style={{
-        border: '1px solid #ccc',
-        borderRadius: 8,
-        padding: 12,
-        marginTop: 12,
-        background: '#fff',
-        fontSize: '12px',
-        color: '#444',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <div
-          aria-label="Group color"
-          title={tile.group}
-          style={{
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            background: groupColor,
-            border: '1px solid #999',
-          }}
-        />
-        <strong>
-          {groupIcon} {tile.group}: {tile.name}
-        </strong>
+    <div className="tile-card">
+      <div className="tile-card-header" style={{ background: groupColor }}>
+        {groupIcon} {tile.group}
       </div>
 
-      {tile.isOwnable && (
-        <div>
-          <div style={{ marginBottom: 8 }}>
-            Bonus: {bonusType === 'gold' ? 'Gold' : 'Units'}
-          </div>
+      <div className="tile-card-title">{tile.name} {tile.level > 1 ? `(Level ${tile.level})` : ''}</div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      {tile.isOwnable && (
+        <div className="tile-card-body">
+          <div className="tile-card-table-wrap">
+            <table className="tile-card-table">
               <thead>
-              <tr>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Lvl</th>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Price</th>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Bonus</th>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '4px 6px' }}>Defence</th>
-              </tr>
+                <tr>
+                  <th className="tc-th">Price</th>
+                  <th className="tc-th">Bonus</th>
+                  <th className="tc-th">Defence</th>
+                </tr>
               </thead>
               <tbody>
-              <tr>
-                <td style={{ padding: '4px 6px' }}>1</td>
-                <td style={{ padding: '4px 6px' }}>{priceLvl1}</td>
-                <td style={{ padding: '4px 6px' }}>
-                  {bonus(1)} {bonusType === 'gold' ? 'GP' : 'U'}
-                </td>
-                <td style={{ padding: '4px 6px' }}>{defence(1)} U</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '4px 6px' }}>2</td>
-                <td style={{ padding: '4px 6px' }}>{priceLvl2}</td>
-                <td style={{ padding: '4px 6px' }}>
-                  {bonus(2)} {bonusType === 'gold' ? 'GP' : 'U'}
-                </td>
-                <td style={{ padding: '4px 6px' }}>{defence(2)} U</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '4px 6px' }}>3</td>
-                <td style={{ padding: '4px 6px' }}>{priceLvl3}</td>
-                <td style={{ padding: '4px 6px' }}>
-                  {bonus(3)} {bonusType === 'gold' ? 'GP' : 'U'}
-                </td>
-                <td style={{ padding: '4px 6px' }}>{defence(3)} U</td>
-              </tr>
+                <tr>
+                  <td className="tc-td">{pricelevel1}</td>
+                  <td className="tc-td">
+                    +{bonus(1)} {bonusType === 'gold' ? '🟡' : '🧍'}
+                  </td>
+                  <td className="tc-td">{defence(1)} 🧍</td>
+                </tr>
+                <tr>
+                  <td className="tc-td">{pricelevel2}</td>
+                  <td className="tc-td">
+                    +{bonus(2)} {bonusType === 'gold' ? '🟡' : '🧍'}
+                  </td>
+                  <td className="tc-td">{defence(2)} 🧍</td>
+                </tr>
+                <tr>
+                  <td className="tc-td">{pricelevel3}</td>
+                  <td className="tc-td">
+                    +{bonus(3)} {bonusType === 'gold' ? '🟡' : '🧍'}
+                  </td>
+                  <td className="tc-td">{defence(3)} 🧍</td>
+                </tr>
               </tbody>
             </table>
           </div>

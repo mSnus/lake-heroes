@@ -10,17 +10,20 @@ export function upgradeTile(
   const player = board.activePlayer;
   const tile = board.tiles[tileIdx];
   if (tile.owner !== player.name) return;
-  const currentLvl = tile.level;
-  if (currentLvl >= 3) return;
-  const nextLvl = (currentLvl + 1) as 2 | 3;
-  const price = tile.upgradePrices[String(nextLvl)];
+
+  const currentlevel = tile.level;
+
+  if (currentlevel >= 3) return;
+
+  const nextlevel = (currentlevel + 1) as 2 | 3;
+
+  const price = tile.upgradePrices[nextlevel];
   if (!price) return;
   if (player.gold >= price.gold && player.units >= price.units) {
     player.gold -= price.gold;
     player.units -= price.units;
-    tile.level = nextLvl;
+    tile.level = nextlevel;
     setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
   }
   endTurn();
 }
-

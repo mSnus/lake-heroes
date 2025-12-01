@@ -1,72 +1,100 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Board } from '../game/Board';
 import { Dice } from '../game/Dice';
 
-export const DiceWidget: React.FC = () => {
-  const [visible, setVisible] = useState(false);
+interface Props {
+  board: Board | null;
+  setBoard: React.Dispatch<React.SetStateAction<Board | null>>;
+}
+
+export const DiceWidget: React.FC<Props> = ({ board, setBoard }) => {
   const [side, setSide] = useState<number>(1);
   const [reRoll, setReRoll] = useState(false);
-  const diceRef = useRef<HTMLDivElement | null>(null);
-  const dice = useRef(new Dice());
-  const animationTimeoutRef = useRef<number | null>(null);
+  const animationTimeout = useRef<number | null>(null);
+
+  // helper to commit mutated board while preserving Dice instance and prototype
+  function commitBoardChange(mutated: Board) {
+    const newBoard = Object.assign(new Board(mutated.tiles || [], mutated.players || []), {
+      ...mutated,
+    }) as Board;
+
+    // preserve dice instance from current board if available
+    newBoard.dice = board && board.dice ? board.dice : new Dice();
+
+    // if mutated carried a plain dice object with visible flag, copy it to real Dice
+    if ((mutated as any).dice && typeof (mutated as any).dice.visible !== 'undefined') {
+      newBoard.dice.visible = !!(mutated as any).dice.visible;
+    }
+
+    setBoard(newBoard);
+  }
 
   useEffect(() => {
-    function onRoll(e: Event) {
+    function onDiceRolled(e: Event) {
       const detail = (e as CustomEvent).detail;
-      const value = typeof detail === 'number' ? detail : (detail && (detail.result || 1)) || 1;
-      setSide(value);
-      setVisible(true);
-
+      const value = typeof detail === 'number' ? detail : 1;
       setReRoll(true);
-      if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
-      animationTimeoutRef.current = window.setTimeout(() => {
+
+      setSide(value);
+
+      if (animationTimeout.current) window.clearTimeout(animationTimeout.current);
+      animationTimeout.current = window.setTimeout(() => {
         setReRoll(false);
-        // notify that dice animation stopped and provide final value
+        // hide dice after animation by mutating board.dice.visible and committing
+        if (board && board.dice) {
+          board.dice.visible = false;
+          commitBoardChange(board);
+        }
+        // notify that dice animation stopped
         window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: value }));
       }, 1600) as unknown as number;
     }
-    window.addEventListener('diceRolled', onRoll as EventListener);
-    return () => window.removeEventListener('diceRolled', onRoll as EventListener);
-  }, []);
+
+    window.addEventListener('diceRolled', onDiceRolled as EventListener);
+    return () => window.removeEventListener('diceRolled', onDiceRolled as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [board]);
 
   useEffect(() => {
-    function onStart(e: Event) {
-      // Start a roll programmatically (this will dispatch `diceRolled` from Dice.roll())
-      const result = dice.current.roll();
-      // Immediate visual state for the widget (Dice.roll will also dispatch diceRolled; handler above will run too)
-      setSide(result);
-      setVisible(true);
-      setReRoll(true);
-      if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
-      animationTimeoutRef.current = window.setTimeout(() => {
-        setReRoll(false);
-        window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: result }));
-      }, 1600) as unknown as number;
+    function onStart() {
+      if (!board) return;
+      // Show dice in UI then trigger roll via board.dice
+      if (board.dice) {
+        board.dice.visible = true;
+        commitBoardChange(board);
+        board.dice.roll();
+      } else {
+        const d = new Dice();
+        d.visible = true;
+        if (board) {
+          (board as any).dice = d;
+          commitBoardChange(board);
+          d.roll();
+        }
+      }
     }
     window.addEventListener('startDiceRoll', onStart as EventListener);
     return () => window.removeEventListener('startDiceRoll', onStart as EventListener);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
-    };
-  }, []);
+  }, [board]); // depends on board to access dice instance
 
   function handleClick() {
-    // roll via Dice instance; roll() dispatches the diceRolled event
-    const r = dice.current.roll();
-    // immediate feedback
-    setSide(r);
-    setVisible(true);
-    setReRoll(true);
-    if (animationTimeoutRef.current) window.clearTimeout(animationTimeoutRef.current);
-    animationTimeoutRef.current = window.setTimeout(() => {
-      setReRoll(false);
-      window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: r }));
-    }, 1600) as unknown as number;
+    if (!board) return;
+    if (board.dice) {
+      board.dice.visible = true;
+      commitBoardChange(board);
+      board.dice.roll();
+    } else {
+      const d = new Dice();
+      d.visible = true;
+      if (board) {
+        (board as any).dice = d;
+        commitBoardChange(board);
+        d.roll();
+      }
+    }
   }
 
-  if (!visible) return null;
+  if (!board || !board.dice || !board.dice.visible) return null;
 
   return (
     <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 2000 }}>
@@ -75,7 +103,6 @@ export const DiceWidget: React.FC = () => {
         data-side={String(side)}
         className={reRoll ? 'reRoll' : ''}
         onClick={handleClick}
-        ref={diceRef}
         style={{ width: 90, height: 90, transformStyle: 'preserve-3d' }}
       >
         <div className="sides side-1">

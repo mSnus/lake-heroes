@@ -1,13 +1,6 @@
 import React from 'react';
 
-type MenuActions = 
-  | 'roll-dice'
-  | 'end-turn'
-  | 'buy-tile'
-  | 'sell-tile'
-  | 'upgrade-tile'
-  | 'fight'
-  | 'pay-fee';
+type MenuActions = 'roll-dice' | 'end-turn' | 'buy-tile' | 'fight' | 'pay-fee';
 
 interface MenuItem {
   label: string;
@@ -17,15 +10,12 @@ interface MenuItem {
 }
 
 interface GameMenuProps {
-  title: React.ReactNode; // allow rich headers (e.g., colored circle + name)
+  title?: string; // allow rich headers (e.g., colored circle + name)
   items: MenuItem[];
   children?: React.ReactNode;
 }
 
 export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) => {
-  const titleText = typeof title === 'string' ? title : undefined;
-
-
   function handleItemClick(item: MenuItem) {
     // Require action and validate it
     const action = item.action;
@@ -54,8 +44,8 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
   }
 
   return (
-    <aside className="game-menu">
-      {titleText && <h3>{titleText}</h3>}
+    <div className="game-menu">
+      {title && <h3>{title}</h3>}
       <div>
         {items.map((item, i) => {
           // Display label: normalize end-turn text for consistency
@@ -63,9 +53,9 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
           return (
             <button
               key={i}
+              className="game-menu-button"
               onClick={() => handleItemClick(item)}
               disabled={item.disabled}
-              style={{ display: 'block', margin: '8px 0', width: '100%' }}
             >
               {displayLabel}
             </button>
@@ -73,6 +63,6 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
         })}
       </div>
       {children && <div style={{ marginTop: 16 }}>{children}</div>}
-    </aside>
+    </div>
   );
 };

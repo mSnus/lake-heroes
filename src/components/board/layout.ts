@@ -16,7 +16,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   const kingCastle = byName('King Castle');
   const prison = byName('Prison');
   const treasureBox = byName('Treasure box');
-  const freelancers = byName("Freelancers' camp");
+  const freelancers = byName('Tavern');
 
   if (!kingCastle) throw new Error('King Castle tile not found');
   if (!treasureBox) throw new Error('Treasure box tile not found');

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './App.css';
-import './assets/dice.css';
+import './styles/App.css';
+import './styles/GameMenu.css';
+import './styles/dice.css';
 import { Tile } from './game/Tile';
 import { Player } from './game/Player';
 import { Board } from './game/Board';
@@ -17,32 +18,34 @@ import playersData from './settings/players.json';
 import { buildTileLayoutFromTemplates } from './components/board/layout';
 import { isMobileLayout } from './components/board/common';
 import { DiceWidget } from './components/DiceWidget';
-
-type TurnPhase = 'before-move' | 'rolling' | 'after-move';
+import ResetGameButton from './components/ResetGameButton';
+import { Dice } from './game/Dice';
+import { TurnPhase } from './game/Board';
+import { CurrentTile } from './components/CurrentCard';
+import { CurrentPlayer } from './components/CurrentPlayer';
 
 function App() {
   const [board, setBoard] = useState<Board | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
-  const [turnPhase, setTurnPhase] = useState<TurnPhase>(
-    () => (loadFromStorage('turn-phase', null) as TurnPhase) || 'before-move'
-  );
-
-  useEffect(() => {
-    // Persist phase whenever it changes
-    saveToStorage('turn-phase', turnPhase);
-  }, [turnPhase]);
 
   useEffect(() => {
     // Allow components to request phase changes via CustomEvent('setPhase', { detail: 'before-move' | ... })
     function onSetPhase(e: Event) {
-      const detail = (e as CustomEvent).detail;
-      if (detail === 'before-move' || detail === 'rolling' || detail === 'after-move') {
-        setTurnPhase(detail);
-      }
+      const phase = (e as CustomEvent).detail as TurnPhase;
+      if (!(phase === 'before-move' || phase === 'rolling' || phase === 'after-move')) return;
+      if (!board) return;
+      // commit new Board instance preserving prototype and dice instance
+      const mutated = Object.assign(new Board(board.tiles, board.players), {
+        ...board,
+        turnPhase: phase,
+      }) as Board;
+      // preserve dice instance if any
+      mutated.dice = board.dice || new Dice();
+      setBoard(mutated);
     }
     window.addEventListener('setPhase', onSetPhase as EventListener);
     return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
-  }, []);
+  }, [board, setBoard]);
 
   useEffect(() => {
     function loadGameData() {
@@ -59,9 +62,22 @@ function App() {
           tiles,
           players,
         }) as Board;
+
+        restored.dice = new Dice();
+        if (savedRaw.dice && typeof savedRaw.dice.visible !== 'undefined') {
+          restored.dice.visible = !!savedRaw.dice.visible;
+        }
+
+        if (!restored.turnPhase) restored.turnPhase = 'before-move';
+
         setBoard(restored);
         setMenu({ type: 'main' });
-        // Announce starting player's turn if not skipped
+
+        window.setTimeout(
+          () => window.dispatchEvent(new CustomEvent('setPhase', { detail: restored.turnPhase })),
+          0
+        );
+
         const first = restored.activePlayer;
         if (!first.turnsToSkip || first.turnsToSkip <= 0) {
           say(`${first.name}'s turn`, 'info');
@@ -69,25 +85,46 @@ function App() {
         return;
       }
 
-      // Build full template list from settings
+      
       const allTemplates: any[] = (tilesData as any[]).slice();
       const placedTemplates = buildTileLayoutFromTemplates(allTemplates);
 
-      // Map to Tile instances; leave blanks as undefined
       const tiles = placedTemplates.map((t) =>
         t ? new Tile(t) : (undefined as any)
       ) as unknown as Tile[];
       const players = (playersData as any[]).map((p: any) => new Player(p));
       const initialBoard = new Board(tiles, players);
+
       setBoard(initialBoard);
       setMenu({ type: 'main' });
-      // ensure default phase on new game
+
       window.setTimeout(
-        () => window.dispatchEvent(new CustomEvent('setPhase', { detail: 'before-move' })),
+        () => window.dispatchEvent(new CustomEvent('setPhase', { detail: initialBoard.turnPhase })),
         0
       );
-      // Announce starting player's turn if not skipped
+
       const first = initialBoard.activePlayer;
+
+      if (first.turnsToSkip && first.turnsToSkip > 0) {
+        say(
+          `${first.name} is skipping their turn (${first.turnsToSkip} turn${
+            first.turnsToSkip > 1 ? 's' : ''
+          } left)`,
+          'info'
+        );
+
+        first.turnsToSkip -= 1;
+        setBoard(Object.setPrototypeOf({ ...initialBoard }, Board.prototype));
+        // Advance to next player
+        window.setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('setPhase', { detail: 'before-move' }));
+          window.setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('endTurn'));
+          }, 0);
+        }, 0);
+        return;
+      }
+
       if (!first.turnsToSkip || first.turnsToSkip <= 0) {
         say(`${first.name}'s turn`, 'info');
       }
@@ -107,65 +144,33 @@ function App() {
         hideProgressBar={true}
       />
 
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-        }}
-      >
-        <DiceWidget />
-        {board && <BoardCanvas board={board} />}
-        {board && <PlayerStatsTable board={board} setBoard={setBoard} />}
-      </div>
-      <div style={{ minWidth: 240 }}>
-        {board && menu ? (
-          <GameMenuRenderer board={board} menu={menu} setMenu={setMenu} setBoard={setBoard} />
-        ) : (
-          <div style={{ minWidth: 240 }}></div>
-        )}
-      </div>
-
-      {/* Reset Game button fixed at the bottom */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          padding: '12px 0',
-          background: 'rgba(0,0,0,0.3)',
-          backdropFilter: 'blur(2px)',
-        }}
-      >
-        <button
-          onClick={() => {
-            try {
-              localStorage.removeItem('board-state');
-            } catch (e) {
-              // ignore storage errors
-            } finally {
-              window.location.reload();
-            }
-          }}
+      {board && (
+        <div
+          id="mainContainer"
           style={{
-            padding: '10px 16px',
-            borderRadius: 6,
-            border: '1px solid #ccc',
-            cursor: 'pointer',
-            background: '#fff',
-            color: '#333',
-            fontWeight: 600,
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
           }}
         >
-          Reset Game
-        </button>
-      </div>
+          <DiceWidget board={board} setBoard={setBoard} />
+          <CurrentTile board={board} />
+          <BoardCanvas board={board} />
+          <CurrentPlayer board={board} />
+
+          {menu ? (
+            <GameMenuRenderer board={board} menu={menu} setMenu={setMenu} setBoard={setBoard} />
+          ) : (
+            <div className="game-menu"></div>
+          )}
+
+          <PlayerStatsTable board={board} setBoard={setBoard} />
+        </div>
+      )}
+
+      <ResetGameButton />
     </div>
   );
 }

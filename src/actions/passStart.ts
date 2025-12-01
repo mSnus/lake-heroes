@@ -15,8 +15,8 @@ export function passStart(board: Board | null, setBoard: (board: Board) => void)
     const tile = board.tiles[idx];
     if (!tile) continue;
     if (tile.owner && tile.owner !== player.name) continue; // safety check
-    const lvl = String(tile.level);
-    const bonus = tile.bonuses[lvl] || 0;
+
+    const bonus = tile.bonuses[tile.level] || 0;
     if ((tile.bonusType || 'gold') === 'units') {
       unitsProfit += bonus;
     } else {
@@ -39,8 +39,3 @@ export function passStart(board: Board | null, setBoard: (board: Board) => void)
   const summary = parts.join(', ');
   say(`${player.name} passed start: ${summary}`, 'success');
 }
-
-
-
-
-

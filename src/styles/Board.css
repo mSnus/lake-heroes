@@ -1,0 +1,189 @@
+/* Wrapper & background layers (static parts) */
+.board-wrapper {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.board-bg {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+/* Layer containers */
+.layer-tiles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.layer-diamonds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.layer-players {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 3;
+}
+
+/* Static tile shell and content */
+.tile {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: visible;
+  pointer-events: none;
+  width: 80px;
+  height: 80px;
+}
+
+.tile-left {
+  margin-left: -40px;
+  margin-top: 6px;
+}
+
+.tile-right {
+  margin-left: 40px;
+  margin-top: 6px;
+}
+
+.tile-content {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.tile-left .tile-content {
+  display: flex;
+  flex-direction: row;
+}
+
+.tile-right .tile-content {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.tile-emoji {
+  font:
+    24px Arial,
+    sans-serif;
+  margin-bottom: 4px;
+  filter: drop-shadow(1px 5px 5px #000000a0);
+}
+
+.title-emoji-big {
+  font:
+    54px Arial,
+    sans-serif;
+  margin-bottom: 4px;
+  filter: drop-shadow(1px 5px 5px #000000a0);
+  margin-top: -20px;
+}
+
+.tile-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* Diamonds (ownership markers) */
+.diamond-container {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  transform: translate(-50%, 150%);
+  gap: 4px;
+}
+
+.diamond {
+  transform: rotate(45deg);
+  border: solid 1px #ffffff55;
+  /* width/height and background color are set inline (DIAMOND_SIZE, owner color) */
+}
+
+/* Player markers */
+.player-wrapper {
+  position: absolute;
+  z-index: 3;
+  transform: translate(50%, 60%);
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.player-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.player-marker {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  border: 0.125rem solid #fff;
+  position: absolute;
+  z-index: 500;
+  /* background color is dynamic and set inline */
+}
+
+.player-name {
+  font-size: 10px;
+  color: #fff;
+  margin-top: 22px;
+}
+
+/* Background image */
+.bg-image {
+  width: 100vw;
+  display: block;
+  height: 36.5625vw;
+  position: relative;
+  top: -40px;
+  filter: brightness(0.7);
+}
+
+@media screen and (max-width: 768px) {
+  .tile {
+    width: 40px;
+    height: 40px;
+  }
+
+  .bg-image {
+    height: 145vw;
+    top: -11vw;
+  }
+}
