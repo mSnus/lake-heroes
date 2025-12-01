@@ -15,7 +15,9 @@ export function endTurn(
   const nextPlayer = board.activePlayer;
   if (nextPlayer.turnsToSkip > 0) {
     say(`${nextPlayer.name} should skip the turn`, 'info');
+    setMenu({ type: 'end-turn' });
   }
 
   setMenu({ type: 'main' });
+  board.turns += 1;
 }

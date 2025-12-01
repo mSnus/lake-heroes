@@ -10,6 +10,7 @@ export class Board {
   playerOrder: number[];
   activePlayerIndex: number;
   dice: Dice;
+  turns: number = 0;
 
   // new: phase of the current turn owned by the Board
   turnPhase: TurnPhase;

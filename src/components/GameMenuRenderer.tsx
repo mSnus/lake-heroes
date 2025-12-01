@@ -71,7 +71,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         items={[
           {
             action: 'buy-tile',
-            label: `Buy for ${tile.priceGold} 🟡 ${tile.priceUnits} 🧍`,
+            label: `Buy for ${tile.priceGold}🟡 ${tile.priceUnits}🧍`,
             onClick: () => {
               buyTile(board, setBoard);
               setMenu({ type: 'end-turn' });

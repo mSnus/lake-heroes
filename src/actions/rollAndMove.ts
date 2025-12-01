@@ -5,6 +5,7 @@ import { handleTreasureBox } from './treasureBox';
 import { handleRogueCamp } from './rogueCamp';
 import { handlePrison } from './prison';
 import { handleSphynx } from './sphynx';
+import { handleKingCastle } from './king';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { say } from '../utils/say';
@@ -50,11 +51,11 @@ export async function rollAndMove(
   const tileIdx = player.position;
   const tile = board.tiles[tileIdx];
 
-  if (tile.name.includes('Treasure box')) {
+  if (tile.name.includes('Treasure')) {
     handleTreasureBox(board, setBoard, endTurn);
     return;
   }
-  if (tile.name.includes('Rogue camp')) {
+  if (tile.name.includes('Tavern')) {
     handleRogueCamp(board, setBoard, endTurn);
     return;
   }
@@ -64,6 +65,10 @@ export async function rollAndMove(
   }
   if (tile.name.includes('Sphynx')) {
     handleSphynx(board, setBoard, endTurn);
+    return;
+  }
+  if (tile.name.includes('King')) {
+    handleKingCastle(board, setBoard, endTurn);
     return;
   }
 
