@@ -85,7 +85,7 @@
   },
   {
     "group": "Farms",
-    "name": "🐷 Pig farm",
+    "name": "🐷 Pigs farm",
     "isOwnable": true,
     "bonusType": "gold",
     "priceGold": 150,
@@ -113,7 +113,7 @@
   },
   {
     "group": "Farms",
-    "name": "🐄 Cow farm",
+    "name": "🐄 Cows farm",
     "isOwnable": true,
     "bonusType": "gold",
     "priceGold": 180,

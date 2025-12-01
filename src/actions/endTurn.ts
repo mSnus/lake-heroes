@@ -13,8 +13,8 @@ export function endTurn(
   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
 
   const nextPlayer = board.activePlayer;
-  if (nextPlayer.turnsToSkip <= 0) {
-    say(`${nextPlayer.name}'s turn`, 'info');
+  if (nextPlayer.turnsToSkip > 0) {
+    say(`${nextPlayer.name} should skip the turn`, 'info');
   }
 
   setMenu({ type: 'main' });

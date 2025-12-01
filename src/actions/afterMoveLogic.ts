@@ -28,7 +28,7 @@ export function afterMoveLogic(
       return;
     } else {
       say(`${player.name} cannot afford to buy ${tile.name}.`, 'warning');
-      endTurn();
+      setMenu({ type: 'end-turn' });
       return;
     }
   }

@@ -27,17 +27,31 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   const handleEndTurn = () => endTurn(board, setBoard, setMenu);
 
   if (menu.type === 'main') {
-    return (
-      <GameMenu
-        items={[
-          {
-            label: 'Roll Dice',
-            onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
-            action: 'roll-dice',
-          },
-        ]}
-      ></GameMenu>
-    );
+    let items = [
+      {
+        label: 'Roll Dice 🎲',
+        onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
+        action: 'roll-dice',
+      },
+    ];
+
+    // If on ownable tile, show option to sell it
+    if (
+      currentTile.isOwnable &&
+      !currentTile.isOwned() &&
+      activePlayer.gold >= currentTile.priceGold &&
+      activePlayer.units >= currentTile.priceUnits
+    ) {
+      items.push({
+        action: 'buy-tile',
+        label: `Buy for ${currentTile.priceGold} 🟡 ${currentTile.priceUnits} 🧍`,
+        onClick: () => {
+          buyTile(board, setBoard);
+        },
+      });
+    }
+
+    return <GameMenu items={items}></GameMenu>;
   }
 
   if (menu.type === 'move-result') {
@@ -59,12 +73,20 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
             action: 'buy-tile',
             label: `Buy for ${tile.priceGold} 🟡 ${tile.priceUnits} 🧍`,
             onClick: () => {
-              buyTile(menu, board, setBoard, handleEndTurn);
-              setMenu({ type: 'main' });
+              buyTile(board, setBoard);
+              setMenu({ type: 'end-turn' });
             },
           },
           { action: 'end-turn', label: 'Pass', onClick: handleEndTurn },
         ]}
+      ></GameMenu>
+    );
+  }
+
+  if (menu.type === 'end-turn') {
+    return (
+      <GameMenu
+        items={[{ action: 'end-turn', label: 'End turn ⏳', onClick: handleEndTurn }]}
       ></GameMenu>
     );
   }

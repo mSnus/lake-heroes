@@ -27,11 +27,11 @@
   {
     "name": "Towers",
     "icon": "🗼",
-    "color": "#616d76"
+    "color": "#ff4d4d"
   },
   {
     "name": "Special",
     "icon": "⭐",
-    "color": "#FFFFFF"
+    "color": "#CCCCCC"
   }
 ]

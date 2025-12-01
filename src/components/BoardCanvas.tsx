@@ -92,7 +92,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                           style={{
                             height: titleBarHeight,
                             font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
-                            background: grp?.color || '#EAEAEA',
+                            color: grp?.color || '#FFF',
                           }}
                         >
                           {textPart1} {isMobileLayout() ? '' : textPart2}

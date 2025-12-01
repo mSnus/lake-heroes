@@ -48,8 +48,6 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
       {title && <h3>{title}</h3>}
       <div>
         {items.map((item, i) => {
-          // Display label: normalize end-turn text for consistency
-          const displayLabel = item.action === 'end-turn' ? 'End Turn' : item.label;
           return (
             <button
               key={i}
@@ -57,7 +55,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
               onClick={() => handleItemClick(item)}
               disabled={item.disabled}
             >
-              {displayLabel}
+              {item.label}
             </button>
           );
         })}

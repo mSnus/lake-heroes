@@ -1,22 +1,19 @@
 import { Board } from '../game/Board';
-import { MenuState } from '../types/menuState';
 
 export function buyTile(
-  menu: MenuState | null,
   board: Board | null,
-  setBoard: (board: Board) => void,
-  endTurn: () => void
+  setBoard: (board: Board) => void
 ) {
-  if (!board || !menu) return;
-  const tile = board.tiles[menu.tileIdx!];
+  if (!board) return;
 
   const player = board.activePlayer;
+  const tile = board.tiles[player.position];
   
   if (player.gold >= tile.priceGold && player.units >= tile.priceUnits && !tile.isOwned()) {
     player.gold -= tile.priceGold;
     player.units -= tile.priceUnits;
     tile.owner = player.name;
-    player.ownedTiles.push(menu.tileIdx!);
+    player.ownedTiles.push(player.position);
     setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
   }
 }
