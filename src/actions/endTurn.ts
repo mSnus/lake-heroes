@@ -18,6 +18,9 @@ export function endTurn(
     setMenu({ type: 'end-turn' });
   }
 
+  window.dispatchEvent(
+    new CustomEvent('tileClicked', {  })
+  );
   setMenu({ type: 'main' });
   board.turns += 1;
 }

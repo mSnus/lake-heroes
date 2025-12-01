@@ -65,7 +65,7 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
     commitBoardChange(board);
 
     say(
-      `${activePlayer.name} sold ${tile.name} and received ${refunds.gold} gold and ${refunds.units} units`,
+      `${activePlayer.name} sold ${tile.name} and received ${refunds.gold}🟡 and ${refunds.units}🧍`,
       'info'
     );
 

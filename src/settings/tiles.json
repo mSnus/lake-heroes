@@ -511,7 +511,8 @@
     "priceUnits": 0,
     "upgradePrices": {},
     "bonuses": {},
-    "defences": {}
+    "defences": {},
+    "description": "Roll dice 🎲 to receive extra 🟡" 
   },
   {
     "group": "Special",
@@ -521,7 +522,8 @@
     "priceUnits": 0,
     "upgradePrices": {},
     "bonuses": {},
-    "defences": {}
+    "defences": {},
+    "description": "Roll dice 🎲 to hire extra 🧍"
   },
   {
     "group": "Special",
@@ -531,7 +533,8 @@
     "priceUnits": 0,
     "upgradePrices": {},
     "bonuses": {},
-    "defences": {}
+    "defences": {},
+    "description": "Hire 🧍 for 🟡"
   },
   {
     "group": "Special",
@@ -541,7 +544,8 @@
     "priceUnits": 0,
     "upgradePrices": {},
     "bonuses": {},
-    "defences": {}
+    "defences": {},
+    "description": "Miss a turn ⏳"
   },
   {
     "group": "Special",
@@ -551,6 +555,7 @@
     "priceUnits": 0,
     "upgradePrices": {},
     "bonuses": {},
-    "defences": {}
+    "defences": {},
+    "description": "Roll dice 🎲 to receive or lose 🟡 and 🧍"  
   }
 ]

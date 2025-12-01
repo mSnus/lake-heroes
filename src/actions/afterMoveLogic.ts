@@ -13,8 +13,6 @@ export function afterMoveLogic(
   const tileIdx = player.position;
   const tile = board.tiles[tileIdx];
 
-  console.debug('After move logic for player and tile:', player, tile);
-
   // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
   if (!tile.isOwnable) {
     endTurn();

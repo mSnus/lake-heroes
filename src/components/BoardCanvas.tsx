@@ -56,7 +56,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   // Capture initial tiles once so static portion never re-renders when `board` changes
   const initialTilesRef = useRef<any[] | null>(board.tiles || null);
 
-  // Static tile renderer (no dynamic owner markers)
+  // Static tile renderer
   const staticTilesJSX = React.useMemo(
     () => {
       const tiles = initialTilesRef.current || [];
@@ -68,6 +68,15 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         if (pos?.textPos === 'left') titleClass += ' tile-left';
         if (pos?.textPos === 'right') titleClass += ' tile-right';
 
+        // Add click handler to make tiles interactive
+        const handleTileClick = () => {
+          if (tile) {
+            window.dispatchEvent(
+              new CustomEvent('tileClicked', { detail: { tileIndex: i, tile } })
+            );
+          }
+        };
+
         return (
           <div
             key={`static-${i}`}
@@ -76,6 +85,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
               top: pos.y - offsetY + '%',
               left: pos.x - offsetX + '%',
             }}
+            onClick={handleTileClick}
           >
             <div className="tile-content">
               {tile?.name &&

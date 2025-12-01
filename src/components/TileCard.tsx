@@ -41,13 +41,19 @@ export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
   const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
   const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;
 
+  if (!tile.isOwnable) {
+    console.log('Tile description:', tile, tile.description);
+  }
+
   return (
     <div className="tile-card">
       <div className="tile-card-header" style={{ background: groupColor }}>
         {groupIcon} {tile.group}
       </div>
 
-      <div className="tile-card-title">{tile.name} {tile.level > 1 ? `(Level ${tile.level})` : ''}</div>
+      <div className="tile-card-title">
+        {tile.name} {tile.level > 1 ? `(Level ${tile.level})` : ''}
+      </div>
 
       {tile.isOwnable && (
         <div className="tile-card-body">
@@ -86,6 +92,9 @@ export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
             </table>
           </div>
         </div>
+      )}
+      {!tile.isOwnable && tile.description && (
+        <div className="tile-card-description">{tile.description}</div>
       )}
     </div>
   );

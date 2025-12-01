@@ -23,7 +23,7 @@ export function sellTile(
   const level = tile.level || 1;
 
   for (let l = 2; l <= level; l++) {
-    const p = upgradePrices[String(l)];
+    const p = upgradePrices[l];
     if (p) {
       upgradesGold += p.gold || 0;
       upgradesUnits += p.units || 0;

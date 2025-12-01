@@ -28,6 +28,10 @@ export async function rollAndMove(
 
   say(`${player.name} rolled ${roll} and went to ${nextTile.name}!`, 'info');
   setMenu({ type: 'wait' });
+  
+  window.dispatchEvent(
+    new CustomEvent('tileClicked', {  })
+  );
 
   // Step-by-step move with 0.2s delay per tile
   for (let step = 1; step <= roll; step++) {

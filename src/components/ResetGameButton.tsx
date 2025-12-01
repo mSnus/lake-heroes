@@ -2,12 +2,14 @@ import React from 'react';
 
 const ResetGameButton: React.FC = () => {
   function handleReset() {
-    try {
-      localStorage.removeItem('board-state');
-    } catch (e) {
-      // ignore storage errors
-    } finally {
-      window.location.reload();
+    if (window.confirm('Are you sure you want to start a new game? Your current progress will be lost.')) {
+      try {
+        localStorage.removeItem('board-state');
+      } catch (e) {
+        // ignore storage errors
+      } finally {
+        window.location.reload();
+      }
     }
   }
 
@@ -38,7 +40,7 @@ const ResetGameButton: React.FC = () => {
           boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
         }}
       >
-        Reset Game
+        New Game
       </button>
     </div>
   );

@@ -27,7 +27,7 @@
   height: 100%;
   width: 100%;
   z-index: 1;
-  pointer-events: none;
+  /* tiles need to be clickable */
 }
 
 .layer-diamonds {
@@ -47,6 +47,7 @@
   height: 100%;
   width: 100%;
   z-index: 3;
+  pointer-events: none; /* allow clicks to pass through to tiles unless specifically on player markers */
 }
 
 /* Static tile shell and content */
@@ -58,9 +59,11 @@
   justify-content: flex-start;
   align-items: center;
   overflow: visible;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   width: 80px;
   height: 80px;
+  z-index: 5000;
 }
 
 .tile-left {
