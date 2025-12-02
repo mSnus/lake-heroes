@@ -1,10 +1,10 @@
 import React from 'react';
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { isMobileLayout } from './board/common';
 import '../styles/CurrentPlayer.css';
 
 interface CurrentPlayerProps {
-  board: Board;
+  board: GameState;
 }
 
 export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ board }) => {

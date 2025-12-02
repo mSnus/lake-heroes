@@ -1,10 +1,10 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { say } from '../utils/say';
 
 export function sellTile(
-  board: Board,
+  board: GameState,
   player: Player,
   tileIndex: number
 ): { gold: number; units: number } {

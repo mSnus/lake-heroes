@@ -1,14 +1,17 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
 
 export function afterMoveLogic(
-  board: Board | null,
-  setBoard: (board: Board) => void,
+  board: GameState | null,
+  setGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void,
   endTurn: () => void
 ) {
   if (!board) return;
+
+  console.log('Action: after move logic');
+  
   const player = board.activePlayer;
   const tileIdx = player.position;
   const tile = board.tiles[tileIdx];
@@ -21,7 +24,7 @@ export function afterMoveLogic(
 
   // Ownable, not owned, player can buy
   if (!tile.isOwned()) {
-    if ( player.gold >= tile.priceGold && player.units >= tile.priceUnits) {
+    if (player.gold >= tile.priceGold && player.units >= tile.priceUnits) {
       setMenu({ type: 'buy', tileIdx });
       return;
     } else {

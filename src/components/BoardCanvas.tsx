@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
 import mapUrlH from '../assets/map-h.png';
 import mapUrlV from '../assets/map-v.png';
@@ -18,17 +18,20 @@ import {
 } from './board/common';
 import '../styles/Board.css';
 
-interface BoardCanvasProps {
-  board: Board;
+interface GameStateCanvasProps {
+  board: GameState;
 }
 
-export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
+export const GameStateCanvas: React.FC<GameStateCanvasProps> = ({ board }) => {
   const isMobile = isMobileLayout();
+
   const ratio = isMobile ? 2 : 1;
+
   const offsetX = isMobile ? 10 : 0;
   const offsetY = isMobile ? 8 : 0;
-  const tileWidth = Math.round(TILE_WIDTH / ratio);
+
   const titleBarHeight = Math.round(TITLE_BAR_HEIGHT / ratio);
+
   const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '64rem';
   const CANVAS_HEIGHT = isMobileLayout() ? '120vw' : '36.5625rem';
   const WRAPPER_HEIGHT = isMobileLayout() ? '115vw' : CANVAS_HEIGHT;

@@ -1,4 +1,4 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 import { say } from '../utils/say';
 
@@ -12,8 +12,8 @@ import { say } from '../utils/say';
  * After applying effect, end the turn.
  */
 export function handleSphynx(
-  board: Board | null,
-  setBoard: (board: Board) => void,
+  board: GameState | null,
+  setGameState: (board: GameState) => void,
   endTurn: () => void
 ) {
   if (!board) return;
@@ -49,7 +49,7 @@ export function handleSphynx(
   }
 
   // Persist state
-  setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
 
   // Announce
   say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');

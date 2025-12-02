@@ -1,7 +1,7 @@
 import React from 'react';
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
-import { GameMenu } from './GameMenu';
+import { GameMenu, MenuAction, MenuAction } from './GameMenu';
 import { buyTile } from '../actions/buyTile';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
@@ -9,28 +9,28 @@ import { rollAndMove } from '../actions/rollAndMove';
 import { endTurn } from '../actions/endTurn';
 
 interface GameMenuRendererProps {
-  board: Board;
+  board: GameState;
   menu: MenuState;
   setMenu: (menu: MenuState) => void;
-  setBoard: (board: Board) => void;
+  setGameState: (board: GameState) => void;
 }
 
 export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   board,
   menu,
   setMenu,
-  setBoard,
+  setGameState,
 }) => {
   const activePlayer = board.activePlayer;
   const currentTile = board.tiles[activePlayer.position];
 
-  const handleEndTurn = () => endTurn(board, setBoard, setMenu);
+  const handleEndTurn = () => endTurn(board, setGameState, setMenu);
 
   if (menu.type === 'main') {
     let items = [
       {
         label: 'Roll Dice 🎲',
-        onClick: () => rollAndMove(board, setBoard, setMenu, handleEndTurn),
+        onClick: () => rollAndMove(board, setGameState, setMenu, handleEndTurn),
         action: 'roll-dice',
       },
     ];
@@ -46,7 +46,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         action: 'buy-tile',
         label: `Buy for ${currentTile.priceGold} 🟡 ${currentTile.priceUnits} 🧍`,
         onClick: () => {
-          buyTile(board, setBoard);
+          buyTile(board, setGameState);
         },
       });
     }
@@ -73,7 +73,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
             action: 'buy-tile',
             label: `Buy for ${tile.priceGold}🟡 ${tile.priceUnits}🧍`,
             onClick: () => {
-              buyTile(board, setBoard);
+              buyTile(board, setGameState);
               setMenu({ type: 'end-turn' });
             },
           },
@@ -99,14 +99,14 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     const items = [
       {
         label: `Pay Fee ${fee} 🟡`,
-        action: 'pay-fee',
-        onClick: () => payFee(menu, board, setBoard, handleEndTurn),
+        action: 'pay-fee' as MenuAction,
+        onClick: () => payFee(menu, board, setGameState, handleEndTurn),
         disabled: activePlayer.gold < fee,
       },
       {
         label: `Fight ${defence} 🧍`,
-        action: 'fight',
-        onClick: () => fightTile(menu, board, setBoard, setMenu, handleEndTurn),
+        action: 'fight' as MenuAction,
+        onClick: () => fightTile(board, setGameState, setMenu),
         disabled: activePlayer.units < defence,
       },
     ];

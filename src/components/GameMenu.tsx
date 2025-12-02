@@ -1,10 +1,10 @@
 import React from 'react';
 
-type MenuActions = 'roll-dice' | 'end-turn' | 'buy-tile' | 'fight' | 'pay-fee';
+export type MenuAction = 'roll-dice' | 'end-turn' | 'buy-tile' | 'fight' | 'pay-fee';
 
 interface MenuItem {
   label: string;
-  action: MenuActions;
+  action: MenuAction;
   onClick: () => void;
   disabled?: boolean;
 }

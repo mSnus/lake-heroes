@@ -4,16 +4,14 @@ import { Player } from './Player';
 import { Tile } from './Tile';
 import { Dice } from './Dice';
 
-export class Board {
+export class GameState {
   tiles: Tile[];
   players: Player[];
   playerOrder: number[];
   activePlayerIndex: number;
   dice: Dice;
   turns: number = 0;
-  gameStarted : boolean = false;
-
-  // new: phase of the current turn owned by the Board
+  gameStarted: boolean = false;
   turnPhase: TurnPhase;
 
   constructor(tiles: Tile[], players: Player[]) {
@@ -35,5 +33,9 @@ export class Board {
 
   get activePlayer(): Player {
     return this.players[this.playerOrder[this.activePlayerIndex]];
+  }
+
+  setActivePlayerIndex(idx: number) {
+    this.activePlayerIndex = idx;
   }
 }

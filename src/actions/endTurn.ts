@@ -1,26 +1,27 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
 
 export function endTurn(
-  board: Board | null,
-  setBoard: (board: Board) => void,
+  board: GameState | null,
+  setGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
 
+  console.log('Action: end turn');
+
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
-  setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
 
   const nextPlayer = board.activePlayer;
   if (nextPlayer.turnsToSkip > 0) {
-    say(`${nextPlayer.name} should skip the turn`, 'info');
+    nextPlayer.turnsToSkip--;
+    say(`${nextPlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
   }
 
-  window.dispatchEvent(
-    new CustomEvent('tileClicked', {  })
-  );
+  window.dispatchEvent(new CustomEvent('tileClicked', {}));
   setMenu({ type: 'main' });
   board.turns += 1;
 }

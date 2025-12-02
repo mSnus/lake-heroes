@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import TileCard from './TileCard';
@@ -9,11 +9,11 @@ import '../styles/PlayerStatsTable.css';
 import { isMobileLayout } from './board/common';
 
 interface Props {
-  board: Board;
-  setBoard: React.Dispatch<React.SetStateAction<Board | null>>;
+  board: GameState;
+  setGameState: React.Dispatch<React.SetStateAction<GameState | null>>;
 }
 
-export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
+export const PlayerStatsTable: React.FC<Props> = ({ board, setGameState }) => {
   const activePlayer = board.activePlayer as Player;
 
   // Map owned tiles and keep their indices
@@ -27,13 +27,13 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
 
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  // Helper to commit board changes preserving Board prototype
-  function commitBoardChange(mutatedBoard: Board) {
-    const newBoard = Object.assign(
-      new Board(mutatedBoard.tiles, mutatedBoard.players),
-      mutatedBoard
-    ) as Board;
-    setBoard(newBoard);
+  // Helper to commit board changes preserving GameState prototype
+  function commitGameStateChange(mutatedGameState: GameState) {
+    const newGameState = Object.assign(
+      new GameState(mutatedGameState.tiles, mutatedGameState.players),
+      mutatedGameState
+    ) as GameState;
+    setGameState(newGameState);
   }
 
   function handleUpgrade(tile: Tile, tileIdx: number) {
@@ -55,14 +55,14 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
     activePlayer.units = (activePlayer.units || 0) - (nextPrice.units || 0);
     tile.level = nextLevel;
     say(`${activePlayer.name} upgraded ${tile.name} to level ${nextLevel}`, 'info');
-    commitBoardChange(board);
+    commitGameStateChange(board);
     setSelectedIdx(null);
   }
 
   async function handleSell(tile: Tile, tileIdx: number) {
     const refunds = sellTile(board, activePlayer, tileIdx);
 
-    commitBoardChange(board);
+    commitGameStateChange(board);
 
     say(
       `${activePlayer.name} sold ${tile.name} and received ${refunds.gold}🟡 and ${refunds.units}🧍`,
@@ -92,8 +92,6 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setBoard }) => {
 
   return (
     <div style={paneStyle}>
-      
-
       <div style={rightStyle}>
         {owned.length === 0 && <div style={{ color: '#888' }}>No owned tiles</div>}
 

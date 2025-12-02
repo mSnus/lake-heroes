@@ -2,7 +2,11 @@ import React from 'react';
 
 const ResetGameButton: React.FC = () => {
   function handleReset() {
-    if (window.confirm('Are you sure you want to start a new game? Your current progress will be lost.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to start a new game? Your current progress will be lost.'
+      )
+    ) {
       try {
         localStorage.removeItem('board-state');
       } catch (e) {

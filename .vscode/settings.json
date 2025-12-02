@@ -21,6 +21,7 @@
   },
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "CodeGPT.apiKey": "Perplexity"
 }
 

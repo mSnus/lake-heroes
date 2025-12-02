@@ -6,8 +6,8 @@ import './styles/GameMenu.css';
 import './styles/dice.css';
 import { Tile } from './game/Tile';
 import { Player } from './game/Player';
-import { Board } from './game/Board';
-import { BoardCanvas } from './components/BoardCanvas';
+import { GameState } from './game/GameState';
+import { GameStateCanvas } from './components/GameStateCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
 import { PlayerStatsTable } from './components/PlayerStatsTable';
@@ -15,18 +15,18 @@ import { GameMenuRenderer } from './components/GameMenuRenderer';
 import { MenuState } from './types/menuState';
 import tilesData from './settings/tiles.json';
 import playersData from './settings/players.json';
-import { buildTileLayoutFromTemplates } from './components/board/layout';
+import { buildTilesFromTemplates, rehydrateSavedTiles } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
 import { DiceWidget } from './components/DiceWidget';
 import ResetGameButton from './components/ResetGameButton';
 import { Dice } from './game/Dice';
-import { TurnPhase } from './game/Board';
+import { TurnPhase } from './game/GameState';
 import { CurrentTile } from './components/CurrentCard';
 import { CurrentPlayer } from './components/CurrentPlayer';
-import { gameStart } from './game/actions/gameStart';
+import { gameStart } from './actions/gameStart';
 
 function App() {
-  const [board, setBoard] = useState<Board | null>(null);
+  const [board, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   useEffect(() => {
@@ -35,18 +35,18 @@ function App() {
       const phase = (e as CustomEvent).detail as TurnPhase;
       if (!(phase === 'before-move' || phase === 'rolling' || phase === 'after-move')) return;
       if (!board) return;
-      // commit new Board instance preserving prototype and dice instance
-      const mutated = Object.assign(new Board(board.tiles, board.players), {
+      // commit new GameState instance preserving prototype and dice instance
+      const mutated = Object.assign(new GameState(board.tiles, board.players), {
         ...board,
         turnPhase: phase,
-      }) as Board;
+      }) as GameState;
       // preserve dice instance if any
       mutated.dice = board.dice || new Dice();
-      setBoard(mutated);
+      setGameState(mutated);
     }
     window.addEventListener('setPhase', onSetPhase as EventListener);
     return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
-  }, [board, setBoard]);
+  }, [board, setGameState]);
 
   useEffect(() => {
     function loadGameData() {
@@ -56,15 +56,14 @@ function App() {
 
         // Rehydrate tiles and players so we preserve class methods (e.g. Tile.isOwned)
         const savedRaw = saved as any;
-        const tiles = (savedRaw.tiles || []).map((t: any) =>
-          t ? new Tile(t) : (undefined as any)
-        ) as unknown as Tile[];
+        // use TileSet helper to convert saved plain objects into Tile instances
+        const tiles = rehydrateSavedTiles(savedRaw);
         const players = (savedRaw.players || []).map((p: any) => new Player(p));
-        const restored = Object.assign(new Board(tiles, players), {
+        const restored = Object.assign(new GameState(tiles, players), {
           ...savedRaw,
           tiles,
           players,
-        }) as Board;
+        }) as GameState;
 
         restored.dice = new Dice();
         if (savedRaw.dice && typeof savedRaw.dice.visible !== 'undefined') {
@@ -73,7 +72,7 @@ function App() {
 
         if (!restored.turnPhase) restored.turnPhase = 'before-move';
 
-        setBoard(restored);
+        setGameState(restored);
         setMenu({ type: 'main' });
 
         window.setTimeout(
@@ -89,50 +88,24 @@ function App() {
         return;
       }
 
-      
-      const allTemplates: any[] = (tilesData as any[]).slice();
-      const placedTemplates = buildTileLayoutFromTemplates(allTemplates);
-
-      const tiles = placedTemplates.map((t) =>
-        t ? new Tile(t) : (undefined as any)
-      ) as unknown as Tile[];
+      // Build tiles using the new TileSet helper
+      const tiles = buildTilesFromTemplates(tilesData);
       const players = (playersData as any[]).map((p: any) => new Player(p));
-      const initialBoard = new Board(tiles, players);
-      gameStart(initialBoard);
+      const initialGameState = new GameState(tiles, players);
+      gameStart(initialGameState);
 
-      setBoard(initialBoard);
+      setGameState(initialGameState);
       setMenu({ type: 'main' });
 
       window.setTimeout(
-        () => window.dispatchEvent(new CustomEvent('setPhase', { detail: initialBoard.turnPhase })),
+        () =>
+          window.dispatchEvent(new CustomEvent('setPhase', { detail: initialGameState.turnPhase })),
         0
       );
 
-      const first = initialBoard.activePlayer;
+      const first = initialGameState.activePlayer;
 
-      if (first.turnsToSkip && first.turnsToSkip > 0) {
-        say(
-          `${first.name} is skipping their turn (${first.turnsToSkip} turn${
-            first.turnsToSkip > 1 ? 's' : ''
-          } left)`,
-          'info'
-        );
-
-        first.turnsToSkip -= 1;
-        setBoard(Object.setPrototypeOf({ ...initialBoard }, Board.prototype));
-        // Advance to next player
-        window.setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('setPhase', { detail: 'before-move' }));
-          window.setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('endTurn'));
-          }, 0);
-        }, 0);
-        return;
-      }
-
-      if (!first.turnsToSkip || first.turnsToSkip <= 0) {
-        say(`${first.name}'s turn`, 'info');
-      }
+      say(`${first.name}, start the game by rolling the dice!`, 'info');
     }
     loadGameData();
   }, []);
@@ -160,18 +133,23 @@ function App() {
             justifyContent: 'flex-start',
           }}
         >
-          <DiceWidget board={board} setBoard={setBoard} />
+          <DiceWidget board={board} setGameState={setGameState} />
           <CurrentTile board={board} />
-          <BoardCanvas board={board} />
+          <GameStateCanvas board={board} />
           <CurrentPlayer board={board} />
 
           {menu ? (
-            <GameMenuRenderer board={board} menu={menu} setMenu={setMenu} setBoard={setBoard} />
+            <GameMenuRenderer
+              board={board}
+              menu={menu}
+              setMenu={setMenu}
+              setGameState={setGameState}
+            />
           ) : (
             <div className="game-menu"></div>
           )}
 
-          <PlayerStatsTable board={board} setBoard={setBoard} />
+          <PlayerStatsTable board={board} setGameState={setGameState} />
         </div>
       )}
 

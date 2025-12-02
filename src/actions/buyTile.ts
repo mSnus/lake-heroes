@@ -1,20 +1,18 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 
-export function buyTile(
-  board: Board | null,
-  setBoard: (board: Board) => void
-) {
+export function buyTile(board: GameState | null, setGameState: (board: GameState) => void) {
   if (!board) return;
+
+  console.log('Action: buy tile');
 
   const player = board.activePlayer;
   const tile = board.tiles[player.position];
-  
+
   if (player.gold >= tile.priceGold && player.units >= tile.priceUnits && !tile.isOwned()) {
     player.gold -= tile.priceGold;
     player.units -= tile.priceUnits;
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
-    setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+    setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
   }
 }
-

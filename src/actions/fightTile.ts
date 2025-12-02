@@ -1,20 +1,21 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
+import { Player } from '../game/Player';
 
 export function fightTile(
-  menu: MenuState | null,
-  board: Board | null,
-  setBoard: (board: Board) => void,
+  board: GameState | null,
+  setGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void,
-  endTurn: () => void
 ) {
-  if (!board || !menu) return;
+  if (!board) return;
 
-  const tile = board.tiles[menu.tileIdx!];
+  console.log('Action: fight tile');
+
   const player = board.activePlayer;
-  const tileLevel = tile.level;
+  const tile = board.tiles[player.position];
+  const tileLevel = tile.level ?? 1;
   const defence = tile.defences[tileLevel] || 0;
 
   const dice = new Dice();
@@ -30,21 +31,20 @@ export function fightTile(
     say(`Battle for the ${tile.name} was lost, ${defence}🧍 died`, 'error');
     player.units -= defence;
 
-    setMenu({ type: 'end-turn'});
+    setMenu({ type: 'end-turn' });
   } else {
     say(`${player.name} razed the ${tile.name} with high price of  ${defence}🧍`, 'success');
     player.units -= defence;
 
     tile.level = 1;
     tile.owner = undefined;
-    // Remove from previous owner's ownedTiles
-    board.players.forEach((p) => {
-      p.ownedTiles = p.ownedTiles.filter((idx) => idx !== menu.tileIdx);
+
+    board.players.forEach((p: Player) => {
+      p.ownedTiles = p.ownedTiles.filter((idx: number) => idx !== player.position);
     });
 
-    setMenu({ type: 'main'});
+    setMenu({ type: 'buy' });
   }
 
-   setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
 }
-

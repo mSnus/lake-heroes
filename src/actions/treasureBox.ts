@@ -1,20 +1,25 @@
-import { Board } from '../game/Board';
+import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 import { say } from '../utils/say';
 
 export function handleTreasureBox(
-  board: Board | null,
-  setBoard: (board: Board) => void,
+  board: GameState | null,
+  setGameState: (board: GameState) => void,
   endTurn: () => void
 ) {
   if (!board) return;
+  console.log('Action: treasure box');
+
   const dice = new Dice();
   const roll = dice.roll();
+  
   const goldReward = roll * 100;
   const player = board.activePlayer;
+  
   player.gold += goldReward;
-  setBoard(Object.setPrototypeOf({ ...board }, Board.prototype));
+  
+  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
   say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward} GP!`, 'success');
+  
   endTurn();
 }
-
