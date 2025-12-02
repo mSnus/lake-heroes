@@ -1,6 +1,6 @@
 .game-menu {
   position: relative;
-  width: 100vw;
+  width: fit-content;
   min-height: 3rem;
   padding: 8px;
 }
@@ -19,8 +19,8 @@
   color: black;
   border-radius: 6px;
   width: fit-content;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
   padding: 12px 16px;
   cursor: pointer;
 }

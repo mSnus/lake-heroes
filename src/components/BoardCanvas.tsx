@@ -75,7 +75,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         const handleTileClick = () => {
           if (tile) {
             window.dispatchEvent(
-              new CustomEvent('tileClicked', { detail: { tileIndex: i, tile } })
+              new CustomEvent('setViewedTitle', { detail: { tileIndex: i, tile } })
             );
           }
         };

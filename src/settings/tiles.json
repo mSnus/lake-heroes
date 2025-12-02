@@ -512,7 +512,7 @@
     "upgradePrices": {},
     "bonuses": {},
     "defences": {},
-    "description": "Roll dice 🎲 to receive extra 🟡" 
+    "description": "Chance to receive 🟡🟡🟡"
   },
   {
     "group": "Special",
@@ -523,7 +523,7 @@
     "upgradePrices": {},
     "bonuses": {},
     "defences": {},
-    "description": "Roll dice 🎲 to hire extra 🧍"
+    "description": "Chance to hire 🧍🧍🧍"
   },
   {
     "group": "Special",
@@ -556,6 +556,6 @@
     "upgradePrices": {},
     "bonuses": {},
     "defences": {},
-    "description": "Roll dice 🎲 to receive or lose 🟡 and 🧍"  
+    "description": "Roll dice 🎲 to receive or lose 🟡 and 🧍"
   }
 ]

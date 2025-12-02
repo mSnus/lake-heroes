@@ -1,4 +1,5 @@
 import { GameState } from '../game/GameState';
+import { Player } from '../game/Player';
 import { MenuState } from '../types/menuState';
 
 export function payFee(
@@ -11,9 +12,9 @@ export function payFee(
   const tile = board.tiles[menu.tileIdx!];
   const player = board.activePlayer;
   const tileLevel = tile.level ?? 1;
-  const owner = board.players.find((p) => p.name === tile.owner);
+  const owner = board.players.find((p: Player) => p.name === tile.owner);
 
-  const fee = tile.bonuses[tileLevel] || 0;
+  const fee = tile.defences[tileLevel] * 10 || 0;
 
   if (player.gold >= fee && owner) {
     player.gold -= fee;

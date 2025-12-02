@@ -141,7 +141,7 @@
 .player-wrapper {
   position: absolute;
   z-index: 3;
-  transform: translate(50%, 60%);
+  transform: translate(30%, 50%);
   display: flex;
   gap: 6px;
   pointer-events: auto;

@@ -13,6 +13,7 @@ export class GameState {
   turns: number = 0;
   gameStarted: boolean = false;
   turnPhase: TurnPhase;
+  gameMessage: string = '';
 
   constructor(tiles: Tile[], players: Player[]) {
     this.tiles = tiles;

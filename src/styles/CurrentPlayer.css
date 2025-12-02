@@ -1,10 +1,7 @@
 .player-pane {
-  width: 100vw;
-  padding: 12px;
-  border-radius: 8px;
+  width: fit-content;
   display: flex;
   justify-content: center;
-  min-height: 2rem;
   gap: 12px;
   align-items: center;
 }

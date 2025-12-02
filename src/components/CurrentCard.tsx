@@ -14,7 +14,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ board }) => {
   const shouldDisplay = (current.isOwnable && !current.isOwned()) || displayedTile !== current;
 
   React.useEffect(() => {
-    function onTileClicked(e: Event) {
+    function onsetViewedTitle(e: Event) {
       const detail = (e as CustomEvent).detail;
 
       if (detail && detail.tile) {
@@ -23,8 +23,8 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ board }) => {
         setDisplayedTile(null);
       }
     }
-    window.addEventListener('tileClicked', onTileClicked as EventListener);
-    return () => window.removeEventListener('tileClicked', onTileClicked as EventListener);
+    window.addEventListener('setViewedTitle', onsetViewedTitle as EventListener);
+    return () => window.removeEventListener('setViewedTitle', onsetViewedTitle as EventListener);
   }, []);
 
   return (

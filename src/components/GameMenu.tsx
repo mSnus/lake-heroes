@@ -45,7 +45,6 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
 
   return (
     <div className="game-menu">
-      {title && <h3>{title}</h3>}
       <div>
         {items.map((item, i) => {
           return (

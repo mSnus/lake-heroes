@@ -12,8 +12,18 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ board }) => {
 
   return (
     <div className="player-pane">
-      <div className="player-marker-indicator" style={{ background: activePlayer.color }} />
-      <div style={{ fontWeight: 700 }}>{activePlayer.name}</div>
+      <div
+        style={{
+          fontWeight: 500,
+          borderColor: activePlayer.color,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '4px',
+          paddingBottom: '4px',
+          paddingTop: '4px',
+        }}
+      >
+        {activePlayer.name}
+      </div>
       <div>
         <strong>{activePlayer.gold ?? 0} 🟡</strong>
       </div>

@@ -43,7 +43,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
       activePlayer.units >= currentTile.priceUnits
     ) {
       items.push({
-        action: 'buy-tile',
+        action: 'buy-tile' as MenuAction,
         label: `Buy for ${currentTile.priceGold} 🟡 ${currentTile.priceUnits} 🧍`,
         onClick: () => {
           buyTile(board, setGameState);
@@ -65,7 +65,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'buy') {
-    const tile = board.tiles[menu.tileIdx!];
+    const tile = currentTile;
     return (
       <GameMenu
         items={[
@@ -77,7 +77,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
               setMenu({ type: 'end-turn' });
             },
           },
-          { action: 'end-turn', label: 'Pass', onClick: handleEndTurn },
+          { action: 'end-turn', label: 'End turn ⏳', onClick: handleEndTurn },
         ]}
       ></GameMenu>
     );
@@ -92,33 +92,24 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'fee-or-fight') {
-    const tile = board.tiles[menu.tileIdx!];
-    const tileLevel = tile.level;
-    const fee = tile.bonuses[tileLevel] || 0;
-    const defence = tile.defences[tileLevel] || 0;
+    const tileLevel = currentTile.level;
+    const fee = currentTile.defences[tileLevel] * 10 || 0;
+    const defence = currentTile.defences[tileLevel] || 0;
     const items = [
       {
-        label: `Pay Fee ${fee} 🟡`,
+        label: `Pay fee ${fee} 🟡`,
         action: 'pay-fee' as MenuAction,
         onClick: () => payFee(menu, board, setGameState, handleEndTurn),
         disabled: activePlayer.gold < fee,
       },
       {
-        label: `Fight ${defence} 🧍`,
+        label: `Send ${defence}🧍 to raze`,
         action: 'fight' as MenuAction,
         onClick: () => fightTile(board, setGameState, setMenu),
         disabled: activePlayer.units < defence,
       },
     ];
-    return (
-      <GameMenu items={items}>
-        <>
-          <div>
-            This tile is owned by {tile.owner}.<br />
-          </div>
-        </>
-      </GameMenu>
-    );
+    return <GameMenu items={items}></GameMenu>;
   }
 
   return null;

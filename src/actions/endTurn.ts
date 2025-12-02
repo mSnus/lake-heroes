@@ -12,6 +12,9 @@ export function endTurn(
   console.log('Action: end turn');
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
+  board.turns += 1;
+  board.gameMessage = '';
+
   setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
 
   const nextPlayer = board.activePlayer;
@@ -19,9 +22,9 @@ export function endTurn(
     nextPlayer.turnsToSkip--;
     say(`${nextPlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
+  } else {
+    setMenu({ type: 'main' });
   }
 
-  window.dispatchEvent(new CustomEvent('tileClicked', {}));
-  setMenu({ type: 'main' });
-  board.turns += 1;
+  window.dispatchEvent(new CustomEvent('setViewedTitle', {}));
 }

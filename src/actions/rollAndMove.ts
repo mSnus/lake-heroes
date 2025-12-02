@@ -2,7 +2,7 @@ import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 import { MenuState } from '../types/menuState';
 import { handleTreasureBox } from './treasureBox';
-import { handleRogueCamp } from './tavern';
+import { handleTavern } from './tavern';
 import { handlePrison } from './prison';
 import { handleSphynx } from './sphynx';
 import { handleKingCastle } from './king';
@@ -26,10 +26,11 @@ export async function rollAndMove(
   const nextTileIdx = (player.position + roll) % BOARD_TILE_COUNT;
   const nextTile = board.tiles[nextTileIdx];
 
+  board.gameMessage = '';
   say(`${player.name} rolled ${roll} and went to ${nextTile.name}!`, 'info');
   setMenu({ type: 'wait' });
 
-  window.dispatchEvent(new CustomEvent('tileClicked', {}));
+  window.dispatchEvent(new CustomEvent('setViewedTitle', {}));
 
   // Step-by-step move with 0.2s delay per tile
   for (let step = 1; step <= roll; step++) {
@@ -54,11 +55,11 @@ export async function rollAndMove(
   const tile = board.tiles[tileIdx];
 
   if (tile.name.includes('Treasure')) {
-    handleTreasureBox(board, setGameState, endTurn);
+    handleTreasureBox(board, setGameState, setMenu);
     return;
   }
   if (tile.name.includes('Tavern')) {
-    handleRogueCamp(board, setGameState, endTurn);
+    handleTavern(board, setGameState, setMenu);
     return;
   }
   if (tile.name.includes('Prison')) {
@@ -66,11 +67,11 @@ export async function rollAndMove(
     return;
   }
   if (tile.name.includes('Sphynx')) {
-    handleSphynx(board, setGameState, endTurn);
+    handleSphynx(board, setGameState, setMenu);
     return;
   }
   if (tile.name.includes('King')) {
-    handleKingCastle(board, setGameState, endTurn);
+    handleKingCastle(board, setGameState, setMenu);
     return;
   }
 

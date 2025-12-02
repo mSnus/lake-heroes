@@ -48,9 +48,6 @@ export const TileCard: React.FC<{ tile: Tile | undefined; mode?: 'short' | 'full
   const class2 = (tile.level ?? 0) == 2 ? 'tc-td level-highlighted' : 'tc-td';
   const class3 = (tile.level ?? 0) == 3 ? 'tc-td level-highlighted' : 'tc-td';
 
-  console.log('TileCard render', tile.name, tile.level);
-
-  console.log('TileCard styles', class1, class2, class3);
   return (
     <div className="tile-card">
       <div className="tile-card-header" style={{ background: groupColor }}>
@@ -74,27 +71,21 @@ export const TileCard: React.FC<{ tile: Tile | undefined; mode?: 'short' | 'full
               </thead>
               <tbody>
                 <tr>
-                  <td className={class1}>
-                    {pricelevel1}
-                  </td>
+                  <td className={class1}>{pricelevel1}</td>
                   <td className={class1}>
                     +{bonus(1)} {bonusType === 'gold' ? '🟡' : '🧍'}
                   </td>
                   <td className={class1}>{defence(1)} 🧍</td>
                 </tr>
                 <tr>
-                  <td className={class2}>
-                    {pricelevel2}
-                  </td>
+                  <td className={class2}>{pricelevel2}</td>
                   <td className={class2}>
                     +{bonus(2)} {bonusType === 'gold' ? '🟡' : '🧍'}
                   </td>
                   <td className={class2}>{defence(2)} 🧍</td>
                 </tr>
                 <tr>
-                  <td className={class3}>
-                    {pricelevel3}
-                  </td>
+                  <td className={class3}>{pricelevel3}</td>
                   <td className={class3}>
                     +{bonus(3)} {bonusType === 'gold' ? '🟡' : '🧍'}
                   </td>

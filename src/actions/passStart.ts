@@ -37,10 +37,11 @@ export function passStart(board: GameState | null, setGameState: (board: GameSta
   const parts: string[] = [];
   parts.push(`+${baseGold} GP`);
 
-  if (goldProfit > 0) parts.push(`+${goldProfit}🟡 from own tiles`);
-  if (unitsProfit > 0) parts.push(`+${unitsProfit}🧍 from own tiles`);
-  
-  const summary = parts.join(', ');
-  
+  if (goldProfit > 0) parts.push(`${goldProfit}🟡`);
+  if (unitsProfit > 0) parts.push(`${unitsProfit}🧍`);
+
+  const summary = parts.join(' and ');
+
   say(`${player.name} receives ${summary}`, 'success');
+  board.gameMessage = `King rewards you with ${summary}.`;
 }

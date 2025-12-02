@@ -4,9 +4,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/App.css';
 import './styles/GameMenu.css';
 import './styles/dice.css';
-import { Tile } from './game/Tile';
+
 import { Player } from './game/Player';
-import { GameState } from './game/GameState';
+import { GameState, TurnPhase } from './game/GameState';
 import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
@@ -20,10 +20,10 @@ import { isMobileLayout } from './components/board/common';
 import { DiceWidget } from './components/DiceWidget';
 import ResetGameButton from './components/ResetGameButton';
 import { Dice } from './game/Dice';
-import { TurnPhase } from './game/GameState';
 import { CurrentTile } from './components/CurrentCard';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
+import GameMessage from './components/GameMessage';
 
 function App() {
   const [board, setGameState] = useState<GameState | null>(null);
@@ -136,18 +136,25 @@ function App() {
           <DiceWidget board={board} setGameState={setGameState} />
           <CurrentTile board={board} />
           <BoardCanvas board={board} />
-          <CurrentPlayer board={board} />
 
-          {menu ? (
-            <GameMenuRenderer
-              board={board}
-              menu={menu}
-              setMenu={setMenu}
-              setGameState={setGameState}
-            />
-          ) : (
-            <div className="game-menu"></div>
-          )}
+          <div className="board-controls-wrapper">
+            <GameMessage message={board.gameMessage} />
+
+            <div className="board-controls">
+              <CurrentPlayer board={board} />
+
+              {menu ? (
+                <GameMenuRenderer
+                  board={board}
+                  menu={menu}
+                  setMenu={setMenu}
+                  setGameState={setGameState}
+                />
+              ) : (
+                <div className="game-menu"></div>
+              )}
+            </div>
+          </div>
 
           <PlayerStatsTable board={board} setGameState={setGameState} />
         </div>

@@ -15,6 +15,7 @@ export function gameStart(board: GameState): void {
 
   board.turns = 0;
   board.gameStarted = true;
+  board.gameMessage = 'New game started! Good luck to all players.';
 
   say('New game started! Good luck to all players!', 'success');
 }

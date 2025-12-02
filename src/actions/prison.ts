@@ -8,11 +8,15 @@ export function handlePrison(
   setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
-  console.log('Action: prison');
 
-  const player = board.activePlayer;
-  player.turnsToSkip = 1;
+  const player = board.activePlayerIndex;
+  board.players[player].turnsToSkip = 1;
+
+  console.log('Action: prison for', board.players[player].name);
+
+
   setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
-  say(`${player.name} landed on Prison! Next turn will be skipped.`, 'warning');
-  setMenu({ type: 'move-result', diceRoll: 0, passedStart: false });
+  say(`${board.players[player].name} landed on Prison! Next turn will be skipped.`, 'warning');
+  
+  setMenu({ type: 'move-result' });
 }

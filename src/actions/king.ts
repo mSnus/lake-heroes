@@ -1,11 +1,12 @@
 import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 import { say } from '../utils/say';
+import { MenuState } from '../types/menuState';
 
 export function handleKingCastle(
   board: GameState | null,
   setGameState: (board: GameState) => void,
-  endTurn: () => void
+  setMenu: (menu: MenuState) => void,
 ) {
   if (!board) return;
   if (board.turns === 0) return;
