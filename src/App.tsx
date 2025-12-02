@@ -114,6 +114,19 @@ function App() {
     if (board) saveToStorage('board-state', board);
   }, [board]);
 
+  const updateGameState = (gameState: GameState | null): void => {
+  if (!gameState) return;
+
+  const newGameState = Object.assign(new GameState(gameState.tiles || [], gameState.players || []), {
+    ...gameState,
+  }) as GameState;
+
+  // Preserve dice instance if present on the original gameState
+  newGameState.dice = (gameState as any).dice || new Dice();
+
+  setGameState(newGameState);
+}
+
   return (
     <div className="App">
       <ToastContainer
@@ -148,7 +161,7 @@ function App() {
                   board={board}
                   menu={menu}
                   setMenu={setMenu}
-                  setGameState={setGameState}
+                  updateGameState={updateGameState}
                 />
               ) : (
                 <div className="game-menu"></div>

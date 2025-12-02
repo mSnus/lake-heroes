@@ -5,7 +5,7 @@ export type MenuAction = 'roll-dice' | 'end-turn' | 'buy-tile' | 'fight' | 'pay-
 interface MenuItem {
   label: string;
   action: MenuAction;
-  onClick: () => void;
+  onClick: () => void | Promise<void>;
   disabled?: boolean;
 }
 

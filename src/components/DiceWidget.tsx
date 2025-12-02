@@ -4,30 +4,14 @@ import { Dice } from '../game/Dice';
 
 interface Props {
   board: GameState | null;
-  setGameState: React.Dispatch<React.SetStateAction<GameState | null>>;
+  updateGameState: (board: GameState) => void;
 }
 
-export const DiceWidget: React.FC<Props> = ({ board, setGameState }) => {
+export const DiceWidget: React.FC<Props> = ({ board, updateGameState }) => {
   const [side, setSide] = useState<number>(1);
   const [reRoll, setReRoll] = useState(false);
   const animationTimeout = useRef<number | null>(null);
 
-  // helper to commit mutated board while preserving Dice instance and prototype
-  function commitGameStateChange(mutated: GameState) {
-    const newGameState = Object.assign(new GameState(mutated.tiles || [], mutated.players || []), {
-      ...mutated,
-    }) as GameState;
-
-    // preserve dice instance from current board if available
-    newGameState.dice = board && board.dice ? board.dice : new Dice();
-
-    // if mutated carried a plain dice object with visible flag, copy it to real Dice
-    if ((mutated as any).dice && typeof (mutated as any).dice.visible !== 'undefined') {
-      newGameState.dice.visible = !!(mutated as any).dice.visible;
-    }
-
-    setGameState(newGameState);
-  }
 
   useEffect(() => {
     function onDiceRolled(e: Event) {
@@ -43,7 +27,7 @@ export const DiceWidget: React.FC<Props> = ({ board, setGameState }) => {
         // hide dice after animation by mutating board.dice.visible and committing
         if (board && board.dice) {
           board.dice.visible = false;
-          commitGameStateChange(board);
+          updateGameState(board);
         }
         // notify that dice animation stopped
         window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: value }));
@@ -61,14 +45,14 @@ export const DiceWidget: React.FC<Props> = ({ board, setGameState }) => {
       // Show dice in UI then trigger roll via board.dice
       if (board.dice) {
         board.dice.visible = true;
-        commitGameStateChange(board);
+        updateGameState(board);
         board.dice.roll();
       } else {
         const d = new Dice();
         d.visible = true;
         if (board) {
           (board as any).dice = d;
-          commitGameStateChange(board);
+          updateGameState(board);
           d.roll();
         }
       }
@@ -77,22 +61,6 @@ export const DiceWidget: React.FC<Props> = ({ board, setGameState }) => {
     return () => window.removeEventListener('startDiceRoll', onStart as EventListener);
   }, [board]); // depends on board to access dice instance
 
-  function handleClick() {
-    if (!board) return;
-    if (board.dice) {
-      board.dice.visible = true;
-      commitGameStateChange(board);
-      board.dice.roll();
-    } else {
-      const d = new Dice();
-      d.visible = true;
-      if (board) {
-        (board as any).dice = d;
-        commitGameStateChange(board);
-        d.roll();
-      }
-    }
-  }
 
   if (!board || !board.dice || !board.dice.visible) return null;
 
@@ -102,7 +70,6 @@ export const DiceWidget: React.FC<Props> = ({ board, setGameState }) => {
         id="dice"
         data-side={String(side)}
         className={reRoll ? 'reRoll' : ''}
-        onClick={handleClick}
         style={{ width: 90, height: 90, transformStyle: 'preserve-3d' }}
       >
         <div className="sides side-1">

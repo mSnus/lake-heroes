@@ -12,25 +12,25 @@ interface GameMenuRendererProps {
   board: GameState;
   menu: MenuState;
   setMenu: (menu: MenuState) => void;
-  setGameState: (board: GameState) => void;
+  updateGameState: (board: GameState) => void;
 }
 
 export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   board,
   menu,
   setMenu,
-  setGameState,
+  updateGameState,
 }) => {
   const activePlayer = board.activePlayer;
   const currentTile = board.tiles[activePlayer.position];
 
-  const handleEndTurn = () => endTurn(board, setGameState, setMenu);
+  const handleEndTurn = () => endTurn(board, updateGameState, setMenu);
 
   if (menu.type === 'main') {
     let items = [
       {
         label: 'Roll Dice 🎲',
-        onClick: () => rollAndMove(board, setGameState, setMenu, handleEndTurn),
+        onClick: () => rollAndMove(board, updateGameState, setMenu),
         action: 'roll-dice',
       },
     ];
@@ -46,7 +46,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         action: 'buy-tile' as MenuAction,
         label: `Buy for ${currentTile.priceGold} 🟡 ${currentTile.priceUnits} 🧍`,
         onClick: () => {
-          buyTile(board, setGameState);
+          buyTile(board, updateGameState);
         },
       });
     }
@@ -73,7 +73,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
             action: 'buy-tile',
             label: `Buy for ${tile.priceGold}🟡 ${tile.priceUnits}🧍`,
             onClick: () => {
-              buyTile(board, setGameState);
+              buyTile(board, updateGameState);
               setMenu({ type: 'end-turn' });
             },
           },
@@ -93,19 +93,19 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
 
   if (menu.type === 'fee-or-fight') {
     const tileLevel = currentTile.level;
-    const fee = currentTile.defences[tileLevel] * 10 || 0;
-    const defence = currentTile.defences[tileLevel] || 0;
+    const fee = currentTile.defences[tileLevel ?? 1] * 10 || 0;
+    const defence = currentTile.defences[tileLevel ?? 1] || 0;
     const items = [
       {
         label: `Pay fee ${fee} 🟡`,
         action: 'pay-fee' as MenuAction,
-        onClick: () => payFee(menu, board, setGameState, handleEndTurn),
+        onClick: () => payFee(menu, board, updateGameState, handleEndTurn),
         disabled: activePlayer.gold < fee,
       },
       {
         label: `Send ${defence}🧍 to raze`,
         action: 'fight' as MenuAction,
-        onClick: () => fightTile(board, setGameState, setMenu),
+        onClick: () => fightTile(board, updateGameState, setMenu),
         disabled: activePlayer.units < defence,
       },
     ];

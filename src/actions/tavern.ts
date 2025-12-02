@@ -5,8 +5,8 @@ import { MenuState } from '../types/menuState';
 
 export function handleTavern(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
+  updateGameState: (board: GameState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
   console.log('Action: tavern');
@@ -18,8 +18,8 @@ export function handleTavern(
   player.units += unitsReward;
 
   board.gameMessage = ` ${unitsReward}🧍 joined your mighty forces`;
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  updateGameState(board);
   say(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`, 'success');
-  
+
   setMenu({ type: 'end-turn' });
 }

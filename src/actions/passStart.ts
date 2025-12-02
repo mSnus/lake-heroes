@@ -1,12 +1,12 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { UNITS_START, MONEY_PASS_START } from '../components/board/common';
+import { MONEY_PASS_START } from '../components/board/common';
 
-export function passStart(board: GameState | null, setGameState: (board: GameState) => void) {
+export function passStart(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
   const player = board.activePlayer;
 
-  console.log('Action: pass start');
+  console.log('Action: pass start for', player.name);
 
   const baseGold = MONEY_PASS_START;
 
@@ -30,9 +30,6 @@ export function passStart(board: GameState | null, setGameState: (board: GameSta
   player.gold += baseGold + goldProfit;
   player.units += unitsProfit;
 
-  // Persist state
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
-
   // Build toast message summarizing rewards
   const parts: string[] = [];
   parts.push(`+${baseGold} GP`);
@@ -44,4 +41,6 @@ export function passStart(board: GameState | null, setGameState: (board: GameSta
 
   say(`${player.name} receives ${summary}`, 'success');
   board.gameMessage = `King rewards you with ${summary}.`;
+
+  updateGameState(board);
 }

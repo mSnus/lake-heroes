@@ -5,8 +5,8 @@ import { MenuState } from '../types/menuState';
 
 export function handleTreasureBox(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
+  updateGameState: (board: GameState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
   console.log('Action: treasure box');
@@ -20,7 +20,7 @@ export function handleTreasureBox(
   player.gold += goldReward;
 
   board.gameMessage = `You found a treasure worth ${goldReward}🟡`;
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  updateGameState(board);
   say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward}🟡!`, 'success');
 
   setMenu({ type: 'end-turn' });

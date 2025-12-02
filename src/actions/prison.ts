@@ -4,7 +4,7 @@ import { say } from '../utils/say';
 
 export function handlePrison(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
@@ -14,9 +14,8 @@ export function handlePrison(
 
   console.log('Action: prison for', board.players[player].name);
 
-
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  updateGameState(board);
   say(`${board.players[player].name} landed on Prison! Next turn will be skipped.`, 'warning');
-  
+
   setMenu({ type: 'move-result' });
 }

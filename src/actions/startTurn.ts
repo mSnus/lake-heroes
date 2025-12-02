@@ -4,7 +4,7 @@ import { say } from '../utils/say';
 
 export function startTurn(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;

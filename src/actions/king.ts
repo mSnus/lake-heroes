@@ -5,7 +5,7 @@ import { MenuState } from '../types/menuState';
 
 export function handleKingCastle(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void,
 ) {
   if (!board) return;
@@ -18,7 +18,7 @@ export function handleKingCastle(
   const unitsReward = roll;
   const player = board.activePlayer;
   player.units += unitsReward;
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  updateGameState(board);
   say(`King provides ${player.name} with ${unitsReward}🧍!`, 'success');
-  endTurn();
+  setMenu({ type: 'end-turn' });
 }

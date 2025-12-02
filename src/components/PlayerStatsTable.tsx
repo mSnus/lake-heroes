@@ -10,10 +10,10 @@ import { isMobileLayout } from './board/common';
 
 interface Props {
   board: GameState;
-  setGameState: React.Dispatch<React.SetStateAction<GameState | null>>;
+  updateGameState: (board: GameState) => void;
 }
 
-export const PlayerStatsTable: React.FC<Props> = ({ board, setGameState }) => {
+export const PlayerStatsTable: React.FC<Props> = ({ board, updateGameState }) => {
   const activePlayer = board.activePlayer as Player;
 
   // Map owned tiles and keep their indices
@@ -27,14 +27,6 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setGameState }) => {
 
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  // Helper to commit board changes preserving GameState prototype
-  function commitGameStateChange(mutatedGameState: GameState) {
-    const newGameState = Object.assign(
-      new GameState(mutatedGameState.tiles, mutatedGameState.players),
-      mutatedGameState
-    ) as GameState;
-    setGameState(newGameState);
-  }
 
   function handleUpgrade(tile: Tile, tileIdx: number) {
     const currentLevel = tile.level || 1;
@@ -55,14 +47,14 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setGameState }) => {
     activePlayer.units = (activePlayer.units || 0) - (nextPrice.units || 0);
     tile.level = nextLevel;
     say(`${activePlayer.name} upgraded ${tile.name} to level ${nextLevel}`, 'info');
-    commitGameStateChange(board);
+    updateGameState(board);
     setSelectedIdx(null);
   }
 
   async function handleSell(tile: Tile, tileIdx: number) {
     const refunds = sellTile(board, activePlayer, tileIdx);
 
-    commitGameStateChange(board);
+    updateGameState(board);
 
     say(
       `${activePlayer.name} sold ${tile.name} and received ${refunds.gold}🟡 and ${refunds.units}🧍`,

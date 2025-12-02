@@ -4,9 +4,8 @@ import { say } from '../utils/say';
 
 export function afterMoveLogic(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void,
-  endTurn: () => void
 ) {
   if (!board) return;
 
@@ -18,7 +17,7 @@ export function afterMoveLogic(
 
   // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
   if (!tile.isOwnable) {
-    endTurn();
+    setMenu({ type: 'end-turn' });
     return;
   }
 
@@ -40,12 +39,10 @@ export function afterMoveLogic(
     const defence = tile.defences[tile.level ?? 1] || 0;
 
     if (player.gold < fee && player.units < defence) {
-      say(
-        `${player.name} cannot afford to pay the fee or fight the defences on ${tile.name}.`,
-        'error'
-      );
+      //Death
+      say(`${player.name} cannot afford to pay the fee or fight the defences on ${tile.name}.`, 'error');
       board.gameMessage = `${player.name} is technically dead.`;
-      setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+      updateGameState(board);
       setMenu({ type: 'end-turn' });
     } else {
       setMenu({ type: 'fee-or-fight' });
@@ -54,5 +51,5 @@ export function afterMoveLogic(
   }
 
   // Else, just end turn
-  endTurn();
+  setMenu({ type: 'end-turn' });
 }

@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 
-export function buyTile(board: GameState | null, setGameState: (board: GameState) => void) {
+export function buyTile(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   console.log('Action: buy tile');
@@ -13,6 +13,6 @@ export function buyTile(board: GameState | null, setGameState: (board: GameState
     player.units -= tile.priceUnits;
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
-    setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+    updateGameState(board);
   }
 }

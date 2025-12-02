@@ -6,7 +6,7 @@ import { Player } from '../game/Player';
 
 export function fightTile(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void,
 ) {
   if (!board) return;
@@ -46,5 +46,5 @@ export function fightTile(
     setMenu({ type: 'buy' });
   }
 
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  updateGameState(board);
 }

@@ -14,9 +14,8 @@ const BOARD_TILE_COUNT = 20;
 
 export async function rollAndMove(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
-  endTurn: () => void
+  updateGameState: (board: GameState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
   const dice = new Dice();
@@ -28,7 +27,6 @@ export async function rollAndMove(
 
   board.gameMessage = '';
   say(`${player.name} rolled ${roll} and went to ${nextTile.name}!`, 'info');
-  setMenu({ type: 'wait' });
 
   window.dispatchEvent(new CustomEvent('setViewedTitle', {}));
 
@@ -37,13 +35,11 @@ export async function rollAndMove(
     const nextPos = (player.position + 1) % BOARD_TILE_COUNT;
     const willWrap = player.position + 1 >= BOARD_TILE_COUNT;
 
-    // Advance the marker by one tile
     player.position = nextPos;
-    setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+    updateGameState(board);
 
-    // If we just wrapped around, process passing start
     if (willWrap) {
-      passStart(board, setGameState);
+      passStart(board, updateGameState);
     }
 
     // Delay before the next step to visualize movement
@@ -55,26 +51,26 @@ export async function rollAndMove(
   const tile = board.tiles[tileIdx];
 
   if (tile.name.includes('Treasure')) {
-    handleTreasureBox(board, setGameState, setMenu);
+    handleTreasureBox(board, updateGameState, setMenu);
     return;
   }
   if (tile.name.includes('Tavern')) {
-    handleTavern(board, setGameState, setMenu);
+    handleTavern(board, updateGameState, setMenu);
     return;
   }
   if (tile.name.includes('Prison')) {
-    handlePrison(board, setGameState, setMenu);
+    handlePrison(board, updateGameState, setMenu);
     return;
   }
   if (tile.name.includes('Sphynx')) {
-    handleSphynx(board, setGameState, setMenu);
+    handleSphynx(board, updateGameState, setMenu);
     return;
   }
   if (tile.name.includes('King')) {
-    handleKingCastle(board, setGameState, setMenu);
+    handleKingCastle(board, updateGameState, setMenu);
     return;
   }
 
   // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
-  afterMoveLogic(board, setGameState, setMenu, endTurn);
+  afterMoveLogic(board, updateGameState, setMenu);
 }

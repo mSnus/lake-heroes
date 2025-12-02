@@ -13,15 +13,15 @@ import { MenuState } from '../types/menuState';
  * After applying effect, end the turn.
  */
 export function handleSphynx(
-  board: GameState | null,
-  setGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
+  gameState: GameState | null,
+  updateGameState: (board: GameState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
-  if (!board) return;
+  if (!gameState) return;
   const dice = new Dice();
   const roll = dice.roll();
 
-  const player = board.activePlayer;
+  const player = gameState.activePlayer;
   let message = `${player.name} met the Sphynx and rolled ${roll}. `;
 
   if (roll === 1 || roll === 2) {
@@ -32,7 +32,7 @@ export function handleSphynx(
 
     player.gold -= loss;
     message += `Lost half of gold: -${loss}🟡`;
-    board.gameMessage = `You escape the Sphynx losing ${loss}🟡.`;
+    gameState.gameMessage = `You escape the Sphynx losing ${loss}🟡.`;
   } else if (roll === 3 || roll === 4) {
     // Lose 20% units, rounded up to at least 1, but not below zero
     const raw = Math.ceil(player.units * 0.2);
@@ -41,21 +41,22 @@ export function handleSphynx(
 
     player.units -= loss;
     message += `Lost ${loss}🧍 (20%).`;
-    board.gameMessage = `Sphynx eats ${loss}🧍, but you escape.`;
+    gameState.gameMessage = `Sphynx eats ${loss}🧍, but you escape.`;
   } else if (roll === 5) {
     message += `Nothing happens.`;
-    board.gameMessage = `Sphynx remained silent. Nothing happened.`;
+    gameState.gameMessage = `Sphynx remained silent. Nothing happened.`;
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100
     const bonusBase = player.gold * 0.2;
     const gain = Math.ceil(bonusBase / 100) * 100;
     player.gold += gain;
     message += `Received ${gain}🟡 (20% rounded up to 100).`;
-    board.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
+    gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
   }
 
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  updateGameState(gameState);
+
   say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');
-  
+
   setMenu({ type: 'end-turn' });
 }

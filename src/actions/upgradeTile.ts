@@ -3,7 +3,7 @@ import { GameState } from '../game/GameState';
 export function upgradeTile(
   tileIdx: number,
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   endTurn: () => void
 ) {
   if (!board) return;
@@ -11,7 +11,7 @@ export function upgradeTile(
 
   const player = board.activePlayer;
   const tile = board.tiles[tileIdx];
-  
+
   if (tile.owner !== player.name) return;
 
   const currentlevel = tile.level;
@@ -27,7 +27,7 @@ export function upgradeTile(
     player.gold -= price.gold;
     player.units -= price.units;
     tile.level = nextlevel;
-    setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+    updateGameState(board);
   }
   endTurn();
 }

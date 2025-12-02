@@ -5,7 +5,7 @@ import { MenuState } from '../types/menuState';
 export function payFee(
   menu: MenuState | null,
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   endTurn: () => void
 ) {
   if (!board || !menu) return;
@@ -19,7 +19,7 @@ export function payFee(
   if (player.gold >= fee && owner) {
     player.gold -= fee;
     owner.gold += fee;
-    setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+    updateGameState(board);
   }
   endTurn();
 }

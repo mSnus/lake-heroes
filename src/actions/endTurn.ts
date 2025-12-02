@@ -4,27 +4,26 @@ import { say } from '../utils/say';
 
 export function endTurn(
   board: GameState | null,
-  setGameState: (board: GameState) => void,
+  updateGameState: (board: GameState) => void,
   setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
 
-  console.log('Action: end turn');
-
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.turns += 1;
   board.gameMessage = '';
+  console.log('Action: end turn for', board.activePlayer.name);
 
-  setGameState(Object.setPrototypeOf({ ...board }, GameState.prototype));
+  if (board.activePlayer.turnsToSkip > 0) {
+    board.activePlayer.turnsToSkip--;
 
-  const nextPlayer = board.activePlayer;
-  if (nextPlayer.turnsToSkip > 0) {
-    nextPlayer.turnsToSkip--;
-    say(`${nextPlayer.name} dwells in prison and skips the turn`, 'info');
+    say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
   } else {
     setMenu({ type: 'main' });
   }
+
+  updateGameState(board);
 
   window.dispatchEvent(new CustomEvent('setViewedTitle', {}));
 }
