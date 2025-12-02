@@ -1,4 +1,4 @@
-export type TurnPhase = 'before-move' | 'rolling' | 'after-move';
+export type TurnPhase = 'before-move' | 'rolling' | 'moving' | 'after-move';
 
 import { Player } from './Player';
 import { Tile } from './Tile';

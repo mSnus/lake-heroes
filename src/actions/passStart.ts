@@ -40,7 +40,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   const summary = parts.join(' and ');
 
   say(`${player.name} receives ${summary}`, 'success');
-  board.gameMessage = `King rewards you with ${summary}.`;
+  board.gameMessage = `King rewards you with ${summary} for your properties`;
 
   updateGameState(board);
 }

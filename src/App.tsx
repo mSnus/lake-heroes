@@ -146,7 +146,7 @@ function App() {
             justifyContent: 'flex-start',
           }}
         >
-          <DiceWidget board={board} setGameState={setGameState} />
+          <DiceWidget board={board} />
           <CurrentTile board={board} />
           <BoardCanvas board={board} />
 
@@ -169,7 +169,7 @@ function App() {
             </div>
           </div>
 
-          <PlayerStatsTable board={board} setGameState={setGameState} />
+          <PlayerStatsTable board={board} updateGameState={updateGameState} />
         </div>
       )}
 

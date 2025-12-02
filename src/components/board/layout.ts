@@ -2,7 +2,7 @@ import { shuffle } from './common';
 
 // Place tiles according to rules:
 // - Fixed placements (1-based positions):
-//   #1 King Castle, #8 Treasure box, #13 Prison, #17 Treasure box, #20 Freelancers' camp
+//   #1 King Castle, #8 Treasure box, #13 Prison, #17 Treasure box, #20 Tavern
 // - Remaining tiles placed from a randomized stack
 // - No adjacent tiles of the same group unless there are no alternatives left
 // - If not enough tiles to fill, leave remaining slots blank (undefined)
@@ -16,12 +16,12 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   const kingCastle = byName('King Castle');
   const prison = byName('Prison');
   const treasureBox = byName('Treasure box');
-  const freelancers = byName('Tavern');
+  const tavern = byName('Tavern');
 
   if (!kingCastle) throw new Error('King Castle tile not found');
   if (!treasureBox) throw new Error('Treasure box tile not found');
   if (!prison) throw new Error('Prison tile not found');
-  if (!freelancers) throw new Error("Freelancers' camp tile not found");
+  if (!tavern) throw new Error('Tavern tile not found');
 
   // Prepare slots (0-based indices)
   const slots: (any | undefined)[] = new Array(SLOT_COUNT).fill(undefined);
@@ -30,25 +30,18 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   const FIXED: [number, any][] = [
     [0, kingCastle],
     [7, treasureBox],
-    [12, prison],
+    [12, tavern],
+    [13, prison],
     [16, treasureBox],
-    [19, freelancers],
+    [19, tavern],
   ];
+
   FIXED.forEach(([idx, tpl]) => {
     slots[idx] = tpl;
   });
 
-  // Build pool = all templates except the exact fixed ones we already used.
-  // Important: treasure box is used twice; remove two from the pool if present.
-  const pool: any[] = [];
-  let treasureToRemove = 2;
-  (allTemplates as any[]).forEach((t) => {
-    if (t === kingCastle || t === prison || t === freelancers) return; // used once
-    if (t === treasureBox && treasureToRemove > 0) {
-      treasureToRemove--;
-      return; // skip two copies
-    }
-    pool.push(t);
+  const pool = allTemplates.filter((t) => {
+    return t !== kingCastle && t !== prison && t !== treasureBox && t !== tavern;
   });
 
   // Randomize stack

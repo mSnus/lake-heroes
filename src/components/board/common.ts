@@ -1,5 +1,5 @@
 export const MONEY_START = 500;
-export const UNITS_START = 12;  
+export const UNITS_START = 12;
 export const MONEY_PASS_START = 200;
 
 export const TILE_COUNT = 24;
@@ -17,7 +17,6 @@ export const GAP_PX = 16; // ~1rem
 
 export const ICON_RADIUS = 9; // px (diameter 18)
 
-// Canvas size will be computed at runtime based on device (mobile vs desktop)
 export const DIAMOND_SIZE = 14; // marker icon size in px
 export const DIAMOND_GAP = 4; // gap between markers
 export const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
@@ -27,20 +26,22 @@ export function isMobileLayout(): boolean {
 }
 
 // Load precomputed tile maps (percent coords relative to board width)
-import desktopMap from '../../settings/map.json';
-import mobileMap from '../../settings/map_mobile.json';
+import mapSetup from '../../settings/map.json';
 
 type MapSlotPct = {
-  textPos: null; xPct: number; yPct: number 
+  textPos: null;
+  xPct: number;
+  yPct: number;
 };
-const desktopSlots: MapSlotPct[] = desktopMap as any;
-const mobileSlots: MapSlotPct[] = mobileMap as any;
+
+const slots: MapSlotPct[] = mapSetup as any;
 
 // Calculate tile position using precomputed percent coords (both axes are percentages of board width)
-export function getTilePosition(tileIndex: number): { x: number; y: number; textPos: string | null } {
-  const isMobile = isMobileLayout();
-
-  const slots = isMobile ? mobileSlots : desktopSlots;
+export function getTilePosition(tileIndex: number): {
+  x: number;
+  y: number;
+  textPos: string | null;
+} {
   const idx = tileIndex % TILE_COUNT;
   const slot = slots[idx];
 

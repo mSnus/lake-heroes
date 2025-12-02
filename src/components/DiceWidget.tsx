@@ -4,10 +4,9 @@ import { Dice } from '../game/Dice';
 
 interface Props {
   board: GameState | null;
-  updateGameState: (board: GameState) => void;
 }
 
-export const DiceWidget: React.FC<Props> = ({ board, updateGameState }) => {
+export const DiceWidget: React.FC<Props> = ({ board }) => {
   const [side, setSide] = useState<number>(1);
   const [reRoll, setReRoll] = useState(false);
   const animationTimeout = useRef<number | null>(null);
@@ -27,7 +26,6 @@ export const DiceWidget: React.FC<Props> = ({ board, updateGameState }) => {
         // hide dice after animation by mutating board.dice.visible and committing
         if (board && board.dice) {
           board.dice.visible = false;
-          updateGameState(board);
         }
         // notify that dice animation stopped
         window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: value }));
@@ -45,14 +43,12 @@ export const DiceWidget: React.FC<Props> = ({ board, updateGameState }) => {
       // Show dice in UI then trigger roll via board.dice
       if (board.dice) {
         board.dice.visible = true;
-        updateGameState(board);
         board.dice.roll();
       } else {
         const d = new Dice();
         d.visible = true;
         if (board) {
           (board as any).dice = d;
-          updateGameState(board);
           d.roll();
         }
       }
