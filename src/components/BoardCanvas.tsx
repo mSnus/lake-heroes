@@ -18,11 +18,11 @@ import {
 } from './board/common';
 import '../styles/Board.css';
 
-interface GameStateCanvasProps {
+interface BoardCanvasProps {
   board: GameState;
 }
 
-export const GameStateCanvas: React.FC<GameStateCanvasProps> = ({ board }) => {
+export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const isMobile = isMobileLayout();
 
   const ratio = isMobile ? 2 : 1;

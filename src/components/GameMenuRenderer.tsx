@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
-import { GameMenu, MenuAction, MenuAction } from './GameMenu';
+import { GameMenu, MenuAction } from './GameMenu';
 import { buyTile } from '../actions/buyTile';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';

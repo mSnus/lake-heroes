@@ -7,7 +7,7 @@ import './styles/dice.css';
 import { Tile } from './game/Tile';
 import { Player } from './game/Player';
 import { GameState } from './game/GameState';
-import { GameStateCanvas } from './components/GameStateCanvas';
+import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
 import { PlayerStatsTable } from './components/PlayerStatsTable';
@@ -135,7 +135,7 @@ function App() {
         >
           <DiceWidget board={board} setGameState={setGameState} />
           <CurrentTile board={board} />
-          <GameStateCanvas board={board} />
+          <BoardCanvas board={board} />
           <CurrentPlayer board={board} />
 
           {menu ? (
