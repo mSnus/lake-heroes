@@ -1,4 +1,4 @@
-index,group,name,isOwnable,bonusType,priceGold,priceUnits,upgrade2_gold,upgrade2_units,upgrade3_gold,upgrade3_units,bonus1,bonus2,bonus3,defence1,defence2,defence3
+index,group,name,isOwnable,bonusType,prices["1"].gold,prices["1"].units,upgrade2_gold,upgrade2_units,upgrade3_gold,upgrade3_units,bonus1,bonus2,bonus3,defence1,defence2,defence3
 1,"Mills","💧 Water mill","true","gold",200,5,300,5,500,10,100,200,300,10,15,30
 2,"Mills","🌬️ Windmill","true","gold",240,6,360,6,600,12,120,240,360,12,18,36
 3,"Mills","🧱 Brick factory","true","gold",240,6,360,6,600,12,120,240,360,12,18,36

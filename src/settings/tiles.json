@@ -4,9 +4,11 @@
     "name": "💧 Water mill",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 200,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 200,
+        "units": 5
+      },
       "2": {
         "gold": 300,
         "units": 5
@@ -32,9 +34,11 @@
     "name": "🌬️ Windmill",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 250,
-    "priceUnits": 6,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 250,
+        "units": 6
+      },
       "2": {
         "gold": 360,
         "units": 6
@@ -60,9 +64,11 @@
     "name": "🧱 Brick factory",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 300,
-    "priceUnits": 6,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 300,
+        "units": 6
+      },
       "2": {
         "gold": 360,
         "units": 6
@@ -88,9 +94,11 @@
     "name": "🐷 Pigs farm",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -116,9 +124,11 @@
     "name": "🐄 Cows farm",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 180,
-    "priceUnits": 6,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 180,
+        "units": 6
+      },
       "2": {
         "gold": 240,
         "units": 1
@@ -144,9 +154,11 @@
     "name": "🐑 Sheep farm",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 195,
-    "priceUnits": 7,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 195,
+        "units": 7
+      },
       "2": {
         "gold": 260,
         "units": 1
@@ -172,9 +184,11 @@
     "name": "🌾 Wheat field",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -200,9 +214,11 @@
     "name": "🥬 Cabbage field",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 250,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 250,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -228,9 +244,11 @@
     "name": "🍎 Fruit garden",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 350,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 350,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -256,9 +274,11 @@
     "name": "🏹 Bows",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 250,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 250,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -284,9 +304,11 @@
     "name": "🔪 Knives",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 350,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 350,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -312,9 +334,11 @@
     "name": "🗡️ Swords",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 450,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 450,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -340,9 +364,11 @@
     "name": "🏹 Archer tower",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -368,9 +394,11 @@
     "name": "💣 Arquebus tower",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -396,9 +424,11 @@
     "name": "💥 Cannon tower",
     "isOwnable": true,
     "bonusType": "units",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -424,9 +454,11 @@
     "name": "🍇 Grapes",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -452,9 +484,11 @@
     "name": "🐟 Fish",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -480,9 +514,11 @@
     "name": "🦫 Fur",
     "isOwnable": true,
     "bonusType": "gold",
-    "priceGold": 150,
-    "priceUnits": 5,
-    "upgradePrices": {
+    "prices": {
+      "1": {
+        "gold": 150,
+        "units": 5
+      },
       "2": {
         "gold": 200,
         "units": 1
@@ -507,9 +543,13 @@
     "group": "Special",
     "name": "🪙 Treasure box",
     "isOwnable": false,
-    "priceGold": 0,
-    "priceUnits": 0,
-    "upgradePrices": {},
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "prices": {},
     "bonuses": {},
     "defences": {},
     "description": "Chance to receive 🟡🟡🟡"
@@ -518,9 +558,13 @@
     "group": "Special",
     "name": "🏘️ Tavern",
     "isOwnable": false,
-    "priceGold": 0,
-    "priceUnits": 0,
-    "upgradePrices": {},
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "prices": {},
     "bonuses": {},
     "defences": {},
     "description": "Chance to hire 🧍🧍🧍"
@@ -529,9 +573,13 @@
     "group": "Special",
     "name": "🏰 King Castle",
     "isOwnable": false,
-    "priceGold": 0,
-    "priceUnits": 0,
-    "upgradePrices": {},
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "prices": {},
     "bonuses": {},
     "defences": {},
     "description": "Hire 🧍 for 🟡"
@@ -540,9 +588,13 @@
     "group": "Special",
     "name": "🛡️ Prison",
     "isOwnable": false,
-    "priceGold": 0,
-    "priceUnits": 0,
-    "upgradePrices": {},
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "prices": {},
     "bonuses": {},
     "defences": {},
     "description": "Miss a turn ⏳"
@@ -551,9 +603,13 @@
     "group": "Special",
     "name": " 🐈 Sphynx",
     "isOwnable": false,
-    "priceGold": 0,
-    "priceUnits": 0,
-    "upgradePrices": {},
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "prices": {},
     "bonuses": {},
     "defences": {},
     "description": "Roll dice 🎲 to receive or lose 🟡 and 🧍"

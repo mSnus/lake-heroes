@@ -37,14 +37,15 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
 
     // If on ownable tile, show option to sell it
     if (
-      currentTile.isOwnable &&
-      !currentTile.isOwned() &&
-      activePlayer.gold >= currentTile.priceGold &&
-      activePlayer.units >= currentTile.priceUnits
+      (currentTile.isOwnable &&
+        !currentTile.isOwned() &&
+        activePlayer.gold >= currentTile.prices['1']?.gold) ??
+      (0 && activePlayer.units >= currentTile.prices['1']?.units) ??
+      0
     ) {
       items.push({
         action: 'buy-tile' as MenuAction,
-        label: `Buy for ${currentTile.priceGold} 🟡 ${currentTile.priceUnits} 🧍`,
+        label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
         onClick: () => {
           buyTile(board, updateGameState);
         },
@@ -71,7 +72,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         items={[
           {
             action: 'buy-tile',
-            label: `Buy for ${tile.priceGold}🟡 ${tile.priceUnits}🧍`,
+            label: `Buy for ${tile.prices['1']?.gold ?? 0}🟡 ${tile.prices['1']?.units ?? 0}🧍`,
             onClick: () => {
               buyTile(board, updateGameState);
               setMenu({ type: 'end-turn' });

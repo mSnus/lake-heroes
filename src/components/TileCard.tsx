@@ -31,15 +31,9 @@ export const TileCard: React.FC<{ tile: Tile | undefined; mode?: 'short' | 'full
   const groupColor = groupMeta?.color ?? '#eee';
   const bonusType = getBonusType(tile);
 
-  const pricelevel1 = fmtPrice(tile.priceGold, tile.priceUnits);
-  const pricelevel2 = fmtPrice(
-    tile.upgradePrices['2']?.gold ?? 0,
-    tile.upgradePrices['2']?.units ?? 0
-  );
-  const pricelevel3 = fmtPrice(
-    tile.upgradePrices['3']?.gold ?? 0,
-    tile.upgradePrices['3']?.units ?? 0
-  );
+  const pricelevel1 = fmtPrice(tile.prices['1']?.gold ?? 0, tile.prices['1']?.units ?? 0);
+  const pricelevel2 = fmtPrice(tile.prices['2']?.gold ?? 0, tile.prices['2']?.units ?? 0);
+  const pricelevel3 = fmtPrice(tile.prices['3']?.gold ?? 0, tile.prices['3']?.units ?? 0);
 
   const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
   const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;

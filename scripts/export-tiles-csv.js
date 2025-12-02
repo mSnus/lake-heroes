@@ -3,7 +3,7 @@
   Output: exports/tiles.csv
 
   Columns:
-  index,group,name,isOwnable,bonusType,priceGold,priceUnits,
+  index,group,name,isOwnable,bonusType,prices["1"].gold,prices["1"].units,
   upgrade2_gold,upgrade2_units,upgrade3_gold,upgrade3_units,
   bonus1,bonus2,bonus3,defence1,defence2,defence3
 */
@@ -42,12 +42,12 @@ function main() {
     'name',
     'isOwnable',
     'bonusType',
-    'priceGold',
-    'priceUnits',
-    'upgrade2_gold',
-    'upgrade2_units',
-    'upgrade3_gold',
-    'upgrade3_units',
+    'gold_1',
+    'units_1',
+    'gold_2',
+    'units_2',
+    'gold_3',
+    'units_3',
     'bonus1',
     'bonus2',
     'bonus3',
@@ -60,9 +60,10 @@ function main() {
   lines.push(headers.join(','));
 
   tiles.forEach((t, i) => {
-    const upgrades = t.upgradePrices || {};
-    const up2 = upgrades['2'] || { gold: 0, units: 0 };
-    const up3 = upgrades['3'] || { gold: 0, units: 0 };
+    const prices = t.prices || {};
+    const up1 = prices['1'] || { gold: 0, units: 0 };
+    const up2 = prices['2'] || { gold: 0, units: 0 };
+    const up3 = prices['3'] || { gold: 0, units: 0 };
     const bonuses = t.bonuses || {};
     const defences = t.defences || {};
 
@@ -72,8 +73,8 @@ function main() {
       t.name ?? '',
       !!t.isOwnable,
       t.bonusType ?? '',
-      t.priceGold ?? 0,
-      t.priceUnits ?? 0,
+      up1.gold ?? 0,
+      up1.units ?? 0,
       up2.gold ?? 0,
       up2.units ?? 0,
       up3.gold ?? 0,

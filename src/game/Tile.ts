@@ -3,9 +3,7 @@ export interface TileJSON {
   name: string;
   isOwnable: boolean;
   bonusType?: 'gold' | 'units';
-  priceGold?: number;
-  priceUnits?: number;
-  upgradePrices?: { [level: number]: { gold: number; units: number } };
+  prices?: { [level: number]: { gold: number; units: number } };
   bonuses?: { [level: number]: number };
   defences?: { [level: number]: number };
   owner?: string | null;
@@ -18,9 +16,7 @@ export class Tile implements TileJSON {
   name: string;
   isOwnable: boolean;
   bonusType: 'gold' | 'units';
-  priceGold: number;
-  priceUnits: number;
-  upgradePrices: { [level: number]: { gold: number; units: number } };
+  prices: { [level: number]: { gold: number; units: number } };
   bonuses: { [level: number]: number };
   defences: { [level: number]: number };
   owner?: string | null;
@@ -32,9 +28,7 @@ export class Tile implements TileJSON {
     this.name = data.name || '';
     this.isOwnable = !!data.isOwnable;
     this.bonusType = data.bonusType || 'gold';
-    this.priceGold = typeof data.priceGold === 'number' ? data.priceGold : 0;
-    this.priceUnits = typeof data.priceUnits === 'number' ? data.priceUnits : 0;
-    this.upgradePrices = Object.assign({}, data.upgradePrices || {});
+    this.prices = Object.assign({}, data.prices || {});
     this.bonuses = Object.assign({}, data.bonuses || {});
     this.defences = Object.assign({}, data.defences || {});
     this.owner = data.owner ?? null;
@@ -51,23 +45,21 @@ export class Tile implements TileJSON {
   }
 
   isAffordable(playerGold: number, playerUnits: number): boolean {
-    return playerGold >= this.priceGold && playerUnits >= this.priceUnits;
+    return playerGold >= this.prices["1"].gold && playerUnits >= this.prices["1"].units;
   }
 
   isUpgradeable(playerGold: number, playerUnits: number): boolean {
-    return !!this.upgradePrices &&
-      this.level !== undefined &&
-      this.upgradePrices[this.level + 1] !== undefined
-      ? playerGold >= this.upgradePrices[this.level + 1].gold &&
-          playerUnits >= this.upgradePrices[this.level + 1].units
+    return !!this.prices && this.level !== undefined && this.prices[this.level + 1] !== undefined
+      ? playerGold >= this.prices[this.level + 1].gold &&
+          playerUnits >= this.prices[this.level + 1].units
       : false;
   }
 
   // level should be 1|2|3 (but kept generic)
   getPrice(level: number = 1): { gold: number; units: number } {
     const key = level;
-    if (level === 1) return { gold: this.priceGold || 0, units: this.priceUnits || 0 };
-    const up = this.upgradePrices && this.upgradePrices[key];
+    if (level === 1) return { gold: this.prices["1"].gold || 0, units: this.prices["1"].units || 0 };
+    const up = this.prices && this.prices[key];
     return { gold: up?.gold || 0, units: up?.units || 0 };
   }
 
@@ -85,9 +77,7 @@ export class Tile implements TileJSON {
       name: this.name,
       isOwnable: this.isOwnable,
       bonusType: this.bonusType,
-      priceGold: this.priceGold,
-      priceUnits: this.priceUnits,
-      upgradePrices: this.upgradePrices,
+      prices: this.prices,
       bonuses: this.bonuses,
       defences: this.defences,
       owner: this.owner,

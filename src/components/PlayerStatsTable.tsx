@@ -27,12 +27,11 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, updateGameState }) =>
 
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-
   function handleUpgrade(tile: Tile, tileIdx: number) {
     const currentLevel = tile.level || 1;
     const nextLevel = currentLevel + 1;
-    const upgradePrices = tile.upgradePrices || {};
-    const nextPrice = upgradePrices[nextLevel];
+    const prices = tile.prices || {};
+    const nextPrice = prices[nextLevel];
 
     if (!nextPrice) return;
 
@@ -93,10 +92,10 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, updateGameState }) =>
           const maxLevel = 3;
           const canUpgrade =
             currentLevel < maxLevel &&
-            tile.upgradePrices &&
-            tile.upgradePrices[currentLevel + 1] &&
-            (activePlayer.gold ?? 0) >= (tile.upgradePrices[currentLevel + 1].gold || 0) &&
-            (activePlayer.units ?? 0) >= (tile.upgradePrices[currentLevel + 1].units || 0);
+            tile.prices &&
+            tile.prices[currentLevel + 1] &&
+            (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
+            (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
 
           return (
             <div key={idx} style={{ position: 'relative' }}>
@@ -104,7 +103,7 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, updateGameState }) =>
                 onClick={() => setSelectedIdx(isSelected ? null : idx)}
                 style={{ cursor: 'pointer' }}
               >
-                <TileCard tile={tile} mode="short"/>
+                <TileCard tile={tile} mode="short" />
               </div>
 
               {isSelected && (

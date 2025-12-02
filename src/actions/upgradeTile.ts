@@ -20,7 +20,7 @@ export function upgradeTile(
 
   const nextlevel = (currentlevel + 1) as 2 | 3;
 
-  const price = tile.upgradePrices[nextlevel];
+  const price = tile.prices[nextlevel];
 
   if (!price) return;
   if (player.gold >= price.gold && player.units >= price.units) {

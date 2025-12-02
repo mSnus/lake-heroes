@@ -8,9 +8,13 @@ export function buyTile(board: GameState | null, updateGameState: (board: GameSt
   const player = board.activePlayer;
   const tile = board.tiles[player.position];
 
-  if (player.gold >= tile.priceGold && player.units >= tile.priceUnits && !tile.isOwned()) {
-    player.gold -= tile.priceGold;
-    player.units -= tile.priceUnits;
+  if (
+    player.gold >= tile.prices['1']?.gold ??
+    (0 && player.units >= tile.prices['1']?.units) ??
+    (0 && !tile.isOwned())
+  ) {
+    player.gold -= tile.prices['1']?.gold ?? 0;
+    player.units -= tile.prices['1']?.units ?? 0;
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
     updateGameState(board);

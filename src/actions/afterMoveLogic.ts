@@ -5,7 +5,7 @@ import { say } from '../utils/say';
 export function afterMoveLogic(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
 
@@ -23,7 +23,11 @@ export function afterMoveLogic(
 
   // Ownable, not owned, player can buy
   if (!tile.isOwned()) {
-    if (player.gold >= tile.priceGold && player.units >= tile.priceUnits) {
+    if (
+      player.gold >= tile.prices['1']?.gold ??
+      (0 && player.units >= tile.prices['1']?.units) ??
+      0
+    ) {
       setMenu({ type: 'buy' });
       return;
     } else {
@@ -40,7 +44,10 @@ export function afterMoveLogic(
 
     if (player.gold < fee && player.units < defence) {
       //Death
-      say(`${player.name} cannot afford to pay the fee or fight the defences on ${tile.name}.`, 'error');
+      say(
+        `${player.name} cannot afford to pay the fee or fight the defences on ${tile.name}.`,
+        'error'
+      );
       board.gameMessage = `${player.name} is technically dead.`;
       updateGameState(board);
       setMenu({ type: 'end-turn' });

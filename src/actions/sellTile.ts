@@ -13,17 +13,17 @@ export function sellTile(
   if (tile.owner !== player.name) return { gold: 0, units: 0 };
 
   // Base refund: purchase price
-  const baseGold = tile.priceGold || 0;
-  const baseUnits = tile.priceUnits || 0;
+  const baseGold = tile.prices['1']?.gold ?? (0 || 0);
+  const baseUnits = tile.prices['1']?.units ?? (0 || 0);
 
   // Refund upgrades that were already purchased
-  const upgradePrices = tile.upgradePrices || {};
+  const prices = tile.prices || {};
   let upgradesGold = 0;
   let upgradesUnits = 0;
   const level = tile.level || 1;
 
   for (let l = 2; l <= level; l++) {
-    const p = upgradePrices[l];
+    const p = prices[l];
     if (p) {
       upgradesGold += p.gold || 0;
       upgradesUnits += p.units || 0;
