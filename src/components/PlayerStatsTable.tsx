@@ -112,7 +112,7 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, setGameState }) => {
                 onClick={() => setSelectedIdx(isSelected ? null : idx)}
                 style={{ cursor: 'pointer' }}
               >
-                <TileCard tile={tile} />
+                <TileCard tile={tile} mode="short"/>
               </div>
 
               {isSelected && (

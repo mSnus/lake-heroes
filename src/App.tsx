@@ -117,7 +117,7 @@ function App() {
   return (
     <div className="App">
       <ToastContainer
-        position={isMobileLayout() ? 'bottom-center' : 'top-right'}
+        position={isMobileLayout() ? 'top-center' : 'top-right'}
         autoClose={3500}
         hideProgressBar={true}
       />

@@ -73,3 +73,16 @@
  margin: 0 auto;
  width: fit-content;
 }
+
+.tile-owner {
+  font-weight: 600;
+  margin-top: 8px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.level-highlighted {
+  background-color: #f5e8d1;
+  color: #000;
+  font-weight: 600;
+}

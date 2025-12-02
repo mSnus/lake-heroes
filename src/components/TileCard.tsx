@@ -18,7 +18,10 @@ const getBonusType = (tile: Tile): 'gold' | 'units' => {
   return tile.group === 'Camps' || tile.group === 'Towers' ? 'units' : 'gold';
 };
 
-export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
+export const TileCard: React.FC<{ tile: Tile | undefined; mode?: 'short' | 'full' }> = ({
+  tile,
+  mode = 'full',
+}) => {
   if (!tile) return null;
 
   const groupMeta = (groups as { name: string; icon: string; color: string }[]).find(
@@ -41,6 +44,13 @@ export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
   const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
   const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;
 
+  const class1 = (tile.level ?? 0) < 2 ? 'tc-td level-highlighted' : 'tc-td';
+  const class2 = (tile.level ?? 0) == 2 ? 'tc-td level-highlighted' : 'tc-td';
+  const class3 = (tile.level ?? 0) == 3 ? 'tc-td level-highlighted' : 'tc-td';
+
+  console.log('TileCard render', tile.name, tile.level);
+
+  console.log('TileCard styles', class1, class2, class3);
   return (
     <div className="tile-card">
       <div className="tile-card-header" style={{ background: groupColor }}>
@@ -48,7 +58,7 @@ export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
       </div>
 
       <div className="tile-card-title">
-        {tile.name} {tile.level > 1 ? `(Level ${tile.level})` : ''}
+        {tile.name} {(tile.level ?? 1) > 1 ? `(Level ${tile.level})` : ''}
       </div>
 
       {tile.isOwnable && (
@@ -64,31 +74,38 @@ export const TileCard: React.FC<{ tile: Tile | undefined }> = ({ tile }) => {
               </thead>
               <tbody>
                 <tr>
-                  <td className="tc-td">{pricelevel1}</td>
-                  <td className="tc-td">
+                  <td className={class1}>
+                    {pricelevel1}
+                  </td>
+                  <td className={class1}>
                     +{bonus(1)} {bonusType === 'gold' ? '🟡' : '🧍'}
                   </td>
-                  <td className="tc-td">{defence(1)} 🧍</td>
+                  <td className={class1}>{defence(1)} 🧍</td>
                 </tr>
                 <tr>
-                  <td className="tc-td">{pricelevel2}</td>
-                  <td className="tc-td">
+                  <td className={class2}>
+                    {pricelevel2}
+                  </td>
+                  <td className={class2}>
                     +{bonus(2)} {bonusType === 'gold' ? '🟡' : '🧍'}
                   </td>
-                  <td className="tc-td">{defence(2)} 🧍</td>
+                  <td className={class2}>{defence(2)} 🧍</td>
                 </tr>
                 <tr>
-                  <td className="tc-td">{pricelevel3}</td>
-                  <td className="tc-td">
+                  <td className={class3}>
+                    {pricelevel3}
+                  </td>
+                  <td className={class3}>
                     +{bonus(3)} {bonusType === 'gold' ? '🟡' : '🧍'}
                   </td>
-                  <td className="tc-td">{defence(3)} 🧍</td>
+                  <td className={class3}>{defence(3)} 🧍</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       )}
+      {mode === 'full' && tile.owner && <div className="tile-owner">owned by {tile.owner}</div>}
       {!tile.isOwnable && tile.description && (
         <div className="tile-card-description">{tile.description}</div>
       )}

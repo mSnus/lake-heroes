@@ -46,6 +46,10 @@ export class Tile implements TileJSON {
     return !!this.owner;
   }
 
+  ownedBy(): string | null {
+    return this.owner || null;
+  }
+
   isAffordable(playerGold: number, playerUnits: number): boolean {
     return playerGold >= this.priceGold && playerUnits >= this.priceUnits;
   }

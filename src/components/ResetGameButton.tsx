@@ -21,27 +21,26 @@ const ResetGameButton: React.FC = () => {
     <div
       style={{
         position: 'fixed',
-        bottom: 0,
-        left: 0,
-        width: '100%',
+        top: '0px',
+        left: '0px',
+        width: '40px',
         display: 'flex',
         justifyContent: 'center',
-        padding: '12px 0',
-        background: 'rgba(0,0,0,0.3)',
-        backdropFilter: 'blur(2px)',
+        zIndex: 1000,
       }}
     >
       <button
         onClick={handleReset}
         style={{
-          padding: '10px 16px',
-          borderRadius: 6,
-          border: '1px solid #ccc',
+          padding: '4px 6px',
+          borderRadius: '0px 0px 12px 0px',
+          fontSize: '12px',
           cursor: 'pointer',
-          background: '#fff',
+          border: 'none',
+          background: '#959c95ff',
           color: '#333',
           fontWeight: 600,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          boxShadow: '1px 13px 13px rgba(0,0,0,0.3)',
         }}
       >
         New Game
