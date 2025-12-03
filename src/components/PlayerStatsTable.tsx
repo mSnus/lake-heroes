@@ -25,44 +25,6 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, updateGameState }) =>
     return res;
   }, [board, activePlayer.name]);
 
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-
-  function handleUpgrade(tile: Tile, tileIdx: number) {
-    const currentLevel = tile.level || 1;
-    const nextLevel = currentLevel + 1;
-    const prices = tile.prices || {};
-    const nextPrice = prices[nextLevel];
-
-    if (!nextPrice) return;
-
-    if (
-      (activePlayer.gold || 0) < (nextPrice.gold || 0) ||
-      (activePlayer.units || 0) < (nextPrice.units || 0)
-    ) {
-      return;
-    }
-
-    activePlayer.gold = (activePlayer.gold || 0) - (nextPrice.gold || 0);
-    activePlayer.units = (activePlayer.units || 0) - (nextPrice.units || 0);
-    tile.level = nextLevel;
-    say(`${activePlayer.name} upgraded ${tile.name} to level ${nextLevel}`, 'info');
-    updateGameState(board);
-    setSelectedIdx(null);
-  }
-
-  async function handleSell(tile: Tile, tileIdx: number) {
-    const refunds = sellTile(board, activePlayer, tileIdx);
-
-    updateGameState(board);
-
-    say(
-      `${activePlayer.name} sold ${tile.name} and received ${refunds.gold}🟡 and ${refunds.units}🧍`,
-      'info'
-    );
-
-    setSelectedIdx(null);
-  }
-
   const paneStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: isMobileLayout() ? 'column' : 'row',
@@ -79,94 +41,25 @@ export const PlayerStatsTable: React.FC<Props> = ({ board, updateGameState }) =>
     gap: 12,
     flexWrap: 'wrap',
     alignItems: 'flex-start',
+    width: '100%',
   };
 
   return (
     <div style={paneStyle}>
       <div style={rightStyle}>
-        {owned.length === 0 && <div style={{ color: '#888' }}>No owned tiles</div>}
+        {owned.length === 0 && (
+          <div className="poor-player">Poor {activePlayer.name} owns nothing</div>
+        )}
 
         {owned.map(({ tile, idx }) => {
-          const isSelected = selectedIdx === idx;
-          const currentLevel = tile.level || 1;
-          const maxLevel = 3;
-          const canUpgrade =
-            currentLevel < maxLevel &&
-            tile.prices &&
-            tile.prices[currentLevel + 1] &&
-            (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
-            (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
-
           return (
             <div key={idx} style={{ position: 'relative' }}>
-              <div
-                onClick={() => setSelectedIdx(isSelected ? null : idx)}
-                style={{ cursor: 'pointer' }}
-              >
-                <TileCard tile={tile} mode="short" />
-              </div>
-
-              {isSelected && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    background: '#fff',
-                    color: '#000',
-                    padding: 8,
-                    borderRadius: 6,
-                    boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
-                    zIndex: 1000,
-                    minWidth: 160,
-                    display: 'flex',
-                    gap: 8,
-                  }}
-                >
-                  <button
-                    onClick={() => handleUpgrade(tile, idx)}
-                    disabled={!canUpgrade}
-                    style={{
-                      padding: '6px 10px',
-                      borderRadius: 6,
-                      border: '1px solid #ccc',
-                      background: canUpgrade ? '#2ecc71' : '#ddd',
-                      color: canUpgrade ? '#fff' : '#666',
-                      cursor: canUpgrade ? 'pointer' : 'not-allowed',
-                    }}
-                  >
-                    Upgrade
-                  </button>
-
-                  <button
-                    onClick={() => handleSell(tile, idx)}
-                    style={{
-                      padding: '6px 10px',
-                      borderRadius: 6,
-                      border: '1px solid #ccc',
-                      background: '#e74c3c',
-                      color: '#fff',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Sell
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedIdx(null)}
-                    style={{
-                      padding: '6px 10px',
-                      borderRadius: 6,
-                      border: '1px solid #ccc',
-                      background: '#fff',
-                      color: '#333',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
+              <TileCard
+                tile={tile}
+                mode="owned"
+                gameState={board}
+                updateGameState={updateGameState}
+              />
             </div>
           );
         })}

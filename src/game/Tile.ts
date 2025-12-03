@@ -45,7 +45,7 @@ export class Tile implements TileJSON {
   }
 
   isAffordable(playerGold: number, playerUnits: number): boolean {
-    return playerGold >= this.prices["1"].gold && playerUnits >= this.prices["1"].units;
+    return playerGold >= this.prices['1'].gold && playerUnits >= this.prices['1'].units;
   }
 
   isUpgradeable(playerGold: number, playerUnits: number): boolean {
@@ -58,7 +58,8 @@ export class Tile implements TileJSON {
   // level should be 1|2|3 (but kept generic)
   getPrice(level: number = 1): { gold: number; units: number } {
     const key = level;
-    if (level === 1) return { gold: this.prices["1"].gold || 0, units: this.prices["1"].units || 0 };
+    if (level === 1)
+      return { gold: this.prices['1'].gold || 0, units: this.prices['1'].units || 0 };
     const up = this.prices && this.prices[key];
     return { gold: up?.gold || 0, units: up?.units || 0 };
   }

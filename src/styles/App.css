@@ -44,11 +44,12 @@
 
 .board-controls {
   display: flex;
+  flex-direction: column;
   width: 100%;
   justify-content: flex-start;
+  align-items: center;
   gap: 12px;
-  padding: 2px 2px 2px 16px;
-  height: 4rem;
+  height: 6.5rem;
   position: relative;
 }
 

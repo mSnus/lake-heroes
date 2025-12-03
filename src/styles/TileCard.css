@@ -30,7 +30,21 @@
   margin-bottom: 8px;
   padding: 6px;
   border-radius: 6px 6px 0 0;
-  justify-content: center;
+  justify-content: space-between;
+}
+
+.tile-card-button {
+  padding: 6px 10px;
+  border: none;
+  cursor: pointer;
+  background: none;
+  background-color: transparent;
+}
+
+.tile-card-button:disabled {
+  filter: grayscale();
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .tile-card-title {
@@ -68,10 +82,10 @@
 }
 
 .tile-card-description {
- font-size: 14px;
- padding: 8px;
- margin: 0 auto;
- width: fit-content;
+  font-size: 14px;
+  padding: 8px;
+  margin: 0 auto;
+  width: fit-content;
 }
 
 .tile-owner {

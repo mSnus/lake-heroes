@@ -9,9 +9,9 @@ export function buyTile(board: GameState | null, updateGameState: (board: GameSt
   console.log('Action: buy tile', player, tile);
 
   if (
-    (0 && player.gold >= tile.prices['1']?.gold) &&
-    (0 && player.units >= tile.prices['1']?.units) &&
-    (0 && !tile.isOwned())
+    player.gold >= (tile.prices['1']?.gold ?? 0) &&
+    player.units >= (tile.prices['1']?.units ?? 0) &&
+    !tile.isOwned()
   ) {
     player.gold -= tile.prices['1']?.gold ?? 0;
     player.units -= tile.prices['1']?.units ?? 0;

@@ -23,10 +23,7 @@ export function afterMoveLogic(
 
   // Ownable, not owned, player can buy
   if (!tile.isOwned()) {
-    if (
-      player.gold >= tile.prices['1']?.gold ??
-      (0 && player.units >= tile.prices['1']?.units) ??
-      0
+    if (tile.isAffordable(player.gold, player.units)
     ) {
       setMenu({ type: 'buy' });
       return;

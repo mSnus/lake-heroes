@@ -28,7 +28,7 @@ export async function rollAndMove(
   board.gameMessage = '';
   say(`${player.name} rolled ${roll} and went to ${nextTile.name}!`, 'info');
 
-  window.dispatchEvent(new CustomEvent('setViewedTitle', {}));
+  window.dispatchEvent(new CustomEvent('displayTitle', {}));
 
   // Step-by-step move with 0.2s delay per tile
   for (let step = 1; step <= roll; step++) {
@@ -43,11 +43,13 @@ export async function rollAndMove(
       passStart(board, updateGameState);
     }
 
+    window.dispatchEvent(new CustomEvent('displayTitle', { detail: board.tiles[nextPos] }));
     // Delay before the next step to visualize movement
-    await new Promise((res) => setTimeout(res, 200));
+    await new Promise((res) => setTimeout(res, 300));
   }
 
   board.turnPhase = 'after-move';
+  updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic
   const tileIdx = player.position;

@@ -4,11 +4,10 @@ import { Tile } from '../game/Tile';
 import { say } from '../utils/say';
 
 export function sellTile(
-  board: GameState,
+  gameState: GameState,
   player: Player,
-  tileIndex: number
+  tile: Tile
 ): { gold: number; units: number } {
-  const tile = board.tiles[tileIndex] as Tile | undefined;
   if (!tile) return { gold: 0, units: 0 };
   if (tile.owner !== player.name) return { gold: 0, units: 0 };
 

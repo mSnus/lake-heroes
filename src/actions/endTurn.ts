@@ -16,7 +16,7 @@ export function endTurn(
 
   if (board.activePlayer.turnsToSkip > 0) {
     board.activePlayer.turnsToSkip--;
-
+    board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
   } else {
@@ -25,5 +25,5 @@ export function endTurn(
 
   updateGameState(board);
 
-  window.dispatchEvent(new CustomEvent('setViewedTitle', {}));
+  window.dispatchEvent(new CustomEvent('displayTitle', {}));
 }

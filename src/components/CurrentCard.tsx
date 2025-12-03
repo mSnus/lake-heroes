@@ -9,27 +9,32 @@ interface CurrentTileProps {
 
 export const CurrentTile: React.FC<CurrentTileProps> = ({ board }) => {
   const [displayedTile, setDisplayedTile] = React.useState<Tile | null>(null);
+  const [shouldDisplay, setShouldDisplay] = React.useState<boolean>(true);
   const activePlayer = board.activePlayer;
   const current = board.tiles[activePlayer.position];
-  const shouldDisplay = (current.isOwnable && !current.isOwned()) || displayedTile !== current;
 
   React.useEffect(() => {
-    function onsetViewedTitle(e: Event) {
+    function ondisplayTitle(e: Event) {
       const detail = (e as CustomEvent).detail;
+      const display =
+        (detail !== null && current.isOwnable && !current.isOwned()) || displayedTile !== current;
 
-      if (detail && detail.tile) {
-        setDisplayedTile(detail.tile);
+      if (detail) {
+        setDisplayedTile(detail);
+        setShouldDisplay(display);
       } else {
         setDisplayedTile(null);
+        setShouldDisplay(false);
       }
     }
-    window.addEventListener('setViewedTitle', onsetViewedTitle as EventListener);
-    return () => window.removeEventListener('setViewedTitle', onsetViewedTitle as EventListener);
+
+    window.addEventListener('displayTitle', ondisplayTitle as EventListener);
+    return () => window.removeEventListener('displayTitle', ondisplayTitle as EventListener);
   }, []);
 
   return (
     <div className="current-tile">
-      {shouldDisplay && <TileCard tile={displayedTile ?? current} />}
+      {!!shouldDisplay && <TileCard tile={displayedTile ?? current} mode="display" />}
     </div>
   );
 };

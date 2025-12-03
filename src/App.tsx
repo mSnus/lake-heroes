@@ -156,7 +156,7 @@ function App() {
             <div className="board-controls">
               <CurrentPlayer board={board} />
 
-              {menu ? (
+              {menu && board.turnPhase !== 'moving' ? (
                 <GameMenuRenderer
                   board={board}
                   menu={menu}
