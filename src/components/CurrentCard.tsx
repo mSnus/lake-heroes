@@ -4,15 +4,16 @@ import { TileCard } from './TileCard';
 import { Tile } from '../game/Tile';
 
 interface CurrentTileProps {
-  board: GameState;
+  gameState: GameState;
 }
 
-export const CurrentTile: React.FC<CurrentTileProps> = ({ board }) => {
+export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState }) => {
   const [displayedTile, setDisplayedTile] = React.useState<Tile | null>(null);
   const [shouldDisplay, setShouldDisplay] = React.useState<boolean>(true);
-  const activePlayer = board.activePlayer;
-  const current = board.tiles[activePlayer.position];
 
+  if (!gameState) return;
+
+  const current = gameState.activeTile;
   React.useEffect(() => {
     function ondisplayTitle(e: Event) {
       const detail = (e as CustomEvent).detail;
@@ -34,7 +35,9 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ board }) => {
 
   return (
     <div className="current-tile">
-      {!!shouldDisplay && <TileCard tile={displayedTile ?? current} mode="display" />}
+      {!!shouldDisplay && (
+        <TileCard tile={displayedTile ?? current} mode="display" gameState={gameState} />
+      )}
     </div>
   );
 };

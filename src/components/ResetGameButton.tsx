@@ -8,7 +8,7 @@ const ResetGameButton: React.FC = () => {
       )
     ) {
       try {
-        localStorage.removeItem('board-state');
+        localStorage.removeItem('game-state');
       } catch (e) {
         // ignore storage errors
       } finally {

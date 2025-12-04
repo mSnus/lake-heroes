@@ -2,7 +2,7 @@ import React from 'react';
 
 export type MenuAction = 'roll-dice' | 'end-turn' | 'buy-tile' | 'fight' | 'pay-fee';
 
-interface MenuItem {
+export interface MenuItem {
   label: string;
   action: MenuAction;
   onClick: () => void | Promise<void>;

@@ -1,3 +1,4 @@
+import { FEE_MULTIPLIER } from '../components/board/common';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
@@ -10,8 +11,7 @@ export function afterMoveLogic(
   if (!board) return;
 
   const player = board.activePlayer;
-  const tileIdx = player.position;
-  const tile = board.tiles[tileIdx];
+  const tile = board.activeTile;
 
   console.log(`Action: after move logic for ${player.name} on ${tile.name}`, player, tile);
 
@@ -36,7 +36,7 @@ export function afterMoveLogic(
 
   // Ownable, owned by someone else
   if (tile.isOwned() && tile.owner !== player.name) {
-    const fee = tile.defences[tile.level ?? 1] * 10 || 0;
+    const fee = tile.defences[tile.level ?? 1] * FEE_MULTIPLIER || 0;
     const defence = tile.defences[tile.level ?? 1] || 0;
 
     if (player.gold < fee && player.units < defence) {

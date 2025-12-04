@@ -24,9 +24,10 @@ import { CurrentTile } from './components/CurrentCard';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
+import { Tile } from './game/Tile';
 
 function App() {
-  const [board, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   useEffect(() => {
@@ -34,23 +35,23 @@ function App() {
     function onSetPhase(e: Event) {
       const phase = (e as CustomEvent).detail as TurnPhase;
       if (!(phase === 'before-move' || phase === 'rolling' || phase === 'after-move')) return;
-      if (!board) return;
+      if (!gameState) return;
       // commit new GameState instance preserving prototype and dice instance
-      const mutated = Object.assign(new GameState(board.tiles, board.players), {
-        ...board,
+      const mutated = Object.assign(new GameState(gameState.tiles, gameState.players), {
+        ...gameState,
         turnPhase: phase,
       }) as GameState;
       // preserve dice instance if any
-      mutated.dice = board.dice || new Dice();
+      mutated.dice = gameState.dice || new Dice();
       setGameState(mutated);
     }
     window.addEventListener('setPhase', onSetPhase as EventListener);
     return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
-  }, [board, setGameState]);
+  }, [gameState, setGameState]);
 
   useEffect(() => {
     function loadGameData() {
-      const saved = loadFromStorage('board-state', null);
+      const saved = loadFromStorage('game-state', null);
       if (saved) {
         say('Restoring saved game...', 'info');
 
@@ -111,21 +112,24 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (board) saveToStorage('board-state', board);
-  }, [board]);
+    if (gameState) saveToStorage('game-state', gameState);
+  }, [gameState]);
 
   const updateGameState = (gameState: GameState | null): void => {
-  if (!gameState) return;
+    if (!gameState) return;
 
-  const newGameState = Object.assign(new GameState(gameState.tiles || [], gameState.players || []), {
-    ...gameState,
-  }) as GameState;
+    const newGameState = Object.assign(
+      new GameState(gameState.tiles || [], gameState.players || []),
+      {
+        ...gameState,
+      }
+    ) as GameState;
 
-  // Preserve dice instance if present on the original gameState
-  newGameState.dice = (gameState as any).dice || new Dice();
+    // Preserve dice instance if present on the original gameState
+    newGameState.dice = (gameState as any).dice || new Dice();
 
-  setGameState(newGameState);
-}
+    setGameState(newGameState);
+  };
 
   return (
     <div className="App">
@@ -135,7 +139,7 @@ function App() {
         hideProgressBar={true}
       />
 
-      {board && (
+      {gameState && (
         <div
           id="mainContainer"
           style={{
@@ -146,19 +150,19 @@ function App() {
             justifyContent: 'flex-start',
           }}
         >
-          <DiceWidget board={board} />
-          <CurrentTile board={board} />
-          <BoardCanvas board={board} />
+          <DiceWidget gameState={gameState} />
+          <CurrentTile gameState={gameState} />
+          <BoardCanvas board={gameState} />
 
           <div className="board-controls-wrapper">
-            <GameMessage message={board.gameMessage} />
+            <GameMessage message={gameState.gameMessage} />
 
             <div className="board-controls">
-              <CurrentPlayer board={board} />
+              <CurrentPlayer gameState={gameState} />
 
-              {menu && board.turnPhase !== 'moving' ? (
+              {menu && gameState.turnPhase !== 'moving' ? (
                 <GameMenuRenderer
-                  board={board}
+                  board={gameState}
                   menu={menu}
                   setMenu={setMenu}
                   updateGameState={updateGameState}
@@ -169,7 +173,7 @@ function App() {
             </div>
           </div>
 
-          <PlayerStatsTable board={board} updateGameState={updateGameState} />
+          <PlayerStatsTable gameState={gameState} updateGameState={updateGameState} />
         </div>
       )}
 

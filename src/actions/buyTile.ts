@@ -4,7 +4,7 @@ export function buyTile(board: GameState | null, updateGameState: (board: GameSt
   if (!board) return;
 
   const player = board.activePlayer;
-  const tile = board.tiles[player.position];
+  const tile = board.activeTile;
 
   console.log('Action: buy tile', player, tile);
 

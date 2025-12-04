@@ -1,15 +1,13 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
-import { isMobileLayout } from './board/common';
 import '../styles/CurrentPlayer.css';
 
 interface CurrentPlayerProps {
-  board: GameState;
+  gameState: GameState;
 }
 
-export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ board }) => {
-  const activePlayer = board.activePlayer;
-
+export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
+  const activePlayer = gameState.activePlayer;
   return (
     <div className="player-pane">
       <div

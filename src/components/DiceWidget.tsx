@@ -3,10 +3,10 @@ import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 
 interface Props {
-  board: GameState | null;
+  gameState: GameState | null;
 }
 
-export const DiceWidget: React.FC<Props> = ({ board }) => {
+export const DiceWidget: React.FC<Props> = ({ gameState }) => {
   const [side, setSide] = useState<number>(1);
   const [reRoll, setReRoll] = useState(false);
   const animationTimeout = useRef<number | null>(null);
@@ -23,9 +23,9 @@ export const DiceWidget: React.FC<Props> = ({ board }) => {
       if (animationTimeout.current) window.clearTimeout(animationTimeout.current);
       animationTimeout.current = window.setTimeout(() => {
         setReRoll(false);
-        // hide dice after animation by mutating board.dice.visible and committing
-        if (board && board.dice) {
-          board.dice.visible = false;
+        // hide dice after animation by mutating gameState.dice.visible and committing
+        if (gameState && gameState.dice) {
+          gameState.dice.visible = false;
         }
         // notify that dice animation stopped
         window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: value }));
@@ -35,30 +35,30 @@ export const DiceWidget: React.FC<Props> = ({ board }) => {
     window.addEventListener('diceRolled', onDiceRolled as EventListener);
     return () => window.removeEventListener('diceRolled', onDiceRolled as EventListener);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [board]);
+  }, [gameState]);
 
   useEffect(() => {
     function onStart() {
-      if (!board) return;
-      // Show dice in UI then trigger roll via board.dice
-      if (board.dice) {
-        board.dice.visible = true;
-        board.dice.roll();
+      if (!gameState) return;
+      // Show dice in UI then trigger roll via gameState.dice
+      if (gameState.dice) {
+        gameState.dice.visible = true;
+        gameState.dice.roll();
       } else {
         const d = new Dice();
         d.visible = true;
-        if (board) {
-          (board as any).dice = d;
+        if (gameState) {
+          (gameState as any).dice = d;
           d.roll();
         }
       }
     }
     window.addEventListener('startDiceRoll', onStart as EventListener);
     return () => window.removeEventListener('startDiceRoll', onStart as EventListener);
-  }, [board]); // depends on board to access dice instance
+  }, [gameState]); // depends on gameState to access dice instance
 
 
-  if (!board || !board.dice || !board.dice.visible) return null;
+  if (!gameState || !gameState.dice || !gameState.dice.visible) return null;
 
   return (
     <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 2000 }}>

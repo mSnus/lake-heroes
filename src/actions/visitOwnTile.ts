@@ -1,0 +1,39 @@
+import { GameState } from '../game/GameState';
+import { say } from '../utils/say';
+import { MenuState } from '../types/menuState';
+
+export function handleVisitOwnTile(
+  board: GameState | null,
+  updateGameState: (board: GameState) => void,
+  setMenu: (menu: MenuState) => void
+) {
+  if (!board) return;
+  if (board.circles === 0) return;
+
+  const tile = board.activeTile;
+  const player = board.activePlayer;
+
+  console.log('Action: visit own tile', player, tile);
+
+  let rewards = [];
+  if (tile.bonusType === 'gold') {
+    const goldReward = tile.bonuses[tile.level ?? 1] || 0;
+    rewards.push(`${goldReward}🟡`);
+
+    player.gold += goldReward;
+  }
+
+  if (tile.bonusType === 'units') {
+    const unitsReward = tile.bonuses[tile.level ?? 1] || 0;
+    rewards.push(`${unitsReward}🧍`);
+
+    player.units += unitsReward;
+  }
+
+  const rewardsStr = rewards.join(' and ');
+  say(`Your ${tile.name} provides  ${player.name} with ${rewardsStr}!`, 'success');
+  board.gameMessage = `Your ${tile.name} provides you with ${rewardsStr}!`;
+
+  updateGameState(board);
+  setMenu({ type: 'end-turn' });
+}

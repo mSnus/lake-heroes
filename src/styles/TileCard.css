@@ -31,10 +31,13 @@
   padding: 6px;
   border-radius: 6px 6px 0 0;
   justify-content: space-between;
+  text-transform: uppercase;
+  color: #676767bf;
+  font-weight: bold;
 }
 
 .tile-card-button {
-  padding: 6px 10px;
+  padding: 3px 3px;
   border: none;
   cursor: pointer;
   background: none;
@@ -81,6 +84,10 @@
   text-align: right;
 }
 
+.tc-td:first-child {
+  text-align: center;
+}
+
 .tile-card-description {
   font-size: 14px;
   padding: 8px;
@@ -93,6 +100,15 @@
   margin-top: 8px;
   text-align: center;
   margin-bottom: 6px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  align-items: center;
+}
+
+.tile-owner .diamond {
+  width: 10px;
+  height: 10px;
 }
 
 .level-highlighted {

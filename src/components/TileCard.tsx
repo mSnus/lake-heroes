@@ -2,10 +2,8 @@ import React from 'react';
 import { Tile } from '../game/Tile';
 import groups from '../settings/groups.json';
 import '../styles/TileCard.css';
-import { Player } from '../game/Player';
 import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
-import { debug } from 'console';
 import { sellTile } from '../actions/sellTile';
 
 const fmtPrice = (gold: number, units: number): string => {
@@ -46,16 +44,16 @@ export const TileCard: React.FC<TileCardProps> = ({
   const groupColor = groupMeta?.color ?? '#eee';
   const bonusType = getBonusType(tile);
 
-  const pricelevel1 = fmtPrice(tile.prices['1']?.gold ?? 0, tile.prices['1']?.units ?? 0);
+  const pricelevel1 = fmtPrice(tile.prices[1]?.gold ?? 0, tile.prices[1]?.units ?? 0);
   const pricelevel2 = fmtPrice(tile.prices['2']?.gold ?? 0, tile.prices['2']?.units ?? 0);
   const pricelevel3 = fmtPrice(tile.prices['3']?.gold ?? 0, tile.prices['3']?.units ?? 0);
 
   const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
   const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;
 
-  const class1 = (tile.level ?? 0) < 2 ? 'tc-td level-highlighted' : 'tc-td';
-  const class2 = (tile.level ?? 0) == 2 ? 'tc-td level-highlighted' : 'tc-td';
-  const class3 = (tile.level ?? 0) == 3 ? 'tc-td level-highlighted' : 'tc-td';
+  const class1 = tile.isOwned() && (tile.level ?? 1) < 2 ? 'tc-td level-highlighted' : 'tc-td';
+  const class2 = tile.isOwned() && (tile.level ?? 1) == 2 ? 'tc-td level-highlighted' : 'tc-td';
+  const class3 = tile.isOwned() && (tile.level ?? 1) == 3 ? 'tc-td level-highlighted' : 'tc-td';
 
   let canUpgrade = false;
   const activePlayer = gameState?.activePlayer ?? null;
@@ -76,6 +74,8 @@ export const TileCard: React.FC<TileCardProps> = ({
     const nextLevel = currentLevel + 1;
     const prices = tile.prices || {};
     const nextPrice = prices[nextLevel];
+
+    if (!window.confirm(`Really upgrade ${tile.name}?`)) return;
 
     if (!nextPrice || !activePlayer || !gameState) return;
 
@@ -102,6 +102,8 @@ export const TileCard: React.FC<TileCardProps> = ({
   const handleSell = () => {
     if (!gameState || !activePlayer) return;
 
+    if (!window.confirm(`Sell ${tile.name}, seriously?`)) return;
+
     const refunds = sellTile(gameState, activePlayer, tile);
 
     updateGameState && updateGameState(gameState);
@@ -124,6 +126,7 @@ export const TileCard: React.FC<TileCardProps> = ({
             🪙
           </button>
         )}
+        {mode === 'display' && <div style={{ width: '24px' }} />}
         {groupIcon} {tile.group}
         {mode === 'owned' && (
           <button
@@ -139,7 +142,7 @@ export const TileCard: React.FC<TileCardProps> = ({
           <button
             onClick={() => handleClose()}
             className="tile-card-button"
-            style={{ fontSize: '16px', filter: 'grayscale(100%)' }}
+            style={{ fontSize: '12px', filter: 'grayscale(100%)', opacity: 0.5 }}
           >
             ❌
           </button>
@@ -156,9 +159,9 @@ export const TileCard: React.FC<TileCardProps> = ({
             <table className="tile-card-table">
               <thead>
                 <tr>
-                  <th className="tc-th">Price</th>
-                  <th className="tc-th">Bonus</th>
-                  <th className="tc-th">Defence</th>
+                  <th className="tc-th">🔺🔺🔺</th>
+                  <th className="tc-th">🏆</th>
+                  <th className="tc-th">🛡️</th>
                 </tr>
               </thead>
               <tbody>
@@ -188,9 +191,24 @@ export const TileCard: React.FC<TileCardProps> = ({
           </div>
         </div>
       )}
-      {mode === 'full' && tile.owner && <div className="tile-owner">owned by {tile.owner}</div>}
+
+      {mode === 'display' && tile.owner && (
+        <div className="tile-owner">
+          owned by {tile.owner}
+          {Array.from({ length: tile.level ?? 1 }).map((_, d) => (
+            <div
+              key={d}
+              className="diamond"
+              style={{
+                background: gameState?.players.find((p) => p.name === tile.owner)?.color || '#444',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       {!tile.isOwnable && tile.description && (
-        <div className="tile-card-description">{tile.description}</div>
+        <div className="tile-card-description" dangerouslySetInnerHTML={{ __html: tile.description }} />
       )}
     </div>
   );

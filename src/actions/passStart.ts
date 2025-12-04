@@ -4,11 +4,12 @@ import { MONEY_PASS_START } from '../components/board/common';
 
 export function passStart(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
+
   const player = board.activePlayer;
-
-  console.log('Action: pass start for', player.name);
-
   const baseGold = MONEY_PASS_START;
+
+  board.circles += 1;
+  console.log('Action: pass start for', player.name);
 
   // Calculate profits from owned tiles based on their bonusType and level
   let goldProfit = 0;
@@ -18,7 +19,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
     if (!tile) continue;
     if (tile.owner && tile.owner !== player.name) continue; // safety check
 
-    const bonus = tile.bonuses[tile.level] || 0;
+    const bonus = tile.bonuses[tile.level ?? 1] || 0;
     if ((tile.bonusType || 'gold') === 'units') {
       unitsProfit += bonus;
     } else {
@@ -27,20 +28,20 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   }
 
   // Apply rewards
-  player.gold += baseGold + goldProfit;
+  const totalGold = baseGold + goldProfit;
+  player.gold += totalGold;
   player.units += unitsProfit;
 
   // Build toast message summarizing rewards
   const parts: string[] = [];
-  parts.push(`+${baseGold} GP`);
 
-  if (goldProfit > 0) parts.push(`${goldProfit}🟡`);
+  if (totalGold > 0) parts.push(`${totalGold}🟡`);
   if (unitsProfit > 0) parts.push(`${unitsProfit}🧍`);
 
   const summary = parts.join(' and ');
 
   say(`${player.name} receives ${summary}`, 'success');
-  board.gameMessage = `King rewards you with ${summary} for your properties`;
+  board.gameMessage = `King rewards you with ${summary} for your service and properties`;
 
   updateGameState(board);
 }

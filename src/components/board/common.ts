@@ -1,8 +1,10 @@
 export const MONEY_START = 500;
 export const UNITS_START = 12;
 export const MONEY_PASS_START = 200;
+export const FEE_MULTIPLIER = 50;
+export const TREASURE_BOX_MULTIPLIER = 100;
 
-export const TILE_COUNT = 24;
+export const TILE_COUNT = 25;
 
 export const TILE_WIDTH = 80;
 export const TILE_HEIGHT = 80;
@@ -20,6 +22,7 @@ export const ICON_RADIUS = 9; // px (diameter 18)
 export const DIAMOND_SIZE = 14; // marker icon size in px
 export const DIAMOND_GAP = 4; // gap between markers
 export const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
+
 
 export function isMobileLayout(): boolean {
   return window.matchMedia('(max-width: 768px)').matches;

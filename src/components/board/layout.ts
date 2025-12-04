@@ -1,4 +1,4 @@
-import { shuffle } from './common';
+import { shuffle, TILE_COUNT } from './common';
 
 // Place tiles according to rules:
 // - Fixed placements (1-based positions):
@@ -7,8 +7,6 @@ import { shuffle } from './common';
 // - No adjacent tiles of the same group unless there are no alternatives left
 // - If not enough tiles to fill, leave remaining slots blank (undefined)
 export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefined)[] {
-  const SLOT_COUNT = 24; // rectangular path 8x6 perimeter
-
   // Helper: find by name contains
   const byName = (substr: string) =>
     (allTemplates as any[]).find((t) => typeof t?.name === 'string' && t.name.includes(substr));
@@ -24,7 +22,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   if (!tavern) throw new Error('Tavern tile not found');
 
   // Prepare slots (0-based indices)
-  const slots: (any | undefined)[] = new Array(SLOT_COUNT).fill(undefined);
+  const slots: (any | undefined)[] = new Array(TILE_COUNT).fill(undefined);
 
   // Fixed positions (0-based): 0, 7, 12, 16, 19
   const FIXED: [number, any][] = [
@@ -51,12 +49,12 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   const getGroup = (tpl: any | undefined) => (tpl ? tpl.group : undefined);
 
   // Fill remaining slots respecting adjacency constraint when possible
-  for (let i = 0; i < SLOT_COUNT; i++) {
+  for (let i = 0; i < TILE_COUNT; i++) {
     if (slots[i]) continue; // already fixed
 
     // Determine disallowed group from neighbors already placed or fixed
-    const left = i > 0 ? slots[i - 1] : slots[SLOT_COUNT - 1]; // wrap-around neighbor
-    const right = i < SLOT_COUNT - 1 ? slots[i + 1] : slots[0]; // may still be undefined if not placed yet
+    const left = i > 0 ? slots[i - 1] : slots[TILE_COUNT - 1]; // wrap-around neighbor
+    const right = i < TILE_COUNT - 1 ? slots[i + 1] : slots[0]; // may still be undefined if not placed yet
     const leftGroup = getGroup(left);
     const rightGroup = getGroup(right);
 

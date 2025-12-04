@@ -34,23 +34,23 @@ export function handleSphynx(
     message += `Lost half of gold: -${loss}🟡`;
     gameState.gameMessage = `You escape the Sphynx losing ${loss}🟡.`;
   } else if (roll === 3 || roll === 4) {
-    // Lose 20% units, rounded up to at least 1, but not below zero
-    const raw = Math.ceil(player.units * 0.2);
+    // Lose 30% units, rounded up to at least 1, but not below zero
+    const raw = Math.ceil(player.units * 0.33);
     const atLeastOne = player.units > 0 ? Math.max(1, raw) : 0;
     const loss = Math.min(player.units, atLeastOne);
 
     player.units -= loss;
-    message += `Lost ${loss}🧍 (20%).`;
+    message += `Lost ${loss}🧍 (1/3).`;
     gameState.gameMessage = `Sphynx eats ${loss}🧍, but you escape.`;
   } else if (roll === 5) {
     message += `Nothing happens.`;
     gameState.gameMessage = `Sphynx remained silent. Nothing happened.`;
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100
-    const bonusBase = player.gold * 0.2;
+    const bonusBase = player.gold * 0.5;
     const gain = Math.ceil(bonusBase / 100) * 100;
     player.gold += gain;
-    message += `Received ${gain}🟡 (20% rounded up to 100).`;
+    message += `Received ${gain}🟡 (50%).`;
     gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
   }
 

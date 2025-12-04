@@ -9,10 +9,11 @@ export function endTurn(
 ) {
   if (!board) return;
 
+  console.log('Action: end turn for', board.activePlayer.name);
+
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.turns += 1;
   board.gameMessage = '';
-  console.log('Action: end turn for', board.activePlayer.name);
 
   if (board.activePlayer.turnsToSkip > 0) {
     board.activePlayer.turnsToSkip--;
@@ -25,5 +26,5 @@ export function endTurn(
 
   updateGameState(board);
 
-  window.dispatchEvent(new CustomEvent('displayTitle', {}));
+  // window.dispatchEvent(new CustomEvent('displayTitle', {}));
 }

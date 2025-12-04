@@ -1,12 +1,13 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
-import { GameMenu, MenuAction } from './GameMenu';
+import { GameMenu, MenuAction, MenuItem } from './GameMenu';
 import { buyTile } from '../actions/buyTile';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
 import { rollAndMove } from '../actions/rollAndMove';
 import { endTurn } from '../actions/endTurn';
+import { FEE_MULTIPLIER } from './board/common';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -22,7 +23,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   updateGameState,
 }) => {
   const activePlayer = board.activePlayer;
-  const currentTile = board.tiles[activePlayer.position];
+  const currentTile = board.activeTile;
 
   const handleEndTurn = () => endTurn(board, updateGameState, setMenu);
 
@@ -65,19 +66,29 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
 
   if (menu.type === 'buy') {
     const tile = currentTile;
-    return (
-      <GameMenu
-        items={[
-          {
+    const items =  [] as MenuItem[];
+
+      if (tile.isAffordable(activePlayer.gold, activePlayer.units)) {
+        items.push({
             action: 'buy-tile',
             label: `Buy for ${tile.prices['1']?.gold ?? 0}🟡 ${tile.prices['1']?.units ?? 0}🧍`,
             onClick: () => {
               buyTile(board, updateGameState);
               setMenu({ type: 'end-turn' });
             },
-          },
-          { action: 'end-turn', label: 'End turn ⏳', onClick: handleEndTurn },
-        ]}
+        });
+      }
+
+      items.push({
+            action: 'end-turn', 
+            label: 'End turn ⏳', 
+            onClick: handleEndTurn
+        });
+
+    return (
+      
+      <GameMenu
+        items={items}
       ></GameMenu>
     );
   }
@@ -92,13 +103,13 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
 
   if (menu.type === 'fee-or-fight') {
     const tileLevel = currentTile.level;
-    const fee = currentTile.defences[tileLevel ?? 1] * 10 || 0;
+    const fee = currentTile.defences[tileLevel ?? 1] * FEE_MULTIPLIER || 0;
     const defence = currentTile.defences[tileLevel ?? 1] || 0;
     const items = [
       {
         label: `Pay fee ${fee} 🟡`,
         action: 'pay-fee' as MenuAction,
-        onClick: () => payFee(board, updateGameState, handleEndTurn),
+        onClick: () => payFee(board, updateGameState, setMenu),
         disabled: activePlayer.gold < fee,
       },
       {

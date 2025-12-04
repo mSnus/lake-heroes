@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { Dice } from '../game/Dice';
 import { say } from '../utils/say';
 import { MenuState } from '../types/menuState';
+import { TREASURE_BOX_MULTIPLIER } from '../components/board/common';
 
 export function handleTreasureBox(
   board: GameState | null,
@@ -14,7 +15,7 @@ export function handleTreasureBox(
   const dice = new Dice();
   const roll = dice.roll();
 
-  const goldReward = roll * 100;
+  const goldReward = roll * TREASURE_BOX_MULTIPLIER;
   const player = board.activePlayer;
 
   player.gold += goldReward;

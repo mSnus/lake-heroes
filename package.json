@@ -2,6 +2,7 @@
   "name": "board-game-simulator",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -11,6 +12,7 @@
     "@types/node": "^20.19.0",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-responsive": "^10.0.0",

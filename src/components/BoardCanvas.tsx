@@ -1,20 +1,16 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, ReactElement } from 'react';
 import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
-import mapUrlH from '../assets/map-h.png';
-import mapUrlV from '../assets/map-v.png';
+import mapUrlV from '../assets/map10.jpg';
+import diamondIcon from '../assets/diamond.svg';
 
 import {
   TILE_COUNT,
-  TILE_WIDTH,
-  TITLE_BAR_HEIGHT,
-  BODY_FONT,
   DIAMOND_SIZE,
   DIAMOND_GAP,
   getTilePosition,
   isMobileLayout,
   parseTileName,
-  BODY_MOBILE_FONT,
 } from './board/common';
 import '../styles/Board.css';
 
@@ -25,24 +21,20 @@ interface BoardCanvasProps {
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const isMobile = isMobileLayout();
 
-  const ratio = isMobile ? 2 : 1;
-
   const offsetX = isMobile ? 10 : 0;
   const offsetY = isMobile ? 8 : 0;
-
-  const titleBarHeight = Math.round(TITLE_BAR_HEIGHT / ratio);
 
   const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '64rem';
   const CANVAS_HEIGHT = isMobileLayout() ? '120vw' : '36.5625rem';
   const WRAPPER_HEIGHT = isMobileLayout() ? '115vw' : CANVAS_HEIGHT;
 
   const [mapReady, setMapReady] = React.useState(false);
-  const mapUrl = isMobile ? (mapUrlV as unknown as string) : (mapUrlH as unknown as string);
+  const mapUrl = mapUrlV as string;
 
   // Preload map so tiles render only after background is ready
   useEffect(() => {
     const img = new Image();
-    img.src = isMobile ? (mapUrlV as unknown as string) : (mapUrlH as unknown as string);
+    img.src = mapUrl;
     img.onload = () => setMapReady(true);
   }, [isMobile]);
 
@@ -74,9 +66,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         // Add click handler to make tiles interactive
         const handleTileClick = () => {
           if (tile) {
-            window.dispatchEvent(
-              new CustomEvent('displayTitle', { detail: { tileIndex: i, tile } })
-            );
+            window.dispatchEvent(new CustomEvent('displayTitle', { detail: tile }));
           }
         };
 
@@ -103,8 +93,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                         <div
                           className="tile-title"
                           style={{
-                            height: titleBarHeight,
-                            font: isMobile ? BODY_MOBILE_FONT : BODY_FONT,
                             color: grp?.color || '#FFF',
                           }}
                         >
@@ -130,7 +118,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
   // Dynamic ownership markers (diamonds) and player markers are rendered from current board
   const renderOwnershipMarkers = () => {
-    const markers: JSX.Element[] = [];
+    const markers: ReactElement[] = [];
     (board.tiles || []).forEach((tile: any, i: number) => {
       if (!tile || !tile.owner) return;
       const owner = board.players.find((p) => p.name === tile.owner);
@@ -158,7 +146,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                 width: DIAMOND_SIZE,
                 height: DIAMOND_SIZE,
               }}
-            />
+            ></div>
           ))}
         </div>
       );
@@ -183,7 +171,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
             id={`player-${player.name}`}
             className="player-marker"
             style={{
-              background: player.color,
+              background: `${player.color}`,
             }}
           />
           <div className="player-name">{player.name}</div>

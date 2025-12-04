@@ -6,19 +6,28 @@ import { MenuState } from '../types/menuState';
 export function handleKingCastle(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
   if (board.turns === 0) return;
 
-  console.log('Action: king castle');
-
-  const dice = new Dice();
-  const roll = dice.roll();
-  const unitsReward = roll;
   const player = board.activePlayer;
-  player.units += unitsReward;
+  console.log('Action: king castle for', player);
+
+  const bonusBase = player.gold * 0.5;
+  const halfGold = Math.ceil(bonusBase / 50) * 50;
+
+  const raw = halfGold / 100;
+
+  const unitsReward = raw > 0 ? Math.ceil(raw) : 0;
+
+  if (unitsReward > 0) {
+    player.units += unitsReward;
+    player.gold -= unitsReward * 100;
+
+    say(`King provided ${player.name} with ${unitsReward}🧍 for ${unitsReward * 100}🟡!`, 'success');
+  }
   updateGameState(board);
-  say(`King provides ${player.name} with ${unitsReward}🧍!`, 'success');
+
   setMenu({ type: 'end-turn' });
 }

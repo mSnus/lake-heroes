@@ -14,7 +14,7 @@ export function fightTile(
   console.log('Action: fight tile');
 
   const player = board.activePlayer;
-  const tile = board.tiles[player.position];
+  const tile = board.activeTile
   const tileLevel = tile.level ?? 1;
   const defence = tile.defences[tileLevel] || 0;
 

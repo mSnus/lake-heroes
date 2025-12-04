@@ -11,6 +11,7 @@ export class GameState {
   activePlayerIndex: number;
   dice: Dice;
   turns: number = 0;
+  circles: number = 0;
   gameStarted: boolean = false;
   turnPhase: TurnPhase;
   gameMessage: string = '';
@@ -38,5 +39,9 @@ export class GameState {
 
   setActivePlayerIndex(idx: number) {
     this.activePlayerIndex = idx;
+  }
+
+  get activeTile(): Tile {
+    return this.tiles[this.activePlayer.position];
   }
 }
