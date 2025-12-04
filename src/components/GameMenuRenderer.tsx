@@ -39,8 +39,8 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     // If on ownable tile, show option to sell it
     if (
       currentTile.isOwnable &&
-        !currentTile.isOwned() &&
-        currentTile.isAffordable(activePlayer.gold, activePlayer.units)
+      !currentTile.isOwned() &&
+      currentTile.isAffordable(activePlayer.gold, activePlayer.units)
     ) {
       items.push({
         action: 'buy-tile' as MenuAction,
@@ -66,31 +66,26 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
 
   if (menu.type === 'buy') {
     const tile = currentTile;
-    const items =  [] as MenuItem[];
+    const items = [] as MenuItem[];
 
-      if (tile.isAffordable(activePlayer.gold, activePlayer.units)) {
-        items.push({
-            action: 'buy-tile',
-            label: `Buy for ${tile.prices['1']?.gold ?? 0}🟡 ${tile.prices['1']?.units ?? 0}🧍`,
-            onClick: () => {
-              buyTile(board, updateGameState);
-              setMenu({ type: 'end-turn' });
-            },
-        });
-      }
-
+    if (tile.isAffordable(activePlayer.gold, activePlayer.units)) {
       items.push({
-            action: 'end-turn', 
-            label: 'End turn ⏳', 
-            onClick: handleEndTurn
-        });
+        action: 'buy-tile',
+        label: `Buy for ${tile.prices['1']?.gold ?? 0}🟡 ${tile.prices['1']?.units ?? 0}🧍`,
+        onClick: () => {
+          buyTile(board, updateGameState);
+          setMenu({ type: 'end-turn' });
+        },
+      });
+    }
 
-    return (
-      
-      <GameMenu
-        items={items}
-      ></GameMenu>
-    );
+    items.push({
+      action: 'end-turn',
+      label: 'End turn ⏳',
+      onClick: handleEndTurn,
+    });
+
+    return <GameMenu items={items}></GameMenu>;
   }
 
   if (menu.type === 'end-turn') {

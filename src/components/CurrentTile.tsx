@@ -11,14 +11,19 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState }) => {
   const [displayedTile, setDisplayedTile] = React.useState<Tile | null>(null);
   const [shouldDisplay, setShouldDisplay] = React.useState<boolean>(true);
 
-  if (!gameState) return;
-
   const current = gameState.activeTile;
+  if (gameState.turns === 0 && gameState.turnPhase === 'before-move' && shouldDisplay !== false) {
+        setShouldDisplay(false);
+      } 
   React.useEffect(() => {
     function ondisplayTitle(e: Event) {
       const detail = (e as CustomEvent).detail;
-      const display =
-        (detail !== null && current.isOwnable && !current.isOwned()) || displayedTile !== current;
+      let display = 
+        (detail !== null && current.isOwnable && !current.isOwned()) || displayedTile !== current; 
+
+      if (gameState.turns === 0 && gameState.turnPhase === 'before-move') {
+        display = false;
+      } 
 
       if (detail) {
         setDisplayedTile(detail);

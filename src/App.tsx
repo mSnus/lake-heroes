@@ -20,31 +20,34 @@ import { isMobileLayout } from './components/board/common';
 import { DiceWidget } from './components/DiceWidget';
 import ResetGameButton from './components/ResetGameButton';
 import { Dice } from './game/Dice';
-import { CurrentTile } from './components/CurrentCard';
+import { CurrentTile } from './components/CurrentTile';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
-import { Tile } from './game/Tile';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   useEffect(() => {
-    // Allow components to request phase changes via CustomEvent('setPhase', { detail: 'before-move' | ... })
+    // setPhase event listener and handler
     function onSetPhase(e: Event) {
       const phase = (e as CustomEvent).detail as TurnPhase;
-      if (!(phase === 'before-move' || phase === 'rolling' || phase === 'after-move')) return;
+
+      console.log(`Received event of phase ${phase}`);
+
+      if (!['before-move', 'rolling', 'after-move'].includes(phase)) return;
+
       if (!gameState) return;
-      // commit new GameState instance preserving prototype and dice instance
-      const mutated = Object.assign(new GameState(gameState.tiles, gameState.players), {
-        ...gameState,
-        turnPhase: phase,
-      }) as GameState;
-      // preserve dice instance if any
-      mutated.dice = gameState.dice || new Dice();
-      setGameState(mutated);
+
+      const newTurn = phase === 'after-move' ? gameState.turns + 1 : gameState.turns;
+
+      gameState.turnPhase = phase;
+      gameState.turns = newTurn;
+
+      setGameState(gameState);
     }
+
     window.addEventListener('setPhase', onSetPhase as EventListener);
     return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
   }, [gameState, setGameState]);
@@ -93,9 +96,8 @@ function App() {
       const tiles = buildTilesFromTemplates(tilesData);
       const players = (playersData as any[]).map((p: any) => new Player(p));
       const initialGameState = new GameState(tiles, players);
-      gameStart(initialGameState);
+      gameStart(initialGameState, updateGameState);
 
-      setGameState(initialGameState);
       setMenu({ type: 'main' });
 
       window.setTimeout(

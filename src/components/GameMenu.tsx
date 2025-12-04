@@ -36,7 +36,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({ title, items, children }) =>
 
     if (action === 'end-turn') {
       // update phase to before-move when ending turn
-      window.dispatchEvent(new CustomEvent('setPhase', { detail: 'before-move' }));
+      window.dispatchEvent(new CustomEvent('setPhase', { detail: 'after-move' }));
     }
 
     // Default: execute item handler

@@ -143,7 +143,7 @@
 .player-wrapper {
   position: absolute;
   z-index: 3;
-  transform: translate(30%, 50%);
+  transform: translate(-13px, -10px);
   display: flex;
   gap: 6px;
   pointer-events: auto;
@@ -157,20 +157,30 @@
 }
 
 .player-marker {
-  width: 18px;
-  height: 18px;
-  border-radius: 9px;
+  width: 33px;
+  height: 33px;
+  border-radius: 100%;
   border: 0.125rem solid #fff;
   position: absolute;
-  z-index: 500;
-  filter: drop-shadow(0px 0px 6px #fff);
+  transform: translate(6px, 14px);
+  z-index: 490;
+  /* filter: drop-shadow(0px 0px 6px #fff); */
+  /* opacity: 0.8; */
   /* background color is dynamic and set inline */
+}
+
+.player-image {
+  width: 64px;
+  min-height: 64px;
+  z-index: 500;
+  filter: drop-shadow(0px 0px 6px #000);
 }
 
 .player-name {
   font-size: 10px;
   color: #fff;
-  margin-top: 22px;
+  margin-top: -5px;
+  filter: drop-shadow(0px 0px 6px #000);
 }
 
 /* Background image */

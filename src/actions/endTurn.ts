@@ -12,7 +12,6 @@ export function endTurn(
   console.log('Action: end turn for', board.activePlayer.name);
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
-  board.turns += 1;
   board.gameMessage = '';
 
   if (board.activePlayer.turnsToSkip > 0) {
@@ -25,6 +24,4 @@ export function endTurn(
   }
 
   updateGameState(board);
-
-  // window.dispatchEvent(new CustomEvent('displayTitle', {}));
 }

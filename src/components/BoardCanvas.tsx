@@ -2,7 +2,12 @@ import React, { useRef, useEffect, ReactElement } from 'react';
 import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
 import mapUrlV from '../assets/map10.jpg';
-import diamondIcon from '../assets/diamond.svg';
+import riderBlue from '../assets/rider-blue.png';
+import riderYellow from '../assets/rider-yellow.png';
+import riderRed from '../assets/rider-red.png';
+import riderGreen from '../assets/rider-green.png';
+import riderViolet from '../assets/rider-violet.png';
+import riderBlack from '../assets/rider-black.png';
 
 import {
   TILE_COUNT,
@@ -157,16 +162,54 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const renderPlayer = (player: any, i: number) => {
     const tileNumber = player.position % TILE_COUNT;
     const pos = getTilePosition(tileNumber);
+
+    let src = 'rider-red.png';
+
+    switch (player.image) {
+      case 'rider-red.png':
+        src = riderRed;
+        break;
+      case 'rider-blue.png':
+        src = riderBlue;
+        break;
+      case 'rider-black.png':
+        src = riderBlack;
+        break;
+      case 'rider-green.png':
+        src = riderGreen;
+        break;
+      case 'rider-violet.png':
+        src = riderViolet;
+        break;
+      case 'rider-yellow.png':
+        src = riderYellow;
+        break;
+    }
+    
+    let onSameTileCount = 0;
+    board.players.forEach((p, idx) => {
+      if (idx < i && p.position % TILE_COUNT === tileNumber) {
+        onSameTileCount++;
+      }
+    });
+
+    const shiftOffset = onSameTileCount > 0 ? Math.ceil(7 / onSameTileCount) : 0;
+
     return (
       <div
         key={`player-${i}`}
         className="player-wrapper"
         style={{
           top: pos.y - offsetY + '%',
-          left: pos.x - offsetX + '%',
+          left: pos.x - offsetX + shiftOffset + '%',
         }}
       >
         <div className="player-col">
+          <img
+            className="player-image"
+            src={src}
+            alt={player.name}
+          />
           <div
             id={`player-${player.name}`}
             className="player-marker"

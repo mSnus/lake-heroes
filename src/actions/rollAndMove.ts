@@ -36,7 +36,7 @@ export async function rollAndMove(
     const nextPos = (player.position + 1) % TILE_COUNT;
     const willWrap = player.position + 1 >= TILE_COUNT;
 
-    board.turnPhase = 'moving';
+    window.dispatchEvent(new CustomEvent('setPhase', { detail: 'moving' }));
     player.position = nextPos;
     updateGameState(board);
 
@@ -49,7 +49,7 @@ export async function rollAndMove(
     await new Promise((res) => setTimeout(res, 300));
   }
 
-  board.turnPhase = 'after-move';
+  window.dispatchEvent(new CustomEvent('setPhase', { detail: 'after-move' }));
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic

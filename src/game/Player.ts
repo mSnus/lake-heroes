@@ -4,6 +4,7 @@ export interface PlayerParams {
   gold: number;
   units: number;
   position: number;
+  image: string;
 }
 
 export class Player {
@@ -13,6 +14,7 @@ export class Player {
   units: number;
   ownedTiles: number[];
   position: number;
+  image: string;
   turnsToSkip: number;
 
   constructor(params: PlayerParams) {
@@ -21,6 +23,7 @@ export class Player {
     this.gold = params.gold;
     this.units = params.units;
     this.position = params.position;
+    this.image = params.image;
     this.ownedTiles = [];
     this.turnsToSkip = 0;
   }
