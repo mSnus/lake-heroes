@@ -44,4 +44,12 @@ export class GameState {
   get activeTile(): Tile {
     return this.tiles[this.activePlayer.position];
   }
+
+  setPhase(phase: TurnPhase) {
+    this.turnPhase = phase;
+  }
+
+  incTurns() {
+    this.turns = this.turns + 1;
+  }
 }

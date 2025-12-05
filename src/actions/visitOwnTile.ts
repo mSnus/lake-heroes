@@ -17,14 +17,14 @@ export function handleVisitOwnTile(
 
   let rewards = [];
   if (tile.bonusType === 'gold') {
-    const goldReward = tile.bonuses[tile.level ?? 1] || 0;
+    const goldReward = tile.bonuses[tile.level] || 0;
     rewards.push(`${goldReward}🟡`);
 
     player.gold += goldReward;
   }
 
   if (tile.bonusType === 'units') {
-    const unitsReward = tile.bonuses[tile.level ?? 1] || 0;
+    const unitsReward = tile.bonuses[tile.level] || 0;
     rewards.push(`${unitsReward}🧍`);
 
     player.units += unitsReward;

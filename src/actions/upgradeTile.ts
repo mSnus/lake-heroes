@@ -26,7 +26,7 @@ export function upgradeTile(
   if (player.gold >= price.gold && player.units >= price.units) {
     player.gold -= price.gold;
     player.units -= price.units;
-    tile.level = nextlevel;
+    tile._level = nextlevel;
     updateGameState(board);
   }
   endTurn();

@@ -89,7 +89,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
               {tile?.name &&
                 (() => {
                   const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
-                  const isKingTile = textPart1?.substr(0, 4) === 'King';
+                  const isKingTile = textPart1?.substring(0, 4) === 'King';
                   const emojiClass = isKingTile ? 'title-emoji-big' : 'tile-emoji';
 
                   return (

@@ -19,7 +19,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
     if (!tile) continue;
     if (tile.owner && tile.owner !== player.name) continue; // safety check
 
-    const bonus = tile.bonuses[tile.level ?? 1] || 0;
+    const bonus = tile.bonuses[tile.level] || 0;
     if ((tile.bonusType || 'gold') === 'units') {
       unitsProfit += bonus;
     } else {

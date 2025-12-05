@@ -89,28 +89,32 @@
 .tile-left .tile-content {
   display: flex;
   flex-direction: row;
+  gap: 1px;
 }
 
 .tile-right .tile-content {
   display: flex;
   flex-direction: row-reverse;
+  gap: 1px;
 }
 
 .tile-emoji {
   font:
-    24px Arial,
+    1.5rem Arial,
     sans-serif;
   margin-bottom: 4px;
   filter: drop-shadow(1px 5px 5px #000000a0);
+  z-index: 101;
 }
 
 .title-emoji-big {
   font:
-    54px Arial,
+    3.3rem Arial,
     sans-serif;
   margin-bottom: 4px;
   filter: drop-shadow(1px 5px 5px #000000a0);
   margin-top: -20px;
+  z-index: 101;
 }
 
 .tile-title {
@@ -122,14 +126,15 @@
   background-color: #00000055;
   font: var(--body-font);
   height: 20px;
+  z-index: 100;
 }
 
 /* Diamonds (ownership markers) */
 .diamond-container {
   position: absolute;
   z-index: 2;
-  display: flex;
-  transform: translate(-50%, 150%);
+  display: block;
+  transform: translate(-30%, 200%);
   gap: 4px;
 }
 
@@ -137,6 +142,15 @@
   transform: rotate(45deg);
   border: solid 1px #ffffff55;
   /* width/height and background color are set inline (DIAMOND_SIZE, owner color) */
+}
+
+.diamond-container .diamond {
+  margin-left: -5px;
+  float: right;
+}
+
+.diamond-container .diamond:first {
+  margin-left: 0px;
 }
 
 /* Player markers */

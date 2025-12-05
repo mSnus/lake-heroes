@@ -20,6 +20,7 @@ export function endTurn(
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
   } else {
+    
     setMenu({ type: 'main' });
   }
 

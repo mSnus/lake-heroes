@@ -12,7 +12,6 @@ import { afterMoveLogic } from './afterMoveLogic';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../components/board/common';
 
-
 export async function rollAndMove(
   board: GameState | null,
   updateGameState: (board: GameState) => void,

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/CurrentPlayer.css';
+import { Tile } from '../game/Tile';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -8,25 +9,64 @@ interface CurrentPlayerProps {
 
 export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   const activePlayer = gameState.activePlayer;
+
+  // Map owned tiles and keep their indices
+  const owned = useMemo(() => {
+    const res: { tile: Tile; idx: number }[] = [];
+    gameState.tiles.forEach((t: any, idx: number) => {
+      if (t && t.owner === activePlayer.name) res.push({ tile: t as Tile, idx });
+    });
+    return res;
+  }, [gameState, activePlayer.name]);
+
+  let totalGold = 0;
+  let totalUnits = 0;
+
+  owned.forEach(({ tile }) => {
+    if (tile.bonusType === 'gold') {
+      totalGold += tile.bonuses[tile.level] ?? 0;
+    } else {
+      totalUnits += tile.bonuses[tile.level] ?? 0;
+    }
+  });
+
   return (
-    <div className="player-pane">
+    <div className="player-pane"
+      style={{ 
+        borderColor: activePlayer.color ,
+        borderTopStyle: 'solid',
+        borderTopWidth: '4px',        
+      }}>
+
       <div
         style={{
           fontWeight: 500,
           borderColor: activePlayer.color,
-          borderBottomStyle: 'solid',
-          borderBottomWidth: '4px',
           paddingBottom: '4px',
           paddingTop: '4px',
         }}
       >
         {activePlayer.name}
       </div>
+
       <div>
         <strong>{activePlayer.gold ?? 0} 🟡</strong>
       </div>
       <div>
         <strong>{activePlayer.units ?? 0} 🧍</strong>
+      </div>
+
+
+
+      <div style={{
+        filter: 'grayscale(0.7)',
+        fontSize: '16px'
+      }}></div>
+      <div>
+        <strong>{totalGold} 🏆</strong>
+      </div>
+      <div>
+        <strong>{totalUnits} 👬</strong>
       </div>
     </div>
   );

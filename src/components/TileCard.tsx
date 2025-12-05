@@ -35,6 +35,8 @@ export const TileCard: React.FC<TileCardProps> = ({
   gameState,
   updateGameState,
 }) => {
+  const [expanded, setExpanded] = React.useState(false);
+
   if (!tile) return null;
 
   const groupMeta = (groups as { name: string; icon: string; color: string }[]).find(
@@ -44,16 +46,16 @@ export const TileCard: React.FC<TileCardProps> = ({
   const groupColor = groupMeta?.color ?? '#eee';
   const bonusType = getBonusType(tile);
 
-  const pricelevel1 = fmtPrice(tile.prices[1]?.gold ?? 0, tile.prices[1]?.units ?? 0);
+  const pricelevel1 = fmtPrice(tile.prices['1']?.gold ?? 0, tile.prices['1']?.units ?? 0);
   const pricelevel2 = fmtPrice(tile.prices['2']?.gold ?? 0, tile.prices['2']?.units ?? 0);
   const pricelevel3 = fmtPrice(tile.prices['3']?.gold ?? 0, tile.prices['3']?.units ?? 0);
 
-  const bonus = (level: 1 | 2 | 3) => tile.bonuses[level] ?? 0;
-  const defence = (level: 1 | 2 | 3) => tile.defences[level] ?? 0;
+  const bonus = (level: number) => tile.bonuses[level] ?? 0;
+  const defence = (level: number) => tile.defences[level] ?? 0;
 
-  const class1 = tile.isOwned() && (tile.level ?? 1) < 2 ? 'tc-td level-highlighted' : 'tc-td';
-  const class2 = tile.isOwned() && (tile.level ?? 1) == 2 ? 'tc-td level-highlighted' : 'tc-td';
-  const class3 = tile.isOwned() && (tile.level ?? 1) == 3 ? 'tc-td level-highlighted' : 'tc-td';
+  const class1 = tile.isOwned() && tile.level < 2 ? 'tc-td level-highlighted' : 'tc-td';
+  const class2 = tile.isOwned() && tile.level == 2 ? 'tc-td level-highlighted' : 'tc-td';
+  const class3 = tile.isOwned() && tile.level == 3 ? 'tc-td level-highlighted' : 'tc-td';
 
   let canUpgrade = false;
   const activePlayer = gameState?.activePlayer ?? null;
@@ -90,7 +92,7 @@ export const TileCard: React.FC<TileCardProps> = ({
       (activePlayer.gold || 0) - (nextPrice.gold || 0);
     gameState.players[gameState.playerOrder[gameState.activePlayerIndex]].units =
       (activePlayer.units || 0) - (nextPrice.units || 0);
-    tile.level = nextLevel;
+    tile._level = nextLevel;
     say(`${activePlayer.name} upgraded ${tile.name} to level ${nextLevel}`, 'info');
     updateGameState && updateGameState(gameState);
   };
@@ -112,6 +114,10 @@ export const TileCard: React.FC<TileCardProps> = ({
       `${activePlayer.name} sold ${tile.name} and received ${refunds.gold}🟡 and ${refunds.units}🧍`,
       'info'
     );
+  };
+
+  const handleClick = () => {
+    setExpanded(!expanded);
   };
 
   return (
@@ -149,66 +155,108 @@ export const TileCard: React.FC<TileCardProps> = ({
         )}
       </div>
 
-      <div className="tile-card-title">
-        {tile.name} {(tile.level ?? 1) > 1 ? `(Level ${tile.level})` : ''}
-      </div>
+      <div className="tile-card-title">{tile.name}</div>
 
-      {tile.isOwnable && (
-        <div className="tile-card-body">
-          <div className="tile-card-table-wrap">
-            <table className="tile-card-table">
-              <thead>
-                <tr>
-                  <th className="tc-th">🔺🔺🔺</th>
-                  <th className="tc-th">🏆</th>
-                  <th className="tc-th">🛡️</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className={class1}>{pricelevel1}</td>
-                  <td className={class1}>
-                    +{bonus(1)} {bonusType === 'gold' ? '🟡' : '🧍'}
-                  </td>
-                  <td className={class1}>{defence(1)} 🧍</td>
-                </tr>
-                <tr>
-                  <td className={class2}>{pricelevel2}</td>
-                  <td className={class2}>
-                    +{bonus(2)} {bonusType === 'gold' ? '🟡' : '🧍'}
-                  </td>
-                  <td className={class2}>{defence(2)} 🧍</td>
-                </tr>
-                <tr>
-                  <td className={class3}>{pricelevel3}</td>
-                  <td className={class3}>
-                    +{bonus(3)} {bonusType === 'gold' ? '🟡' : '🧍'}
-                  </td>
-                  <td className={class3}>{defence(3)} 🧍</td>
-                </tr>
-              </tbody>
-            </table>
+      {mode === 'display' && tile.owner && (
+        <div className="tile-owner">
+          owned by
+          <div
+            style={{
+              color: gameState?.players.find((p) => p.name === tile.owner)?.color || '#444',
+            }}
+          >
+            {tile.owner}
           </div>
         </div>
       )}
 
-      {mode === 'display' && tile.owner && (
-        <div className="tile-owner">
-          owned by {tile.owner}
-          {Array.from({ length: tile.level ?? 1 }).map((_, d) => (
-            <div
-              key={d}
-              className="diamond"
-              style={{
-                background: gameState?.players.find((p) => p.name === tile.owner)?.color || '#444',
-              }}
-            />
-          ))}
+      {tile.isOwnable && (
+        <div className="tile-card-body" onClick={handleClick}>
+          <div className="tile-card-base-level">
+            <table className="tile-card-base-info">
+              <tbody>
+                <tr>
+                  <td>
+                    {tile.owner && (
+                      <div className="diamonds">
+                        {Array.from({ length: tile.level }).map((_, d) => (
+                          <div
+                            key={d}
+                            className="diamond"
+                            style={{
+                              background:
+                                gameState?.players.find((p) => p.name === tile.owner)?.color ||
+                                '#444',
+                              width: '12px',
+                              height: '12px',
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {!tile.owner && '🚩'}
+                  </td>
+                  <td>{tile.currentPrice.gold ?? 0} 🟡</td>
+                  <td>{tile.currentPrice.units ?? 0}🧍</td>
+                </tr>
+                <tr>
+                  <td className="circular-path">🗘</td>
+                  <td>
+                    +{bonus(tile.level)} {bonusType === 'gold' ? '🏆' : '👬'}
+                  </td>
+                  <td>{defence(tile.level)} 🛡️</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {!expanded && <div className="tile-card-toggle">⏬</div>}
+
+          {expanded && (
+            <div className="tile-card-table-wrap">
+              <div className="tile-card-toggle">⏫</div>
+              <table className="tile-card-table">
+                <thead>
+                  <tr>
+                    <th className="tc-th">🚩</th>
+                    <th className="tc-th">🏆/👬</th>
+                    <th className="tc-th">🛡️</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className={class1}>{pricelevel1}</td>
+                    <td className={class1}>
+                      +{bonus(1)} {bonusType === 'gold' ? '🏆' : '👬'}
+                    </td>
+                    <td className={class1}>{defence(1)} </td>
+                  </tr>
+                  <tr>
+                    <td className={class2}>{pricelevel2}</td>
+                    <td className={class2}>
+                      +{bonus(2)} {bonusType === 'gold' ? '🏆' : '👬'}
+                    </td>
+                    <td className={class2}>{defence(2)} </td>
+                  </tr>
+                  <tr>
+                    <td className={class3}>{pricelevel3}</td>
+                    <td className={class3}>
+                      +{bonus(3)} {bonusType === 'gold' ? '🏆' : '👬'}
+                    </td>
+                    <td className={class3}>{defence(3)} </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
       {!tile.isOwnable && tile.description && (
-        <div className="tile-card-description" dangerouslySetInnerHTML={{ __html: tile.description }} />
+        <div
+          className="tile-card-description"
+          dangerouslySetInnerHTML={{ __html: tile.description }}
+        />
       )}
     </div>
   );

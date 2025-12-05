@@ -18,7 +18,7 @@ import playersData from './settings/players.json';
 import { buildTilesFromTemplates, rehydrateSavedTiles } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
 import { DiceWidget } from './components/DiceWidget';
-import ResetGameButton from './components/ResetGameButton';
+import NewGameButton from './components/NewGameButton';
 import { Dice } from './game/Dice';
 import { CurrentTile } from './components/CurrentTile';
 import { CurrentPlayer } from './components/CurrentPlayer';
@@ -29,31 +29,27 @@ function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
-  useEffect(() => {
-    // setPhase event listener and handler
-    function onSetPhase(e: Event) {
-      const phase = (e as CustomEvent).detail as TurnPhase;
+  // setPhase event listener and handler
+  function onSetPhase(e: Event) {
+    if (!gameState) return;
 
-      console.log(`Received event of phase ${phase}`);
+    const phase = (e as CustomEvent).detail as TurnPhase;
 
-      if (!['before-move', 'rolling', 'after-move'].includes(phase)) return;
+    if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
 
-      if (!gameState) return;
-
-      const newTurn = phase === 'after-move' ? gameState.turns + 1 : gameState.turns;
-
-      gameState.turnPhase = phase;
-      gameState.turns = newTurn;
-
-      setGameState(gameState);
+    gameState.setPhase(phase);
+    if (phase === 'after-move') {
+      gameState.incTurns();
     }
 
-    window.addEventListener('setPhase', onSetPhase as EventListener);
-    return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
-  }, [gameState, setGameState]);
+    setGameState(gameState);
+  }
+
+  window.addEventListener('setPhase', onSetPhase as EventListener);
 
   useEffect(() => {
     function loadGameData() {
+      console.warn('Loading game data...');
       const saved = loadFromStorage('game-state', null);
       if (saved) {
         say('Restoring saved game...', 'info');
@@ -163,12 +159,14 @@ function App() {
               <CurrentPlayer gameState={gameState} />
 
               {menu && gameState.turnPhase !== 'moving' ? (
-                <GameMenuRenderer
-                  board={gameState}
-                  menu={menu}
-                  setMenu={setMenu}
-                  updateGameState={updateGameState}
-                />
+                <div>
+                  <GameMenuRenderer
+                    board={gameState}
+                    menu={menu}
+                    setMenu={setMenu}
+                    updateGameState={updateGameState}
+                  />
+                </div>
               ) : (
                 <div className="game-menu"></div>
               )}
@@ -179,7 +177,7 @@ function App() {
         </div>
       )}
 
-      <ResetGameButton />
+      <NewGameButton />
     </div>
   );
 }

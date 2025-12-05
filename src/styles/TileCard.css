@@ -58,6 +58,79 @@
   padding-bottom: 8px;
 }
 
+.tile-card-base-level {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  align-items: center;
+  gap: 12px;
+}
+
+.tile-card-price {
+  display: flex;
+  text-align: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.tile-card-bonus {
+  display: flex;
+  text-align: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.tile-card-base-info {
+  border-collapse: collapse;
+  text-align: center;
+  margin-bottom: 12px;
+  white-space: nowrap;
+}
+
+.tile-card-base-info .diamonds {
+  display: block;
+}
+
+.tile-card-base-info .diamond {
+  margin-left: -5px;
+  float: right;
+}
+
+.tile-card-base-info .diamond:first {
+  margin-left: 0px;
+}
+
+.tile-card-base-info tr:first-child {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tile-card-base-info td {
+  padding: 4px 8px;
+}
+
+.tile-card-base-info td:nth-child(2) {
+  text-align: right;
+}
+
+.tile-card-toggle {
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  filter: grayscale(0.8);
+}
+
+.tile-card-own-level {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 .tile-card-body {
   padding: 0px 12px 12px 12px;
 }
@@ -81,11 +154,12 @@
 .tc-td {
   padding: 4px 6px;
   text-wrap: nowrap;
-  text-align: right;
+  text-align: center;
 }
 
-.tc-td:first-child {
-  text-align: center;
+.tc-td:nth-child(2) {
+  text-align: right;
+  padding-right: 1rem;
 }
 
 .tile-card-description {
@@ -97,9 +171,10 @@
 
 .tile-owner {
   font-weight: 600;
-  margin-top: 8px;
+  margin-top: -8px;
+  padding-left: 12px;
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: center;
   gap: 6px;
@@ -115,4 +190,10 @@
   background-color: #f5e8d1;
   color: #000;
   font-weight: 600;
+}
+
+.circular-path {
+  transform: scaley(0.9) translateY(4px) translateX(4px);
+  color: #ffbf6b;
+  font-size: 24px;
 }

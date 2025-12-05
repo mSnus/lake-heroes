@@ -34,7 +34,7 @@ export function sellTile(
 
   // Mutate tile and player
   tile.owner = undefined;
-  tile.level = 1;
+  tile._level = 1;
 
   player.gold = (player.gold || 0) + totalGold;
   player.units = (player.units || 0) + totalUnits;

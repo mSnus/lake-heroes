@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { GameMenu, MenuAction, MenuItem } from './GameMenu';
@@ -97,9 +97,8 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'fee-or-fight') {
-    const tileLevel = currentTile.level;
-    const fee = currentTile.defences[tileLevel ?? 1] * FEE_MULTIPLIER || 0;
-    const defence = currentTile.defences[tileLevel ?? 1] || 0;
+    const fee = currentTile.defences[currentTile.level] * FEE_MULTIPLIER || 0;
+    const defence = currentTile.defences[currentTile.level] || 0;
     const items = [
       {
         label: `Pay fee ${fee} 🟡`,

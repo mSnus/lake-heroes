@@ -20,7 +20,7 @@ export class Tile implements TileJSON {
   bonuses: { [level: number]: number };
   defences: { [level: number]: number };
   owner?: string | null;
-  level?: number;
+  _level?: number;
   description?: string;
 
   constructor(data: Partial<TileJSON> = {}) {
@@ -32,8 +32,12 @@ export class Tile implements TileJSON {
     this.bonuses = Object.assign({}, data.bonuses || {});
     this.defences = Object.assign({}, data.defences || {});
     this.owner = data.owner ?? null;
-    this.level = typeof data.level === 'number' ? data.level : 1;
+    this._level = typeof data.level === 'number' ? data.level : 1;
     this.description = data.description;
+  }
+
+  get level(): number {
+    return this._level ?? 1;
   }
 
   isOwned(): boolean {
@@ -62,6 +66,18 @@ export class Tile implements TileJSON {
       return { gold: this.prices['1'].gold || 0, units: this.prices['1'].units || 0 };
     const up = this.prices && this.prices[key];
     return { gold: up?.gold || 0, units: up?.units || 0 };
+  }
+
+  get currentPrice(): { gold: number; units: number } {
+    let priceGold = 0;
+    let priceUnits = 0;
+
+    for (let lvl = 1; lvl <= this.level; lvl++) {
+      priceGold += this.prices[lvl].gold || 0;
+      priceUnits += this.prices[lvl].units || 0;
+    }
+
+    return { gold: priceGold, units: priceUnits };
   }
 
   getBonus(level: number = 1): number {

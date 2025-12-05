@@ -23,8 +23,7 @@ export function afterMoveLogic(
 
   // Ownable, not owned, player can buy
   if (!tile.isOwned()) {
-    if (tile.isAffordable(player.gold, player.units)
-    ) {
+    if (tile.isAffordable(player.gold, player.units)) {
       setMenu({ type: 'buy' });
       return;
     } else {
@@ -36,8 +35,8 @@ export function afterMoveLogic(
 
   // Ownable, owned by someone else
   if (tile.isOwned() && tile.owner !== player.name) {
-    const fee = tile.defences[tile.level ?? 1] * FEE_MULTIPLIER || 0;
-    const defence = tile.defences[tile.level ?? 1] || 0;
+    const fee = tile.defences[tile.level] * FEE_MULTIPLIER || 0;
+    const defence = tile.defences[tile.level] || 0;
 
     if (player.gold < fee && player.units < defence) {
       //Death

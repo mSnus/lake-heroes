@@ -450,7 +450,7 @@
     }
   },
   {
-    "group": "Manufacture",
+    "group": "Hunters",
     "name": "🍇 Grapes",
     "isOwnable": true,
     "bonusType": "gold",
@@ -480,7 +480,7 @@
     }
   },
   {
-    "group": "Manufacture",
+    "group": "Hunters",
     "name": "🐟 Fish",
     "isOwnable": true,
     "bonusType": "gold",
@@ -510,7 +510,7 @@
     }
   },
   {
-    "group": "Manufacture",
+    "group": "Hunters",
     "name": "🦫 Fur",
     "isOwnable": true,
     "bonusType": "gold",

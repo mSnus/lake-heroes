@@ -1,6 +1,8 @@
 import React from 'react';
 
-const ResetGameButton: React.FC = () => {
+import shield from '../assets/shield.png';
+
+const NewGameButton: React.FC = () => {
   function handleReset() {
     if (
       window.confirm(
@@ -21,32 +23,40 @@ const ResetGameButton: React.FC = () => {
     <div
       style={{
         position: 'fixed',
-        top: '0px',
-        left: '0px',
-        width: '40px',
+        top: '-18px',
+        left: '-18px',
+        width: '80px',
+        height: '80px',
         display: 'flex',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: 50,
+        backgroundImage: `url(${shield})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: 'contain',
+        filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.3))',
       }}
     >
       <button
         onClick={handleReset}
         style={{
-          padding: '4px 6px',
-          borderRadius: '0px 0px 12px 0px',
+          width: '100%',
+          height: '100%',
+          borderRadius: '100%',
           fontSize: '12px',
           cursor: 'pointer',
           border: 'none',
-          background: '#959c95ff',
-          color: '#333',
+          background: 'transparent',
+          color: '#b1a772',
           fontWeight: 600,
-          boxShadow: '1px 13px 13px rgba(0,0,0,0.3)',
         }}
       >
-        New Game
+        New
+        <br />
+        Game
       </button>
     </div>
   );
 };
 
-export default ResetGameButton;
+export default NewGameButton;

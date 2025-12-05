@@ -7,16 +7,15 @@ import { Player } from '../game/Player';
 export function fightTile(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
+  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
 
   console.log('Action: fight tile');
 
   const player = board.activePlayer;
-  const tile = board.activeTile
-  const tileLevel = tile.level ?? 1;
-  const defence = tile.defences[tileLevel] || 0;
+  const tile = board.activeTile;
+  const defence = tile.defences[tile.level] || 0;
 
   const dice = new Dice();
   const roll = dice.roll();
@@ -36,7 +35,7 @@ export function fightTile(
     say(`${player.name} razed the ${tile.name} with high price of  ${defence}🧍`, 'success');
     player.units -= defence;
 
-    tile.level = 1;
+    tile._level = 1;
     tile.owner = undefined;
 
     board.players.forEach((p: Player) => {
