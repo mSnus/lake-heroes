@@ -45,7 +45,7 @@
 }
 
 .tile-card-button:disabled {
-  filter: grayscale();
+  filter: grayscale(1);
   opacity: 0.6;
   pointer-events: none;
 }
@@ -99,8 +99,8 @@
   float: right;
 }
 
-.tile-card-base-info .diamond:first {
-  margin-left: 0px;
+.tile-card-base-info .diamond:first-child {
+  margin-left: 0;
 }
 
 .tile-card-base-info tr:first-child {
@@ -132,7 +132,7 @@
 }
 
 .tile-card-body {
-  padding: 0px 12px 12px 12px;
+  padding: 0 12px 12px 12px;
 }
 
 .tile-card-table-wrap {
@@ -193,7 +193,6 @@
 }
 
 .circular-path {
-  transform: scaley(0.9) translateY(4px) translateX(4px);
   color: #ffbf6b;
-  font-size: 24px;
+  font-size: 16px;
 }

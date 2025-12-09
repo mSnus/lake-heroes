@@ -26,13 +26,18 @@ export function handleSphynx(
 
   if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
-    const half = player.gold / 2;
-    const roundedUp50 = Math.ceil(half / 50) * 50;
-    const loss = Math.min(player.gold, roundedUp50);
+    if (player.gold === 0) {
+      const half = player.gold / 2;
+      const roundedUp50 = Math.ceil(half / 50) * 50;
+      const loss = Math.min(player.gold, roundedUp50);
 
-    player.gold -= loss;
-    message += `Lost half of gold: -${loss}🟡`;
-    gameState.gameMessage = `You escape the Sphynx losing ${loss}🟡.`;
+      player.gold -= loss;
+      message += `Lost half of gold: -${loss}🟡`;
+      gameState.gameMessage = `You escape the Sphynx losing ${loss}🟡`;
+    } else {
+      message += `He sees your poverty and lets you go.`;
+      gameState.gameMessage = `The Sphinx refuses to deal with beggars`;
+    }
   } else if (roll === 3 || roll === 4) {
     // Lose 30% units, rounded up to at least 1, but not below zero
     const raw = Math.ceil(player.units * 0.33);

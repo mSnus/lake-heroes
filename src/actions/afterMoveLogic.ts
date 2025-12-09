@@ -35,8 +35,8 @@ export function afterMoveLogic(
 
   // Ownable, owned by someone else
   if (tile.isOwned() && tile.owner !== player.name) {
-    const fee = tile.defences[tile.level] * FEE_MULTIPLIER || 0;
-    const defence = tile.defences[tile.level] || 0;
+    const fee = tile.defence * FEE_MULTIPLIER || 0;
+    const defence = tile.defence || 0;
 
     if (player.gold < fee && player.units < defence) {
       //Death

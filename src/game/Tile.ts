@@ -40,6 +40,11 @@ export class Tile implements TileJSON {
     return this._level ?? 1;
   }
 
+  get defence(): number {
+    const level = this._level ?? 1;
+    return level == 1 ? this.bonuses[1] : this.defences[level];
+  }
+
   isOwned(): boolean {
     return !!this.owner;
   }

@@ -31,13 +31,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   });
 
   return (
-    <div className="player-pane"
-      style={{ 
-        borderColor: activePlayer.color ,
+    <div
+      className="player-pane"
+      style={{
+        borderColor: activePlayer.color,
         borderTopStyle: 'solid',
-        borderTopWidth: '4px',        
-      }}>
-
+        borderTopWidth: '4px',
+      }}
+    >
       <div
         style={{
           fontWeight: 500,
@@ -56,14 +57,15 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <strong>{activePlayer.units ?? 0} 🧍</strong>
       </div>
 
-
-
-      <div style={{
-        filter: 'grayscale(0.7)',
-        fontSize: '16px'
-      }}></div>
-      <div>
-        <strong>{totalGold} 🏆</strong>
+      <div
+        style={{
+          filter: 'grayscale(0.7)',
+          fontSize: '16px',
+        }}
+      ></div>
+      <div style={{display: 'flex', justifyContent: 'center', alignItems:'center'}}>
+        <div className="circular-path" style={{paddingTop: '6px', paddingRight: '4px'}}>🗘</div>
+        <strong>{totalGold} 🟡</strong>
       </div>
       <div>
         <strong>{totalUnits} 👬</strong>

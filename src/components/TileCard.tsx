@@ -173,12 +173,12 @@ export const TileCard: React.FC<TileCardProps> = ({
       {tile.isOwnable && (
         <div className="tile-card-body" onClick={handleClick}>
           <div className="tile-card-base-level">
-            <table className="tile-card-base-info">
-              <tbody>
-                <tr>
-                  <td>
-                    {tile.owner && (
-                      <div className="diamonds">
+            {tile.owner && (
+              <table className="tile-card-base-info">
+                <tbody>
+                  <tr>
+                    <td colSpan={2} align="center">
+                      <div className="diamonds" style={{ textAlign: 'center' }}>
                         {Array.from({ length: tile.level }).map((_, d) => (
                           <div
                             key={d}
@@ -193,21 +193,35 @@ export const TileCard: React.FC<TileCardProps> = ({
                           />
                         ))}
                       </div>
-                    )}
-                    {!tile.owner && '🚩'}
-                  </td>
-                  <td>{tile.currentPrice.gold ?? 0} 🟡</td>
-                  <td>{tile.currentPrice.units ?? 0}🧍</td>
-                </tr>
-                <tr>
-                  <td className="circular-path">🗘</td>
-                  <td>
-                    +{bonus(tile.level)} {bonusType === 'gold' ? '🏆' : '👬'}
-                  </td>
-                  <td>{defence(tile.level)} 🛡️</td>
-                </tr>
-              </tbody>
-            </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span className="circular-path">🗘</span>
+                      {bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
+                    </td>
+                    <td>{tile.defence} 🛡️</td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+
+            {!tile.owner && (
+              <table className="tile-card-base-info">
+                <tbody>
+                  <tr>
+                    <td>🚩 {tile.currentPrice.gold ?? 0} 🟡</td>
+                    <td>{defence(1)} 🧍</td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>
+                      <span className="circular-path">🗘</span>
+                      {bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
           </div>
 
           {!expanded && <div className="tile-card-toggle">⏬</div>}
@@ -219,7 +233,11 @@ export const TileCard: React.FC<TileCardProps> = ({
                 <thead>
                   <tr>
                     <th className="tc-th">🚩</th>
-                    <th className="tc-th">🏆/👬</th>
+                    <th className="tc-th">
+                      <div className="circular-path" style={{ paddingTop: '5px' }}>
+                        🗘
+                      </div>
+                    </th>
                     <th className="tc-th">🛡️</th>
                   </tr>
                 </thead>
@@ -227,21 +245,21 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <tr>
                     <td className={class1}>{pricelevel1}</td>
                     <td className={class1}>
-                      +{bonus(1)} {bonusType === 'gold' ? '🏆' : '👬'}
+                      +{bonus(1)} {bonusType === 'gold' ? '🟡' : '👬'}
                     </td>
                     <td className={class1}>{defence(1)} </td>
                   </tr>
                   <tr>
-                    <td className={class2}>{pricelevel2}</td>
+                    <td className={class2}>+{pricelevel2}</td>
                     <td className={class2}>
-                      +{bonus(2)} {bonusType === 'gold' ? '🏆' : '👬'}
+                      +{bonus(2)} {bonusType === 'gold' ? '🟡' : '👬'}
                     </td>
                     <td className={class2}>{defence(2)} </td>
                   </tr>
                   <tr>
-                    <td className={class3}>{pricelevel3}</td>
+                    <td className={class3}>+{pricelevel3}</td>
                     <td className={class3}>
-                      +{bonus(3)} {bonusType === 'gold' ? '🏆' : '👬'}
+                      +{bonus(3)} {bonusType === 'gold' ? '🟡' : '👬'}
                     </td>
                     <td className={class3}>{defence(3)} </td>
                   </tr>
