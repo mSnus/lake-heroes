@@ -25,10 +25,13 @@ import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import BuyUnitsModal from './components/BuyUnitsModal';
+import NewGameModal, { PlayerSetup } from './components/NewGameModal';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
+  const [showNewGameModal, setShowNewGameModal] = useState(true);
+
 
   // setPhase event listener and handler
   function onSetPhase(e: Event) {
@@ -149,6 +152,15 @@ function App() {
     setMenu({ type: 'end-turn' });
   };
 
+  const handleStartGame = (playersSetup: PlayerSetup[]) => {
+    // Create a new GameState with the configuration from the modal
+    const newPlayers = playersSetup.map((p) => new Player(p));
+    const newGameState = { tiles: gameState?.tiles, players: newPlayers };
+
+    updateGameState(newGameState);
+    setShowNewGameModal(false); // Hide the modal
+  };
+
   return (
     <div className="App">
       <ToastContainer
@@ -171,6 +183,8 @@ function App() {
           <DiceWidget gameState={gameState} />
           <CurrentTile gameState={gameState} />
           <BoardCanvas board={gameState} />
+
+          {showNewGameModal && <NewGameModal onStart={handleStartGame} />}
 
           <div className="board-controls-wrapper">
             <GameMessage message={gameState.gameMessage} />

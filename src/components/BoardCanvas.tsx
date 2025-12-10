@@ -2,14 +2,6 @@ import React, { useRef, useEffect, ReactElement } from 'react';
 import { GameState } from '../game/GameState';
 import { SPRITE_SIZE } from './board/common';
 import groupsData from '../settings/groups.json';
-import mapUrlV from '../assets/map10.jpg';
-import riderBlue from '../assets/rider-blue.png';
-import riderYellow from '../assets/rider-yellow.png';
-import riderRed from '../assets/rider-red.png';
-import riderGreen from '../assets/rider-green.png';
-import riderViolet from '../assets/rider-violet.png';
-import riderBlack from '../assets/rider-black.png';
-import spritesUrl from '../assets/sprites2.png';
 
 import {
   TILE_COUNT,
@@ -20,6 +12,7 @@ import {
   parseTileName,
 } from './board/common';
 import '../styles/Board.css';
+import { playerImageAssets } from '../game/PlayerOptions';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -36,7 +29,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const WRAPPER_HEIGHT = isMobileLayout() ? '115vw' : CANVAS_HEIGHT;
 
   const [mapReady, setMapReady] = React.useState(false);
-  const mapUrl = mapUrlV as string;
+  const mapUrl = 'assets/map10.jpg';
 
   // Preload map so tiles render only after background is ready
   useEffect(() => {
@@ -109,7 +102,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                         <div
                           className="tile-sprite"
                           style={{
-                            backgroundImage: `url(${spritesUrl})`,
+                            backgroundImage: `url(assets/sprites2.png)`,
                             backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
                             backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
                           }}
@@ -173,28 +166,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     const tileNumber = player.position % TILE_COUNT;
     const pos = getTilePosition(tileNumber);
 
-    let src = 'rider-red.png';
-
-    switch (player.image) {
-      case 'rider-red.png':
-        src = riderRed;
-        break;
-      case 'rider-blue.png':
-        src = riderBlue;
-        break;
-      case 'rider-black.png':
-        src = riderBlack;
-        break;
-      case 'rider-green.png':
-        src = riderGreen;
-        break;
-      case 'rider-violet.png':
-        src = riderViolet;
-        break;
-      case 'rider-yellow.png':
-        src = riderYellow;
-        break;
-    }
+    const src = playerImageAssets[player.image] || 'assets/players/default.png';
 
     let onSameTileCount = 0;
     board.players.forEach((p, idx) => {
@@ -260,7 +232,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           {staticTilesJSX}
         </div>
 
-        <img className="bg-image" src={mapUrl as string} alt={'Map bg'}></img>
+        <img className="bg-image" src={mapUrl} alt={'Map bg'}></img>
       </div>
     </div>
   );

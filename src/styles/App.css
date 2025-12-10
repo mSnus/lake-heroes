@@ -1,7 +1,8 @@
 :root {
     --toastify-color-light: #3b402cc4;
     --toastify-text-color-light: #abab93;
-    --body-font: '9px Inter, sans-serif';
+    --body-font-size: '9px';
+    --body-font-family: 'Inter, sans-serif';
     --sprite-size: 92px;
 }
 
@@ -9,6 +10,24 @@
     :root {
         --body-font: '11px Inter, sans-serif';
     }
+}
+
+body {
+    font-family: "Roboto Condensed", sans-serif;
+}
+
+@font-face {
+    font-family: 'Texturina';
+    src: url('./fonts/Texturina-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Encode';
+    src: url('./fonts/EncodeSans-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 #mainContainer {

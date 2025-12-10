@@ -1,6 +1,6 @@
 import React from 'react';
 
-import shield from '../assets/shield.png';
+import shield from '../../public/assets/shield.png';
 
 const NewGameButton: React.FC = () => {
   function handleReset() {

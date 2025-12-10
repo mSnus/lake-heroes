@@ -7,7 +7,7 @@ export const TREASURE_BOX_MULTIPLIER = 100;
 export const TILE_COUNT = 25;
 
 export const SPRITE_SIZE = 92;
-export const SPRITE_SHIFT = 0;
+export const MAX_PLAYERS = 4;
 
 export const DIAMOND_SIZE = 14; // marker icon size in px
 export const DIAMOND_GAP = 4; // gap between markers

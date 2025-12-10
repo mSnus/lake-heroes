@@ -1,6 +1,6 @@
 [
   {
-    "name": "Caterina",
+    "name": "Player 1",
     "color": "#FF4444",
     "gold": 0,
     "units": 0,
@@ -8,7 +8,7 @@
     "image": "rider-red.png"
   },
   {
-    "name": "Kristina",
+    "name": "Player 2",
     "color": "#4444FF",
     "gold": 0,
     "units": 0,

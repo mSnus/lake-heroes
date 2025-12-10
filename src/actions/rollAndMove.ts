@@ -26,7 +26,14 @@ export async function rollAndMove(
   const nextTile = board.tiles[nextTileIdx];
 
   board.gameMessage = '';
-  say(`${player.name} rolled ${roll} and went to ${nextTile.name}!`, 'info');
+
+  let tileMessage = `${player.name} rolled ${roll} and went to ${nextTile.name}`;
+
+  if (!nextTile.isOwned() && !nextTile.isAffordable(player.gold, player.units)) {
+    tileMessage += `, but cannot afford to buy it.`;
+  }
+
+  say(tileMessage, 'info');
 
   window.dispatchEvent(new CustomEvent('displayTitle', {}));
 

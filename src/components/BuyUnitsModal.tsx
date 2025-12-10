@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
-import { Player } from '../game/Player';
-import '../styles/BuyUnitsModal.css';
+import '../styles/modal.css';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -29,7 +28,7 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
   };
 
   return (
-    <div className="buy-units-modal">
+    <div className="game-modal">
       <div className="modal-content">
         <img src="/path/to/your/image.png" alt="Top Image" className="top-image" />
         <h2>Buy Units</h2>
