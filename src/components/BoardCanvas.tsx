@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, ReactElement } from 'react';
 import { GameState } from '../game/GameState';
+import { SPRITE_SIZE } from './board/common';
 import groupsData from '../settings/groups.json';
 import mapUrlV from '../assets/map10.jpg';
 import riderBlue from '../assets/rider-blue.png';
@@ -8,6 +9,7 @@ import riderRed from '../assets/rider-red.png';
 import riderGreen from '../assets/rider-green.png';
 import riderViolet from '../assets/rider-violet.png';
 import riderBlack from '../assets/rider-black.png';
+import spritesUrl from '../assets/sprites2.png';
 
 import {
   TILE_COUNT,
@@ -88,9 +90,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
             <div className="tile-content">
               {tile?.name &&
                 (() => {
-                  const { emoji, textPart1, textPart2 } = parseTileName(tile.name);
+                  const { textPart1, textPart2 } = parseTileName(tile.name);
                   const isKingTile = textPart1?.substring(0, 4) === 'King';
-                  const emojiClass = isKingTile ? 'title-emoji-big' : 'tile-emoji';
 
                   return (
                     <>
@@ -104,7 +105,16 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                           {textPart1} {isMobileLayout() ? '' : textPart2}
                         </div>
                       )}
-                      {emoji && <div className={emojiClass}>{emoji}</div>}
+                      {tile.sprite && (
+                        <div
+                          className="tile-sprite"
+                          style={{
+                            backgroundImage: `url(${spritesUrl})`,
+                            backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
+                            backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
+                          }}
+                        ></div>
+                      )}
                     </>
                   );
                 })()}
@@ -185,7 +195,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         src = riderYellow;
         break;
     }
-    
+
     let onSameTileCount = 0;
     board.players.forEach((p, idx) => {
       if (idx < i && p.position % TILE_COUNT === tileNumber) {
@@ -250,7 +260,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
           {staticTilesJSX}
         </div>
 
-        <img className="bg-image" src={mapUrl as string}></img>
+        <img className="bg-image" src={mapUrl as string} alt={'Map bg'}></img>
       </div>
     </div>
   );

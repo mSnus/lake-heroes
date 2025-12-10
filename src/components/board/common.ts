@@ -6,22 +6,11 @@ export const TREASURE_BOX_MULTIPLIER = 100;
 
 export const TILE_COUNT = 25;
 
-export const TILE_WIDTH = 80;
-export const TILE_HEIGHT = 80;
-
-export const TITLE_BAR_HEIGHT = 20; // px
-
-export const TITLE_FONT = 'bold 12px Arial';
-export const BODY_FONT = '9px Arial';
-export const BODY_MOBILE_FONT = '14px Arial';
-
-export const GAP_PX = 16; // ~1rem
-
-export const ICON_RADIUS = 9; // px (diameter 18)
+export const SPRITE_SIZE = 92;
+export const SPRITE_SHIFT = 0;
 
 export const DIAMOND_SIZE = 14; // marker icon size in px
 export const DIAMOND_GAP = 4; // gap between markers
-export const DIAMOND_BOTTOM_PADDING = 6; // distance from bottom edge
 
 
 export function isMobileLayout(): boolean {

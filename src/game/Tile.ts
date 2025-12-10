@@ -9,6 +9,7 @@ export interface TileJSON {
   owner?: string | null;
   level?: number;
   description?: string;
+  sprite?: { x: number; y: number };
 }
 
 export class Tile implements TileJSON {
@@ -22,6 +23,7 @@ export class Tile implements TileJSON {
   owner?: string | null;
   _level?: number;
   description?: string;
+  sprite?: { x: number; y: number };
 
   constructor(data: Partial<TileJSON> = {}) {
     this.group = data.group || '';
@@ -34,6 +36,7 @@ export class Tile implements TileJSON {
     this.owner = data.owner ?? null;
     this._level = typeof data.level === 'number' ? data.level : 1;
     this.description = data.description;
+    this.sprite = data.sprite;
   }
 
   get level(): number {
@@ -105,6 +108,7 @@ export class Tile implements TileJSON {
       owner: this.owner,
       level: this.level,
       description: this.description,
+      sprite: this.sprite,
     };
   }
 }

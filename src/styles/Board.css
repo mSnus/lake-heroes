@@ -98,23 +98,15 @@
   gap: 1px;
 }
 
-.tile-emoji {
-  font:
-    1.5rem Arial,
-    sans-serif;
-  margin-bottom: 4px;
+.tile-sprite {
+  width: var(--sprite-size);
+  height: var(--sprite-size);
   filter: drop-shadow(1px 5px 5px #000000a0);
   z-index: 101;
-}
-
-.title-emoji-big {
-  font:
-    3.3rem Arial,
-    sans-serif;
-  margin-bottom: 4px;
-  filter: drop-shadow(1px 5px 5px #000000a0);
-  margin-top: -20px;
-  z-index: 101;
+  background-size: 460px 460px;
+  border-radius: var(--sprite-size);
+  transform: scale(60%);
+  opacity: 0.9;
 }
 
 .tile-title {
@@ -127,6 +119,21 @@
   font: var(--body-font);
   height: 20px;
   z-index: 100;
+  margin-top: 16px;
+  margin-bottom: -16px;
+  opacity: 0.8;
+}
+
+.tile-left .tile-title {
+  margin-right: -23px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.tile-right .tile-title {
+  margin-left: -23px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 /* Diamonds (ownership markers) */
@@ -149,7 +156,7 @@
   float: right;
 }
 
-.diamond-container .diamond:first {
+.diamond-container .diamond:first-child {
   margin-left: 0px;
 }
 

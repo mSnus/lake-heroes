@@ -1,0 +1,23 @@
+Mills 💧 Water mill #FFD166
+Mills 🌬️ Windmill #FFD166
+Mills 🧱 Brick factory #FFD166
+Farms 🐷 Pigs farm #aaec84
+Farms 🐄 Cows farm #aaec84
+Farms 🐑 Sheep farm #aaec84
+Fields 🌾 Wheat field #e3f667
+Fields 🥬 Cabbage field #e3f667
+Fields 🍎 Fruit garden #e3f667
+Camps 🏹 Bows #74b6bd
+Camps 🔪 Knives #74b6bd
+Camps 🗡️ Swords #74b6bd
+Towers 🏹 Archer tower #ff4d4d
+Towers 💣 Arquebus tower #ff4d4d
+Towers 💥 Cannon tower #ff4d4d
+Traders 🍇 Grapes #f6b0ca
+Traders 🐟 Fish #f6b0ca
+Traders 🦫 Fur #f6b0ca
+Special 🪙 Treasure box #CCCCCC
+Special 🏘️ Tavern #CCCCCC
+Special 🏰 King Castle #CCCCCC
+Special 🔒 Prison #CCCCCC
+Special  🐈 Sphynx #CCCCCC

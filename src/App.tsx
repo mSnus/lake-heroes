@@ -24,6 +24,7 @@ import { CurrentTile } from './components/CurrentTile';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
+import BuyUnitsModal from './components/BuyUnitsModal';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -129,6 +130,25 @@ function App() {
     setGameState(newGameState);
   };
 
+  const handleBuyUnits = (amount: number) => {
+    if (!gameState) return;
+    const player = gameState.activePlayer;
+    const cost = amount * 100;
+    if (player.gold >= cost) {
+      player.gold -= cost;
+      player.units += amount;
+      say(`${player.name} bought ${amount} units for ${cost} gold.`, 'success');
+      updateGameState(gameState);
+    } else {
+      say('Not enough gold to buy units.', 'error');
+    }
+    setMenu({ type: 'end-turn' });
+  };
+
+  const handleSkipBuyUnits = () => {
+    setMenu({ type: 'end-turn' });
+  };
+
   return (
     <div className="App">
       <ToastContainer
@@ -158,7 +178,15 @@ function App() {
             <div className="board-controls">
               <CurrentPlayer gameState={gameState} />
 
-              {menu && gameState.turnPhase !== 'moving' ? (
+              {menu && menu.type === 'buy-units' && (
+                <BuyUnitsModal
+                  gameState={gameState}
+                  onBuy={handleBuyUnits}
+                  onSkip={handleSkipBuyUnits}
+                />
+              )}
+
+              {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' ? (
                 <div>
                   <GameMenuRenderer
                     board={gameState}
