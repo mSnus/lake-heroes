@@ -19,15 +19,13 @@
   display: block;
 }
 
-/* Layer containers */
 .layer-tiles {
   position: absolute;
-  top: 0;
+  top: -32px;
   left: 0;
   height: 100%;
   width: 100%;
   z-index: 1;
-  /* tiles need to be clickable */
 }
 
 .layer-diamonds {
@@ -83,31 +81,58 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 2px;
+  gap: 12px;
 }
 
 .tile-left .tile-content {
   display: flex;
   flex-direction: row;
-  gap: 1px;
+  gap: 16px;
 }
 
 .tile-right .tile-content {
   display: flex;
   flex-direction: row-reverse;
-  gap: 1px;
+  gap: 16px;
 }
 
 .tile-sprite {
   width: var(--sprite-size);
   height: var(--sprite-size);
+  min-height: var(--sprite-size);
   filter: drop-shadow(1px 5px 5px #000000a0);
   z-index: 101;
   background-size: 460px 460px;
   border-radius: var(--sprite-size);
-  transform: scale(60%);
+  transform: scale(var(--sprite-scale));
   opacity: 0.9;
 }
+
+.tile-sprite-container {
+  height: calc(var(--sprite-size) / 2);
+  width: calc(var(--sprite-size) / 2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile-sprite-container.tile-big {
+  height: var(--sprite-size);
+  width: var(--sprite-size);
+}
+
+.tile-big .tile-sprite {
+  width: var(--sprite-size);
+  height: var(--sprite-size);
+  min-height: var(--sprite-size);
+  border-radius: var(--sprite-size);
+  transform: scale(calc(var(--sprite-scale) * 1.6)) translateY(-20px);
+  opacity: 0.9;
+}
+
+
 
 .tile-title {
   font-family: 'Texturina', serif;
@@ -162,11 +187,10 @@
   margin-left: 0px;
 }
 
-/* Player markers */
 .player-wrapper {
   position: absolute;
   z-index: 3;
-  transform: translate(-36px, 15px);
+  transform: translate(-25px, -35px);
   display: flex;
   gap: 6px;
   pointer-events: auto;

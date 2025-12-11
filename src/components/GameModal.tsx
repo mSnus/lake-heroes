@@ -29,7 +29,7 @@ const GameModal: React.FC<GameModalProps> = ({ children, className, style }) => 
   return (
     <div className="game-modal-wrapper">
       <div className="game-modal">
-        <div className="game-modal-border" style={{backgroundImage: `url('assets/sand.jpg')`}}>
+        <div className="game-modal-border" style={{ backgroundImage: `url('assets/sand.jpg')` }}>
           <div
             className={`modal-content ${className || ''}`}
             style={style}

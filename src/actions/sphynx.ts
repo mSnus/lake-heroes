@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { Dice } from '../game/Dice';
+import { rollDice } from '../game/Dice';
 import { say } from '../utils/say';
 import { MenuState } from '../types/menuState';
 
@@ -18,8 +18,7 @@ export function handleSphynx(
   setMenu: (menu: MenuState) => void
 ) {
   if (!gameState) return;
-  const dice = new Dice();
-  const roll = dice.roll();
+  const roll = rollDice();
 
   const player = gameState.activePlayer;
   let message = `${player.name} met the Sphynx and rolled ${roll}. `;

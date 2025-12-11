@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { playerOptions, PlayerOption } from '../game/PlayerOptions';
+import { playerOptions } from '../game/PlayerOptions';
 import { MAX_PLAYERS, MONEY_START, UNITS_START } from './board/common';
 import GameModal from './GameModal';
 import '../styles/modal.css';
@@ -84,7 +84,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     <GameModal className="modal-new-game" style={{ backgroundImage: `url(./assets/logo512.png)` }}>
       <>
         <div className="input-group">
-          <label>Number of Players: </label>
+          <label>Players: </label>
           <select value={numPlayers} onChange={handleNumPlayersChange}>
             {Array.from({ length: MAX_PLAYERS - 1 }, (_, i) => i + 2).map((n) => (
               <option key={n} value={n}>

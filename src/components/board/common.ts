@@ -12,7 +12,6 @@ export const MAX_PLAYERS = 4;
 export const DIAMOND_SIZE = 14; // marker icon size in px
 export const DIAMOND_GAP = 4; // gap between markers
 
-
 export function isMobileLayout(): boolean {
   return window.matchMedia('(max-width: 768px)').matches;
 }

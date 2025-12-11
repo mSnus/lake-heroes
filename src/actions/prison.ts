@@ -15,7 +15,10 @@ export function handlePrison(
   console.log('Action: prison for', board.players[board.playerOrder[player]].name);
 
   updateGameState(board);
-  say(`${board.players[board.playerOrder[player]].name} landed on Prison! Next turn will be skipped.`, 'warning');
+  say(
+    `${board.players[board.playerOrder[player]].name} landed on Prison! Next turn will be skipped.`,
+    'warning'
+  );
 
   setMenu({ type: 'move-result' });
 }

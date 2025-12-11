@@ -45,7 +45,7 @@ export class Tile implements TileJSON {
 
   get defence(): number {
     const level = this._level ?? 1;
-    return level == 1 ? this.bonuses[1] : this.defences[level];
+    return level == 1 ? this.prices[1].units : this.defences[level];
   }
 
   isOwned(): boolean {

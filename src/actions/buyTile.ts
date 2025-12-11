@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 
-export function buyTile(board: GameState | null, updateGameState: (board: GameState) => void) {
+export async function buyTile(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   const player = board.activePlayer;

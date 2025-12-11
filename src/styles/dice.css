@@ -1,12 +1,34 @@
+:root {
+  --dice-size: 40px;
+}
 #dice {
-  width: 90px;
-  height: 90px;
+  width: var(--dice-size);
+  height: var(--dice-size);
   transform-style: preserve-3d;
-  transition: transform 1.5s ease-out;
+  transition: transform 1s ease-out;
 }
 #dice:hover {
   cursor: pointer;
 }
+
+.dice-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.dice {
+  width: calc(var(--dice-size) / 2);
+  height: calc(var(--dice-size) / 2);
+  border: 2px solid #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
 .sides {
   background-color: #efe5dc;
   display: block;
@@ -18,8 +40,8 @@
 .dot {
   display: block;
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: black;
   transform: translate(-50%, -50%);
@@ -110,22 +132,22 @@
 }
 
 #dice .side-1 {
-  transform: translateZ(45px);
+  transform: translateZ(calc(var(--dice-size) / 2));
 }
 #dice .side-2 {
-  transform: rotateX(-180deg) translateZ(45px);
+  transform: rotateX(-180deg) translateZ(calc(var(--dice-size) / 2));
 }
 #dice .side-3 {
-  transform: rotateY(90deg) translateZ(45px);
+  transform: rotateY(90deg) translateZ(calc(var(--dice-size) / 2));
 }
 #dice .side-4 {
-  transform: rotateY(-90deg) translateZ(45px);
+  transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2));
 }
 #dice .side-5 {
-  transform: rotateX(90deg) translateZ(45px);
+  transform: rotateX(90deg) translateZ(calc(var(--dice-size) / 2));
 }
 #dice .side-6 {
-  transform: rotateX(-90deg) translateZ(45px);
+  transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2));
 }
 
 #dice[data-side='1'] {

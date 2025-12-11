@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { Dice } from '../game/Dice';
+import { rollDice } from '../game/Dice';
 import { say } from '../utils/say';
 import { MenuState } from '../types/menuState';
 
@@ -11,8 +11,7 @@ export function handleTavern(
   if (!board) return;
   console.log('Action: tavern');
 
-  const dice = new Dice();
-  const roll = dice.roll();
+  const roll = rollDice();
   const unitsReward = roll;
   const player = board.activePlayer;
   player.units += unitsReward;

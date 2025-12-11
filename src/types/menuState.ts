@@ -5,5 +5,3 @@ export interface MenuState {
   passedStart?: boolean;
   specialReward?: { type: 'gold' | 'units'; amount: number };
 }
-
-

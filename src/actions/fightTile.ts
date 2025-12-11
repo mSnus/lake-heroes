@@ -1,8 +1,8 @@
 import { GameState } from '../game/GameState';
-import { Dice } from '../game/Dice';
 import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
 import { Player } from '../game/Player';
+import { rollDice } from '../game/Dice';
 
 export function fightTile(
   board: GameState | null,
@@ -15,10 +15,9 @@ export function fightTile(
 
   const player = board.activePlayer;
   const tile = board.activeTile;
-  const defence = tile.defences[tile.level] || 0;
+  const defence = tile.defence;
 
-  const dice = new Dice();
-  const roll = dice.roll();
+  const roll = rollDice();
 
   if (player.units < defence) {
     return say(`Not enough units to fight for the ${tile.name}`, 'error');

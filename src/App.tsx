@@ -3,7 +3,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/App.css';
 import './styles/GameMenu.css';
-import './styles/dice.css';
 
 import { Player } from './game/Player';
 import { GameState, TurnPhase } from './game/GameState';
@@ -19,7 +18,6 @@ import { buildTilesFromTemplates, rehydrateSavedTiles } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
 import { DiceWidget } from './components/DiceWidget';
 import NewGameButton from './components/NewGameButton';
-import { Dice } from './game/Dice';
 import { CurrentTile } from './components/CurrentTile';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
@@ -31,7 +29,7 @@ function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
   const [showNewGameModal, setShowNewGameModal] = useState(true);
-
+  const [showDice, setShowDice] = useState(true);
 
   // setPhase event listener and handler
   function onSetPhase(e: Event) {
@@ -40,6 +38,10 @@ function App() {
     const phase = (e as CustomEvent).detail as TurnPhase;
 
     if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
+
+    if (phase === 'rolling') {
+      setShowDice(true);
+    }
 
     gameState.setPhase(phase);
     if (phase === 'after-move') {
@@ -68,11 +70,6 @@ function App() {
           tiles,
           players,
         }) as GameState;
-
-        restored.dice = new Dice();
-        if (savedRaw.dice && typeof savedRaw.dice.visible !== 'undefined') {
-          restored.dice.visible = !!savedRaw.dice.visible;
-        }
 
         if (!restored.turnPhase) restored.turnPhase = 'before-move';
 
@@ -127,9 +124,6 @@ function App() {
       }
     ) as GameState;
 
-    // Preserve dice instance if present on the original gameState
-    newGameState.dice = (gameState as any).dice || new Dice();
-
     setGameState(newGameState);
   };
 
@@ -155,10 +149,11 @@ function App() {
   const handleStartGame = (playersSetup: PlayerSetup[]) => {
     // Create a new GameState with the configuration from the modal
     const newPlayers = playersSetup.map((p) => new Player(p));
-    const newGameState = { tiles: gameState?.tiles, players: newPlayers };
+    const newGameState = { ...gameState, tiles: gameState?.tiles, players: newPlayers };
 
     updateGameState(newGameState);
     setShowNewGameModal(false); // Hide the modal
+    setShowDice(false);
   };
 
   return (
@@ -180,7 +175,7 @@ function App() {
             justifyContent: 'flex-start',
           }}
         >
-          <DiceWidget gameState={gameState} />
+          {showDice && <DiceWidget gameState={gameState} />}
           <CurrentTile gameState={gameState} />
           <BoardCanvas board={gameState} />
 

@@ -2,14 +2,13 @@ export type TurnPhase = 'before-move' | 'rolling' | 'moving' | 'after-move';
 
 import { Player } from './Player';
 import { Tile } from './Tile';
-import { Dice } from './Dice';
 
 export class GameState {
   tiles: Tile[];
   players: Player[];
   playerOrder: number[];
   activePlayerIndex: number;
-  dice: Dice;
+  lastDice: number;
   turns: number = 0;
   circles: number = 0;
   gameStarted: boolean = false;
@@ -21,7 +20,7 @@ export class GameState {
     this.players = players;
     this.playerOrder = this.shuffle(Array.from({ length: players.length }, (_, i) => i));
     this.activePlayerIndex = 0;
-    this.dice = new Dice();
+    this.lastDice = 1;
     this.turnPhase = 'before-move';
   }
 
@@ -35,10 +34,6 @@ export class GameState {
 
   get activePlayer(): Player {
     return this.players[this.playerOrder[this.activePlayerIndex]];
-  }
-
-  setActivePlayerIndex(idx: number) {
-    this.activePlayerIndex = idx;
   }
 
   get activeTile(): Tile {

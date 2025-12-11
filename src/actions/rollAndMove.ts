@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { Dice } from '../game/Dice';
+import { rollDice } from '../game/Dice';
 import { MenuState } from '../types/menuState';
 import { handleTreasureBox } from './treasureBox';
 import { handleTavern } from './tavern';
@@ -18,12 +18,14 @@ export async function rollAndMove(
   setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
-  const dice = new Dice();
-  const roll = dice.roll();
+
+  const roll = rollDice();
   const player = board.activePlayer;
 
   const nextTileIdx = (player.position + roll) % TILE_COUNT;
   const nextTile = board.tiles[nextTileIdx];
+
+  window.dispatchEvent(new CustomEvent('setPhase', { detail: 'rolling' }));
 
   board.gameMessage = '';
 

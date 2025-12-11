@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const PlayerStatsTable: React.FC<Props> = ({ gameState, updateGameState }) => {
-  if (!gameState) return;
+  if (!gameState) return <div></div>;
 
   const activePlayer = gameState.activePlayer as Player;
 
@@ -47,5 +47,3 @@ export const PlayerStatsTable: React.FC<Props> = ({ gameState, updateGameState }
     </div>
   );
 };
-
-export default PlayerStatsTable;

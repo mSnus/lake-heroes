@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
+import GameModal from './GameModal';
+import topImage from '../../public/assets/top1.jpg';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -28,11 +30,12 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
   };
 
   return (
-    <div className="game-modal">
+    <GameModal className="game-modal">
       <div className="modal-content">
-        <img src="/path/to/your/image.png" alt="Top Image" className="top-image" />
+        <img src={topImage} alt="Top Image" className="top-image" />
         <h2>Buy Units</h2>
         <p>1 Unit = 100 Gold</p>
+
         <div className="input-group">
           <input
             type="number"
@@ -42,14 +45,16 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
             max={maxAmount}
           />
         </div>
-        <div className="button-group">
-          <button onClick={handleBuy} disabled={amount <= 0 || amount > maxAmount}>Buy</button>
-          <button onClick={handleHalf}>Half</button>
-          <button onClick={handleMax}>Max</button>
-          <button onClick={onSkip}>Skip</button>
+        <div className="button-group" style={{display:"flex", justifyContent:"center", gap: "8px", marginTop: "16px"}}>
+          <button className="game-menu-button" onClick={handleBuy} disabled={amount <= 0 || amount > maxAmount}>
+            Buy
+          </button>
+          <button className="game-menu-button" onClick={handleHalf}>1/2</button>
+          <button className="game-menu-button" onClick={handleMax}>Max</button>
+          <button className="game-menu-button" onClick={onSkip}>Skip</button>
         </div>
       </div>
-    </div>
+    </GameModal>
   );
 };
 

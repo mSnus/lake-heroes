@@ -4,8 +4,8 @@ import { Player } from '../game/Player';
 import { MONEY_START, UNITS_START } from '../components/board/common';
 
 export function gameStart(
-    gameState: GameState | null,
-    updateGameState: (board: GameState) => void,
+  gameState: GameState | null,
+  updateGameState: (board: GameState) => void
 ): void {
   if (!gameState || gameState.gameStarted) return;
 

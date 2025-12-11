@@ -32,23 +32,18 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
       {
         label: 'Roll Dice 🎲',
         onClick: () => rollAndMove(board, updateGameState, setMenu),
-        action: 'roll-dice',
-      },
+      } as MenuItem,
     ];
 
-    // If on ownable tile, show option to sell it
     if (
       currentTile.isOwnable &&
       !currentTile.isOwned() &&
       currentTile.isAffordable(activePlayer.gold, activePlayer.units)
     ) {
       items.push({
-        action: 'buy-tile' as MenuAction,
         label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
-        onClick: () => {
-          buyTile(board, updateGameState);
-        },
-      });
+        onClick: () => buyTile(board, updateGameState),
+      } as MenuItem);
     }
 
     return <GameMenu items={items}></GameMenu>;
@@ -58,7 +53,6 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     // Only used for Prison - show message and end turn
     return (
       <GameMenu
-        title="Prison"
         items={[{ action: 'end-turn', label: 'Continue', onClick: handleEndTurn }]}
       ></GameMenu>
     );

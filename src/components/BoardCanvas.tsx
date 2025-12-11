@@ -85,6 +85,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                 (() => {
                   const { textPart1, textPart2 } = parseTileName(tile.name);
                   const isKingTile = textPart1?.substring(0, 4) === 'King';
+                  const tileSizeClass = isKingTile
+                    ? 'tile-sprite-container tile-big'
+                    : 'tile-sprite-container';
 
                   return (
                     <>
@@ -99,14 +102,16 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
                         </div>
                       )}
                       {tile.sprite && (
-                        <div
-                          className="tile-sprite"
-                          style={{
-                            backgroundImage: `url(assets/sprites2.png)`,
-                            backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
-                            backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
-                          }}
-                        ></div>
+                        <div className={tileSizeClass}>
+                          <div
+                            className="tile-sprite"
+                            style={{
+                              backgroundImage: `url(assets/sprites2.png)`,
+                              backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
+                              backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
+                            }}
+                          ></div>
+                        </div>
                       )}
                     </>
                   );
@@ -187,11 +192,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         }}
       >
         <div className="player-col">
-          <img
-            className="player-image"
-            src={src}
-            alt={player.name}
-          />
+          <img className="player-image" src={src} alt={player.name} />
           <div
             id={`player-${player.name}`}
             className="player-marker"
