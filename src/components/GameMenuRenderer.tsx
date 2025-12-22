@@ -35,16 +35,6 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
       } as MenuItem,
     ];
 
-    if (
-      currentTile.isOwnable &&
-      !currentTile.isOwned() &&
-      currentTile.isAffordable(activePlayer.gold, activePlayer.units)
-    ) {
-      items.push({
-        label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
-        onClick: () => buyTile(board, updateGameState),
-      } as MenuItem);
-    }
 
     return <GameMenu items={items}></GameMenu>;
   }

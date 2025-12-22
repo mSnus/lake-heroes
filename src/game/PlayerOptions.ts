@@ -14,7 +14,7 @@ export interface PlayerOption {
 
 export const playerOptions: PlayerOption[] = [
   { colorName: 'Red', color: '#FF4444', image: 'rider-red.png', asset: riderRed },
-  { colorName: 'Blue', color: '#4444FF', image: 'rider-blue.png', asset: riderBlue },
+  { colorName: 'Blue', color: '#286cff', image: 'rider-blue.png', asset: riderBlue },
   { colorName: 'Yellow', color: '#FFD700', image: 'rider-yellow.png', asset: riderYellow },
   { colorName: 'Green', color: '#00C851', image: 'rider-green.png', asset: riderGreen },
   { colorName: 'Violet', color: '#9933CC', image: 'rider-violet.png', asset: riderViolet },

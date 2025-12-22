@@ -7,6 +7,7 @@ import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
 import { MenuItem } from './GameMenu';
+import { FEE_MULTIPLIER } from './board/common';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
@@ -174,12 +175,11 @@ export const TileCard: React.FC<TileCardProps> = ({
           <div className="tile-card-base-level">
             {tile.owner && (
               <div className="tile-card-base-info">
-                <div className='tile-card-owner-info'>
+                <div className="tile-card-owner-info">
                   <div className="tile-owner">
                     {mode == 'display' && (
                       <div>
-                        🚩 owned by
-                        {' '}
+                        🚩 owned by{' '}
                         <span
                           style={{
                             color:
@@ -208,37 +208,49 @@ export const TileCard: React.FC<TileCardProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className='tile-card-base-row'>
-                  <div className="icon-hint">
-                    <span className="circular-path">🗘</span>
-                    <div>per turn</div>
-                  </div>
-                  <div>
-                    +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
-                  </div>
+                <div className="tile-card-base-row">
+                  {tile.owner !== activePlayer?.name && (
+                    <div>
+                      <div className="big-icon-hint">
+                        <div>{tile.defences[tile.level] * FEE_MULTIPLIER || 0}🟡</div>
+                        <div>fee</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {tile.owner === activePlayer?.name && (
+                    <div>
+                      <div className="big-icon-hint">
+                        <div>
+                          +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
+                        </div>
+                        <div>per turn</div>
+                      </div>
+                    </div>
+                  )}
 
                   <div></div>
 
-                  <div className="icon-hint">
-                    <span className="circular-path">⚔️</span>
+                  <div className="big-icon-hint">
+                    <div>{tile.defence} 🛡️</div>
                     <div>defence</div>
                   </div>
-                  <div>{tile.defence} 🛡️</div>
                 </div>
               </div>
             )}
 
             {!tile.owner && (
               <div className="tile-card-base-info">
-                <div className='tile-card-base-row'>
+                <div className="tile-card-base-row">
                   <div>
-                    <div className="icon-hint">
-                      <span className="circular-path">🚩</span>
+                    <div className="big-icon-hint">
+                      <div>
+                        {tile.currentPrice.gold ?? 0} 🟡 {tile.currentPrice.units ?? 0}🧍
+                      </div>
                       <div>to own</div>
                     </div>
                   </div>
-                  <div>{tile.currentPrice.gold ?? 0} 🟡</div>
-                  <div>{tile.currentPrice.units ?? 0} 🧍</div>
+
                   <div>
                     {couldBuy && (
                       <button
@@ -251,17 +263,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                     )}
                   </div>
                 </div>
-                <div className='tile-card-base-row'>
-                  <div>
-                    <div className="icon-hint">
-                      <span className="circular-path">🗘</span>
-                      <div>per turn</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div>
-                      {bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    </div>
+                <div className="tile-card-base-row">
+                  <div className="big-icon-hint">
+                    +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
+                    <div>per turn</div>
                   </div>
                 </div>
               </div>

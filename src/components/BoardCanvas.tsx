@@ -48,123 +48,75 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       return map;
     }, []);
 
-  // Capture initial tiles once so static portion never re-renders when `board` changes
-  const initialTilesRef = useRef<any[] | null>(board.tiles || null);
+  const renderTile = (tile: any, i: number) => {
+    const grp = tile?.group ? groupsByName[tile.group] : undefined;
 
-  // Static tile renderer
-  const staticTilesJSX = React.useMemo(
-    () => {
-      const tiles = initialTilesRef.current || [];
-      const renderStaticTile = (tile: any, i: number) => {
-        const grp = tile?.group ? groupsByName[tile.group] : undefined;
+    const pos = getTilePosition(i);
+    let titleClass = 'tile';
+    if (pos?.textPos === 'left') titleClass += ' tile-left';
+    if (pos?.textPos === 'right') titleClass += ' tile-right';
 
-        const pos = getTilePosition(i);
-        let titleClass = 'tile';
-        if (pos?.textPos === 'left') titleClass += ' tile-left';
-        if (pos?.textPos === 'right') titleClass += ' tile-right';
+    const handleTileClick = () => {
+      if (tile) {
+        window.dispatchEvent(new CustomEvent('displayTitle', { detail: tile }));
+      }
+    };
 
-        // Add click handler to make tiles interactive
-        const handleTileClick = () => {
-          if (tile) {
-            window.dispatchEvent(new CustomEvent('displayTitle', { detail: tile }));
-          }
-        };
+    const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
 
-        return (
-          <div
-            key={`static-${i}`}
-            className={titleClass}
-            style={{
-              top: pos.y - offsetY + '%',
-              left: pos.x - offsetX + '%',
-            }}
-            onClick={handleTileClick}
-          >
-            <div className="tile-content">
-              {tile?.name &&
-                (() => {
-                  const { textPart1, textPart2 } = parseTileName(tile.name);
-                  const isKingTile = textPart1?.substring(0, 4) === 'King';
-                  const tileSizeClass = isKingTile
-                    ? 'tile-sprite-container tile-big'
-                    : 'tile-sprite-container';
+    const owner = tile.owner ? board.players.find((p) => p.name === tile.owner) : null;
+    const ownerColor = owner?.color || '#444';
 
-                  return (
-                    <>
-                      {!isKingTile && (
-                        <div
-                          className="tile-title"
-                          style={{
-                            color: grp?.color || '#FFF',
-                          }}
-                        >
-                          {textPart1} {isMobileLayout() ? '' : textPart2}
-                        </div>
-                      )}
-                      {tile.sprite && (
-                        <div className={tileSizeClass}>
-                          <div
-                            className="tile-sprite"
-                            style={{
-                              backgroundImage: `url(assets/sprites2.png)`,
-                              backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
-                              backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
-                            }}
-                          ></div>
-                        </div>
-                      )}
-                    </>
-                  );
-                })()}
-            </div>
-          </div>
-        );
-      };
+    return (
+      <div
+        key={`tile-${i}`}
+        className={titleClass}
+        style={{
+          top: pos.y - offsetY + '%',
+          left: pos.x - offsetX + '%',
+        }}
+        onClick={handleTileClick}
+      >
+        <div className="tile-content">
+          {tile?.name &&
+            (() => {
+              const { textPart1, textPart2 } = parseTileName(tile.name);
+              const isKingTile = textPart1?.substring(0, 4) === 'King';
+              const tileSizeClass = isKingTile
+                ? 'tile-sprite-container tile-big'
+                : 'tile-sprite-container';
 
-      return Array.from({ length: TILE_COUNT }).map((_, i) => renderStaticTile(tiles[i], i));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    [
-      /* empty: compute once */
-    ]
-  );
-
-  // Dynamic ownership markers (diamonds) and player markers are rendered from current board
-  const renderOwnershipMarkers = () => {
-    const markers: ReactElement[] = [];
-    (board.tiles || []).forEach((tile: any, i: number) => {
-      if (!tile || !tile.owner) return;
-      const owner = board.players.find((p) => p.name === tile.owner);
-      const color = owner?.color || '#444';
-      const count = Math.max(0, Math.min(3, tile.level || 1));
-
-      const pos = getTilePosition(i);
-      // container positioned at tile center; diamonds arranged horizontally
-      markers.push(
-        <div
-          key={`marker-${i}`}
-          className="diamond-container"
-          style={{
-            top: pos.y - offsetY + '%',
-            left: pos.x - offsetX + '%',
-            gap: DIAMOND_GAP,
-          }}
-        >
-          {Array.from({ length: count }).map((_, d) => (
-            <div
-              key={d}
-              className="diamond"
-              style={{
-                background: color,
-                width: DIAMOND_SIZE,
-                height: DIAMOND_SIZE,
-              }}
-            ></div>
-          ))}
+              return (
+                <>
+                  {!isKingTile && (
+                    <div
+                      className="tile-title"
+                      style={{
+                        color: grp?.color || '#FFF',
+                      }}
+                    >
+                      {textPart1} {isMobileLayout() ? '' : textPart2}
+                    </div>
+                  )}
+                  {tile.sprite && (
+                    <div className={tileSizeClass}>
+                      <div
+                        className={`tile-sprite ${ownedClass}`}
+                        style={{
+                          backgroundImage: `url(assets/sprites2.png)`,
+                          backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
+                          backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
+                          borderColor: ownerColor,
+                        }}
+                      ></div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
         </div>
-      );
-    });
-    return markers;
+      </div>
+    );
   };
 
   const renderPlayer = (player: any, i: number) => {
@@ -193,14 +145,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       >
         <div className="player-col">
           <img className="player-image" src={src} alt={player.name} />
-          <div
-            id={`player-${player.name}`}
-            className="player-marker"
-            style={{
-              background: `${player.color}`,
-            }}
-          />
-          <div className="player-name">{player.name}</div>
+          <div className="player-name" style={{color: player.color}}>{player.name}</div>
         </div>
       </div>
     );
@@ -223,14 +168,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       id="layerWrapper"
     >
       <div className="bg-layer">
-        <div className="layer-diamonds" aria-live="polite">
-          {renderOwnershipMarkers()}
-        </div>
-
         <div className="layer-players">{board.players.map((p, i) => renderPlayer(p, i))}</div>
 
         <div className="layer-tiles" aria-hidden>
-          {staticTilesJSX}
+          {board.tiles.map((tile, i) => renderTile(tile, i))}
         </div>
 
         <img className="bg-image" src={mapUrl} alt={'Map bg'}></img>

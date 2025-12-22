@@ -21,7 +21,7 @@
 
 .layer-tiles {
   position: absolute;
-  top: -32px;
+  top: 16px;
   left: 0;
   height: 100%;
   width: 100%;
@@ -40,7 +40,7 @@
 
 .layer-players {
   position: absolute;
-  top: 0;
+  top: 46px;
   left: 0;
   height: 100%;
   width: 100%;
@@ -108,6 +108,11 @@
   opacity: 0.9;
 }
 
+.tile-sprite-owned {
+  border-width: 6px;
+  border-style: solid;
+}
+
 .tile-sprite-container {
   height: calc(var(--sprite-size) / 2);
   width: calc(var(--sprite-size) / 2);
@@ -168,23 +173,12 @@
   position: absolute;
   z-index: 2;
   display: block;
-  transform: translate(-30%, 200%);
-  gap: 4px;
 }
 
 .diamond {
   transform: rotate(45deg);
   border: solid 1px #ffffff55;
   /* width/height and background color are set inline (DIAMOND_SIZE, owner color) */
-}
-
-.diamond-container .diamond {
-  margin-left: -5px;
-  float: right;
-}
-
-.diamond-container .diamond:first-child {
-  margin-left: 0px;
 }
 
 .player-wrapper {
@@ -225,6 +219,7 @@
 
 .player-name {
   font-size: 10px;
+  font-weight: 600;
   color: #fff;
   margin-top: -5px;
   filter: drop-shadow(0px 0px 6px #000);
