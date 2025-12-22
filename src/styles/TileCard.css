@@ -3,13 +3,13 @@
   left: 50%;
   top: 25%;
   transform: translate(-50%, -50%);
-  width: 210px;
   background: transparent;
   border-radius: 10px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
   padding: 0;
   z-index: 100;
   min-width: 230px;
+  width: 280px;
   text-align: left;
 }
 
@@ -88,6 +88,16 @@
   text-align: center;
   margin-bottom: 12px;
   white-space: nowrap;
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.tile-card-base-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .tile-card-base-info .diamonds {
@@ -179,6 +189,7 @@
   justify-content: center;
   gap: 6px;
   align-items: center;
+  font-size: 14px;
 }
 
 .tile-owner .diamond {
@@ -195,4 +206,26 @@
 .circular-path {
   color: #ffbf6b;
   font-size: 16px;
+  height: 20px;
 }
+
+.tile-card-base-info td {
+  vertical-align: top;
+  padding-top: 5px;
+  text-align: center;
+}
+
+.icon-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-size: 9px;
+  padding-top: 0px;
+}
+
+.tile-card-base-info-data {
+  text-align: center;
+}
+

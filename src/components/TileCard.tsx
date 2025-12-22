@@ -5,6 +5,8 @@ import '../styles/TileCard.css';
 import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
+import { buyTile } from '../actions/buyTile';
+import { MenuItem } from './GameMenu';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
@@ -27,6 +29,8 @@ export type TileCardProps = {
   mode?: 'display' | 'owned';
   gameState?: GameState;
   updateGameState?: (board: any) => void;
+  couldBuy?: boolean;
+  couldAfford?: boolean;
 };
 
 export const TileCard: React.FC<TileCardProps> = ({
@@ -34,6 +38,8 @@ export const TileCard: React.FC<TileCardProps> = ({
   mode = 'display',
   gameState,
   updateGameState,
+  couldBuy = false,
+  couldAfford = false,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -120,6 +126,12 @@ export const TileCard: React.FC<TileCardProps> = ({
     setExpanded(!expanded);
   };
 
+  const handleBuyClick = () => {
+    if (!gameState) return;
+
+    buyTile(gameState, updateGameState);
+  };
+
   return (
     <div className="tile-card">
       <div className="tile-card-header" style={{ background: groupColor }}>
@@ -157,70 +169,102 @@ export const TileCard: React.FC<TileCardProps> = ({
 
       <div className="tile-card-title">{tile.name}</div>
 
-      {mode === 'display' && tile.owner && (
-        <div className="tile-owner">
-          owned by
-          <div
-            style={{
-              color: gameState?.players.find((p) => p.name === tile.owner)?.color || '#444',
-            }}
-          >
-            {tile.owner}
-          </div>
-        </div>
-      )}
-
       {tile.isOwnable && (
         <div className="tile-card-body" onClick={handleClick}>
           <div className="tile-card-base-level">
             {tile.owner && (
-              <table className="tile-card-base-info">
-                <tbody>
-                  <tr>
-                    <td colSpan={2} align="center">
-                      <div className="diamonds" style={{ textAlign: 'center' }}>
-                        {Array.from({ length: tile.level }).map((_, d) => (
-                          <div
-                            key={d}
-                            className="diamond"
-                            style={{
-                              background:
-                                gameState?.players.find((p) => p.name === tile.owner)?.color ||
-                                '#444',
-                              width: '12px',
-                              height: '12px',
-                            }}
-                          />
-                        ))}
+              <div className="tile-card-base-info">
+                <div className='tile-card-owner-info'>
+                  <div className="tile-owner">
+                    {mode == 'display' && (
+                      <div>
+                        🚩 owned by
+                        {' '}
+                        <span
+                          style={{
+                            color:
+                              gameState?.players.find((p) => p.name === tile.owner)?.color ||
+                              '#444',
+                          }}
+                        >
+                          {tile.owner}
+                        </span>
                       </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="circular-path">🗘</span>
-                      {bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    </td>
-                    <td>{tile.defence} 🛡️</td>
-                  </tr>
-                </tbody>
-              </table>
+                    )}
+                    <div className="diamonds" style={{ textAlign: 'center' }}>
+                      {Array.from({ length: tile.level }).map((_, d) => (
+                        <div
+                          key={d}
+                          className="diamond"
+                          style={{
+                            background:
+                              gameState?.players.find((p) => p.name === tile.owner)?.color ||
+                              '#444',
+                            width: '12px',
+                            height: '12px',
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className='tile-card-base-row'>
+                  <div className="icon-hint">
+                    <span className="circular-path">🗘</span>
+                    <div>per turn</div>
+                  </div>
+                  <div>
+                    +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
+                  </div>
+
+                  <div></div>
+
+                  <div className="icon-hint">
+                    <span className="circular-path">⚔️</span>
+                    <div>defence</div>
+                  </div>
+                  <div>{tile.defence} 🛡️</div>
+                </div>
+              </div>
             )}
 
             {!tile.owner && (
-              <table className="tile-card-base-info">
-                <tbody>
-                  <tr>
-                    <td>🚩 {tile.currentPrice.gold ?? 0} 🟡</td>
-                    <td>{defence(1)} 🧍</td>
-                  </tr>
-                  <tr>
-                    <td colSpan={3}>
+              <div className="tile-card-base-info">
+                <div className='tile-card-base-row'>
+                  <div>
+                    <div className="icon-hint">
+                      <span className="circular-path">🚩</span>
+                      <div>to own</div>
+                    </div>
+                  </div>
+                  <div>{tile.currentPrice.gold ?? 0} 🟡</div>
+                  <div>{tile.currentPrice.units ?? 0} 🧍</div>
+                  <div>
+                    {couldBuy && (
+                      <button
+                        className="game-menu-button"
+                        onClick={() => handleBuyClick()}
+                        disabled={!couldAfford}
+                      >
+                        Buy
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className='tile-card-base-row'>
+                  <div>
+                    <div className="icon-hint">
                       <span className="circular-path">🗘</span>
+                      <div>per turn</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div>
                       {bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 

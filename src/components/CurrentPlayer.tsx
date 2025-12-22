@@ -64,7 +64,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         }}
       ></div>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="circular-path" style={{ paddingTop: '6px', paddingRight: '4px' }}>
+        <div className="circular-path" style={{ marginTop: '-4px', paddingRight: '4px' }}>
           🗘
         </div>
         <strong>{totalGold} 🟡</strong>

@@ -45,3 +45,4 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
 
   updateGameState(board);
 }
+

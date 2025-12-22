@@ -1,25 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { TileCard } from './TileCard';
 import { Tile } from '../game/Tile';
 
 interface CurrentTileProps {
   gameState: GameState;
+  updateGameState: (board: any) => void;
 }
 
-export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState }) => {
-  const [displayedTile, setDisplayedTile] = React.useState<Tile | null>(null);
-  const [shouldDisplay, setShouldDisplay] = React.useState<boolean>(true);
+export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameState }) => {
+  const [displayedTile, setDisplayedTile] = useState<Tile | null>(null);
+  const [shouldDisplay, setShouldDisplay] = useState<boolean>(true);
 
-  const current = gameState.activeTile;
-  if (gameState.turns === 0 && gameState.turnPhase === 'before-move' && shouldDisplay !== false) {
+  const currentTile = gameState.activeTile;
+  const activePlayer = gameState.activePlayer;
+
+  if (gameState.turns === 0 && gameState.turnPhase === 'before-move' && shouldDisplay) {
     setShouldDisplay(false);
   }
   React.useEffect(() => {
     function ondisplayTitle(e: Event) {
       const detail = (e as CustomEvent).detail;
       let display =
-        (detail !== null && current.isOwnable && !current.isOwned()) || displayedTile !== current;
+        (detail !== null && currentTile.isOwnable && !currentTile.isOwned()) || displayedTile !== currentTile;
 
       if (gameState.turns === 0 && gameState.turnPhase === 'before-move') {
         display = false;
@@ -38,10 +41,23 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState }) => {
     return () => window.removeEventListener('displayTitle', ondisplayTitle as EventListener);
   }, []);
 
+  const couldBuy = currentTile.isOwnable && !currentTile.isOwned();
+  const couldAfford = currentTile.isAffordable(activePlayer.gold, activePlayer.units);
+
+  // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
+  //   onClick: () => buyTile(board, updateGameState),
+
   return (
     <div className="current-tile">
-      {!!shouldDisplay && (
-        <TileCard tile={displayedTile ?? current} mode="display" gameState={gameState} />
+      {shouldDisplay && (
+        <TileCard
+          tile={displayedTile ?? currentTile}
+          mode="display"
+          gameState={gameState}
+          updateGameState={updateGameState}
+          couldBuy={couldBuy}
+          couldAfford={couldAfford}
+        />
       )}
     </div>
   );

@@ -75,6 +75,7 @@ function App() {
 
         setGameState(restored);
         setMenu({ type: 'main' });
+        setShowNewGameModal(false);
 
         window.setTimeout(
           () => window.dispatchEvent(new CustomEvent('setPhase', { detail: restored.turnPhase })),
@@ -176,7 +177,7 @@ function App() {
           }}
         >
           {showDice && <DiceWidget gameState={gameState} />}
-          <CurrentTile gameState={gameState} />
+          <CurrentTile gameState={gameState} updateGameState={updateGameState}/>
           <BoardCanvas board={gameState} />
 
           {showNewGameModal && <NewGameModal onStart={handleStartGame} />}
