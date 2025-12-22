@@ -177,39 +177,31 @@ function App() {
           }}
         >
           {showDice && <DiceWidget gameState={gameState} />}
-          <CurrentTile gameState={gameState} updateGameState={updateGameState}/>
+          <CurrentPlayer gameState={gameState} />
+          <GameMessage message={gameState.gameMessage} />
+          <CurrentTile gameState={gameState} updateGameState={updateGameState} />
+          {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' ? (
+            <GameMenuRenderer
+              board={gameState}
+              menu={menu}
+              setMenu={setMenu}
+              updateGameState={updateGameState}
+              top={gameState.gameMessage ? '40px' : '30px'}
+            />
+          ) : (
+            <div className="game-menu"></div>
+          )}
           <BoardCanvas board={gameState} />
 
           {showNewGameModal && <NewGameModal onStart={handleStartGame} />}
 
-          <div className="board-controls-wrapper">
-            <GameMessage message={gameState.gameMessage} />
-
-            <div className="board-controls">
-              <CurrentPlayer gameState={gameState} />
-
-              {menu && menu.type === 'buy-units' && (
-                <BuyUnitsModal
-                  gameState={gameState}
-                  onBuy={handleBuyUnits}
-                  onSkip={handleSkipBuyUnits}
-                />
-              )}
-
-              {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' ? (
-                <div>
-                  <GameMenuRenderer
-                    board={gameState}
-                    menu={menu}
-                    setMenu={setMenu}
-                    updateGameState={updateGameState}
-                  />
-                </div>
-              ) : (
-                <div className="game-menu"></div>
-              )}
-            </div>
-          </div>
+          {menu && menu.type === 'buy-units' && (
+            <BuyUnitsModal
+              gameState={gameState}
+              onBuy={handleBuyUnits}
+              onSkip={handleSkipBuyUnits}
+            />
+          )}
 
           <PlayerStatsTable gameState={gameState} updateGameState={updateGameState} />
         </div>

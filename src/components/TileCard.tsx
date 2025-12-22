@@ -127,7 +127,8 @@ export const TileCard: React.FC<TileCardProps> = ({
     setExpanded(!expanded);
   };
 
-  const handleBuyClick = () => {
+  const handleBuyClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!gameState) return;
 
     buyTile(gameState, updateGameState);
@@ -255,7 +256,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     {couldBuy && (
                       <button
                         className="game-menu-button"
-                        onClick={() => handleBuyClick()}
+                        onClick={(e) => handleBuyClick(e)}
                         disabled={!couldAfford}
                       >
                         Buy

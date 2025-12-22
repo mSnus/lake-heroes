@@ -13,9 +13,10 @@ export interface MenuItem {
 interface GameMenuProps {
   items: MenuItem[];
   children?: React.ReactNode;
+  top: string;
 }
 
-export const GameMenu: React.FC<GameMenuProps> = ({ items, children }) => {
+export const GameMenu: React.FC<GameMenuProps> = ({ items, children, top }) => {
   function handleItemClick(item: MenuItem) {
     if (item.action === 'end-turn') {
       // update phase to before-move when ending turn
@@ -28,7 +29,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({ items, children }) => {
   }
 
   return (
-    <div className="game-menu">
+    <div className="game-menu" style={{top: top}}>
       <div>
         {items.map((item, i) => {
           return (

@@ -1,7 +1,7 @@
 .current-tile {
   position: absolute;
   left: 50%;
-  top: 25%;
+  top: 36%;
   transform: translate(-50%, -50%);
   background: transparent;
   border-radius: 10px;

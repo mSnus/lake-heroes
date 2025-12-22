@@ -1,8 +1,10 @@
 .game-menu {
-  position: relative;
+  position: fixed;
   width: fit-content;
   min-height: 3rem;
   padding: 8px;
+  top: 60px;
+  z-index: 30;
 }
 
 .game-menu > div {

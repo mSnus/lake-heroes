@@ -14,6 +14,7 @@ interface GameMenuRendererProps {
   menu: MenuState;
   setMenu: (menu: MenuState) => void;
   updateGameState: (board: GameState) => void;
+  top: string;
 }
 
 export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
@@ -21,6 +22,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   menu,
   setMenu,
   updateGameState,
+  top
 }) => {
   const activePlayer = board.activePlayer;
   const currentTile = board.activeTile;
@@ -36,7 +38,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     ];
 
 
-    return <GameMenu items={items}></GameMenu>;
+    return <GameMenu items={items} top={top}></GameMenu>;
   }
 
   if (menu.type === 'move-result') {
@@ -44,6 +46,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     return (
       <GameMenu
         items={[{ action: 'end-turn', label: 'Continue', onClick: handleEndTurn }]}
+        top={top}
       ></GameMenu>
     );
   }
@@ -69,13 +72,14 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
       onClick: handleEndTurn,
     });
 
-    return <GameMenu items={items}></GameMenu>;
+    return <GameMenu items={items} top={top}></GameMenu>;
   }
 
   if (menu.type === 'end-turn') {
     return (
       <GameMenu
         items={[{ action: 'end-turn', label: 'End turn ⏳', onClick: handleEndTurn }]}
+        top={top}
       ></GameMenu>
     );
   }
@@ -97,7 +101,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         disabled: activePlayer.units < defence,
       },
     ];
-    return <GameMenu items={items}></GameMenu>;
+    return <GameMenu items={items} top={top}></GameMenu>;
   }
 
   return null;
