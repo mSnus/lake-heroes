@@ -24,12 +24,15 @@ import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import BuyUnitsModal from './components/BuyUnitsModal';
 import NewGameModal, { PlayerSetup } from './components/NewGameModal';
+import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
   const [showNewGameModal, setShowNewGameModal] = useState(true);
   const [showDice, setShowDice] = useState(true);
+  const [messageHistory, setMessageHistory] = useState<LogMessage[]>([]);
+  const [showLogModal, setShowLogModal] = useState(false);
 
   // setPhase event listener and handler
   function onSetPhase(e: Event) {
@@ -52,6 +55,16 @@ function App() {
   }
 
   window.addEventListener('setPhase', onSetPhase as EventListener);
+
+  useEffect(() => {
+    const handleLogMessage = (e: Event) => {
+      const detail = (e as CustomEvent).detail as LogMessage;
+      setMessageHistory((prev) => [...prev, detail]);
+    };
+
+    window.addEventListener('logMessage', handleLogMessage);
+    return () => window.removeEventListener('logMessage', handleLogMessage);
+  }, []);
 
   useEffect(() => {
     function loadGameData() {
@@ -157,6 +170,14 @@ function App() {
     setShowDice(false);
   };
 
+  const handleOpenLog = () => {
+    setShowLogModal(true);
+  };
+
+  const handleCloseLog = () => {
+    setShowLogModal(false);
+  };
+
   return (
     <div className="App">
       <ToastContainer
@@ -186,7 +207,7 @@ function App() {
               menu={menu}
               setMenu={setMenu}
               updateGameState={updateGameState}
-              top={gameState.gameMessage ? '40px' : '30px'}
+              top={gameState.gameMessage ? '60px' : '30px'}
             />
           ) : (
             <div className="game-menu"></div>
@@ -203,11 +224,35 @@ function App() {
             />
           )}
 
+          {showLogModal && (
+            <MessageHistoryModal
+              messages={messageHistory}
+              onClose={handleCloseLog}
+            />
+          )}
+
           <PlayerStatsTable gameState={gameState} updateGameState={updateGameState} />
         </div>
       )}
 
       <NewGameButton />
+      <button
+        onClick={handleOpenLog}
+        style={{
+          position: 'fixed',
+          top: '80px',
+          left: '4px',
+          zIndex: 49,
+          fontSize: '24px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))'
+        }}
+        title="Show Game Log"
+      >
+        📜
+      </button>
     </div>
   );
 }

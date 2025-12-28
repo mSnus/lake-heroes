@@ -6,6 +6,7 @@ export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error';
  * say: unified user notification helper.
  * - Shows a react-toastify toast
  * - Logs the same message to the console with an appropriate severity
+ * - Dispatches a 'logMessage' event for history tracking
  */
 export function say(message: ToastContent, level: SayLevel = 'info'): void {
   // Show toast by level
@@ -20,11 +21,11 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
       toast.error(message);
       break;
     case 'info':
-      toast.info(message);
+      // toast.info(message);
       break;
     case 'default':
     default:
-      toast(message);
+      // toast(message);
       break;
   }
 
@@ -47,5 +48,14 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
     default:
       console.log(`[toast:${level}] ${text}`);
       break;
+  }
+
+  // Dispatch event for history
+  if (typeof message === 'string') {
+    window.dispatchEvent(
+      new CustomEvent('logMessage', {
+        detail: { message, level, timestamp: Date.now() },
+      })
+    );
   }
 }

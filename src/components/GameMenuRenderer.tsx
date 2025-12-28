@@ -55,7 +55,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     const tile = currentTile;
     const items = [] as MenuItem[];
 
-    if (tile.isAffordable(activePlayer.gold, activePlayer.units)) {
+/*    if (tile.isAffordable(activePlayer.gold, activePlayer.units)) {
       items.push({
         action: 'buy-tile',
         label: `Buy for ${tile.prices['1']?.gold ?? 0}🟡 ${tile.prices['1']?.units ?? 0}🧍`,
@@ -64,7 +64,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
           setMenu({ type: 'end-turn' });
         },
       });
-    }
+    }*/
 
     items.push({
       action: 'end-turn',
@@ -95,7 +95,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         disabled: activePlayer.gold < fee,
       },
       {
-        label: `Send ${defence}🧍 to raze 🔥`,
+        label: `Try to raze ⚔️🔥`,
         action: 'fight' as MenuAction,
         onClick: () => fightTile(board, updateGameState, setMenu),
         disabled: activePlayer.units < defence,
