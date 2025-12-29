@@ -25,6 +25,7 @@ import GameMessage from './components/GameMessage';
 import BuyUnitsModal from './components/BuyUnitsModal';
 import NewGameModal, { PlayerSetup } from './components/NewGameModal';
 import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
+import { gameEvent } from './utils/events';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -91,7 +92,7 @@ function App() {
         setShowNewGameModal(false);
 
         window.setTimeout(
-          () => window.dispatchEvent(new CustomEvent('setPhase', { detail: restored.turnPhase })),
+          () => gameEvent('setPhase', restored.turnPhase),
           0
         );
 
@@ -112,8 +113,7 @@ function App() {
       setMenu({ type: 'main' });
 
       window.setTimeout(
-        () =>
-          window.dispatchEvent(new CustomEvent('setPhase', { detail: initialGameState.turnPhase })),
+        () => gameEvent('setPhase', initialGameState.turnPhase),
         0
       );
 

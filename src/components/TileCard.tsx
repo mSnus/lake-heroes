@@ -6,8 +6,8 @@ import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
-import { MenuItem } from './GameMenu';
 import { FEE_MULTIPLIER } from './board/common';
+import { gameEvent } from '../utils/events';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
@@ -49,7 +49,6 @@ export const TileCard: React.FC<TileCardProps> = ({
   const groupMeta = (groups as { name: string; icon: string; color: string }[]).find(
     (g) => g.name === tile.group
   );
-  const groupIcon = groupMeta?.icon ?? '';
   const groupColor = groupMeta?.color ?? '#eee';
   const bonusType = getBonusType(tile);
 
@@ -105,7 +104,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const handleClose = () => {
-    window.dispatchEvent(new CustomEvent('displayTitle', {}));
+    gameEvent('displayTitle', {})
   };
 
   const handleSell = () => {

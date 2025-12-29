@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/dice.css';
+import { say } from '../utils/say';
+import { gameEvent } from '../utils/events';
 interface Props {
   gameState: GameState | null;
 }
 
 export const DiceWidget: React.FC<Props> = ({ gameState }) => {
   const [side, setSide] = useState<number>(1);
+  const [needRoll, setNeedRoll] = useState<boolean>(false);
 
   const animationTimeout = useRef<number | null>(null);
 
@@ -20,12 +23,22 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
       setSide(value);
       if (animationTimeout.current) window.clearTimeout(animationTimeout.current);
       animationTimeout.current = window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('diceAnimationStopped', { detail: value }));
+        gameEvent('diceAnimationStopped', value);
       }, 1600);
     }
 
     window.addEventListener('diceRolled', onDiceRolled as EventListener);
     return () => window.removeEventListener('diceRolled', onDiceRolled as EventListener);
+  }, []);
+
+  useEffect(() => {
+    function onNeedDiceRoll(e: Event) {
+      say('Need dice roll!');
+      setNeedRoll(false);
+    }
+
+    window.addEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
+    return () => window.removeEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
   }, []);
 
   return (
@@ -70,6 +83,7 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
           <span className="dot dot-6" />
         </div>
       </div>
+      {needRoll && <div>Roll dice!</div>}
     </div>
   );
 };

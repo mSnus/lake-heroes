@@ -10,6 +10,7 @@ import { FEE_MULTIPLIER } from './board/common';
 import { sellTile } from '../actions/sellTile';
 import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { say } from '../utils/say';
+import { gameEvent } from '../utils/events';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -24,7 +25,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   menu,
   setMenu,
   updateGameState,
-  top
+  top,
 }) => {
   const activePlayer = board.activePlayer;
   const currentTile = board.activeTile;
@@ -32,13 +33,14 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   const handleEndTurn = () => endTurn(board, updateGameState, setMenu);
 
   if (menu.type === 'main') {
+    gameEvent('needDiceRoll', true);
+
     let items = [
       {
         label: 'Roll Dice 🎲',
         onClick: () => rollAndMove(board, updateGameState, setMenu),
       } as MenuItem,
     ];
-
 
     return <GameMenu items={items} top={top}></GameMenu>;
   }

@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { Player } from '../game/Player';
 import { MONEY_START, UNITS_START } from '../components/board/common';
+import { gameEvent } from '../utils/events';
 
 export function gameStart(
   gameState: GameState | null,
@@ -22,5 +23,5 @@ export function gameStart(
 
   updateGameState(gameState);
 
-  window.dispatchEvent(new CustomEvent('displayTitle', {}));
+  gameEvent('displayTitle', {});
 }

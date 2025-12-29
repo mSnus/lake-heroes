@@ -1,18 +1,12 @@
-import React, { useRef, useEffect, ReactElement } from 'react';
+import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import { SPRITE_SIZE } from './board/common';
 import groupsData from '../settings/groups.json';
 
-import {
-  TILE_COUNT,
-  DIAMOND_SIZE,
-  DIAMOND_GAP,
-  getTilePosition,
-  isMobileLayout,
-  parseTileName,
-} from './board/common';
+import { TILE_COUNT, getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import '../styles/Board.css';
 import { playerImageAssets } from '../game/PlayerOptions';
+import { gameEvent } from '../utils/events';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -58,7 +52,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
     const handleTileClick = () => {
       if (tile) {
-        window.dispatchEvent(new CustomEvent('displayTitle', { detail: tile }));
+        gameEvent('displayTitle', tile);
       }
     };
 
@@ -145,7 +139,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
       >
         <div className="player-col">
           <img className="player-image" src={src} alt={player.name} />
-          <div className="player-name" style={{color: player.color}}>{player.name}</div>
+          <div className="player-name" style={{ color: player.color }}>
+            {player.name}
+          </div>
         </div>
       </div>
     );

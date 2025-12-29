@@ -11,6 +11,7 @@ import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../components/board/common';
+import { gameEvent } from '../utils/events';
 
 export async function rollAndMove(
   board: GameState | null,
@@ -25,7 +26,7 @@ export async function rollAndMove(
   const nextTileIdx = (player.position + roll) % TILE_COUNT;
   const nextTile = board.tiles[nextTileIdx];
 
-  window.dispatchEvent(new CustomEvent('setPhase', { detail: 'rolling' }));
+  gameEvent('setPhase', 'rolling');
 
   board.gameMessage = '';
 
@@ -37,14 +38,14 @@ export async function rollAndMove(
 
   say(tileMessage, 'info');
 
-  window.dispatchEvent(new CustomEvent('displayTitle', {}));
+  gameEvent('displayTitle', {});
 
   // Step-by-step move with 0.2s delay per tile
   for (let step = 1; step <= roll; step++) {
     const nextPos = (player.position + 1) % TILE_COUNT;
     const willWrap = player.position + 1 >= TILE_COUNT;
 
-    window.dispatchEvent(new CustomEvent('setPhase', { detail: 'moving' }));
+    gameEvent('setPhase', 'moving');
     player.position = nextPos;
     updateGameState(board);
 
@@ -52,12 +53,12 @@ export async function rollAndMove(
       passStart(board, updateGameState);
     }
 
-    window.dispatchEvent(new CustomEvent('displayTitle', { detail: board.tiles[nextPos] }));
+    gameEvent('displayTitle', board.tiles[nextPos]);
     // Delay before the next step to visualize movement
     await new Promise((res) => setTimeout(res, 300));
   }
 
-  window.dispatchEvent(new CustomEvent('setPhase', { detail: 'after-move' }));
+  gameEvent('setPhase', 'after-move');
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic

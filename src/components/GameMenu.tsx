@@ -1,5 +1,5 @@
 import React from 'react';
-import { rollDice } from '../game/Dice';
+import { gameEvent } from '../utils/events';
 
 export type MenuAction = 'roll-dice' | 'end-turn' | 'buy-tile' | 'fight' | 'pay-fee';
 
@@ -20,7 +20,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({ items, children, top }) => {
   function handleItemClick(item: MenuItem) {
     if (item.action === 'end-turn') {
       // update phase to before-move when ending turn
-      window.dispatchEvent(new CustomEvent('setPhase', { detail: 'before-move' }));
+      gameEvent('setPhase', 'before-move');
     }
 
     try {
@@ -29,7 +29,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({ items, children, top }) => {
   }
 
   return (
-    <div className="game-menu" style={{top: top}}>
+    <div className="game-menu" style={{ top: top }}>
       <div>
         {items.map((item, i) => {
           return (

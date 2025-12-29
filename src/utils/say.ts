@@ -1,4 +1,5 @@
 import { toast, ToastContent } from 'react-toastify';
+import { gameEvent } from './events';
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error';
 
@@ -52,10 +53,6 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
 
   // Dispatch event for history
   if (typeof message === 'string') {
-    window.dispatchEvent(
-      new CustomEvent('logMessage', {
-        detail: { message, level, timestamp: Date.now() },
-      })
-    );
+    gameEvent('logMessage', { message, level, timestamp: Date.now() });
   }
 }
