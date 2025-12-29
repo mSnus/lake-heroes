@@ -62,18 +62,12 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <strong>{activePlayer.units ?? 0} 🧍</strong>
       </div>
 
-      <div
-        style={{
-          filter: 'grayscale(0.7)',
-          fontSize: '16px',
-        }}
-      ></div>
+
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div className="circular-path" style={{ marginTop: '6px', paddingRight: '4px' }}>
           🗘
         </div>
-        <div>per turn:</div>
-      </div>
+      
       
       {totalGold > 0 ? (
         <div>
@@ -89,12 +83,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         ) : <div/>
       }
 
-      {totalUnits <= 0 && totalGold <= 0 ? (
-        <div>
-          <strong>no 🟡 or 👬 income</strong>
-        </div>
-        ) : <div/>
-      }
+      </div>
     </div>
   );
 };

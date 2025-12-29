@@ -185,13 +185,6 @@ function App() {
       {gameState && (
         <div
           id="mainContainer"
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-          }}
         >
           {showDice && <DiceWidget gameState={gameState} />}
           <CurrentPlayer gameState={gameState} />
@@ -232,7 +225,7 @@ function App() {
       <div
         className="shield-button-container"
         style={{
-          left: '50px',
+          top: '50px',
         }}
       >
         <button

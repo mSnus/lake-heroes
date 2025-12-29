@@ -3,6 +3,7 @@
   display: block;
   position: relative;
   overflow: hidden;
+  background-color: #2a3c2a;
 }
 
 .board-bg {
@@ -14,7 +15,7 @@
 
 .bg-layer {
   position: absolute;
-  top: 0;
+  top: 16px;
   left: 0;
   display: block;
 }
@@ -45,7 +46,8 @@
   height: 100%;
   width: 100%;
   z-index: 3;
-  pointer-events: none; /* allow clicks to pass through to tiles unless specifically on player markers */
+  pointer-events: none;
+  /* allow clicks to pass through to tiles unless specifically on player markers */
 }
 
 /* Static tile shell and content */
@@ -149,7 +151,7 @@
   font-size: var(--body-font-size);
   height: 20px;
   z-index: 100;
-  margin-top: 16px;
+  margin-top: 4px;
   margin-bottom: -16px;
   opacity: 0.8;
 }
@@ -182,10 +184,11 @@
 .player-wrapper {
   position: absolute;
   z-index: 3;
-  transform: translate(-25px, -35px);
+  transform: translate(-2px, -46px);
   display: flex;
   gap: 6px;
   pointer-events: auto;
+  padding-right: 12px;
 }
 
 .player-col {
@@ -213,10 +216,12 @@
   min-height: 64px;
   z-index: 500;
   filter: drop-shadow(0px 0px 6px #000);
+  transform: scale(0.75);
 }
 
 .player-image.current-player {
   filter: drop-shadow(-1px 2px 3px #f3fe5d);
+  transform: scale(1);
 }
 
 .player-name {
@@ -242,7 +247,7 @@
 
 .shield-button-container {
   position: fixed;
-  top: calc(var(--player-pane-height) + 8px);
+  top: -16px;
   left: -12px;
   width: 60px;
   height: 60px;

@@ -2,11 +2,13 @@
   width: 100%;
   height: var(--player-pane-height);
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  justify-content: flex-end;
+  gap: 8px;
   align-items: center;
   line-height: 0.9;
   overflow-y: hidden;
+  font-size: 14px;
+  padding-right: 12px;
 }
 
 .player-marker-indicator {
