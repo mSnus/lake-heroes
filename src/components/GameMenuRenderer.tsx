@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { GameMenu, MenuAction, MenuItem } from './GameMenu';
-import { buyTile } from '../actions/buyTile';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
 import { rollAndMove } from '../actions/rollAndMove';
 import { endTurn } from '../actions/endTurn';
 import { FEE_MULTIPLIER } from './board/common';
+import { sellTile } from '../actions/sellTile';
+import { afterMoveLogic } from '../actions/afterMoveLogic';
+import { say } from '../utils/say';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -52,19 +54,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'buy') {
-    const tile = currentTile;
     const items = [] as MenuItem[];
-
-/*    if (tile.isAffordable(activePlayer.gold, activePlayer.units)) {
-      items.push({
-        action: 'buy-tile',
-        label: `Buy for ${tile.prices['1']?.gold ?? 0}🟡 ${tile.prices['1']?.units ?? 0}🧍`,
-        onClick: () => {
-          buyTile(board, updateGameState);
-          setMenu({ type: 'end-turn' });
-        },
-      });
-    }*/
 
     items.push({
       action: 'end-turn',
@@ -101,6 +91,29 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         disabled: activePlayer.units < defence,
       },
     ];
+    return <GameMenu items={items} top={top}></GameMenu>;
+  }
+
+  if (menu.type === 'sell-to-pay') {
+    if (menu.tileIdx === undefined) {
+      say(`Tile to sell (menu.tileIdx) is not set`);
+      return;
+    }
+
+    const tile = board.tiles[activePlayer.ownedTiles[menu.tileIdx]];
+
+    const items = [
+      {
+        label: `Sell ${tile.name} to pay fee`,
+        onClick: () => {
+          sellTile(board, activePlayer, tile);
+          updateGameState(board);
+          // Re-evaluate logic
+          afterMoveLogic(board, updateGameState, setMenu);
+        },
+      } as MenuItem,
+    ];
+
     return <GameMenu items={items} top={top}></GameMenu>;
   }
 

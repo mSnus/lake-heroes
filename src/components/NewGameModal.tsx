@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { playerOptions } from '../game/PlayerOptions';
+import { playerOptions, generatePlayerName } from '../game/PlayerOptions';
 import { MAX_PLAYERS, MONEY_START, UNITS_START } from './board/common';
 import GameModal from './GameModal';
 import '../styles/modal.css';
@@ -23,7 +23,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     const initialPlayers: PlayerSetup[] = [];
     for (let i = 0; i < numPlayers; i++) {
       initialPlayers.push({
-        name: `Player ${i + 1}`,
+        name: generatePlayerName(),
         color: playerOptions[i].color,
         image: playerOptions[i].image,
         gold: MONEY_START,
@@ -50,7 +50,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
       const availableOption = playerOptions.find((opt) => !usedColors.includes(opt.color));
 
       newPlayers.push({
-        name: `Player ${i + 1}`,
+        name: generatePlayerName(),
         color: availableOption?.color || '#FFFFFF',
         image: availableOption?.image || '',
         gold: MONEY_START,

@@ -170,7 +170,7 @@ function App() {
     setShowDice(false);
   };
 
-  const handleOpenLog = () => {
+    const handleOpenLog = () => {
     setShowLogModal(true);
   };
 
@@ -225,10 +225,7 @@ function App() {
           )}
 
           {showLogModal && (
-            <MessageHistoryModal
-              messages={messageHistory}
-              onClose={handleCloseLog}
-            />
+            <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
           )}
 
           <PlayerStatsTable gameState={gameState} updateGameState={updateGameState} />
@@ -236,23 +233,21 @@ function App() {
       )}
 
       <NewGameButton />
-      <button
-        onClick={handleOpenLog}
+      <div
+        className="shield-button-container"
         style={{
-          position: 'fixed',
           top: '80px',
-          left: '4px',
-          zIndex: 49,
-          fontSize: '24px',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))'
         }}
-        title="Show Game Log"
       >
-        📜
-      </button>
+        <button
+          id="btnGamelog"
+          onClick={handleOpenLog}
+          className="shield-button"
+          title="Show Game Log"
+        >
+          📜
+        </button>
+      </div>
     </div>
   );
 }

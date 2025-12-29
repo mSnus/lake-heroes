@@ -21,39 +21,13 @@ const NewGameButton: React.FC = () => {
 
   return (
     <div
+      className="shield-button-container"
       style={{
-        position: 'fixed',
-        top: '-18px',
-        left: '-18px',
-        width: '80px',
-        height: '80px',
-        display: 'flex',
-        justifyContent: 'center',
-        zIndex: 50,
-        backgroundImage: `url(${shield})`,
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-        backgroundSize: 'contain',
-        filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.3))',
+        top: '18px',
       }}
     >
-      <button
-        onClick={handleReset}
-        style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: '100%',
-          fontSize: '12px',
-          cursor: 'pointer',
-          border: 'none',
-          background: 'transparent',
-          color: '#b1a772',
-          fontWeight: 600,
-        }}
-      >
-        New
-        <br />
-        Game
+      <button onClick={handleReset} className="shield-button">
+        🐲
       </button>
     </div>
   );

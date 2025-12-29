@@ -28,3 +28,48 @@ export const playerImageAssets: Record<string, string> = playerOptions.reduce(
   },
   {} as Record<string, string>
 );
+
+const pronouns = [
+  'Drunken',
+  'Laughing',
+  'Singing',
+  'Angry',
+  'Sleepy',
+  'Filthy',
+  'Pathetic',
+  'Toothless',
+  'Brave',
+  'Ragged',
+  'Dirty',
+  'Shiny',
+  'Merciless',
+  'Golden',
+  'Radiant',
+  'Noble',
+  'Valiant',
+  'Squint-eyed',
+];
+
+const nouns = [
+  'Beggar',
+  'Peasant',
+  'Gravedigger',
+  'Knight',
+  'Squire',
+  'Raider',
+  'Champion',
+  'Scolar',
+  'Nun',
+  'Baron',
+  'Lady',
+  'Prince',
+  'Princess',
+  'Bandit',
+  'Assasin',
+];
+
+export function generatePlayerName(): string {
+  const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+  const noun = nouns[Math.floor(Math.random() * nouns.length)];
+  return `${pronoun} ${noun}`;
+}

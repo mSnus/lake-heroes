@@ -235,6 +235,36 @@
   filter: brightness(0.9);
 }
 
+
+/* New Game Button */
+.shield-button-container {
+  position: fixed;
+  left: -12px;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  z-index: 50;
+  background-image: url("/assets/shield.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.3));
+}
+
+.shield-button {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #b1a772;
+  font-weight: 600;
+  font-size: 22px;
+  text-shadow: 5px 5px 5px #00000050;
+}
+
 @media screen and (max-width: 768px) {
   .tile {
     width: 40px;
@@ -250,3 +280,4 @@
     height: 10px;
   }
 }
+

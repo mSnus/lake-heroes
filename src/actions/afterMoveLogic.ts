@@ -2,6 +2,7 @@ import { FEE_MULTIPLIER } from '../components/board/common';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
+import { becomeBeggar } from './becomeBeggar';
 
 export function afterMoveLogic(
   board: GameState | null,
@@ -38,13 +39,34 @@ export function afterMoveLogic(
     const defence = tile.defence || 0;
 
     if (player.gold < fee && player.units < defence) {
-      //Death
+      // Check if player has tiles to sell
+      const ownedTiles = board.tiles.filter((t) => t.owner === player.name);
+      if (ownedTiles.length > 0) {
+        // Find tile with minimal value
+        let minTile = -1;
+        let minVal = Infinity;
+
+        ownedTiles.forEach((t, index) => {
+          const price = t.currentPrice;
+          const val = price.gold + price.units * 100;
+          if (val < minVal && val >= fee) {
+            minVal = val;
+            minTile = index;
+          }
+        });
+
+        if (minTile > 0) {
+          say(`${player.name} sells ${ownedTiles[minTile].name} to pay the fee`, 'warning');
+          setMenu({ type: 'sell-to-pay', tileIdx: minTile });
+          return;
+        }
+      }
+
       say(
         `${player.name} cannot afford to pay the fee or fight the defences on ${tile.name}.`,
         'error'
       );
-      board.gameMessage = `${player.name} is technically dead.`;
-      updateGameState(board);
+      becomeBeggar(board, updateGameState);
       setMenu({ type: 'end-turn' });
     } else {
       setMenu({ type: 'fee-or-fight' });
