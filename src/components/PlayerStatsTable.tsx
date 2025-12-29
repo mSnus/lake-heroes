@@ -25,8 +25,8 @@ export const PlayerStatsTable: React.FC<Props> = ({ gameState, updateGameState }
   }, [gameState, activePlayer.name]);
 
   return (
-    <div className="player-pane-wrapper">
-      <div className="player-pane-owned-cards">
+    <div className="cards-pane-wrapper">
+      <div className="owned-cards">
         {owned.length === 0 && (
           <div className="poor-player">Poor {activePlayer.name} owns nothing</div>
         )}

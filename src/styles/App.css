@@ -5,6 +5,7 @@
   --body-font-family: 'Inter, sans-serif';
   --sprite-size: 92px;
   --sprite-scale: 40%;
+  --player-pane-height: 32px;
 }
 
 @media screen and (max-width: 768px) {
@@ -54,7 +55,8 @@ body {
 }
 
 .game-message {
-  position: relative;
+  position: absolute;
+  top: var(--player-pane-height);
   text-align: center;
   background: linear-gradient(90deg, #3f591e, #6b8e23);
   color: #fdf599;
@@ -62,4 +64,5 @@ body {
   font-weight: 700;
   width: 100%;
   padding: 4px;
+  z-index: 40;
 }

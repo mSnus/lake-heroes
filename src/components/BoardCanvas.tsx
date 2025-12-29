@@ -18,9 +18,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
   const offsetX = isMobile ? 10 : 0;
   const offsetY = isMobile ? 8 : 0;
 
-  const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '64rem';
-  const CANVAS_HEIGHT = isMobileLayout() ? '120vw' : '36.5625rem';
-  const WRAPPER_HEIGHT = isMobileLayout() ? '115vw' : CANVAS_HEIGHT;
+  const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '50vw';
+  const CANVAS_HEIGHT = isMobileLayout() ? '120vw' : '60vw';
+  const WRAPPER_HEIGHT = isMobileLayout() ? '120vw' : CANVAS_HEIGHT;
 
   const [mapReady, setMapReady] = React.useState(false);
   const mapUrl = 'assets/map10.jpg';
@@ -138,10 +138,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
         }}
       >
         <div className="player-col">
-          <img className="player-image" src={src} alt={player.name} />
-          <div className="player-name" style={{ color: player.color }}>
-            {player.name}
-          </div>
+          <img className={"player-image" + (player.name == board.activePlayer.name ? " current-player" : '')} src={src} alt={player.name} />
         </div>
       </div>
     );

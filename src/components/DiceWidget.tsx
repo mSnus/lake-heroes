@@ -33,13 +33,13 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
 
   useEffect(() => {
     function onNeedDiceRoll(e: Event) {
-      say('Need dice roll!');
+      // say('Need dice roll!');
       setNeedRoll(false);
     }
 
     window.addEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
     return () => window.removeEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
-  }, []);
+  }, [needRoll]);
 
   return (
     <div className="dice-container ">

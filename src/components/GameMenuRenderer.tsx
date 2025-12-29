@@ -77,8 +77,8 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   }
 
   if (menu.type === 'fee-or-fight') {
-    const fee = currentTile.defences[currentTile.level] * FEE_MULTIPLIER || 0;
-    const defence = currentTile.defences[currentTile.level] || 0;
+    const fee = currentTile.fee;
+    const defence = currentTile.defence;
     const items = [
       {
         label: `Pay fee ${fee} 🟡`,
@@ -87,7 +87,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         disabled: activePlayer.gold < fee,
       },
       {
-        label: `Try to raze ⚔️🔥`,
+        label: `Risk ${defence}🧍 to raze ⚔️🔥`,
         action: 'fight' as MenuAction,
         onClick: () => fightTile(board, updateGameState, setMenu),
         disabled: activePlayer.units < defence,

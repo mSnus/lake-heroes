@@ -26,6 +26,7 @@ import BuyUnitsModal from './components/BuyUnitsModal';
 import NewGameModal, { PlayerSetup } from './components/NewGameModal';
 import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
 import { gameEvent } from './utils/events';
+import { afterMoveLogic } from './actions/afterMoveLogic';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -88,13 +89,11 @@ function App() {
         if (!restored.turnPhase) restored.turnPhase = 'before-move';
 
         setGameState(restored);
-        setMenu({ type: 'main' });
+        // setMenu({ type: 'main' });
+        afterMoveLogic(restored, updateGameState, setMenu);
         setShowNewGameModal(false);
 
-        window.setTimeout(
-          () => gameEvent('setPhase', restored.turnPhase),
-          0
-        );
+        window.setTimeout(() => gameEvent('setPhase', restored.turnPhase), 0);
 
         const first = restored.activePlayer;
         if (!first.turnsToSkip || first.turnsToSkip <= 0) {
@@ -112,10 +111,7 @@ function App() {
 
       setMenu({ type: 'main' });
 
-      window.setTimeout(
-        () => gameEvent('setPhase', initialGameState.turnPhase),
-        0
-      );
+      window.setTimeout(() => gameEvent('setPhase', initialGameState.turnPhase), 0);
 
       const first = initialGameState.activePlayer;
 
@@ -170,7 +166,7 @@ function App() {
     setShowDice(false);
   };
 
-    const handleOpenLog = () => {
+  const handleOpenLog = () => {
     setShowLogModal(true);
   };
 
@@ -236,7 +232,7 @@ function App() {
       <div
         className="shield-button-container"
         style={{
-          top: '80px',
+          left: '50px',
         }}
       >
         <button

@@ -44,7 +44,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 }) => {
   const [expanded, setExpanded] = React.useState(false);
 
-  if (!tile) return null;
+  if (!tile || !tile.name) return null;
 
   const groupMeta = (groups as { name: string; icon: string; color: string }[]).find(
     (g) => g.name === tile.group
@@ -215,7 +215,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   {tile.owner !== activePlayer?.name && (
                     <div>
                       <div className="big-icon-hint">
-                        <div>{tile.defences[tile.level] * FEE_MULTIPLIER || 0}🟡</div>
+                        <div>{tile.fee}🟡</div>
                         <div>fee</div>
                       </div>
                     </div>

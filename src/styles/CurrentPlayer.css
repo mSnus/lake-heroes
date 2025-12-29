@@ -1,9 +1,12 @@
 .player-pane {
   width: 100%;
+  height: var(--player-pane-height);
   display: flex;
   justify-content: center;
   gap: 12px;
   align-items: center;
+  line-height: 0.9;
+  overflow-y: hidden;
 }
 
 .player-marker-indicator {

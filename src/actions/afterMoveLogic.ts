@@ -35,8 +35,8 @@ export function afterMoveLogic(
 
   // Ownable, owned by someone else
   if (tile.isOwned() && tile.owner !== player.name) {
-    const fee = tile.defence * FEE_MULTIPLIER || 0;
-    const defence = tile.defence || 0;
+    const fee = tile.fee;
+    const defence = tile.defence;
 
     if (player.gold < fee && player.units < defence) {
       // Check if player has tiles to sell

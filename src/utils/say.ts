@@ -13,7 +13,7 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
   // Show toast by level
   switch (level) {
     case 'success':
-      toast.success(message);
+      // toast.success(message);
       break;
     case 'warning':
       toast.warning(message);

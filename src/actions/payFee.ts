@@ -14,7 +14,7 @@ export function payFee(
   const player = board.activePlayer;
   const owner = board.players.find((p: Player) => p.name === tile.owner);
 
-  const fee = tile.defences[tile.level] * FEE_MULTIPLIER || 0;
+  const fee = tile.fee;
 
   if (player.gold >= fee && owner) {
     player.gold -= fee;

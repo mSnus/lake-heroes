@@ -20,12 +20,7 @@ const NewGameButton: React.FC = () => {
   }
 
   return (
-    <div
-      className="shield-button-container"
-      style={{
-        top: '18px',
-      }}
-    >
+    <div className="shield-button-container">
       <button onClick={handleReset} className="shield-button">
         🐲
       </button>

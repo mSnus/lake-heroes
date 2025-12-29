@@ -24,7 +24,7 @@
 .game-modal-border {
   width: fit-content;
   height: fit-content;
-  background-image: url('assets/sand.png');
+  background-image: url('assets/sand.jpg');
   background-repeat: repeat;
   background-size: 50%;
   border-radius: 15px;
@@ -81,7 +81,7 @@ button.decorated {
 }
 
 .modal-content input[type='text'],
-.modal-content input[type='number']{
+.modal-content input[type='number'] {
   height: 32px;
   width: 130px;
   border: solid 1px #623e1b;

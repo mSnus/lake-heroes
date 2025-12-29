@@ -1,3 +1,5 @@
+import { FEE_MULTIPLIER } from '../components/board/common';
+
 export interface TileJSON {
   group: string;
   name: string;
@@ -45,7 +47,11 @@ export class Tile implements TileJSON {
 
   get defence(): number {
     const level = this._level ?? 1;
-    return level == 1 ? this.prices[1].units : this.defences[level];
+    return this.getDefence(level);
+  }
+
+  get fee(): number {
+    return this.defence * FEE_MULTIPLIER;
   }
 
   isOwned(): boolean {
@@ -93,7 +99,9 @@ export class Tile implements TileJSON {
   }
 
   getDefence(level: number = 1): number {
-    return this.defences ? this.defences[level] || 0 : 0;
+    const defence = this.defences ? this.defences[level] || 0 : 0;
+
+    return level == 1 ? this.prices[1].units : defence;
   }
 
   toJSON(): TileJSON {

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/CurrentPlayer.css';
 import { Tile } from '../game/Tile';
+import { MONEY_PASS_START } from './board/common';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -22,6 +23,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   let totalGold = 0;
   let totalUnits = 0;
 
+  const baseGold = MONEY_PASS_START;
+
   owned.forEach(({ tile }) => {
     if (tile.bonusType === 'gold') {
       totalGold += tile.bonuses[tile.level] ?? 0;
@@ -29,6 +32,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
       totalUnits += tile.bonuses[tile.level] ?? 0;
     }
   });
+
+  totalGold += baseGold;
 
   return (
     <div
@@ -64,17 +69,32 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         }}
       ></div>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="circular-path" style={{ marginTop: '-4px', paddingRight: '4px' }}>
+        <div className="circular-path" style={{ marginTop: '6px', paddingRight: '4px' }}>
           🗘
         </div>
         <div>per turn:</div>
       </div>
-      <div>
-        <strong>{totalGold} 🟡</strong>
-      </div>
-      <div>
-        <strong>{totalUnits} 👬</strong>
-      </div>
+      
+      {totalGold > 0 ? (
+        <div>
+          <strong>+ {totalGold} 🟡</strong>
+        </div>
+        ) : <div/>
+      }
+      
+      {totalUnits > 0 ? (
+        <div>
+          <strong>+ {totalUnits} 👬</strong>
+        </div>
+        ) : <div/>
+      }
+
+      {totalUnits <= 0 && totalGold <= 0 ? (
+        <div>
+          <strong>no 🟡 or 👬 income</strong>
+        </div>
+        ) : <div/>
+      }
     </div>
   );
 };
