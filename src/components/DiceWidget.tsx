@@ -29,7 +29,7 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
   }, []);
 
   return (
-    <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 2000 }}>
+    <div className="dice-container ">
       <div
         id="dice"
         data-side={String(side)}

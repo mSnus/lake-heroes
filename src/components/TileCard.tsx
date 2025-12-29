@@ -136,27 +136,32 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   return (
     <div className="tile-card">
-      <div className="tile-card-header" style={{ background: groupColor }}>
+      <div className="tile-card-header" style={{ background: groupColor + 'e0' }}>
+        <div className="tile-card-title">{tile.name}</div>
+
         {mode === 'owned' && (
-          <button
+          <a
             onClick={() => handleSell()}
-            className="tile-card-button"
-            style={{ fontSize: '18px', opacity: 0.8 }}
-          >
-            🪙
-          </button>
-        )}
-        {mode === 'display' && <div style={{ width: '24px' }} />}
-        {groupIcon} {tile.group}
-        {mode === 'owned' && (
-          <button
-            onClick={() => handleUpgrade()}
-            className="tile-card-button"
+            className={'tile-card-button'}
             style={{ fontSize: '16px' }}
-            disabled={!canUpgrade}
           >
-            ⬆️
-          </button>
+            <div className="big-icon-hint">
+              <div>🪙</div>
+              <div>sell</div>
+            </div>
+          </a>
+        )}
+        {mode === 'owned' && (
+          <a
+            onClick={() => handleUpgrade()}
+            className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
+            style={{ fontSize: '16px' }}
+          >
+            <div className="big-icon-hint">
+              <div>⬆️</div>
+              <div>upgrade</div>
+            </div>
+          </a>
         )}
         {mode === 'display' && (
           <button
@@ -168,8 +173,6 @@ export const TileCard: React.FC<TileCardProps> = ({
           </button>
         )}
       </div>
-
-      <div className="tile-card-title">{tile.name}</div>
 
       {tile.isOwnable && (
         <div className="tile-card-body" onClick={handleClick}>
@@ -192,24 +195,24 @@ export const TileCard: React.FC<TileCardProps> = ({
                         </span>
                       </div>
                     )}
-                    <div className="diamonds" style={{ textAlign: 'center' }}>
-                      {Array.from({ length: tile.level }).map((_, d) => (
-                        <div
-                          key={d}
-                          className="diamond"
-                          style={{
-                            background:
-                              gameState?.players.find((p) => p.name === tile.owner)?.color ||
-                              '#444',
-                            width: '12px',
-                            height: '12px',
-                          }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 </div>
                 <div className="tile-card-base-row">
+                  <div className="diamonds" style={{ textAlign: 'center' }}>
+                    {Array.from({ length: tile.level }).map((_, d) => (
+                      <div
+                        key={d}
+                        className="diamond"
+                        style={{
+                          background:
+                            gameState?.players.find((p) => p.name === tile.owner)?.color || '#444',
+                          width: '12px',
+                          height: '12px',
+                        }}
+                      />
+                    ))}
+                  </div>
+
                   {tile.owner !== activePlayer?.name && (
                     <div>
                       <div className="big-icon-hint">

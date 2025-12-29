@@ -12,9 +12,10 @@
 }
 
 .dice-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
+  position: fixed;
+  top: 32px;
+  right: 16px;
+  z-index: 2000;
 }
 
 .dice {
