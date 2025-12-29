@@ -16,5 +16,5 @@ export function handlePrison(
 
   updateGameState(board);
 
-  setMenu({ type: 'move-result' });
+  setMenu({ type: 'end-turn' });
 }

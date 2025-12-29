@@ -180,3 +180,15 @@
     bottom: 20px;
   }
 }
+
+.dice-roll {
+  position: absolute;
+  font-size: 11px;
+  margin-top: 8px;
+  margin-left: -4px;
+  background: linear-gradient(145deg, #e3dca7, #cf9d39);
+  padding: 4px;
+  z-index: 3000;
+  border-radius: 4px;;
+  white-space: nowrap;
+}

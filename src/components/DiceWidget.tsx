@@ -10,6 +10,7 @@ interface Props {
 export const DiceWidget: React.FC<Props> = ({ gameState }) => {
   const [side, setSide] = useState<number>(1);
   const [needRoll, setNeedRoll] = useState<boolean>(false);
+  const [showDice, setShowDice] = useState<boolean>(false);
 
   const animationTimeout = useRef<number | null>(null);
 
@@ -33,16 +34,28 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
 
   useEffect(() => {
     function onNeedDiceRoll(e: Event) {
-      // say('Need dice roll!');
-      setNeedRoll(false);
+      console.log('Need dice roll!');
+      setNeedRoll(true);
+      setShowDice(true);
     }
 
     window.addEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
     return () => window.removeEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
   }, [needRoll]);
 
+  useEffect(() => {
+    function onHindeDice(e: Event) {
+      console.log('Hide dice!');
+      setShowDice(true);
+    }
+
+    window.addEventListener('hideDice', onHindeDice as EventListener);
+    return () => window.removeEventListener('hideDice', onHindeDice as EventListener);
+  }, [showDice]);
+
   return (
     <div className="dice-container ">
+      {showDice && (
       <div
         id="dice"
         data-side={String(side)}
@@ -82,8 +95,9 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
           <span className="dot dot-5" />
           <span className="dot dot-6" />
         </div>
-      </div>
-      {needRoll && <div>Roll dice!</div>}
+      </div>)}
+      
+      {needRoll ? <div className="dice-roll">Roll dice!</div> : <div>no need</div>}
     </div>
   );
 };

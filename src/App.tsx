@@ -110,6 +110,7 @@ function App() {
       gameStart(initialGameState, updateGameState);
 
       setMenu({ type: 'main' });
+      gameEvent('needDiceRoll', true);
 
       window.setTimeout(() => gameEvent('setPhase', initialGameState.turnPhase), 0);
 

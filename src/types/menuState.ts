@@ -1,13 +1,5 @@
 export interface MenuState {
-  type:
-    | 'main'
-    | 'buy'
-    | 'fee-or-fight'
-    | 'wait'
-    | 'move-result'
-    | 'end-turn'
-    | 'buy-units'
-    | 'sell-to-pay';
+  type: 'main' | 'fee-or-fight' | 'wait' | 'end-turn' | 'buy-units' | 'sell-to-pay';
   tileIdx?: number;
   diceRoll?: number;
   passedStart?: boolean;

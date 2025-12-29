@@ -41,7 +41,7 @@ export function fightTile(
       p.ownedTiles = p.ownedTiles.filter((idx: number) => idx !== player.position);
     });
 
-    setMenu({ type: 'buy' });
+    setMenu({ type: 'end-turn' });
   }
 
   updateGameState(board);

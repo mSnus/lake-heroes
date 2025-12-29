@@ -33,36 +33,12 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   const handleEndTurn = () => endTurn(board, updateGameState, setMenu);
 
   if (menu.type === 'main') {
-    gameEvent('needDiceRoll', true);
-
     let items = [
       {
         label: 'Roll Dice 🎲',
         onClick: () => rollAndMove(board, updateGameState, setMenu),
       } as MenuItem,
     ];
-
-    return <GameMenu items={items} top={top}></GameMenu>;
-  }
-
-  if (menu.type === 'move-result') {
-    // Only used for Prison - show message and end turn
-    return (
-      <GameMenu
-        items={[{ action: 'end-turn', label: 'Continue', onClick: handleEndTurn }]}
-        top={top}
-      ></GameMenu>
-    );
-  }
-
-  if (menu.type === 'buy') {
-    const items = [] as MenuItem[];
-
-    items.push({
-      action: 'end-turn',
-      label: 'End turn ⏳',
-      onClick: handleEndTurn,
-    });
 
     return <GameMenu items={items} top={top}></GameMenu>;
   }

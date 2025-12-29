@@ -1,6 +1,7 @@
 import { FEE_MULTIPLIER } from '../components/board/common';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
+import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
 import { becomeBeggar } from './becomeBeggar';
 
@@ -19,18 +20,8 @@ export function afterMoveLogic(
   // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
   if (!tile.isOwnable) {
     setMenu({ type: 'end-turn' });
+    gameEvent('hideDice', true);
     return;
-  }
-
-  // Ownable, not owned, player can buy
-  if (!tile.isOwned()) {
-    if (tile.isAffordable(player.gold, player.units)) {
-      setMenu({ type: 'buy' });
-      return;
-    } else {
-      setMenu({ type: 'end-turn' });
-      return;
-    }
   }
 
   // Ownable, owned by someone else

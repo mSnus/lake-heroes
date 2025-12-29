@@ -1,5 +1,6 @@
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
+import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
 
 export function endTurn(
@@ -19,8 +20,10 @@ export function endTurn(
     board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
+    gameEvent('hideDice', true);
   } else {
     setMenu({ type: 'main' });
+    gameEvent('needDiceRoll', true);
   }
 
   updateGameState(board);

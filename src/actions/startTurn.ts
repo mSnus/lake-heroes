@@ -1,5 +1,6 @@
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
+import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
 
 export function startTurn(
@@ -12,4 +13,5 @@ export function startTurn(
   say(`${board.activePlayer.name}'s turn`, 'info');
 
   setMenu({ type: 'main' });
+  gameEvent('needDiceRoll', true);
 }
