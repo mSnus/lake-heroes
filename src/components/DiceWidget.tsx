@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/dice.css';
-import { say } from '../utils/say';
 import { gameEvent } from '../utils/events';
+import { rollDice } from '../game/Dice';
 interface Props {
   gameState: GameState | null;
 }
@@ -21,6 +21,10 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
 
       if (gameState) gameState.lastDice = value;
 
+      console.log('Dice rolled:', value);
+      setNeedRoll(false);
+      setShowDice(false);
+
       setSide(value);
       if (animationTimeout.current) window.clearTimeout(animationTimeout.current);
       animationTimeout.current = window.setTimeout(() => {
@@ -32,35 +36,18 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
     return () => window.removeEventListener('diceRolled', onDiceRolled as EventListener);
   }, []);
 
-  useEffect(() => {
-    function onNeedDiceRoll(e: Event) {
-      console.log('Need dice roll!');
-      setNeedRoll(true);
-      setShowDice(true);
-    }
-
-    window.addEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
-    return () => window.removeEventListener('needDiceRoll', onNeedDiceRoll as EventListener);
-  }, [needRoll]);
-
-  useEffect(() => {
-    function onHindeDice(e: Event) {
-      console.log('Hide dice!');
-      setShowDice(true);
-    }
-
-    window.addEventListener('hideDice', onHindeDice as EventListener);
-    return () => window.removeEventListener('hideDice', onHindeDice as EventListener);
-  }, [showDice]);
+  const handleClick = () => {
+    rollDice();
+  };
 
   return (
     <div className="dice-container ">
-      {showDice && (
       <div
         id="dice"
         data-side={String(side)}
         className="dice"
         style={{ transformStyle: 'preserve-3d' }}
+        onClick={handleClick}
       >
         <div className="sides side-1">
           <span className="dot dot-1" />
@@ -95,9 +82,9 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
           <span className="dot dot-5" />
           <span className="dot dot-6" />
         </div>
-      </div>)}
-      
-      {needRoll ? <div className="dice-roll">Roll dice!</div> : <div>no need</div>}
+      </div>
+
+      <div className="dice-roll">Roll dice!</div>
     </div>
   );
 };

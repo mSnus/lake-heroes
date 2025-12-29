@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
+import { showModal } from '../utils/modalStore';
 import { say } from '../utils/say';
 
 export function endTurn(
@@ -22,8 +23,7 @@ export function endTurn(
     setMenu({ type: 'end-turn' });
     gameEvent('hideDice', true);
   } else {
-    setMenu({ type: 'main' });
-    gameEvent('needDiceRoll', true);
+    showModal('dice');
   }
 
   updateGameState(board);

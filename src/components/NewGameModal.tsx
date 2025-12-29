@@ -3,15 +3,7 @@ import { playerOptions, generatePlayerName } from '../game/PlayerOptions';
 import { MAX_PLAYERS, MONEY_START, UNITS_START } from './board/common';
 import GameModal from './GameModal';
 import '../styles/modal.css';
-
-export interface PlayerSetup {
-  name: string;
-  color: string;
-  image: string;
-  gold: number;
-  units: number;
-  position: number;
-}
+import { PlayerSetup } from '../utils/playerSetup';
 
 interface NewGameModalProps {
   onStart: (players: PlayerSetup[]) => void;
@@ -124,6 +116,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 src={getSelectedOption(player)?.asset}
                 alt={getSelectedOption(player)?.colorName}
                 style={{ width: '60px', height: '60px' }}
+                className='player-image current-player'
               />
             )}
           </div>

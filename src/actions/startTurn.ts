@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
+import { showModal } from '../utils/modalStore';
 import { say } from '../utils/say';
 
 export function startTurn(
@@ -11,7 +12,5 @@ export function startTurn(
   if (!board) return;
 
   say(`${board.activePlayer.name}'s turn`, 'info');
-
-  setMenu({ type: 'main' });
-  gameEvent('needDiceRoll', true);
+  showModal('dice');
 }

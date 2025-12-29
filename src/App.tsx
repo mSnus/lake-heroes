@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/App.css';
@@ -27,36 +27,42 @@ import NewGameModal, { PlayerSetup } from './components/NewGameModal';
 import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
+import { ModalRenderer } from './components/ModalRenderer';
+import { closeModal, showModal } from './utils/modalStore';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
-  const [showNewGameModal, setShowNewGameModal] = useState(true);
-  const [showDice, setShowDice] = useState(true);
   const [messageHistory, setMessageHistory] = useState<LogMessage[]>([]);
   const [showLogModal, setShowLogModal] = useState(false);
 
   // setPhase event listener and handler
-  function onSetPhase(e: Event) {
-    if (!gameState) return;
+  const onSetPhase = useCallback(
+    (e: Event) => {
+      if (!gameState) return;
 
-    const phase = (e as CustomEvent).detail as TurnPhase;
+      const phase = (e as CustomEvent).detail as TurnPhase;
 
-    if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
+      if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
 
-    if (phase === 'rolling') {
-      setShowDice(true);
-    }
+      if (phase === 'rolling') {
+        showModal('dice');
+      }
 
-    gameState.setPhase(phase);
-    if (phase === 'after-move') {
-      gameState.incTurns();
-    }
+      gameState.setPhase(phase);
+      if (phase === 'after-move') {
+        gameState.incTurns();
+      }
 
-    setGameState(gameState);
-  }
-
-  window.addEventListener('setPhase', onSetPhase as EventListener);
+      setGameState(gameState);
+    },
+    [gameState]
+  );
+  // register listener in effect so it's added/removed with lifecycle
+  useEffect(() => {
+    window.addEventListener('setPhase', onSetPhase as EventListener);
+    return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
+  }, [onSetPhase]);
 
   useEffect(() => {
     const handleLogMessage = (e: Event) => {
@@ -68,9 +74,15 @@ function App() {
     return () => window.removeEventListener('logMessage', handleLogMessage);
   }, []);
 
+  const didInit = useRef(false);
+
   useEffect(() => {
     function loadGameData() {
-      console.warn('Loading game data...');
+      if (didInit.current) return;
+      didInit.current = true;
+
+      console.warn('Setting up game data...');
+
       const saved = loadFromStorage('game-state', null);
       if (saved) {
         say('Restoring saved game...', 'info');
@@ -89,9 +101,9 @@ function App() {
         if (!restored.turnPhase) restored.turnPhase = 'before-move';
 
         setGameState(restored);
-        // setMenu({ type: 'main' });
+
         afterMoveLogic(restored, updateGameState, setMenu);
-        setShowNewGameModal(false);
+        showModal('dice');
 
         window.setTimeout(() => gameEvent('setPhase', restored.turnPhase), 0);
 
@@ -103,20 +115,7 @@ function App() {
         return;
       }
 
-      // Build tiles using the new TileSet helper
-      const tiles = buildTilesFromTemplates(tilesData);
-      const players = (playersData as any[]).map((p: any) => new Player(p));
-      const initialGameState = new GameState(tiles, players);
-      gameStart(initialGameState, updateGameState);
-
-      setMenu({ type: 'main' });
-      gameEvent('needDiceRoll', true);
-
-      window.setTimeout(() => gameEvent('setPhase', initialGameState.turnPhase), 0);
-
-      const first = initialGameState.activePlayer;
-
-      say(`${first.name}, start the game by rolling the dice!`, 'info');
+      showModal('new-game', handleStartGame);
     }
     loadGameData();
   }, []);
@@ -157,15 +156,28 @@ function App() {
     setMenu({ type: 'end-turn' });
   };
 
-  const handleStartGame = (playersSetup: PlayerSetup[]) => {
-    // Create a new GameState with the configuration from the modal
-    const newPlayers = playersSetup.map((p) => new Player(p));
-    const newGameState = { ...gameState, tiles: gameState?.tiles, players: newPlayers };
+  const handleStartGame = useCallback(
+    (playersSetup: PlayerSetup[]) => {
+      console.log('Starting new game');
 
-    updateGameState(newGameState);
-    setShowNewGameModal(false); // Hide the modal
-    setShowDice(false);
-  };
+      const tiles = buildTilesFromTemplates(tilesData);
+      const players = (playersSetup as any[]).map((p: any) => new Player(p));
+      const initialGameState = new GameState(tiles, players);
+      gameStart(initialGameState, updateGameState);
+
+      gameEvent('setPhase', initialGameState.turnPhase);
+
+      const first = initialGameState.activePlayer;
+
+      say(`${first.name}, start the game by rolling the dice!`, 'info');
+
+      const newGameState = { ...initialGameState, tiles: initialGameState.tiles, players };
+      updateGameState(newGameState);
+
+      showModal('dice');
+    },
+    [gameState, updateGameState]
+  );
 
   const handleOpenLog = () => {
     setShowLogModal(true);
@@ -183,11 +195,10 @@ function App() {
         hideProgressBar={true}
       />
 
+      <ModalRenderer />
+
       {gameState && (
-        <div
-          id="mainContainer"
-        >
-          {showDice && <DiceWidget gameState={gameState} />}
+        <div id="mainContainer">
           <CurrentPlayer gameState={gameState} />
           <GameMessage message={gameState.gameMessage} />
           <CurrentTile gameState={gameState} updateGameState={updateGameState} />
@@ -203,8 +214,6 @@ function App() {
             <div className="game-menu"></div>
           )}
           <BoardCanvas board={gameState} />
-
-          {showNewGameModal && <NewGameModal onStart={handleStartGame} />}
 
           {menu && menu.type === 'buy-units' && (
             <BuyUnitsModal
@@ -222,7 +231,7 @@ function App() {
         </div>
       )}
 
-      <NewGameButton />
+      <NewGameButton onClick={() => showModal('new-game', handleStartGame)} />
       <div
         className="shield-button-container"
         style={{
