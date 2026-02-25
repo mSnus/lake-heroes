@@ -3,16 +3,20 @@ import { GameState } from '../game/GameState';
 import '../styles/dice.css';
 import { gameEvent } from '../utils/events';
 import { rollDice } from '../game/Dice';
+import { on } from 'events';
 interface Props {
   gameState: GameState | null;
+  onRoll: (roll: number) => void;
 }
 
-export const DiceWidget: React.FC<Props> = ({ gameState }) => {
-  const [side, setSide] = useState<number>(1);
-  const [needRoll, setNeedRoll] = useState<boolean>(false);
-  const [showDice, setShowDice] = useState<boolean>(false);
+export const DiceWidget: React.FC<Props> = ({ gameState, onRoll }) => {
+  const [side, setSide] = useState<number>(0);
 
   const animationTimeout = useRef<number | null>(null);
+
+  // Ref so the stable listener below always calls the latest onRoll
+  const onRollRef = useRef(onRoll);
+  useEffect(() => { onRollRef.current = onRoll; }, [onRoll]);
 
   useEffect(() => {
     function onDiceRolled(e: Event) {
@@ -22,8 +26,6 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
       if (gameState) gameState.lastDice = value;
 
       console.log('Dice rolled:', value);
-      setNeedRoll(false);
-      setShowDice(false);
 
       setSide(value);
       if (animationTimeout.current) window.clearTimeout(animationTimeout.current);
@@ -36,7 +38,20 @@ export const DiceWidget: React.FC<Props> = ({ gameState }) => {
     return () => window.removeEventListener('diceRolled', onDiceRolled as EventListener);
   }, []);
 
+  useEffect(() => {
+    function onDiceFinished(e: Event) {
+      const detail = (e as CustomEvent).detail as number;
+      console.log('Dice finished, onRoll called for roll:', detail);
+      onRollRef.current(detail);
+    }
+
+    window.addEventListener('diceAnimationStopped', onDiceFinished as EventListener);
+    return () =>
+      window.removeEventListener('diceAnimationStopped', onDiceFinished as EventListener);
+  }, []);
+
   const handleClick = () => {
+    gameEvent('displayTitle', {});
     rollDice();
   };
 

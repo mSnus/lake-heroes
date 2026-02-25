@@ -1,13 +1,8 @@
-export const MONEY_START = 500;
-export const UNITS_START = 12;
-export const MONEY_PASS_START = 200;
-export const FEE_MULTIPLIER = 50;
-export const TREASURE_BOX_MULTIPLIER = 100;
-
-export const TILE_COUNT = 25;
+export { MONEY_START, UNITS_START, MONEY_PASS_START, FEE_MULTIPLIER, TREASURE_BOX_MULTIPLIER, MAX_PLAYERS } from '../../game/constants';
+import { TILE_COUNT } from '../../game/constants';
+export { TILE_COUNT };
 
 export const SPRITE_SIZE = 92;
-export const MAX_PLAYERS = 4;
 
 export const DIAMOND_SIZE = 14; // marker icon size in px
 export const DIAMOND_GAP = 4; // gap between markers

@@ -14,6 +14,7 @@ export class GameState {
   gameStarted: boolean = false;
   turnPhase: TurnPhase;
   gameMessage: string = '';
+  gameOver: boolean = false;
 
   constructor(tiles: Tile[], players: Player[]) {
     this.tiles = tiles;

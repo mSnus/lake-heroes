@@ -18,8 +18,12 @@ export function payFee(
 
   if (player.gold >= fee && owner) {
     player.gold -= fee;
-    owner.gold += fee;
-    say(`${player.name} paid ${fee}🟡 to ${owner.name} for ${tile.name}.`, 'info');
+    if (owner.turnsToSkip > 0) {
+      say(`${player.name} paid ${fee}🟡 for ${tile.name}, but ${owner.name} is in prison and collects nothing.`, 'info');
+    } else {
+      owner.gold += fee;
+      say(`${player.name} paid ${fee}🟡 to ${owner.name} for ${tile.name}.`, 'info');
+    }
     updateGameState(board);
   }
 

@@ -39,9 +39,10 @@ export function sellTile(
   player.gold = (player.gold || 0) + totalGold;
   player.units = (player.units || 0) + totalUnits;
 
-  // Try to remove tile from player's ownedTiles list if present
-  if (Array.isArray((player as any).ownedTiles)) {
-    (player as any).ownedTiles = (player as any).ownedTiles.filter((t: any) => t !== tile.name);
+  // Remove tile position index from player's ownedTiles list
+  const tileIndex = gameState.tiles.indexOf(tile);
+  if (tileIndex !== -1) {
+    player.ownedTiles = player.ownedTiles.filter((idx) => idx !== tileIndex);
   }
 
   say(`${player.name} sold ${tile.name} for ${totalGold} gold and ${totalUnits} units`, 'info');

@@ -3,6 +3,7 @@ import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
 import { showModal } from '../utils/modalStore';
 import { say } from '../utils/say';
+import { DRAGON_UNITS_THRESHOLD } from './fightDragon';
 
 export function endTurn(
   board: GameState | null,
@@ -22,7 +23,13 @@ export function endTurn(
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
     setMenu({ type: 'end-turn' });
     gameEvent('hideDice', true);
+  } else if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
+    say(`${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`, 'info');
+    board.gameMessage = `Challenge the Dragon or roll dice?`;
+    setMenu({ type: 'dragon-challenge' });
+    gameEvent('hideDice', true);
   } else {
+    console.debug('dice from endTurn');
     showModal('dice');
   }
 

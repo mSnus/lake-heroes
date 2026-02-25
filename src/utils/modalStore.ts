@@ -20,7 +20,7 @@ export function showModal(type: ModalType, handler?: Function) {
     return;
   }
 
-  console.log('Showing modal:', type);
+  console.log('Showing modal:', type, handler);
   state = { type, handler };
   emit();
 }

@@ -6,6 +6,7 @@ import './styles/GameMenu.css';
 
 import { Player } from './game/Player';
 import { GameState, TurnPhase } from './game/GameState';
+import { TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
@@ -13,22 +14,22 @@ import { PlayerStatsTable } from './components/PlayerStatsTable';
 import { GameMenuRenderer } from './components/GameMenuRenderer';
 import { MenuState } from './types/menuState';
 import tilesData from './settings/tiles.json';
-import playersData from './settings/players.json';
-import { buildTilesFromTemplates, rehydrateSavedTiles } from './game/TileSet';
+import { buildTilesFromTemplates, rehydrateSavedTiles, SavedGameState } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
-import { DiceWidget } from './components/DiceWidget';
 import NewGameButton from './components/NewGameButton';
 import { CurrentTile } from './components/CurrentTile';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import BuyUnitsModal from './components/BuyUnitsModal';
-import NewGameModal, { PlayerSetup } from './components/NewGameModal';
+import { PlayerSetup } from './utils/playerSetup';
 import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
-import { closeModal, showModal } from './utils/modalStore';
+import { showModal } from './utils/modalStore';
+import { rollAndMove } from './actions/rollAndMove';
+import { buyUnits } from './actions/buyUnits';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -36,27 +37,48 @@ function App() {
   const [messageHistory, setMessageHistory] = useState<LogMessage[]>([]);
   const [showLogModal, setShowLogModal] = useState(false);
 
+  // Always-current ref so dice/action closures never capture stale state
+  const gameStateRef = useRef<GameState | null>(null);
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  const updateGameState = useCallback((gs: GameState | null): void => {
+    if (!gs) return;
+    const newGameState = Object.assign(
+      new GameState(gs.tiles || [], gs.players || []),
+      { ...gs }
+    ) as GameState;
+    setGameState(newGameState);
+  }, []);
+
+  const handleDiceRollAndMove = useCallback(function (roll: number) {
+    rollAndMove(gameStateRef.current, updateGameState, setMenu, roll);
+  }, [updateGameState]);
+
   // setPhase event listener and handler
   const onSetPhase = useCallback(
     (e: Event) => {
-      if (!gameState) return;
+      const current = gameStateRef.current;
+      if (!current) return;
 
       const phase = (e as CustomEvent).detail as TurnPhase;
 
       if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
 
       if (phase === 'rolling') {
-        showModal('dice');
+        console.debug('dice from phase');
+        showModal('dice', handleDiceRollAndMove);
       }
 
-      gameState.setPhase(phase);
+      current.setPhase(phase);
       if (phase === 'after-move') {
-        gameState.incTurns();
+        current.incTurns();
       }
 
-      setGameState(gameState);
+      setGameState(current);
     },
-    [gameState]
+    [handleDiceRollAndMove]
   );
   // register listener in effect so it's added/removed with lifecycle
   useEffect(() => {
@@ -88,24 +110,25 @@ function App() {
         say('Restoring saved game...', 'info');
 
         // Rehydrate tiles and players so we preserve class methods (e.g. Tile.isOwned)
-        const savedRaw = saved as any;
+        const savedRaw = saved as SavedGameState;
         // use TileSet helper to convert saved plain objects into Tile instances
         const tiles = rehydrateSavedTiles(savedRaw);
-        const players = (savedRaw.players || []).map((p: any) => new Player(p));
+        const players = (savedRaw.players || []).map((p) => new Player(p));
         const restored = Object.assign(new GameState(tiles, players), {
           ...savedRaw,
           tiles,
           players,
-        }) as GameState;
+        });
 
         if (!restored.turnPhase) restored.turnPhase = 'before-move';
 
         setGameState(restored);
 
         afterMoveLogic(restored, updateGameState, setMenu);
-        showModal('dice');
+        console.debug('dice from restore');
+        showModal('dice', handleDiceRollAndMove);
 
-        window.setTimeout(() => gameEvent('setPhase', restored.turnPhase), 0);
+        gameEvent('setPhase', restored.turnPhase);
 
         const first = restored.activePlayer;
         if (!first.turnsToSkip || first.turnsToSkip <= 0) {
@@ -124,33 +147,9 @@ function App() {
     if (gameState) saveToStorage('game-state', gameState);
   }, [gameState]);
 
-  const updateGameState = (gameState: GameState | null): void => {
-    if (!gameState) return;
-
-    const newGameState = Object.assign(
-      new GameState(gameState.tiles || [], gameState.players || []),
-      {
-        ...gameState,
-      }
-    ) as GameState;
-
-    setGameState(newGameState);
-  };
-
-  const handleBuyUnits = (amount: number) => {
-    if (!gameState) return;
-    const player = gameState.activePlayer;
-    const cost = amount * 100;
-    if (player.gold >= cost) {
-      player.gold -= cost;
-      player.units += amount;
-      say(`${player.name} bought ${amount} units for ${cost} gold.`, 'success');
-      updateGameState(gameState);
-    } else {
-      say('Not enough gold to buy units.', 'error');
-    }
-    setMenu({ type: 'end-turn' });
-  };
+  const handleBuyUnits = useCallback((amount: number) => {
+    buyUnits(gameStateRef.current, amount, updateGameState, setMenu);
+  }, [updateGameState]);
 
   const handleSkipBuyUnits = () => {
     setMenu({ type: 'end-turn' });
@@ -160,23 +159,18 @@ function App() {
     (playersSetup: PlayerSetup[]) => {
       console.log('Starting new game');
 
-      const tiles = buildTilesFromTemplates(tilesData);
-      const players = (playersSetup as any[]).map((p: any) => new Player(p));
+      const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
+      const players = playersSetup.map((p) => new Player(p));
       const initialGameState = new GameState(tiles, players);
       gameStart(initialGameState, updateGameState);
 
       gameEvent('setPhase', initialGameState.turnPhase);
+      say(`${initialGameState.activePlayer.name}, start the game by rolling the dice!`, 'info');
 
-      const first = initialGameState.activePlayer;
-
-      say(`${first.name}, start the game by rolling the dice!`, 'info');
-
-      const newGameState = { ...initialGameState, tiles: initialGameState.tiles, players };
-      updateGameState(newGameState);
-
-      showModal('dice');
+      console.debug('dice from handleStartGame');
+      showModal('dice', handleDiceRollAndMove);
     },
-    [gameState, updateGameState]
+    [updateGameState]
   );
 
   const handleOpenLog = () => {
@@ -196,6 +190,27 @@ function App() {
       />
 
       <ModalRenderer />
+
+      {gameState?.gameOver && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.82)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            color: '#ffe066', fontSize: '2.5rem', textAlign: 'center',
+            gap: '1.5rem',
+          }}
+        >
+          <div>🐉 {gameState.gameMessage} 🐉</div>
+          <button
+            style={{ fontSize: '1.2rem', padding: '0.6rem 2rem', cursor: 'pointer' }}
+            onClick={() => showModal('new-game', handleStartGame)}
+          >
+            New Game
+          </button>
+        </div>
+      )}
 
       {gameState && (
         <div id="mainContainer">

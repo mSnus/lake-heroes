@@ -1,4 +1,3 @@
-import { FEE_MULTIPLIER } from '../components/board/common';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
@@ -30,27 +29,26 @@ export function afterMoveLogic(
     const defence = tile.defence;
 
     if (player.gold < fee && player.units < defence) {
-      // Check if player has tiles to sell
-      const ownedTiles = board.tiles.filter((t) => t.owner === player.name);
-      if (ownedTiles.length > 0) {
-        // Find tile with minimal value
-        let minTile = -1;
-        let minVal = Infinity;
+      // Check if player has tiles to sell — find cheapest owned tile worth >= fee
+      let bestOwnedIdx = -1;
+      let minVal = Infinity;
 
-        ownedTiles.forEach((t, index) => {
-          const price = t.currentPrice;
-          const val = price.gold + price.units * 100;
-          if (val < minVal && val >= fee) {
-            minVal = val;
-            minTile = index;
-          }
-        });
-
-        if (minTile > 0) {
-          say(`${player.name} sells ${ownedTiles[minTile].name} to pay the fee`, 'warning');
-          setMenu({ type: 'sell-to-pay', tileIdx: minTile });
-          return;
+      player.ownedTiles.forEach((posIdx, ownedIdx) => {
+        const t = board.tiles[posIdx];
+        if (!t || t.owner !== player.name) return;
+        const price = t.currentPrice;
+        const val = price.gold + price.units * 100;
+        if (val < minVal && val >= fee) {
+          minVal = val;
+          bestOwnedIdx = ownedIdx;
         }
+      });
+
+      if (bestOwnedIdx >= 0) {
+        const tileToSell = board.tiles[player.ownedTiles[bestOwnedIdx]];
+        say(`${player.name} sells ${tileToSell.name} to pay the fee`, 'warning');
+        setMenu({ type: 'sell-to-pay', tileIdx: bestOwnedIdx });
+        return;
       }
 
       say(

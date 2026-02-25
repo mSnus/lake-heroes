@@ -12,11 +12,12 @@ export interface PlayerSetup {
 }
 
 interface DiceModalProps {
+  onRoll: (roll: number) => void;
 }
 
-const DiceModal: React.FC<DiceModalProps> = ({ }) => {
+const DiceModal: React.FC<DiceModalProps> = ({ onRoll }) => {
   return (
-    <DiceWidget gameState={null} />
+    <DiceWidget gameState={null} onRoll={onRoll} />
   );
 };
 

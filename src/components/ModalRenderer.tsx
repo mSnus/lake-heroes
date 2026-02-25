@@ -12,7 +12,7 @@ export function ModalRenderer() {
 
   switch (type) {
     case 'dice':
-      return <DiceModal />;
+      return <DiceModal onRoll={(roll) => (handler as (roll: number) => void)?.(roll)} />;
     case 'new-game':
       return <NewGameModal onStart={handler as (players: PlayerSetup[]) => void} />;
     default:

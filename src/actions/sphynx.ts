@@ -25,7 +25,7 @@ export function handleSphynx(
 
   if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
-    if (player.gold === 0) {
+    if (player.gold > 0) {
       const half = player.gold / 2;
       const roundedUp50 = Math.ceil(half / 50) * 50;
       const loss = Math.min(player.gold, roundedUp50);
@@ -51,10 +51,10 @@ export function handleSphynx(
     gameState.gameMessage = `Sphynx remained silent. Nothing happened.`;
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100
-    const bonusBase = player.gold * 0.5;
+    const bonusBase = player.gold * 0.2;
     const gain = Math.ceil(bonusBase / 100) * 100;
     player.gold += gain;
-    message += `Received ${gain}🟡 (50%).`;
+    message += `Received ${gain}🟡 (20%).`;
     gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
   }
 

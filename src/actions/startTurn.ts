@@ -12,5 +12,6 @@ export function startTurn(
   if (!board) return;
 
   say(`${board.activePlayer.name}'s turn`, 'info');
+  console.debug('dice from startTurn');
   showModal('dice');
 }

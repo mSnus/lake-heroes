@@ -29,7 +29,7 @@ export type TileCardProps = {
   tile: Tile;
   mode?: 'display' | 'owned';
   gameState?: GameState;
-  updateGameState?: (board: any) => void;
+  updateGameState?: (board: GameState) => void;
   couldBuy?: boolean;
   couldAfford?: boolean;
 };
@@ -128,7 +128,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const handleBuyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!gameState) return;
+    if (!gameState || !updateGameState) return;
 
     buyTile(gameState, updateGameState);
   };

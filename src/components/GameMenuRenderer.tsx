@@ -4,6 +4,7 @@ import { MenuState } from '../types/menuState';
 import { GameMenu, MenuAction, MenuItem } from './GameMenu';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
+import { fightDragon } from '../actions/fightDragon';
 import { rollAndMove } from '../actions/rollAndMove';
 import { endTurn } from '../actions/endTurn';
 import { FEE_MULTIPLIER } from './board/common';
@@ -11,6 +12,7 @@ import { sellTile } from '../actions/sellTile';
 import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { say } from '../utils/say';
 import { gameEvent } from '../utils/events';
+import { showModal } from '../utils/modalStore';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -75,7 +77,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   if (menu.type === 'sell-to-pay') {
     if (menu.tileIdx === undefined) {
       say(`Tile to sell (menu.tileIdx) is not set`);
-      return;
+      return null;
     }
 
     const tile = board.tiles[activePlayer.ownedTiles[menu.tileIdx]];
@@ -93,6 +95,25 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
     ];
 
     return <GameMenu items={items} top={top}></GameMenu>;
+  }
+
+  if (menu.type === 'dragon-challenge') {
+    const items: MenuItem[] = [
+      {
+        label: 'Challenge the Dragon 🐉',
+        action: 'fight' as MenuAction,
+        onClick: () => fightDragon(board, updateGameState, setMenu),
+      },
+      {
+        label: 'Roll Dice Instead 🎲',
+        action: 'roll-dice' as MenuAction,
+        onClick: () => {
+          showModal('dice');
+          setMenu(null as unknown as MenuState);
+        },
+      },
+    ];
+    return <GameMenu items={items} top={top} />;
   }
 
   return null;

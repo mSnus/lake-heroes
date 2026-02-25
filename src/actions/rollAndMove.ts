@@ -16,11 +16,16 @@ import { gameEvent } from '../utils/events';
 export async function rollAndMove(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  setMenu: (menu: MenuState) => void,
+  preRolledValue?: number
 ) {
+  console.log('Roll and move');
+
   if (!board) return;
 
-  const roll = rollDice();
+  // Use the value already rolled by the dice widget (avoids re-triggering the animation)
+  const roll = preRolledValue !== undefined ? preRolledValue : rollDice();
+  console.log('Rolled ', roll);
   const player = board.activePlayer;
 
   const nextTileIdx = (player.position + roll) % TILE_COUNT;

@@ -1,4 +1,4 @@
-import { FEE_MULTIPLIER } from '../components/board/common';
+import { FEE_MULTIPLIER } from './constants';
 
 export interface TileJSON {
   group: string;

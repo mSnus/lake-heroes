@@ -3,6 +3,7 @@ import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
 import { Player } from '../game/Player';
 import { rollDice } from '../game/Dice';
+import { becomeBeggar } from './becomeBeggar';
 
 export function fightTile(
   board: GameState | null,
@@ -29,7 +30,41 @@ export function fightTile(
     say(`Battle for the ${tile.name} was lost, ${defence}🧍 died`, 'error');
     player.units -= defence;
 
-    setMenu({ type: 'end-turn' });
+    // After a lost battle, the fee must still be paid
+    const fee = tile.fee;
+    const owner = board.players.find((p: Player) => p.name === tile.owner);
+
+    if (owner && player.gold >= fee) {
+      player.gold -= fee;
+      if (owner.turnsToSkip <= 0) owner.gold += fee;
+      say(`${player.name} also paid ${fee}🟡 as defeat penalty to ${owner.name}.`, 'warning');
+      updateGameState(board);
+      setMenu({ type: 'end-turn' });
+    } else {
+      // Can't pay fee — find a tile to sell or go bankrupt
+      updateGameState(board);
+      let bestOwnedIdx = -1;
+      let minVal = Infinity;
+      player.ownedTiles.forEach((posIdx, ownedIdx) => {
+        const t = board.tiles[posIdx];
+        if (!t || t.owner !== player.name) return;
+        const price = t.currentPrice;
+        const val = price.gold + price.units * 100;
+        if (val < minVal && val >= fee) {
+          minVal = val;
+          bestOwnedIdx = ownedIdx;
+        }
+      });
+
+      if (bestOwnedIdx >= 0) {
+        say(`${player.name} must sell tiles to pay the defeat penalty`, 'warning');
+        setMenu({ type: 'sell-to-pay', tileIdx: bestOwnedIdx });
+      } else {
+        say(`${player.name} cannot pay the defeat penalty`, 'error');
+        becomeBeggar(board, updateGameState);
+        setMenu({ type: 'end-turn' });
+      }
+    }
   } else {
     say(`${player.name} razed the ${tile.name} with high price of  ${defence}🧍`, 'success');
     player.units -= defence;
@@ -41,8 +76,7 @@ export function fightTile(
       p.ownedTiles = p.ownedTiles.filter((idx: number) => idx !== player.position);
     });
 
+    updateGameState(board);
     setMenu({ type: 'end-turn' });
   }
-
-  updateGameState(board);
 }
