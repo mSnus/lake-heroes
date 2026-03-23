@@ -1,7 +1,6 @@
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
-import { showModal } from '../utils/modalStore';
 import { say } from '../utils/say';
 import { DRAGON_UNITS_THRESHOLD } from './fightDragon';
 
@@ -29,8 +28,8 @@ export function endTurn(
     setMenu({ type: 'dragon-challenge' });
     gameEvent('hideDice', true);
   } else {
-    console.debug('dice from endTurn');
-    showModal('dice');
+    // Dispatch event so App.tsx can open the dice modal with the correct roll handler
+    gameEvent('showDice', null);
   }
 
   updateGameState(board);

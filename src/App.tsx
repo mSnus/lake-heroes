@@ -16,7 +16,6 @@ import { MenuState } from './types/menuState';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, rehydrateSavedTiles, SavedGameState } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
-import NewGameButton from './components/NewGameButton';
 import { CurrentTile } from './components/CurrentTile';
 import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
@@ -30,6 +29,7 @@ import { ModalRenderer } from './components/ModalRenderer';
 import { showModal } from './utils/modalStore';
 import { rollAndMove } from './actions/rollAndMove';
 import { buyUnits } from './actions/buyUnits';
+import { ActionBar } from './components/ActionBar';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -66,25 +66,22 @@ function App() {
 
       if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
 
-      if (phase === 'rolling') {
-        console.debug('dice from phase');
-        showModal('dice', handleDiceRollAndMove);
-      }
-
       current.setPhase(phase);
-      if (phase === 'after-move') {
-        current.incTurns();
-      }
-
       setGameState(current);
     },
-    [handleDiceRollAndMove]
+    []
   );
-  // register listener in effect so it's added/removed with lifecycle
   useEffect(() => {
     window.addEventListener('setPhase', onSetPhase as EventListener);
     return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
   }, [onSetPhase]);
+
+  // showDice event: fired by endTurn/dragon to open the dice modal with the correct handler
+  useEffect(() => {
+    const handler = () => showModal('dice', handleDiceRollAndMove);
+    window.addEventListener('showDice', handler);
+    return () => window.removeEventListener('showDice', handler);
+  }, [handleDiceRollAndMove]);
 
   useEffect(() => {
     const handleLogMessage = (e: Event) => {
@@ -103,15 +100,11 @@ function App() {
       if (didInit.current) return;
       didInit.current = true;
 
-      console.warn('Setting up game data...');
-
       const saved = loadFromStorage('game-state', null);
       if (saved) {
         say('Restoring saved game...', 'info');
 
-        // Rehydrate tiles and players so we preserve class methods (e.g. Tile.isOwned)
         const savedRaw = saved as SavedGameState;
-        // use TileSet helper to convert saved plain objects into Tile instances
         const tiles = rehydrateSavedTiles(savedRaw);
         const players = (savedRaw.players || []).map((p) => new Player(p));
         const restored = Object.assign(new GameState(tiles, players), {
@@ -125,7 +118,6 @@ function App() {
         setGameState(restored);
 
         afterMoveLogic(restored, updateGameState, setMenu);
-        console.debug('dice from restore');
         showModal('dice', handleDiceRollAndMove);
 
         gameEvent('setPhase', restored.turnPhase);
@@ -157,8 +149,6 @@ function App() {
 
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[]) => {
-      console.log('Starting new game');
-
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
       const players = playersSetup.map((p) => new Player(p));
       const initialGameState = new GameState(tiles, players);
@@ -166,20 +156,13 @@ function App() {
 
       gameEvent('setPhase', initialGameState.turnPhase);
       say(`${initialGameState.activePlayer.name}, start the game by rolling the dice!`, 'info');
-
-      console.debug('dice from handleStartGame');
       showModal('dice', handleDiceRollAndMove);
     },
     [updateGameState]
   );
 
-  const handleOpenLog = () => {
-    setShowLogModal(true);
-  };
-
-  const handleCloseLog = () => {
-    setShowLogModal(false);
-  };
+  const handleOpenLog = () => setShowLogModal(true);
+  const handleCloseLog = () => setShowLogModal(false);
 
   return (
     <div className="App">
@@ -217,18 +200,27 @@ function App() {
           <CurrentPlayer gameState={gameState} />
           <GameMessage message={gameState.gameMessage} />
           <CurrentTile gameState={gameState} updateGameState={updateGameState} />
-          {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' ? (
+          {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' && menu.type !== 'end-turn' ? (
             <GameMenuRenderer
               board={gameState}
               menu={menu}
               setMenu={setMenu}
               updateGameState={updateGameState}
-              top={gameState.gameMessage ? '60px' : '30px'}
+              top={gameState.gameMessage ? '90px' : '60px'}
             />
           ) : (
-            <div className="game-menu"></div>
+            <div className="game-menu" />
           )}
           <BoardCanvas board={gameState} />
+
+          <ActionBar
+            gameState={gameState}
+            menu={menu}
+            updateGameState={updateGameState}
+            setMenu={setMenu}
+            onOpenLog={handleOpenLog}
+            onNewGame={() => showModal('new-game', handleStartGame)}
+          />
 
           {menu && menu.type === 'buy-units' && (
             <BuyUnitsModal
@@ -245,23 +237,6 @@ function App() {
           <PlayerStatsTable gameState={gameState} updateGameState={updateGameState} />
         </div>
       )}
-
-      <NewGameButton onClick={() => showModal('new-game', handleStartGame)} />
-      <div
-        className="shield-button-container"
-        style={{
-          top: '50px',
-        }}
-      >
-        <button
-          id="btnGamelog"
-          onClick={handleOpenLog}
-          className="shield-button"
-          title="Show Game Log"
-        >
-          📜
-        </button>
-      </div>
     </div>
   );
 }

@@ -6,13 +6,11 @@ import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
 import { fightDragon } from '../actions/fightDragon';
 import { rollAndMove } from '../actions/rollAndMove';
-import { endTurn } from '../actions/endTurn';
 import { FEE_MULTIPLIER } from './board/common';
 import { sellTile } from '../actions/sellTile';
 import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { say } from '../utils/say';
 import { gameEvent } from '../utils/events';
-import { showModal } from '../utils/modalStore';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -32,26 +30,14 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
   const activePlayer = board.activePlayer;
   const currentTile = board.activeTile;
 
-  const handleEndTurn = () => endTurn(board, updateGameState, setMenu);
-
   if (menu.type === 'main') {
-    let items = [
+    const items = [
       {
         label: 'Roll Dice 🎲',
         onClick: () => rollAndMove(board, updateGameState, setMenu),
       } as MenuItem,
     ];
-
-    return <GameMenu items={items} top={top}></GameMenu>;
-  }
-
-  if (menu.type === 'end-turn') {
-    return (
-      <GameMenu
-        items={[{ action: 'end-turn', label: 'End turn ⏳', onClick: handleEndTurn }]}
-        top={top}
-      ></GameMenu>
-    );
+    return <GameMenu items={items} top={top} />;
   }
 
   if (menu.type === 'fee-or-fight') {
@@ -71,7 +57,7 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         disabled: activePlayer.units < defence,
       },
     ];
-    return <GameMenu items={items} top={top}></GameMenu>;
+    return <GameMenu items={items} top={top} />;
   }
 
   if (menu.type === 'sell-to-pay') {
@@ -88,13 +74,12 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         onClick: () => {
           sellTile(board, activePlayer, tile);
           updateGameState(board);
-          // Re-evaluate logic
           afterMoveLogic(board, updateGameState, setMenu);
         },
       } as MenuItem,
     ];
 
-    return <GameMenu items={items} top={top}></GameMenu>;
+    return <GameMenu items={items} top={top} />;
   }
 
   if (menu.type === 'dragon-challenge') {
@@ -108,8 +93,8 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         label: 'Roll Dice Instead 🎲',
         action: 'roll-dice' as MenuAction,
         onClick: () => {
-          showModal('dice');
           setMenu(null as unknown as MenuState);
+          gameEvent('showDice', null);
         },
       },
     ];

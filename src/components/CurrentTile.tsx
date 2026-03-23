@@ -15,7 +15,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   const currentTile = gameState.activeTile;
   const activePlayer = gameState.activePlayer;
 
-  if (gameState.turns === 0 && gameState.turnPhase === 'before-move' && shouldDisplay) {
+  if (gameState.turnPhase === 'before-move' && shouldDisplay) {
     setShouldDisplay(false);
   }
   React.useEffect(() => {
@@ -24,7 +24,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
       let display =
         (detail !== null && currentTile.isOwnable && !currentTile.isOwned()) || displayedTile !== currentTile;
 
-      if (gameState.turns === 0 && gameState.turnPhase === 'before-move') {
+      if (gameState.turnPhase === 'before-move') {
         display = false;
       }
 

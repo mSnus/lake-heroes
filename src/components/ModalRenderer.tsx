@@ -4,7 +4,7 @@ import NewGameModal from './NewGameModal';
 import { PlayerSetup } from '../utils/playerSetup';
 
 export function ModalRenderer() {
-  const { type, handler } = useModal();
+  const { type, handler, key, rolling } = useModal();
 
   console.log('Rendering modal of type:', type);
 
@@ -12,7 +12,7 @@ export function ModalRenderer() {
 
   switch (type) {
     case 'dice':
-      return <DiceModal onRoll={(roll) => (handler as (roll: number) => void)?.(roll)} />;
+      return <DiceModal key={key} rolling={rolling} onRoll={(roll) => (handler as (roll: number) => void)?.(roll)} />;
     case 'new-game':
       return <NewGameModal onStart={handler as (players: PlayerSetup[]) => void} />;
     default:

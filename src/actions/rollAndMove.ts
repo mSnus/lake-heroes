@@ -12,6 +12,7 @@ import { afterMoveLogic } from './afterMoveLogic';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../components/board/common';
 import { gameEvent } from '../utils/events';
+import { showModal } from '../utils/modalStore';
 
 export async function rollAndMove(
   board: GameState | null,
@@ -63,18 +64,23 @@ export async function rollAndMove(
     await new Promise((res) => setTimeout(res, 300));
   }
 
-  gameEvent('setPhase', 'after-move');
+  board.setPhase('after-move');
+  board.incTurns();
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic
   const tile = board.activeTile;
 
   if (tile.name.includes('Treasure')) {
-    handleTreasureBox(board, updateGameState, setMenu);
+    board.gameMessage = `Roll dice! Discover the treasure inside...`;
+    updateGameState(board);
+    showModal('dice', (roll: number) => handleTreasureBox(board, updateGameState, setMenu, roll));
     return;
   }
   if (tile.name.includes('Tavern')) {
-    handleTavern(board, updateGameState, setMenu);
+    board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
+    updateGameState(board);
+    showModal('dice', (roll: number) => handleTavern(board, updateGameState, setMenu, roll));
     return;
   }
   if (tile.name.includes('Prison')) {
@@ -82,7 +88,9 @@ export async function rollAndMove(
     return;
   }
   if (tile.name.includes('Sphynx')) {
-    handleSphynx(board, updateGameState, setMenu);
+    board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
+    updateGameState(board);
+    showModal('dice', (roll: number) => handleSphynx(board, updateGameState, setMenu, roll));
     return;
   }
   if (tile.name.includes('King')) {

@@ -248,7 +248,13 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div>
                     <div className="big-icon-hint">
                       <div>
-                        {tile.currentPrice.gold ?? 0} 🟡 {tile.currentPrice.units ?? 0}🧍
+                        <span style={couldBuy && (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0) ? { color: '#ff4444' } : {}}>
+                          {tile.currentPrice.gold ?? 0} 🟡
+                        </span>
+                        {' '}
+                        <span style={couldBuy && (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0) ? { color: '#ff4444' } : {}}>
+                          {tile.currentPrice.units ?? 0}🧍
+                        </span>
                       </div>
                       <div>to own</div>
                     </div>

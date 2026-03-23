@@ -1,17 +1,16 @@
 import { GameState } from '../game/GameState';
-import { rollDice } from '../game/Dice';
 import { say } from '../utils/say';
 import { MenuState } from '../types/menuState';
 
 export function handleTavern(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  setMenu: (menu: MenuState) => void,
+  roll: number
 ) {
   if (!board) return;
   console.log('Action: tavern');
 
-  const roll = rollDice();
   const unitsReward = roll;
   const player = board.activePlayer;
   player.units += unitsReward;

@@ -1,10 +1,12 @@
 .game-menu {
   position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   width: fit-content;
   min-height: 3rem;
   padding: 8px;
   top: 60px;
-  z-index: 30;
+  z-index: 6000;
 }
 
 .game-menu > div {

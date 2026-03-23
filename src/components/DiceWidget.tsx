@@ -1,105 +1,50 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { GameState } from '../game/GameState';
+import React, { useEffect, useRef } from 'react';
+import ReactDice, { ReactDiceRef } from 'react-dice-complete';
 import '../styles/dice.css';
-import { gameEvent } from '../utils/events';
+import { closeModal } from '../utils/modalStore';
 import { rollDice } from '../game/Dice';
-import { on } from 'events';
+
+// Must match the rollTime prop passed to ReactDice (in ms)
+const ROLL_TIME_MS = 1500;
+
 interface Props {
-  gameState: GameState | null;
   onRoll: (roll: number) => void;
+  rolling: boolean;
 }
 
-export const DiceWidget: React.FC<Props> = ({ gameState, onRoll }) => {
-  const [side, setSide] = useState<number>(0);
-
-  const animationTimeout = useRef<number | null>(null);
-
-  // Ref so the stable listener below always calls the latest onRoll
-  const onRollRef = useRef(onRoll);
-  useEffect(() => { onRollRef.current = onRoll; }, [onRoll]);
+export const DiceWidget: React.FC<Props> = ({ onRoll, rolling }) => {
+  const diceRef = useRef<ReactDiceRef>(null);
+  const rollValueRef = useRef<number>(1);
 
   useEffect(() => {
-    function onDiceRolled(e: Event) {
-      const detail = (e as CustomEvent).detail;
-      const value = typeof detail === 'number' ? detail : 1;
+    if (!rolling) return;
+    rollValueRef.current = rollDice();
+    diceRef.current?.rollAll([rollValueRef.current]);
+    // Use a fixed timer instead of rollDone — the library fires rollDone prematurely
+    // on mount (initial render effect), so we can't rely on it.
+    const timer = setTimeout(() => {
+      closeModal();
+      onRoll(rollValueRef.current);
+    }, ROLL_TIME_MS + 200);
+    return () => clearTimeout(timer);
+  }, [rolling]);
 
-      if (gameState) gameState.lastDice = value;
-
-      console.log('Dice rolled:', value);
-
-      setSide(value);
-      if (animationTimeout.current) window.clearTimeout(animationTimeout.current);
-      animationTimeout.current = window.setTimeout(() => {
-        gameEvent('diceAnimationStopped', value);
-      }, 1600);
-    }
-
-    window.addEventListener('diceRolled', onDiceRolled as EventListener);
-    return () => window.removeEventListener('diceRolled', onDiceRolled as EventListener);
-  }, []);
-
-  useEffect(() => {
-    function onDiceFinished(e: Event) {
-      const detail = (e as CustomEvent).detail as number;
-      console.log('Dice finished, onRoll called for roll:', detail);
-      onRollRef.current(detail);
-    }
-
-    window.addEventListener('diceAnimationStopped', onDiceFinished as EventListener);
-    return () =>
-      window.removeEventListener('diceAnimationStopped', onDiceFinished as EventListener);
-  }, []);
-
-  const handleClick = () => {
-    gameEvent('displayTitle', {});
-    rollDice();
-  };
+  if (!rolling) return null;
 
   return (
-    <div className="dice-container ">
-      <div
-        id="dice"
-        data-side={String(side)}
-        className="dice"
-        style={{ transformStyle: 'preserve-3d' }}
-        onClick={handleClick}
-      >
-        <div className="sides side-1">
-          <span className="dot dot-1" />
-        </div>
-        <div className="sides side-2">
-          <span className="dot dot-1" />
-          <span className="dot dot-2" />
-        </div>
-        <div className="sides side-3">
-          <span className="dot dot-1" />
-          <span className="dot dot-2" />
-          <span className="dot dot-3" />
-        </div>
-        <div className="sides side-4">
-          <span className="dot dot-1" />
-          <span className="dot dot-2" />
-          <span className="dot dot-3" />
-          <span className="dot dot-4" />
-        </div>
-        <div className="sides side-5">
-          <span className="dot dot-1" />
-          <span className="dot dot-2" />
-          <span className="dot dot-3" />
-          <span className="dot dot-4" />
-          <span className="dot dot-5" />
-        </div>
-        <div className="sides side-6">
-          <span className="dot dot-1" />
-          <span className="dot dot-2" />
-          <span className="dot dot-3" />
-          <span className="dot dot-4" />
-          <span className="dot dot-5" />
-          <span className="dot dot-6" />
-        </div>
-      </div>
-
-      <div className="dice-roll">Roll dice!</div>
+    <div className="dice-container">
+      <ReactDice
+        numDice={1}
+        ref={diceRef}
+        rollDone={() => {}}
+        faceColor="#efe5dc"
+        dotColor="#5a3a1a"
+        dieSize={80}
+        disableIndividual
+        rollTime={1.5}
+        outline
+        outlineColor="#8b6914"
+      />
     </div>
   );
 };

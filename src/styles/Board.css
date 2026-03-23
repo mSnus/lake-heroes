@@ -247,14 +247,11 @@
 }
 
 .shield-button-container {
-  position: fixed;
-  top: -16px;
-  left: -12px;
   width: 60px;
   height: 60px;
   display: flex;
   justify-content: center;
-  z-index: 50;
+  align-items: center;
   background-image: url('/assets/shield.png');
   background-repeat: no-repeat;
   background-position: center;
