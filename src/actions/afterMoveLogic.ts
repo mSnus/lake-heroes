@@ -56,6 +56,7 @@ export function afterMoveLogic(
         'error'
       );
       becomeBeggar(board, updateGameState);
+      gameEvent('displayTitle', board.activeTile); // player moved to Prison — refresh tile card
       setMenu({ type: 'end-turn' });
     } else {
       setMenu({ type: 'fee-or-fight' });
