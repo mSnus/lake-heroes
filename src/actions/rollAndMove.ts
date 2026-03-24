@@ -42,7 +42,7 @@ export async function rollAndMove(
     tileMessage += `, but cannot afford to buy it.`;
   }
 
-  say(tileMessage, 'info');
+  say(tileMessage, 'debug');
 
   gameEvent('displayTitle', {});
 

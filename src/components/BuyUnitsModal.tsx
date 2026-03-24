@@ -30,11 +30,16 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
   };
 
   return (
-    <GameModal className="game-modal">
-      <div className="modal-content">
-        <img src={topImage} alt="Top Image" className="top-image" />
-        <h2>Buy Units</h2>
-        <p>1 Unit = 100 Gold</p>
+    <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder={true}>
+      <div className="modal-content" style={{ color: `white` }}>
+        <h2>
+          The King welcomes you,
+          <br /> {player.name}!
+        </h2>
+        <p>{gameState.gameMessage}</p>
+
+        <h2>You may recruit units for your army:</h2>
+        <p>1🧍 = 100 🟡</p>
 
         <div className="input-group">
           <input
@@ -45,13 +50,26 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
             max={maxAmount}
           />
         </div>
-        <div className="button-group" style={{display:"flex", justifyContent:"center", gap: "8px", marginTop: "16px"}}>
-          <button className="game-menu-button" onClick={handleBuy} disabled={amount <= 0 || amount > maxAmount}>
+        <div
+          className="button-group"
+          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
+        >
+          <button
+            className="game-menu-button"
+            onClick={handleBuy}
+            disabled={amount <= 0 || amount > maxAmount}
+          >
             Buy
           </button>
-          <button className="game-menu-button" onClick={handleHalf}>1/2</button>
-          <button className="game-menu-button" onClick={handleMax}>Max</button>
-          <button className="game-menu-button" onClick={onSkip}>Skip</button>
+          <button className="game-menu-button" onClick={handleHalf}>
+            1/2
+          </button>
+          <button className="game-menu-button" onClick={handleMax}>
+            Max
+          </button>
+          <button className="game-menu-button" onClick={onSkip}>
+            Skip
+          </button>
         </div>
       </div>
     </GameModal>

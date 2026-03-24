@@ -36,7 +36,7 @@
 }
 
 .modal-content {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: transparent;
   background-size: cover;
   padding: 8px;
   border-radius: 10px;
@@ -44,14 +44,17 @@
   min-width: 350px;
 }
 
+.modal-background {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.fade {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
 .modal-new-game {
-  background-size: contain;
-  background-position-x: center;
-  background-repeat: no-repeat;
-  background-color: #293908;
-  background-blend-mode: soft-light;
   height: 464px;
-  max-width: 75vw;
+  max-width: 85vw;
   padding-top: 0;
   overflow: hidden;
   display: flex;
@@ -83,7 +86,7 @@ button.decorated {
 .modal-content input[type='text'],
 .modal-content input[type='number'] {
   height: 32px;
-  width: 130px;
+  width: 40vw;
   border: solid 1px #623e1b;
   padding: 4px 12px;
   font-size: 20px;

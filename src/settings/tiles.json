@@ -642,7 +642,7 @@
     },
     "bonuses": {},
     "defences": {},
-    "description": "Chance to receive 🟡🟡🟡",
+    "description": "Chance to receive 🟡🟡🟡 <br>Roll the dice! \uD83C\uDFB2!",
     "sprite": {
       "x": 0,
       "y": 4
@@ -661,7 +661,7 @@
     },
     "bonuses": {},
     "defences": {},
-    "description": "Chance to hire 🧍🧍🧍",
+    "description": "Chance to hire 🧍🧍🧍. <br>Roll the dice! \uD83C\uDFB2!",
     "sprite": {
       "x": 1,
       "y": 4

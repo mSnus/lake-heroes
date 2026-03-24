@@ -73,10 +73,10 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
   };
 
   return (
-    <GameModal className="modal-new-game" style={{ backgroundImage: `url(./assets/logo512.png)` }}>
+    <GameModal className="modal-new-game" backgroundImage="assets/screens/dragon.jpg" noBorder>
       <>
         <div className="input-group">
-          <label>Players: </label>
+          <label>Heroes: </label>
           <select value={numPlayers} onChange={handleNumPlayersChange}>
             {Array.from({ length: MAX_PLAYERS - 1 }, (_, i) => i + 2).map((n) => (
               <option key={n} value={n}>

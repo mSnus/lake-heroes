@@ -11,6 +11,8 @@ import { sellTile } from '../actions/sellTile';
 import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { say } from '../utils/say';
 import { gameEvent } from '../utils/events';
+import { ScreenBackground } from './ScreenBackground';
+import { Fade } from './Fade';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -57,7 +59,60 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         disabled: activePlayer.units < defence,
       },
     ];
-    return <GameMenu items={items} top={top} />;
+    return (
+      <>
+        <ScreenBackground image="assets/screens/guards.jpg">
+          <Fade></Fade>
+
+          {currentTile.sprite && (
+            <div
+              style={{
+                width: '30vw',
+                height: '30vw',
+                borderRadius: '50%',
+                backgroundImage: `url(assets/sprites2.png)`,
+                backgroundSize: '150vw',
+                backgroundPositionX: `calc(${currentTile.sprite.x} * -30vw)`,
+                backgroundPositionY: `calc(${currentTile.sprite.y} * -30vw)`,
+                marginBottom: '16px',
+                flexShrink: 0,
+                zIndex: 6000,
+              }}
+            />
+          )}
+          <div
+            style={{
+              color: 'white',
+              fontSize: '1.4rem',
+              textAlign: 'center',
+              textShadow: '1px 1px 6px black',
+              padding: '0 24px',
+              zIndex: 6001,
+            }}
+          >
+            <strong>{activePlayer.name}</strong> encounters <strong>{currentTile.name}</strong> that
+            belongs to <strong>{currentTile.owner}</strong>. Pay fee or try to raze it?
+          </div>
+        </ScreenBackground>
+        <GameMenu items={items} top={'80vh'} />
+      </>
+    );
+  }
+
+  if (menu.type === 'fight-win') {
+    return (
+      <ScreenBackground image="assets/screens/victory.jpg">
+        <GameMenu items={[{ label: 'Continue', action: 'end-turn' as MenuAction, onClick: () => setMenu({ type: 'end-turn' }) }]} top="80vh" />
+      </ScreenBackground>
+    );
+  }
+
+  if (menu.type === 'fight-lose') {
+    return (
+      <ScreenBackground image="assets/screens/lost.jpg">
+        <GameMenu items={[{ label: 'Continue', action: 'end-turn' as MenuAction, onClick: () => setMenu({ type: 'end-turn' }) }]} top="80vh" />
+      </ScreenBackground>
+    );
   }
 
   if (menu.type === 'sell-to-pay') {

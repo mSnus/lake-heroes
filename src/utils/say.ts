@@ -1,7 +1,7 @@
 import { toast, ToastContent } from 'react-toastify';
 import { gameEvent } from './events';
 
-export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error';
+export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
 /**
  * say: unified user notification helper.
@@ -23,6 +23,9 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
       break;
     case 'info':
       toast.info(message);
+      break;
+    case 'debug':
+      console.log(message);
       break;
     case 'default':
     default:

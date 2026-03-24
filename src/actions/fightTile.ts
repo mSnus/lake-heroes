@@ -39,7 +39,7 @@ export function fightTile(
       if (owner.turnsToSkip <= 0) owner.gold += fee;
       say(`${player.name} also paid ${fee}🟡 as defeat penalty to ${owner.name}.`, 'warning');
       updateGameState(board);
-      setMenu({ type: 'end-turn' });
+      setMenu({ type: 'fight-lose' });
     } else {
       // Can't pay fee — find a tile to sell or go bankrupt
       updateGameState(board);
@@ -77,6 +77,6 @@ export function fightTile(
     });
 
     updateGameState(board);
-    setMenu({ type: 'end-turn' });
+    setMenu({ type: 'fight-win' });
   }
 }
