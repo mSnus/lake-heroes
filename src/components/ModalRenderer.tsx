@@ -6,9 +6,9 @@ import { PlayerSetup } from '../utils/playerSetup';
 export function ModalRenderer() {
   const { type, handler, key, rolling } = useModal();
 
-  console.log('Rendering modal of type:', type);
-
   if (!type) return null;
+
+  console.log('Rendering modal of type:', type);
 
   switch (type) {
     case 'dice':

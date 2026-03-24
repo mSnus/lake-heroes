@@ -60,14 +60,13 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           📜
         </button>
       </div>
-      <div
-        className={`shield-button-container${canEndTurn ? '' : ' shield-button-container--disabled'}`}
-        title="End Turn"
-      >
-        <button onClick={handleEndTurn} className="shield-button" disabled={!canEndTurn}>
-          ⏳
-        </button>
-      </div>
+      {canEndTurn && (
+        <div className="shield-button-container" title="End Turn">
+          <button onClick={handleEndTurn} className="shield-button">
+            ⏳
+          </button>
+        </div>
+      )}
       {canRollDice && (
         <div className="shield-button-container" title="Roll Dice">
           <button onClick={startDiceRoll} className="shield-button">

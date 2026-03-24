@@ -74,6 +74,7 @@ export async function rollAndMove(
   if (tile.name.includes('Treasure')) {
     board.gameMessage = `Roll dice! Discover the treasure inside...`;
     updateGameState(board);
+    setMenu({ type: 'treasure-waiting' });
     showModal('dice', (roll: number) => handleTreasureBox(board, updateGameState, setMenu, roll));
     return;
   }

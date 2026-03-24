@@ -21,5 +21,5 @@ export function handleTreasureBox(
   updateGameState(board);
   say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward}🟡!`, 'success');
 
-  setMenu({ type: 'end-turn' });
+  setMenu({ type: 'treasure-result' });
 }
