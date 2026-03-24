@@ -11,30 +11,30 @@ import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
-import { GameMenuRenderer } from './components/GameMenuRenderer';
-import { MenuState } from './types/menuState';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, rehydrateSavedTiles, SavedGameState } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
-import BuyUnitsModal from './components/BuyUnitsModal';
 import { PlayerSetup } from './utils/playerSetup';
 import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
-import { showModal } from './utils/modalStore';
+import { showDice } from './utils/diceStore';
+import { useScreen, showScreen, clearScreen } from './utils/screenStore';
+import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
-import { buyUnits } from './actions/buyUnits';
+import { resetEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
+import { ScreenRenderer } from './components/ScreenRenderer';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [menu, setMenu] = useState<MenuState | null>(null);
   const [messageHistory, setMessageHistory] = useState<LogMessage[]>([]);
   const [showLogModal, setShowLogModal] = useState(false);
+  const screen = useScreen();
 
   // Always-current ref so dice/action closures never capture stale state
   const gameStateRef = useRef<GameState | null>(null);
@@ -52,7 +52,8 @@ function App() {
   }, []);
 
   const handleDiceRollAndMove = useCallback(function (roll: number) {
-    rollAndMove(gameStateRef.current, updateGameState, setMenu, roll);
+    resetEndTurn();
+    rollAndMove(gameStateRef.current, updateGameState, roll);
   }, [updateGameState]);
 
   // setPhase event listener and handler
@@ -77,7 +78,7 @@ function App() {
 
   // showDice event: fired by endTurn/dragon to open the dice modal with the correct handler
   useEffect(() => {
-    const handler = () => showModal('dice', handleDiceRollAndMove);
+    const handler = () => showDice(handleDiceRollAndMove);
     window.addEventListener('showDice', handler);
     return () => window.removeEventListener('showDice', handler);
   }, [handleDiceRollAndMove]);
@@ -116,8 +117,8 @@ function App() {
 
         setGameState(restored);
 
-        afterMoveLogic(restored, updateGameState, setMenu);
-        showModal('dice', handleDiceRollAndMove);
+        afterMoveLogic(restored, updateGameState);
+        showDice(handleDiceRollAndMove);
 
         gameEvent('setPhase', restored.turnPhase);
 
@@ -129,7 +130,7 @@ function App() {
         return;
       }
 
-      showModal('new-game', handleStartGame);
+      showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
     }
     loadGameData();
   }, []);
@@ -138,14 +139,6 @@ function App() {
     if (gameState) saveToStorage('game-state', gameState);
   }, [gameState]);
 
-  const handleBuyUnits = useCallback((amount: number) => {
-    buyUnits(gameStateRef.current, amount, updateGameState, setMenu);
-  }, [updateGameState]);
-
-  const handleSkipBuyUnits = () => {
-    setMenu({ type: 'end-turn' });
-  };
-
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[]) => {
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
@@ -153,9 +146,10 @@ function App() {
       const initialGameState = new GameState(tiles, players);
       gameStart(initialGameState, updateGameState);
 
+      clearScreen();
       gameEvent('setPhase', initialGameState.turnPhase);
       say(`${initialGameState.activePlayer.name}, start the game by rolling the dice!`, 'info');
-      showModal('dice', handleDiceRollAndMove);
+      showDice(handleDiceRollAndMove);
     },
     [updateGameState]
   );
@@ -187,7 +181,7 @@ function App() {
           <div>🐉 {gameState.gameMessage} 🐉</div>
           <button
             style={{ fontSize: '1.2rem', padding: '0.6rem 2rem', cursor: 'pointer' }}
-            onClick={() => showModal('new-game', handleStartGame)}
+            onClick={() => showScreen({ content: <NewGameModal onStart={handleStartGame} /> })}
           >
             New Game
           </button>
@@ -196,43 +190,23 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
-          {(!menu || !['fee-or-fight', 'treasure-waiting', 'treasure-result', 'sphynx-waiting', 'sphynx-result', 'tavern-waiting', 'tavern-result', 'fight-win', 'fight-lose', 'sell-to-pay', 'prison-regular', 'prison-beggar'].includes(menu.type)) && (
-            <GameMessage message={gameState.gameMessage} />
-          )}
+          {!screen && <GameMessage message={gameState.gameMessage} />}
           <CurrentTile gameState={gameState} updateGameState={updateGameState} />
-          {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' && menu.type !== 'end-turn' && (
-            <GameMenuRenderer
-              gameState={gameState}
-              menu={menu}
-              setMenu={setMenu}
-              updateGameState={updateGameState}
-              top={gameState.gameMessage ? '90px' : '60px'}
-            />
-          )}
+          <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
           <BoardCanvas board={gameState} />
 
           <ActionBar
             gameState={gameState}
-            menu={menu}
             updateGameState={updateGameState}
-            setMenu={setMenu}
             onOpenLog={handleOpenLog}
-            onNewGame={() => showModal('new-game', handleStartGame)}
+            onNewGame={() => {}}
           />
-
-          {menu && menu.type === 'buy-units' && (
-            <BuyUnitsModal
-              gameState={gameState}
-              onBuy={handleBuyUnits}
-              onSkip={handleSkipBuyUnits}
-            />
-          )}
 
           {showLogModal && (
             <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
           )}
 
-          {menu?.type !== 'sell-to-pay' && (
+          {!screen?.sellMode && (
             <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
           )}
         </div>

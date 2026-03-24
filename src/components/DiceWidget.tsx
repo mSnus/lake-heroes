@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactDice, { ReactDiceRef } from 'react-dice-complete';
 import '../styles/dice.css';
-import { closeModal } from '../utils/modalStore';
+import { closeModal } from '../utils/diceStore';
 import { rollDice } from '../game/Dice';
 
 // Must match the rollTime prop passed to ReactDice (in ms)

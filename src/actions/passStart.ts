@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { MONEY_PASS_START } from '../components/board/common';
+import { MONEY_PASS_START } from '../game/constants';
 
 export function passStart(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -41,8 +41,10 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   const summary = parts.join(' and ');
 
   say(`${player.name} receives ${summary}`, 'success');
-  board.gameMessage = `King rewards you with ${summary} for your service and properties`;
 
+  if (!board.activeTile.name.toLowerCase().startsWith('king')) {
+    board.gameMessage = `King rewards you with ${summary} for your service and properties`;
+  }
   updateGameState(board);
 }
 

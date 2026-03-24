@@ -1,11 +1,11 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { MenuState } from '../types/menuState';
+import { showScreen, clearScreen } from '../utils/screenStore';
+import { setEndTurn } from '../utils/endTurnStore';
 
 export function handleTavern(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
   roll: number
 ) {
   if (!board) return;
@@ -15,9 +15,13 @@ export function handleTavern(
   const player = board.activePlayer;
   player.units += unitsReward;
 
-  board.gameMessage = ` ${unitsReward}🧍 joined your mighty forces`;
+  board.gameMessage = `${unitsReward}🧍 joined your mighty forces`;
   updateGameState(board);
   say(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`, 'success');
 
-  setMenu({ type: 'tavern-result' });
+  showScreen({
+    background: 'assets/screens/tavern.jpg',
+    message: board.gameMessage,
+    buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+  });
 }

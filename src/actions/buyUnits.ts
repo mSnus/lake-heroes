@@ -1,14 +1,13 @@
 import { GameState } from '../game/GameState';
-import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
+import { setEndTurn } from '../utils/endTurnStore';
 
 const UNIT_COST = 100;
 
 export function buyUnits(
   board: GameState | null,
   amount: number,
-  updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
 
@@ -24,5 +23,5 @@ export function buyUnits(
     say('Not enough gold to buy units.', 'error');
   }
 
-  setMenu({ type: 'end-turn' });
+  setEndTurn();
 }

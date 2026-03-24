@@ -1,6 +1,5 @@
 import { GameState } from '../game/GameState';
 import { rollDice } from '../game/Dice';
-import { MenuState } from '../types/menuState';
 import { handleTreasureBox } from './treasureBox';
 import { handleTavern } from './tavern';
 import { handlePrison } from './prison';
@@ -10,14 +9,14 @@ import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { say } from '../utils/say';
-import { TILE_COUNT } from '../components/board/common';
+import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
-import { showModal } from '../utils/modalStore';
+import { showDice, startDiceRoll } from '../utils/diceStore';
+import { showScreen } from '../utils/screenStore';
 
 export async function rollAndMove(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
   preRolledValue?: number
 ) {
   console.log('Roll and move');
@@ -74,38 +73,52 @@ export async function rollAndMove(
   if (tile.name.includes('Treasure')) {
     board.gameMessage = `Roll dice! Discover the treasure inside...`;
     updateGameState(board);
-    setMenu({ type: 'treasure-waiting' });
-    showModal('dice', (roll: number) => handleTreasureBox(board, updateGameState, setMenu, roll));
+    showDice( (roll: number) => handleTreasureBox(board, updateGameState, roll));
+    showScreen({
+      background: 'assets/screens/treasure.jpg',
+      htmlMessage: tile.description,
+      buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+    });
     return;
   }
   if (tile.name.includes('Tavern')) {
     board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
     updateGameState(board);
-    setMenu({ type: 'tavern-waiting' });
-    showModal('dice', (roll: number) => handleTavern(board, updateGameState, setMenu, roll));
+    showDice( (roll: number) => handleTavern(board, updateGameState, roll));
+    showScreen({
+      background: 'assets/screens/tavern.jpg',
+      fade: true,
+      htmlMessage: tile.description,
+      buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+    });
     return;
   }
   if (tile.name.includes('Prison')) {
-    handlePrison(board, updateGameState, setMenu);
+    handlePrison(board, updateGameState);
     return;
   }
   if (tile.name.includes('Sphynx')) {
     board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
     updateGameState(board);
-    setMenu({ type: 'sphynx-waiting' });
-    showModal('dice', (roll: number) => handleSphynx(board, updateGameState, setMenu, roll));
+    showDice( (roll: number) => handleSphynx(board, updateGameState, roll));
+    showScreen({
+      background: 'assets/screens/sphynx.jpg',
+      fade: true,
+      htmlMessage: tile.description,
+      buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+    });
     return;
   }
   if (tile.name.includes('King')) {
-    handleKingCastle(board, updateGameState, setMenu);
+    handleKingCastle(board, updateGameState);
     return;
   }
 
   if (tile.isOwned() && tile.owner === player.name) {
-    handleVisitOwnTile(board, updateGameState, setMenu);
+    handleVisitOwnTile(board, updateGameState);
     return;
   }
 
   // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
-  afterMoveLogic(board, updateGameState, setMenu);
+  afterMoveLogic(board, updateGameState);
 }

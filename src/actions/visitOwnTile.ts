@@ -1,11 +1,9 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { MenuState } from '../types/menuState';
-
+import { setEndTurn } from '../utils/endTurnStore';
 export function handleVisitOwnTile(
   board: GameState | null,
-  updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
   if (board.circles === 0) return;
@@ -31,9 +29,9 @@ export function handleVisitOwnTile(
   }
 
   const rewardsStr = rewards.join(' and ');
-  say(`${tile.name} provide ${player.name} with ${rewardsStr}!`, 'success');
+  say(`${tile.name} provides ${player.name} with ${rewardsStr}!`, 'debug');
   board.gameMessage = `Your ${tile.name} provides you with ${rewardsStr}!`;
 
   updateGameState(board);
-  setMenu({ type: 'end-turn' });
+  setEndTurn();
 }

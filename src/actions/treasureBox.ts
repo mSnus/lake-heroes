@@ -1,12 +1,12 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { MenuState } from '../types/menuState';
 import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
+import { showScreen, clearScreen } from '../utils/screenStore';
+import { setEndTurn } from '../utils/endTurnStore';
 
 export function handleTreasureBox(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
   roll: number
 ) {
   if (!board) return;
@@ -16,9 +16,15 @@ export function handleTreasureBox(
   const player = board.activePlayer;
 
   player.gold += goldReward;
+  board.gameMessage = `${player.name} found ${goldReward}🟡 in the treasure!`;
 
   updateGameState(board);
   say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward}🟡!`, 'success');
 
-  setMenu({ type: 'treasure-result' });
+  showScreen({
+    background: 'assets/screens/treasure.jpg',
+    message: board.gameMessage,
+    fade: true,
+    buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+  });
 }

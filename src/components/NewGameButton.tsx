@@ -1,12 +1,11 @@
 import React from 'react';
-import { showModal } from '../utils/modalStore';
 import { PlayerSetup } from '../utils/playerSetup';
 
 type NewGameButtonProps = {
   onClick: (playersSetup: PlayerSetup[]) => void;
 };
 
-const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick }) => {
+const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick: _onClick }) => {
   function handleReset() {
     if (
       window.confirm(
@@ -15,7 +14,6 @@ const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick }) => {
     ) {
       try {
         localStorage.removeItem('game-state');
-        showModal('new-game', onClick);
       } catch (e) {
         // ignore storage errors
       } finally {

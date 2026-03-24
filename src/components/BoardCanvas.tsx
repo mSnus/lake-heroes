@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
-import { SPRITE_SIZE } from './board/common';
+import { SPRITE_SIZE } from '../game/constants';
 import groupsData from '../settings/groups.json';
 
-import { TILE_COUNT, getTilePosition, isMobileLayout, parseTileName } from './board/common';
+import { TILE_COUNT } from '../game/constants';
+import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import '../styles/Board.css';
 import { playerImageAssets } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';

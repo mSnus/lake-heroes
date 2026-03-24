@@ -1,32 +1,28 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { GameState } from '../game/GameState';
-import { MenuState } from '../types/menuState';
 import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
-import { useModal, startDiceRoll } from '../utils/modalStore';
+import { useModal, startDiceRoll } from '../utils/diceStore';
+import { useEndTurnReady } from '../utils/endTurnStore';
 import { CurrentPlayer } from './CurrentPlayer';
 import '../styles/ActionBar.css';
 
 interface ActionBarProps {
   gameState: GameState | null;
-  menu: MenuState | null;
   updateGameState: (gs: GameState) => void;
-  setMenu: (menu: MenuState) => void;
   onOpenLog: () => void;
   onNewGame: () => void;
 }
 
 export const ActionBar: React.FC<ActionBarProps> = ({
   gameState,
-  menu,
   updateGameState,
-  setMenu,
   onOpenLog,
   onNewGame,
 }) => {
-  const { type: modalType } = useModal();
-  const canEndTurn = menu?.type === 'end-turn' && modalType !== 'dice';
-  const canRollDice = modalType === 'dice';
+  const { active: diceActive } = useModal();
+  const endTurnReady = useEndTurnReady();
+  const canEndTurn = endTurnReady && !diceActive;
 
   function handleNewGame() {
     if (
@@ -46,7 +42,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   function handleEndTurn() {
     if (!gameState || !canEndTurn) return;
     gameEvent('setPhase', 'before-move');
-    endTurn(gameState, updateGameState, setMenu);
+    endTurn(gameState, updateGameState);
   }
 
   return (
@@ -83,7 +79,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             </button>
           </div>
         )}
-        {canRollDice && (
+        {diceActive && (
           <div className="shield-button-container" title="Roll Dice">
             <button onClick={startDiceRoll} className="shield-button">
               🎲

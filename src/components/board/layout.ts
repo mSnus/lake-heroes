@@ -1,4 +1,5 @@
-import { shuffle, TILE_COUNT } from './common';
+import { shuffle } from './common';
+import { TILE_COUNT } from '../../game/constants'
 
 // Place tiles according to rules:
 // - Fixed placements (1-based positions):

@@ -1,11 +1,5 @@
 export { MONEY_START, UNITS_START, MONEY_PASS_START, FEE_MULTIPLIER, TREASURE_BOX_MULTIPLIER, MAX_PLAYERS } from '../../game/constants';
 import { TILE_COUNT } from '../../game/constants';
-export { TILE_COUNT };
-
-export const SPRITE_SIZE = 92;
-
-export const DIAMOND_SIZE = 14; // marker icon size in px
-export const DIAMOND_GAP = 4; // gap between markers
 
 export function isMobileLayout(): boolean {
   return window.matchMedia('(max-width: 768px)').matches;

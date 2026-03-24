@@ -1,15 +1,13 @@
 import { GameState } from '../game/GameState';
-import { MenuState } from '../types/menuState';
 import { rollDice } from '../game/Dice';
 import { say } from '../utils/say';
-import { showModal } from '../utils/modalStore';
+import { showDice } from '../utils/diceStore';
 
 export const DRAGON_UNITS_THRESHOLD = 50;
 
 export function fightDragon(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
 ) {
   if (!board) return;
 
@@ -23,7 +21,6 @@ export function fightDragon(
     board.gameOver = true;
     say(`${player.name} slays the Dragon and wins the game! 🎉`, 'success');
     updateGameState(board);
-    setMenu({ type: 'wait' });
   } else {
     const unitLoss = Math.ceil(player.units / 2);
     const goldLoss = player.gold;
@@ -37,7 +34,6 @@ export function fightDragon(
     board.gameMessage = `Defeated by the Dragon! Lost all gold and ${unitLoss}🧍`;
     updateGameState(board);
 
-    showModal('dice');
-    setMenu(null as unknown as MenuState);
+    showDice();
   }
 }

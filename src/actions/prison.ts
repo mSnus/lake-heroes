@@ -1,19 +1,20 @@
 import { GameState } from '../game/GameState';
-import { MenuState } from '../types/menuState';
+import { showPrisonScreen } from '../utils/screenStore';
 
 export function handlePrison(
   board: GameState | null,
-  updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
 
   const player = board.activePlayerIndex;
   board.players[board.playerOrder[player]].turnsToSkip = 1;
 
-  console.log('Action: prison for', board.players[board.playerOrder[player]].name);
+  const playerName = board.players[board.playerOrder[player]].name;
+  console.log('Action: prison for', playerName);
 
+  board.gameMessage = `${playerName} dwells in prison`;
   updateGameState(board);
 
-  setMenu({ type: 'prison-regular' });
+  showPrisonScreen(board.gameMessage);
 }

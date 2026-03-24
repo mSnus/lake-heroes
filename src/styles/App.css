@@ -62,7 +62,7 @@ body {
 
 .game-message {
   position: absolute;
-  top: calc(120vw - 38px);
+  top: calc(120vw - 48px);
   text-align: center;
   background: linear-gradient(90deg, #3f591e, #6b8e23);
   color: #fdf599;
@@ -71,4 +71,8 @@ body {
   font-weight: 700;
   width: 100vw;
   z-index: 8000;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

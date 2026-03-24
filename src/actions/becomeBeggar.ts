@@ -30,12 +30,13 @@ export function becomeBeggar(
   // 3. Moved to prison with skipTurns = 2
   // Prison index is 13.
   player.position = 13;
-  player.turnsToSkip = 2;
+  player.turnsToSkip = 1;
 
-  say(`${player.name} is in Prison for mendicancy (2 turns)`, 'warning');
+  say(`${player.name} is captured and moved to Prison`, 'warning');
 
   const tilesMsg = lostTilesCount > 0 ? `Lost ${lostTilesCount} tile${lostTilesCount > 1 ? 's' : ''} and ` : '';
-  board.gameMessage = `${player.name} became a beggar! ${tilesMsg}${loss} unit${loss !== 1 ? 's' : ''} deserted. Imprisoned for 2 turns.`;
+  const lostUnitsMsg = loss > 0 ? `${loss} unit${loss !== 1 ? 's' : ''} deserted` : ``;
+  board.gameMessage = `${player.name} became a prisoner of war! ${tilesMsg}${lostUnitsMsg}. Imprisoned for 2 turns.`;
 
   updateGameState(board);
 }

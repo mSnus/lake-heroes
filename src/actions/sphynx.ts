@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { MenuState } from '../types/menuState';
+import { showScreen, clearScreen } from '../utils/screenStore';
+import { setEndTurn } from '../utils/endTurnStore';
 
 /**
  * Handle landing on Sphynx tile.
@@ -14,7 +15,6 @@ import { MenuState } from '../types/menuState';
 export function handleSphynx(
   gameState: GameState | null,
   updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void,
   roll: number
 ) {
   if (!gameState) return;
@@ -61,5 +61,10 @@ export function handleSphynx(
 
   say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');
 
-  setMenu({ type: 'sphynx-result' });
+  showScreen({
+    background: 'assets/screens/sphynx.jpg',
+    fade: true,
+    message: gameState.gameMessage,
+    buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+  });
 }

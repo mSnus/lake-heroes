@@ -7,6 +7,7 @@ import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
 import { gameEvent } from '../utils/events';
+import { SPRITE_PX, SPRITE_SIZE } from '../game/constants';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
@@ -134,7 +135,40 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   return (
     <div className="tile-card">
-      <div className="tile-card-header" style={{ background: groupColor + 'e0' }}>
+      <div
+        className="tile-card-header"
+        style={{
+          background: groupColor + 'e0',
+          overflow: 'clip',
+          maxHeight: `${SPRITE_SIZE / 2}px`,
+        }}
+      >
+        {tile.sprite && (
+          <div
+            style={{
+              height: `${SPRITE_SIZE}px`,
+              width: `${SPRITE_SIZE}px`,
+              marginLeft: `-${SPRITE_SIZE * 0.5}px`,
+              marginTop: `-12px`,
+            }}
+          >
+            <div
+              style={{
+                width: `${SPRITE_SIZE}px`,
+                height: `${SPRITE_SIZE}px`,
+                border: `3px solid ${groupColor}70`,
+                borderRadius: '50%',
+                backgroundImage: `url(assets/sprites2.png)`,
+                backgroundSize: '150vw',
+                backgroundPositionX: `calc(${tile.sprite.x} * -${SPRITE_PX}px)`,
+                backgroundPositionY: `calc(${tile.sprite.y} * -${SPRITE_PX}px)`,
+                flexShrink: 0,
+                zIndex: 6000,
+              }}
+            />
+          </div>
+        )}
+
         <div className="tile-card-title">{tile.name}</div>
 
         {mode === 'display' && (
@@ -250,20 +284,15 @@ export const TileCard: React.FC<TileCardProps> = ({
             )}
           </div>
 
-          <div className="tile-card-actions">
-            {mode === 'owned' && (
-              <a
-                onClick={() => handleSell()}
-                className={'tile-card-button'}
-              >
+          {mode === 'owned' && (
+            <div className="tile-card-actions">
+              <a onClick={() => handleSell()} className={'tile-card-button'}>
                 <div className="big-icon-hint">
                   <div>🪙</div>
                   <div>sell</div>
                 </div>
               </a>
-            )}
 
-            {mode === 'owned' && (
               <a
                 onClick={() => handleUpgrade()}
                 className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
@@ -273,18 +302,19 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div>upgrade</div>
                 </div>
               </a>
-            )}
-            <a
-              onClick={() => handleInfoClick()}
-              className={'tile-card-button'}
-              style={{ width: (mode !== 'owned' ? '100%' : 'unset') }}
-            >
-              <div className="big-icon-hint">
-                <div>ℹ️</div>
-                <div>info</div>
-              </div>
-            </a>
-          </div>
+
+              <a
+                onClick={() => handleInfoClick()}
+                className={'tile-card-button'}
+                style={{ width: mode !== 'owned' ? '100%' : 'unset' }}
+              >
+                <div className="big-icon-hint">
+                  <div>ℹ️</div>
+                  <div>info</div>
+                </div>
+              </a>
+            </div>
+          )}
 
           {expanded && (
             <div className="tile-card-table-wrap">

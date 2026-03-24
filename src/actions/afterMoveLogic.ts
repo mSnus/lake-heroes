@@ -1,13 +1,14 @@
 import { GameState } from '../game/GameState';
-import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
-import { say } from '../utils/say';
 import { becomeBeggar } from './becomeBeggar';
+import { showScreen, showPrisonScreen, ScreenButton } from '../utils/screenStore';
+import { setEndTurn } from '../utils/endTurnStore';
+import { payFee } from './payFee';
+import { fightTile } from './fightTile';
 
 export function afterMoveLogic(
   board: GameState | null,
-  updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
 
@@ -16,54 +17,69 @@ export function afterMoveLogic(
 
   console.log(`Action: after move logic for ${player.name} on ${tile.name}`, player, tile);
 
-  // Special tiles are already handled in rollAndMove, so just end turn if it's a special tile
   if (!tile.isOwnable) {
-    setMenu({ type: 'end-turn' });
+    setEndTurn();
     gameEvent('hideDice', true);
     return;
   }
 
-  // Ownable, owned by someone else
   if (tile.isOwned() && tile.owner !== player.name) {
     const fee = tile.fee;
     const defence = tile.defence;
+    const ownerColor = board.players.find((p) => p.name === tile.owner)?.color;
 
-    if (player.gold < fee && player.units < defence) {
-      // Check if player has tiles to sell — find cheapest owned tile worth >= fee
-      let bestOwnedIdx = -1;
-      let minVal = Infinity;
+    const totalSellGold = player.ownedTiles.reduce((sum, posIdx) => {
+      const t = board.tiles[posIdx];
+      if (!t || t.owner !== player.name) return sum;
+      return sum + t.currentPrice.gold;
+    }, 0);
+    const canSell = totalSellGold >= fee;
 
-      player.ownedTiles.forEach((posIdx, ownedIdx) => {
-        const t = board.tiles[posIdx];
-        if (!t || t.owner !== player.name) return;
-        const price = t.currentPrice;
-        const val = price.gold + price.units * 100;
-        if (val < minVal && val >= fee) {
-          minVal = val;
-          bestOwnedIdx = ownedIdx;
-        }
+    const encounter = {
+      playerName: player.name,
+      playerColor: player.color,
+      tileName: tile.name,
+      ownerName: tile.owner ?? undefined,
+      ownerColor,
+      outcomeText: player.units >= defence
+        ? `⚔️ Win: ${tile.name} is razed, costs you ${defence}🧍\n💀 Lose: costs ${defence}🧍 + ${fee}🟡 penalty to ${tile.owner}`
+        : undefined,
+    };
+
+    const baseConfig = {
+      background: 'assets/screens/guards.jpg',
+      fade: true as const,
+      sprite: tile.sprite,
+      encounter,
+    };
+
+    const baseButtons: ScreenButton[] = [
+      { label: `Pay fee ${fee}🟡`, action: 'pay-fee', onClick: () => payFee(board, updateGameState), disabled: player.gold < fee },
+      { label: `Risk ${defence}🧍 to raze ⚔️🔥`, action: 'fight', onClick: () => fightTile(board, updateGameState), disabled: player.units < defence },
+    ];
+
+    const acceptLossButton: ScreenButton = {
+      label: 'Accept loss 😢',
+      action: 'fight',
+      onClick: () => { becomeBeggar(board, updateGameState); showPrisonScreen(board.gameMessage); },
+    };
+
+    if (canSell) {
+      const sellModeConfig = {
+        ...baseConfig,
+        sellMode: true,
+        sellHeader: `Sell tiles to pay the ${fee}🟡 fee or yield to ${tile.owner}`,
+        buttons: [...baseButtons, acceptLossButton],
+      };
+      showScreen({
+        ...baseConfig,
+        buttons: [...baseButtons, { label: 'Sell tiles 💰', action: 'fight', onClick: () => showScreen(sellModeConfig) }],
       });
-
-      if (bestOwnedIdx >= 0) {
-        say(`${player.name} must sell tiles to pay the fee for ${tile.name}`, 'warning');
-        board.gameMessage = `Cannot pay ${tile.fee}🟡 or fight ${tile.defence}🛡️. Sell tiles to raise funds!`;
-        updateGameState(board);
-        setMenu({ type: 'sell-to-pay' });
-        return;
-      }
-
-      say(
-        `${player.name} cannot afford to pay the fee or fight the defences on ${tile.name}.`,
-        'error'
-      );
-      becomeBeggar(board, updateGameState);
-      setMenu({ type: 'prison-beggar' });
     } else {
-      setMenu({ type: 'fee-or-fight' });
-      return;
+      showScreen({ ...baseConfig, buttons: [...baseButtons, acceptLossButton] });
     }
+    return;
   }
 
-  // Else, just end turn
-  setMenu({ type: 'end-turn' });
+  setEndTurn();
 }

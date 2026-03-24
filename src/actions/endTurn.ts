@@ -1,13 +1,13 @@
 import { GameState } from '../game/GameState';
-import { MenuState } from '../types/menuState';
 import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
-import { DRAGON_UNITS_THRESHOLD } from './fightDragon';
+import { DRAGON_UNITS_THRESHOLD, fightDragon } from './fightDragon';
+import { showScreen, clearScreen } from '../utils/screenStore';
+import { setEndTurn } from '../utils/endTurnStore';
 
 export function endTurn(
   board: GameState | null,
-  updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
 
@@ -20,15 +20,27 @@ export function endTurn(
     board.activePlayer.turnsToSkip--;
     board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
-    setMenu({ type: 'end-turn' });
-    gameEvent('hideDice', true);
+    setEndTurn();
   } else if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
     say(`${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`, 'info');
     board.gameMessage = `Challenge the Dragon or roll dice?`;
-    setMenu({ type: 'dragon-challenge' });
-    gameEvent('hideDice', true);
+    showScreen({
+      background: 'assets/screens/dragon.jpg',
+      message: board.gameMessage,
+      buttons: [
+        {
+          label: 'Challenge the Dragon 🐉',
+          action: 'fight',
+          onClick: () => { clearScreen(); fightDragon(board, updateGameState); },
+        },
+        {
+          label: 'Roll Dice Instead 🎲',
+          action: 'roll-dice',
+          onClick: () => { clearScreen(); gameEvent('showDice', null); },
+        },
+      ],
+    });
   } else {
-    // Dispatch event so App.tsx can open the dice modal with the correct roll handler
     gameEvent('showDice', null);
   }
 

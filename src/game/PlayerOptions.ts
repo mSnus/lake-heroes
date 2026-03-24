@@ -51,21 +51,20 @@ const pronouns = [
 ];
 
 const nouns = [
-  'Beggar',
   'Peasant',
   'Gravedigger',
   'Knight',
   'Squire',
   'Raider',
   'Champion',
-  'Scolar',
+  'Monk',
   'Nun',
   'Baron',
   'Lady',
   'Prince',
   'Princess',
   'Bandit',
-  'Assasin',
+  'Assassin',
 ];
 
 export function generatePlayerName(): string {

@@ -1,13 +1,12 @@
-import { FEE_MULTIPLIER } from '../components/board/common';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
-import { MenuState } from '../types/menuState';
 import { say } from '../utils/say';
+import { clearScreen } from '../utils/screenStore';
+import { setEndTurn } from '../utils/endTurnStore';
 
 export function payFee(
   board: GameState | null,
-  updateGameState: (board: GameState) => void,
-  setMenu: (menu: MenuState) => void
+  updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
   const tile = board.activeTile;
@@ -27,5 +26,6 @@ export function payFee(
     updateGameState(board);
   }
 
-  setMenu({ type: 'end-turn' });
+  clearScreen();
+  setEndTurn();
 }
