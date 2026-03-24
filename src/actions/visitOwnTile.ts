@@ -31,7 +31,7 @@ export function handleVisitOwnTile(
   }
 
   const rewardsStr = rewards.join(' and ');
-  say(`Your ${tile.name} provides  ${player.name} with ${rewardsStr}!`, 'success');
+  say(`${tile.name} provide ${player.name} with ${rewardsStr}!`, 'success');
   board.gameMessage = `Your ${tile.name} provides you with ${rewardsStr}!`;
 
   updateGameState(board);

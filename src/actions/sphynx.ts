@@ -61,5 +61,5 @@ export function handleSphynx(
 
   say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');
 
-  setMenu({ type: 'end-turn' });
+  setMenu({ type: 'sphynx-result' });
 }

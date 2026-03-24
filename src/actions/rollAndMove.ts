@@ -80,6 +80,7 @@ export async function rollAndMove(
   if (tile.name.includes('Tavern')) {
     board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
     updateGameState(board);
+    setMenu({ type: 'tavern-waiting' });
     showModal('dice', (roll: number) => handleTavern(board, updateGameState, setMenu, roll));
     return;
   }
@@ -90,6 +91,7 @@ export async function rollAndMove(
   if (tile.name.includes('Sphynx')) {
     board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
     updateGameState(board);
+    setMenu({ type: 'sphynx-waiting' });
     showModal('dice', (roll: number) => handleSphynx(board, updateGameState, setMenu, roll));
     return;
   }

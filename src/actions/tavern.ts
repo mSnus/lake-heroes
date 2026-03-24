@@ -19,5 +19,5 @@ export function handleTavern(
   updateGameState(board);
   say(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`, 'success');
 
-  setMenu({ type: 'end-turn' });
+  setMenu({ type: 'tavern-result' });
 }

@@ -13,6 +13,7 @@ import { say } from '../utils/say';
 import { gameEvent } from '../utils/events';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
+import { startDiceRoll } from '../utils/modalStore';
 
 interface GameMenuRendererProps {
   board: GameState;
@@ -96,6 +97,56 @@ export const GameMenuRenderer: React.FC<GameMenuRendererProps> = ({
         </ScreenBackground>
         <GameMenu items={items} top={'80vh'} />
       </>
+    );
+  }
+
+  if (menu.type === 'sphynx-waiting') {
+    return (
+      <ScreenBackground image="assets/screens/sphynx.jpg">
+        {currentTile.description && (
+          <div
+            style={{ color: 'white', fontSize: '1.4rem', textAlign: 'center', textShadow: '1px 1px 6px black', padding: '0 24px' }}
+            dangerouslySetInnerHTML={{ __html: currentTile.description }}
+          />
+        )}
+        <GameMenu items={[{ label: 'Roll Dice 🎲', action: 'roll-dice' as MenuAction, onClick: startDiceRoll }]} top="80vh" />
+      </ScreenBackground>
+    );
+  }
+
+  if (menu.type === 'tavern-waiting') {
+    return (
+      <ScreenBackground image="assets/screens/tavern.jpg">
+        {currentTile.description && (
+          <div
+            style={{ color: 'white', fontSize: '1.4rem', textAlign: 'center', textShadow: '1px 1px 6px black', padding: '0 24px' }}
+            dangerouslySetInnerHTML={{ __html: currentTile.description }}
+          />
+        )}
+        <GameMenu items={[{ label: 'Roll Dice 🎲', action: 'roll-dice' as MenuAction, onClick: startDiceRoll }]} top="80vh" />
+      </ScreenBackground>
+    );
+  }
+
+  if (menu.type === 'sphynx-result') {
+    return (
+      <ScreenBackground image="assets/screens/sphynx.jpg">
+        <div style={{ color: 'white', fontSize: '1.4rem', textAlign: 'center', textShadow: '1px 1px 6px black', padding: '0 24px', marginBottom: '16px' }}>
+          {board.gameMessage}
+        </div>
+        <GameMenu items={[{ label: 'Continue', action: 'end-turn' as MenuAction, onClick: () => setMenu({ type: 'end-turn' }) }]} top="80vh" />
+      </ScreenBackground>
+    );
+  }
+
+  if (menu.type === 'tavern-result') {
+    return (
+      <ScreenBackground image="assets/screens/tavern.jpg">
+        <div style={{ color: 'white', fontSize: '1.4rem', textAlign: 'center', textShadow: '1px 1px 6px black', padding: '0 24px', marginBottom: '16px' }}>
+          {board.gameMessage}
+        </div>
+        <GameMenu items={[{ label: 'Continue', action: 'end-turn' as MenuAction, onClick: () => setMenu({ type: 'end-turn' }) }]} top="80vh" />
+      </ScreenBackground>
     );
   }
 
