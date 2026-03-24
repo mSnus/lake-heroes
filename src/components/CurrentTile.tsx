@@ -22,7 +22,8 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     function ondisplayTitle(e: Event) {
       const detail = (e as CustomEvent).detail;
       let display =
-        (detail !== null && currentTile.isOwnable && !currentTile.isOwned()) || displayedTile !== currentTile;
+        (detail !== null && currentTile.isOwnable && !currentTile.isOwned()) ||
+        displayedTile !== currentTile;
 
       if (gameState.turnPhase === 'before-move') {
         display = false;
@@ -53,20 +54,33 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     : undefined;
 
   return (
-    <div
-      className="current-tile"
-      style={ownerColor ? { boxShadow: `0 0 0 3px ${ownerColor}, 0 2px 16px rgba(0,0,0,0.8)` } : undefined}
-    >
-      {shouldDisplay && (
-        <TileCard
-          tile={displayedTile ?? currentTile}
-          mode="display"
-          gameState={gameState}
-          updateGameState={updateGameState}
-          couldBuy={couldBuy}
-          couldAfford={couldAfford}
-        />
+    <div className="current-tile-card-wrapper">
+      {shownTile?.owner && ownerColor && (
+        <div className="tile-card-owner-info">
+          <div className="tile-owner" style={{ color: ownerColor }}>
+              🚩 owned by {shownTile?.owner}
+          </div>
+        </div>
       )}
+      <div
+        className="current-tile"
+        style={
+          ownerColor
+            ? { boxShadow: `0 0 0 3px ${ownerColor}, 0 2px 16px rgba(0,0,0,0.8)` }
+            : undefined
+        }
+      >
+        {shouldDisplay && (
+          <TileCard
+            tile={displayedTile ?? currentTile}
+            mode="display"
+            gameState={gameState}
+            updateGameState={updateGameState}
+            couldBuy={couldBuy}
+            couldAfford={couldAfford}
+          />
+        )}
+      </div>
     </div>
   );
 };

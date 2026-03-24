@@ -196,18 +196,18 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
-          <GameMessage message={gameState.gameMessage} />
+          {(!menu || !['fee-or-fight', 'treasure-waiting', 'treasure-result', 'sphynx-waiting', 'sphynx-result', 'tavern-waiting', 'tavern-result', 'fight-win', 'fight-lose', 'sell-to-pay', 'prison-regular', 'prison-beggar'].includes(menu.type)) && (
+            <GameMessage message={gameState.gameMessage} />
+          )}
           <CurrentTile gameState={gameState} updateGameState={updateGameState} />
-          {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' && menu.type !== 'end-turn' ? (
+          {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' && menu.type !== 'end-turn' && (
             <GameMenuRenderer
-              board={gameState}
+              gameState={gameState}
               menu={menu}
               setMenu={setMenu}
               updateGameState={updateGameState}
               top={gameState.gameMessage ? '90px' : '60px'}
             />
-          ) : (
-            <div className="game-menu" />
           )}
           <BoardCanvas board={gameState} />
 
@@ -232,7 +232,9 @@ function App() {
             <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
           )}
 
-          <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
+          {menu?.type !== 'sell-to-pay' && (
+            <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
+          )}
         </div>
       )}
     </div>

@@ -34,5 +34,8 @@ export function becomeBeggar(
 
   say(`${player.name} is in Prison for mendicancy (2 turns)`, 'warning');
 
+  const tilesMsg = lostTilesCount > 0 ? `Lost ${lostTilesCount} tile${lostTilesCount > 1 ? 's' : ''} and ` : '';
+  board.gameMessage = `${player.name} became a beggar! ${tilesMsg}${loss} unit${loss !== 1 ? 's' : ''} deserted. Imprisoned for 2 turns.`;
+
   updateGameState(board);
 }

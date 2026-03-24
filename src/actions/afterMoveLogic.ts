@@ -45,9 +45,10 @@ export function afterMoveLogic(
       });
 
       if (bestOwnedIdx >= 0) {
-        const tileToSell = board.tiles[player.ownedTiles[bestOwnedIdx]];
-        say(`${player.name} sells ${tileToSell.name} to pay the fee`, 'warning');
-        setMenu({ type: 'sell-to-pay', tileIdx: bestOwnedIdx });
+        say(`${player.name} must sell tiles to pay the fee for ${tile.name}`, 'warning');
+        board.gameMessage = `Cannot pay ${tile.fee}🟡 or fight ${tile.defence}🛡️. Sell tiles to raise funds!`;
+        updateGameState(board);
+        setMenu({ type: 'sell-to-pay' });
         return;
       }
 
@@ -56,8 +57,7 @@ export function afterMoveLogic(
         'error'
       );
       becomeBeggar(board, updateGameState);
-      gameEvent('displayTitle', board.activeTile); // player moved to Prison — refresh tile card
-      setMenu({ type: 'end-turn' });
+      setMenu({ type: 'prison-beggar' });
     } else {
       setMenu({ type: 'fee-or-fight' });
       return;

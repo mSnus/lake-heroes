@@ -70,10 +70,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             ) : (
               <div />
             )}
-
             {totalUnits > 0 ? (
               <div>
-                <strong>+{totalUnits} 👬</strong>
+                {' '}<strong>+{totalUnits} 👬</strong>
               </div>
             ) : (
               <div />

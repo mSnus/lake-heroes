@@ -1,6 +1,5 @@
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
-import { say } from '../utils/say';
 
 export function handlePrison(
   board: GameState | null,
@@ -16,5 +15,5 @@ export function handlePrison(
 
   updateGameState(board);
 
-  setMenu({ type: 'end-turn' });
+  setMenu({ type: 'prison-regular' });
 }

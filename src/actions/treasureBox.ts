@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { MenuState } from '../types/menuState';
-import { TREASURE_BOX_MULTIPLIER } from '../components/board/common';
+import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
 
 export function handleTreasureBox(
   board: GameState | null,
@@ -17,7 +17,6 @@ export function handleTreasureBox(
 
   player.gold += goldReward;
 
-  board.gameMessage = `You found a treasure worth ${goldReward}🟡`;
   updateGameState(board);
   say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward}🟡!`, 'success');
 

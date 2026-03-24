@@ -1,7 +1,5 @@
 .game-menu {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   width: fit-content;
   min-height: 3rem;
   padding: 8px;
@@ -19,7 +17,7 @@
 .game-menu-button {
   background: linear-gradient(145deg, #e3dca7, #cf9d39);
   filter: drop-shadow(0 2px 4px #0004);
-  text-shadow: #cf9d39 0px 0px 6px;
+  text-shadow: #cf9d39 0 0 6px;
 
   border: none;
   color: black;
@@ -41,7 +39,6 @@
   font-size: 15px;
   font-weight: 600;
   padding: 12px 16px;
-  cursor: pointer;
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -49,4 +46,13 @@
 .game-menu h3 {
   margin-top: 0;
   margin-bottom: 12px;
+}
+
+.game-menu .text-message {
+  color: white;
+  font-size: 1.4rem;
+  text-align: center;
+  text-shadow: 4px 4px 12px black;
+  padding: 0 24px;
+  z-index: 6001;
 }

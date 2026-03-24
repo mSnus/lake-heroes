@@ -38,6 +38,7 @@ export function fightTile(
       player.gold -= fee;
       if (owner.turnsToSkip <= 0) owner.gold += fee;
       say(`${player.name} also paid ${fee}🟡 as defeat penalty to ${owner.name}.`, 'warning');
+      board.gameMessage = `${player.name} failed to raze ${tile.name}. Lost ${defence}🧍 and paid ${fee}🟡 to ${owner.name}.`;
       updateGameState(board);
       setMenu({ type: 'fight-lose' });
     } else {
@@ -58,17 +59,20 @@ export function fightTile(
 
       if (bestOwnedIdx >= 0) {
         say(`${player.name} must sell tiles to pay the defeat penalty`, 'warning');
-        setMenu({ type: 'sell-to-pay', tileIdx: bestOwnedIdx });
+        board.gameMessage = `Cannot pay ${fee}🟡 defeat penalty to ${owner?.name}. Sell tiles to raise funds!`;
+        updateGameState(board);
+        setMenu({ type: 'sell-to-pay' });
       } else {
         say(`${player.name} cannot pay the defeat penalty`, 'error');
         becomeBeggar(board, updateGameState);
-        setMenu({ type: 'end-turn' });
+        setMenu({ type: 'prison-beggar' });
       }
     }
   } else {
     say(`${player.name} razed the ${tile.name} with high price of  ${defence}🧍`, 'success');
     player.units -= defence;
 
+    const prevOwner = tile.owner;
     tile._level = 1;
     tile.owner = undefined;
 
@@ -76,6 +80,7 @@ export function fightTile(
       p.ownedTiles = p.ownedTiles.filter((idx: number) => idx !== player.position);
     });
 
+    board.gameMessage = `${player.name} razed ${tile.name}! ${prevOwner} lost the tile. Cost: ${defence}🧍.`;
     updateGameState(board);
     setMenu({ type: 'fight-win' });
   }

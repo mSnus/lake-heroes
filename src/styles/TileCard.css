@@ -1,13 +1,16 @@
-.current-tile {
+.current-tile-card-wrapper {
   position: absolute;
   left: 50%;
-  top: 36%;
+  top: 28%;
   transform: translate(-50%, -50%);
+  z-index: 100;
+}
+
+.current-tile {
   background: transparent;
   border-radius: 10px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
   padding: 0;
-  z-index: 100;
   min-width: 230px;
   width: 230px;
   text-align: left;
@@ -130,6 +133,11 @@
   text-align: right;
 }
 
+.tile-card-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
 .tile-card-toggle {
   cursor: pointer;
   text-align: center;
@@ -225,7 +233,7 @@
   justify-content: center;
   gap: 0;
   font-size: 9px;
-  padding-top: 0px;
+  padding-top: 0;
 }
 
 .big-icon-hint {
@@ -234,11 +242,11 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding-top: 0px;
+  padding-top: 0;
 }
 
 .big-icon-hint div:first-child {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .big-icon-hint div:last-child {

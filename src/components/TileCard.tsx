@@ -6,7 +6,6 @@ import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
-import { FEE_MULTIPLIER } from './board/common';
 import { gameEvent } from '../utils/events';
 
 const fmtPrice = (gold: number, units: number): string => {
@@ -104,7 +103,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const handleClose = () => {
-    gameEvent('displayTitle', {})
+    gameEvent('displayTitle', {});
   };
 
   const handleSell = () => {
@@ -122,7 +121,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     );
   };
 
-  const handleClick = () => {
+  const handleInfoClick = () => {
     setExpanded(!expanded);
   };
 
@@ -138,30 +137,6 @@ export const TileCard: React.FC<TileCardProps> = ({
       <div className="tile-card-header" style={{ background: groupColor + 'e0' }}>
         <div className="tile-card-title">{tile.name}</div>
 
-        {mode === 'owned' && (
-          <a
-            onClick={() => handleSell()}
-            className={'tile-card-button'}
-            style={{ fontSize: '16px' }}
-          >
-            <div className="big-icon-hint">
-              <div>🪙</div>
-              <div>sell</div>
-            </div>
-          </a>
-        )}
-        {mode === 'owned' && (
-          <a
-            onClick={() => handleUpgrade()}
-            className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
-            style={{ fontSize: '16px' }}
-          >
-            <div className="big-icon-hint">
-              <div>⬆️</div>
-              <div>upgrade</div>
-            </div>
-          </a>
-        )}
         {mode === 'display' && (
           <button
             onClick={() => handleClose()}
@@ -174,28 +149,10 @@ export const TileCard: React.FC<TileCardProps> = ({
       </div>
 
       {tile.isOwnable && (
-        <div className="tile-card-body" onClick={handleClick}>
+        <div className="tile-card-body">
           <div className="tile-card-base-level">
             {tile.owner && (
               <div className="tile-card-base-info">
-                <div className="tile-card-owner-info">
-                  <div className="tile-owner">
-                    {mode == 'display' && (
-                      <div>
-                        🚩 owned by{' '}
-                        <span
-                          style={{
-                            color:
-                              gameState?.players.find((p) => p.name === tile.owner)?.color ||
-                              '#444',
-                          }}
-                        >
-                          {tile.owner}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
                 <div className="tile-card-base-row">
                   <div className="diamonds" style={{ textAlign: 'center' }}>
                     {Array.from({ length: tile.level }).map((_, d) => (
@@ -248,15 +205,26 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div>
                     <div className="big-icon-hint">
                       <div>
-                        <span style={couldBuy && (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0) ? { color: '#ff4444' } : {}}>
+                        <span
+                          style={
+                            couldBuy && (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0)
+                              ? { color: '#ff4444' }
+                              : {}
+                          }
+                        >
                           {tile.currentPrice.gold ?? 0} 🟡
-                        </span>
-                        {' '}
-                        <span style={couldBuy && (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0) ? { color: '#ff4444' } : {}}>
+                        </span>{' '}
+                        <span
+                          style={
+                            couldBuy && (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0)
+                              ? { color: '#ff4444' }
+                              : {}
+                          }
+                        >
                           {tile.currentPrice.units ?? 0}🧍
                         </span>
                       </div>
-                      <div>to own</div>
+                      <div>{!couldBuy ? 'to own' : "can't afford"}</div>
                     </div>
                   </div>
 
@@ -282,11 +250,44 @@ export const TileCard: React.FC<TileCardProps> = ({
             )}
           </div>
 
-          {!expanded && <div className="tile-card-toggle">⏬</div>}
+          <div className="tile-card-actions">
+            {mode === 'owned' && (
+              <a
+                onClick={() => handleSell()}
+                className={'tile-card-button'}
+              >
+                <div className="big-icon-hint">
+                  <div>🪙</div>
+                  <div>sell</div>
+                </div>
+              </a>
+            )}
+
+            {mode === 'owned' && (
+              <a
+                onClick={() => handleUpgrade()}
+                className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
+              >
+                <div className="big-icon-hint">
+                  <div>⬆️</div>
+                  <div>upgrade</div>
+                </div>
+              </a>
+            )}
+            <a
+              onClick={() => handleInfoClick()}
+              className={'tile-card-button'}
+              style={{ width: (mode !== 'owned' ? '100%' : 'unset') }}
+            >
+              <div className="big-icon-hint">
+                <div>ℹ️</div>
+                <div>info</div>
+              </div>
+            </a>
+          </div>
 
           {expanded && (
             <div className="tile-card-table-wrap">
-              <div className="tile-card-toggle">⏫</div>
               <table className="tile-card-table">
                 <thead>
                   <tr>
