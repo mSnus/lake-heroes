@@ -3,14 +3,14 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import TileCard from './TileCard';
-import '../styles/PlayerStatsTable.css';
+import '../styles/OwnedTiles.css';
 
 interface Props {
   gameState: GameState;
   updateGameState: (gameState: GameState) => void;
 }
 
-export const PlayerStatsTable: React.FC<Props> = ({ gameState, updateGameState }) => {
+export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState }) => {
   if (!gameState) return <div></div>;
 
   const activePlayer = gameState.activePlayer as Player;

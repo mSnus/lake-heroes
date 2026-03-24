@@ -36,14 +36,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   totalGold += baseGold;
 
   return (
-    <div
-      className="player-pane"
-      style={{
-        borderColor: activePlayer.color,
-        borderTopStyle: 'solid',
-        borderTopWidth: '4px',
-      }}
-    >
+    <div className="player-pane">
       <div
         style={{
           fontWeight: 600,
@@ -55,34 +48,38 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         {activePlayer.name}
       </div>
 
-      <div>
-        <strong>{activePlayer.gold ?? 0} 🟡</strong>
-      </div>
-      <div>
-        <strong>{activePlayer.units ?? 0} 🧍</strong>
-      </div>
-
-
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="circular-path" style={{ marginTop: '6px', paddingRight: '4px' }}>
-          🗘
+      <div className="player-stats-gold">
+        <div className="player-stats-savings">
+          <div className="player-stats-hint">🏛️ savings</div>
+          <div>
+            <strong>{activePlayer.gold ?? 0} 🟡</strong>
+          </div>
+          <div>
+            <strong>{activePlayer.units ?? 0} 🧍</strong>
+          </div>
         </div>
-      
-      
-      {totalGold > 0 ? (
-        <div>
-          <strong>+ {totalGold} 🟡</strong>
-        </div>
-        ) : <div/>
-      }
-      
-      {totalUnits > 0 ? (
-        <div>
-          <strong>+ {totalUnits} 👬</strong>
-        </div>
-        ) : <div/>
-      }
 
+        <div className="player-stats-per-turn">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div className="player-stats-hint">🏆️ per turn</div>
+
+            {totalGold > 0 ? (
+              <div>
+                <strong>+{totalGold} 🟡</strong>
+              </div>
+            ) : (
+              <div />
+            )}
+
+            {totalUnits > 0 ? (
+              <div>
+                <strong>+{totalUnits} 👬</strong>
+              </div>
+            ) : (
+              <div />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

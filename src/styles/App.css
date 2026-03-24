@@ -5,7 +5,7 @@
   --body-font-family: 'Inter, sans-serif';
   --sprite-size: 92px;
   --sprite-scale: 40%;
-  --player-pane-height: 32px;
+  --player-pane-height: 64px;
   --shield-width: 60px;
 }
 
@@ -62,13 +62,13 @@ body {
 
 .game-message {
   position: absolute;
-  top: var(--player-pane-height);
+  top: 0;
   text-align: center;
   background: linear-gradient(90deg, #3f591e, #6b8e23);
   color: #fdf599;
-  font-size: 14px;
+  font-size: 16px;
+  padding: 10px 42px;
   font-weight: 700;
-  width: 100%;
-  padding: 4px;
-  z-index: 40;
+  width: 100vw;
+  z-index: 8000;
 }

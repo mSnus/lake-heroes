@@ -1,11 +1,42 @@
 .action-bar {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end;
+  align-items: flex-end;
   gap: 12px;
   width: 100%;
-  padding: 6px 0 10px;
+  padding: 0 0 10px 0;
+}
+
+.action-bar-stats {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+
+.action-bar-poor {
+  color: #888;
+  font-size: 1rem;
+  padding: 8px 12px;
+  align-self: center;
+}
+
+.action-bar-corner {
+  position: absolute;
+  top: 8px;
+  z-index: 200;
+}
+
+.action-bar-corner--left {
+  left: 8px;
+}
+
+.action-bar-corner--right {
+  right: 8px;
 }
 
 .shield-button-container--disabled {

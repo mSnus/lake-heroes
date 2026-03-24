@@ -10,14 +10,13 @@ import { TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
-import { PlayerStatsTable } from './components/PlayerStatsTable';
+import { OwnedTiles } from './components/OwnedTiles';
 import { GameMenuRenderer } from './components/GameMenuRenderer';
 import { MenuState } from './types/menuState';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, rehydrateSavedTiles, SavedGameState } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
-import { CurrentPlayer } from './components/CurrentPlayer';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import BuyUnitsModal from './components/BuyUnitsModal';
@@ -197,7 +196,6 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
-          <CurrentPlayer gameState={gameState} />
           <GameMessage message={gameState.gameMessage} />
           <CurrentTile gameState={gameState} updateGameState={updateGameState} />
           {menu && gameState.turnPhase !== 'moving' && menu.type !== 'buy-units' && menu.type !== 'end-turn' ? (
@@ -234,7 +232,7 @@ function App() {
             <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
           )}
 
-          <PlayerStatsTable gameState={gameState} updateGameState={updateGameState} />
+          <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
         </div>
       )}
     </div>

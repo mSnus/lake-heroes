@@ -15,7 +15,7 @@
 
 .bg-layer {
   position: absolute;
-  top: 16px;
+  top: 0;
   left: 0;
   display: block;
 }

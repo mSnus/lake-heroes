@@ -47,8 +47,16 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
+  const shownTile = shouldDisplay ? (displayedTile ?? currentTile) : null;
+  const ownerColor = shownTile?.owner
+    ? gameState.players.find((p) => p.name === shownTile.owner)?.color
+    : undefined;
+
   return (
-    <div className="current-tile">
+    <div
+      className="current-tile"
+      style={ownerColor ? { boxShadow: `0 0 0 3px ${ownerColor}, 0 2px 16px rgba(0,0,0,0.8)` } : undefined}
+    >
       {shouldDisplay && (
         <TileCard
           tile={displayedTile ?? currentTile}

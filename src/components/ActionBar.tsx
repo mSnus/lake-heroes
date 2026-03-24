@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { GameState } from '../game/GameState';
 import { MenuState } from '../types/menuState';
 import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
 import { useModal, startDiceRoll } from '../utils/modalStore';
+import { CurrentPlayer } from './CurrentPlayer';
 import '../styles/ActionBar.css';
 
 interface ActionBarProps {
@@ -49,31 +50,47 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   }
 
   return (
-    <div className="action-bar">
-      <div className="shield-button-container" title="New Game">
-        <button onClick={handleNewGame} className="shield-button">
-          🐲
-        </button>
-      </div>
-      <div className="shield-button-container" title="Game Log">
-        <button onClick={onOpenLog} className="shield-button">
-          📜
-        </button>
-      </div>
-      {canEndTurn && (
-        <div className="shield-button-container" title="End Turn">
-          <button onClick={handleEndTurn} className="shield-button">
-            ⏳
+    <>
+      <div className="action-bar-corner action-bar-corner--left" title="New Game">
+        <div className="shield-button-container">
+          <button onClick={handleNewGame} className="shield-button">
+            🐲
           </button>
         </div>
-      )}
-      {canRollDice && (
-        <div className="shield-button-container" title="Roll Dice">
-          <button onClick={startDiceRoll} className="shield-button">
-            🎲
+      </div>
+      <div className="action-bar-corner action-bar-corner--right" title="Game Log">
+        <div className="shield-button-container">
+          <button onClick={onOpenLog} className="shield-button">
+            📜
           </button>
         </div>
-      )}
-    </div>
+      </div>
+
+      <div
+        className="action-bar"
+        style={{
+          borderColor: gameState?.activePlayer.color ?? '#eeeeee',
+          borderTopStyle: 'solid',
+          borderTopWidth: '4px',
+        }}
+      >
+        {gameState && <CurrentPlayer gameState={gameState} />}
+
+        {canEndTurn && (
+          <div className="shield-button-container" title="End Turn">
+            <button onClick={handleEndTurn} className="shield-button">
+              ⏳
+            </button>
+          </div>
+        )}
+        {canRollDice && (
+          <div className="shield-button-container" title="Roll Dice">
+            <button onClick={startDiceRoll} className="shield-button">
+              🎲
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
