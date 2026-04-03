@@ -33,6 +33,20 @@ body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Boldonce';
+  src: url('/assets/fonts/Boldonse-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'StyleScript';
+  src: url('/assets/fonts/StyleScript-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 #mainContainer {
   max-width: 100vw;
   overflow-x: hidden;
@@ -41,6 +55,15 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+}
+
+.game-title {
+  font-family: 'StyleScript', serif;
+  color: wheat;
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 4rem;
+  text-shadow: #000 1px 1px 2px;
 }
 
 .board-controls {
@@ -70,9 +93,47 @@ body {
   padding: 10px 42px;
   font-weight: 700;
   width: 100vw;
-  z-index: 8000;
+  z-index: 999;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.side-pane {
+  width: 100%;
+}
+
+@media screen and (min-width: 769px) {
+  #mainContainer {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .board-section {
+    width: 82vh;
+    height: 100vh;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .side-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    min-width: 0;
+  }
+
+  .game-message {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
 }

@@ -15,7 +15,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     const initialPlayers: PlayerSetup[] = [];
     for (let i = 0; i < numPlayers; i++) {
       initialPlayers.push({
-        name: generatePlayerName(),
+        name: generatePlayerName(initialPlayers.map((p) => p.name)),
         color: playerOptions[i].color,
         image: playerOptions[i].image,
         gold: MONEY_START,
@@ -42,7 +42,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
       const availableOption = playerOptions.find((opt) => !usedColors.includes(opt.color));
 
       newPlayers.push({
-        name: generatePlayerName(),
+        name: generatePlayerName(newPlayers.map((p) => p.name)),
         color: availableOption?.color || '#FFFFFF',
         image: availableOption?.image || '',
         gold: MONEY_START,
@@ -75,6 +75,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
   return (
     <GameModal className="modal-new-game" backgroundImage="assets/screens/dragon.jpg" noBorder>
       <>
+        <div className="game-title">The Battle of the Lake</div>
         <div className="input-group">
           <label>Heroes: </label>
           <select value={numPlayers} onChange={handleNumPlayersChange}>
@@ -92,6 +93,13 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             className="input-group"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
           >
+            <button
+              onClick={() => handlePlayerChange(index, 'name', generatePlayerName(players.filter((_, i) => i !== index).map((p) => p.name)))}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px' }}
+              title="Random name"
+            >
+              ↪️
+            </button>
             <input
               type="text"
               value={player.name}

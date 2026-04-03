@@ -53,14 +53,13 @@
 }
 
 .modal-new-game {
-  height: 464px;
-  max-width: 85vw;
   padding-top: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
+  max-height: 100vh;
 }
 
 .top-image {

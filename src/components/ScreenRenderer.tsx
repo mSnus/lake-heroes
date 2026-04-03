@@ -37,6 +37,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
     <>
       <ScreenBackground image={config.background!}>
         {config.fade && <Fade />}
+        {config.title && <div className="text-title">{config.title.trim()}</div>}
         {config.sprite && (
           <div
             style={{

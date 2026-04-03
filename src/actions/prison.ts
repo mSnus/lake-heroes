@@ -16,5 +16,5 @@ export function handlePrison(
   board.gameMessage = `${playerName} dwells in prison`;
   updateGameState(board);
 
-  showPrisonScreen(board.gameMessage);
+  showPrisonScreen(board.gameMessage, board.activeTile.name);
 }

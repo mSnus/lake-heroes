@@ -1,14 +1,19 @@
 .player-pane {
-  width: 100%;
+  width: 100vw;
   height: var(--player-pane-height);
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   padding-left: 16px;
-  gap: 24px;
+  gap: 8px;
   align-items: center;
   line-height: 0.9;
   overflow-y: hidden;
   padding-right: 12px;
+}
+
+.current-player {
+  display: flex;
 }
 
 .player-marker-indicator {
@@ -20,9 +25,12 @@
 
 .player-stats-gold {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 16px;
   white-space: nowrap;
+  width: calc(100% - 64px);
+  padding-right: 64px;
+  justify-content: space-around;
 }
 
 .player-stats-gold > div {

@@ -23,8 +23,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   let totalGold = 0;
   let totalUnits = 0;
 
-  const baseGold = MONEY_PASS_START;
-
   owned.forEach(({ tile }) => {
     if (tile.bonusType === 'gold') {
       totalGold += tile.bonuses[tile.level] ?? 0;
@@ -33,7 +31,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
     }
   });
 
-  totalGold += baseGold;
+  totalGold += MONEY_PASS_START;
 
   return (
     <div className="player-pane">
@@ -44,13 +42,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           paddingBottom: '4px',
           paddingTop: '4px',
         }}
+        className='current-player'
       >
         {activePlayer.name}
       </div>
 
       <div className="player-stats-gold">
         <div className="player-stats-savings">
-          <div className="player-stats-hint">🏆 spoils</div>
+          <div className="player-stats-hint"></div>
           <div>
             <strong>{activePlayer.gold ?? 0} 🟡</strong>
           </div>

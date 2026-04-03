@@ -54,14 +54,6 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           </button>
         </div>
       </div>
-      <div className="action-bar-corner action-bar-corner--right" title="Game Log">
-        <div className="shield-button-container">
-          <button onClick={onOpenLog} className="shield-button">
-            📜
-          </button>
-        </div>
-      </div>
-
       <div
         className="action-bar"
         style={{
@@ -73,14 +65,14 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         {gameState && <CurrentPlayer gameState={gameState} />}
 
         {canEndTurn && (
-          <div className="shield-button-container" title="End Turn">
+          <div className="shield-button-container main-button" title="End Turn">
             <button onClick={handleEndTurn} className="shield-button">
               ⏳
             </button>
           </div>
         )}
         {diceActive && (
-          <div className="shield-button-container" title="Roll Dice">
+          <div className="shield-button-container main-button" title="Roll Dice">
             <button onClick={startDiceRoll} className="shield-button">
               🎲
             </button>

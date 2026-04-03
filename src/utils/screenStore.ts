@@ -12,6 +12,7 @@ export interface ScreenButton {
 export interface ScreenConfig {
   background?: string;
   fade?: boolean;
+  title?: string;
   sprite?: { x: number; y: number };
   encounter?: {
     playerName: string;
@@ -48,9 +49,10 @@ export function clearScreen(): void {
   emit();
 }
 
-export function showPrisonScreen(message: string): void {
+export function showPrisonScreen(message: string, title?: string): void {
   showScreen({
     background: 'assets/screens/prison.jpg',
+    title,
     message,
     buttons: [
       {

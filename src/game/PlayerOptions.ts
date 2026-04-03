@@ -67,8 +67,17 @@ const nouns = [
   'Assassin',
 ];
 
-export function generatePlayerName(): string {
-  const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
+export function generatePlayerName(usedNames: string[] = []): string {
+  const usedPronouns = new Set(usedNames.map((n) => n.split(' ')[0]));
+  const usedNouns = new Set(usedNames.map((n) => n.split(' ')[1]));
+
+  const availablePronouns = pronouns.filter((p) => !usedPronouns.has(p));
+  const availableNouns = nouns.filter((n) => !usedNouns.has(n));
+
+  const pronounPool = availablePronouns.length > 0 ? availablePronouns : pronouns;
+  const nounPool = availableNouns.length > 0 ? availableNouns : nouns;
+
+  const pronoun = pronounPool[Math.floor(Math.random() * pronounPool.length)];
+  const noun = nounPool[Math.floor(Math.random() * nounPool.length)];
   return `${pronoun} ${noun}`;
 }

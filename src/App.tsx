@@ -197,25 +197,34 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
-          {!screen && <GameMessage message={gameState.gameMessage} />}
-          <CurrentTile gameState={gameState} updateGameState={updateGameState} />
-          <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
-          <BoardCanvas board={gameState} />
+          <div className="board-section">
+            {!screen && <GameMessage message={gameState.gameMessage} />}
+            <CurrentTile gameState={gameState} updateGameState={updateGameState} />
+            <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
+            <BoardCanvas board={gameState} />
+            <div className="action-bar-corner action-bar-corner--right" title="Game Log">
+              <div className="shield-button-container">
+                <button onClick={handleOpenLog} className="shield-button">📜</button>
+              </div>
+            </div>
+          </div>
 
-          <ActionBar
-            gameState={gameState}
-            updateGameState={updateGameState}
-            onOpenLog={handleOpenLog}
-            onNewGame={() => {}}
-          />
+          <div className="side-pane">
+            <ActionBar
+              gameState={gameState}
+              updateGameState={updateGameState}
+              onOpenLog={handleOpenLog}
+              onNewGame={() => {}}
+            />
 
-          {showLogModal && (
-            <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
-          )}
+            {showLogModal && (
+              <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
+            )}
 
-          {!screen?.sellMode && (
-            <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
-          )}
+            {!screen?.sellMode && (
+              <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
+            )}
+          </div>
         </div>
       )}
     </div>
