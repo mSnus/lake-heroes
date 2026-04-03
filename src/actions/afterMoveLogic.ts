@@ -34,6 +34,8 @@ export function afterMoveLogic(
       return sum + t.currentPrice.gold;
     }, 0);
     const canSell = totalSellGold >= fee;
+    const canPay = player.gold >= fee;
+    const showAcceptLoss = !canPay && !canSell;
 
     const encounter = {
       playerName: player.name,
@@ -42,7 +44,7 @@ export function afterMoveLogic(
       ownerName: tile.owner ?? undefined,
       ownerColor,
       outcomeText: player.units >= defence
-        ? `⚔️ Win: ${tile.name} is razed, costs you ${defence}🧍\n💀 Lose: costs ${defence}🧍 + ${fee}🟡 penalty to ${tile.owner}`
+        ? `⚔️ Send ${defence}🧍 soldiers to fight for ${tile.name}`
         : undefined,
     };
 
@@ -55,7 +57,7 @@ export function afterMoveLogic(
 
     const baseButtons: ScreenButton[] = [
       { label: `Pay fee ${fee}🟡`, action: 'pay-fee', onClick: () => payFee(board, updateGameState), disabled: player.gold < fee },
-      { label: `Risk ${defence}🧍 to raze ⚔️🔥`, action: 'fight', onClick: () => fightTile(board, updateGameState), disabled: player.units < defence },
+      { label: `Battle ⚔️ (${defence}🧍)`, action: 'fight', onClick: () => fightTile(board, updateGameState), disabled: player.units < defence },
     ];
 
     const acceptLossButton: ScreenButton = {
@@ -72,14 +74,14 @@ export function afterMoveLogic(
         ...baseConfig,
         sellMode: true,
         sellHeader: `Sell tiles to pay the ${fee}🟡 fee or yield to ${tile.owner}`,
-        buttons: [...baseButtons, acceptLossButton],
+        buttons: baseButtons,
       };
       showScreen({
         ...baseConfig,
         buttons: [...baseButtons, { label: 'Sell tiles 💰', action: 'fight', onClick: () => showScreen(sellModeConfig) }],
       });
     } else {
-      showScreen({ ...baseConfig, buttons: [...baseButtons, acceptLossButton] });
+      showScreen({ ...baseConfig, buttons: showAcceptLoss ? [...baseButtons, acceptLossButton] : baseButtons });
     }
     return;
   }

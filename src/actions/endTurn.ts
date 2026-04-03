@@ -16,6 +16,11 @@ export function endTurn(
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.gameMessage = '';
 
+  if (board.activePlayerIndex === 0) {
+    board.round++;
+    console.log(`Round ${board.round}`);
+  }
+
   if (board.activePlayer.turnsToSkip > 0) {
     board.activePlayer.turnsToSkip--;
     board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;

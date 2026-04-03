@@ -145,13 +145,13 @@ export const TileCard: React.FC<TileCardProps> = ({
       >
         {tile.sprite && (
           <div
-            className={"tile-sprite-box"}
+            className={'tile-sprite-box'}
             style={{
               height: `${SPRITE_SIZE}px`,
               width: `${SPRITE_SIZE}px`,
               marginLeft: `-${SPRITE_SIZE * 0.36}px`,
               marginTop: `-8px`,
-              overflow: 'clip'
+              overflow: 'clip',
             }}
           >
             <div
@@ -172,9 +172,7 @@ export const TileCard: React.FC<TileCardProps> = ({
           </div>
         )}
 
-        <div className="tile-card-title">
-          {tile.name}
-        </div>
+        <div className="tile-card-title">{tile.name}</div>
 
         {mode === 'display' && (
           <button
@@ -242,8 +240,9 @@ export const TileCard: React.FC<TileCardProps> = ({
               <div className="tile-card-base-info">
                 <div className="tile-card-base-row">
                   <div>
-                    <div className="big-icon-hint">
+                    <div>
                       <div>
+                        <div>to own:</div>
                         <span
                           style={
                             couldBuy && (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0)
@@ -251,8 +250,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                               : {}
                           }
                         >
+                          {couldBuy &&
+                            (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0) &&
+                            '🔻'}
                           {tile.currentPrice.gold ?? 0} 🟡
-                        </span>{' '}
+                        </span>
+                        {'  '}
                         <span
                           style={
                             couldBuy && (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0)
@@ -260,20 +263,18 @@ export const TileCard: React.FC<TileCardProps> = ({
                               : {}
                           }
                         >
+                          {couldBuy &&
+                            (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0) &&
+                            '🔻'}
                           {tile.currentPrice.units ?? 0}🧍
                         </span>
                       </div>
-                      <div>{!couldBuy ? 'to own' : "can't afford"}</div>
                     </div>
                   </div>
 
                   <div>
-                    {couldBuy && (
-                      <button
-                        className="game-menu-button"
-                        onClick={(e) => handleBuyClick(e)}
-                        disabled={!couldAfford}
-                      >
+                    {couldBuy && couldAfford && (
+                      <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
                         Buy
                       </button>
                     )}
