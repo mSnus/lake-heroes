@@ -59,9 +59,12 @@ export function afterMoveLogic(
     ];
 
     const acceptLossButton: ScreenButton = {
-      label: 'Accept loss 😢',
+      label: `Accept loss 😢 ${totalSellGold}`,
       action: 'fight',
-      onClick: () => { becomeBeggar(board, updateGameState); showPrisonScreen(board.gameMessage); },
+      onClick: () => {
+        becomeBeggar(board, updateGameState);
+        showPrisonScreen(board.gameMessage);
+      },
     };
 
     if (canSell) {

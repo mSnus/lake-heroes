@@ -8,4 +8,4 @@ export const MAX_PLAYERS = 4;
 
 export const SPRITE_SIZE = 92;
 
-export const SPRITE_PX = 158;
+export const SPRITE_PX = 184;

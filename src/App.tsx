@@ -102,32 +102,37 @@ function App() {
 
       const saved = loadFromStorage('game-state', null);
       if (saved) {
-        say('Restoring saved game...', 'info');
+        try {
+          say('Restoring saved game...', 'info');
 
-        const savedRaw = saved as SavedGameState;
-        const tiles = rehydrateSavedTiles(savedRaw);
-        const players = (savedRaw.players || []).map((p) => new Player(p));
-        const restored = Object.assign(new GameState(tiles, players), {
-          ...savedRaw,
-          tiles,
-          players,
-        });
+          const savedRaw = saved as SavedGameState;
+          const tiles = rehydrateSavedTiles(savedRaw);
+          const players = (savedRaw.players || []).map((p) => new Player(p));
+          const restored = Object.assign(new GameState(tiles, players), {
+            ...savedRaw,
+            tiles,
+            players,
+          });
 
-        if (!restored.turnPhase) restored.turnPhase = 'before-move';
+          if (!restored.turnPhase) restored.turnPhase = 'before-move';
 
-        setGameState(restored);
+          setGameState(restored);
 
-        afterMoveLogic(restored, updateGameState);
-        showDice(handleDiceRollAndMove);
+          afterMoveLogic(restored, updateGameState);
+          showDice(handleDiceRollAndMove);
 
-        gameEvent('setPhase', restored.turnPhase);
+          gameEvent('setPhase', restored.turnPhase);
 
-        const first = restored.activePlayer;
-        if (!first.turnsToSkip || first.turnsToSkip <= 0) {
-          say(`${first.name}'s turn`, 'info');
+          const first = restored.activePlayer;
+          if (!first.turnsToSkip || first.turnsToSkip <= 0) {
+            say(`${first.name}'s turn`, 'info');
+          }
+
+          return;
+        } catch (e) {
+          console.error('Failed to restore saved game, starting fresh:', e);
+          localStorage.removeItem('game-state');
         }
-
-        return;
       }
 
       showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
@@ -166,6 +171,8 @@ function App() {
       />
 
       <ModalRenderer />
+
+      {!gameState && screen?.content && <>{screen.content}</>}
 
       {gameState?.gameOver && (
         <div

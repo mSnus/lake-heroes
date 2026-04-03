@@ -43,7 +43,7 @@ export async function rollAndMove(
 
   say(tileMessage, 'debug');
 
-  gameEvent('displayTitle', {});
+  gameEvent('displayTile', {});
 
   // Step-by-step move with 0.2s delay per tile
   for (let step = 1; step <= roll; step++) {
@@ -58,7 +58,7 @@ export async function rollAndMove(
       passStart(board, updateGameState);
     }
 
-    gameEvent('displayTitle', board.tiles[nextPos]);
+    gameEvent('displayTile', board.tiles[nextPos]);
     // Delay before the next step to visualize movement
     await new Promise((res) => setTimeout(res, 300));
   }

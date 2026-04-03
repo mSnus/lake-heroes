@@ -53,7 +53,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
 
     const handleTileClick = () => {
       if (tile) {
-        gameEvent('displayTitle', tile);
+        gameEvent('displayTile', tile);
       }
     };
 

@@ -50,7 +50,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
 
       <div className="player-stats-gold">
         <div className="player-stats-savings">
-          <div className="player-stats-hint">🏛️ savings</div>
+          <div className="player-stats-hint">🏆 spoils</div>
           <div>
             <strong>{activePlayer.gold ?? 0} 🟡</strong>
           </div>
@@ -61,7 +61,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
 
         <div className="player-stats-per-turn">
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div className="player-stats-hint">🏆️ per turn</div>
+            <div className="player-stats-hint">🛞️ per turn</div>
 
             {totalGold > 0 ? (
               <div>
@@ -72,7 +72,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             )}
             {totalUnits > 0 ? (
               <div>
-                {' '}<strong>+{totalUnits} 👬</strong>
+                {' '}
+                <strong>+{totalUnits} 👬</strong>
               </div>
             ) : (
               <div />

@@ -19,6 +19,6 @@ export async function buyTile(gameState: GameState | null, updateGameState: (sta
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
     updateGameState(gameState);
-    gameEvent('displayTitle', {});
+    gameEvent('displayTile', {});
   }
 }

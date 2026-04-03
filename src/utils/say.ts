@@ -23,6 +23,7 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
       break;
     case 'info':
       toast.info(message);
+      console.info(message);
       break;
     case 'debug':
       console.log(message);

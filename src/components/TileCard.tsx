@@ -104,7 +104,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const handleClose = () => {
-    gameEvent('displayTitle', {});
+    gameEvent('displayTile', {});
   };
 
   const handleSell = () => {
@@ -145,11 +145,13 @@ export const TileCard: React.FC<TileCardProps> = ({
       >
         {tile.sprite && (
           <div
+            className={"tile-sprite-box"}
             style={{
               height: `${SPRITE_SIZE}px`,
               width: `${SPRITE_SIZE}px`,
-              marginLeft: `-${SPRITE_SIZE * 0.5}px`,
-              marginTop: `-12px`,
+              marginLeft: `-${SPRITE_SIZE * 0.36}px`,
+              marginTop: `-8px`,
+              overflow: 'clip'
             }}
           >
             <div
@@ -157,19 +159,22 @@ export const TileCard: React.FC<TileCardProps> = ({
                 width: `${SPRITE_SIZE}px`,
                 height: `${SPRITE_SIZE}px`,
                 border: `3px solid ${groupColor}70`,
-                borderRadius: '50%',
+                borderRadius: '0%',
                 backgroundImage: `url(assets/sprites2.png)`,
-                backgroundSize: '150vw',
-                backgroundPositionX: `calc(${tile.sprite.x} * -${SPRITE_PX}px)`,
-                backgroundPositionY: `calc(${tile.sprite.y} * -${SPRITE_PX}px)`,
+                backgroundSize: '460px 460px',
+                backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE - 8}px`,
+                backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE - 10}px`,
                 flexShrink: 0,
                 zIndex: 6000,
+                transform: 'scale(1.4)',
               }}
             />
           </div>
         )}
 
-        <div className="tile-card-title">{tile.name}</div>
+        <div className="tile-card-title">
+          {tile.name}
+        </div>
 
         {mode === 'display' && (
           <button

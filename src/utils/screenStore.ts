@@ -39,6 +39,7 @@ function emit() {
 
 export function showScreen(config: ScreenConfig): void {
   state = config;
+  console.log('showing screen', state);
   emit();
 }
 

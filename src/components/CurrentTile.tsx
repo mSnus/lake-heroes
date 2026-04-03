@@ -15,31 +15,20 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   const currentTile = gameState.activeTile;
   const activePlayer = gameState.activePlayer;
 
-  if (gameState.turnPhase === 'before-move' && shouldDisplay) {
-    setShouldDisplay(false);
-  }
   React.useEffect(() => {
-    function ondisplayTitle(e: Event) {
-      const detail = (e as CustomEvent).detail;
-      let display =
-        (detail !== null && currentTile.isOwnable && !currentTile.isOwned()) ||
-        displayedTile !== currentTile;
-
-      if (gameState.turnPhase === 'before-move') {
-        display = false;
-      }
-
-      if (detail) {
+    function onDisplayTile(e: Event) {
+      const detail = (e as CustomEvent).detail as Tile | null;
+      if (detail && detail.name) {
         setDisplayedTile(detail);
-        setShouldDisplay(display);
+        setShouldDisplay(true);
       } else {
         setDisplayedTile(null);
         setShouldDisplay(false);
       }
     }
 
-    window.addEventListener('displayTitle', ondisplayTitle as EventListener);
-    return () => window.removeEventListener('displayTitle', ondisplayTitle as EventListener);
+    window.addEventListener('displayTile', onDisplayTile as EventListener);
+    return () => window.removeEventListener('displayTile', onDisplayTile as EventListener);
   }, []);
 
   const couldBuy = currentTile.isOwnable && !currentTile.isOwned();
@@ -48,7 +37,8 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
-  const shownTile = shouldDisplay ? (displayedTile ?? currentTile) : null;
+  const isVisible = shouldDisplay && gameState.turnPhase !== 'before-move';
+  const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
   const ownerColor = shownTile?.owner
     ? gameState.players.find((p) => p.name === shownTile.owner)?.color
     : undefined;
@@ -70,7 +60,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
             : undefined
         }
       >
-        {shouldDisplay && (
+        {isVisible && (
           <TileCard
             tile={displayedTile ?? currentTile}
             mode="display"

@@ -23,5 +23,5 @@ export function gameStart(
 
   updateGameState(gameState);
 
-  gameEvent('displayTitle', {});
+  gameEvent('displayTile', {});
 }
