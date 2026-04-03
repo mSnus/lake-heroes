@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DEPLOY_ROOT: /var/www/msnus/data/www/vinetsky.com/heroes
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest code
+        run: git -C ${{ github.workspace }} pull origin master
+
+      - name: Increment version
+        id: version
+        run: |
+          COUNTER_FILE=$HOME/.lakeheroes-deploy-version
+          if [ -f "$COUNTER_FILE" ]; then
+            N=$(cat "$COUNTER_FILE")
+          else
+            N=0
+          fi
+          N=$((N + 1))
+          echo $N > "$COUNTER_FILE"
+          echo "tag=0.$N" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ github.workspace }}
+
+      - name: Build
+        run: npm run build
+        working-directory: ${{ github.workspace }}
+
+      - name: Publish versioned build
+        run: |
+          VERSION=${{ steps.version.outputs.tag }}
+          TARGET=${{ env.DEPLOY_ROOT }}/$VERSION
+          mkdir -p "$TARGET"
+          cp -r ${{ github.workspace }}/dist/. "$TARGET/"
+          ln -sfn "$TARGET" ${{ env.DEPLOY_ROOT }}/current
+          echo "Published $VERSION → ${{ env.DEPLOY_ROOT }}/current"
