@@ -57,6 +57,8 @@
   line-height: 1;
   margin-bottom: 4rem;
   text-shadow: #000 1px 1px 2px;
+  position: relative;
+  z-index: 6000;
 }
 
 .text-message {

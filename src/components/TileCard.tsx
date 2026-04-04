@@ -158,11 +158,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                 borderRadius: '0%',
                 backgroundImage: `url(assets/sprites2.png)`,
                 backgroundSize: '460px 460px',
-                backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE - 8}px`,
-                backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE - 10}px`,
+                backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
+                backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
                 flexShrink: 0,
                 zIndex: 6000,
-                transform: 'scale(1.4)',
               }}
             />
           </div>

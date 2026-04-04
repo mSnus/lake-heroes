@@ -39,7 +39,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
-  const isVisible = shouldDisplay && gameState.turnPhase !== 'before-move';
+  const isVisible = shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move');
   const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
   const ownerColor = shownTile?.owner
     ? gameState.players.find((p) => p.name === shownTile.owner)?.color
