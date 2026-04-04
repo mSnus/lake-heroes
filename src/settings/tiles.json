@@ -707,7 +707,8 @@
   },
   {
     "group": "Special",
-    "name": " 🐈 Sphynx",
+    "icon": "🐈",
+    "name": "Sphynx",
     "isOwnable": false,
     "prices": {
       "1": {

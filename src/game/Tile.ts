@@ -1,4 +1,5 @@
 import { FEE_MULTIPLIER } from './constants';
+import groups from '../settings/groups.json';
 
 export interface TileJSON {
   group: string;
@@ -39,6 +40,13 @@ export class Tile implements TileJSON {
     this._level = typeof data.level === 'number' ? data.level : 1;
     this.description = data.description;
     this.sprite = data.sprite;
+  }
+
+  get groupColor(): string {
+    const meta = (groups as { name: string; icon: string; color: string }[]).find(
+      (g) => g.name === this.group
+    );
+    return meta?.color ?? '#eee';
   }
 
   get level(): number {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Tile } from '../game/Tile';
-import groups from '../settings/groups.json';
 import '../styles/TileCard.css';
 import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
@@ -46,10 +45,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   if (!tile || !tile.name) return null;
 
-  const groupMeta = (groups as { name: string; icon: string; color: string }[]).find(
-    (g) => g.name === tile.group
-  );
-  const groupColor = groupMeta?.color ?? '#eee';
+  const groupColor = tile.groupColor;
   const bonusType = getBonusType(tile);
 
   const pricelevel1 = fmtPrice(tile.prices['1']?.gold ?? 0, tile.prices['1']?.units ?? 0);

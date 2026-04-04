@@ -18,6 +18,8 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   React.useEffect(() => {
     function onDisplayTile(e: Event) {
       const detail = (e as CustomEvent).detail as Tile | null;
+      console.log('✉️ displayTile received', detail);
+
       if (detail && detail.name) {
         setDisplayedTile(detail);
         setShouldDisplay(true);

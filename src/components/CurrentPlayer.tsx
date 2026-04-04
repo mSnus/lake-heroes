@@ -38,13 +38,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
       <div
         style={{
           fontWeight: 600,
-          color: activePlayer.color,
           paddingBottom: '4px',
           paddingTop: '4px',
+          gap: '8px',
         }}
         className="current-player"
       >
-        {activePlayer.name}
+        <span style={{ color: activePlayer.color }}>{activePlayer.name} </span> is at
+        <span style={{ color: gameState.activeTile.groupColor }}>{gameState.activeTile.name} </span>
       </div>
 
       <div className="player-stats-gold">
