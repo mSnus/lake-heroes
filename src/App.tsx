@@ -201,7 +201,7 @@ function App() {
             {!screen && <GameMessage message={gameState.gameMessage} />}
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
-            <BoardCanvas board={gameState} />
+            <BoardCanvas board={gameState} updateGameState={updateGameState} />
             <div className="action-bar-corner action-bar-corner--right" title="Game Log">
               <div className="shield-button-container">
                 <button onClick={handleOpenLog} className="shield-button">📜</button>

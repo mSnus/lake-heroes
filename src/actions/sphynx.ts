@@ -37,12 +37,11 @@ export function handleSphynx(
       gameState.gameMessage = `The Sphinx refuses to deal with beggars`;
     }
   } else if (roll === 3 || roll === 4) {
-    // Lose 30% units, rounded up to at least 1, but not below zero
+    // Lose 33% units, minimum 1, floor at 0
     const raw = Math.ceil(player.units * 0.33);
-    const atLeastOne = player.units > 0 ? Math.max(1, raw) : 0;
-    const loss = Math.min(player.units, atLeastOne);
+    const loss = Math.max(1, raw);
 
-    player.units -= loss;
+    player.units = Math.max(0, player.units - loss);
     message += `Lost ${loss}🧍 (1/3).`;
     gameState.gameMessage = `Sphynx eats ${loss}🧍, but you escape.`;
   } else if (roll === 5) {

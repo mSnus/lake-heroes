@@ -18,7 +18,7 @@ export function endTurn(
 
   if (board.activePlayerIndex === 0) {
     board.round++;
-    console.log(`Round ${board.round}`);
+    console.debug(`Round ${board.round}`, board.players);
   }
 
   if (board.activePlayer.turnsToSkip > 0) {

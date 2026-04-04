@@ -42,6 +42,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   function handleEndTurn() {
     if (!gameState || !canEndTurn) return;
     gameEvent('setPhase', 'before-move');
+    gameEvent('displayTile', {});
     endTurn(gameState, updateGameState);
   }
 

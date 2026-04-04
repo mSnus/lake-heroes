@@ -8,12 +8,14 @@ import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import '../styles/Board.css';
 import { playerImageAssets } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
+import { handleKingCastle } from '../actions/king';
 
 interface BoardCanvasProps {
   board: GameState;
+  updateGameState: (board: GameState) => void;
 }
 
-export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
+export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState }) => {
   const isMobile = isMobileLayout();
 
   const offsetX = isMobile ? 10 : 0;
@@ -52,9 +54,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board }) => {
     if (pos?.textPos === 'right') titleClass += ' tile-right';
 
     const handleTileClick = () => {
-      if (tile) {
-        gameEvent('displayTile', tile);
+      if (!tile) return;
+      const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
+      if (isActivePlayerTile && tile.name.includes('King')) {
+        handleKingCastle(board, updateGameState);
+        return;
       }
+      gameEvent('displayTile', tile);
     };
 
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';

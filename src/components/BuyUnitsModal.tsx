@@ -32,16 +32,18 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
   return (
     <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder={true}>
       <div className="modal-content" style={{ color: `white` }}>
-        <h2 className='game-title'>
+        <h2 className="game-title">
           The King welcomes you,
           <br /> {player.name}!
         </h2>
-        <p>{gameState.gameMessage}</p>
+        <h3>{gameState.gameMessage}</h3>
 
-        <h2>You may recruit units for your army:</h2>
-        <p>1🧍 = 100 🟡</p>
+        <h3>You may recruit units: 🧍 = 100 🟡</h3>
 
-        <div className="input-group">
+        <div
+          className="input-group"
+          style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}
+        >
           <input
             type="number"
             value={amount}
@@ -49,26 +51,27 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
             min="0"
             max={maxAmount}
           />
-        </div>
-        <div
-          className="button-group"
-          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
-        >
-          <button
-            className="game-menu-button"
-            onClick={handleBuy}
-            disabled={amount <= 0 || amount > maxAmount}
-          >
-            Buy
-          </button>
           <button className="game-menu-button" onClick={handleHalf}>
             1/2
           </button>
           <button className="game-menu-button" onClick={handleMax}>
             Max
           </button>
+        </div>
+        <div
+          className="button-group"
+          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
+        >
           <button className="game-menu-button" onClick={onSkip}>
             Skip
+          </button>
+
+          <button
+            className="game-menu-button"
+            onClick={handleBuy}
+            disabled={amount <= 0 || amount > maxAmount}
+          >
+            Buy
           </button>
         </div>
       </div>

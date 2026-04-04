@@ -680,7 +680,7 @@
     },
     "bonuses": {},
     "defences": {},
-    "description": "Provides 🧍 for half of your 🟡 after 1st circle<br>Each circle pays you 200🟡<br>Each circle pays you bonus from your tiles",
+    "description": "Allows to recruit 🧍<br>Each visit pays you reward for your tiles",
     "sprite": {
       "x": 2,
       "y": 4
