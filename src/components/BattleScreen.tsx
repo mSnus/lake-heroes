@@ -134,16 +134,23 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           attacker.units = Math.max(0, attacker.units - totalAttDead);
 
           if (o === 'attacker') {
+            const prevOwner = gameState.players.find((p) => p.name === tile.owner);
+            if (prevOwner) prevOwner.leadership = Math.max(1, prevOwner.leadership - 1);
             gameState.players.forEach((p) => {
               p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
             });
             tile.owner = attacker.name;
             tile._level = 1;
             attacker.ownedTiles.push(attacker.position);
+            attacker.leadership++;
             gameState.gameMessage = `${attacker.name} won ${tile.name} sacrificing ${totalAttDead}🧍`;
           } else if (o === 'defender') {
+            attacker.leadership = Math.max(1, attacker.leadership - 1);
             gameState.gameMessage = `${attacker.name} lost ${totalAttDead}🧍 in the battle for ${tile.name}`;
           } else {
+            const prevOwner = gameState.players.find((p) => p.name === tile.owner);
+            if (prevOwner) prevOwner.leadership = Math.max(1, prevOwner.leadership - 1);
+            attacker.leadership = Math.max(1, attacker.leadership - 1);
             gameState.players.forEach((p) => {
               p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
             });

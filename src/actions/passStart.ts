@@ -29,14 +29,16 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
 
   // Apply rewards
   const totalGold = baseGold + goldProfit;
+  const leadershipUnits = player.leadership ?? 1;
   player.gold += totalGold;
-  player.units += unitsProfit;
+  player.units += unitsProfit + leadershipUnits;
 
   // Build toast message summarizing rewards
   const parts: string[] = [];
 
   if (totalGold > 0) parts.push(`${totalGold}🟡`);
-  if (unitsProfit > 0) parts.push(`${unitsProfit}🧍`);
+  const totalUnits = unitsProfit + leadershipUnits;
+  if (totalUnits > 0) parts.push(`${totalUnits}🧍`);
 
   const summary = parts.join(' and ');
 

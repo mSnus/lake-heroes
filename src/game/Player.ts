@@ -5,6 +5,7 @@ export interface PlayerParams {
   units: number;
   position: number;
   image: string;
+  leadership?: number;
 }
 
 export class Player {
@@ -16,6 +17,7 @@ export class Player {
   position: number;
   image: string;
   turnsToSkip: number;
+  leadership: number;
 
   constructor(params: PlayerParams) {
     this.name = params.name;
@@ -26,5 +28,6 @@ export class Player {
     this.image = params.image;
     this.ownedTiles = [];
     this.turnsToSkip = 0;
+    this.leadership = params.leadership ?? 1;
   }
 }
