@@ -2,7 +2,7 @@
   {
     "group": "Mills",
     "icon": "💧",
-    "name": " Water mill",
+    "name": "Water mill",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -37,7 +37,7 @@
   {
     "group": "Mills",
     "icon": "🌬️",
-    "name": " Windmill",
+    "name": "Windmill",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -72,7 +72,7 @@
   {
     "group": "Mills",
     "icon": "🧱",
-    "name": " Brick factory",
+    "name": "Brick factory",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -107,7 +107,7 @@
   {
     "group": "Farms",
     "icon": "🐷",
-    "name": " Pigs farm",
+    "name": "Pigs farm",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -142,7 +142,7 @@
   {
     "group": "Farms",
     "icon": "🐄",
-    "name": " Cows farm",
+    "name": "Cows farm",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -177,7 +177,7 @@
   {
     "group": "Farms",
     "icon": "🐑",
-    "name": " Sheep farm",
+    "name": "Sheep farm",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -212,7 +212,7 @@
   {
     "group": "Fields",
     "icon": "🌾",
-    "name": " Wheat field",
+    "name": "Wheat field",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -247,7 +247,7 @@
   {
     "group": "Fields",
     "icon": "🥬",
-    "name": " Cabbage field",
+    "name": "Cabbage field",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -282,7 +282,7 @@
   {
     "group": "Fields",
     "icon": "🍎",
-    "name": " Fruit garden",
+    "name": "Fruit garden",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -317,7 +317,7 @@
   {
     "group": "Camps",
     "icon": "🏹",
-    "name": " Bows",
+    "name": "Bows",
     "isOwnable": true,
     "bonusType": "units",
     "prices": {
@@ -352,7 +352,7 @@
   {
     "group": "Camps",
     "icon": "🔪",
-    "name": " Knives",
+    "name": "Knives",
     "isOwnable": true,
     "bonusType": "units",
     "prices": {
@@ -387,7 +387,7 @@
   {
     "group": "Camps",
     "icon": "🗡️",
-    "name": " Swords",
+    "name": "Swords",
     "isOwnable": true,
     "bonusType": "units",
     "prices": {
@@ -422,7 +422,7 @@
   {
     "group": "Towers",
     "icon": "🏹",
-    "name": " Archer tower",
+    "name": "Archer tower",
     "isOwnable": true,
     "bonusType": "units",
     "prices": {
@@ -457,7 +457,7 @@
   {
     "group": "Towers",
     "icon": "💣",
-    "name": " Arquebus tower",
+    "name": "Arquebus tower",
     "isOwnable": true,
     "bonusType": "units",
     "prices": {
@@ -492,7 +492,7 @@
   {
     "group": "Towers",
     "icon": "💥",
-    "name": " Cannon tower",
+    "name": "Cannon tower",
     "isOwnable": true,
     "bonusType": "units",
     "prices": {
@@ -527,7 +527,7 @@
   {
     "group": "Traders",
     "icon": "🍇",
-    "name": " Grapes",
+    "name": "Grapes",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -562,7 +562,7 @@
   {
     "group": "Traders",
     "icon": "🐟",
-    "name": " Fish",
+    "name": "Fish",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -597,7 +597,7 @@
   {
     "group": "Traders",
     "icon": "🦫",
-    "name": " Fur",
+    "name": "Fur",
     "isOwnable": true,
     "bonusType": "gold",
     "prices": {
@@ -632,7 +632,7 @@
   {
     "group": "Special",
     "icon": "🪙",
-    "name": " Treasure box",
+    "name": "Treasure box",
     "isOwnable": false,
     "prices": {
       "1": {
@@ -651,7 +651,7 @@
   {
     "group": "Special",
     "icon": "🏘️",
-    "name": " Tavern",
+    "name": "Tavern",
     "isOwnable": false,
     "prices": {
       "1": {
@@ -670,7 +670,7 @@
   {
     "group": "Special",
     "icon": "🏰",
-    "name": " King Castle",
+    "name": "King Castle",
     "isOwnable": false,
     "prices": {
       "1": {
@@ -689,7 +689,7 @@
   {
     "group": "Special",
     "icon": "🔒",
-    "name": " Prison",
+    "name": "Prison",
     "isOwnable": false,
     "prices": {
       "1": {

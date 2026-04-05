@@ -2,15 +2,16 @@ import { shuffle } from './common';
 import { TILE_COUNT } from '../../game/constants'
 
 // Place tiles according to rules:
-// - Fixed placements (1-based positions):
-//   #1 King Castle, #8 Treasure box, #13 Prison, #17 Treasure box, #20 Tavern
-// - Remaining tiles placed from a randomized stack
-// - No adjacent tiles of the same group unless there are no alternatives left
-// - If not enough tiles to fill, leave remaining slots blank (undefined)
+// - Fixed placements (0-based): King Castle=0, Treasure=7, Tavern=12, Prison=13, Treasure=16, Tavern=19
+// - Remaining (random) tiles distributed via interleaved group stacks:
+//     1. Group pool tiles by their group, sort each group by level-1 gold price (cheapest first)
+//     2. Build stacks: stack[i] = ith tile from each group (stack 0 = all cheapest, etc.)
+//     3. Shuffle each stack independently
+//     4. Distribute stack 0 → stack 1 → ... into free slots in order
+//   Guarantees: no same-group neighbours within a stack, cheapest tiles appear earliest
 export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefined)[] {
-  // Helper: find by name contains
   const byName = (substr: string) =>
-    (allTemplates as any[]).find((t) => typeof t?.name === 'string' && t.name.includes(substr));
+    allTemplates.find((t) => typeof t?.name === 'string' && t.name.includes(substr));
 
   const kingCastle = byName('King Castle');
   const prison = byName('Prison');
@@ -22,10 +23,8 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   if (!prison) throw new Error('Prison tile not found');
   if (!tavern) throw new Error('Tavern tile not found');
 
-  // Prepare slots (0-based indices)
   const slots: (any | undefined)[] = new Array(TILE_COUNT).fill(undefined);
 
-  // Fixed positions (0-based): 0, 7, 12, 16, 19
   const FIXED: [number, any][] = [
     [0, kingCastle],
     [7, treasureBox],
@@ -34,53 +33,39 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
     [16, treasureBox],
     [19, tavern],
   ];
+  FIXED.forEach(([idx, tpl]) => { slots[idx] = tpl; });
 
-  FIXED.forEach(([idx, tpl]) => {
-    slots[idx] = tpl;
-  });
+  const fixedSet = new Set([kingCastle, prison, treasureBox, tavern]);
+  const pool = allTemplates.filter((t) => !fixedSet.has(t));
 
-  const pool = allTemplates.filter((t) => {
-    return t !== kingCastle && t !== prison && t !== treasureBox && t !== tavern;
-  });
+  // Group pool tiles by group name, sort each group cheapest first
+  const groupMap = new Map<string, any[]>();
+  for (const tile of pool) {
+    const g = tile.group ?? 'Unknown';
+    if (!groupMap.has(g)) groupMap.set(g, []);
+    groupMap.get(g)!.push(tile);
+  }
+  for (const tiles of Array.from(groupMap.values())) {
+    tiles.sort((a, b) => (a.prices?.['1']?.gold ?? 0) - (b.prices?.['1']?.gold ?? 0));
+  }
 
-  // Randomize stack
-  const stack = shuffle(pool);
+  // Build interleaved stacks: stack[i] has the (i+1)th tile from each group
+  const groups = Array.from(groupMap.values());
+  const maxDepth = Math.max(...groups.map((g) => g.length));
+  const orderedPool: any[] = [];
+  for (let i = 0; i < maxDepth; i++) {
+    const stack: any[] = [];
+    for (const group of groups) {
+      if (i < group.length) stack.push(group[i]);
+    }
+    orderedPool.push(...shuffle(stack));
+  }
 
-  // Helper to get neighbor groups for constraint
-  const getGroup = (tpl: any | undefined) => (tpl ? tpl.group : undefined);
-
-  // Fill remaining slots respecting adjacency constraint when possible
+  // Fill free slots in board order from the ordered pool
+  let poolIdx = 0;
   for (let i = 0; i < TILE_COUNT; i++) {
-    if (slots[i]) continue; // already fixed
-
-    // Determine disallowed group from neighbors already placed or fixed
-    const left = i > 0 ? slots[i - 1] : slots[TILE_COUNT - 1]; // wrap-around neighbor
-    const right = i < TILE_COUNT - 1 ? slots[i + 1] : slots[0]; // may still be undefined if not placed yet
-    const leftGroup = getGroup(left);
-    const rightGroup = getGroup(right);
-
-    // Try to find a tile not matching left/right groups
-    let pickIndex = -1;
-    for (let s = 0; s < stack.length; s++) {
-      const g = getGroup(stack[s]);
-      if (g !== leftGroup && (rightGroup === undefined || g !== rightGroup)) {
-        pickIndex = s;
-        break;
-      }
-    }
-
-    // If none found and we still have tiles, relax the constraint
-    if (pickIndex === -1 && stack.length > 0) {
-      pickIndex = 0;
-    }
-
-    if (pickIndex >= 0) {
-      const [picked] = stack.splice(pickIndex, 1);
-      slots[i] = picked;
-    } else {
-      // Out of tiles → leave blank
-      slots[i] = undefined;
-    }
+    if (slots[i]) continue;
+    slots[i] = orderedPool[poolIdx++] ?? undefined;
   }
 
   return slots;

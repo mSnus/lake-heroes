@@ -33,7 +33,8 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     return () => window.removeEventListener('displayTile', onDisplayTile as EventListener);
   }, []);
 
-  const couldBuy = currentTile.isOwnable && !currentTile.isOwned();
+  const couldBuy = currentTile.isOwnable && !currentTile.isOwned()
+    && displayedTile === null && gameState.turnPhase === 'after-move';
   const couldAfford = currentTile.isAffordable(activePlayer.gold, activePlayer.units);
 
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,

@@ -8,9 +8,11 @@
   bonus1,bonus2,bonus3,defence1,defence2,defence3
 */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const tilesPath = path.join(ROOT, 'src', 'settings', 'tiles.json');
 const outDir = path.join(ROOT, 'exports');
