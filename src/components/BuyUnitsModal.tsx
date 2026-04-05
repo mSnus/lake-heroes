@@ -33,8 +33,7 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
     <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder={true}>
       <div className="modal-content" style={{ color: `white` }}>
         <h2 className="game-title">
-          The King welcomes you,
-          <br /> {player.name}!
+          The King's Castle
         </h2>
         <h3>{gameState.gameMessage}</h3>
 
