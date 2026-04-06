@@ -6,7 +6,7 @@ import './styles/GameMenu.css';
 
 import { Player } from './game/Player';
 import { GameState, TurnPhase } from './game/GameState';
-import { TileJSON } from './game/Tile';
+import { Tile, TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
@@ -92,6 +92,32 @@ function App() {
     window.addEventListener('logMessage', handleLogMessage);
     return () => window.removeEventListener('logMessage', handleLogMessage);
   }, []);
+
+  // Dev tool: reload tile definitions from tiles.json without resetting the game.
+  // Usage from browser console: await __reloadTiles()
+  useEffect(() => {
+    (window as any).__reloadTiles = async () => {
+      const gs = gameStateRef.current;
+      if (!gs) { console.warn('__reloadTiles: no active game state'); return; }
+
+      const res = await fetch('/src/settings/tiles.json');
+      if (!res.ok) throw new Error(`Failed to fetch tiles.json: ${res.status}`);
+      const freshTemplates: TileJSON[] = await res.json();
+
+      const byName = new Map<string, TileJSON>(freshTemplates.map((t) => [t.name, t]));
+
+      // Rebuild each tile from fresh JSON but carry over runtime state
+      const updatedTiles = gs.tiles.map((tile) => {
+        const fresh = byName.get(tile.name);
+        if (!fresh) return tile;
+        return new Tile({ ...fresh, owner: tile.owner, level: tile._level });
+      });
+
+      updateGameState({ ...gs, tiles: updatedTiles } as GameState);
+      console.log(`[reloadTiles] ${updatedTiles.length} tiles refreshed from tiles.json`);
+    };
+    return () => { delete (window as any).__reloadTiles; };
+  }, [updateGameState]);
 
   const didInit = useRef(false);
 
