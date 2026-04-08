@@ -12,7 +12,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   const [displayedTile, setDisplayedTile] = useState<Tile | null>(null);
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(true);
 
-  const currentTile = gameState.activeTile;
+  const currentTile =  gameState.activeTile;
 
   React.useEffect(() => {
     function onDisplayTile(e: Event) {
