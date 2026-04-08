@@ -28,8 +28,8 @@
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" \"public/**/*.{json,html}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" \"public/**/*.{json,html}\"",
-    "export:tiles": "node scripts/export-tiles-csv.js",
-    "import:tiles": "node scripts/import-tiles-csv.js"
+    "tiles:export": "node scripts/export-tiles-csv.js",
+    "tiles:import": "node scripts/import-tiles-csv.js"
   },
   "eslintConfig": {
     "extends": [
