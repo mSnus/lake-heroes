@@ -13,7 +13,6 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(true);
 
   const currentTile = gameState.activeTile;
-  const activePlayer = gameState.activePlayer;
 
   React.useEffect(() => {
     function onDisplayTile(e: Event) {
@@ -35,7 +34,6 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
 
   const couldBuy = currentTile.isOwnable && !currentTile.isOwned()
     && displayedTile === null && gameState.turnPhase === 'after-move';
-  const couldAfford = currentTile.isAffordable(activePlayer.gold, activePlayer.units);
 
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),
@@ -70,7 +68,6 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
             gameState={gameState}
             updateGameState={updateGameState}
             couldBuy={couldBuy}
-            couldAfford={couldAfford}
           />
         )}
       </div>

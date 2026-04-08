@@ -6,7 +6,7 @@ import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
 import { gameEvent } from '../utils/events';
-import { SPRITE_PX, SPRITE_SIZE } from '../game/constants';
+import { SPRITE_SIZE } from '../game/constants';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
@@ -30,7 +30,6 @@ export type TileCardProps = {
   gameState?: GameState;
   updateGameState?: (board: GameState) => void;
   couldBuy?: boolean;
-  couldAfford?: boolean;
 };
 
 export const TileCard: React.FC<TileCardProps> = ({
@@ -39,7 +38,6 @@ export const TileCard: React.FC<TileCardProps> = ({
   gameState,
   updateGameState,
   couldBuy = false,
-  couldAfford = false,
 }) => {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -240,7 +238,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                         <div>to own:</div>
                         <span
                           style={
-                            couldBuy && (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0)
+                            couldBuy && ((activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0))
                               ? { color: '#ff4444' }
                               : {}
                           }
@@ -268,7 +266,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   </div>
 
                   <div>
-                    {couldBuy && couldAfford && (
+                    {couldBuy && (activePlayer?.gold ?? 0) >= (tile.currentPrice.gold ?? 0) && (activePlayer?.units ?? 0) >= (tile.currentPrice.units ?? 0) && (
                       <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
                         Buy
                       </button>
