@@ -5,6 +5,7 @@
     "name": "Water mill",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 200,
@@ -40,6 +41,7 @@
     "name": "Windmill",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 250,
@@ -75,6 +77,7 @@
     "name": "Brick factory",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 300,
@@ -110,6 +113,7 @@
     "name": "Pigs farm",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 150,
@@ -145,6 +149,7 @@
     "name": "Cows farm",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 180,
@@ -180,6 +185,7 @@
     "name": "Sheep farm",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 195,
@@ -215,6 +221,7 @@
     "name": "Wheat field",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 150,
@@ -250,6 +257,7 @@
     "name": "Cabbage field",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 250,
@@ -285,6 +293,7 @@
     "name": "Fruit garden",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 350,
@@ -320,6 +329,7 @@
     "name": "Bows",
     "isOwnable": true,
     "bonusType": "units",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 250,
@@ -355,6 +365,7 @@
     "name": "Knives",
     "isOwnable": true,
     "bonusType": "units",
+    "requiredCharisma": 2,
     "prices": {
       "1": {
         "gold": 350,
@@ -390,6 +401,7 @@
     "name": "Swords",
     "isOwnable": true,
     "bonusType": "units",
+    "requiredCharisma": 2,
     "prices": {
       "1": {
         "gold": 450,
@@ -425,6 +437,7 @@
     "name": "Archer tower",
     "isOwnable": true,
     "bonusType": "units",
+    "requiredCharisma": 4,
     "prices": {
       "1": {
         "gold": 150,
@@ -460,6 +473,7 @@
     "name": "Arquebus tower",
     "isOwnable": true,
     "bonusType": "units",
+    "requiredCharisma": 4,
     "prices": {
       "1": {
         "gold": 150,
@@ -495,6 +509,7 @@
     "name": "Cannon tower",
     "isOwnable": true,
     "bonusType": "units",
+    "requiredCharisma": 4,
     "prices": {
       "1": {
         "gold": 150,
@@ -530,6 +545,7 @@
     "name": "Grapes",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 150,
@@ -565,6 +581,7 @@
     "name": "Fish",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 150,
@@ -600,6 +617,7 @@
     "name": "Fur",
     "isOwnable": true,
     "bonusType": "gold",
+    "requiredCharisma": 0,
     "prices": {
       "1": {
         "gold": 150,

@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import '../styles/CurrentPlayer.css';
 import { Tile } from '../game/Tile';
 import { MONEY_PASS_START } from './board/common';
+import { say } from '../utils/say';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -21,7 +22,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   }, [gameState, activePlayer.name]);
 
   let totalGold = 0;
-  let totalUnits = activePlayer.leadership ?? 1;
+  let totalUnits = activePlayer.charisma ?? 1;
 
   owned.forEach(({ tile }) => {
     if (tile.bonusType === 'gold') {
@@ -50,7 +51,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
 
       <div className="player-stats-gold">
         {/* wealth */}
-        <div className="player-stats-savings">
+        <div className="player-stats-savings" id="statsOwnedResources" onClick={() => say('Current money and units you own', 'info')} style={{ cursor: 'pointer' }}>
           <div className="player-stats-hint"></div>
           <div>
             <strong>{activePlayer.gold ?? 0} 🟡</strong>
@@ -60,16 +61,16 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        {/* leadership */}
-        <div className="player-stats-savings">
+        {/* charisma */}
+        <div className="player-stats-savings" id="statsCharisma" onClick={() => say('Your Charisma. Gain it by owning the tiles and winning the battles!', 'info')} style={{ cursor: 'pointer' }}>
           <div className="player-stats-hint"></div>
           <div>
-            <strong>🏆 {activePlayer.leadership ?? 1}</strong>
+            <strong>🏆 {activePlayer.charisma ?? 1}</strong>
           </div>
         </div>
 
         {/* wages per turn */}
-        <div className="player-stats-per-turn">
+        <div className="player-stats-per-turn" id="statsPerTurn" onClick={() => say("Your wages after passing the King's Castle", 'info')} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div className="player-stats-hint" style={{ marginRight: '8px' }}>
               🏰

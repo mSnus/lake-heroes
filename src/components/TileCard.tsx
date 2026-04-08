@@ -238,39 +238,61 @@ export const TileCard: React.FC<TileCardProps> = ({
                         <div>to own:</div>
                         <span
                           style={
-                            couldBuy && ((activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0))
+                            activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
                               ? { color: '#ff4444' }
                               : {}
                           }
                         >
-                          {couldBuy &&
-                            (activePlayer?.gold ?? 0) < (tile.currentPrice.gold ?? 0) &&
+                          {activePlayer &&
+                            (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0) &&
                             '🔻'}
                           {tile.currentPrice.gold ?? 0} 🟡
                         </span>
                         {'  '}
                         <span
                           style={
-                            couldBuy && (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0)
+                            activePlayer && (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)
                               ? { color: '#ff4444' }
                               : {}
                           }
                         >
-                          {couldBuy &&
-                            (activePlayer?.units ?? 0) < (tile.currentPrice.units ?? 0) &&
+                          {activePlayer &&
+                            (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0) &&
                             '🔻'}
                           {tile.currentPrice.units ?? 0}🧍
                         </span>
+                        {tile.requiredCharisma > 0 && (
+                          <>
+                            {'  '}
+                            <span
+                              style={
+                                activePlayer && (activePlayer.charisma ?? 1) < tile.requiredCharisma
+                                  ? { color: '#ff4444' }
+                                  : {}
+                              }
+                            >
+                              {activePlayer &&
+                                (activePlayer.charisma ?? 1) < tile.requiredCharisma &&
+                                '🔻'}
+                              {tile.requiredCharisma} 🏆
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    {couldBuy && (activePlayer?.gold ?? 0) >= (tile.currentPrice.gold ?? 0) && (activePlayer?.units ?? 0) >= (tile.currentPrice.units ?? 0) && (
-                      <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
-                        Buy
-                      </button>
-                    )}
+                    {couldBuy &&
+                      tile.isAffordable(
+                        activePlayer?.gold ?? 0,
+                        activePlayer?.units ?? 0,
+                        activePlayer?.charisma ?? 1
+                      ) && (
+                        <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
+                          Buy
+                        </button>
+                      )}
                   </div>
                 </div>
                 <div className="tile-card-base-row">
