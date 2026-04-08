@@ -18,7 +18,7 @@ export async function buyTile(gameState: GameState | null, updateGameState: (sta
     player.units -= tile.prices['1']?.units ?? 0;
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
-    player.leadership++;
+    player.charisma++;
     updateGameState(gameState);
     gameEvent('displayTile', {});
   }

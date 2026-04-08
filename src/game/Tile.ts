@@ -13,6 +13,7 @@ export interface TileJSON {
   level?: number;
   description?: string;
   sprite?: { x: number; y: number };
+  requiredCharisma?: number;
 }
 
 export class Tile implements TileJSON {
@@ -27,6 +28,7 @@ export class Tile implements TileJSON {
   _level?: number;
   description?: string;
   sprite?: { x: number; y: number };
+  requiredCharisma: number;
 
   constructor(data: Partial<TileJSON> = {}) {
     this.group = data.group || '';
@@ -40,6 +42,7 @@ export class Tile implements TileJSON {
     this._level = typeof data.level === 'number' ? data.level : 1;
     this.description = data.description;
     this.sprite = data.sprite;
+    this.requiredCharisma = data.requiredCharisma ?? 0;
   }
 
   get groupColor(): string {
@@ -66,8 +69,10 @@ export class Tile implements TileJSON {
     return !!this.owner;
   }
 
-  isAffordable(playerGold: number, playerUnits: number): boolean {
-    return playerGold >= this.prices['1'].gold && playerUnits >= this.prices['1'].units;
+  isAffordable(playerGold: number, playerUnits: number, playerCharisma: number): boolean {
+    return playerGold >= this.prices['1'].gold &&
+      playerUnits >= this.prices['1'].units &&
+      playerCharisma >= this.requiredCharisma;
   }
 
   isUpgradeable(playerGold: number, playerUnits: number): boolean {
@@ -121,6 +126,7 @@ export class Tile implements TileJSON {
       level: this.level,
       description: this.description,
       sprite: this.sprite,
+      requiredCharisma: this.requiredCharisma,
     };
   }
 }

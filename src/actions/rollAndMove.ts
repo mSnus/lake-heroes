@@ -37,7 +37,7 @@ export async function rollAndMove(
 
   let tileMessage = `${player.name} rolled ${roll} and went to ${nextTile.name}`;
 
-  if (!nextTile.isOwned() && !nextTile.isAffordable(player.gold, player.units)) {
+  if (!nextTile.isOwned() && !nextTile.isAffordable(player.gold, player.units, player.charisma)) {
     tileMessage += `, but cannot afford to buy it.`;
   }
 

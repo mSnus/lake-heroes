@@ -22,6 +22,6 @@ export function handleTavern(
   showScreen({
     background: 'assets/screens/tavern.jpg',
     message: board.gameMessage,
-    buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+    buttons: [{ label: 'New folks are always welcome!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
   });
 }
