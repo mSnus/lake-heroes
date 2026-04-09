@@ -3,7 +3,7 @@
   --toastify-text-color-light: #abab93;
   --body-font-size: 0.85rem;
   --body-font-family: 'Inter, sans-serif';
-  --sprite-size: 92px;
+  --sprite-size: 96px;
   --sprite-scale: 40%;
   --player-pane-height: 64px;
   --shield-width: 60px;
@@ -93,6 +93,7 @@ body {
   padding: 10px 42px;
   font-weight: 700;
   width: 100vw;
+  box-sizing: border-box;
   z-index: 999;
   height: 30px;
   display: flex;
