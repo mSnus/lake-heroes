@@ -1,3 +1,6 @@
+Make Joker tile
+Use new tile graphics
+replace 'to own' with purse emoji nad put on gray or green background
 
 On fight when the fight is lost, require to pay fee
 

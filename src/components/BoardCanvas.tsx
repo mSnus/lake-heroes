@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
-import { SPRITE_SIZE } from '../game/constants';
+import { SPRITE_CROP, SPRITE_INTERVAL, SPRITE_PX, SPRITE_SIZE } from '../game/constants';
 import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT } from '../game/constants';
@@ -102,11 +102,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                   {tile.sprite && (
                     <div className={tileSizeClass}>
                       <div
-                        className={`tile-sprite ${ownedClass}`}
+                        className={`tile-sprite ${ownedClass}${!tile.isOwnable ? ' tile-sprite-special' : ''}`}
                         style={{
-                          backgroundImage: `url(assets/sprites2.png)`,
-                          backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
-                          backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
+                          backgroundImage: `url(assets/sprites3i.png)`,
+                          backgroundPositionX: `-${(tile.sprite.x * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
+                          backgroundPositionY: `-${(tile.sprite.y * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
                           borderColor: ownerColor,
                         }}
                       ></div>

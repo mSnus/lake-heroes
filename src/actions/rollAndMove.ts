@@ -5,6 +5,7 @@ import { handleTavern } from './tavern';
 import { handlePrison } from './prison';
 import { handleSphynx } from './sphynx';
 import { handleKingCastle } from './king';
+import { handleJoker } from './joker';
 import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
@@ -114,6 +115,10 @@ export async function rollAndMove(
   }
   if (tile.name.includes('King')) {
     handleKingCastle(board, updateGameState);
+    return;
+  }
+  if (tile.name.includes('Joker')) {
+    handleJoker(board, updateGameState);
     return;
   }
 

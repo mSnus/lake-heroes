@@ -6,7 +6,7 @@ import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
 import { gameEvent } from '../utils/events';
-import { SPRITE_SIZE } from '../game/constants';
+import { SPRITE_COLS, SPRITE_CROP, SPRITE_INTERVAL, SPRITE_PX, SPRITE_ROWS, SPRITE_SIZE } from '../game/constants';
 
 const fmtPrice = (gold: number, units: number): string => {
   const hasGold = gold > 0;
@@ -154,10 +154,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                 height: `${SPRITE_SIZE}px`,
                 border: `3px solid ${groupColor}70`,
                 borderRadius: '0%',
-                backgroundImage: `url(assets/sprites2.png)`,
-                backgroundSize: '460px 460px',
-                backgroundPositionX: `-${tile.sprite.x * SPRITE_SIZE}px`,
-                backgroundPositionY: `-${tile.sprite.y * SPRITE_SIZE}px`,
+                backgroundImage: `url(assets/sprites3i.png)`,
+                backgroundSize: `${(SPRITE_PX * SPRITE_COLS + SPRITE_INTERVAL * (SPRITE_COLS - 1)) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px ${(SPRITE_PX * SPRITE_ROWS + SPRITE_INTERVAL * (SPRITE_ROWS - 1)) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
+                backgroundPositionX: `-${(tile.sprite.x * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
+                backgroundPositionY: `-${(tile.sprite.y * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
                 flexShrink: 0,
                 zIndex: 6000,
               }}

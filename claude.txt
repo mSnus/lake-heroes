@@ -1,0 +1,27 @@
+claude --resume 34de92cc-c28f-4a1e-98e4-090eaa162808
+💧 Water mill
+🌬️ Windmill
+🧱 Brick factory
+🐷 Pigs farm
+🐄 Cows farm
+🐑 Sheep farm
+🌾 Wheat field
+🥬 Cabbage field
+🍎 Fruit garden
+🏹 Bows
+🔪 Knives
+🗡️ Swords
+🏹 Archer tower
+💣 Arquebus tower
+💥 Cannon tower
+🍇 Grapes
+🐟 Fish
+🦫 Fur
+🪙 Treasure box
+🏘️ Tavern
+🏰 King Castle
+🔒 Prison
+🐈 Sphynx
+
+on-server claude, topic: GitHub deploy
+claude --resume 82a6e382-6985-4dab-9e45-7ab7c381520a

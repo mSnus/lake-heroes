@@ -44,7 +44,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
               width: '30vw',
               height: '30vw',
               borderRadius: '50%',
-              backgroundImage: `url(assets/sprites2.png)`,
+              backgroundImage: `url(assets/sprites3i.png)`,
               backgroundSize: '150vw',
               backgroundPositionX: `calc(${config.sprite.x} * -30vw)`,
               backgroundPositionY: `calc(${config.sprite.y} * -30vw)`,
