@@ -12,6 +12,10 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Pull latest code
         run: git -C ${{ github.workspace }} pull origin master
 
