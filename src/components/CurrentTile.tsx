@@ -32,14 +32,16 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     return () => window.removeEventListener('displayTile', onDisplayTile as EventListener);
   }, []);
 
-  const couldBuy = currentTile.isOwnable && !currentTile.isOwned()
-    && (displayedTile === null || displayedTile === currentTile)
-    && gameState.turnPhase === 'after-move';
+  const couldBuy = currentTile.isOwnable && !currentTile.isOwned() && (
+    gameState.turnPhase === 'before-move' ||
+    (gameState.turnPhase === 'after-move' && (displayedTile === null || displayedTile === currentTile))
+  );
 
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
-  const isVisible = shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move');
+  const isVisible = (shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move'))
+    || (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned());
   const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
   const ownerColor = shownTile?.owner
     ? gameState.players.find((p) => p.name === shownTile.owner)?.color
