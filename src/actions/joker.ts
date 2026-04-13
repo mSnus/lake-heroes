@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { showScreen } from '../utils/screenStore';
+import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 
 const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Gift"] as const;
@@ -87,6 +87,6 @@ export function handleJoker(
   showScreen({
     background: 'assets/screens/joker.jpg',
     message: `🃏 ${event}\n${message}`,
-    buttons: [{ label: 'Continue ⏭️', action: 'end-turn' }],
+    buttons: [{ label: 'Continue ⏭️', action: 'end-turn', onClick: clearScreen }],
   });
 }
