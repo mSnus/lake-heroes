@@ -8,17 +8,18 @@ index,group,name,isOwnable,bonusType,requiredCharisma,gold_1,units_1,gold_2,unit
 7,"Fields","Wheat field","true","gold",0,150,2,200,1,300,3,50,100,200,5,10,15
 8,"Fields","Cabbage field","true","gold",0,250,3,200,1,300,3,50,100,200,5,10,15
 9,"Fields","Fruit garden","true","gold",0,350,4,200,1,300,3,50,100,200,5,10,15
-16,"Traders","Grapes","true","gold",0,250,3,200,1,300,3,50,100,200,5,10,15
-17,"Traders","Fish","true","gold",0,350,4,200,1,300,3,50,100,200,5,10,15
-18,"Traders","Fur","true","gold",0,450,4,200,1,300,3,50,100,200,5,10,15
-10,"Camps","Bows","true","units",2,400,5,200,1,300,3,5,10,20,5,10,15
-11,"Camps","Knives","true","units",2,500,5,200,1,300,3,5,10,20,5,10,15
-12,"Camps","Swords","true","units",2,600,5,200,1,300,3,5,10,20,5,10,15
-13,"Towers","Archer tower","true","units",5,600,5,200,1,300,3,5,10,20,5,10,15
-14,"Towers","Arquebus tower","true","units",5,800,5,200,1,300,3,5,10,20,5,10,15
-15,"Towers","Cannon tower","true","units",5,1000,5,200,1,300,3,5,10,20,5,10,15
+10,"Traders","Grapes","true","gold",0,250,3,200,1,300,3,50,100,200,5,10,15
+11,"Traders","Fish","true","gold",0,350,4,200,1,300,3,50,100,200,5,10,15
+12,"Traders","Fur","true","gold",0,450,4,200,1,300,3,50,100,200,5,10,15
+13,"Camps","Bows","true","units",2,400,5,200,1,300,3,5,10,20,5,10,15
+14,"Camps","Knives","true","units",2,500,5,200,1,300,3,5,10,20,5,10,15
+15,"Camps","Swords","true","units",2,600,5,200,1,300,3,5,10,20,5,10,15
+16,"Towers","Archer tower","true","units",5,600,5,200,1,300,3,5,10,20,5,10,15
+17,"Towers","Arquebus tower","true","units",5,800,5,200,1,300,3,5,10,20,5,10,15
+18,"Towers","Cannon tower","true","units",5,1000,5,200,1,300,3,5,10,20,5,10,15
 19,"Special","Treasure box","false","",0,0,0,0,0,0,0,0,0,0,0,0,0
 20,"Special","Tavern","false","",0,0,0,0,0,0,0,0,0,0,0,0,0
 21,"Special","King Castle","false","",0,0,0,0,0,0,0,0,0,0,0,0,0
 22,"Special","Prison","false","",0,0,0,0,0,0,0,0,0,0,0,0,0
 23,"Special","Sphynx","false","",0,0,0,0,0,0,0,0,0,0,0,0,0
+24,"Special","Joker","false","",0,0,0,0,0,0,0,0,0,0,0,0,0

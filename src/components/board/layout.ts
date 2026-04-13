@@ -1,5 +1,5 @@
 import { shuffle } from './common';
-import { TILE_COUNT } from '../../game/constants'
+import { TILE_COUNT } from '../../game/constants';
 
 // Place tiles according to rules:
 // - Fixed placements (0-based): King Castle=0, Treasure=7, Tavern=12, Prison=13, Treasure=16, Tavern=19
@@ -15,27 +15,34 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
 
   const kingCastle = byName('King Castle');
   const prison = byName('Prison');
-  const treasureBox = byName('Treasure box');
+  const treasure = byName('Treasure');
   const tavern = byName('Tavern');
+  const sphynx = byName('Sphynx');
+  const joker = byName('Joker');
 
   if (!kingCastle) throw new Error('King Castle tile not found');
-  if (!treasureBox) throw new Error('Treasure box tile not found');
+  if (!treasure) throw new Error('Treasure tile not found');
   if (!prison) throw new Error('Prison tile not found');
   if (!tavern) throw new Error('Tavern tile not found');
+  if (!joker) throw new Error('Joker tile not found');
+  if (!sphynx) throw new Error('Sphynx tile not found');
 
   const slots: (any | undefined)[] = new Array(TILE_COUNT).fill(undefined);
 
   const FIXED: [number, any][] = [
     [0, kingCastle],
-    [7, treasureBox],
-    [12, tavern],
+    [5, treasure],
+    [9, sphynx],
     [13, prison],
-    [16, treasureBox],
-    [19, tavern],
+    [16, tavern],
+    [19, joker],
+    [23, treasure],
   ];
-  FIXED.forEach(([idx, tpl]) => { slots[idx] = tpl; });
+  FIXED.forEach(([idx, tpl]) => {
+    slots[idx] = tpl;
+  });
 
-  const fixedSet = new Set([kingCastle, prison, treasureBox, tavern]);
+  const fixedSet = new Set([kingCastle, prison, treasure, tavern, sphynx, joker]);
   const pool = allTemplates.filter((t) => !fixedSet.has(t));
 
   // Group pool tiles by group name, sort each group cheapest first
