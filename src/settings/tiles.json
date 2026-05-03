@@ -690,6 +690,7 @@
     "icon": "🏰",
     "name": "King Castle",
     "isOwnable": false,
+    "fog": false,
     "prices": {
       "1": {
         "gold": 0,
