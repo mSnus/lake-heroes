@@ -40,6 +40,9 @@ jobs:
         run: npm run build
         working-directory: ${{ github.workspace }}
 
+      - name: Write version file
+        run: echo "${{ steps.version.outputs.tag }}" > ${{ github.workspace }}/dist/version.txt
+
       - name: Publish versioned build
         run: |
           VERSION=${{ steps.version.outputs.tag }}
