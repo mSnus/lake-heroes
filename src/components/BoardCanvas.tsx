@@ -63,10 +63,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       gameEvent('displayTile', tile);
     };
 
+    const isFogged = tile.fogged();
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
 
     const owner = tile.owner ? board.players.find((p) => p.name === tile.owner) : null;
-    const ownerColor = owner?.color || '#444';
+    const ownerColor = isFogged ? '#666' : (owner?.color || '#444');
 
     return (
       <div
@@ -89,7 +90,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
               return (
                 <>
-                  {!isKingTile && (
+                  {!isKingTile && !isFogged && (
                     <div
                       className="tile-title"
                       style={{
@@ -108,6 +109,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                           backgroundPositionX: `-${(tile.sprite.x * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
                           backgroundPositionY: `-${(tile.sprite.y * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
                           borderColor: ownerColor,
+                          ...(isFogged && { filter: 'blur(4px) saturate(0)' }),
                         }}
                       ></div>
                     </div>

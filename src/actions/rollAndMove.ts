@@ -66,6 +66,7 @@ export async function rollAndMove(
 
   board.setPhase('after-move');
   board.incTurns();
+  board.activeTile.fog = false;
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic

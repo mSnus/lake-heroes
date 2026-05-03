@@ -18,6 +18,7 @@ export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({ image, child
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
+      animation: 'screenFadeIn 0.4s ease',
     }}
   >
     {children}

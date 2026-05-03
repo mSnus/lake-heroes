@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
@@ -23,6 +23,19 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   const { active: diceActive } = useModal();
   const endTurnReady = useEndTurnReady();
   const canEndTurn = endTurnReady && !diceActive;
+
+  useEffect(() => {
+    if (!diceActive && !canEndTurn) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (diceActive) startDiceRoll();
+        else if (canEndTurn) handleEndTurn();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [diceActive, canEndTurn]);
 
   function handleNewGame() {
     if (
