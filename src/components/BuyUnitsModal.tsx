@@ -37,7 +37,7 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
         </h2>
         <h3>{gameState.gameMessage}</h3>
 
-        <h3>You may recruit units: 🧍 = 100 🟡</h3>
+        <h3>You may recruit {maxAmount} units for {maxAmount * 100}🟡</h3>
 
         <div
           className="input-group"
