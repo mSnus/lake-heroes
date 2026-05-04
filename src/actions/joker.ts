@@ -85,6 +85,7 @@ export function handleJoker(
   setEndTurn();
 
   showScreen({
+    screenType: 'joker',
     background: 'assets/screens/joker.jpg',
     message: `🃏 ${event}\n${message}`,
     buttons: [{ label: 'Continue ⏭️', action: 'end-turn', onClick: clearScreen }],

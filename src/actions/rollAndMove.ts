@@ -83,6 +83,7 @@ export async function rollAndMove(
     updateGameState(board);
     showDice( (roll: number) => handleTreasureBox(board, updateGameState, roll));
     showScreen({
+      screenType: 'treasure',
       background: 'assets/screens/treasure.jpg',
       title: tile.name,
       htmlMessage: tile.description,
@@ -95,6 +96,7 @@ export async function rollAndMove(
     updateGameState(board);
     showDice( (roll: number) => handleTavern(board, updateGameState, roll));
     showScreen({
+      screenType: 'tavern',
       background: 'assets/screens/tavern.jpg',
       title: tile.name,
       fade: true,
@@ -112,6 +114,7 @@ export async function rollAndMove(
     updateGameState(board);
     showDice( (roll: number) => handleSphynx(board, updateGameState, roll));
     showScreen({
+      screenType: 'sphynx',
       background: 'assets/screens/sphynx.jpg',
       title: tile.name,
       fade: true,

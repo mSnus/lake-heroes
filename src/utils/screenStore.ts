@@ -9,11 +9,19 @@ export interface ScreenButton {
   disabled?: boolean;
 }
 
+export interface SavedScreen {
+  type: string;
+  message?: string;
+  htmlMessage?: string;
+  title?: string;
+}
+
 export interface ScreenConfig {
   background?: string;
   fade?: boolean;
   title?: string;
   sprite?: { x: number; y: number };
+  screenType?: string;
   encounter?: {
     playerName: string;
     playerColor: string;
@@ -51,6 +59,7 @@ export function clearScreen(): void {
 
 export function showPrisonScreen(message: string, title?: string): void {
   showScreen({
+    screenType: 'prison',
     background: 'assets/screens/prison.jpg',
     title,
     message,

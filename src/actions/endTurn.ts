@@ -30,6 +30,7 @@ export function endTurn(
     say(`${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`, 'info');
     board.gameMessage = `Challenge the Dragon or roll dice?`;
     showScreen({
+      screenType: 'dragon',
       background: 'assets/screens/dragon.jpg',
       message: board.gameMessage,
       buttons: [

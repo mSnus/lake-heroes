@@ -22,8 +22,12 @@ import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModa
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
-import { showDice } from './utils/diceStore';
-import { useScreen, showScreen, clearScreen } from './utils/screenStore';
+import { showDice, startDiceRoll } from './utils/diceStore';
+import { useScreen, showScreen, clearScreen, showPrisonScreen, SavedScreen } from './utils/screenStore';
+import { handleSphynx } from './actions/sphynx';
+import { handleTavern } from './actions/tavern';
+import { handleTreasureBox } from './actions/treasureBox';
+import { fightDragon } from './actions/fightDragon';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
 import { resetEndTurn } from './utils/endTurnStore';
@@ -144,8 +148,71 @@ function App() {
 
           setGameState(restored);
 
-          afterMoveLogic(restored, updateGameState);
-          showDice(handleDiceRollAndMove);
+          const savedScreen = loadFromStorage<SavedScreen | null>('game-screen', null);
+          if (savedScreen) {
+            switch (savedScreen.type) {
+              case 'prison':
+                showPrisonScreen(savedScreen.message ?? '', savedScreen.title);
+                break;
+              case 'joker':
+                showScreen({
+                  screenType: 'joker',
+                  background: 'assets/screens/joker.jpg',
+                  message: savedScreen.message,
+                  buttons: [{ label: 'Continue ⏭️', action: 'end-turn', onClick: clearScreen }],
+                });
+                break;
+              case 'dragon':
+                showScreen({
+                  screenType: 'dragon',
+                  background: 'assets/screens/dragon.jpg',
+                  message: savedScreen.message,
+                  buttons: [
+                    { label: 'Challenge the Dragon 🐉', action: 'fight', onClick: () => { clearScreen(); fightDragon(restored, updateGameState); } },
+                    { label: 'Roll Dice Instead 🎲', action: 'roll-dice', onClick: () => { clearScreen(); gameEvent('showDice', null); } },
+                  ],
+                });
+                break;
+              case 'sphynx':
+                showDice((roll: number) => handleSphynx(restored, updateGameState, roll));
+                showScreen({
+                  screenType: 'sphynx',
+                  background: 'assets/screens/sphynx.jpg',
+                  title: savedScreen.title,
+                  fade: true,
+                  htmlMessage: savedScreen.htmlMessage,
+                  buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+                });
+                break;
+              case 'tavern':
+                showDice((roll: number) => handleTavern(restored, updateGameState, roll));
+                showScreen({
+                  screenType: 'tavern',
+                  background: 'assets/screens/tavern.jpg',
+                  title: savedScreen.title,
+                  fade: true,
+                  htmlMessage: savedScreen.htmlMessage,
+                  buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+                });
+                break;
+              case 'treasure':
+                showDice((roll: number) => handleTreasureBox(restored, updateGameState, roll));
+                showScreen({
+                  screenType: 'treasure',
+                  background: 'assets/screens/treasure.jpg',
+                  title: savedScreen.title,
+                  htmlMessage: savedScreen.htmlMessage,
+                  buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+                });
+                break;
+              default:
+                afterMoveLogic(restored, updateGameState);
+                showDice(handleDiceRollAndMove);
+            }
+          } else {
+            afterMoveLogic(restored, updateGameState);
+            showDice(handleDiceRollAndMove);
+          }
 
           gameEvent('setPhase', restored.turnPhase);
 
@@ -167,8 +234,19 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (gameState) saveToStorage('game-state', gameState);
-  }, [gameState]);
+    if (!gameState) return;
+    saveToStorage('game-state', gameState);
+    if (screen?.screenType) {
+      saveToStorage<SavedScreen>('game-screen', {
+        type: screen.screenType,
+        message: screen.message,
+        htmlMessage: screen.htmlMessage,
+        title: screen.title,
+      });
+    } else {
+      localStorage.removeItem('game-screen');
+    }
+  }, [gameState, screen]);
 
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[]) => {
