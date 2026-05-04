@@ -1,9 +1,8 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-
-export const REVEAL_GOLD = 100;
+import { REVEAL_GOLD } from '../game/constants';
 
 export function revealTile(board: GameState): void {
   board.activePlayer.gold += REVEAL_GOLD;
-  say(`${board.activePlayer.name} explored new lands! +${REVEAL_GOLD} gold`, 'success');
+  say(`${board.activePlayer.name} discovered ${board.activeTile.name}. Reward: ${REVEAL_GOLD}`, 'success');
 }

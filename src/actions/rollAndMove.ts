@@ -69,7 +69,10 @@ export async function rollAndMove(
   board.incTurns();
   const wasFogged = board.activeTile.fog;
   board.activeTile.fog = false;
-  if (wasFogged) revealTile(board);
+  if (wasFogged) {
+    revealTile(board);
+    gameEvent('displayTile', board.activeTile);
+  }
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic

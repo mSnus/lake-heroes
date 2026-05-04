@@ -45,7 +45,7 @@ export class Tile implements TileJSON {
     this.description = data.description;
     this.sprite = data.sprite;
     this.requiredCharisma = data.requiredCharisma ?? 0;
-    this.fog = data.fog !== false;
+    this.fog = data.fog !== false && this.isOwnable;
   }
 
   get groupColor(): string {
