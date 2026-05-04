@@ -9,6 +9,7 @@ import { handleJoker } from './joker';
 import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
+import { revealTile } from './revealTile';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
@@ -59,14 +60,16 @@ export async function rollAndMove(
       passStart(board, updateGameState);
     }
 
-    gameEvent('displayTile', board.tiles[nextPos]);
+    gameEvent('displayTile', board.tiles[nextPos].fogged() ? {} : board.tiles[nextPos]);
     // Delay before the next step to visualize movement
     await new Promise((res) => setTimeout(res, 300));
   }
 
   board.setPhase('after-move');
   board.incTurns();
+  const wasFogged = board.activeTile.fog;
   board.activeTile.fog = false;
+  if (wasFogged) revealTile(board);
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic

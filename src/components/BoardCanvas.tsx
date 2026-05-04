@@ -107,6 +107,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                         style={isFogged ? {
                           backgroundImage: `url(assets/fog.png)`,
                           backgroundSize: 'cover',
+                          borderRadius: '50%',
                           borderColor: '#666',
                         } : {
                           backgroundImage: `url(assets/sprites3i.png)`,
