@@ -90,7 +90,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
               return (
                 <>
-                  {!isKingTile && !isFogged && (
+                  {!isKingTile && !isFogged && tile.isOwnable && (
                     <div
                       className="tile-title"
                       style={{

@@ -165,7 +165,7 @@ export const TileCard: React.FC<TileCardProps> = ({
           </div>
         )}
 
-        <div className="tile-card-title">{tile.name}</div>
+        <div className="tile-card-title" onClick={handleInfoClick} style={{ cursor: 'pointer' }}>{tile.name}</div>
 
         {mode === 'display' && (
           <button
@@ -324,16 +324,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                 </div>
               </a>
 
-              <a
-                onClick={() => handleInfoClick()}
-                className={'tile-card-button'}
-                style={{ width: mode !== 'owned' ? '100%' : 'unset' }}
-              >
-                <div className="big-icon-hint">
-                  <div>ℹ️</div>
-                  <div>info</div>
-                </div>
-              </a>
             </div>
           )}
 
@@ -344,9 +334,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <tr>
                     <th className="tc-th">🚩</th>
                     <th className="tc-th">
-                      <div className="circular-path" style={{ paddingTop: '5px' }}>
-                        🗘
-                      </div>
+                      🏰
                     </th>
                     <th className="tc-th">🛡️</th>
                   </tr>
