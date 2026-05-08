@@ -54,6 +54,7 @@ export function showScreen(config: ScreenConfig): void {
 
 export function clearScreen(): void {
   state = null;
+  localStorage.removeItem('game-screen');
   emit();
 }
 
