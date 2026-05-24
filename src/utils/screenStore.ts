@@ -30,6 +30,8 @@ export interface ScreenConfig {
     ownerColor?: string;
     outcomeText?: string;
     subMessage?: string;
+    gold?: number;
+    units?: number;
   };
   message?: string;
   htmlMessage?: string;

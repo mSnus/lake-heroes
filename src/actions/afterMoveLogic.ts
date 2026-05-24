@@ -46,6 +46,8 @@ export function afterMoveLogic(
       outcomeText: player.units >= defence
         ? `⚔️ Send ${defence}🧍 soldiers to fight for ${tile.name}`
         : undefined,
+      gold: player.gold,
+      units: player.units,
     };
 
     const baseConfig = {
@@ -69,20 +71,18 @@ export function afterMoveLogic(
       },
     };
 
-    if (canSell) {
+    const extraButtons: ScreenButton[] = [];
+    if (canSell && !canPay) {
       const sellModeConfig = {
         ...baseConfig,
         sellMode: true,
         sellHeader: `Sell tiles to pay the ${fee}🟡 fee or yield to ${tile.owner}`,
         buttons: baseButtons,
       };
-      showScreen({
-        ...baseConfig,
-        buttons: [...baseButtons, { label: 'Sell tiles 💰', action: 'fight', onClick: () => showScreen(sellModeConfig) }],
-      });
-    } else {
-      showScreen({ ...baseConfig, buttons: showAcceptLoss ? [...baseButtons, acceptLossButton] : baseButtons });
+      extraButtons.push({ label: 'Sell tiles 💰', action: 'fight', onClick: () => showScreen(sellModeConfig) });
     }
+    if (showAcceptLoss) extraButtons.push(acceptLossButton);
+    showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
     return;
   }
 

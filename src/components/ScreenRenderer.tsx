@@ -108,6 +108,13 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
       </ScreenBackground>
       {!config.sellMode && (
         <div className="game-menu" style={{ top: '80vh' }}>
+          {config.encounter?.gold !== undefined && (
+            <div className="player-stats-savings" style={{ justifyContent: 'center', marginBottom: '8px', color: config.encounter.playerColor }}>
+              <span>👛</span>
+              <strong>{config.encounter.gold} 🟡</strong>
+              <strong>{config.encounter.units} 🧍</strong>
+            </div>
+          )}
           <div>
             {buttons.map((btn, i) => (
               <button key={i} className="game-menu-button" disabled={btn.disabled} onClick={() => handleButtonClick(btn.onClick, btn.action)}>
