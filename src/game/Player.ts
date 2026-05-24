@@ -18,6 +18,9 @@ export class Player {
   image: string;
   turnsToSkip: number;
   charisma: number;
+  circles: number;
+  dragonEncounters: number;
+  dragonEncounteredLastTurn: boolean;
 
   constructor(params: PlayerParams) {
     this.name = params.name;
@@ -29,5 +32,8 @@ export class Player {
     this.ownedTiles = [];
     this.turnsToSkip = 0;
     this.charisma = params.charisma ?? 1;
+    this.circles = 0;
+    this.dragonEncounters = 0;
+    this.dragonEncounteredLastTurn = false;
   }
 }

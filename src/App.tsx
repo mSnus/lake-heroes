@@ -30,7 +30,7 @@ import { handleTreasureBox } from './actions/treasureBox';
 import { fightDragon } from './actions/fightDragon';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
-import { resetEndTurn } from './utils/endTurnStore';
+import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ScreenRenderer } from './components/ScreenRenderer';
 
@@ -171,6 +171,14 @@ function App() {
                     { label: 'Challenge the Dragon 🐉', action: 'fight', onClick: () => { clearScreen(); fightDragon(restored, updateGameState); } },
                     { label: 'Roll Dice Instead 🎲', action: 'roll-dice', onClick: () => { clearScreen(); gameEvent('showDice', null); } },
                   ],
+                });
+                break;
+              case 'dragon-attack':
+                showScreen({
+                  screenType: 'dragon-attack',
+                  background: 'assets/screens/dragon_attack.jpg',
+                  message: savedScreen.message,
+                  buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
                 });
                 break;
               case 'sphynx':

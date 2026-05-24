@@ -10,6 +10,7 @@ import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
+import { checkDragonEncounter } from './dragonEncounter';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
@@ -78,65 +79,71 @@ export async function rollAndMove(
   // After finishing the movement, determine landing tile and proceed with existing logic
   const tile = board.activeTile;
 
-  if (tile.name.includes('Treasure')) {
-    board.gameMessage = `Roll dice! Discover the treasure inside...`;
-    updateGameState(board);
-    showDice( (roll: number) => handleTreasureBox(board, updateGameState, roll));
-    showScreen({
-      screenType: 'treasure',
-      background: 'assets/screens/treasure.jpg',
-      title: tile.name,
-      htmlMessage: tile.description,
-      buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-    });
-    return;
-  }
-  if (tile.name.includes('Tavern')) {
-    board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
-    updateGameState(board);
-    showDice( (roll: number) => handleTavern(board, updateGameState, roll));
-    showScreen({
-      screenType: 'tavern',
-      background: 'assets/screens/tavern.jpg',
-      title: tile.name,
-      fade: true,
-      htmlMessage: tile.description,
-      buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-    });
-    return;
-  }
-  if (tile.name.includes('Prison')) {
-    handlePrison(board, updateGameState);
-    return;
-  }
-  if (tile.name.includes('Sphynx')) {
-    board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
-    updateGameState(board);
-    showDice( (roll: number) => handleSphynx(board, updateGameState, roll));
-    showScreen({
-      screenType: 'sphynx',
-      background: 'assets/screens/sphynx.jpg',
-      title: tile.name,
-      fade: true,
-      htmlMessage: tile.description,
-      buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-    });
-    return;
-  }
-  if (tile.name.includes('King')) {
-    handleKingCastle(board, updateGameState);
-    return;
-  }
-  if (tile.name.includes('Joker')) {
-    handleJoker(board, updateGameState);
-    return;
-  }
+  const continueTileLogic = () => {
+    if (tile.name.includes('Treasure')) {
+      board.gameMessage = `Roll dice! Discover the treasure inside...`;
+      updateGameState(board);
+      showDice( (roll: number) => handleTreasureBox(board, updateGameState, roll));
+      showScreen({
+        screenType: 'treasure',
+        background: 'assets/screens/treasure.jpg',
+        title: tile.name,
+        htmlMessage: tile.description,
+        buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+      });
+      return;
+    }
+    if (tile.name.includes('Tavern')) {
+      board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
+      updateGameState(board);
+      showDice( (roll: number) => handleTavern(board, updateGameState, roll));
+      showScreen({
+        screenType: 'tavern',
+        background: 'assets/screens/tavern.jpg',
+        title: tile.name,
+        fade: true,
+        htmlMessage: tile.description,
+        buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+      });
+      return;
+    }
+    if (tile.name.includes('Prison')) {
+      handlePrison(board, updateGameState);
+      return;
+    }
+    if (tile.name.includes('Sphynx')) {
+      board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
+      updateGameState(board);
+      showDice( (roll: number) => handleSphynx(board, updateGameState, roll));
+      showScreen({
+        screenType: 'sphynx',
+        background: 'assets/screens/sphynx.jpg',
+        title: tile.name,
+        fade: true,
+        htmlMessage: tile.description,
+        buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+      });
+      return;
+    }
+    if (tile.name.includes('King')) {
+      handleKingCastle(board, updateGameState);
+      return;
+    }
+    if (tile.name.includes('Joker')) {
+      handleJoker(board, updateGameState);
+      return;
+    }
 
-  if (tile.isOwned() && tile.owner === player.name) {
-    handleVisitOwnTile(board, updateGameState);
-    return;
-  }
+    if (tile.isOwned() && tile.owner === player.name) {
+      handleVisitOwnTile(board, updateGameState);
+      return;
+    }
 
-  // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
-  afterMoveLogic(board, updateGameState);
+    // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
+    afterMoveLogic(board, updateGameState);
+  };
+
+  const dragonHandled = checkDragonEncounter(board, updateGameState, continueTileLogic);
+  if (dragonHandled) return;
+  continueTileLogic();
 }
