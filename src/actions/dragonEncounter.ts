@@ -19,6 +19,10 @@ export function checkDragonEncounter(
 ): boolean {
   const player = board.activePlayer;
 
+  if ((player.circles ?? 0) <= 2) {
+    return false;
+  }
+
   if (player.dragonEncounteredLastTurn) {
     player.dragonEncounteredLastTurn = false;
     return false;
@@ -142,7 +146,7 @@ function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameS
   updateGameState(board);
   showScreen({
     screenType: 'dragon-attack',
-    background: 'assets/screens/dragon.jpg',
+    background: 'assets/screens/dragon-attack.jpg',
     message,
     buttons: [
       {
