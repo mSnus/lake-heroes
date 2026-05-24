@@ -49,9 +49,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const grp = tile?.group ? groupsByName[tile.group] : undefined;
 
     const pos = getTilePosition(i);
-    let titleClass = 'tile';
-    if (pos?.textPos === 'left') titleClass += ' tile-left';
-    if (pos?.textPos === 'right') titleClass += ' tile-right';
+    let tileClass = 'tile';
+    if (pos?.textPos === 'left') tileClass += ' tile-left';
+    if (pos?.textPos === 'right') tileClass += ' tile-right';
+    if (!tile.isOwnable) tileClass += ' tile-sprite-special';
 
     const handleTileClick = () => {
       if (!tile) return;
@@ -72,7 +73,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     return (
       <div
         key={`tile-${i}`}
-        className={titleClass}
+        className={tileClass}
         style={{
           top: pos.y - offsetY + '%',
           left: pos.x - offsetX + '%',
@@ -103,7 +104,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                   {tile.sprite && (
                     <div className={tileSizeClass}>
                       <div
-                        className={`tile-sprite ${ownedClass}${!tile.isOwnable ? ' tile-sprite-special' : ''}`}
+                        className={`tile-sprite ${ownedClass}`}
                         style={isFogged ? {
                           backgroundImage: `url(assets/fog.png)`,
                           backgroundSize: 'cover',

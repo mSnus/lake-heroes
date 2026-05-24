@@ -3,13 +3,10 @@ import { say } from '../utils/say';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 
-const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Gift"] as const;
+const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Gift", 'Earthquake'] as const;
 type JokerEvent = (typeof EVENTS)[number];
 
-export function handleJoker(
-  board: GameState,
-  updateGameState: (board: GameState) => void
-) {
+export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
   const event: JokerEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
   let message = '';
 
@@ -59,6 +56,13 @@ export function handleJoker(
       message = 'All owned tiles are upgraded one level.';
       break;
 
+    case 'Earthquake':
+      for (const t of board.tiles) {
+        if (t?.isOwned() && t.level > 1) t._level = t.level - 1;
+      }
+      message = 'All owned tiles lose one level.';
+      break;
+
     case "King's Gift": {
       const player = board.activePlayer;
       const free = board.tiles
@@ -79,15 +83,15 @@ export function handleJoker(
     }
   }
 
-  say(`🃏 ${event}: ${message}`, 'info');
-  board.gameMessage = `🃏 ${event}: ${message}`;
+  say(`${event}: ${message}`, 'info');
+  board.gameMessage = `${event}: ${message}`;
   updateGameState(board);
   setEndTurn();
 
   showScreen({
     screenType: 'joker',
     background: 'assets/screens/joker.jpg',
-    message: `🃏 ${event}\n${message}`,
-    buttons: [{ label: 'Continue ⏭️', action: 'end-turn', onClick: clearScreen }],
+    message: `${event}\n${message}`,
+    buttons: [{ label: 'Continue', action: 'end-turn', onClick: clearScreen }],
   });
 }

@@ -52,6 +52,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
       <div className="player-stats-gold">
         {/* wealth */}
         <div className="player-stats-savings" id="statsOwnedResources" onClick={() => say('Current money and units you own', 'info')} style={{ cursor: 'pointer' }}>
+          <div>
+            👛
+          </div>
           <div className="player-stats-hint"></div>
           <div>
             <strong>{activePlayer.gold ?? 0} 🟡</strong>

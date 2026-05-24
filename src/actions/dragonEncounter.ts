@@ -7,7 +7,7 @@ import { say } from '../utils/say';
 const ENCOUNTER_CHANCE = 1 / 18;
 const ATTACK_CHANCE = 1 / 6;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
-const LEADERSHIP_THRESHOLD = 5;
+const CHARISMA_THRESHOLD = 5;
 const CIRCLE_THRESHOLD = 3;
 
 const SKY_MESSAGE = 'You see a giant black dragon passing on the sky high over you';
@@ -40,7 +40,7 @@ export function checkDragonEncounter(
   player.dragonEncounters = (player.dragonEncounters ?? 0) + 1;
   player.dragonEncounteredLastTurn = true;
 
-  if (player.charisma < LEADERSHIP_THRESHOLD || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
+  if (player.charisma < CHARISMA_THRESHOLD || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
     updateGameState(board);
     showDragonSkyScreen(onContinue);
     return true;
@@ -123,8 +123,8 @@ function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameS
   let message: string;
 
   if (mostExpensiveIdx === null) {
-    message = 'The Dragon swoops down and attacks you! Your leadership decreases.';
-    say(`${player.name} is attacked by the dragon! Leadership -1.`, 'error');
+    message = 'The Dragon swoops down and attacks you!';
+    say(`${player.name} is attacked by the dragon! Charisma lost.`, 'error');
   } else {
     const tile = board.tiles[mostExpensiveIdx];
     const tileName = tile.name;
