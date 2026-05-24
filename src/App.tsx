@@ -23,7 +23,13 @@ import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
 import { showDice, startDiceRoll } from './utils/diceStore';
-import { useScreen, showScreen, clearScreen, showPrisonScreen, SavedScreen } from './utils/screenStore';
+import {
+  useScreen,
+  showScreen,
+  clearScreen,
+  showPrisonScreen,
+  SavedScreen,
+} from './utils/screenStore';
 import { handleSphynx } from './actions/sphynx';
 import { handleTavern } from './actions/tavern';
 import { handleTreasureBox } from './actions/treasureBox';
@@ -48,33 +54,32 @@ function App() {
 
   const updateGameState = useCallback((gs: GameState | null): void => {
     if (!gs) return;
-    const newGameState = Object.assign(
-      new GameState(gs.tiles || [], gs.players || []),
-      { ...gs }
-    ) as GameState;
+    const newGameState = Object.assign(new GameState(gs.tiles || [], gs.players || []), {
+      ...gs,
+    }) as GameState;
     setGameState(newGameState);
   }, []);
 
-  const handleDiceRollAndMove = useCallback(function (roll: number) {
-    resetEndTurn();
-    rollAndMove(gameStateRef.current, updateGameState, roll);
-  }, [updateGameState]);
+  const handleDiceRollAndMove = useCallback(
+    function (roll: number) {
+      resetEndTurn();
+      rollAndMove(gameStateRef.current, updateGameState, roll);
+    },
+    [updateGameState]
+  );
 
   // setPhase event listener and handler
-  const onSetPhase = useCallback(
-    (e: Event) => {
-      const current = gameStateRef.current;
-      if (!current) return;
+  const onSetPhase = useCallback((e: Event) => {
+    const current = gameStateRef.current;
+    if (!current) return;
 
-      const phase = (e as CustomEvent).detail as TurnPhase;
+    const phase = (e as CustomEvent).detail as TurnPhase;
 
-      if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
+    if (!['before-move', 'rolling', 'moving', 'after-move'].includes(phase)) return;
 
-      current.setPhase(phase);
-      setGameState(current);
-    },
-    []
-  );
+    current.setPhase(phase);
+    setGameState(current);
+  }, []);
   useEffect(() => {
     window.addEventListener('setPhase', onSetPhase as EventListener);
     return () => window.removeEventListener('setPhase', onSetPhase as EventListener);
@@ -102,7 +107,10 @@ function App() {
   useEffect(() => {
     (window as any).__reloadTiles = async () => {
       const gs = gameStateRef.current;
-      if (!gs) { console.warn('__reloadTiles: no active game state'); return; }
+      if (!gs) {
+        console.warn('__reloadTiles: no active game state');
+        return;
+      }
 
       const res = await fetch('/src/settings/tiles.json');
       if (!res.ok) throw new Error(`Failed to fetch tiles.json: ${res.status}`);
@@ -120,7 +128,9 @@ function App() {
       updateGameState({ ...gs, tiles: updatedTiles } as GameState);
       console.log(`[reloadTiles] ${updatedTiles.length} tiles refreshed from tiles.json`);
     };
-    return () => { delete (window as any).__reloadTiles; };
+    return () => {
+      delete (window as any).__reloadTiles;
+    };
   }, [updateGameState]);
 
   const didInit = useRef(false);
@@ -168,17 +178,40 @@ function App() {
                   background: 'assets/screens/dragon.jpg',
                   message: savedScreen.message,
                   buttons: [
-                    { label: 'Challenge the Dragon 🐉', action: 'fight', onClick: () => { clearScreen(); fightDragon(restored, updateGameState); } },
-                    { label: 'Roll Dice Instead 🎲', action: 'roll-dice', onClick: () => { clearScreen(); gameEvent('showDice', null); } },
+                    {
+                      label: 'Challenge the Dragon 🐉',
+                      action: 'fight',
+                      onClick: () => {
+                        clearScreen();
+                        fightDragon(restored, updateGameState);
+                      },
+                    },
+                    {
+                      label: 'Roll Dice Instead 🎲',
+                      action: 'roll-dice',
+                      onClick: () => {
+                        clearScreen();
+                        gameEvent('showDice', null);
+                      },
+                    },
                   ],
                 });
                 break;
               case 'dragon-attack':
                 showScreen({
                   screenType: 'dragon-attack',
-                  background: 'assets/screens/dragon_attack.jpg',
+                  background: 'assets/screens/dragon-attack.jpg',
                   message: savedScreen.message,
-                  buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                  buttons: [
+                    {
+                      label: 'Continue',
+                      action: 'end-turn',
+                      onClick: () => {
+                        clearScreen();
+                        setEndTurn();
+                      },
+                    },
+                  ],
                 });
                 break;
               case 'sphynx':
@@ -289,11 +322,17 @@ function App() {
       {gameState?.gameOver && (
         <div
           style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
             background: 'rgba(0,0,0,0.82)',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            color: '#ffe066', fontSize: '2.5rem', textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffe066',
+            fontSize: '2.5rem',
+            textAlign: 'center',
             gap: '1.5rem',
           }}
         >
@@ -316,7 +355,9 @@ function App() {
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
             <div className="action-bar-corner action-bar-corner--right" title="Game Log">
               <div className="shield-button-container">
-                <button onClick={handleOpenLog} className="shield-button">📜</button>
+                <button onClick={handleOpenLog} className="shield-button">
+                  📜
+                </button>
               </div>
             </div>
           </div>

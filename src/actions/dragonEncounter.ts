@@ -84,7 +84,7 @@ function showDragonSkyScreen(onContinue: () => void) {
   say('A massive black dragon soars overhead...', 'info');
   showScreen({
     screenType: 'dragon-sky',
-    background: 'assets/screens/dragon_sky.jpg',
+    background: 'assets/screens/dragon-sky.jpg',
     message: SKY_MESSAGE,
     buttons: [
       {
