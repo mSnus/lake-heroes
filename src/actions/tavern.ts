@@ -11,8 +11,10 @@ export function handleTavern(
   if (!board) return;
   console.log('Action: tavern');
 
-  const unitsReward = roll;
   const player = board.activePlayer;
+  const circles = player.circles ?? 0;
+  const circleMultiplier = circles >= 12 ? 2 : circles >= 6 ? 1.5 : 1;
+  const unitsReward = Math.round(roll * circleMultiplier);
   player.units += unitsReward;
 
   board.gameMessage = `${unitsReward}🧍 joined your mighty forces`;

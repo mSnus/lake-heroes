@@ -4,7 +4,9 @@ import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
+import { showScreen } from '../utils/screenStore';
 import { CurrentPlayer } from './CurrentPlayer';
+import HelpScreen from './HelpScreen';
 import '../styles/ActionBar.css';
 
 interface ActionBarProps {
@@ -61,10 +63,15 @@ export const ActionBar: React.FC<ActionBarProps> = ({
 
   return (
     <>
-      <div className="action-bar-corner action-bar-corner--left" title="New Game">
-        <div className="shield-button-container">
+      <div className="action-bar-corner action-bar-corner--left" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="shield-button-container" title="New Game">
           <button onClick={handleNewGame} className="shield-button">
             🐲
+          </button>
+        </div>
+        <div className="shield-button-container" title="Help">
+          <button onClick={() => showScreen({ content: <HelpScreen /> })} className="shield-button">
+            ?
           </button>
         </div>
       </div>

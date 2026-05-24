@@ -10,7 +10,6 @@ export class GameState {
   activePlayerIndex: number;
   lastDice: number;
   turns: number = 0;
-  circles: number = 0;
   round: number = 1;
   gameStarted: boolean = false;
   turnPhase: TurnPhase;

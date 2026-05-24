@@ -313,6 +313,7 @@ function App() {
         position={isMobileLayout() ? 'top-center' : 'top-right'}
         autoClose={3500}
         hideProgressBar={true}
+        closeOnClick={true}
       />
 
       <ModalRenderer />

@@ -8,7 +8,6 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   const player = board.activePlayer;
   const baseGold = MONEY_PASS_START;
 
-  board.circles += 1;
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
   console.log('Action: pass start for', player.name);

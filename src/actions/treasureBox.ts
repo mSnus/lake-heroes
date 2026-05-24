@@ -12,8 +12,10 @@ export function handleTreasureBox(
   if (!board) return;
   console.log('Action: treasure box');
 
-  const goldReward = roll * TREASURE_BOX_MULTIPLIER;
   const player = board.activePlayer;
+  const circles = player.circles ?? 0;
+  const circleMultiplier = circles >= 12 ? 2 : circles >= 6 ? 1.5 : 1;
+  const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier);
 
   player.gold += goldReward;
   board.gameMessage = `${player.name} found ${goldReward}🟡 in the treasure!`;

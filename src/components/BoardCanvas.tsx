@@ -61,7 +61,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         handleKingCastle(board, updateGameState);
         return;
       }
-      gameEvent('displayTile', tile);
+      gameEvent('displayTile', tile.fogged() ? {} : tile);
     };
 
     const isFogged = tile.fogged();
