@@ -23,10 +23,24 @@ type RoundResult = {
 
 export type BattleScreenProps = {
   attacker: Player;
-  defender: Player;
-  tile: Tile;
   gameState: GameState;
   updateGameState: (gs: GameState) => void;
+  // Tile battle (default)
+  mode?: 'tile';
+  defender?: Player;
+  tile?: Tile;
+  onClose?: never;
+} | {
+  attacker: Player;
+  gameState: GameState;
+  updateGameState: (gs: GameState) => void;
+  // Caravan battle
+  mode: 'caravan';
+  caravanDefence: number;
+  caravanPrize: number;
+  onClose: () => void;
+  defender?: never;
+  tile?: never;
 };
 
 function buildRoundSoldiers(defence: number): number[] {
@@ -51,14 +65,16 @@ function determineBattleOutcome(results: RoundResult[]): BattleOutcome {
   return 'raze';
 }
 
-export const BattleScreen: React.FC<BattleScreenProps> = ({
-  attacker,
-  defender,
-  tile,
-  gameState,
-  updateGameState,
-}) => {
-  const roundSoldiers = buildRoundSoldiers(tile.defence);
+export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
+  const { attacker, gameState, updateGameState } = props;
+  const isCaravan = props.mode === 'caravan';
+  const defender = isCaravan ? undefined : props.defender;
+  const tile = isCaravan ? undefined : props.tile;
+  const caravanDefence = isCaravan ? props.caravanDefence : undefined;
+  const caravanPrize = isCaravan ? props.caravanPrize : undefined;
+
+  const defence = isCaravan ? (caravanDefence ?? 1) : (tile?.defence ?? 1);
+  const roundSoldiers = buildRoundSoldiers(defence);
   const totalRounds = roundSoldiers.length;
 
   const [currentRound, setCurrentRound] = useState(0);
@@ -131,44 +147,55 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           const o = determineBattleOutcome(newResults);
           const totalAttDead = newResults.reduce((s, r) => s + r.defenderKills, 0);
 
-          attacker.units = Math.max(0, attacker.units - totalAttDead);
-
-          if (o === 'attacker') {
-            const prevOwner = gameState.players.find((p) => p.name === tile.owner);
-            if (prevOwner) prevOwner.charisma = Math.max(1, prevOwner.charisma - 1);
-            gameState.players.forEach((p) => {
-              p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-            });
-            tile.owner = attacker.name;
-            tile._level = 1;
-            attacker.ownedTiles.push(attacker.position);
-            attacker.charisma++;
-            gameState.gameMessage = `${attacker.name} won ${tile.name} sacrificing ${totalAttDead}🧍`;
-          } else if (o === 'defender') {
-            attacker.charisma = Math.max(1, attacker.charisma - 1);
-            gameState.gameMessage = `${attacker.name} lost ${totalAttDead}🧍 in the battle for ${tile.name}`;
-          } else {
-            const prevOwner = gameState.players.find((p) => p.name === tile.owner);
-            if (prevOwner) prevOwner.charisma = Math.max(1, prevOwner.charisma - 1);
-            attacker.charisma = Math.max(1, attacker.charisma - 1);
-            gameState.players.forEach((p) => {
-              p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-            });
-            tile.owner = null;
-            tile._level = 1;
-            gameState.gameMessage = `${tile.name} was razed! ${attacker.name} lost ${totalAttDead}🧍`;
-          }
-          updateGameState(gameState);
-
           let msg = '';
-          if (o === 'attacker')
-            msg = `Win: ${attacker.name} wins ${tile.name} by sacrificing ${totalAttDead}🧍`;
-          else if (o === 'defender')
-            msg = `Lose: ${attacker.name} loses ${totalAttDead}🧍 in the battle for ${tile.name}`;
-          else
-            msg = `Raze: ${tile.name} was razed! ${attacker.name} loses ${totalAttDead}🧍`;
 
-          setOutcome(o);
+          if (isCaravan) {
+            const won = o === 'attacker';
+            if (won) {
+              attacker.gold += caravanPrize!;
+              gameState.gameMessage = `${attacker.name} raided the caravan and received ${caravanPrize}🟡!`;
+              msg = `Victory! Received ${caravanPrize}🟡`;
+            } else {
+              attacker.units = Math.max(0, attacker.units - totalAttDead);
+              gameState.gameMessage = `${attacker.name} failed to raid the caravan, losing ${totalAttDead}🧍`;
+              msg = `Defeat! Lost ${totalAttDead}🧍`;
+            }
+            setOutcome(won ? 'attacker' : 'defender');
+          } else {
+            attacker.units = Math.max(0, attacker.units - totalAttDead);
+
+            if (o === 'attacker') {
+              const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
+              if (prevOwner) prevOwner.charisma = Math.max(1, prevOwner.charisma - 1);
+              gameState.players.forEach((p) => {
+                p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
+              });
+              tile!.owner = attacker.name;
+              tile!._level = 1;
+              attacker.ownedTiles.push(attacker.position);
+              attacker.charisma++;
+              gameState.gameMessage = `${attacker.name} won ${tile!.name} sacrificing ${totalAttDead}🧍`;
+              msg = `Win: ${attacker.name} wins ${tile!.name} by sacrificing ${totalAttDead}🧍`;
+            } else if (o === 'defender') {
+              attacker.charisma = Math.max(1, attacker.charisma - 1);
+              gameState.gameMessage = `${attacker.name} lost ${totalAttDead}🧍 in the battle for ${tile!.name}`;
+              msg = `Lose: ${attacker.name} loses ${totalAttDead}🧍 in the battle for ${tile!.name}`;
+            } else {
+              const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
+              if (prevOwner) prevOwner.charisma = Math.max(1, prevOwner.charisma - 1);
+              attacker.charisma = Math.max(1, attacker.charisma - 1);
+              gameState.players.forEach((p) => {
+                p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
+              });
+              tile!.owner = null;
+              tile!._level = 1;
+              gameState.gameMessage = `${tile!.name} was razed! ${attacker.name} lost ${totalAttDead}🧍`;
+              msg = `Raze: ${tile!.name} was razed! ${attacker.name} loses ${totalAttDead}🧍`;
+            }
+            setOutcome(o);
+          }
+
+          updateGameState(gameState);
           setResultMsg(msg);
           setPhase('result');
         }, 2000);
@@ -179,6 +206,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     const t = setTimeout(() => setRevealCount((c) => c + 1), 100);
     return () => clearTimeout(t);
   }, [phase, revealCount]);
+
+  // In caravan mode the defender auto-rolls — no button shown
+  useEffect(() => {
+    if (phase !== 'defender-roll' || !isCaravan) return;
+    const t = setTimeout(() => handleDefenderRoll(), 800);
+    return () => clearTimeout(t);
+  }, [phase, isCaravan]);
 
   const handleAttackerRoll = () => {
     const roll = rollDice();
@@ -205,7 +239,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 
   const handleClose = () => {
     clearScreen();
-    setEndTurn();
+    if (isCaravan) {
+      (props as { onClose: () => void }).onClose();
+    } else {
+      setEndTurn();
+    }
   };
 
   // How many units are visible in current phase
@@ -218,7 +256,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     phase === 'deaths' ? Math.max(0, revealCount - attackerKills) : defenderKills;
 
   const attackerImg = playerImageAssets[attacker.image];
-  const defenderImg = playerImageAssets[defender.image];
+  const defenderImg = defender ? playerImageAssets[defender.image] : null;
 
   const UnitRow = ({
     total,
@@ -260,7 +298,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     <ScreenBackground image="assets/screens/battle.jpg">
       <div className="battle-screen">
         <div className="battle-header">
-          ⚔️ Battle for <strong>{tile.name}</strong>
+          {isCaravan ? '🐪 Caravan raid!' : <>⚔️ Battle for <strong>{tile!.name}</strong></>}
         </div>
         <div className="battle-round-label">
           Round {currentRound + 1} / {totalRounds}
@@ -297,7 +335,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         <div className="battle-side defender-side">
           <UnitRow total={soldiers} kills={attackerKills} deathsShown={defenderDeadShown} />
           <div className="battle-player-info defender-info">
-            <img src={defenderImg} alt={defender.name} className="battle-player-icon" />
+            {defenderImg
+              ? <img src={defenderImg} alt={defender!.name} className="battle-player-icon" />
+              : <span className="battle-player-icon" style={{ fontSize: '2rem', lineHeight: 1 }}>🐪</span>
+            }
             {defenderRoll !== null && (
               <span className="battle-roll-result">
                 🎲{defenderRoll} → {roundDataRef.current.defenderKills}💀
@@ -306,11 +347,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           </div>
         </div>
 
-        {/* Defender roll prompt */}
-        {phase === 'defender-roll' && (
+        {/* Defender roll prompt — hidden in caravan mode (auto-rolls) */}
+        {phase === 'defender-roll' && !isCaravan && (
           <div className="battle-roll-prompt defender-prompt">
-            <span className="battle-player-name" style={{ color: defender.color }}>
-              {defender.name}
+            <span className="battle-player-name" style={{ color: defender!.color }}>
+              {defender!.name}
             </span>
             <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
               🛡️ Defend!

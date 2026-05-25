@@ -10,6 +10,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
+  player.caravanEncounters = 0;
   console.log('Action: pass start for', player.name);
 
   // Calculate profits from owned tiles based on their bonusType and level

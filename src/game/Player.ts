@@ -21,6 +21,8 @@ export class Player {
   circles: number;
   dragonEncounters: number;
   dragonEncounteredLastTurn: boolean;
+  caravanEncounters: number;
+  caravanEncounteredLastTurn: boolean;
 
   constructor(params: PlayerParams) {
     this.name = params.name;
@@ -35,5 +37,7 @@ export class Player {
     this.circles = 0;
     this.dragonEncounters = 0;
     this.dragonEncounteredLastTurn = false;
+    this.caravanEncounters = 0;
+    this.caravanEncounteredLastTurn = false;
   }
 }

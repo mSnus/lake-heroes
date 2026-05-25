@@ -34,6 +34,7 @@ import { handleSphynx } from './actions/sphynx';
 import { handleTavern } from './actions/tavern';
 import { handleTreasureBox } from './actions/treasureBox';
 import { fightDragon } from './actions/fightDragon';
+import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
@@ -207,6 +208,55 @@ function App() {
                   ],
                 });
                 break;
+              case 'caravan':
+                showScreen({
+                  screenType: 'caravan',
+                  background: 'assets/screens/caravan.jpg',
+                  caravanDefence: savedScreen.caravanDefence,
+                  caravanPrize: savedScreen.caravanPrize,
+                  message: savedScreen.message,
+                  buttons: [
+                    {
+                      label: 'Attack!',
+                      onClick: () => showScreen({
+                        screenType: 'caravan-battle',
+                        caravanDefence: savedScreen.caravanDefence,
+                        caravanPrize: savedScreen.caravanPrize,
+                        content: (
+                          <BattleScreen
+                            mode="caravan"
+                            attacker={restored.activePlayer}
+                            gameState={restored}
+                            updateGameState={updateGameState}
+                            caravanDefence={savedScreen.caravanDefence!}
+                            caravanPrize={savedScreen.caravanPrize!}
+                            onClose={() => afterMoveLogic(restored, updateGameState)}
+                          />
+                        ),
+                      }),
+                    },
+                    { label: 'Let it pass..', onClick: () => { clearScreen(); afterMoveLogic(restored, updateGameState); } },
+                  ],
+                });
+                break;
+              case 'caravan-battle':
+                showScreen({
+                  screenType: 'caravan-battle',
+                  caravanDefence: savedScreen.caravanDefence,
+                  caravanPrize: savedScreen.caravanPrize,
+                  content: (
+                    <BattleScreen
+                      mode="caravan"
+                      attacker={restored.activePlayer}
+                      gameState={restored}
+                      updateGameState={updateGameState}
+                      caravanDefence={savedScreen.caravanDefence!}
+                      caravanPrize={savedScreen.caravanPrize!}
+                      onClose={() => afterMoveLogic(restored, updateGameState)}
+                    />
+                  ),
+                });
+                break;
               case 'portal':
                 showScreen({
                   screenType: 'portal',
@@ -302,6 +352,8 @@ function App() {
         message: screen.message,
         htmlMessage: screen.htmlMessage,
         title: screen.title,
+        caravanDefence: screen.caravanDefence,
+        caravanPrize: screen.caravanPrize,
       });
     } else {
       localStorage.removeItem('game-screen');

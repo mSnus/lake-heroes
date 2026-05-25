@@ -14,6 +14,8 @@ export interface SavedScreen {
   message?: string;
   htmlMessage?: string;
   title?: string;
+  caravanDefence?: number;
+  caravanPrize?: number;
 }
 
 export interface ScreenConfig {
@@ -35,6 +37,8 @@ export interface ScreenConfig {
   };
   message?: string;
   htmlMessage?: string;
+  caravanDefence?: number;
+  caravanPrize?: number;
   buttons?: ScreenButton[];
   sellMode?: boolean;
   sellHeader?: string;
