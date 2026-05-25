@@ -133,6 +133,16 @@ function App() {
     };
   }, [updateGameState]);
 
+  // Preload individual sprite PNGs so they're cached before tiles render
+  useEffect(() => {
+    (tilesData as TileJSON[]).forEach((t) => {
+      if (t.spriteImage) {
+        const img = new Image();
+        img.src = t.spriteImage;
+      }
+    });
+  }, []);
+
   const didInit = useRef(false);
 
   useEffect(() => {
@@ -195,6 +205,15 @@ function App() {
                       },
                     },
                   ],
+                });
+                break;
+              case 'portal':
+                showScreen({
+                  screenType: 'portal',
+                  background: 'assets/screens/portal.jpg',
+                  spriteImage: restored.activeTile.spriteImage,
+                  message: savedScreen.message,
+                  buttons: [{ label: 'Continue', onClick: () => { clearScreen(); afterMoveLogic(restored, updateGameState); } }],
                 });
                 break;
               case 'dragon-attack':

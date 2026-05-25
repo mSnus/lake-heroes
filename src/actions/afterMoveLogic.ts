@@ -43,9 +43,7 @@ export function afterMoveLogic(
       tileName: tile.name,
       ownerName: tile.owner ?? undefined,
       ownerColor,
-      outcomeText: player.units >= defence
-        ? `⚔️ Send ${defence}🧍 soldiers to fight for ${tile.name}`
-        : undefined,
+      outcomeText: undefined,
       gold: player.gold,
       units: player.units,
     };
@@ -53,13 +51,23 @@ export function afterMoveLogic(
     const baseConfig = {
       background: 'assets/screens/guards.jpg',
       fade: true as const,
-      sprite: tile.sprite,
+      spriteImage: tile.spriteImage,
       encounter,
     };
 
     const baseButtons: ScreenButton[] = [
-      { label: `Pay fee ${fee}🟡`, action: 'pay-fee', onClick: () => payFee(board, updateGameState), disabled: player.gold < fee },
-      { label: `Battle ⚔️ (${defence}🧍)`, action: 'fight', onClick: () => fightTile(board, updateGameState), disabled: player.units < defence },
+      {
+        label: `Pay fee ${fee}🟡`,
+        action: 'pay-fee',
+        onClick: () => payFee(board, updateGameState),
+        disabled: player.gold < fee,
+      },
+      {
+        label: `Battle ⚔️ (${defence}🧍)`,
+        action: 'fight',
+        onClick: () => fightTile(board, updateGameState),
+        disabled: player.units < defence,
+      },
     ];
 
     const acceptLossButton: ScreenButton = {
@@ -79,7 +87,11 @@ export function afterMoveLogic(
         sellHeader: `Sell tiles to pay the ${fee}🟡 fee or yield to ${tile.owner}`,
         buttons: baseButtons,
       };
-      extraButtons.push({ label: 'Sell tiles 💰', action: 'fight', onClick: () => showScreen(sellModeConfig) });
+      extraButtons.push({
+        label: 'Sell tiles 💰',
+        action: 'fight',
+        onClick: () => showScreen(sellModeConfig),
+      });
     }
     if (showAcceptLoss) extraButtons.push(acceptLossButton);
     showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });

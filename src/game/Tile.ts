@@ -13,6 +13,7 @@ export interface TileJSON {
   level?: number;
   description?: string;
   sprite?: { x: number; y: number };
+  spriteImage?: string;
   requiredCharisma?: number;
   fog?: boolean;
 }
@@ -29,6 +30,7 @@ export class Tile implements TileJSON {
   _level?: number;
   description?: string;
   sprite?: { x: number; y: number };
+  spriteImage?: string;
   requiredCharisma: number;
   fog: boolean;
 
@@ -44,6 +46,7 @@ export class Tile implements TileJSON {
     this._level = typeof data.level === 'number' ? data.level : 1;
     this.description = data.description;
     this.sprite = data.sprite;
+    this.spriteImage = data.spriteImage;
     this.requiredCharisma = data.requiredCharisma ?? 0;
     this.fog = data.fog !== false && this.isOwnable;
   }
@@ -133,6 +136,7 @@ export class Tile implements TileJSON {
       level: this.level,
       description: this.description,
       sprite: this.sprite,
+      spriteImage: this.spriteImage,
       requiredCharisma: this.requiredCharisma,
       fog: this.fog,
     };

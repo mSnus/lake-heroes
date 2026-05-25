@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
-import { SPRITE_CROP, SPRITE_INTERVAL, SPRITE_PX, SPRITE_SIZE } from '../game/constants';
 import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT } from '../game/constants';
@@ -69,6 +68,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     const owner = tile.owner ? board.players.find((p) => p.name === tile.owner) : null;
     const ownerColor = owner?.color || '#444';
+    const ownerShadow = tile.isOwned() ? ownerColor + ' 0px 0px 0px 4px inset' : 'none';
 
     return (
       <div
@@ -101,21 +101,25 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                       {textPart1} {isMobileLayout() ? '' : textPart2}
                     </div>
                   )}
-                  {tile.sprite && (
+                  {(tile.spriteImage || isFogged) && (
                     <div className={tileSizeClass}>
                       <div
                         className={`tile-sprite ${ownedClass}`}
-                        style={isFogged ? {
-                          backgroundImage: `url(assets/fog.png)`,
-                          backgroundSize: 'cover',
-                          borderRadius: '50%',
-                          borderColor: '#666',
-                        } : {
-                          backgroundImage: `url(assets/sprites3i.png)`,
-                          backgroundPositionX: `-${(tile.sprite.x * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
-                          backgroundPositionY: `-${(tile.sprite.y * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP) * SPRITE_SIZE / (SPRITE_PX - SPRITE_CROP * 2)}px`,
-                          borderColor: ownerColor,
-                        }}
+                        style={
+                          isFogged
+                            ? {
+                                backgroundImage: `url(assets/fog.png)`,
+                                backgroundSize: 'cover',
+                                borderRadius: '50%',
+                                boxShadow: 'none',
+                              }
+                            : {
+                                backgroundImage: `url(${tile.spriteImage})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                boxShadow: ownerShadow,
+                              }
+                        }
                       ></div>
                     </div>
                   )}
@@ -152,7 +156,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         }}
       >
         <div className="player-col">
-          <img className={"player-image" + (player.name == board.activePlayer.name ? " current-player" : '')} src={src} alt={player.name} />
+          <img
+            className={
+              'player-image' + (player.name == board.activePlayer.name ? ' current-player' : '')
+            }
+            src={src}
+            alt={player.name}
+          />
         </div>
       </div>
     );

@@ -122,8 +122,7 @@
 }
 
 .tile-sprite-owned {
-    border-width: 6px;
-    border-style: solid;
+    box-shadow: inset 0px 0px 15px rgb(127 127 127)
 }
 
 .tile-sprite-container {

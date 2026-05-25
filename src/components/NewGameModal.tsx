@@ -75,7 +75,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
   return (
     <GameModal className="modal-new-game" backgroundImage="assets/screens/dragon.jpg" noBorder>
       <>
-        <div className="game-title">The Battle of the Lake</div>
+        <div className="game-title">Dragon's Bounty</div>
         <div className="input-group">
           <label>Heroes: </label>
           <select value={numPlayers} onChange={handleNumPlayersChange}>

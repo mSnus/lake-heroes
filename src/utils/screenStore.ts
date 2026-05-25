@@ -20,7 +20,7 @@ export interface ScreenConfig {
   background?: string;
   fade?: boolean;
   title?: string;
-  sprite?: { x: number; y: number };
+  spriteImage?: string;
   screenType?: string;
   encounter?: {
     playerName: string;

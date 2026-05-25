@@ -1,7 +1,6 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { useScreen } from '../utils/screenStore';
-import { SPRITE_PX, SPRITE_INTERVAL, SPRITE_CROP, SPRITE_COLS, SPRITE_ROWS } from '../game/constants';
 import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
@@ -13,10 +12,7 @@ interface ScreenRendererProps {
   updateGameState: (gs: GameState) => void;
 }
 
-export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
-  gameState,
-  updateGameState,
-}) => {
+export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updateGameState }) => {
   const config = useScreen();
   if (!config) return null;
 
@@ -31,7 +27,9 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
 
   function handleButtonClick(onClick: () => void, action?: string) {
     if (action === 'end-turn') gameEvent('setPhase', 'before-move');
-    try { onClick(); } catch {}
+    try {
+      onClick();
+    } catch {}
   }
 
   return (
@@ -39,35 +37,40 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
       <ScreenBackground image={config.background!}>
         {config.fade && <Fade />}
         {config.title && <div className="text-title">{config.title.trim()}</div>}
-        {config.sprite && (() => {
-          const EFFECTIVE = SPRITE_PX - 2 * SPRITE_CROP;
-          const SHEET_W = (SPRITE_PX + SPRITE_INTERVAL) * SPRITE_COLS;
-          const SHEET_H = (SPRITE_PX + SPRITE_INTERVAL) * SPRITE_ROWS;
-          const ox = config.sprite.x * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP;
-          const oy = config.sprite.y * (SPRITE_PX + SPRITE_INTERVAL) + SPRITE_CROP;
-          return (
-            <div
-              style={{
-                width: '30vw',
-                height: '30vw',
-                borderRadius: '50%',
-                backgroundImage: `url(assets/sprites3i.png)`,
-                backgroundSize: `calc(30vw * ${SHEET_W} / ${EFFECTIVE}) calc(30vw * ${SHEET_H} / ${EFFECTIVE})`,
-                backgroundPositionX: `calc(30vw * ${-ox} / ${EFFECTIVE})`,
-                backgroundPositionY: `calc(30vw * ${-oy} / ${EFFECTIVE})`,
-                marginBottom: '16px',
-                flexShrink: 0,
-                zIndex: 6000,
-              }}
-            />
-          );
-        })()}
+        {config.spriteImage && (
+          <div
+            style={{
+              width: '30vw',
+              height: '30vw',
+              borderRadius: '50%',
+              marginBottom: '16px',
+              flexShrink: 0,
+              zIndex: 6000,
+              backgroundImage: `url(${config.spriteImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+        )}
         {config.encounter && (
           <div className="text-message">
             <strong style={{ color: config.encounter.playerColor }}>
               {config.encounter.playerName}
             </strong>
-            <br />
+            {config.encounter?.gold !== undefined && (
+              <div
+                className="player-stats-savings"
+                style={{
+                  justifyContent: 'center',
+                  marginBottom: '8px',
+                  color: config.encounter.playerColor,
+                }}
+              >
+                <strong>{config.encounter.gold} 🟡</strong>
+                &nbsp;
+                <strong>{config.encounter.units} 🧍</strong>
+              </div>
+            )}
             encounters <strong>{config.encounter.tileName}</strong>
             {config.encounter.ownerName && (
               <>
@@ -100,24 +103,19 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({
         )}
         {config.message && <div className="text-message">{config.message}</div>}
         {config.htmlMessage && (
-          <div
-            className="text-message"
-            dangerouslySetInnerHTML={{ __html: config.htmlMessage }}
-          />
+          <div className="text-message" dangerouslySetInnerHTML={{ __html: config.htmlMessage }} />
         )}
       </ScreenBackground>
       {!config.sellMode && (
         <div className="game-menu" style={{ top: '80vh' }}>
-          {config.encounter?.gold !== undefined && (
-            <div className="player-stats-savings" style={{ justifyContent: 'center', marginBottom: '8px', color: config.encounter.playerColor }}>
-              <span>👛</span>
-              <strong>{config.encounter.gold} 🟡</strong>
-              <strong>{config.encounter.units} 🧍</strong>
-            </div>
-          )}
           <div>
             {buttons.map((btn, i) => (
-              <button key={i} className="game-menu-button" disabled={btn.disabled} onClick={() => handleButtonClick(btn.onClick, btn.action)}>
+              <button
+                key={i}
+                className="game-menu-button"
+                disabled={btn.disabled}
+                onClick={() => handleButtonClick(btn.onClick, btn.action)}
+              >
                 {btn.label}
               </button>
             ))}

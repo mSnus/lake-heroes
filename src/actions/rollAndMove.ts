@@ -6,6 +6,7 @@ import { handlePrison } from './prison';
 import { handleSphynx } from './sphynx';
 import { handleKingCastle } from './king';
 import { handleJoker } from './joker';
+import { handlePortal } from './portal';
 import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
@@ -77,9 +78,8 @@ export async function rollAndMove(
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic
-  const tile = board.activeTile;
-
   const continueTileLogic = () => {
+    const tile = board.activeTile;
     if (tile.name.includes('Treasure')) {
       board.gameMessage = `Roll dice! Discover the treasure inside...`;
       updateGameState(board);
@@ -123,6 +123,10 @@ export async function rollAndMove(
         htmlMessage: tile.description,
         buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
       });
+      return;
+    }
+    if (tile.name.includes('Portal')) {
+      handlePortal(board, updateGameState, continueTileLogic);
       return;
     }
     if (tile.name.includes('King')) {
