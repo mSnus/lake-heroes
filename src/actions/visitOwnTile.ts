@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
+import { syndicateMultiplier } from '../game/syndicate';
 export function handleVisitOwnTile(
   board: GameState | null,
   updateGameState: (board: GameState) => void
@@ -13,24 +14,25 @@ export function handleVisitOwnTile(
 
   console.log('Action: visit own tile', player, tile);
 
-  let rewards = [];
-  if (tile.bonusType === 'gold') {
-    const goldReward = tile.bonuses[tile.level] || 0;
-    rewards.push(`${goldReward}🟡`);
+  const mult = syndicateMultiplier(board, player, tile.group);
+  const syndicateTag = mult > 1 ? ' (Syndicate ×2)' : '';
 
+  const rewards = [];
+  if (tile.bonusType === 'gold') {
+    const goldReward = (tile.bonuses[tile.level] || 0) * mult;
+    rewards.push(`${goldReward}🟡`);
     player.gold += goldReward;
   }
 
   if (tile.bonusType === 'units') {
-    const unitsReward = tile.bonuses[tile.level] || 0;
+    const unitsReward = (tile.bonuses[tile.level] || 0) * mult;
     rewards.push(`${unitsReward}🧍`);
-
     player.units += unitsReward;
   }
 
   const rewardsStr = rewards.join(' and ');
-  say(`${tile.name} provides ${player.name} with ${rewardsStr}!`, 'debug');
-  board.gameMessage = `Your ${tile.name} provides you with ${rewardsStr}!`;
+  say(`${tile.name} provides ${player.name} with ${rewardsStr}${syndicateTag}!`, 'debug');
+  board.gameMessage = `Your ${tile.name} provides you with ${rewardsStr}${syndicateTag}!`;
 
   updateGameState(board);
   setEndTurn();

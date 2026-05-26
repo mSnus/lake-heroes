@@ -24,9 +24,17 @@ export function afterMoveLogic(
   }
 
   if (tile.isOwned() && tile.owner !== player.name) {
+    const owner = board.players.find((p) => p.name === tile.owner);
+
+    // Owner is in prison — no fee collected
+    if (owner && (owner.turnsToSkip ?? 0) > 0) {
+      setEndTurn();
+      return;
+    }
+
     const fee = tile.fee;
     const defence = tile.defence;
-    const ownerColor = board.players.find((p) => p.name === tile.owner)?.color;
+    const ownerColor = owner?.color;
 
     const totalSellGold = player.ownedTiles.reduce((sum, posIdx) => {
       const t = board.tiles[posIdx];

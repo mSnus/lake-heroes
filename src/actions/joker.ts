@@ -91,7 +91,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   showScreen({
     screenType: 'joker',
     background: 'assets/screens/joker.jpg',
-    message: `${event}\n${message}`,
-    buttons: [{ label: 'Continue', action: 'end-turn', onClick: clearScreen }],
+    message: `${message}`,
+    buttons: [{ label: 'Accept your destiny', action: 'end-turn', onClick: clearScreen }],
   });
 }
