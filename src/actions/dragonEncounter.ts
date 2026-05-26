@@ -4,7 +4,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 
-const ENCOUNTER_CHANCE = 1 / 18;
+const ENCOUNTER_CHANCE = 1 / 12;
 const ATTACK_CHANCE = 1 / 6;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
 const CHARISMA_THRESHOLD = 5;

@@ -5,6 +5,8 @@ import { GameState } from '../game/GameState';
 import { rollDice } from '../game/Dice';
 import { clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { showDice } from '../utils/diceStore';
+import { say } from '../utils/say';
 import { playerImageAssets } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import '../styles/BattleScreen.css';
@@ -41,6 +43,15 @@ export type BattleScreenProps = {
   onClose: () => void;
   defender?: never;
   tile?: never;
+} | {
+  attacker: Player;
+  gameState: GameState;
+  updateGameState: (gs: GameState) => void;
+  // Dragon battle (50 vs 50)
+  mode: 'dragon';
+  defender?: never;
+  tile?: never;
+  onClose?: never;
 };
 
 function buildRoundSoldiers(defence: number): number[] {
@@ -65,15 +76,18 @@ function determineBattleOutcome(results: RoundResult[]): BattleOutcome {
   return 'raze';
 }
 
+const DRAGON_UNITS = 50;
+
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const { attacker, gameState, updateGameState } = props;
   const isCaravan = props.mode === 'caravan';
-  const defender = isCaravan ? undefined : props.defender;
-  const tile = isCaravan ? undefined : props.tile;
+  const isDragon = props.mode === 'dragon';
+  const defender = (!isCaravan && !isDragon) ? props.defender : undefined;
+  const tile = (!isCaravan && !isDragon) ? props.tile : undefined;
   const caravanDefence = isCaravan ? props.caravanDefence : undefined;
   const caravanPrize = isCaravan ? props.caravanPrize : undefined;
 
-  const defence = isCaravan ? (caravanDefence ?? 1) : (tile?.defence ?? 1);
+  const defence = isCaravan ? (caravanDefence ?? 1) : isDragon ? DRAGON_UNITS : (tile?.defence ?? 1);
   const roundSoldiers = buildRoundSoldiers(defence);
   const totalRounds = roundSoldiers.length;
 
@@ -149,18 +163,39 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           let msg = '';
 
-          if (isCaravan) {
-            const won = o === 'attacker';
-            if (won) {
+          if (isDragon) {
+            if (o === 'attacker' || o === 'raze') {
+              gameState.gameMessage = `${attacker.name} slays the Dragon! 🐉 VICTORY!`;
+              gameState.gameOver = true;
+              say(`${attacker.name} slays the Dragon and wins the game! 🎉`, 'success');
+              msg = 'The Dragon is slain! 🐉 VICTORY!';
+            } else {
+              const unitLoss = Math.ceil(attacker.units / 2);
+              const goldLoss = attacker.gold;
+              attacker.units = Math.max(0, attacker.units - unitLoss);
+              attacker.gold = 0;
+              gameState.gameMessage = `${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
+              say(`${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍.`, 'error');
+              msg = `Defeated! Lost all gold and ${unitLoss}🧍`;
+            }
+            setOutcome(o === 'attacker' || o === 'raze' ? 'attacker' : 'defender');
+          } else if (isCaravan) {
+            if (o === 'attacker') {
               attacker.gold += caravanPrize!;
               gameState.gameMessage = `${attacker.name} raided the caravan and received ${caravanPrize}🟡!`;
               msg = `Victory! Received ${caravanPrize}🟡`;
+            } else if (o === 'raze') {
+              const halfPrize = Math.floor(caravanPrize! / 2);
+              attacker.units = Math.max(0, attacker.units - totalAttDead);
+              attacker.gold += halfPrize;
+              gameState.gameMessage = `${attacker.name} tied with the caravan guards, losing ${totalAttDead}🧍 but receiving ${halfPrize}🟡`;
+              msg = `Tie! Lost ${totalAttDead}🧍, received ${halfPrize}🟡`;
             } else {
               attacker.units = Math.max(0, attacker.units - totalAttDead);
               gameState.gameMessage = `${attacker.name} failed to raid the caravan, losing ${totalAttDead}🧍`;
               msg = `Defeat! Lost ${totalAttDead}🧍`;
             }
-            setOutcome(won ? 'attacker' : 'defender');
+            setOutcome(o === 'attacker' ? 'attacker' : o === 'raze' ? 'raze' : 'defender');
           } else {
             attacker.units = Math.max(0, attacker.units - totalAttDead);
 
@@ -207,12 +242,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     return () => clearTimeout(t);
   }, [phase, revealCount]);
 
-  // In caravan mode the defender auto-rolls — no button shown
+  // In caravan/dragon mode the defender auto-rolls — no button shown
   useEffect(() => {
-    if (phase !== 'defender-roll' || !isCaravan) return;
+    if (phase !== 'defender-roll' || (!isCaravan && !isDragon)) return;
     const t = setTimeout(() => handleDefenderRoll(), 800);
     return () => clearTimeout(t);
-  }, [phase, isCaravan]);
+  }, [phase, isCaravan, isDragon]);
 
   const handleAttackerRoll = () => {
     const roll = rollDice();
@@ -241,6 +276,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     clearScreen();
     if (isCaravan) {
       (props as { onClose: () => void }).onClose();
+    } else if (isDragon) {
+      // Win: gameOver already set — nothing else needed
+      // Loss: next turn
+      if (outcome !== 'attacker') showDice();
     } else {
       setEndTurn();
     }
@@ -298,7 +337,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     <ScreenBackground image="assets/screens/battle.jpg">
       <div className="battle-screen">
         <div className="battle-header">
-          {isCaravan ? '🐪 Caravan raid!' : <>⚔️ Battle for <strong>{tile!.name}</strong></>}
+          {isCaravan ? '🐪 Caravan raid!' : isDragon ? '🐉 Dragon Battle!' : <>⚔️ Battle for <strong>{tile!.name}</strong></>}
         </div>
         <div className="battle-round-label">
           Round {currentRound + 1} / {totalRounds}
@@ -337,7 +376,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           <div className="battle-player-info defender-info">
             {defenderImg
               ? <img src={defenderImg} alt={defender!.name} className="battle-player-icon" />
-              : <span className="battle-player-icon" style={{ fontSize: '2rem', lineHeight: 1 }}>🐪</span>
+              : <span className="battle-player-icon" style={{ fontSize: '2rem', lineHeight: 1 }}>{isDragon ? '🐉' : '🐪'}</span>
             }
             {defenderRoll !== null && (
               <span className="battle-roll-result">
@@ -347,8 +386,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
         </div>
 
-        {/* Defender roll prompt — hidden in caravan mode (auto-rolls) */}
-        {phase === 'defender-roll' && !isCaravan && (
+        {/* Defender roll prompt — hidden in caravan/dragon mode (auto-rolls) */}
+        {phase === 'defender-roll' && !isCaravan && !isDragon && (
           <div className="battle-roll-prompt defender-prompt">
             <span className="battle-player-name" style={{ color: defender!.color }}>
               {defender!.name}

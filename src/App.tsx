@@ -283,6 +283,19 @@ function App() {
                   ],
                 });
                 break;
+              case 'dragon-battle':
+                showScreen({
+                  screenType: 'dragon-battle',
+                  content: (
+                    <BattleScreen
+                      mode="dragon"
+                      attacker={restored.activePlayer}
+                      gameState={restored}
+                      updateGameState={updateGameState}
+                    />
+                  ),
+                });
+                break;
               case 'sphynx':
                 showDice((roll: number) => handleSphynx(restored, updateGameState, roll));
                 showScreen({
@@ -408,10 +421,15 @@ function App() {
             gap: '1.5rem',
           }}
         >
-          <div>🐉 {gameState.gameMessage} 🐉</div>
+          <div>🐉 Congratulations! You won the hardest battle, all the treasures are yours! 🐉</div>
           <button
             style={{ fontSize: '1.2rem', padding: '0.6rem 2rem', cursor: 'pointer' }}
-            onClick={() => showScreen({ content: <NewGameModal onStart={handleStartGame} /> })}
+            onClick={() => {
+              localStorage.removeItem('game-state');
+              localStorage.removeItem('game-screen');
+              setGameState(null);
+              showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
+            }}
           >
             New Game
           </button>

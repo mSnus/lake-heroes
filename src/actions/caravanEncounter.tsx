@@ -10,6 +10,8 @@ export function checkCaravanEncounter(
 ): boolean {
   const player = board.activePlayer;
 
+  // Not enough units to threaten a caravan
+  if (player.units < 3) return false;
   // No back-to-back
   if (player.caravanEncounteredLastTurn) {
     player.caravanEncounteredLastTurn = false;
