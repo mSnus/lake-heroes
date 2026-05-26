@@ -106,6 +106,10 @@ body {
   justify-content: center;
 }
 
+.board-section {
+  position: relative;
+}
+
 .side-pane {
   width: 100%;
 }

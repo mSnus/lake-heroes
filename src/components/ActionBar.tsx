@@ -4,24 +4,15 @@ import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
-import { showScreen } from '../utils/screenStore';
 import { CurrentPlayer } from './CurrentPlayer';
-import HelpScreen from './HelpScreen';
 import '../styles/ActionBar.css';
 
 interface ActionBarProps {
   gameState: GameState | null;
   updateGameState: (gs: GameState) => void;
-  onOpenLog: () => void;
-  onNewGame: () => void;
 }
 
-export const ActionBar: React.FC<ActionBarProps> = ({
-  gameState,
-  updateGameState,
-  onOpenLog,
-  onNewGame,
-}) => {
+export const ActionBar: React.FC<ActionBarProps> = ({ gameState, updateGameState }) => {
   const { active: diceActive } = useModal();
   const endTurnReady = useEndTurnReady();
   const canEndTurn = endTurnReady && !diceActive;
@@ -31,75 +22,29 @@ export const ActionBar: React.FC<ActionBarProps> = ({
     const handler = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault();
-        if (diceActive) startDiceRoll();
-        else if (canEndTurn) handleEndTurn();
+        if (diceActive) {
+          startDiceRoll();
+        } else if (canEndTurn && gameState) {
+          gameEvent('setPhase', 'before-move');
+          gameEvent('displayTile', {});
+          endTurn(gameState, updateGameState);
+        }
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [diceActive, canEndTurn]);
-
-  function handleNewGame() {
-    if (
-      window.confirm('Are you sure you want to start a new game? Your current progress will be lost.')
-    ) {
-      try {
-        localStorage.removeItem('game-state');
-        onNewGame();
-      } catch {
-        // ignore storage errors
-      } finally {
-        window.location.reload();
-      }
-    }
-  }
-
-  function handleEndTurn() {
-    if (!gameState || !canEndTurn) return;
-    gameEvent('setPhase', 'before-move');
-    gameEvent('displayTile', {});
-    endTurn(gameState, updateGameState);
-  }
+  }, [diceActive, canEndTurn, gameState, updateGameState]);
 
   return (
-    <>
-      <div className="action-bar-corner action-bar-corner--left" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <div className="shield-button-container" title="New Game">
-          <button onClick={handleNewGame} className="shield-button">
-            🐲
-          </button>
-        </div>
-        <div className="shield-button-container" title="Help">
-          <button onClick={() => showScreen({ content: <HelpScreen /> })} className="shield-button">
-            ?
-          </button>
-        </div>
-      </div>
-      <div
-        className="action-bar"
-        style={{
-          borderColor: gameState?.activePlayer.color ?? '#eeeeee',
-          borderTopStyle: 'solid',
-          borderTopWidth: '4px',
-        }}
-      >
-        {gameState && <CurrentPlayer gameState={gameState} />}
-
-        {canEndTurn && (
-          <div className="shield-button-container main-button" title="End Turn">
-            <button onClick={handleEndTurn} className="shield-button">
-              ⏳
-            </button>
-          </div>
-        )}
-        {diceActive && (
-          <div className="shield-button-container main-button" title="Roll Dice">
-            <button onClick={startDiceRoll} className="shield-button">
-              🎲
-            </button>
-          </div>
-        )}
-      </div>
-    </>
+    <div
+      className="action-bar"
+      style={{
+        borderColor: gameState?.activePlayer.color ?? '#eeeeee',
+        borderTopStyle: 'solid',
+        borderTopWidth: '4px',
+      }}
+    >
+      {gameState && <CurrentPlayer gameState={gameState} />}
+    </div>
   );
 };

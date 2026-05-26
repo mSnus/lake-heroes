@@ -9,11 +9,13 @@ export function handlePortal(
   onContinue: () => void
 ) {
   const player = board.activePlayer;
+  const portalPos = player.position;
 
-  // Teleport forward 7–16 tiles, but stop 1 tile before King's Castle
-  const steps = Math.floor(Math.random() * 10) + 7;
-  const rawPos = player.position + steps;
-  const newPos = rawPos >= TILE_COUNT ? TILE_COUNT - 1 : rawPos;
+  // Teleport to any random tile except the portal itself
+  let newPos: number;
+  do {
+    newPos = Math.floor(Math.random() * TILE_COUNT);
+  } while (newPos === portalPos);
 
   player.position = newPos;
 

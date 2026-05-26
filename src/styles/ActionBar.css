@@ -25,19 +25,6 @@
   align-self: center;
 }
 
-.action-bar-corner {
-  position: absolute;
-  top: 8px;
-  z-index: 200;
-}
-
-.action-bar-corner--left {
-  left: 8px;
-}
-
-.action-bar-corner--right {
-  right: 8px;
-}
 
 .shield-button-container--disabled {
   opacity: 0.35;

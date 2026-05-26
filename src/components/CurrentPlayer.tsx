@@ -45,16 +45,34 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         }}
         className="current-player"
       >
-        <span style={{ color: activePlayer.color }}>{activePlayer.name} </span> is at
+        
+        <span style={{ color: activePlayer.color }}>{activePlayer.name} </span> 
+        {/* charisma */}
+        <div
+          className="player-stats-savings"
+          id="statsCharisma"
+          onClick={() =>
+            say('Your Charisma. Gain it by owning the tiles and winning the battles!', 'info')
+          }
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="player-stats-hint"></div>
+          <div>
+            <strong>🏆 {activePlayer.charisma ?? 1}</strong>
+          </div>
+        </div>
+        <span>is&nbsp;at</span>
         <span style={{ color: gameState.activeTile.groupColor }}>{gameState.activeTile.name} </span>
       </div>
 
       <div className="player-stats-gold">
         {/* wealth */}
-        <div className="player-stats-savings" id="statsOwnedResources" onClick={() => say('Current money and units you own', 'info')} style={{ cursor: 'pointer' }}>
-          <div>
-            👛
-          </div>
+        <div
+          className="player-stats-data"
+          id="statsOwnedResources"
+          onClick={() => say('Current money and units you own', 'info')}
+        >
+          <div className="player-stats-hint">👛</div>
           <div className="player-stats-hint"></div>
           <div>
             <strong>{activePlayer.gold ?? 0} 🟡</strong>
@@ -64,18 +82,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        {/* charisma */}
-        <div className="player-stats-savings" id="statsCharisma" onClick={() => say('Your Charisma. Gain it by owning the tiles and winning the battles!', 'info')} style={{ cursor: 'pointer' }}>
-          <div className="player-stats-hint"></div>
-          <div>
-            <strong>🏆 {activePlayer.charisma ?? 1}</strong>
-          </div>
-        </div>
-
         {/* wages per turn */}
-        <div className="player-stats-per-turn" id="statsPerTurn" onClick={() => say("Your wages after passing the King's Castle", 'info')} style={{ cursor: 'pointer' }}>
+        <div
+          className="player-stats-data"
+          id="statsPerTurn"
+          onClick={() => say("Your wages after passing the King's Castle", 'info')}
+        >
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div className="player-stats-hint" style={{ marginRight: '8px' }}>
+            <div className="player-stats-hint">
               🏰
             </div>
 

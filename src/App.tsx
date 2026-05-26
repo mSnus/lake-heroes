@@ -39,6 +39,7 @@ import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
+import { ShieldColumn } from './components/ShieldColumn';
 import { ScreenRenderer } from './components/ScreenRenderer';
 
 function App() {
@@ -443,21 +444,17 @@ function App() {
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
-            <div className="action-bar-corner action-bar-corner--right" title="Game Log">
-              <div className="shield-button-container">
-                <button onClick={handleOpenLog} className="shield-button">
-                  📜
-                </button>
-              </div>
-            </div>
+            <ShieldColumn
+              gameState={gameState}
+              updateGameState={updateGameState}
+              onOpenLog={handleOpenLog}
+            />
           </div>
 
           <div className="side-pane">
             <ActionBar
               gameState={gameState}
               updateGameState={updateGameState}
-              onOpenLog={handleOpenLog}
-              onNewGame={() => {}}
             />
 
             {showLogModal && (

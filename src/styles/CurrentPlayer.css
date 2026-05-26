@@ -23,6 +23,17 @@
   border: 2px solid #fff;
 }
 
+.player-stats-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.player-stats-data div:first-child {
+  margin-right: 8px;
+}
+
 .player-stats-gold {
   display: flex;
   flex-direction: row;
@@ -33,14 +44,14 @@
   justify-content: space-around;
 }
 
-.player-stats-gold > div {
+.player-stats-gold>div {
   display: flex;
   flex-direction: row;
   gap: 12px;
   white-space: nowrap;
 }
 
-.player-stats-gold div > div{
+.player-stats-gold div>div {
   text-align: right;
 }
 
