@@ -60,18 +60,20 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({ gameState, updateGam
         <div className="shield-button-container" title="Game Log">
           <button onClick={onOpenLog} className="shield-button">📜</button>
         </div>
-        {canEndTurn && (
-          <div className="shield-button-container main-button" title="End Turn">
-            <button onClick={handleEndTurn} className="shield-button">⏳</button>
-          </div>
-        )}
       </div>
 
-      {diceActive && (
+      {(diceActive || canEndTurn) && (
         <div style={{ ...colStyle, bottom: '16vh' }}>
-          <div className="shield-button-container main-button" title="Roll Dice">
-            <button onClick={startDiceRoll} className="shield-button">🎲</button>
-          </div>
+          {diceActive && (
+            <div className="shield-button-container main-button" title="Roll Dice">
+              <button onClick={startDiceRoll} className="shield-button">🎲</button>
+            </div>
+          )}
+          {canEndTurn && (
+            <div className="shield-button-container main-button" title="End Turn">
+              <button onClick={handleEndTurn} className="shield-button">⏳</button>
+            </div>
+          )}
         </div>
       )}
     </>
