@@ -59,6 +59,10 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   let canUpgrade = false;
   const activePlayer = gameState?.activePlayer ?? null;
+  const cantAfford =
+    (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
+    (activePlayer && (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)) ||
+    (tile.requiredCharisma > 0 && activePlayer && (activePlayer.charisma ?? 1) < tile.requiredCharisma);
 
   if (mode === 'owned' && activePlayer) {
     const currentLevel = tile.level || 1;
@@ -234,7 +238,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div>
                     <div>
                       <div>
-                        <div>to own:</div>
+                        <div style={cantAfford ? { color: '#ff4444' } : undefined}>
+                          {cantAfford ? "can't own" : 'to own:'}
+                        </div>
                         <span
                           style={
                             activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
