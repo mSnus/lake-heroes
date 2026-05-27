@@ -5,7 +5,7 @@ export interface PlayerParams {
   units: number;
   position: number;
   image: string;
-  charisma?: number;
+  fame?: number;
 }
 
 export class Player {
@@ -17,7 +17,7 @@ export class Player {
   position: number;
   image: string;
   turnsToSkip: number;
-  charisma: number;
+  fame: number;
   circles: number;
   dragonEncounters: number;
   dragonEncounteredLastTurn: boolean;
@@ -33,7 +33,7 @@ export class Player {
     this.image = params.image;
     this.ownedTiles = [];
     this.turnsToSkip = 0;
-    this.charisma = params.charisma ?? 1;
+    this.fame = params.fame ?? 1;
     this.circles = 0;
     this.dragonEncounters = 0;
     this.dragonEncounteredLastTurn = false;

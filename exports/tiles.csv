@@ -1,4 +1,4 @@
-index,group,name,isOwnable,bonusType,requiredCharisma,gold_1,units_1,gold_2,units_2,gold_3,units_3,bonus1,bonus2,bonus3,defence1,defence2,defence3
+index,group,name,isOwnable,bonusType,requiredFame,gold_1,units_1,gold_2,units_2,gold_3,units_3,bonus1,bonus2,bonus3,defence1,defence2,defence3
 1,"Mills","Water mill","true","gold",0,200,2,300,5,500,10,100,200,300,10,15,30
 2,"Mills","Windmill","true","gold",0,250,3,360,6,600,12,120,240,360,12,18,36
 3,"Mills","Brick factory","true","gold",4,300,6,360,6,600,12,120,240,360,12,18,36

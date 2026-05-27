@@ -62,7 +62,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
     (activePlayer && (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)) ||
-    (tile.requiredCharisma > 0 && activePlayer && (activePlayer.charisma ?? 1) < tile.requiredCharisma);
+    (tile.requiredFame > 0 && activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame);
 
   if (mode === 'owned' && activePlayer) {
     const currentLevel = tile.level || 1;
@@ -168,7 +168,9 @@ export const TileCard: React.FC<TileCardProps> = ({
           </div>
         )}
 
-        <div className="tile-card-title" onClick={handleInfoClick} style={{ cursor: 'pointer' }}>{tile.name}</div>
+        <div className="tile-card-title" onClick={handleInfoClick} style={{ cursor: 'pointer' }}>
+          {tile.name}
+        </div>
 
         {mode === 'display' && (
           <button
@@ -217,7 +219,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                         <div>
                           +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
                         </div>
-                        <div>per turn</div>
+                        <div>per circle</div>
                       </div>
                     </div>
                   )}
@@ -256,7 +258,8 @@ export const TileCard: React.FC<TileCardProps> = ({
                         {'  '}
                         <span
                           style={
-                            activePlayer && (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)
+                            activePlayer &&
+                            (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)
                               ? { color: '#ff4444' }
                               : {}
                           }
@@ -266,20 +269,18 @@ export const TileCard: React.FC<TileCardProps> = ({
                             '🔻'}
                           {tile.currentPrice.units ?? 0}🧍
                         </span>
-                        {tile.requiredCharisma > 0 && (
+                        {tile.requiredFame > 0 && (
                           <>
                             {'  '}
                             <span
                               style={
-                                activePlayer && (activePlayer.charisma ?? 1) < tile.requiredCharisma
+                                activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
                                   ? { color: '#ff4444' }
                                   : {}
                               }
                             >
-                              {activePlayer &&
-                                (activePlayer.charisma ?? 1) < tile.requiredCharisma &&
-                                '🔻'}
-                              {tile.requiredCharisma} 🏆
+                              {activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame && '🔻'}
+                              {tile.requiredFame} 🏆
                             </span>
                           </>
                         )}
@@ -292,7 +293,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       tile.isAffordable(
                         activePlayer?.gold ?? 0,
                         activePlayer?.units ?? 0,
-                        activePlayer?.charisma ?? 1
+                        activePlayer?.fame ?? 1
                       ) && (
                         <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
                           Buy
@@ -303,7 +304,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 <div className="tile-card-base-row">
                   <div className="big-icon-hint">
                     +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    <div>per turn</div>
+                    <div>per circle</div>
                   </div>
                 </div>
               </div>
@@ -328,7 +329,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div>upgrade</div>
                 </div>
               </a>
-
             </div>
           )}
 
@@ -338,9 +338,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 <thead>
                   <tr>
                     <th className="tc-th">🚩</th>
-                    <th className="tc-th">
-                      🏰
-                    </th>
+                    <th className="tc-th">🏰</th>
                     <th className="tc-th">🛡️</th>
                   </tr>
                 </thead>

@@ -33,15 +33,15 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
 
   // Apply rewards
   const totalGold = baseGold + goldProfit;
-  const charismaUnits = player.charisma ?? 1;
+  const fameUnits = player.fame ?? 1;
   player.gold += totalGold;
-  player.units += unitsProfit + charismaUnits;
+  player.units += unitsProfit + fameUnits;
 
   // Build toast message summarizing rewards
   const parts: string[] = [];
 
   if (totalGold > 0) parts.push(`${totalGold}🟡`);
-  const totalUnits = unitsProfit + charismaUnits;
+  const totalUnits = unitsProfit + fameUnits;
   if (totalUnits > 0) parts.push(`${totalUnits}🧍`);
 
   const summary = parts.join(' and ');

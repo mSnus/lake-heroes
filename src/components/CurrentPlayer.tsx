@@ -22,7 +22,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   }, [gameState, activePlayer.name]);
 
   let totalGold = 0;
-  let totalUnits = activePlayer.charisma ?? 1;
+  let totalUnits = activePlayer.fame ?? 1;
 
   owned.forEach(({ tile }) => {
     if (tile.bonusType === 'gold') {
@@ -42,23 +42,23 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           paddingBottom: '4px',
           paddingTop: '4px',
           gap: '8px',
+          textAlign: 'center',
         }}
         className="current-player"
       >
-        
-        <span style={{ color: activePlayer.color }}>{activePlayer.name} </span> 
-        {/* charisma */}
+        <span style={{ color: activePlayer.color }}>{activePlayer.name} </span>
+        {/* fame */}
         <div
-          className="player-stats-savings"
-          id="statsCharisma"
+          className="player-stats-fame"
+          id="statsFame"
           onClick={() =>
-            say('Your Charisma. Gain it by owning the tiles and winning the battles!', 'info')
+            say('Your Fame. Gain it by owning the tiles and winning the battles!', 'info')
           }
           style={{ cursor: 'pointer' }}
         >
-          <div className="player-stats-hint"></div>
+          <div></div>
           <div>
-            <strong>🏆 {activePlayer.charisma ?? 1}</strong>
+            <strong>🏆 {activePlayer.fame ?? 1}</strong>
           </div>
         </div>
         <span>is&nbsp;at</span>
@@ -72,8 +72,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           id="statsOwnedResources"
           onClick={() => say('Current money and units you own', 'info')}
         >
-          <div className="player-stats-hint">👛</div>
-          <div className="player-stats-hint"></div>
+          <div
+            className="player-stats-hint"
+            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+          >
+            ⚜️
+          </div>
+          <div></div>
           <div>
             <strong>{activePlayer.gold ?? 0} 🟡</strong>
           </div>
@@ -82,14 +87,17 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        {/* wages per turn */}
+        {/* wages per circle */}
         <div
           className="player-stats-data"
           id="statsPerTurn"
           onClick={() => say("Your wages after passing the King's Castle", 'info')}
         >
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div className="player-stats-hint">
+            <div
+              className="player-stats-hint"
+              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            >
               🏰
             </div>
 

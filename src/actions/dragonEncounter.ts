@@ -6,7 +6,7 @@ import { say } from '../utils/say';
 const ENCOUNTER_CHANCE = 1 / 12;
 const ATTACK_CHANCE = 1 / 6;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
-const CHARISMA_THRESHOLD = 5;
+const FAME_THRESHOLD = 5;
 const CIRCLE_THRESHOLD = 3;
 
 const SKY_MESSAGE = 'You see a giant black dragon passing on the sky';
@@ -39,7 +39,7 @@ export function checkDragonEncounter(
   player.dragonEncounters = (player.dragonEncounters ?? 0) + 1;
   player.dragonEncounteredLastTurn = true;
 
-  if (player.charisma < CHARISMA_THRESHOLD || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
+  if (player.fame < FAME_THRESHOLD || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
     updateGameState(board);
     showDragonSkyScreen(onContinue);
     return true;
@@ -102,10 +102,14 @@ function showDragonSkyScreen(onContinue: () => void) {
   });
 }
 
-function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameState) => void, onContinue: () => void) {
+function handleWeakPlayerAttack(
+  board: GameState,
+  updateGameState: (board: GameState) => void,
+  onContinue: () => void
+) {
   const player = board.activePlayer;
 
-  player.charisma = Math.max(0, player.charisma - 1);
+  player.fame = Math.max(0, player.fame - 1);
 
   let mostExpensiveIdx: number | null = null;
   let maxGold = -1;
@@ -123,7 +127,7 @@ function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameS
 
   if (mostExpensiveIdx === null) {
     message = 'The Dragon swoops down and attacks you!';
-    say(`${player.name} is attacked by the dragon! Charisma lost.`, 'error');
+    say(`${player.name} is attacked by the dragon! Fame lost.`, 'error');
   } else {
     const tile = board.tiles[mostExpensiveIdx];
     const tileName = tile.name;

@@ -43,7 +43,7 @@ export function sellTile(
   const tileIndex = gameState.tiles.indexOf(tile);
   if (tileIndex !== -1) {
     player.ownedTiles = player.ownedTiles.filter((idx) => idx !== tileIndex);
-  player.charisma = Math.max(1, player.charisma - 1);
+    player.fame = Math.max(1, player.fame - 1);
   }
 
   say(`${player.name} sold ${tile.name} for ${totalGold} gold and ${totalUnits} units`, 'info');

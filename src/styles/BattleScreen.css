@@ -82,14 +82,6 @@
   filter: drop-shadow(0 2px 4px #000);
 }
 
-.battle-roll-result {
-  font-size: 0.8rem;
-  color: #ffcc66;
-  text-shadow: 1px 1px 3px #000;
-  white-space: nowrap;
-  font-weight: 600;
-}
-
 .battle-unit-row {
   display: flex;
   flex-wrap: wrap;
@@ -123,6 +115,14 @@
   text-align: center;
 }
 
+.battle-divider--rolls {
+  color: #ffcc66;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-shadow: 1px 1px 4px #000;
+}
+
 .battle-history {
   display: flex;
   flex-wrap: wrap;
@@ -134,51 +134,34 @@
 .battle-history-round {
   background: rgba(0, 0, 0, 0.55);
   color: #ddd;
-  font-size: 0.78rem;
+  font-size: 1.3rem;
   border-radius: 4px;
   padding: 3px 8px;
   text-shadow: 1px 1px 2px #000;
 }
 
-/* Result overlay */
-.battle-result-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 7000;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.battle-result-box {
-  background: linear-gradient(160deg, #2a1a0a, #1a2a0a 60%, #0a1a2a);
-  border: 2px solid #cf9d39;
-  border-radius: 16px;
-  padding: 32px 40px;
+/* Inline result */
+.battle-result-inline {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  max-width: 360px;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 16px 24px;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 8px 40px #000a;
+  margin-top: 4px;
 }
 
-.battle-result-icon {
-  font-size: 3rem;
-}
-
-.battle-result-title {
-  color: #ffe066;
-  font-size: 1.5rem;
-  margin: 0;
-  text-shadow: 1px 1px 6px #000;
+.battle-result-sequence {
+  font-size: 1.6rem;
+  line-height: 1;
+  letter-spacing: 2px;
 }
 
 .battle-result-message {
   color: #eee;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   margin: 0;
   line-height: 1.5;
   text-shadow: 1px 1px 3px #000;

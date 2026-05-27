@@ -14,7 +14,7 @@ export interface TileJSON {
   description?: string;
   sprite?: { x: number; y: number };
   spriteImage?: string;
-  requiredCharisma?: number;
+  requiredFame?: number;
   fog?: boolean;
 }
 
@@ -31,7 +31,7 @@ export class Tile implements TileJSON {
   description?: string;
   sprite?: { x: number; y: number };
   spriteImage?: string;
-  requiredCharisma: number;
+  requiredFame: number;
   fog: boolean;
 
   constructor(data: Partial<TileJSON> = {}) {
@@ -47,7 +47,7 @@ export class Tile implements TileJSON {
     this.description = data.description;
     this.sprite = data.sprite;
     this.spriteImage = data.spriteImage;
-    this.requiredCharisma = data.requiredCharisma ?? 0;
+    this.requiredFame = data.requiredFame ?? 0;
     this.fog = data.fog !== false && this.isOwnable;
   }
 
@@ -79,10 +79,12 @@ export class Tile implements TileJSON {
     return this.fog;
   }
 
-  isAffordable(playerGold: number, playerUnits: number, playerCharisma: number): boolean {
-    return playerGold >= this.prices['1'].gold &&
+  isAffordable(playerGold: number, playerUnits: number, playerFame: number): boolean {
+    return (
+      playerGold >= this.prices['1'].gold &&
       playerUnits >= this.prices['1'].units &&
-      playerCharisma >= this.requiredCharisma;
+      playerFame >= this.requiredFame
+    );
   }
 
   isUpgradeable(playerGold: number, playerUnits: number): boolean {
@@ -137,7 +139,7 @@ export class Tile implements TileJSON {
       description: this.description,
       sprite: this.sprite,
       spriteImage: this.spriteImage,
-      requiredCharisma: this.requiredCharisma,
+      requiredFame: this.requiredFame,
       fog: this.fog,
     };
   }

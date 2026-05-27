@@ -25,8 +25,10 @@ function parseCsvLine(line) {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
-      else inQuotes = !inQuotes;
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else inQuotes = !inQuotes;
     } else if (ch === ',' && !inQuotes) {
       result.push(current);
       current = '';
@@ -38,8 +40,12 @@ function parseCsvLine(line) {
   return result;
 }
 
-function num(val) { return Number(val) || 0; }
-function bool(val) { return val === 'true'; }
+function num(val) {
+  return Number(val) || 0;
+}
+function bool(val) {
+  return val === 'true';
+}
 
 function main() {
   if (!fs.existsSync(csvPath)) {
@@ -50,11 +56,16 @@ function main() {
   // Build lookup by name for preserved fields (icon, sprite, description)
   const preservedByName = {};
   existing.forEach((t, i) => {
-    preservedByName[t.name] = { icon: t.icon, sprite: t.sprite, description: t.description, _index: i };
+    preservedByName[t.name] = {
+      icon: t.icon,
+      sprite: t.sprite,
+      description: t.description,
+      _index: i,
+    };
   });
 
   const csvText = fs.readFileSync(csvPath, 'utf8');
-  const lines = csvText.split('\n').filter(l => l.trim() !== '');
+  const lines = csvText.split('\n').filter((l) => l.trim() !== '');
   const headers = parseCsvLine(lines[0]);
 
   const col = (row, name) => row[headers.indexOf(name)] ?? '';
@@ -76,24 +87,24 @@ function main() {
 
     if (isOwnable) {
       tile.bonusType = col(row, 'bonusType') || 'gold';
-      tile.requiredCharisma = num(col(row, 'requiredCharisma'));
+      tile.requiredFame = num(col(row, 'requiredFame'));
       tile.prices = {
-        '1': { gold: num(col(row, 'gold_1')), units: num(col(row, 'units_1')) },
-        '2': { gold: num(col(row, 'gold_2')), units: num(col(row, 'units_2')) },
-        '3': { gold: num(col(row, 'gold_3')), units: num(col(row, 'units_3')) },
+        1: { gold: num(col(row, 'gold_1')), units: num(col(row, 'units_1')) },
+        2: { gold: num(col(row, 'gold_2')), units: num(col(row, 'units_2')) },
+        3: { gold: num(col(row, 'gold_3')), units: num(col(row, 'units_3')) },
       };
       tile.bonuses = {
-        '1': num(col(row, 'bonus1')),
-        '2': num(col(row, 'bonus2')),
-        '3': num(col(row, 'bonus3')),
+        1: num(col(row, 'bonus1')),
+        2: num(col(row, 'bonus2')),
+        3: num(col(row, 'bonus3')),
       };
       tile.defences = {
-        '1': num(col(row, 'defence1')),
-        '2': num(col(row, 'defence2')),
-        '3': num(col(row, 'defence3')),
+        1: num(col(row, 'defence1')),
+        2: num(col(row, 'defence2')),
+        3: num(col(row, 'defence3')),
       };
     } else {
-      tile.prices = { '1': { gold: 0, units: 0 } };
+      tile.prices = { 1: { gold: 0, units: 0 } };
       tile.bonuses = {};
       tile.defences = {};
       if (pres.description != null) tile.description = pres.description;
@@ -105,7 +116,9 @@ function main() {
   });
 
   fs.writeFileSync(tilesPath, JSON.stringify(tiles, null, 2) + '\n', 'utf8');
-  console.log(`Imported ${tiles.length} tiles from ${path.relative(ROOT, csvPath)} → src/settings/tiles.json`);
+  console.log(
+    `Imported ${tiles.length} tiles from ${path.relative(ROOT, csvPath)} → src/settings/tiles.json`
+  );
 }
 
 main();

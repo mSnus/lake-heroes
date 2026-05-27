@@ -1,7 +1,10 @@
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 
-export async function buyTile(gameState: GameState | null, updateGameState: (state: GameState) => void) {
+export async function buyTile(
+  gameState: GameState | null,
+  updateGameState: (state: GameState) => void
+) {
   if (!gameState) return;
 
   const player = gameState.activePlayer;
@@ -18,7 +21,7 @@ export async function buyTile(gameState: GameState | null, updateGameState: (sta
     player.units -= tile.prices['1']?.units ?? 0;
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
-    player.charisma++;
+    player.fame++;
     updateGameState(gameState);
     gameEvent('displayTile', {});
   }

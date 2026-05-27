@@ -42,7 +42,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           t.owner = null;
           t._level = 1;
           p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
-          p.charisma = Math.max(1, p.charisma - 1);
+          p.fame = Math.max(1, p.fame - 1);
         }
       }
       message = 'Every player loses their most expensive tile.';
@@ -72,7 +72,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         const { t, i } = free[Math.floor(Math.random() * free.length)];
         t.owner = player.name;
         player.ownedTiles.push(i);
-        player.charisma++;
+        player.fame++;
         message = `${player.name} receives ${t.name} for free!`;
       } else {
         player.gold += 2000;

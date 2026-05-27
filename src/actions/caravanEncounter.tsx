@@ -54,7 +54,7 @@ export function checkCaravanEncounter(
     background: 'assets/screens/caravan.jpg',
     caravanDefence: defendingUnits,
     caravanPrize: prize,
-    message: `You encounter a caravan passing behind the hills, bringing gold and jewels worth ${prize}🟡. It is guarded by ${defendingUnits}🧍. Would you attack?`,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan passing behind the hills, bringing gold and jewels worth ${prize}🟡. It is guarded by ${defendingUnits}🧍. Would you attack?`,
     buttons: [
       { label: 'Attack!', onClick: startBattle },
       { label: 'Let it pass..', onClick: () => { clearScreen(); onContinue(); } },

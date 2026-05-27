@@ -40,7 +40,7 @@ export async function rollAndMove(
 
   let tileMessage = `${player.name} rolled ${roll} and went to ${nextTile.name}`;
 
-  if (!nextTile.isOwned() && !nextTile.isAffordable(player.gold, player.units, player.charisma)) {
+  if (!nextTile.isOwned() && !nextTile.isAffordable(player.gold, player.units, player.fame)) {
     tileMessage += `, but cannot afford to buy it.`;
   }
 
@@ -82,12 +82,11 @@ export async function rollAndMove(
     if (tile.name.includes('Treasure')) {
       board.gameMessage = `Roll dice! Discover the treasure inside...`;
       updateGameState(board);
-      showDice( (roll: number) => handleTreasureBox(board, updateGameState, roll));
+      showDice((roll: number) => handleTreasureBox(board, updateGameState, roll));
       showScreen({
         screenType: 'treasure',
         background: 'assets/screens/treasure.jpg',
         title: tile.name,
-        htmlMessage: tile.description,
         buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
       });
       return;
@@ -95,13 +94,12 @@ export async function rollAndMove(
     if (tile.name.includes('Tavern')) {
       board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
       updateGameState(board);
-      showDice( (roll: number) => handleTavern(board, updateGameState, roll));
+      showDice((roll: number) => handleTavern(board, updateGameState, roll));
       showScreen({
         screenType: 'tavern',
         background: 'assets/screens/tavern.jpg',
         title: tile.name,
         fade: true,
-        htmlMessage: tile.description,
         buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
       });
       return;
@@ -113,13 +111,12 @@ export async function rollAndMove(
     if (tile.name.includes('Sphynx')) {
       board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
       updateGameState(board);
-      showDice( (roll: number) => handleSphynx(board, updateGameState, roll));
+      showDice((roll: number) => handleSphynx(board, updateGameState, roll));
       showScreen({
         screenType: 'sphynx',
         background: 'assets/screens/sphynx.jpg',
-        title: tile.name,
+        title: '',
         fade: true,
-        htmlMessage: tile.description,
         buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
       });
       return;

@@ -39,7 +39,7 @@ const RULES_HTML = `
 <h3>Battle</h3>
 <p>Combat is resolved in rounds. Each round both sides roll; higher roll wins the round. Most rounds won takes the tile. A draw razes it. Losers pay only in warriors — no gold penalty.</p>
 
-<h3>Leadership (charisma)</h3>
+<h3>Leadership (fame)</h3>
 <p>Grows as you acquire special properties. Higher leadership increases passive warrior income each lap and unlocks access to elite tiles. The Dragon targets high-leadership heroes.</p>
 `;
 

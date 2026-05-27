@@ -17,6 +17,7 @@
 @media screen and (max-width: 768px) {
   :root {
     --body-font: '11px Inter, sans-serif';
+    --sprite-size: 19vw;
   }
 }
 

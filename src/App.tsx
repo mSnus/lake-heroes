@@ -299,9 +299,8 @@ function App() {
                 showScreen({
                   screenType: 'sphynx',
                   background: 'assets/screens/sphynx.jpg',
-                  title: savedScreen.title,
+                  title: '',
                   fade: true,
-                  htmlMessage: savedScreen.htmlMessage,
                   buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
                 });
                 break;
@@ -312,7 +311,6 @@ function App() {
                   background: 'assets/screens/tavern.jpg',
                   title: savedScreen.title,
                   fade: true,
-                  htmlMessage: savedScreen.htmlMessage,
                   buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
                 });
                 break;
@@ -322,7 +320,6 @@ function App() {
                   screenType: 'treasure',
                   background: 'assets/screens/treasure.jpg',
                   title: savedScreen.title,
-                  htmlMessage: savedScreen.htmlMessage,
                   buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
                 });
                 break;
