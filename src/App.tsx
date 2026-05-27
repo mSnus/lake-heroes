@@ -37,7 +37,7 @@ import { fightDragon } from './actions/fightDragon';
 import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
-import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
+import { resetEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
 import { ScreenRenderer } from './components/ScreenRenderer';
@@ -231,12 +231,12 @@ function App() {
                             updateGameState={updateGameState}
                             caravanDefence={savedScreen.caravanDefence!}
                             caravanPrize={savedScreen.caravanPrize!}
-                            onClose={() => afterMoveLogic(restored, updateGameState)}
+                            onClose={() => gameEvent('showDice', null)}
                           />
                         ),
                       }),
                     },
-                    { label: 'Let it pass..', onClick: () => { clearScreen(); afterMoveLogic(restored, updateGameState); } },
+                    { label: 'Let it pass..', onClick: () => { clearScreen(); gameEvent('showDice', null); } },
                   ],
                 });
                 break;
@@ -253,7 +253,7 @@ function App() {
                       updateGameState={updateGameState}
                       caravanDefence={savedScreen.caravanDefence!}
                       caravanPrize={savedScreen.caravanPrize!}
-                      onClose={() => afterMoveLogic(restored, updateGameState)}
+                      onClose={() => gameEvent('showDice', null)}
                     />
                   ),
                 });
@@ -267,19 +267,16 @@ function App() {
                   buttons: [{ label: 'Continue', onClick: () => { clearScreen(); afterMoveLogic(restored, updateGameState); } }],
                 });
                 break;
+              case 'dragon-sky':
               case 'dragon-attack':
                 showScreen({
-                  screenType: 'dragon-attack',
-                  background: 'assets/screens/dragon-attack.jpg',
+                  screenType: savedScreen.type,
+                  background: `assets/screens/${savedScreen.type}.jpg`,
                   message: savedScreen.message,
                   buttons: [
                     {
                       label: 'Continue',
-                      action: 'end-turn',
-                      onClick: () => {
-                        clearScreen();
-                        setEndTurn();
-                      },
+                      onClick: () => { clearScreen(); gameEvent('showDice', null); },
                     },
                   ],
                 });

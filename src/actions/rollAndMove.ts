@@ -11,8 +11,6 @@ import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
-import { checkDragonEncounter } from './dragonEncounter';
-import { checkCaravanEncounter } from './caravanEncounter';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
@@ -148,9 +146,5 @@ export async function rollAndMove(
     afterMoveLogic(board, updateGameState);
   };
 
-  const dragonHandled = checkDragonEncounter(board, updateGameState, continueTileLogic);
-  if (dragonHandled) return;
-  const caravanHandled = checkCaravanEncounter(board, updateGameState, continueTileLogic);
-  if (caravanHandled) return;
   continueTileLogic();
 }

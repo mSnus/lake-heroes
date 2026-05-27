@@ -4,6 +4,8 @@ import { say } from '../utils/say';
 import { DRAGON_UNITS_THRESHOLD, fightDragon } from './fightDragon';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { checkDragonEncounter } from './dragonEncounter';
+import { checkCaravanEncounter } from './caravanEncounter';
 
 export function endTurn(
   board: GameState | null,
@@ -25,10 +27,15 @@ export function endTurn(
     board.activePlayer.turnsToSkip--;
     board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
+    updateGameState(board);
     setEndTurn();
-  } else if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
+    return;
+  }
+
+  if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
     say(`${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`, 'info');
     board.gameMessage = `Challenge the Dragon or roll dice?`;
+    updateGameState(board);
     showScreen({
       screenType: 'dragon',
       background: 'assets/screens/dragon.jpg',
@@ -46,9 +53,13 @@ export function endTurn(
         },
       ],
     });
-  } else {
-    gameEvent('showDice', null);
+    return;
   }
 
+  // Check random encounters before the player rolls
   updateGameState(board);
+  const showDice = () => gameEvent('showDice', null);
+  if (checkDragonEncounter(board, updateGameState, showDice)) return;
+  if (checkCaravanEncounter(board, updateGameState, showDice)) return;
+  gameEvent('showDice', null);
 }

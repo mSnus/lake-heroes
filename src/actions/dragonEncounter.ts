@@ -1,6 +1,5 @@
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
-import { setEndTurn } from '../utils/endTurnStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 
@@ -54,7 +53,7 @@ export function checkDragonEncounter(
 
   // Dragon attacks!
   if (player.units < DRAGON_UNITS_THRESHOLD) {
-    handleWeakPlayerAttack(board, updateGameState);
+    handleWeakPlayerAttack(board, updateGameState, onContinue);
   } else {
     updateGameState(board);
     showScreen({
@@ -103,7 +102,7 @@ function showDragonSkyScreen(onContinue: () => void) {
   });
 }
 
-function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameState) => void) {
+function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameState) => void, onContinue: () => void) {
   const player = board.activePlayer;
 
   player.charisma = Math.max(0, player.charisma - 1);
@@ -151,10 +150,9 @@ function handleWeakPlayerAttack(board: GameState, updateGameState: (board: GameS
     buttons: [
       {
         label: 'Continue',
-        action: 'end-turn',
         onClick: () => {
           clearScreen();
-          setEndTurn();
+          onContinue();
         },
       },
     ],
