@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { TILE_COUNT } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
+import { revealTile } from './revealTile';
 
 export function handlePortal(
   board: GameState,
@@ -20,7 +21,12 @@ export function handlePortal(
   player.position = newPos;
 
   const landedTile = board.tiles[newPos];
+  const wasFogged = landedTile.fog;
   landedTile.fog = false;
+
+  if (wasFogged) {
+    revealTile(board);
+  }
 
   updateGameState(board);
   gameEvent('displayTile', landedTile);
@@ -28,8 +34,8 @@ export function handlePortal(
   showScreen({
     screenType: 'portal',
     background: 'assets/screens/portal.jpg',
-    spriteImage: landedTile.spriteImage,
-    message: `When your eyes are able to see again, you find yourself at ${landedTile.name}`,
-    buttons: [{ label: 'Continue', onClick: () => { clearScreen(); onContinue(); } }],
+
+    message: `Whirlpool of colored lights blinds you for a moment. You feel dizzy.`,
+    buttons: [{ label: 'Where am I?', onClick: () => { clearScreen(); onContinue(); } }],
   });
 }

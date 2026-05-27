@@ -9,7 +9,7 @@ const MAX_ENCOUNTERS_PER_CIRCLE = 2;
 const CHARISMA_THRESHOLD = 5;
 const CIRCLE_THRESHOLD = 3;
 
-const SKY_MESSAGE = 'You see a giant black dragon passing on the sky high over you';
+const SKY_MESSAGE = 'You see a giant black dragon passing on the sky';
 
 export function checkDragonEncounter(
   board: GameState,
