@@ -14,7 +14,7 @@ type MapSlotPct = {
   yPct: number;
 };
 
-const slots: MapSlotPct[] = mapSetup as any;
+export const slots: MapSlotPct[] = mapSetup as any;
 
 // Calculate tile position using precomputed percent coords (both axes are percentages of board width)
 export function getTilePosition(tileIndex: number): {

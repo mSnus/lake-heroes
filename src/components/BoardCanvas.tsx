@@ -4,6 +4,7 @@ import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
+import { useMapEditStore, mapEditSelectTile } from '../utils/mapEditStore';
 import '../styles/Board.css';
 import { playerImageAssets } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
@@ -16,16 +17,17 @@ interface BoardCanvasProps {
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState }) => {
   const isMobile = isMobileLayout();
+  const mapEdit = useMapEditStore();
 
   const offsetX = isMobile ? 10 : 0;
   const offsetY = isMobile ? 8 : 0;
 
-  const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '82vh';
-  const CANVAS_HEIGHT = isMobileLayout() ? '120vw' : '100vh';
-  const WRAPPER_HEIGHT = isMobileLayout() ? '120vw' : '100vh';
+  const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '100vw';
+  const CANVAS_HEIGHT = isMobileLayout() ? '100vw' : '100vh';
+  const WRAPPER_HEIGHT = isMobileLayout() ? '100vw' : '100vh';
 
   const [mapReady, setMapReady] = React.useState(false);
-  const mapUrl = 'assets/map10.jpg';
+  const mapUrl = 'assets/map12.jpg';
 
   // Preload map so tiles render only after background is ready
   useEffect(() => {
@@ -55,6 +57,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     const handleTileClick = () => {
       if (!tile) return;
+      if (mapEdit.active) {
+        mapEditSelectTile(i);
+        return;
+      }
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
       if (isActivePlayerTile && tile.name.includes('King')) {
         handleKingCastle(board, updateGameState);
@@ -62,6 +68,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       }
       gameEvent('displayTile', tile.fogged() ? {} : tile);
     };
+
+    const isMapEditSelected = mapEdit.active && mapEdit.selectedIndex === i;
 
     const isFogged = tile.fogged();
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
@@ -77,6 +85,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         style={{
           top: pos.y - offsetY + '%',
           left: pos.x - offsetX + '%',
+          ...(isMapEditSelected ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 } : {}),
         }}
         onClick={handleTileClick}
       >

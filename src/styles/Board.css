@@ -253,6 +253,7 @@
 /* Background image */
 .bg-image {
     width: 100vw;
+    min-height: 100vw;
     display: block;
     height: 36.5625vw;
     position: relative;
@@ -298,7 +299,7 @@
     }
 
     .bg-image {
-        height: 135vw;
+        height: 100vw;
         top: 0;
     }
 
@@ -310,8 +311,9 @@
 
 @media screen and (min-width: 769px) {
     .bg-image {
-        width: 115%;
-        height: 115%;
+        width: 100vh;
+        height: 100vh;
+        min-height: 100vh;
         top: 0;
         object-fit: cover;
     }

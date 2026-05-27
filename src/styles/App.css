@@ -90,7 +90,7 @@ body {
 
 .game-message {
   position: absolute;
-  top: calc(120vw - 48px);
+  top: calc(100vw - 48px);
   text-align: center;
   background: linear-gradient(90deg, #3f591e, #6b8e23);
   color: #fdf599;
