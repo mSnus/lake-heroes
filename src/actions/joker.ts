@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { showScreen, clearScreen } from '../utils/screenStore';
+import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 
 const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Gift", 'Earthquake'] as const;
@@ -87,11 +87,5 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   board.gameMessage = `${event}: ${message}`;
   updateGameState(board);
   setEndTurn();
-
-  showScreen({
-    screenType: 'joker',
-    background: 'assets/screens/joker.jpg',
-    message: `${message}`,
-    buttons: [{ label: 'Accept your destiny', action: 'end-turn', onClick: clearScreen }],
-  });
+  showJokerScreen(message);
 }

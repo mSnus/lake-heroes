@@ -2,7 +2,7 @@ import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
 import { DRAGON_UNITS_THRESHOLD, fightDragon } from './fightDragon';
-import { showScreen, clearScreen } from '../utils/screenStore';
+import { showDragonChallengeScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
@@ -36,23 +36,11 @@ export function endTurn(
     say(`${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`, 'info');
     board.gameMessage = `Challenge the Dragon or roll dice?`;
     updateGameState(board);
-    showScreen({
-      screenType: 'dragon',
-      background: 'assets/screens/dragon.jpg',
-      message: board.gameMessage,
-      buttons: [
-        {
-          label: 'Challenge the Dragon 🐉',
-          action: 'fight',
-          onClick: () => { clearScreen(); fightDragon(board, updateGameState); },
-        },
-        {
-          label: 'Roll Dice Instead 🎲',
-          action: 'roll-dice',
-          onClick: () => { clearScreen(); gameEvent('showDice', null); },
-        },
-      ],
-    });
+    showDragonChallengeScreen(
+      board.gameMessage,
+      () => fightDragon(board, updateGameState),
+      () => gameEvent('showDice', null)
+    );
     return;
   }
 

@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import React from 'react';
 import { setEndTurn } from './endTurnStore';
+import { showDice, startDiceRoll } from './diceStore';
 
 export interface ScreenButton {
   label: string;
@@ -68,7 +69,7 @@ export function showPrisonScreen(message: string, title?: string): void {
   showScreen({
     screenType: 'prison',
     background: 'assets/screens/prison.jpg',
-    title,
+    title: '',
     message,
     buttons: [
       {
@@ -79,6 +80,82 @@ export function showPrisonScreen(message: string, title?: string): void {
           setEndTurn();
         },
       },
+    ],
+  });
+}
+
+export function showTreasureScreen(title: string, handler: (roll: number) => void): void {
+  showDice(handler);
+  showScreen({
+    screenType: 'treasure',
+    background: 'assets/screens/treasure.jpg',
+    title,
+    buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+  });
+}
+
+export function showTavernScreen(title: string, handler: (roll: number) => void): void {
+  showDice(handler);
+  showScreen({
+    screenType: 'tavern',
+    background: 'assets/screens/tavern.jpg',
+    title,
+    fade: true,
+    buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+  });
+}
+
+export function showSphynxScreen(handler: (roll: number) => void): void {
+  showDice(handler);
+  showScreen({
+    screenType: 'sphynx',
+    background: 'assets/screens/sphynx.jpg',
+    title: '',
+    fade: true,
+    buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+  });
+}
+
+export function showJokerScreen(message: string): void {
+  showScreen({
+    screenType: 'joker',
+    background: 'assets/screens/joker.jpg',
+    message,
+    buttons: [{ label: 'Accept your destiny', action: 'end-turn', onClick: clearScreen }],
+  });
+}
+
+export function showDragonSkyScreen(onContinue: () => void): void {
+  showScreen({
+    screenType: 'dragon-sky',
+    background: 'assets/screens/dragon-sky.jpg',
+    message: 'You see a giant black dragon passing on the sky',
+    buttons: [{ label: 'Continue', action: 'continue', onClick: () => { clearScreen(); onContinue(); } }],
+  });
+}
+
+export function showDragonAttackScreen(message: string, onContinue: () => void): void {
+  showScreen({
+    screenType: 'dragon-attack',
+    background: 'assets/screens/dragon-attack.jpg',
+    message,
+    buttons: [{ label: 'Continue', onClick: () => { clearScreen(); onContinue(); } }],
+  });
+}
+
+export function showDragonChallengeScreen(
+  message: string,
+  onFight: () => void,
+  onDecline: () => void,
+  declineLabel = 'Roll Dice Instead 🎲'
+): void {
+  showScreen({
+    screenType: 'dragon',
+    background: 'assets/screens/dragon.jpg',
+    message,
+    buttons: [
+      { label: 'Challenge the Dragon 🐉', action: 'fight', onClick: () => { clearScreen(); onFight(); } },
+      { label: declineLabel, action: 'continue', onClick: () => { clearScreen(); onDecline(); } },
     ],
   });
 }

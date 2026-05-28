@@ -58,6 +58,12 @@ export type BattleScreenProps =
       onClose?: never;
     };
 
+const KILL_PCT: Record<number, number> = { 1: 0, 2: 0.2, 3: 0.3, 4: 0.5, 5: 0.7, 6: 1.0 };
+
+function rollKills(roll: number, soldiers: number): number {
+  return Math.round((KILL_PCT[roll] ?? 0) * soldiers);
+}
+
 function buildRoundSoldiers(defence: number): number[] {
   const rounds: number[] = [];
   let rem = defence;
@@ -280,7 +286,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const handleAttackerRoll = () => {
     const roll = rollDice();
-    const aKills = Math.min(roll, soldiers);
+    const aKills = rollKills(roll, soldiers);
     roundDataRef.current = { ...roundDataRef.current, attackerRoll: roll, attackerKills: aKills };
     setAttackerRoll(roll);
     setPhase('defender-roll');
@@ -288,7 +294,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const handleDefenderRoll = () => {
     const roll = rollDice();
-    const dKills = Math.min(roll, soldiers);
+    const dKills = rollKills(roll, soldiers);
     roundDataRef.current = {
       soldiers,
       attackerRoll: roundDataRef.current.attackerRoll,

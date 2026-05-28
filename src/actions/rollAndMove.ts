@@ -14,8 +14,7 @@ import { revealTile } from './revealTile';
 import { say } from '../utils/say';
 import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
-import { showDice, startDiceRoll } from '../utils/diceStore';
-import { showScreen } from '../utils/screenStore';
+import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 
 export async function rollAndMove(
   board: GameState | null,
@@ -82,26 +81,13 @@ export async function rollAndMove(
     if (tile.name.includes('Treasure')) {
       board.gameMessage = `Roll dice! Discover the treasure inside...`;
       updateGameState(board);
-      showDice((roll: number) => handleTreasureBox(board, updateGameState, roll));
-      showScreen({
-        screenType: 'treasure',
-        background: 'assets/screens/treasure.jpg',
-        title: tile.name,
-        buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-      });
+      showTreasureScreen('Treasure', (roll) => handleTreasureBox(board, updateGameState, roll));
       return;
     }
     if (tile.name.includes('Tavern')) {
       board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
       updateGameState(board);
-      showDice((roll: number) => handleTavern(board, updateGameState, roll));
-      showScreen({
-        screenType: 'tavern',
-        background: 'assets/screens/tavern.jpg',
-        title: tile.name,
-        fade: true,
-        buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-      });
+      showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
       return;
     }
     if (tile.name.includes('Prison')) {
@@ -111,14 +97,7 @@ export async function rollAndMove(
     if (tile.name.includes('Sphynx')) {
       board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
       updateGameState(board);
-      showDice((roll: number) => handleSphynx(board, updateGameState, roll));
-      showScreen({
-        screenType: 'sphynx',
-        background: 'assets/screens/sphynx.jpg',
-        title: '',
-        fade: true,
-        buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-      });
+      showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
       return;
     }
     if (tile.name.includes('Portal')) {

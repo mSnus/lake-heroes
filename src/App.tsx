@@ -22,12 +22,19 @@ import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModa
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
-import { showDice, startDiceRoll } from './utils/diceStore';
+import { showDice } from './utils/diceStore';
 import {
   useScreen,
   showScreen,
   clearScreen,
   showPrisonScreen,
+  showTreasureScreen,
+  showTavernScreen,
+  showSphynxScreen,
+  showJokerScreen,
+  showDragonSkyScreen,
+  showDragonAttackScreen,
+  showDragonChallengeScreen,
   SavedScreen,
 } from './utils/screenStore';
 import { handleSphynx } from './actions/sphynx';
@@ -174,40 +181,17 @@ function App() {
           if (savedScreen) {
             switch (savedScreen.type) {
               case 'prison':
-                showPrisonScreen(savedScreen.message ?? '', savedScreen.title);
+                showPrisonScreen(savedScreen.message ?? '', '');
                 break;
               case 'joker':
-                showScreen({
-                  screenType: 'joker',
-                  background: 'assets/screens/joker.jpg',
-                  message: savedScreen.message,
-                  buttons: [{ label: 'Continue ⏭️', action: 'end-turn', onClick: clearScreen }],
-                });
+                showJokerScreen(savedScreen.message ?? '');
                 break;
               case 'dragon':
-                showScreen({
-                  screenType: 'dragon',
-                  background: 'assets/screens/dragon.jpg',
-                  message: savedScreen.message,
-                  buttons: [
-                    {
-                      label: 'Challenge the Dragon 🐉',
-                      action: 'fight',
-                      onClick: () => {
-                        clearScreen();
-                        fightDragon(restored, updateGameState);
-                      },
-                    },
-                    {
-                      label: 'Roll Dice Instead 🎲',
-                      action: 'roll-dice',
-                      onClick: () => {
-                        clearScreen();
-                        gameEvent('showDice', null);
-                      },
-                    },
-                  ],
-                });
+                showDragonChallengeScreen(
+                  savedScreen.message ?? '',
+                  () => fightDragon(restored, updateGameState),
+                  () => gameEvent('showDice', null)
+                );
                 break;
               case 'caravan':
                 showScreen({
@@ -319,7 +303,7 @@ function App() {
                 showScreen({
                   screenType: 'treasure',
                   background: 'assets/screens/treasure.jpg',
-                  title: savedScreen.title,
+                  title: 'Treasures',
                   buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
                 });
                 break;

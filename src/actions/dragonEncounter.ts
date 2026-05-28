@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { showScreen, clearScreen } from '../utils/screenStore';
+import { showDragonSkyScreen, showDragonAttackScreen, showDragonChallengeScreen } from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 
@@ -8,8 +8,6 @@ const ATTACK_CHANCE = 1 / 6;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
 const FAME_THRESHOLD = 5;
 const CIRCLE_THRESHOLD = 3;
-
-const SKY_MESSAGE = 'You see a giant black dragon passing on the sky';
 
 export function checkDragonEncounter(
   board: GameState,
@@ -41,13 +39,13 @@ export function checkDragonEncounter(
 
   if (player.fame < FAME_THRESHOLD || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
     updateGameState(board);
-    showDragonSkyScreen(onContinue);
+    dragonSkyWithSay(onContinue);
     return true;
   }
 
   if (Math.random() >= ATTACK_CHANCE) {
     updateGameState(board);
-    showDragonSkyScreen(onContinue);
+    dragonSkyWithSay(onContinue);
     return true;
   }
 
@@ -56,50 +54,19 @@ export function checkDragonEncounter(
     handleWeakPlayerAttack(board, updateGameState, onContinue);
   } else {
     updateGameState(board);
-    showScreen({
-      screenType: 'dragon',
-      background: 'assets/screens/dragon.jpg',
-      message: `The Dragon descends from the skies! Your ${player.units} warriors stand ready. Face it or flee?`,
-      buttons: [
-        {
-          label: 'Challenge the Dragon 🐉',
-          action: 'fight',
-          onClick: () => {
-            clearScreen();
-            fightDragon(board, updateGameState);
-          },
-        },
-        {
-          label: 'Flee! 🏃',
-          action: 'continue',
-          onClick: () => {
-            clearScreen();
-            onContinue();
-          },
-        },
-      ],
-    });
+    showDragonChallengeScreen(
+      `The Dragon descends from the skies! Your ${player.units} warriors stand ready. Face it or flee?`,
+      () => fightDragon(board, updateGameState),
+      onContinue,
+      'Flee! 🏃'
+    );
   }
   return true;
 }
 
-function showDragonSkyScreen(onContinue: () => void) {
+function dragonSkyWithSay(onContinue: () => void) {
   say('A massive black dragon soars overhead...', 'info');
-  showScreen({
-    screenType: 'dragon-sky',
-    background: 'assets/screens/dragon-sky.jpg',
-    message: SKY_MESSAGE,
-    buttons: [
-      {
-        label: 'Continue',
-        action: 'continue',
-        onClick: () => {
-          clearScreen();
-          onContinue();
-        },
-      },
-    ],
-  });
+  showDragonSkyScreen(onContinue);
 }
 
 function handleWeakPlayerAttack(
@@ -147,18 +114,5 @@ function handleWeakPlayerAttack(
   }
 
   updateGameState(board);
-  showScreen({
-    screenType: 'dragon-attack',
-    background: 'assets/screens/dragon-attack.jpg',
-    message,
-    buttons: [
-      {
-        label: 'Continue',
-        onClick: () => {
-          clearScreen();
-          onContinue();
-        },
-      },
-    ],
-  });
+  showDragonAttackScreen(message, onContinue);
 }
