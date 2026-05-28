@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { rollDice } from '../game/Dice';
-import { clearScreen } from '../utils/screenStore';
+import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { showDice } from '../utils/diceStore';
 import { say } from '../utils/say';
@@ -275,6 +275,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           }
         }
 
+        markScreenResolved();
         updateGameState(gameState);
         setResultMsg(msg);
         setPhase('result');

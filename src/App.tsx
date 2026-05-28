@@ -310,7 +310,7 @@ function App() {
   useEffect(() => {
     if (!gameState) return;
     saveToStorage('game-state', gameState);
-    if (screen?.screenType) {
+    if (screen?.screenType && !screen?.doNotPersist) {
       saveToStorage<SavedScreen>('game-screen', {
         type: screen.screenType,
         message: screen.message,

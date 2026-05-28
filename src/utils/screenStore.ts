@@ -44,6 +44,7 @@ export interface ScreenConfig {
   sellMode?: boolean;
   sellHeader?: string;
   content?: React.ReactNode;
+  doNotPersist?: boolean;
 }
 
 let state: ScreenConfig | null = null;
@@ -57,6 +58,14 @@ export function showScreen(config: ScreenConfig): void {
   state = config;
   console.log('showing screen', state);
   emit();
+}
+
+export function markScreenResolved(): void {
+  if (state) {
+    state = { ...state, doNotPersist: true };
+    localStorage.removeItem('game-screen');
+    emit();
+  }
 }
 
 export function clearScreen(): void {
