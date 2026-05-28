@@ -91,7 +91,30 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <div
           className="player-stats-data"
           id="statsPerTurn"
-          onClick={() => say("Your wages after passing the King's Castle", 'info')}
+          onClick={() => {
+            const kingsGold = MONEY_PASS_START;
+            const kingsUnits = activePlayer.fame ?? 1;
+            const tileGold = totalGold - kingsGold;
+            const tileUnits = totalUnits - kingsUnits;
+
+            const fmt = (gold: number, units: number, label: string) => {
+              const items = [
+                gold > 0 ? `${gold}🟡` : null,
+                units > 0 ? `${units}🧍` : null,
+              ].filter(Boolean);
+              return items.length > 0 ? `${items.join(' and ')} ${label}` : null;
+            };
+
+            const parts = [
+              fmt(tileGold, tileUnits, 'from your own tiles'),
+              fmt(kingsGold, kingsUnits, "as the King's grace"),
+            ].filter(Boolean);
+
+            say(
+              `Your wages after passing the King's Castle${parts.length ? ': ' + parts.join(', ') : ''}`,
+              'info'
+            );
+          }}
         >
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div
