@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const GameMessage: React.FC<{ message: string }> = ({ message }) => {
-  return message ? <div className="game-message">{message}</div> : <div></div>;
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => setDismissed(false), [message]);
+
+  if (!message || dismissed) return <div />;
+  return <div className="game-message" style={{ cursor: 'pointer' }} onClick={() => setDismissed(true)}>{message}</div>;
 };
 
 export default GameMessage;
