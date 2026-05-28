@@ -5,7 +5,7 @@ const GameMessage: React.FC<{ message: string }> = ({ message }) => {
   useEffect(() => setDismissed(false), [message]);
 
   if (!message || dismissed) return <div />;
-  return <div className="game-message" style={{ cursor: 'pointer' }} onClick={() => setDismissed(true)}>{message}</div>;
+  return <div className="game-message" onClick={() => setDismissed(true)}>{message}</div>;
 };
 
 export default GameMessage;

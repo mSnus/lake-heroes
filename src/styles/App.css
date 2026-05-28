@@ -102,6 +102,7 @@ body {
   box-sizing: border-box;
   z-index: 999;
   height: 48px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
