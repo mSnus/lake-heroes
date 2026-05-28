@@ -153,16 +153,16 @@ export const TileCard: React.FC<TileCardProps> = ({
             }}
           >
             <div
+              className='card-tile-bg'
               style={{
                 width: `${SPRITE_SIZE}px`,
                 height: `${SPRITE_SIZE}px`,
                 border: `3px solid ${groupColor}70`,
                 borderRadius: '0%',
                 flexShrink: 0,
-                zIndex: 6000,
                 backgroundImage: `url(${tile.spriteImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                backgroundSize: '95%',
+                backgroundPosition: '16px 12px',
               }}
             />
           </div>

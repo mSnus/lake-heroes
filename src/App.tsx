@@ -252,18 +252,10 @@ function App() {
                 });
                 break;
               case 'dragon-sky':
+                showDragonSkyScreen(() => gameEvent('showDice', null));
+                break;
               case 'dragon-attack':
-                showScreen({
-                  screenType: savedScreen.type,
-                  background: `assets/screens/${savedScreen.type}.jpg`,
-                  message: savedScreen.message,
-                  buttons: [
-                    {
-                      label: 'Continue',
-                      onClick: () => { clearScreen(); gameEvent('showDice', null); },
-                    },
-                  ],
-                });
+                showDragonAttackScreen(savedScreen.message ?? '', () => gameEvent('showDice', null));
                 break;
               case 'dragon-battle':
                 showScreen({
@@ -279,33 +271,13 @@ function App() {
                 });
                 break;
               case 'sphynx':
-                showDice((roll: number) => handleSphynx(restored, updateGameState, roll));
-                showScreen({
-                  screenType: 'sphynx',
-                  background: 'assets/screens/sphynx.jpg',
-                  title: '',
-                  fade: true,
-                  buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-                });
+                showSphynxScreen((roll) => handleSphynx(restored, updateGameState, roll));
                 break;
               case 'tavern':
-                showDice((roll: number) => handleTavern(restored, updateGameState, roll));
-                showScreen({
-                  screenType: 'tavern',
-                  background: 'assets/screens/tavern.jpg',
-                  title: savedScreen.title,
-                  fade: true,
-                  buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-                });
+                showTavernScreen(savedScreen.title ?? '', (roll) => handleTavern(restored, updateGameState, roll));
                 break;
               case 'treasure':
-                showDice((roll: number) => handleTreasureBox(restored, updateGameState, roll));
-                showScreen({
-                  screenType: 'treasure',
-                  background: 'assets/screens/treasure.jpg',
-                  title: 'Treasures',
-                  buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
-                });
+                showTreasureScreen(savedScreen.title ?? 'Treasures', (roll) => handleTreasureBox(restored, updateGameState, roll));
                 break;
               default:
                 afterMoveLogic(restored, updateGameState);
