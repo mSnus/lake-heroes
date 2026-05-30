@@ -142,30 +142,18 @@ export const TileCard: React.FC<TileCardProps> = ({
         }}
       >
         {tile.spriteImage && (
-          <div
-            className={'tile-sprite-box'}
-            style={{
-              height: `${SPRITE_SIZE}px`,
-              width: `${SPRITE_SIZE}px`,
-              marginLeft: `-${SPRITE_SIZE * 0.36}px`,
-              marginTop: `-8px`,
-              overflow: 'clip',
-            }}
-          >
             <div
               className='card-tile-bg'
               style={{
                 width: `${SPRITE_SIZE}px`,
                 height: `${SPRITE_SIZE}px`,
-                border: `3px solid ${groupColor}70`,
-                borderRadius: '0%',
                 flexShrink: 0,
                 backgroundImage: `url(${tile.spriteImage})`,
-                backgroundSize: '95%',
-                backgroundPosition: '16px 12px',
+                backgroundSize: '70%',
+                backgroundPosition: 'left center',
+                backgroundRepeat: 'no-repeat',
               }}
             />
-          </div>
         )}
 
         <div className="tile-card-title" onClick={handleInfoClick} style={{ cursor: 'pointer' }}>

@@ -3,7 +3,7 @@
   left: calc(30vw * 1vw / 1vh);
   top: calc(38vw * 1vw / 1vh);
   z-index: 100;
-  scale: calc(1vw / 1vh);
+  scale: calc(1vw / 1vh * 1.2);
 }
 
 .current-tile {
@@ -30,12 +30,18 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 8px;
-  padding: 6px 6px 6px 12px;
+  padding: 6px 6px 6px 0px;
   border-radius: 6px 6px 0 0;
   justify-content: space-between;
   color: #0000007f;
   font-weight: bold;
   max-width: 100%
+}
+
+.tile-sprite-box {    
+    margin-left: -8px;
+    margin-top: -8px;
+    overflow: clip;
 }
 
 .tile-card-button {
