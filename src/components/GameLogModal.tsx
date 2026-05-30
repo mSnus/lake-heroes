@@ -9,12 +9,12 @@ export interface LogMessage {
   timestamp: number;
 }
 
-interface MessageHistoryModalProps {
+interface GameLogModalProps {
   messages: LogMessage[];
   onClose: () => void;
 }
 
-const MessageHistoryModal: React.FC<MessageHistoryModalProps> = ({ messages, onClose }) => {
+const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
   const getColor = (level: SayLevel) => {
     switch (level) {
       case 'error':
@@ -83,4 +83,4 @@ const MessageHistoryModal: React.FC<MessageHistoryModalProps> = ({ messages, onC
   );
 };
 
-export default MessageHistoryModal;
+export default GameLogModal;

@@ -10,118 +10,116 @@
 }
 
 .battle-header {
+  font-family: 'StyleScript', serif;
   color: #fff;
-  font-size: 1.4rem;
-  font-weight: bold;
+  font-size: 3rem;
+  line-height: 1;
   text-shadow: 2px 2px 8px #000, 0 0 20px #000;
   text-align: center;
-  letter-spacing: 1px;
 }
 
-/* ── Table layout ── */
+/* ── Grid: one row per round ── */
 
 .battle-table {
-  display: flex;
-  flex-direction: column;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
   border-radius: 10px;
-  overflow: hidden;
-  gap: 0;
+  display: grid;
+  grid-template-columns: 1fr min-content min-content 1fr;
+  margin-top: 1.5rem;
 }
 
-.battle-row {
+.battle-names-row {
   display: flex;
-  align-items: center;
-  padding: 6px 10px;
+  gap: 20vw;
+  align-items: flex-end;
 }
 
-.roll-row {
-  background: rgba(0, 0, 0, 0.25);
+.battle-names-row .bc-attacker,
+.battle-names-row .bc-defender {
+  text-align: center;
 }
 
-.battle-row-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 110px;
+.battle-result-row,
+.battle-action-row {
+  display: contents;
+}
+
+.battle-action-row > div {
+  text-align: center;
+}
+
+.bc-side {
+  padding: 4px;
+  min-height: 40px;
+  font-size: 2rem;
+}
+
+.bc-side.bc-attacker {
+  text-align: right;
+}
+
+.bc-side.bc-defender{
+  text-align: left;
+}
+
+.bc-roll {
+  font-size: 1.4rem;
+  color: #dedede;
+  text-shadow: 1px 1px 3px #000;
+  text-align: center;
+  white-space: nowrap;
+  align-content: center;
+}
+
+.bc-roll-attacker {
+  text-align: right;
+  padding-right: 6px;
+}
+
+.bc-roll-defender {
+  text-align: left;
+  padding-left: 6px;
+}
+
+.dim {
+  opacity: 0.25;
+  font-weight: 400;
+}
+
+/* Icons */
+.battle-player-icon {
+  width: 86px;
+  height: 86px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px #000);
   flex-shrink: 0;
 }
 
-.roll-label {
-  font-size: 1.2rem;
-  min-width: 110px;
-}
-
-.battle-row-cells {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  flex: 1;
-}
-
-.battle-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.battle-cell.dim {
-  opacity: 0.25;
-}
-
-.roll-cell {
-  background: rgba(255, 200, 60, 0.18);
-  border-radius: 6px;
-  color: #ffe066;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.battle-table-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.18);
-  width: 100%;
-}
-
-.battle-player-icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px #000);
-}
-
 .battle-emoji-icon {
-  font-size: 1.4rem;
+  font-size: 3rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .battle-player-name {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-shadow: 1px 1px 4px #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ── Action prompt (roll buttons) ── */
-
-.battle-action {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-  padding: 8px 16px;
-  width: 100%;
-  justify-content: center;
+.battle-round-icon {
+  font-size: 2rem;
+  line-height: 1;
 }
 
+/* Roll button */
 .battle-roll-btn {
-  font-size: 1rem !important;
-  padding: 8px 16px !important;
+  font-size: 0.9rem !important;
+  padding: 6px 12px !important;
+  white-space: nowrap;
 }
 
 /* ── Inline result ── */
@@ -135,18 +133,30 @@
   padding: 16px 24px;
   width: 100%;
   text-align: center;
-  margin-top: 4px;
 }
 
 .battle-result-sequence {
   font-size: 1.6rem;
   line-height: 1;
   letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.battle-result-verdict {
+  font-size: 1.5rem;
+  letter-spacing: normal;
+  text-shadow: 1px 1px 4px #000;
+  font-weight: bold;
+  color: #fff;
 }
 
 .battle-result-message {
   color: #eee;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin: 0;
   line-height: 1.5;
   text-shadow: 1px 1px 3px #000;

@@ -3,7 +3,7 @@ import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { buyUnits } from './buyUnits';
-import BuyUnitsModal from '../components/BuyUnitsModal';
+import KingsCastleModal from '../components/KingsCastleModal';
 
 export function handleKingCastle(
   board: GameState | null,
@@ -16,10 +16,16 @@ export function handleKingCastle(
 
   showScreen({
     content: (
-      <BuyUnitsModal
+      <KingsCastleModal
         gameState={board}
-        onBuy={(amount) => { clearScreen(); buyUnits(board, amount, updateGameState); }}
-        onSkip={() => { clearScreen(); setEndTurn(); }}
+        onBuy={(amount) => {
+          clearScreen();
+          buyUnits(board, amount, updateGameState);
+        }}
+        onSkip={() => {
+          clearScreen();
+          setEndTurn();
+        }}
       />
     ),
   });

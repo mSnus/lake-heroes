@@ -1,9 +1,9 @@
 .current-tile-card-wrapper {
   position: absolute;
-  left: 50%;
-  top: 28%;
-  transform: translate(-50%, -50%);
+  left: calc(30vw * 1vw / 1vh);
+  top: calc(38vw * 1vw / 1vh);
   z-index: 100;
+  scale: calc(1vw / 1vh);
 }
 
 .current-tile {
@@ -48,7 +48,7 @@
 }
 
 .tile-card-button:disabled,
-.tile-card-button.disabled{
+.tile-card-button.disabled {
   filter: grayscale(1);
   opacity: 0.4;
   pointer-events: none;
@@ -259,4 +259,3 @@
 .tile-card-base-info-data {
   text-align: center;
 }
-

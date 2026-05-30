@@ -81,7 +81,7 @@ export async function rollAndMove(
     if (tile.name.includes('Treasure')) {
       board.gameMessage = `Roll dice! Discover the treasure inside...`;
       updateGameState(board);
-      showTreasureScreen('Treasure', (roll) => handleTreasureBox(board, updateGameState, roll));
+      showTreasureScreen('Treasure found!', (roll) => handleTreasureBox(board, updateGameState, roll));
       return;
     }
     if (tile.name.includes('Tavern')) {

@@ -10,7 +10,7 @@ interface BuyUnitsModalProps {
   onSkip: () => void;
 }
 
-const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip }) => {
+const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip }) => {
   const player = gameState.activePlayer;
   const [amount, setAmount] = useState(0);
 
@@ -20,29 +20,35 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
     onBuy(amount);
   };
 
-  const handleHalf = () => {
-    const halfAmount = Math.floor(maxAmount / 2);
-    setAmount(halfAmount);
-  };
-
-  const handleMax = () => {
-    setAmount(maxAmount);
-  };
+  const handleHalf = () => setAmount(Math.floor(maxAmount / 2));
+  const handleThreeQuarters = () => setAmount(Math.floor((maxAmount * 3) / 4));
+  const handleMax = () => setAmount(maxAmount);
+  const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
+  const handleDec = () => setAmount((a) => Math.max(0, a - 1));
 
   return (
-    <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder={true}>
+    <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder={true} 
+      style={{backgroundColor: 'background-color: rgba(0, 0, 0, 0.3);'}}>
       <div className="modal-content" style={{ color: `white` }}>
-        <h2 className="game-title">
-          The King's Castle
-        </h2>
+        <h2 className="game-title">The King's Castle</h2>
         <h3>{gameState.gameMessage}</h3>
 
-        <h3>You may recruit {maxAmount} units for {maxAmount * 100}🟡</h3>
+        <h3>
+          You may recruit {maxAmount} units for {maxAmount * 100}🟡
+        </h3>
 
         <div
           className="input-group"
-          style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}
+          style={{ display: 'flex', gap: '1rem', justifyContent: 'center', alignItems: 'center' }}
         >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <button className="game-menu-button" onClick={handleInc}>
+              +
+            </button>
+            <button className="game-menu-button" onClick={handleDec}>
+              −
+            </button>
+          </div>
           <input
             type="number"
             value={amount}
@@ -52,6 +58,9 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
           />
           <button className="game-menu-button" onClick={handleHalf}>
             1/2
+          </button>
+          <button className="game-menu-button" onClick={handleThreeQuarters}>
+            3/4
           </button>
           <button className="game-menu-button" onClick={handleMax}>
             Max
@@ -78,4 +87,4 @@ const BuyUnitsModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip 
   );
 };
 
-export default BuyUnitsModal;
+export default KingsCastleModal;

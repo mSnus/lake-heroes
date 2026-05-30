@@ -18,7 +18,7 @@ import { CurrentTile } from './components/CurrentTile';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import { PlayerSetup } from './utils/playerSetup';
-import MessageHistoryModal, { LogMessage } from './components/MessageHistoryModal';
+import GameLogModal, { LogMessage } from './components/GameLogModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
@@ -51,7 +51,7 @@ import { ScreenRenderer } from './components/ScreenRenderer';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [messageHistory, setMessageHistory] = useState<LogMessage[]>([]);
+  const [gameLog, setGameLog] = useState<LogMessage[]>([]);
   const [showLogModal, setShowLogModal] = useState(false);
   const screen = useScreen();
 
@@ -104,7 +104,7 @@ function App() {
   useEffect(() => {
     const handleLogMessage = (e: Event) => {
       const detail = (e as CustomEvent).detail as LogMessage;
-      setMessageHistory((prev) => [...prev, detail]);
+      setGameLog((prev) => [...prev, detail]);
     };
 
     window.addEventListener('logMessage', handleLogMessage);
@@ -203,24 +203,31 @@ function App() {
                   buttons: [
                     {
                       label: 'Attack!',
-                      onClick: () => showScreen({
-                        screenType: 'caravan-battle',
-                        caravanDefence: savedScreen.caravanDefence,
-                        caravanPrize: savedScreen.caravanPrize,
-                        content: (
-                          <BattleScreen
-                            mode="caravan"
-                            attacker={restored.activePlayer}
-                            gameState={restored}
-                            updateGameState={updateGameState}
-                            caravanDefence={savedScreen.caravanDefence!}
-                            caravanPrize={savedScreen.caravanPrize!}
-                            onClose={() => gameEvent('showDice', null)}
-                          />
-                        ),
-                      }),
+                      onClick: () =>
+                        showScreen({
+                          screenType: 'caravan-battle',
+                          caravanDefence: savedScreen.caravanDefence,
+                          caravanPrize: savedScreen.caravanPrize,
+                          content: (
+                            <BattleScreen
+                              mode="caravan"
+                              attacker={restored.activePlayer}
+                              gameState={restored}
+                              updateGameState={updateGameState}
+                              caravanDefence={savedScreen.caravanDefence!}
+                              caravanPrize={savedScreen.caravanPrize!}
+                              onClose={() => gameEvent('showDice', null)}
+                            />
+                          ),
+                        }),
                     },
-                    { label: 'Let it pass..', onClick: () => { clearScreen(); gameEvent('showDice', null); } },
+                    {
+                      label: 'Let it pass..',
+                      onClick: () => {
+                        clearScreen();
+                        gameEvent('showDice', null);
+                      },
+                    },
                   ],
                 });
                 break;
@@ -248,14 +255,24 @@ function App() {
                   background: 'assets/screens/portal.jpg',
                   spriteImage: restored.activeTile.spriteImage,
                   message: savedScreen.message,
-                  buttons: [{ label: 'Continue', onClick: () => { clearScreen(); afterMoveLogic(restored, updateGameState); } }],
+                  buttons: [
+                    {
+                      label: 'Continue',
+                      onClick: () => {
+                        clearScreen();
+                        afterMoveLogic(restored, updateGameState);
+                      },
+                    },
+                  ],
                 });
                 break;
               case 'dragon-sky':
                 showDragonSkyScreen(() => gameEvent('showDice', null));
                 break;
               case 'dragon-attack':
-                showDragonAttackScreen(savedScreen.message ?? '', () => gameEvent('showDice', null));
+                showDragonAttackScreen(savedScreen.message ?? '', () =>
+                  gameEvent('showDice', null)
+                );
                 break;
               case 'dragon-battle':
                 showScreen({
@@ -274,10 +291,14 @@ function App() {
                 showSphynxScreen((roll) => handleSphynx(restored, updateGameState, roll));
                 break;
               case 'tavern':
-                showTavernScreen(savedScreen.title ?? '', (roll) => handleTavern(restored, updateGameState, roll));
+                showTavernScreen(savedScreen.title ?? '', (roll) =>
+                  handleTavern(restored, updateGameState, roll)
+                );
                 break;
               case 'treasure':
-                showTreasureScreen(savedScreen.title ?? 'Treasures', (roll) => handleTreasureBox(restored, updateGameState, roll));
+                showTreasureScreen(savedScreen.title ?? 'Treasures', (roll) =>
+                  handleTreasureBox(restored, updateGameState, roll)
+                );
                 break;
               default:
                 afterMoveLogic(restored, updateGameState);
@@ -402,14 +423,9 @@ function App() {
           </div>
 
           <div className="side-pane">
-            <ActionBar
-              gameState={gameState}
-              updateGameState={updateGameState}
-            />
+            <ActionBar gameState={gameState} updateGameState={updateGameState} />
 
-            {showLogModal && (
-              <MessageHistoryModal messages={messageHistory} onClose={handleCloseLog} />
-            )}
+            {showLogModal && <GameLogModal messages={gameLog} onClose={handleCloseLog} />}
 
             {!screen?.sellMode && (
               <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
