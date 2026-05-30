@@ -62,6 +62,7 @@
 
 .tile-card-title {
   font-weight: 300;
+  margin-left: -28px;
   text-align: center;
   font-size: 18px;
   padding-top: 8px;
