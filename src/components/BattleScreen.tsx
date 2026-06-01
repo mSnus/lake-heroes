@@ -16,11 +16,8 @@ type BattlePhase = 'attacker-roll' | 'defender-roll' | 'result';
 type BattleOutcome = 'attacker' | 'defender' | 'tie';
 
 type RoundResult = {
-  soldiers: number;
   attackerRoll: number;
   defenderRoll: number;
-  attackerKills: number;
-  defenderKills: number;
   winner: 'attacker' | 'defender' | 'tie';
 };
 
@@ -55,20 +52,8 @@ export type BattleScreenProps =
       onClose?: never;
     };
 
-const KILL_PCT: Record<number, number> = { 1: 0, 2: 0.2, 3: 0.3, 4: 0.5, 5: 0.7, 6: 1.0 };
-
-function rollKills(roll: number, soldiers: number): number {
-  return Math.round((KILL_PCT[roll] ?? 0) * soldiers);
-}
-
-function buildRoundSoldiers(defence: number): number[] {
-  const rounds: number[] = [];
-  let rem = defence;
-  while (rem > 0) {
-    rounds.push(Math.min(6, rem));
-    rem -= 6;
-  }
-  return rounds.length > 0 ? rounds : [1];
+function roundCount(defence: number): number {
+  return Math.max(1, Math.ceil(defence / 6));
 }
 
 function determineBattleOutcome(results: RoundResult[]): BattleOutcome {
@@ -76,10 +61,6 @@ function determineBattleOutcome(results: RoundResult[]): BattleOutcome {
   const dWins = results.filter((r) => r.winner === 'defender').length;
   if (aWins > dWins) return 'attacker';
   if (dWins > aWins) return 'defender';
-  const aKills = results.reduce((s, r) => s + r.attackerKills, 0);
-  const dKills = results.reduce((s, r) => s + r.defenderKills, 0);
-  if (aKills > dKills) return 'attacker';
-  if (dKills > aKills) return 'defender';
   return 'tie';
 }
 
@@ -99,8 +80,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isDragon
       ? DRAGON_UNITS
       : (tile?.defence ?? 1);
-  const roundSoldiers = buildRoundSoldiers(defence);
-  const totalRounds = roundSoldiers.length;
+  const totalRounds = roundCount(defence);
 
   const [currentRound, setCurrentRound] = useState(0);
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -116,7 +96,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const roundResultsRef = useRef<RoundResult[]>([]);
   const currentRoundRef = useRef(0);
   const attackerRollRef = useRef(0);
-  const attackerKillsRef = useRef(0);
 
   const defenderLabel = defender ? defender.name : isDragon ? 'The Dragon' : 'Caravan Guards';
   const defenderColor = isDragon ? '#ff5816' : isCaravan ? '#f6b03e' : defender?.color;
@@ -140,10 +119,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const handleDefenderRoll = () => setRollingDefender(true);
 
   const onAttackerRollDone = (roll: number) => {
-    const soldiers = roundSoldiers[currentRoundRef.current];
-    const aKills = rollKills(roll, soldiers);
     attackerRollRef.current = roll;
-    attackerKillsRef.current = aKills;
     setRollingAttacker(false);
     setPendingAttackerRoll(roll);
     setPhase('defender-roll');
@@ -153,18 +129,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setRollingDefender(false);
 
     const roundIdx = currentRoundRef.current;
-    const soldiers = roundSoldiers[roundIdx];
-    const dKills = rollKills(roll, soldiers);
     const aRoll = attackerRollRef.current;
-    const aKills = attackerKillsRef.current;
 
     const result: RoundResult = {
-      soldiers,
       attackerRoll: aRoll,
       defenderRoll: roll,
-      attackerKills: aKills,
-      defenderKills: dKills,
-      winner: aKills > dKills ? 'attacker' : dKills > aKills ? 'defender' : 'tie',
+      winner: aRoll > roll ? 'attacker' : roll > aRoll ? 'defender' : 'tie',
     };
 
     const newResults = [...roundResultsRef.current, result];
@@ -188,7 +158,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       setPhase('attacker-roll');
     } else {
       const o = determineBattleOutcome(newResults);
-      const totalAttDead = newResults.reduce((s, r) => s + r.defenderKills, 0);
       let msg = '';
 
       if (isDragon) {
@@ -219,22 +188,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           setOutcome('attacker');
         } else if (o === 'tie') {
           const halfPrize = Math.floor(caravanPrize! / 2);
-          attacker.units = Math.max(0, attacker.units - totalAttDead);
           attacker.gold += halfPrize;
-          gameState.gameMessage = `${attacker.name} tied with the caravan guards, losing ${totalAttDead}🧍 but receiving ${halfPrize}🟡`;
-          say(`${attacker.name} tied with caravan guards, losing ${totalAttDead}🧍 but receiving ${halfPrize}🟡`, 'info');
-          msg = `Lost ${totalAttDead}🧍, received ${halfPrize}🟡`;
+          gameState.gameMessage = `${attacker.name} tied with the caravan guards, receiving ${halfPrize}🟡`;
+          say(`${attacker.name} tied with caravan guards, receiving ${halfPrize}🟡`, 'info');
+          msg = `Received ${halfPrize}🟡`;
           setOutcome('tie');
         } else {
-          attacker.units = Math.max(0, attacker.units - totalAttDead);
-          gameState.gameMessage = `${attacker.name} failed to raid the caravan, losing ${totalAttDead}🧍`;
-          say(`${attacker.name} failed to raid the caravan, losing ${totalAttDead}🧍`, 'error');
-          msg = `Lost ${totalAttDead}🧍`;
+          gameState.gameMessage = `${attacker.name} failed to raid the caravan`;
+          say(`${attacker.name} failed to raid the caravan`, 'error');
+          msg = `The caravan got away`;
           setOutcome('defender');
         }
       } else {
         if (o === 'attacker') {
-          attacker.units = Math.max(0, attacker.units - totalAttDead);
           const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
           if (prevOwner) prevOwner.fame = Math.max(1, prevOwner.fame - 1);
           gameState.players.forEach((p) => {
@@ -244,17 +210,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           tile!._level = 1;
           attacker.ownedTiles.push(attacker.position);
           attacker.fame++;
-          gameState.gameMessage = `Glorious victory! ${attacker.name} won ${tile!.name} sacrificing ${totalAttDead}🧍`;
-          say(`${attacker.name} won ${tile!.name} sacrificing ${totalAttDead}🧍`, 'success');
-          msg = `Glorious victory! ${attacker.name} wins ${tile!.name} sacrificing ${totalAttDead}🧍`;
+          gameState.gameMessage = `Glorious victory! ${attacker.name} conquered ${tile!.name}!`;
+          say(`${attacker.name} conquered ${tile!.name}!`, 'success');
+          msg = `Glorious victory! ${attacker.name} wins ${tile!.name}!`;
           setShowVictoryBg(true);
           setOutcome('attacker');
         } else if (o === 'defender') {
-          attacker.units = Math.max(0, attacker.units - totalAttDead);
           attacker.fame = Math.max(1, attacker.fame - 1);
-          gameState.gameMessage = `${attacker.name} lost ${totalAttDead}🧍 in the battle for ${tile!.name}`;
-          say(`${attacker.name} lost ${totalAttDead}🧍 in the battle for ${tile!.name}`, 'error');
-          msg = `${attacker.name} loses ${totalAttDead}🧍 in the battle for ${tile!.name}`;
+          gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}`;
+          say(`${attacker.name} lost the battle for ${tile!.name}`, 'error');
+          msg = `${attacker.name} retreats from ${tile!.name}`;
           setOutcome('defender');
         } else {
           const tieLoss = Math.round(0.2 * attacker.units);
