@@ -260,9 +260,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderRoundIcon = (r: RoundResult) =>
     r.winner === 'defender' ? '🧍🏻' : r.winner === 'attacker' ? '💥' : '🏴';
 
-  const battleResultEmoji = roundResults
-    .map((r) => (r.winner === 'attacker' ? '⚔️' : r.winner === 'defender' ? '☠️' : '🏴'))
-    .join('');
+  const battleResultEmoji = outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🏴';
 
   return (
     <ScreenBackground image="assets/screens/battle.jpg">
