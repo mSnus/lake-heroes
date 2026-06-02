@@ -288,7 +288,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       />
       <Fade />
 
-      {/* Dice overlays — position:fixed, appear in center of screen */}
       {rollingAttacker && (
         <DiceWidget key={`a-${currentRound}`} rolling={true} onRoll={onAttackerRollDone} />
       )}
