@@ -49,6 +49,7 @@ export function afterMoveLogic(
       playerName: player.name,
       playerColor: player.color,
       tileName: tile.name,
+      tileDefence: tile.defence,
       ownerName: tile.owner ?? undefined,
       ownerColor,
       outcomeText: undefined,

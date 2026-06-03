@@ -5,21 +5,19 @@ export interface PlayerOption {
 }
 
 export const playerOptions: PlayerOption[] = [
-  { colorName: 'Red', color: '#FF4444', image: 'rider-red.png' },
-  { colorName: 'Blue', color: '#286cff', image: 'rider-blue.png' },
-  { colorName: 'Yellow', color: '#FFD700', image: 'rider-yellow.png' },
-  { colorName: 'Green', color: '#00C851', image: 'rider-green.png' },
-  { colorName: 'Violet', color: '#9933CC', image: 'rider-violet.png' },
-  { colorName: 'Black', color: '#212121', image: 'rider-black.png' },
+  { colorName: 'Red', color: '#FF4444', image: 'red' },
+  { colorName: 'Blue', color: '#286cff', image: 'blue' },
+  { colorName: 'Yellow', color: '#FFD700', image: 'yellow' },
+  { colorName: 'Green', color: '#00C851', image: 'green' },
+  { colorName: 'Violet', color: '#9933CC', image: 'violet' },
+  { colorName: 'Black', color: '#212121', image: 'black' },
 ];
 
-export const playerImageAssets: Record<string, string> = playerOptions.reduce(
-  (acc, option) => {
-    acc[option.image] = `assets/${option.image}`;
-    return acc;
-  },
-  {} as Record<string, string>
-);
+// Blue has no footman sprite — always uses rider
+export function getPlayerImageSrc(colorKey: string, fame: number): string {
+  const type = fame >= 4 || colorKey === 'blue' ? 'rider' : 'footman';
+  return `assets/figures/${type}-${colorKey}.png`;
+}
 
 const pronouns = [
   'Drunken',

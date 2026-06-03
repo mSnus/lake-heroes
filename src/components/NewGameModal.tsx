@@ -121,7 +121,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             </select>
             {getSelectedOption(player) && (
               <img
-                src={`assets/${getSelectedOption(player)?.image}`}
+                src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
                 alt={getSelectedOption(player)?.colorName}
                 style={{ width: '60px', height: '60px' }}
                 className='player-image current-player'

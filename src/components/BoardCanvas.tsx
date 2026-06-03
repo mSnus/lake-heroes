@@ -6,7 +6,7 @@ import { TILE_COUNT } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import { useMapEditStore, mapEditSelectTile } from '../utils/mapEditStore';
 import '../styles/Board.css';
-import { playerImageAssets } from '../game/PlayerOptions';
+import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
 import { handleKingCastle } from '../actions/king';
 
@@ -144,7 +144,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const tileNumber = player.position % TILE_COUNT;
     const pos = getTilePosition(tileNumber);
 
-    const src = playerImageAssets[player.image] || 'assets/players/default.png';
+    const src = getPlayerImageSrc(player.image, player.fame);
 
     let onSameTileCount = 0;
     board.players.forEach((p, idx) => {

@@ -6,7 +6,7 @@ import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { showDice } from '../utils/diceStore';
 import { say } from '../utils/say';
-import { playerImageAssets } from '../game/PlayerOptions';
+import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget } from './DiceWidget';
@@ -251,8 +251,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     }
   };
 
-  const attackerImg = playerImageAssets[attacker.image];
-  const defenderImg = defender ? playerImageAssets[defender.image] : null;
+  const attackerImg = getPlayerImageSrc(attacker.image, attacker.fame);
+  const defenderImg = defender
+    ? getPlayerImageSrc(defender.image, defender.fame)
+    : isDragon
+      ? 'assets/figures/npc-drac.png'
+      : 'assets/figures/npc-saracen.png';
 
   // Per-round icons: winner keeps 🧍🏻, loser gets 💥, tie gets 🏴
   const attackerRoundIcon = (r: RoundResult) =>
@@ -300,7 +304,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           {isCaravan ? 'Caravan raid!' : isDragon ? 'Dragon Attack' : <>⚔️ Battle for <strong>{tile!.name}</strong></>}
         </div>
 
-          
         <div className="battle-names-row">
           <div className="bc-attacker">
             <img src={attackerImg} alt={attacker.name} className="battle-player-icon" />
@@ -308,9 +311,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             <span className="battle-player-name" style={{ color: attacker.color }}>{attacker.name}</span>
           </div>
           <div className="bc-defender">
-            {defenderImg
-              ? <img src={defenderImg} alt={defender!.name} className="battle-player-icon" />
-              : <span className="battle-emoji-icon">{isDragon ? '🐉' : '🐪'}</span>}
+            <img src={defenderImg} alt={defenderLabel} className="battle-player-icon" />
               <br/>
             <span className="battle-player-name" style={{ color: defenderColor }}>{defenderLabel}</span>
           </div>
