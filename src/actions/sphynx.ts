@@ -61,6 +61,7 @@ export function handleSphynx(
   say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');
 
   showScreen({
+    screenType: 'sphynx-result',
     background: 'assets/screens/sphynx.jpg',
     fade: true,
     message: gameState.gameMessage,

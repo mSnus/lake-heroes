@@ -34,8 +34,16 @@ export function handlePortal(
   showScreen({
     screenType: 'portal',
     background: 'assets/screens/portal.jpg',
-
-    message: `Whirlpool of colored lights blinds you for a moment. You feel dizzy.`,
-    buttons: [{ label: 'Where am I?', onClick: () => { clearScreen(); onContinue(); } }],
+    title: 'Colored lights blind you',
+    message: `You are feeling desoriented and lost`,
+    buttons: [
+      {
+        label: 'Where am I?',
+        onClick: () => {
+          clearScreen();
+          onContinue();
+        },
+      },
+    ],
   });
 }

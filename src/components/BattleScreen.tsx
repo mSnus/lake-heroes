@@ -4,7 +4,6 @@ import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
-import { showDice } from '../utils/diceStore';
 import { say } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
@@ -38,6 +37,7 @@ export type BattleScreenProps =
       mode: 'caravan';
       caravanDefence: number;
       caravanPrize: number;
+      caravanSlaves?: boolean;
       onClose: () => void;
       defender?: never;
       tile?: never;
@@ -74,13 +74,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const tile = !isCaravan && !isDragon ? props.tile : undefined;
   const caravanDefence = isCaravan ? props.caravanDefence : undefined;
   const caravanPrize = isCaravan ? props.caravanPrize : undefined;
+  const caravanSlaves = isCaravan ? (props.caravanSlaves ?? false) : false;
 
   const defence = isCaravan
     ? (caravanDefence ?? 1)
     : isDragon
       ? DRAGON_UNITS
       : (tile?.defence ?? 1);
-  const totalRounds = roundCount(defence);
+  const totalRounds = isDragon ? 7 : roundCount(defence);
 
   const [currentRound, setCurrentRound] = useState(0);
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -99,14 +100,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const defenderLabel = defender ? defender.name : isDragon ? 'The Dragon' : 'Caravan Guards';
   const defenderColor = isDragon ? '#ff5816' : isCaravan ? '#f6b03e' : defender?.color;
-
-  // Log battle start
-  useEffect(() => {
-    say(
-      `⚔️ Battle: ${attacker.name} vs ${defenderLabel} (${totalRounds} round${totalRounds > 1 ? 's' : ''})`,
-      'debug'
-    );
-  }, []);
 
   // Auto-roll defender in caravan/dragon mode
   useEffect(() => {
@@ -142,101 +135,143 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setRoundResults(newResults);
     setPendingAttackerRoll(null);
 
-    const roundWinner =
-      result.winner === 'attacker' ? attacker.name
-      : result.winner === 'defender' ? defenderLabel
-      : 'Tie';
-    say(
-      `  Round ${roundIdx + 1}: ${attacker.name} 🎲${aRoll} · ${defenderLabel} 🎲${roll} → ${roundWinner}`,
-      'debug'
-    );
-
     const nextRound = roundIdx + 1;
     if (nextRound < totalRounds) {
       currentRoundRef.current = nextRound;
       setCurrentRound(nextRound);
       setPhase('attacker-roll');
     } else {
-      const o = determineBattleOutcome(newResults);
-      let msg = '';
+      // Pause briefly on the final roll before revealing the result screen.
+      setTimeout(() => {
+        const o = determineBattleOutcome(newResults);
+        let msg = '';
+        const unitsBefore = attacker.units;
+        const goldBefore = attacker.gold;
 
-      if (isDragon) {
-        if (o !== 'defender') {
-          gameState.gameMessage = `${attacker.name} slays the Dragon! 🐉 VICTORY!`;
-          gameState.gameOver = true;
-          say(`${attacker.name} slays the Dragon and wins the game! 🎉`, 'success');
-          msg = 'The Dragon is slain! 🐉 VICTORY!';
-          setShowVictoryBg(true);
-          setOutcome('attacker');
+        if (isDragon) {
+          if (o === 'attacker') {
+            gameState.gameMessage = `${attacker.name} slays the Dragon! 🐉 VICTORY!`;
+            gameState.gameOver = true;
+            msg = 'The Dragon is slain! 🐉 VICTORY!';
+            setShowVictoryBg(true);
+            setOutcome('attacker');
+          } else if (o === 'tie') {
+            const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
+            const roundsLost = newResults.filter((r) => r.winner === 'defender').length;
+            const unitLoss = roundsLost * unitsPerRound;
+            const goldLoss = Math.floor(attacker.gold / 2);
+            attacker.gold = Math.max(0, attacker.gold - goldLoss);
+            if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+            const lossStr = unitLoss > 0 ? ` and ${unitLoss}🧍` : '';
+            gameState.gameMessage = `${attacker.name} fought the Dragon to a draw, losing ${goldLoss}🟡${lossStr}`;
+            msg = `The Dragon retreats. Lost ${goldLoss}🟡${lossStr}`;
+            setShowLostBg(true);
+            setOutcome('tie');
+          } else {
+            const unitLoss = Math.ceil(attacker.units / 2);
+            const goldLoss = attacker.gold;
+            attacker.units = Math.max(0, attacker.units - unitLoss);
+            attacker.gold = 0;
+            gameState.gameMessage = `${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
+            msg = `Lost all gold and ${unitLoss}🧍`;
+            setShowLostBg(true);
+            setOutcome('defender');
+          }
+        } else if (isCaravan) {
+          if (o === 'attacker') {
+            if (caravanSlaves) {
+              attacker.units += caravanPrize!;
+              gameState.gameMessage = `${attacker.name} freed ${caravanPrize}🧍 from the slavers!`;
+              msg = `3 ${caravanPrize}🧍 freed from the slavers join your army!`;
+            } else {
+              attacker.gold += caravanPrize!;
+              gameState.gameMessage = `${attacker.name} raided the caravan and pillaged ${caravanPrize}🟡!`;
+              msg = `Pillaged ${caravanPrize}🟡`;
+            }
+            setShowVictoryBg(true);
+            setOutcome('attacker');
+          } else if (o === 'tie') {
+            const halfPrize = Math.floor(caravanPrize! / 2);
+            if (caravanSlaves) {
+              attacker.units += halfPrize;
+              gameState.gameMessage = `${attacker.name} freed ${halfPrize}🧍 from the caravan`;
+              msg = `Freed ${halfPrize}🧍`;
+            } else {
+              attacker.gold += halfPrize;
+              gameState.gameMessage = `${attacker.name} tied with the caravan guards, receiving ${halfPrize}🟡`;
+              msg = `Received ${halfPrize}🟡`;
+            }
+            setOutcome('tie');
+          } else {
+            gameState.gameMessage = `${attacker.name} failed to raid the caravan`;
+            msg = `The caravan got away`;
+            setOutcome('defender');
+          }
         } else {
-          const unitLoss = Math.ceil(attacker.units / 2);
-          const goldLoss = attacker.gold;
-          attacker.units = Math.max(0, attacker.units - unitLoss);
-          attacker.gold = 0;
-          gameState.gameMessage = `${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
-          say(`${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍.`, 'error');
-          msg = `Lost all gold and ${unitLoss}🧍`;
-          setOutcome('defender');
-        }
-      } else if (isCaravan) {
-        if (o === 'attacker') {
-          attacker.gold += caravanPrize!;
-          gameState.gameMessage = `${attacker.name} raided the caravan and pillaged ${caravanPrize}🟡!`;
-          say(`${attacker.name} raided the caravan and pillaged ${caravanPrize}🟡!`, 'success');
-          msg = `Pillaged ${caravanPrize}🟡`;
-          setShowVictoryBg(true);
-          setOutcome('attacker');
-        } else if (o === 'tie') {
-          const halfPrize = Math.floor(caravanPrize! / 2);
-          attacker.gold += halfPrize;
-          gameState.gameMessage = `${attacker.name} tied with the caravan guards, receiving ${halfPrize}🟡`;
-          say(`${attacker.name} tied with caravan guards, receiving ${halfPrize}🟡`, 'info');
-          msg = `Received ${halfPrize}🟡`;
-          setOutcome('tie');
-        } else {
-          gameState.gameMessage = `${attacker.name} failed to raid the caravan`;
-          say(`${attacker.name} failed to raid the caravan`, 'error');
-          msg = `The caravan got away`;
-          setOutcome('defender');
-        }
-      } else {
-        if (o === 'attacker') {
-          const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
-          if (prevOwner) prevOwner.fame = Math.max(1, prevOwner.fame - 1);
-          gameState.players.forEach((p) => {
-            p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-          });
-          tile!.owner = attacker.name;
-          tile!._level = 1;
-          attacker.ownedTiles.push(attacker.position);
-          attacker.fame++;
-          gameState.gameMessage = `Glorious victory! ${attacker.name} conquered ${tile!.name}!`;
-          say(`${attacker.name} conquered ${tile!.name}!`, 'success');
-          msg = `Glorious victory! ${attacker.name} wins ${tile!.name}!`;
-          setShowVictoryBg(true);
-          setOutcome('attacker');
-        } else if (o === 'defender') {
-          attacker.fame = Math.max(1, attacker.fame - 1);
-          gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}`;
-          say(`${attacker.name} lost the battle for ${tile!.name}`, 'error');
-          msg = `${attacker.name} retreats from ${tile!.name}`;
-          setOutcome('defender');
-        } else {
-          const tieLoss = Math.round(0.2 * attacker.units);
-          attacker.units = Math.max(0, attacker.units - tieLoss);
-          const tieSuffix = tieLoss > 0 ? `, ${tieLoss}🧍 are lost` : '';
-          msg = `A tie! Receiving many wounds, ${attacker.name}'s army flee${tieSuffix}`;
-          gameState.gameMessage = msg;
-          say(msg, 'info');
-          if (tieLoss > 0) setShowLostBg(true);
-          setOutcome('tie');
-        }
-      }
+          const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
+          const roundsLost = newResults.filter((r) => r.winner === 'defender').length;
+          const unitLoss = roundsLost * unitsPerRound;
+          if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+          const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
 
-      markScreenResolved();
-      updateGameState(gameState);
-      setResultMsg(msg);
-      setPhase('result');
+          if (o === 'attacker') {
+            const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
+            if (prevOwner) prevOwner.fame = Math.max(1, prevOwner.fame - 1);
+            gameState.players.forEach((p) => {
+              p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
+            });
+            tile!.owner = attacker.name;
+            tile!._level = 1;
+            attacker.ownedTiles.push(attacker.position);
+            attacker.fame++;
+            gameState.gameMessage = `Glorious victory! ${attacker.name} conquered ${tile!.name}${lossStr}!`;
+            msg = `${attacker.name} wins ${tile!.name}${lossStr}! ${defender?.name} finds out that the tiles should be upgraded for better defence`;
+            setShowVictoryBg(true);
+            setOutcome('attacker');
+          } else if (o === 'defender') {
+            attacker.fame = Math.max(1, attacker.fame - 1);
+            gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}${lossStr}`;
+            msg = `${attacker.name} retreats from ${tile!.name}${lossStr}`;
+            setOutcome('defender');
+          } else {
+            msg = `${attacker.name}'s army retreats${lossStr}`;
+            gameState.gameMessage = msg;
+            if (unitLoss > 0) setShowLostBg(true);
+            setOutcome('tie');
+          }
+        }
+
+        // Single summary log entry
+        const outcomeVerb =
+          o === 'attacker' ? 'wins a battle' : o === 'defender' ? 'loses a battle' : 'ties';
+        const capturePart = o === 'attacker' && tile ? `, captured ${tile.name}` : '';
+        const unitsAfter = attacker.units;
+        const goldAfter = attacker.gold;
+        const unitDiff = unitsBefore - unitsAfter;
+        const goldDiff = goldAfter - goldBefore;
+        const unitsPart =
+          unitDiff > 0
+            ? `, lost ${unitDiff}🧍 (${unitsBefore}→${unitsAfter})`
+            : unitDiff < 0
+              ? `, gained ${-unitDiff}🧍 (${unitsBefore}→${unitsAfter})`
+              : '';
+        const goldPart =
+          goldDiff > 0
+            ? `, gained ${goldDiff}🟡`
+            : goldDiff < 0
+              ? `, lost ${-goldDiff}🟡 (${goldBefore}→${goldAfter})`
+              : '';
+        const logLevel = o === 'attacker' ? 'success' : o === 'defender' ? 'error' : 'info';
+        say(
+          `⚔️ ${attacker.name} ${outcomeVerb} with ${defenderLabel}${capturePart}${unitsPart}${goldPart}`,
+          logLevel
+        );
+
+        markScreenResolved();
+        updateGameState(gameState);
+        setResultMsg(msg);
+        setPhase('result');
+      }, 500);
     }
   };
 
@@ -245,7 +280,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (isCaravan) {
       (props as { onClose: () => void }).onClose();
     } else if (isDragon) {
-      if (outcome !== 'attacker') showDice();
+      if (outcome !== 'attacker') setEndTurn();
     } else {
       setEndTurn();
     }
@@ -260,9 +295,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // Per-round icons: winner keeps 🧍🏻, loser gets 💥, tie gets 🏴
   const attackerRoundIcon = (r: RoundResult) =>
-    r.winner === 'attacker' ? '🧍🏻' : r.winner === 'defender' ? '💥' : '🏴';
+    r.winner === 'attacker' ? '🧍🏻' : r.winner === 'defender' ? '💥' : '💥';
   const defenderRoundIcon = (r: RoundResult) =>
-    r.winner === 'defender' ? '🧍🏻' : r.winner === 'attacker' ? '💥' : '🏴';
+    r.winner === 'defender' ? '🧍🏻' : r.winner === 'attacker' ? '💥' : '💥';
 
   const battleResultEmoji = outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🏴';
 
@@ -301,67 +336,75 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
       <div className="battle-screen">
         <div className="battle-header">
-          {isCaravan ? 'Caravan raid!' : isDragon ? 'Dragon Attack' : <>⚔️ Battle for <strong>{tile!.name}</strong></>}
+          {isCaravan ? 'Caravan raid!' : isDragon ? 'Dragon Attack' : <>Battle for{tile!.name}</>}
         </div>
+        <div className="battle-total-rounds">{totalRounds > 1 ? `${totalRounds} rounds` : ''}</div>
 
         <div className="battle-names-row">
           <div className="bc-attacker">
             <img src={attackerImg} alt={attacker.name} className="battle-player-icon" />
-            <br/>
-            <span className="battle-player-name" style={{ color: attacker.color }}>{attacker.name}</span>
+            <br />
+            <span className="battle-player-name" style={{ color: attacker.color }}>
+              ⚔️ {attacker.name}
+            </span>
           </div>
           <div className="bc-defender">
             <img src={defenderImg} alt={defenderLabel} className="battle-player-icon" />
-              <br/>
-            <span className="battle-player-name" style={{ color: defenderColor }}>{defenderLabel}</span>
+            <br />
+            <span className="battle-player-name" style={{ color: defenderColor }}>
+              🛡️ {defenderLabel}
+            </span>
           </div>
         </div>
 
         <div className="battle-table">
-             {/* Completed round rows */}
-            {roundResults.map((r, i) => (
-              <div key={i} className="battle-result-row">
-                <div className="bc-side bc-attacker">
-                  <span className="battle-round-icon">{attackerRoundIcon(r)}</span>
-                </div>
-                <div className="bc-roll bc-roll-attacker">🎲 {r.attackerRoll}</div>
-                <div className="bc-roll bc-roll-defender">{r.defenderRoll} 🎲</div>
-                <div className="bc-side bc-defender">
-                  <span className="battle-round-icon">{defenderRoundIcon(r)}</span>
-                </div>
+          {/* Completed round rows */}
+          {roundResults.map((r, i) => (
+            <div key={i} className="battle-result-row">
+              <div className="bc-side bc-attacker">
+                <span className="battle-round-icon">{attackerRoundIcon(r)}</span>
               </div>
-            ))}
+              <div className="bc-roll bc-roll-attacker">🎲 {r.attackerRoll}</div>
+              <div className="battle-round-result">
+                {r.winner === 'attacker' ? '⚔️' : r.winner === 'tie' ? '🏴' : '☠️'}
+              </div>
+              <div className="bc-roll bc-roll-defender">{r.defenderRoll} 🎲</div>
+              <div className="bc-side bc-defender">
+                <span className="battle-round-icon">{defenderRoundIcon(r)}</span>
+              </div>
+            </div>
+          ))}
 
-            {/* Current round action row */}
-            {phase !== 'result' && (
-              <div className="battle-action-row">
-                <div className="bc-side bc-attacker">
-                  {phase === 'attacker-roll' && !rollingAttacker && (
-                    <button className="game-menu-button battle-roll-btn" onClick={handleAttackerRoll}>
-                      ⚔️ Attack!
-                    </button>
-                  )}
-                  {phase === 'defender-roll' && (
-                    <span className="battle-round-icon">🧍🏻</span>
-                  )}
-                </div>
-                <div className="bc-roll bc-roll-attacker">
-                  {phase === 'defender-roll' && pendingAttackerRoll !== null
-                    ? <>🎲 {pendingAttackerRoll}</>
-                    : <span className="dim">·</span>}
-                </div>
-                <div className="bc-roll bc-roll-defender">
-                  <span className="dim">·</span>
-                </div>
-                <div className="bc-side bc-defender">
-                  {phase === 'defender-roll' && !isCaravan && !isDragon && !rollingDefender && (
-                    <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
-                      🛡️ Defend!
-                    </button>
-                  )}
-                </div>
+          {/* Current round action row */}
+          {phase !== 'result' && (
+            <div className="battle-action-row">
+              <div className="bc-side bc-attacker">
+                {phase === 'attacker-roll' && !rollingAttacker && (
+                  <button className="game-menu-button battle-roll-btn" onClick={handleAttackerRoll}>
+                    ⚔️ Attack!
+                  </button>
+                )}
+                {phase === 'defender-roll' && <span className="battle-round-icon">🧍🏻</span>}
               </div>
-            )}
+              <div className="bc-roll bc-roll-attacker">
+                {phase === 'defender-roll' && pendingAttackerRoll !== null ? (
+                  <>🎲 {pendingAttackerRoll}</>
+                ) : (
+                  <span className="dim">·</span>
+                )}
+              </div>
+              <div className="bc-roll bc-roll-defender">
+                <span className="dim">·</span>
+              </div>
+              <div className="bc-side bc-defender">
+                {phase === 'defender-roll' && !isCaravan && !isDragon && !rollingDefender && (
+                  <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
+                    🛡️ Defend!
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Result */}
@@ -371,14 +414,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               {battleResultEmoji}
               <br />
               <span className="battle-result-verdict">
-                {outcome === 'attacker' ? ` ${attacker.name} won the battle!`
-                  : outcome === 'defender' ? ` ${attacker.name} lost the battle!`
-                  : ' A tie!'}
+                {outcome === 'attacker'
+                  ? `Glorious victory!`
+                  : outcome === 'defender'
+                    ? `The battle is lost!`
+                    : 'A tie!'}
               </span>
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <button className="game-menu-button" onClick={handleClose}>
-              Was it worth it?
+              🩸 Was it worth it?
             </button>
           </div>
         )}

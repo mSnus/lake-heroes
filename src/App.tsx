@@ -44,7 +44,7 @@ import { fightDragon } from './actions/fightDragon';
 import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
-import { resetEndTurn } from './utils/endTurnStore';
+import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
 import { ScreenRenderer } from './components/ScreenRenderer';
@@ -290,23 +290,55 @@ function App() {
               case 'sphynx':
                 showSphynxScreen((roll) => handleSphynx(restored, updateGameState, roll));
                 break;
+              case 'sphynx-result':
+                showScreen({
+                  screenType: 'sphynx-result',
+                  background: 'assets/screens/sphynx.jpg',
+                  fade: true,
+                  message: savedScreen.message,
+                  buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                });
+                break;
               case 'tavern':
                 showTavernScreen(savedScreen.title ?? '', (roll) =>
                   handleTavern(restored, updateGameState, roll)
                 );
+                break;
+              case 'tavern-result':
+                showScreen({
+                  screenType: 'tavern-result',
+                  background: 'assets/screens/tavern.jpg',
+                  message: savedScreen.message,
+                  buttons: [{ label: 'New folks are always welcome!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                });
                 break;
               case 'treasure':
                 showTreasureScreen(savedScreen.title ?? 'Treasures', (roll) =>
                   handleTreasureBox(restored, updateGameState, roll)
                 );
                 break;
+              case 'treasure-result':
+                showScreen({
+                  screenType: 'treasure-result',
+                  background: 'assets/screens/treasure.jpg',
+                  message: savedScreen.message,
+                  fade: true,
+                  buttons: [{ label: 'Let the treasures grow!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                });
+                break;
               default:
-                afterMoveLogic(restored, updateGameState);
-                showDice(handleDiceRollAndMove);
+                if (restored.turnPhase === 'before-move') {
+                  showDice(handleDiceRollAndMove);
+                } else {
+                  afterMoveLogic(restored, updateGameState);
+                }
             }
           } else {
-            afterMoveLogic(restored, updateGameState);
-            showDice(handleDiceRollAndMove);
+            if (restored.turnPhase === 'before-move') {
+              showDice(handleDiceRollAndMove);
+            } else {
+              afterMoveLogic(restored, updateGameState);
+            }
           }
 
           gameEvent('setPhase', restored.turnPhase);

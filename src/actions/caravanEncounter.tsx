@@ -28,7 +28,10 @@ export function checkCaravanEncounter(
   updateGameState(board);
 
   const defendingUnits = Math.floor((0.7 + Math.random() * 0.3) * player.units);
-  const prize = 100 * defendingUnits * (Math.floor(Math.random() * 4) + 1);
+  const isSlaves = Math.random() < 0.5;
+  const prize = isSlaves
+    ? Math.max(1, Math.floor(defendingUnits * (0.5 + Math.random() * 0.5)))
+    : 100 * defendingUnits * (Math.floor(Math.random() * 2) + 1);
 
   const startBattle = () => {
     showScreen({
@@ -43,18 +46,23 @@ export function checkCaravanEncounter(
           updateGameState={updateGameState}
           caravanDefence={defendingUnits}
           caravanPrize={prize}
+          caravanSlaves={isSlaves}
           onClose={onContinue}
         />
       ),
     });
   };
 
+  const caravanDesc = isSlaves
+    ? `bringing ${prize}🧍 in chains`
+    : `bringing gold and jewels worth ${prize}🟡`;
+
   showScreen({
     screenType: 'caravan',
     background: 'assets/screens/caravan.jpg',
     caravanDefence: defendingUnits,
     caravanPrize: prize,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan passing behind the hills, bringing gold and jewels worth ${prize}🟡. It is guarded by ${defendingUnits}🧍. Would you attack?`,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan ${caravanDesc}. It is guarded by ${defendingUnits}🧍. Would you attack?`,
     buttons: [
       { label: 'Attack!', onClick: startBattle },
       { label: 'Let it pass..', onClick: () => { clearScreen(); onContinue(); } },

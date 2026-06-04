@@ -24,6 +24,7 @@ export function handleTreasureBox(
   say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward}🟡!`, 'success');
 
   showScreen({
+    screenType: 'treasure-result',
     background: 'assets/screens/treasure.jpg',
     message: board.gameMessage,
     fade: true,

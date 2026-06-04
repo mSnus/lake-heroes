@@ -110,6 +110,7 @@ export function showTavernScreen(title: string, handler: (roll: number) => void)
     screenType: 'tavern',
     background: 'assets/screens/tavern.jpg',
     title,
+    message: 'Merry folks dwell here',
     fade: true,
     buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
   });
@@ -120,16 +121,17 @@ export function showSphynxScreen(handler: (roll: number) => void): void {
   showScreen({
     screenType: 'sphynx',
     background: 'assets/screens/sphynx.jpg',
-    title: '',
+    title: 'Sphynx stares at you',
     fade: true,
     buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
   });
 }
 
-export function showJokerScreen(message: string): void {
+export function showJokerScreen(message: string, title?: string): void {
   showScreen({
     screenType: 'joker',
     background: 'assets/screens/joker.jpg',
+    title,
     message,
     buttons: [{ label: 'Accept your destiny', action: 'end-turn', onClick: clearScreen }],
   });

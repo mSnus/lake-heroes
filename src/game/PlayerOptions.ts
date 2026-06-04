@@ -15,8 +15,10 @@ export const playerOptions: PlayerOption[] = [
 
 // Blue has no footman sprite — always uses rider
 export function getPlayerImageSrc(colorKey: string, fame: number): string {
-  const type = fame >= 4 || colorKey === 'blue' ? 'rider' : 'footman';
-  return `assets/figures/${type}-${colorKey}.png`;
+  // Normalize legacy saved values (e.g. 'rider-blue.png') down to the bare color key.
+  const color = colorKey.replace(/\.png$/, '').replace(/^(rider|footman)-/, '');
+  const type = fame >= 4 || color === 'blue' ? 'rider' : 'footman';
+  return `assets/figures/${type}-${color}.png`;
 }
 
 const pronouns = [

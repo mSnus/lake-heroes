@@ -24,7 +24,7 @@
   width: 100%;
   border-radius: 10px;
   display: grid;
-  grid-template-columns: 1fr min-content min-content 1fr;
+  grid-template-columns: 1fr min-content min-content min-content 1fr;
   margin-top: 1.5rem;
 }
 
@@ -32,6 +32,13 @@
   display: flex;
   gap: 20vw;
   align-items: flex-end;
+}
+
+.battle-total-rounds {
+  color: #fff;
+  font-size: 1.4rem;
+  font-family: 'Texturina';
+  margin-top: -1.4rem;
 }
 
 .battle-names-row .bc-attacker,
@@ -45,7 +52,7 @@
   display: contents;
 }
 
-.battle-action-row > div {
+.battle-action-row>div {
   text-align: center;
 }
 
@@ -59,7 +66,7 @@
   text-align: right;
 }
 
-.bc-side.bc-defender{
+.bc-side.bc-defender {
   text-align: left;
 }
 
@@ -80,6 +87,13 @@
 .bc-roll-defender {
   text-align: left;
   padding-left: 6px;
+}
+
+.battle-round-result {
+  font-size: 1.8rem;
+  text-align: center;
+  white-space: nowrap;
+  align-content: center;
 }
 
 .dim {
@@ -148,7 +162,7 @@
 }
 
 .battle-result-verdict {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   letter-spacing: normal;
   text-shadow: 1px 1px 4px #000;
   font-weight: bold;

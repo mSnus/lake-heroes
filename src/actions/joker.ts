@@ -15,14 +15,14 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       for (const p of board.players) {
         if (p.gold > 0) p.gold = Math.max(1, Math.round(p.gold / 2));
       }
-      message = 'All players lose half their gold.';
+      message = 'All players lose half of their gold.';
       break;
 
     case 'Plague':
       for (const p of board.players) {
         if (p.units > 0) p.units = Math.max(1, Math.round(p.units / 2));
       }
-      message = 'All players lose half their units.';
+      message = 'All players lose half of their units.';
       break;
 
     case 'Hurricane': {
@@ -87,5 +87,5 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   board.gameMessage = `${event}: ${message}`;
   updateGameState(board);
   setEndTurn();
-  showJokerScreen(message);
+  showJokerScreen(message, event);
 }
