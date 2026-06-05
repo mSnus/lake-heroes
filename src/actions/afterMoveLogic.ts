@@ -36,14 +36,24 @@ export function afterMoveLogic(
     const defence = tile.defence;
     const ownerColor = owner?.color;
 
-    const totalSellGold = player.ownedTiles.reduce((sum, posIdx) => {
-      const t = board.tiles[posIdx];
-      if (!t || t.owner !== player.name) return sum;
-      return sum + t.currentPrice.gold;
-    }, 0);
-    const canSell = totalSellGold >= fee;
+    const sellable = player.ownedTiles.reduce(
+      (acc, posIdx) => {
+        const t = board.tiles[posIdx];
+        if (!t || t.owner !== player.name) return acc;
+        acc.gold += t.currentPrice.gold;
+        acc.units += t.currentPrice.units;
+        return acc;
+      },
+      { gold: 0, units: 0 }
+    );
     const canPay = player.gold >= fee;
-    const showAcceptLoss = !canPay && !canSell;
+    const canFight = player.units >= defence;
+    // Selling tops up existing gold/units, so combine both when deciding whether
+    // selling could unlock paying the fee or fighting for the tile.
+    const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
+    const canSellForFight = !canFight && player.units + sellable.units >= defence;
+    const canSell = canSellForFee || canSellForFight;
+    const showAcceptLoss = !canPay && !canFight && !canSell;
 
     const encounter = {
       playerName: player.name,
@@ -80,7 +90,7 @@ export function afterMoveLogic(
     ];
 
     const acceptLossButton: ScreenButton = {
-      label: `Accept loss 😢 ${totalSellGold}`,
+      label: `Accept loss 😢`,
       action: 'fight',
       onClick: () => {
         becomeBeggar(board, updateGameState);
@@ -89,11 +99,11 @@ export function afterMoveLogic(
     };
 
     const extraButtons: ScreenButton[] = [];
-    if (canSell && !canPay) {
+    if (canSell) {
       const sellModeConfig = {
         ...baseConfig,
         sellMode: true,
-        sellHeader: `Sell tiles to pay the ${fee}🟡 fee or yield to ${tile.owner}`,
+        sellHeader: `Sell tiles to pay the ${fee}🟡 fee, raise an army, or yield to ${tile.owner}`,
         buttons: baseButtons,
       };
       extraButtons.push({

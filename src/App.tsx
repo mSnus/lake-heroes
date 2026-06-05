@@ -166,7 +166,9 @@ function App() {
 
           const savedRaw = saved as SavedGameState;
           const tiles = rehydrateSavedTiles(savedRaw);
-          const players = (savedRaw.players || []).map((p) => new Player(p));
+          // new Player() resets ownedTiles/turnsToSkip/circles/etc; copy the
+          // saved fields back so per-player state survives a reload.
+          const players = (savedRaw.players || []).map((p) => Object.assign(new Player(p), p));
           const restored = Object.assign(new GameState(tiles, players), {
             ...savedRaw,
             tiles,

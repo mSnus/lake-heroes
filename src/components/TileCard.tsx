@@ -7,6 +7,7 @@ import { sellTile } from '../actions/sellTile';
 import { buyTile } from '../actions/buyTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
+import { syndicateMultiplier } from '../game/syndicate';
 
 const fmtPrice = (gold: number, units: number, join: string = ''): string => {
   const hasGold = gold > 0;
@@ -46,24 +47,72 @@ export const TileCard: React.FC<TileCardProps> = ({
   if (!tile || !tile.name) return null;
 
   const groupColor = tile.groupColor;
-  const ownerColor = gameState?.players.find((p) => p.name === tile.owner)?.color || '#444';
+  const ownerPlayer = gameState?.players.find((p) => p.name === tile.owner) ?? null;
+  const ownerColor = ownerPlayer?.color || '#444';
+
+  // Syndicate: the owner holds every ownable tile of this group, which doubles
+  // the income bonus.
+  const syndicateMult =
+    gameState && ownerPlayer ? syndicateMultiplier(gameState, ownerPlayer, tile.group) : 1;
+  const isSyndicate = syndicateMult > 1;
 
   const bonusType = getBonusType(tile);
 
-  const pricelevel1 = fmtPrice(tile.prices['1']?.gold ?? 0, tile.prices['1']?.units ?? 0);
-  const pricelevel2 = fmtPrice(tile.prices['2']?.gold ?? 0, tile.prices['2']?.units ?? 0);
-  const pricelevel3 = fmtPrice(tile.prices['3']?.gold ?? 0, tile.prices['3']?.units ?? 0);
+  // Price cell for the level breakdown table. On the upgrade-target row of an
+  // owned tile that the player can't afford, the lacking resource is shown bold
+  // red with a 🔻 prefix (same treatment as the "can't own" case).
+  const priceCell = (level: number) => {
+    const gold = tile.prices[level]?.gold ?? 0;
+    const units = tile.prices[level]?.units ?? 0;
+    const hasGold = gold > 0;
+    const hasUnits = units > 0;
+    const isOwnedByActive = mode === 'owned' && tile.owner === activePlayer?.name;
+    const isUpgradeTarget = isOwnedByActive && level === nextLevel && !maxLevelReached;
+    const lacksGold = !!isUpgradeTarget && !!activePlayer && (activePlayer.gold ?? 0) < gold;
+    const lacksUnits = !!isUpgradeTarget && !!activePlayer && (activePlayer.units ?? 0) < units;
+    const redBold = { color: '#ff4444', fontWeight: 'bold' as const };
 
-  const bonus = (level: number) => tile.bonuses[level] ?? 0;
+    if (!hasGold && !hasUnits) return <>0</>;
+
+    let icon = 'ᅠ'
+
+    if (lacksGold || lacksUnits) {
+      icon = '❌ ';
+    } else {
+      if (isUpgradeTarget) {
+        icon = '⬆️ ';
+      }
+    }
+
+    return (
+      <>
+      <span>
+      {icon}
+      </span>
+        {hasGold && (
+          <span style={lacksGold ? redBold : undefined}>
+            {lacksGold && '🔻'}
+            {gold}🟡
+          </span>
+        )}
+        {hasGold && hasUnits && ' '}
+        {hasUnits && (
+          <span style={lacksUnits ? redBold : undefined}>
+            {lacksUnits && '🔻'}
+            {units}🧍
+          </span>
+        )}
+      </>
+    );
+  };
+
+  const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
   const defence = (level: number) => tile.defences[level] ?? 0;
 
-  const diamonds = (level: number = tile.level) => Array.from({ length: level }).map((_, d) => (
-                        <div
-                          key={d}
-                          className="diamond"
-                          style={{background: ownerColor}}
-                        />
-                      ))
+  const diamonds = (level: number = tile.level) =>
+    Array.from({ length: level }).map((_, d) => (
+      <div key={d} className="diamond" style={{ background: ownerColor }} />
+    ));
 
   const bonusTypeIcon = bonusType === 'gold' ? '🟡' : '👬';
 
@@ -92,16 +141,17 @@ export const TileCard: React.FC<TileCardProps> = ({
     (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
     (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
 
+  const upgradeUnreachable = !canUpgrade || currentLevel === 1;   
+
   const prices = tile.prices || {};
   const nextPrice = prices[nextLevel];
 
-  let sellPrice = {units: 0, gold: 0};
-  
-  for (let i = 1; i <= currentLevel; i++) {
-      sellPrice.gold += tile.prices[i].gold
-      sellPrice.units += tile.prices[i].units
-  }
+  let sellPrice = { units: 0, gold: 0 };
 
+  for (let i = 1; i <= currentLevel; i++) {
+    sellPrice.gold += tile.prices[i].gold;
+    sellPrice.units += tile.prices[i].units;
+  }
 
   const handleUpgrade = () => {
     if (
@@ -136,7 +186,12 @@ export const TileCard: React.FC<TileCardProps> = ({
   const handleSell = () => {
     if (!gameState || !activePlayer) return;
 
-    if (!window.confirm(`Sell ${tile.name} for ${fmtPrice(sellPrice.gold, sellPrice.units, 'and')}, seriously?`)) return;
+    if (
+      !window.confirm(
+        `Sell ${tile.name} for ${fmtPrice(sellPrice.gold, sellPrice.units, 'and')}, seriously?`
+      )
+    )
+      return;
 
     const refunds = sellTile(gameState, activePlayer, tile);
 
@@ -160,7 +215,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   return (
-    <div className="tile-card">
+    <div className={'tile-card' + (mode === 'owned' && isSyndicate ? ' syndicate' : '')}>
       <div
         className="tile-card-header"
         style={{
@@ -206,7 +261,10 @@ export const TileCard: React.FC<TileCardProps> = ({
               {tile.owner && (
                 <div className="tile-card-base-info">
                   <div className="tile-card-base-row">
-                    <div className="diamonds" style={{ display:'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div
+                      className="diamonds"
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                    >
                       {diamonds()}
                     </div>
 
@@ -243,12 +301,12 @@ export const TileCard: React.FC<TileCardProps> = ({
               {!tile.owner && (
                 <div className="tile-card-base-info">
                   <div className="tile-card-base-row">
-                    <div>
-                      <div>
-                        <div>
-                          <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                            {cantAfford ? "can't own" : 'to own:'}
+                    <div >
+                        <div style={cantAfford ? { color: '#ff4444' } : undefined}>
+                            {cantAfford ? "can't afford" : '👛 to own:'}
                           </div>
+                        <div>
+                        <div>
                           <span
                             style={
                               activePlayer &&
@@ -324,22 +382,22 @@ export const TileCard: React.FC<TileCardProps> = ({
               <div className="tile-card-table-wrap">
                 <table className="tile-card-table">
                   <tbody>
-                    <tr>
-                      <td className={class1}>👛 {pricelevel1}</td>
+                    <tr className={mode === 'owned' && currentLevel > 1 ? 'upgrade-unreachable' : undefined}>
+                      <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>
                         +{bonus(1)} {bonusTypeIcon}
                       </td>
                       <td className={class1}>{defence(1)}🛡️ </td>
                     </tr>
-                    <tr>
-                      <td className={class2}>👛 {pricelevel2}</td>
+                    <tr className={mode === 'owned' && currentLevel > 2 ? 'upgrade-unreachable' : undefined}>
+                      <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>
                         +{bonus(2)} {bonusTypeIcon}
                       </td>
                       <td className={class2}>{defence(2)}🛡️ </td>
                     </tr>
-                    <tr>
-                      <td className={class3}>👛 {pricelevel3}</td>
+                    <tr className={mode === 'owned' && upgradeUnreachable ? 'upgrade-unreachable' : undefined}>
+                      <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>
                         +{bonus(3)} {bonusTypeIcon}
                       </td>
@@ -366,7 +424,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 style={{ backgroundColor: tile.groupColor + '4f' }}
               >
                 <div
-                  onClick={() => handleUpgrade()}
+                  onClick={() => (canUpgrade ? handleUpgrade() : handleInfoClick())}
                   className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
                 >
                   <div className="big-icon-hint">

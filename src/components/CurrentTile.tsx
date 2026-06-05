@@ -32,10 +32,14 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     return () => window.removeEventListener('displayTile', onDisplayTile as EventListener);
   }, []);
 
-  const couldBuy = currentTile.isOwnable && !currentTile.isOwned() && (
-    gameState.turnPhase === 'before-move' ||
-    (gameState.turnPhase === 'after-move' && (displayedTile === null || displayedTile === currentTile))
-  );
+  // Buy is only offered for the active tile (where the active player stands),
+  // never for a different tile the player clicked to inspect.
+  const showingActiveTile = displayedTile === null || displayedTile === currentTile;
+  const couldBuy =
+    showingActiveTile &&
+    currentTile.isOwnable &&
+    !currentTile.isOwned() &&
+    (gameState.turnPhase === 'before-move' || gameState.turnPhase === 'after-move');
 
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),

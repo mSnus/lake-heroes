@@ -20,6 +20,9 @@ const RULES_HTML = `
   <li><strong>Own tile</strong> — collect its bonus (gold or warriors) each visit after your first lap.</li>
 </ul>
 
+<h3>Syndicates</h3>
+<p>Own <strong>every tile of a single group</strong> and you form a syndicate: that group's income bonus is <strong>doubled</strong>. The doubled value is shown on the tile cards, and syndicate tiles are highlighted.</p>
+
 <h3>Special tiles</h3>
 <ul>
   <li>🏰 <strong>King's Castle</strong> — buy warriors. Passing it grants base income plus bonuses from all your properties.</li>

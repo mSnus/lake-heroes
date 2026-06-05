@@ -120,9 +120,10 @@ export class Tile implements TileJSON {
   }
 
   getDefence(level: number = 1): number {
-    const defence = this.defences ? this.defences[level] || 0 : 0;
+    const MIN_DEFENCE = 3;
+    const defence = this.defences ? this.defences[level] || MIN_DEFENCE : MIN_DEFENCE;
 
-    return level == 1 ? this.prices[1].units : defence;
+    return defence;
   }
 
   toJSON(): TileJSON {

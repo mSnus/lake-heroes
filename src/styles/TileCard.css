@@ -25,6 +25,10 @@
   color: #444;
 }
 
+.tile-card.syndicate {
+  background: #fdd06669;
+}
+
 .tile-card-header {
   display: flex;
   align-items: center;
@@ -90,7 +94,11 @@
 .tile-card-button.disabled {
   filter: grayscale(1);
   opacity: 0.4;
-  pointer-events: none;
+}
+
+.upgrade-unreachable {
+  filter: grayscale(1);
+  opacity: 0.8;
 }
 
 .tile-card-title {
@@ -240,7 +248,7 @@
 }
 
 .level-highlighted {
-  background-color: #f5e8d1;
+  background-color: #f5f2eb;
   color: #000;
   font-weight: 600;
 }

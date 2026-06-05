@@ -110,7 +110,7 @@ export function showTavernScreen(title: string, handler: (roll: number) => void)
     screenType: 'tavern',
     background: 'assets/screens/tavern.jpg',
     title,
-    message: 'Merry folks dwell here',
+    message: 'By them a round and toss a coin!',
     fade: true,
     buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
   });
