@@ -95,6 +95,14 @@ export const TileCard: React.FC<TileCardProps> = ({
   const prices = tile.prices || {};
   const nextPrice = prices[nextLevel];
 
+  let sellPrice = {units: 0, gold: 0};
+  
+  for (let i = 1; i <= currentLevel; i++) {
+      sellPrice.gold += tile.prices[i].gold
+      sellPrice.units += tile.prices[i].units
+  }
+
+
   const handleUpgrade = () => {
     if (
       !window.confirm(
@@ -128,7 +136,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const handleSell = () => {
     if (!gameState || !activePlayer) return;
 
-    if (!window.confirm(`Sell ${tile.name}, seriously?`)) return;
+    if (!window.confirm(`Sell ${tile.name} for ${fmtPrice(sellPrice.gold, sellPrice.units, 'and')}, seriously?`)) return;
 
     const refunds = sellTile(gameState, activePlayer, tile);
 
@@ -343,9 +351,9 @@ export const TileCard: React.FC<TileCardProps> = ({
             )}
 
             {expanded && mode === 'owned' && (
-              <div className="tile-card-actions" style={{ marginTop: '1rem' }}>
+              <div className="tile-card-sell" style={{ marginTop: '1rem' }}>
                 <div onClick={() => handleSell()} className={'tile-card-button'}>
-                  🪙 sell for $sellPrice
+                  🪙 sell
                 </div>
               </div>
             )}
