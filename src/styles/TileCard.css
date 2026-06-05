@@ -38,10 +38,35 @@
   max-width: 100%
 }
 
+.tile-card-bg {
+  flex-shrink: 0;
+  background-size: 70%;
+  background-position: left center;
+  background-repeat: no-repeat;
+  margin-right: -8px;
+}
+
 .tile-sprite-box {    
     margin-left: -8px;
     margin-top: -8px;
     overflow: clip;
+}
+
+.tile-card-close {
+  padding: 0px 3px 18px 3px;
+  border: none;
+  cursor: pointer;
+  background: none;
+  background-color: transparent;
+  opacity: 1;
+}
+
+.tile-card-actions {
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+  font-size: 0.8rem;
+  padding: 8px;
 }
 
 .tile-card-button {
@@ -51,6 +76,14 @@
   background: none;
   background-color: transparent;
   opacity: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: bold;
+  width: 100%;
 }
 
 .tile-card-button:disabled,
@@ -78,7 +111,7 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 8px;
-  margin-top: 8px;
+  margin-top: 24px;
   font-size: 18px;
   font-weight: 600;
   align-items: center;
@@ -102,7 +135,6 @@
 .tile-card-base-info {
   border-collapse: collapse;
   text-align: center;
-  margin-bottom: 12px;
   white-space: nowrap;
   display: flex;
   gap: 12px;
@@ -118,12 +150,12 @@
 
 .tile-card-base-info .diamonds {
   display: block;
-  margin-top: -10px;
+  margin-top: -4px;
 }
 
 .tile-card-base-info .diamond {
-  margin-left: -5px;
   float: right;
+  margin-top: -5px;
 }
 
 .tile-card-base-info .diamond:first-child {
@@ -143,18 +175,6 @@
   text-align: right;
 }
 
-.tile-card-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.tile-card-toggle {
-  cursor: pointer;
-  text-align: center;
-  font-size: 16px;
-  filter: grayscale(0.8);
-}
-
 .tile-card-own-level {
   display: flex;
   width: 100%;
@@ -169,6 +189,7 @@
 
 .tile-card-table-wrap {
   overflow-x: hidden;
+  margin-top: 16px;
 }
 
 .tile-card-table {
@@ -266,3 +287,20 @@
 .tile-card-base-info-data {
   text-align: center;
 }
+
+.diamond {
+  width: 10px;
+  height: 10px;
+}
+
+.upgrade-diamonds {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: row;
+}
+
+.upgrade-diamonds .diamond {
+  width: 5px;
+  height: 5px;
+}
+

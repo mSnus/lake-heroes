@@ -87,7 +87,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        {/* wages per circle */}
+        {/* wages per year */}
         <div
           className="player-stats-data"
           id="statsPerTurn"
@@ -98,10 +98,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             const tileUnits = totalUnits - kingsUnits;
 
             const fmt = (gold: number, units: number, label: string) => {
-              const items = [
-                gold > 0 ? `${gold}🟡` : null,
-                units > 0 ? `${units}🧍` : null,
-              ].filter(Boolean);
+              const items = [gold > 0 ? `${gold}🟡` : null, units > 0 ? `${units}🧍` : null].filter(
+                Boolean
+              );
               return items.length > 0 ? `${items.join(' and ')} ${label}` : null;
             };
 

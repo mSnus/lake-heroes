@@ -17,7 +17,7 @@ export function checkCaravanEncounter(
     player.caravanEncounteredLastTurn = false;
     return false;
   }
-  // Max 2 per circle
+  // Max 2 per year
   if ((player.caravanEncounters ?? 0) >= 2) return false;
   // 1/12 chance
   if (Math.random() >= 1 / 12) return false;
@@ -65,7 +65,13 @@ export function checkCaravanEncounter(
     htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan ${caravanDesc}. It is guarded by ${defendingUnits}🧍. Would you attack?`,
     buttons: [
       { label: 'Attack!', onClick: startBattle },
-      { label: 'Let it pass..', onClick: () => { clearScreen(); onContinue(); } },
+      {
+        label: 'Let it pass..',
+        onClick: () => {
+          clearScreen();
+          onContinue();
+        },
+      },
     ],
   });
 

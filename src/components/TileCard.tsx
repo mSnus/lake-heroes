@@ -8,12 +8,14 @@ import { buyTile } from '../actions/buyTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 
-const fmtPrice = (gold: number, units: number): string => {
+const fmtPrice = (gold: number, units: number, join: string = ''): string => {
   const hasGold = gold > 0;
   const hasUnits = units > 0;
-  if (hasGold && hasUnits) return `${gold} 🟡 ${units} 🧍`;
-  if (hasGold) return `${gold} 🟡`;
-  if (hasUnits) return `${units} 🧍`;
+  join = join ? ` ${join} ` : '';
+
+  if (hasGold && hasUnits) return `${gold}🟡${join}${units}🧍`;
+  if (hasGold) return `${gold}🟡`;
+  if (hasUnits) return `${units}🧍`;
   return '0';
 };
 
@@ -44,6 +46,8 @@ export const TileCard: React.FC<TileCardProps> = ({
   if (!tile || !tile.name) return null;
 
   const groupColor = tile.groupColor;
+  const ownerColor = gameState?.players.find((p) => p.name === tile.owner)?.color || '#444';
+
   const bonusType = getBonusType(tile);
 
   const pricelevel1 = fmtPrice(tile.prices['1']?.gold ?? 0, tile.prices['1']?.units ?? 0);
@@ -53,35 +57,51 @@ export const TileCard: React.FC<TileCardProps> = ({
   const bonus = (level: number) => tile.bonuses[level] ?? 0;
   const defence = (level: number) => tile.defences[level] ?? 0;
 
+  const diamonds = (level: number = tile.level) => Array.from({ length: level }).map((_, d) => (
+                        <div
+                          key={d}
+                          className="diamond"
+                          style={{background: ownerColor}}
+                        />
+                      ))
+
+  const bonusTypeIcon = bonusType === 'gold' ? '🟡' : '👬';
+
   const class1 = tile.isOwned() && tile.level < 2 ? 'tc-td level-highlighted' : 'tc-td';
   const class2 = tile.isOwned() && tile.level == 2 ? 'tc-td level-highlighted' : 'tc-td';
   const class3 = tile.isOwned() && tile.level == 3 ? 'tc-td level-highlighted' : 'tc-td';
 
-  let canUpgrade = false;
   const activePlayer = gameState?.activePlayer ?? null;
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
     (activePlayer && (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)) ||
     (tile.requiredFame > 0 && activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame);
 
-  if (mode === 'owned' && activePlayer) {
-    const currentLevel = tile.level || 1;
-    const maxLevel = 3;
-    canUpgrade =
-      currentLevel < maxLevel &&
-      tile.prices &&
-      tile.prices[currentLevel + 1] &&
-      (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
-      (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
-  }
+  const currentLevel = tile.level || 1;
+  const maxLevel = 3;
+  const nextLevel = Math.min(currentLevel + 1, maxLevel);
+  const nextLevelBonus = bonus(nextLevel);
+  const nextLevelDefence = defence(nextLevel);
+  const maxLevelReached = currentLevel >= maxLevel;
+
+  const canUpgrade =
+    activePlayer &&
+    currentLevel < maxLevel &&
+    tile.prices &&
+    tile.prices[currentLevel + 1] &&
+    (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
+    (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
+
+  const prices = tile.prices || {};
+  const nextPrice = prices[nextLevel];
 
   const handleUpgrade = () => {
-    const currentLevel = tile.level || 1;
-    const nextLevel = currentLevel + 1;
-    const prices = tile.prices || {};
-    const nextPrice = prices[nextLevel];
-
-    if (!window.confirm(`Really upgrade ${tile.name}?`)) return;
+    if (
+      !window.confirm(
+        `Really upgrade ${tile.name} for ${fmtPrice(nextPrice.gold, nextPrice.units, 'and')}?`
+      )
+    )
+      return;
 
     if (!nextPrice || !activePlayer || !gameState) return;
 
@@ -142,18 +162,14 @@ export const TileCard: React.FC<TileCardProps> = ({
         }}
       >
         {tile.spriteImage && (
-            <div
-              className='card-tile-bg'
-              style={{
-                width: `${SPRITE_SIZE}px`,
-                height: `${SPRITE_SIZE}px`,
-                flexShrink: 0,
-                backgroundImage: `url(${tile.spriteImage})`,
-                backgroundSize: '70%',
-                backgroundPosition: 'left center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
+          <div
+            className="tile-card-bg"
+            style={{
+              width: `${SPRITE_SIZE}px`,
+              height: `${SPRITE_SIZE}px`,
+              backgroundImage: `url(${tile.spriteImage})`,
+            }}
+          />
         )}
 
         <div className="tile-card-title" onClick={handleInfoClick} style={{ cursor: 'pointer' }}>
@@ -163,7 +179,7 @@ export const TileCard: React.FC<TileCardProps> = ({
         {mode === 'display' && (
           <button
             onClick={() => handleClose()}
-            className="tile-card-button"
+            className="tile-card-close"
             style={{ fontSize: '12px', filter: 'grayscale(100%)', opacity: 0.5 }}
           >
             ❌
@@ -172,190 +188,193 @@ export const TileCard: React.FC<TileCardProps> = ({
       </div>
 
       {tile.isOwnable && (
-        <div className="tile-card-body">
-          <div className="tile-card-base-level">
-            {tile.owner && (
-              <div className="tile-card-base-info">
-                <div className="tile-card-base-row">
-                  <div className="diamonds" style={{ textAlign: 'center' }}>
-                    {Array.from({ length: tile.level }).map((_, d) => (
-                      <div
-                        key={d}
-                        className="diamond"
-                        style={{
-                          background:
-                            gameState?.players.find((p) => p.name === tile.owner)?.color || '#444',
-                          width: '12px',
-                          height: '12px',
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  {tile.owner !== activePlayer?.name && (
-                    <div>
-                      <div className="big-icon-hint">
-                        <div>{tile.fee}🟡</div>
-                        <div>fee</div>
-                      </div>
+        <div>
+          <div className="tile-card-body">
+            <div
+              className="tile-card-base-level"
+              onClick={handleInfoClick}
+              style={{ cursor: 'pointer' }}
+            >
+              {tile.owner && (
+                <div className="tile-card-base-info">
+                  <div className="tile-card-base-row">
+                    <div className="diamonds" style={{ display:'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      {diamonds()}
                     </div>
-                  )}
 
-                  {tile.owner === activePlayer?.name && (
-                    <div>
-                      <div className="big-icon-hint">
-                        <div>
-                          +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
+                    {tile.owner !== activePlayer?.name && (
+                      <div>
+                        <div className="big-icon-hint">
+                          <div>{tile.fee}🟡</div>
+                          <div>fee</div>
                         </div>
-                        <div>per circle</div>
                       </div>
+                    )}
+
+                    {tile.owner === activePlayer?.name && (
+                      <div>
+                        <div className="big-icon-hint">
+                          <div>
+                            +{bonus(tile.level)} {bonusTypeIcon}
+                          </div>
+                          <div>per year</div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div></div>
+
+                    <div className="big-icon-hint">
+                      <div>{tile.defence}🛡️</div>
+                      <div>defence</div>
                     </div>
-                  )}
-
-                  <div></div>
-
-                  <div className="big-icon-hint">
-                    <div>{tile.defence} 🛡️</div>
-                    <div>defence</div>
                   </div>
                 </div>
+              )}
+
+              {!tile.owner && (
+                <div className="tile-card-base-info">
+                  <div className="tile-card-base-row">
+                    <div>
+                      <div>
+                        <div>
+                          <div style={cantAfford ? { color: '#ff4444' } : undefined}>
+                            {cantAfford ? "can't own" : 'to own:'}
+                          </div>
+                          <span
+                            style={
+                              activePlayer &&
+                              (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
+                                ? { color: '#ff4444' }
+                                : {}
+                            }
+                          >
+                            {activePlayer &&
+                              (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0) &&
+                              '🔻'}
+                            {tile.currentPrice.gold ?? 0} 🟡
+                          </span>
+                          {'  '}
+                          <span
+                            style={
+                              activePlayer &&
+                              (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)
+                                ? { color: '#ff4444' }
+                                : {}
+                            }
+                          >
+                            {activePlayer &&
+                              (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0) &&
+                              '🔻'}
+                            {tile.currentPrice.units ?? 0}🧍
+                          </span>
+                          {tile.requiredFame > 0 && (
+                            <>
+                              {'  '}
+                              <span
+                                style={
+                                  activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
+                                    ? { color: '#ff4444' }
+                                    : {}
+                                }
+                              >
+                                {activePlayer &&
+                                  (activePlayer.fame ?? 1) < tile.requiredFame &&
+                                  '🔻'}
+                                {tile.requiredFame} 🏆
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      {couldBuy &&
+                        tile.isAffordable(
+                          activePlayer?.gold ?? 0,
+                          activePlayer?.units ?? 0,
+                          activePlayer?.fame ?? 1
+                        ) && (
+                          <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
+                            Buy
+                          </button>
+                        )}
+                    </div>
+                  </div>
+                  <div className="tile-card-base-row">
+                    <div className="big-icon-hint">
+                      +{bonus(tile.level)} {bonusTypeIcon}
+                      <div>per year</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {expanded && (
+              <div className="tile-card-table-wrap">
+                <table className="tile-card-table">
+                  <tbody>
+                    <tr>
+                      <td className={class1}>👛 {pricelevel1}</td>
+                      <td className={class1}>
+                        +{bonus(1)} {bonusTypeIcon}
+                      </td>
+                      <td className={class1}>{defence(1)}🛡️ </td>
+                    </tr>
+                    <tr>
+                      <td className={class2}>👛 {pricelevel2}</td>
+                      <td className={class2}>
+                        +{bonus(2)} {bonusTypeIcon}
+                      </td>
+                      <td className={class2}>{defence(2)}🛡️ </td>
+                    </tr>
+                    <tr>
+                      <td className={class3}>👛 {pricelevel3}</td>
+                      <td className={class3}>
+                        +{bonus(3)} {bonusTypeIcon}
+                      </td>
+                      <td className={class3}>{defence(3)}🛡️ </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
 
-            {!tile.owner && (
-              <div className="tile-card-base-info">
-                <div className="tile-card-base-row">
-                  <div>
-                    <div>
-                      <div>
-                        <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                          {cantAfford ? "can't own" : 'to own:'}
-                        </div>
-                        <span
-                          style={
-                            activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                              ? { color: '#ff4444' }
-                              : {}
-                          }
-                        >
-                          {activePlayer &&
-                            (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0) &&
-                            '🔻'}
-                          {tile.currentPrice.gold ?? 0} 🟡
-                        </span>
-                        {'  '}
-                        <span
-                          style={
-                            activePlayer &&
-                            (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)
-                              ? { color: '#ff4444' }
-                              : {}
-                          }
-                        >
-                          {activePlayer &&
-                            (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0) &&
-                            '🔻'}
-                          {tile.currentPrice.units ?? 0}🧍
-                        </span>
-                        {tile.requiredFame > 0 && (
-                          <>
-                            {'  '}
-                            <span
-                              style={
-                                activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
-                                  ? { color: '#ff4444' }
-                                  : {}
-                              }
-                            >
-                              {activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame && '🔻'}
-                              {tile.requiredFame} 🏆
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    {couldBuy &&
-                      tile.isAffordable(
-                        activePlayer?.gold ?? 0,
-                        activePlayer?.units ?? 0,
-                        activePlayer?.fame ?? 1
-                      ) && (
-                        <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
-                          Buy
-                        </button>
-                      )}
-                  </div>
-                </div>
-                <div className="tile-card-base-row">
-                  <div className="big-icon-hint">
-                    +{bonus(tile.level)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    <div>per circle</div>
-                  </div>
+            {expanded && mode === 'owned' && (
+              <div className="tile-card-actions" style={{ marginTop: '1rem' }}>
+                <div onClick={() => handleSell()} className={'tile-card-button'}>
+                  🪙 sell for $sellPrice
                 </div>
               </div>
             )}
           </div>
 
-          {mode === 'owned' && (
-            <div className="tile-card-actions">
-              <a onClick={() => handleSell()} className={'tile-card-button'}>
-                <div className="big-icon-hint">
-                  <div>🪙</div>
-                  <div>sell</div>
-                </div>
-              </a>
-
-              <a
-                onClick={() => handleUpgrade()}
-                className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
+          <div className="upgrade-row">
+            {mode === 'owned' && !maxLevelReached && (
+              <div
+                className="tile-card-actions"
+                style={{ backgroundColor: tile.groupColor + '4f' }}
               >
-                <div className="big-icon-hint">
-                  <div>⬆️</div>
-                  <div>upgrade</div>
-                </div>
-              </a>
-            </div>
-          )}
+                <div
+                  onClick={() => handleUpgrade()}
+                  className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
+                >
+                  <div className="big-icon-hint">
+                    <div>⬆️</div>
+                    <div className="upgrade-diamonds">{diamonds(nextLevel)}</div>
+                  </div>
 
-          {expanded && (
-            <div className="tile-card-table-wrap">
-              <table className="tile-card-table">
-                <thead>
-                  <tr>
-                    <th className="tc-th">🚩</th>
-                    <th className="tc-th">🏰</th>
-                    <th className="tc-th">🛡️</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className={class1}>{pricelevel1}</td>
-                    <td className={class1}>
-                      +{bonus(1)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    </td>
-                    <td className={class1}>{defence(1)} </td>
-                  </tr>
-                  <tr>
-                    <td className={class2}>+{pricelevel2}</td>
-                    <td className={class2}>
-                      +{bonus(2)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    </td>
-                    <td className={class2}>{defence(2)} </td>
-                  </tr>
-                  <tr>
-                    <td className={class3}>+{pricelevel3}</td>
-                    <td className={class3}>
-                      +{bonus(3)} {bonusType === 'gold' ? '🟡' : '👬'}
-                    </td>
-                    <td className={class3}>{defence(3)} </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
+                  <div>
+                    +{nextLevelBonus}
+                    {bonusTypeIcon}
+                  </div>
+                  <div>{nextLevelDefence}🛡️</div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
