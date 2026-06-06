@@ -46,7 +46,7 @@ const HelpScreen: React.FC = () => (
             Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final
             battle
           </li>
-          <li>Yearly income 🟡 👬: more tiles you own, more you get each year</li>
+          <li>Yearly income: more tiles you own, more you get each year</li>
         </ul>
 
         <h3>Fame 🏆</h3>

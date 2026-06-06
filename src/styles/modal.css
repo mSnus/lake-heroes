@@ -75,11 +75,14 @@ button.decorated {
   background-size: contain;
   width: 300px;
   height: 100px;
-  font-size: 30px;
-  color: gold;
+  font-size: 1.4rem;
+  color: #f6d381;
   font-weight: bold;
   text-shadow: 3px 1px 5px black;
   filter: drop-shadow(2px 4px 6px black);
+  font-family: 'Texturina';
+  line-height: 1;
+  padding-bottom: 7px;
 }
 
 .modal-content input[type='text'],

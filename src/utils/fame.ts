@@ -1,8 +1,8 @@
 import { Player } from '../game/Player';
 import { say } from './say';
+import { KNIGHT_FAME } from '../game/constants';
 
-// Fame at or above this makes the player a knight (rider sprite).
-export const KNIGHT_FAME = 4;
+export { KNIGHT_FAME };
 
 /**
  * Adjust a player's fame and log when it actually changes. `floor` clamps the

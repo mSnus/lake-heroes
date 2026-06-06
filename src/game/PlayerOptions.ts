@@ -1,3 +1,5 @@
+import { KNIGHT_FAME } from './constants';
+
 export interface PlayerOption {
   colorName: string;
   color: string;
@@ -17,7 +19,7 @@ export const playerOptions: PlayerOption[] = [
 export function getPlayerImageSrc(colorKey: string, fame: number): string {
   // Normalize legacy saved values (e.g. 'rider-blue.png') down to the bare color key.
   const color = colorKey.replace(/\.png$/, '').replace(/^(rider|footman)-/, '');
-  const type = fame >= 4 || color === 'blue' ? 'rider' : 'footman';
+  const type = fame >= KNIGHT_FAME ? 'rider' : 'footman';
   return `assets/figures/${type}-${color}.png`;
 }
 
