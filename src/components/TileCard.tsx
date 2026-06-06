@@ -74,7 +74,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     if (!hasGold && !hasUnits) return <>0</>;
 
-    let icon = 'ᅠ'
+    let icon = 'ᅠ';
 
     if (lacksGold || lacksUnits) {
       icon = '❌ ';
@@ -86,9 +86,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     return (
       <>
-      <span>
-      {icon}
-      </span>
+        <span>{icon}</span>
         {hasGold && (
           <span style={lacksGold ? redBold : undefined}>
             {lacksGold && '🔻'}
@@ -141,7 +139,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
     (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
 
-  const upgradeUnreachable = !canUpgrade || currentLevel === 1;   
+  const upgradeUnreachable = !canUpgrade || currentLevel === 1;
 
   const prices = tile.prices || {};
   const nextPrice = prices[nextLevel];
@@ -301,11 +299,11 @@ export const TileCard: React.FC<TileCardProps> = ({
               {!tile.owner && (
                 <div className="tile-card-base-info">
                   <div className="tile-card-base-row">
-                    <div >
-                        <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                            {cantAfford ? "can't afford" : '👛 to own:'}
-                          </div>
-                        <div>
+                    <div>
+                      <div style={cantAfford ? { color: '#ff4444' } : undefined}>
+                        {cantAfford ? "can't afford" : '👛 to own:'}
+                      </div>
+                      <div>
                         <div>
                           <span
                             style={
@@ -382,21 +380,33 @@ export const TileCard: React.FC<TileCardProps> = ({
               <div className="tile-card-table-wrap">
                 <table className="tile-card-table">
                   <tbody>
-                    <tr className={mode === 'owned' && currentLevel > 1 ? 'upgrade-unreachable' : undefined}>
+                    <tr
+                      className={
+                        mode === 'owned' && currentLevel > 1 ? 'upgrade-unreachable' : undefined
+                      }
+                    >
                       <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>
                         +{bonus(1)} {bonusTypeIcon}
                       </td>
                       <td className={class1}>{defence(1)}🛡️ </td>
                     </tr>
-                    <tr className={mode === 'owned' && currentLevel > 2 ? 'upgrade-unreachable' : undefined}>
+                    <tr
+                      className={
+                        mode === 'owned' && currentLevel > 2 ? 'upgrade-unreachable' : undefined
+                      }
+                    >
                       <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>
                         +{bonus(2)} {bonusTypeIcon}
                       </td>
                       <td className={class2}>{defence(2)}🛡️ </td>
                     </tr>
-                    <tr className={mode === 'owned' && upgradeUnreachable ? 'upgrade-unreachable' : undefined}>
+                    <tr
+                      className={
+                        mode === 'owned' && upgradeUnreachable ? 'upgrade-unreachable' : undefined
+                      }
+                    >
                       <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>
                         +{bonus(3)} {bonusTypeIcon}

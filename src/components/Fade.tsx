@@ -7,7 +7,7 @@ interface FadeProps {
 
 export const Fade: React.FC<FadeProps> = ({ children, amount }) => (
   <div
-    className='fade'
+    className="fade"
     style={{
       position: 'fixed',
       inset: 0,
@@ -20,7 +20,6 @@ export const Fade: React.FC<FadeProps> = ({ children, amount }) => (
       justifyContent: 'center',
       ...(amount !== undefined ? { opacity: amount } : {}),
     }}
-
   >
     {children}
   </div>

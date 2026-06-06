@@ -7,10 +7,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
 
-export function endTurn(
-  board: GameState | null,
-  updateGameState: (board: GameState) => void
-) {
+export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   console.log('Action: end turn for', board.activePlayer.name);
@@ -33,7 +30,10 @@ export function endTurn(
   }
 
   if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
-    say(`${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`, 'info');
+    say(
+      `${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`,
+      'info'
+    );
     board.gameMessage = `Challenge the Dragon or roll dice?`;
     updateGameState(board);
     showDragonChallengeScreen(

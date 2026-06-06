@@ -142,7 +142,16 @@ export function showDragonSkyScreen(onContinue: () => void): void {
     screenType: 'dragon-sky',
     background: 'assets/screens/dragon-sky.jpg',
     message: 'You see a giant black dragon passing on the sky',
-    buttons: [{ label: 'Continue', action: 'continue', onClick: () => { clearScreen(); onContinue(); } }],
+    buttons: [
+      {
+        label: 'Continue',
+        action: 'continue',
+        onClick: () => {
+          clearScreen();
+          onContinue();
+        },
+      },
+    ],
   });
 }
 
@@ -151,7 +160,15 @@ export function showDragonAttackScreen(message: string, onContinue: () => void):
     screenType: 'dragon-attack',
     background: 'assets/screens/dragon-attack.jpg',
     message,
-    buttons: [{ label: 'Continue', onClick: () => { clearScreen(); onContinue(); } }],
+    buttons: [
+      {
+        label: 'Continue',
+        onClick: () => {
+          clearScreen();
+          onContinue();
+        },
+      },
+    ],
   });
 }
 
@@ -166,8 +183,22 @@ export function showDragonChallengeScreen(
     background: 'assets/screens/dragon.jpg',
     message,
     buttons: [
-      { label: 'Challenge the Dragon 🐉', action: 'fight', onClick: () => { clearScreen(); onFight(); } },
-      { label: declineLabel, action: 'continue', onClick: () => { clearScreen(); onDecline(); } },
+      {
+        label: 'Challenge the Dragon 🐉',
+        action: 'fight',
+        onClick: () => {
+          clearScreen();
+          onFight();
+        },
+      },
+      {
+        label: declineLabel,
+        action: 'continue',
+        onClick: () => {
+          clearScreen();
+          onDecline();
+        },
+      },
     ],
   });
 }

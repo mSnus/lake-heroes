@@ -188,6 +188,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               gameState.gameMessage = `${attacker.name} raided the caravan and pillaged ${caravanPrize}🟡!`;
               msg = `Pillaged ${caravanPrize}🟡`;
             }
+
             setShowVictoryBg(true);
             setOutcome('attacker');
           } else if (o === 'tie') {
@@ -201,6 +202,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               gameState.gameMessage = `${attacker.name} tied with the caravan guards, receiving ${halfPrize}🟡`;
               msg = `Received ${halfPrize}🟡`;
             }
+
             setOutcome('tie');
           } else {
             gameState.gameMessage = `${attacker.name} failed to raid the caravan`;

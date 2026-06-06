@@ -14,7 +14,9 @@
   color: #fff;
   font-size: 3rem;
   line-height: 1;
-  text-shadow: 2px 2px 8px #000, 0 0 20px #000;
+  text-shadow:
+    2px 2px 8px #000,
+    0 0 20px #000;
   text-align: center;
 }
 
@@ -44,7 +46,7 @@
 .battle-names-row .bc-attacker,
 .battle-names-row .bc-defender {
   text-align: center;
-  filter: drop-shadow(0px 2px 12px #333333) drop-shadow(0px 2px 12px #333333)
+  filter: drop-shadow(0px 2px 12px #333333) drop-shadow(0px 2px 12px #333333);
 }
 
 .battle-result-row,
@@ -52,7 +54,7 @@
   display: contents;
 }
 
-.battle-action-row>div {
+.battle-action-row > div {
   text-align: center;
 }
 

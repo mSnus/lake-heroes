@@ -72,9 +72,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               </div>
             )}
             encounters <strong>{config.encounter.tileName}</strong>
-            {config.encounter.tileDefence !== undefined && (
-              <> 🛡️ {config.encounter.tileDefence}</>
-            )}
+            {config.encounter.tileDefence !== undefined && <> 🛡️ {config.encounter.tileDefence}</>}
             {config.encounter.ownerName && (
               <>
                 <br />

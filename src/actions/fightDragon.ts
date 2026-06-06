@@ -5,10 +5,7 @@ import { BattleScreen } from '../components/BattleScreen';
 
 export const DRAGON_UNITS_THRESHOLD = 50;
 
-export function fightDragon(
-  board: GameState | null,
-  updateGameState: (board: GameState) => void,
-) {
+export function fightDragon(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   const player = board.activePlayer;

@@ -23,6 +23,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
         position: 0,
       });
     }
+
     return initialPlayers;
   });
 
@@ -65,6 +66,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     } else {
       (newPlayers[index] as any)[field] = value;
     }
+
     setPlayers(newPlayers);
   };
 
@@ -94,8 +96,20 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
           >
             <button
-              onClick={() => handlePlayerChange(index, 'name', generatePlayerName(players.filter((_, i) => i !== index).map((p) => p.name)))}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px' }}
+              onClick={() =>
+                handlePlayerChange(
+                  index,
+                  'name',
+                  generatePlayerName(players.filter((_, i) => i !== index).map((p) => p.name))
+                )
+              }
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1.2rem',
+                padding: '0 4px',
+              }}
               title="Random name"
             >
               ↪️
@@ -124,7 +138,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
                 alt={getSelectedOption(player)?.colorName}
                 style={{ width: '60px', height: '60px' }}
-                className='player-image current-player'
+                className="player-image current-player"
               />
             )}
           </div>

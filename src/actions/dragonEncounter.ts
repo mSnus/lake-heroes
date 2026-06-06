@@ -1,5 +1,9 @@
 import { GameState } from '../game/GameState';
-import { showDragonSkyScreen, showDragonAttackScreen, showDragonChallengeScreen } from '../utils/screenStore';
+import {
+  showDragonSkyScreen,
+  showDragonAttackScreen,
+  showDragonChallengeScreen,
+} from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 
@@ -61,6 +65,7 @@ export function checkDragonEncounter(
       'Flee! 🏃'
     );
   }
+
   return true;
 }
 

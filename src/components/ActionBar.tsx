@@ -31,6 +31,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({ gameState, updateGameState
         }
       }
     };
+
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [diceActive, canEndTurn, gameState, updateGameState]);

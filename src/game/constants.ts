@@ -8,4 +8,3 @@ export const MAX_PLAYERS = 4;
 export const REVEAL_GOLD = 100;
 
 export const SPRITE_SIZE = 96;
-

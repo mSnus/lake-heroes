@@ -9,7 +9,13 @@ interface GameModalProps {
   noBorder?: boolean;
 }
 
-const GameModal: React.FC<GameModalProps> = ({ children, className, style, backgroundImage, noBorder }) => {
+const GameModal: React.FC<GameModalProps> = ({
+  children,
+  className,
+  style,
+  backgroundImage,
+  noBorder,
+}) => {
   useEffect(() => {
     // When the modal is mounted, disable scrolling on the body
     const originalOverflow = document.body.style.overflow;
@@ -29,7 +35,18 @@ const GameModal: React.FC<GameModalProps> = ({ children, className, style, backg
   };
 
   return (
-    <div className="game-modal-wrapper" style={backgroundImage ? { backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
+    <div
+      className="game-modal-wrapper"
+      style={
+        backgroundImage
+          ? {
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          : undefined
+      }
+    >
       <div className="game-modal">
         {noBorder ? (
           <div

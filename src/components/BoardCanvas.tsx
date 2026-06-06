@@ -61,11 +61,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         mapEditSelectTile(i);
         return;
       }
+
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
       if (isActivePlayerTile && tile.name.includes('King')) {
         handleKingCastle(board, updateGameState);
         return;
       }
+
       gameEvent('displayTile', tile.fogged() ? {} : tile);
     };
 
@@ -85,7 +87,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         style={{
           top: pos.y - offsetY + '%',
           left: pos.x - offsetX + '%',
-          ...(isMapEditSelected ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 } : {}),
+          ...(isMapEditSelected
+            ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
+            : {}),
         }}
         onClick={handleTileClick}
       >

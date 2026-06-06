@@ -28,6 +28,15 @@ export function handleTreasureBox(
     background: 'assets/screens/treasure.jpg',
     message: board.gameMessage,
     fade: true,
-    buttons: [{ label: 'Let the treasures grow!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+    buttons: [
+      {
+        label: 'Let the treasures grow!',
+        action: 'end-turn',
+        onClick: () => {
+          clearScreen();
+          setEndTurn();
+        },
+      },
+    ],
   });
 }

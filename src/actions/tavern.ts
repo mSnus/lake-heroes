@@ -25,6 +25,15 @@ export function handleTavern(
     screenType: 'tavern-result',
     background: 'assets/screens/tavern.jpg',
     message: board.gameMessage,
-    buttons: [{ label: 'New folks are always welcome!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+    buttons: [
+      {
+        label: 'New folks are always welcome!',
+        action: 'end-turn',
+        onClick: () => {
+          clearScreen();
+          setEndTurn();
+        },
+      },
+    ],
   });
 }

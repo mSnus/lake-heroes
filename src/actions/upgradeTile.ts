@@ -29,5 +29,6 @@ export function upgradeTile(
     tile._level = nextlevel;
     updateGameState(board);
   }
+
   endTurn();
 }

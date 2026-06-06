@@ -1,4 +1,11 @@
-export { MONEY_START, UNITS_START, MONEY_PASS_START, FEE_MULTIPLIER, TREASURE_BOX_MULTIPLIER, MAX_PLAYERS } from '../../game/constants';
+export {
+  MONEY_START,
+  UNITS_START,
+  MONEY_PASS_START,
+  FEE_MULTIPLIER,
+  TREASURE_BOX_MULTIPLIER,
+  MAX_PLAYERS,
+} from '../../game/constants';
 import { TILE_COUNT } from '../../game/constants';
 
 export function isMobileLayout(): boolean {
@@ -48,6 +55,7 @@ export function parseTileName(name: string): {
       break;
     }
   }
+
   const emoji = name.substring(0, textStart).trim();
   const text = name.substring(textStart).trim();
 
@@ -65,5 +73,6 @@ export function shuffle<T>(array: T[]): T[] {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+
   return shuffled;
 }

@@ -65,6 +65,15 @@ export function handleSphynx(
     background: 'assets/screens/sphynx.jpg',
     fade: true,
     message: gameState.gameMessage,
-    buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+    buttons: [
+      {
+        label: 'Continue',
+        action: 'end-turn',
+        onClick: () => {
+          clearScreen();
+          setEndTurn();
+        },
+      },
+    ],
   });
 }

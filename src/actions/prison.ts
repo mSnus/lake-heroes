@@ -1,10 +1,7 @@
 import { GameState } from '../game/GameState';
 import { showPrisonScreen } from '../utils/screenStore';
 
-export function handlePrison(
-  board: GameState | null,
-  updateGameState: (board: GameState) => void
-) {
+export function handlePrison(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   const player = board.activePlayerIndex;

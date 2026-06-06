@@ -6,5 +6,11 @@ export function ModalRenderer() {
 
   if (!active) return null;
 
-  return <DiceModal key={key} rolling={rolling} onRoll={(roll) => (handler as (roll: number) => void)?.(roll)} />;
+  return (
+    <DiceModal
+      key={key}
+      rolling={rolling}
+      onRoll={(roll) => (handler as (roll: number) => void)?.(roll)}
+    />
+  );
 }

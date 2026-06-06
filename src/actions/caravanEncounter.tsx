@@ -17,6 +17,7 @@ export function checkCaravanEncounter(
     player.caravanEncounteredLastTurn = false;
     return false;
   }
+
   // Max 2 per year
   if ((player.caravanEncounters ?? 0) >= 2) return false;
   // 1/12 chance

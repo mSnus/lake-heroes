@@ -112,6 +112,7 @@ export function afterMoveLogic(
         onClick: () => showScreen(sellModeConfig),
       });
     }
+
     if (showAcceptLoss) extraButtons.push(acceptLossButton);
     showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
     return;

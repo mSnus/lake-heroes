@@ -4,10 +4,7 @@ import { showScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
 import { Player } from '../game/Player';
 
-export function fightTile(
-  board: GameState | null,
-  updateGameState: (board: GameState) => void
-) {
+export function fightTile(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   const attacker = board.activePlayer;

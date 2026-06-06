@@ -51,5 +51,6 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   if (!board.activeTile.name.toLowerCase().startsWith('king')) {
     board.gameMessage = `The King rewards you with ${summary} for your service and properties`;
   }
+
   updateGameState(board);
 }

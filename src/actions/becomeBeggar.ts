@@ -1,10 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 
-export function becomeBeggar(
-  board: GameState,
-  updateGameState: (board: GameState) => void
-) {
+export function becomeBeggar(board: GameState, updateGameState: (board: GameState) => void) {
   const player = board.activePlayer;
 
   say(`${player.name} becomes a beggar!`, 'error');
@@ -18,7 +15,6 @@ export function becomeBeggar(
       lostTilesCount++;
     }
   });
-
 
   // 2. Player loses half of his units (rounded up to 1)
   const loss = Math.ceil(player.units / 2);
@@ -34,7 +30,8 @@ export function becomeBeggar(
 
   say(`${player.name} is captured and moved to Prison`, 'warning');
 
-  const tilesMsg = lostTilesCount > 0 ? `Lost ${lostTilesCount} tile${lostTilesCount > 1 ? 's' : ''} and ` : '';
+  const tilesMsg =
+    lostTilesCount > 0 ? `Lost ${lostTilesCount} tile${lostTilesCount > 1 ? 's' : ''} and ` : '';
   const lostUnitsMsg = loss > 0 ? `${loss} unit${loss !== 1 ? 's' : ''} deserted` : ``;
   board.gameMessage = `${player.name} became a prisoner of war! ${tilesMsg}${lostUnitsMsg}. Imprisoned for 2 turns.`;
 

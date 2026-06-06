@@ -137,6 +137,7 @@ function App() {
       updateGameState({ ...gs, tiles: updatedTiles } as GameState);
       console.log(`[reloadTiles] ${updatedTiles.length} tiles refreshed from tiles.json`);
     };
+
     return () => {
       delete (window as any).__reloadTiles;
     };
@@ -298,7 +299,16 @@ function App() {
                   background: 'assets/screens/sphynx.jpg',
                   fade: true,
                   message: savedScreen.message,
-                  buttons: [{ label: 'Continue', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                  buttons: [
+                    {
+                      label: 'Continue',
+                      action: 'end-turn',
+                      onClick: () => {
+                        clearScreen();
+                        setEndTurn();
+                      },
+                    },
+                  ],
                 });
                 break;
               case 'tavern':
@@ -311,7 +321,16 @@ function App() {
                   screenType: 'tavern-result',
                   background: 'assets/screens/tavern.jpg',
                   message: savedScreen.message,
-                  buttons: [{ label: 'New folks are always welcome!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                  buttons: [
+                    {
+                      label: 'New folks are always welcome!',
+                      action: 'end-turn',
+                      onClick: () => {
+                        clearScreen();
+                        setEndTurn();
+                      },
+                    },
+                  ],
                 });
                 break;
               case 'treasure':
@@ -325,7 +344,16 @@ function App() {
                   background: 'assets/screens/treasure.jpg',
                   message: savedScreen.message,
                   fade: true,
-                  buttons: [{ label: 'Let the treasures grow!', action: 'end-turn', onClick: () => { clearScreen(); setEndTurn(); } }],
+                  buttons: [
+                    {
+                      label: 'Let the treasures grow!',
+                      action: 'end-turn',
+                      onClick: () => {
+                        clearScreen();
+                        setEndTurn();
+                      },
+                    },
+                  ],
                 });
                 break;
               default:
@@ -359,6 +387,7 @@ function App() {
 
       showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
     }
+
     loadGameData();
   }, []);
 

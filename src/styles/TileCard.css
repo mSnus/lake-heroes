@@ -39,7 +39,7 @@
   justify-content: space-between;
   color: #0000007f;
   font-weight: bold;
-  max-width: 100%
+  max-width: 100%;
 }
 
 .tile-card-bg {
@@ -50,10 +50,10 @@
   margin-right: -8px;
 }
 
-.tile-sprite-box {    
-    margin-left: -8px;
-    margin-top: -8px;
-    overflow: clip;
+.tile-sprite-box {
+  margin-left: -8px;
+  margin-top: -8px;
+  overflow: clip;
 }
 
 .tile-card-close {
@@ -109,7 +109,7 @@
   padding-top: 8px;
   padding-bottom: 8px;
   line-height: 1;
-  color: #000000A0;
+  color: #000000a0;
   width: 100%;
   font-family: 'Texturina', serif;
   font-weight: bold;
@@ -313,12 +313,11 @@
   height: 5px;
 }
 
-
 .tile-card-sell {
-    background: #fff3d8;
-    border: 1px outset #ffde2c7a;
-    width: fit-content;
-    padding: 4px;
-    border-radius: 5px;
-    margin-left: auto;
+  background: #fff3d8;
+  border: 1px outset #ffde2c7a;
+  width: fit-content;
+  padding: 4px;
+  border-radius: 5px;
+  margin-left: auto;
 }

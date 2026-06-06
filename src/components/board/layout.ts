@@ -55,6 +55,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
     if (!groupMap.has(g)) groupMap.set(g, []);
     groupMap.get(g)!.push(tile);
   }
+
   for (const tiles of Array.from(groupMap.values())) {
     tiles.sort((a, b) => (a.prices?.['1']?.gold ?? 0) - (b.prices?.['1']?.gold ?? 0));
   }
@@ -68,6 +69,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
     for (const group of groups) {
       if (i < group.length) stack.push(group[i]);
     }
+
     orderedPool.push(...shuffle(stack));
   }
 

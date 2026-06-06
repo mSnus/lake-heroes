@@ -36,10 +36,25 @@ function handleKeyDown(e: KeyboardEvent) {
   }
 
   let moved = false;
-  if (e.key === 'ArrowLeft')  { slot.xPct -= 1; moved = true; }
-  if (e.key === 'ArrowRight') { slot.xPct += 1; moved = true; }
-  if (e.key === 'ArrowUp')    { slot.yPct -= 1; moved = true; }
-  if (e.key === 'ArrowDown')  { slot.yPct += 1; moved = true; }
+  if (e.key === 'ArrowLeft') {
+    slot.xPct -= 1;
+    moved = true;
+  }
+
+  if (e.key === 'ArrowRight') {
+    slot.xPct += 1;
+    moved = true;
+  }
+
+  if (e.key === 'ArrowUp') {
+    slot.yPct -= 1;
+    moved = true;
+  }
+
+  if (e.key === 'ArrowDown') {
+    slot.yPct += 1;
+    moved = true;
+  }
 
   if (moved) {
     e.preventDefault();
@@ -52,7 +67,9 @@ function enable() {
   state = { active: true, selectedIndex: null };
   window.addEventListener('keydown', handleKeyDown);
   emit();
-  console.log('🗺️ Map edit mode ON — click a tile to select, arrow keys to move, Enter to deselect & print full map.');
+  console.log(
+    '🗺️ Map edit mode ON — click a tile to select, arrow keys to move, Enter to deselect & print full map.'
+  );
 }
 
 function disable() {
@@ -76,8 +93,11 @@ export function isMapEditActive(): boolean {
 
 export function useMapEditStore(): MapEditState {
   return useSyncExternalStore(
-    (cb) => { listeners.add(cb); return () => listeners.delete(cb); },
-    () => state,
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => state
   );
 }
 

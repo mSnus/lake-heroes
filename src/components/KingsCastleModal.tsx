@@ -27,8 +27,12 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
   const handleDec = () => setAmount((a) => Math.max(0, a - 1));
 
   return (
-    <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder={true} 
-      style={{backgroundColor: 'background-color: rgba(0, 0, 0, 0.3);'}}>
+    <GameModal
+      className="game-modal"
+      backgroundImage="assets/screens/king.jpg"
+      noBorder={true}
+      style={{ backgroundColor: 'background-color: rgba(0, 0, 0, 0.3);' }}
+    >
       <div className="modal-content" style={{ color: `white` }}>
         <h2 className="game-title">The King's Castle</h2>
         <h3>{gameState.gameMessage}</h3>

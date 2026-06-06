@@ -44,8 +44,9 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
-  const isVisible = (shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move'))
-    || (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned());
+  const isVisible =
+    (shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move')) ||
+    (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned());
   const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
   const ownerColor = shownTile?.owner
     ? gameState.players.find((p) => p.name === shownTile.owner)?.color
@@ -56,7 +57,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
       {shownTile?.owner && ownerColor && (
         <div className="tile-card-owner-info">
           <div className="tile-owner" style={{ color: ownerColor }}>
-              🚩 owned by {shownTile?.owner}
+            🚩 owned by {shownTile?.owner}
           </div>
         </div>
       )}

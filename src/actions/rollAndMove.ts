@@ -73,6 +73,7 @@ export async function rollAndMove(
     revealTile(board);
     gameEvent('displayTile', board.activeTile);
   }
+
   updateGameState(board);
 
   // After finishing the movement, determine landing tile and proceed with existing logic
@@ -81,33 +82,41 @@ export async function rollAndMove(
     if (tile.name.includes('Treasure')) {
       board.gameMessage = `Roll dice! Discover the treasure inside...`;
       updateGameState(board);
-      showTreasureScreen('Treasure found!', (roll) => handleTreasureBox(board, updateGameState, roll));
+      showTreasureScreen('Treasure found!', (roll) =>
+        handleTreasureBox(board, updateGameState, roll)
+      );
       return;
     }
+
     if (tile.name.includes('Tavern')) {
       board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
       updateGameState(board);
       showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
       return;
     }
+
     if (tile.name.includes('Prison')) {
       handlePrison(board, updateGameState);
       return;
     }
+
     if (tile.name.includes('Sphynx')) {
       board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
       updateGameState(board);
       showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
       return;
     }
+
     if (tile.name.includes('Portal')) {
       handlePortal(board, updateGameState, continueTileLogic);
       return;
     }
+
     if (tile.name.includes('King')) {
       handleKingCastle(board, updateGameState);
       return;
     }
+
     if (tile.name.includes('Joker')) {
       handleJoker(board, updateGameState);
       return;

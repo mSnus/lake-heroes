@@ -15,6 +15,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       for (const p of board.players) {
         if (p.gold > 0) p.gold = Math.max(1, Math.round(p.gold / 2));
       }
+
       message = 'All players lose half of their gold.';
       break;
 
@@ -22,6 +23,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       for (const p of board.players) {
         if (p.units > 0) p.units = Math.max(1, Math.round(p.units / 2));
       }
+
       message = 'All players lose half of their units.';
       break;
 
@@ -37,6 +39,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
             targetIdx = idx;
           }
         }
+
         if (targetIdx >= 0) {
           const t = board.tiles[targetIdx];
           t.owner = null;
@@ -45,6 +48,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           p.fame = Math.max(1, p.fame - 1);
         }
       }
+
       message = 'Every player loses their most expensive tile.';
       break;
     }
@@ -53,6 +57,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       for (const t of board.tiles) {
         if (t?.isOwned() && t.level < 3) t._level = t.level + 1;
       }
+
       message = 'All owned tiles are upgraded one level.';
       break;
 
@@ -60,6 +65,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       for (const t of board.tiles) {
         if (t?.isOwned() && t.level > 1) t._level = t.level - 1;
       }
+
       message = 'All owned tiles lose one level.';
       break;
 
@@ -79,6 +85,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         player.units += 5;
         message = `All Camps & Towers owned — ${player.name} receives 2000🟡 and 5🧍.`;
       }
+
       break;
     }
   }
