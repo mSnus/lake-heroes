@@ -34,7 +34,7 @@ export type TileCardProps = {
   updateGameState?: (board: GameState) => void;
   couldBuy?: boolean;
   defaultExpanded?: boolean;
-  showClose?: boolean;
+  demoMode?: boolean;
 };
 
 export const TileCard: React.FC<TileCardProps> = ({
@@ -44,7 +44,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   updateGameState,
   couldBuy = false,
   defaultExpanded = false,
-  showClose = true,
+  demoMode = false,
 }) => {
   const [expanded, setExpanded] = React.useState(defaultExpanded);
 
@@ -156,6 +156,8 @@ export const TileCard: React.FC<TileCardProps> = ({
   }
 
   const handleUpgrade = () => {
+    if (demoMode) return;
+
     if (
       !window.confirm(
         `Really upgrade ${tile.name} for ${fmtPrice(nextPrice.gold, nextPrice.units, 'and')}?`
@@ -182,10 +184,14 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const handleClose = () => {
+    if (demoMode) return;
+
     gameEvent('displayTile', {});
   };
 
   const handleSell = () => {
+    if (demoMode) return;
+
     if (!gameState || !activePlayer) return;
 
     if (
@@ -241,7 +247,7 @@ export const TileCard: React.FC<TileCardProps> = ({
           {tile.name}
         </div>
 
-        {mode === 'display' && showClose && (
+        {mode === 'display' && !demoMode && (
           <button
             onClick={() => handleClose()}
             className="tile-card-close"
@@ -422,7 +428,7 @@ export const TileCard: React.FC<TileCardProps> = ({
               </div>
             )}
 
-            {expanded && mode === 'owned' && (
+            {expanded && (mode === 'owned' || demoMode) && (
               <div className="tile-card-sell" style={{ marginTop: '1rem' }}>
                 <div onClick={() => handleSell()} className={'tile-card-button'}>
                   🪙 sell
@@ -432,14 +438,14 @@ export const TileCard: React.FC<TileCardProps> = ({
           </div>
 
           <div className="upgrade-row">
-            {mode === 'owned' && !maxLevelReached && (
+            {((mode === 'owned' && !maxLevelReached) || demoMode) && (
               <div
                 className="tile-card-actions"
                 style={{ backgroundColor: tile.groupColor + '4f' }}
               >
                 <div
                   onClick={() => (canUpgrade ? handleUpgrade() : handleInfoClick())}
-                  className={'tile-card-button' + (canUpgrade ? '' : ' disabled')}
+                  className={'tile-card-button' + (canUpgrade || demoMode  ? '' : ' disabled')}
                 >
                   <div className="big-icon-hint">
                     <div>⬆️</div>

@@ -22,8 +22,10 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   color: #dec27c;
+  margin-top: 3rem;
+  font-family: 'Encode';
 }
 
 .help-screen-title {
@@ -54,7 +56,8 @@
 }
 
 .help-screen-body li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-family: 'Texturina';
 }
 
 .help-screen-card {
