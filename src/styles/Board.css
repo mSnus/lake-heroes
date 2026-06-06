@@ -125,6 +125,13 @@
   box-shadow: inset 0px 0px 15px rgb(127 127 127);
 }
 
+.tile-sprite-unowned {
+  background-image: url(assets/fog.png); 
+  background-size: cover; 
+  border-radius: 50%; 
+  box-shadow: none;
+}
+
 .tile-sprite-container {
   height: calc(var(--sprite-size) / 2);
   width: calc(var(--sprite-size) / 2);

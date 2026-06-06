@@ -214,7 +214,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         } else if (isCaravan) {
           const unitLoss = processLostInAction();
           const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
-          
+
           if (o === 'attacker') {
             if (caravanSlaves) {
               attacker.units += caravanPrize!;
@@ -265,7 +265,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             
             gameState.gameMessage = `Glorious victory! ${attacker.name} conquered ${tile!.name}${lossStr}!`;
             msg = `${attacker.name} wins ${tile!.name}${lossStr}!`;
-            if (tile!.level < maxLevel) msg += ` ${defender?.name} finds out that the tiles should be upgraded for better defence`;
+            if (tile!.level < maxLevel) msg += ` 📝 ${defender?.name} finds out that the tiles should be upgraded for better defence`;
 
             setShowVictoryBg(true);
             setOutcome('attacker');

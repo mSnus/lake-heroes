@@ -120,12 +120,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                         className={`tile-sprite ${ownedClass}`}
                         style={
                           isFogged
-                            ? {
-                                backgroundImage: `url(assets/fog.png)`,
-                                backgroundSize: 'cover',
-                                borderRadius: '50%',
-                                boxShadow: 'none',
-                              }
+                            ? undefined
                             : {
                                 backgroundImage: `url(${tile.spriteImage})`,
                                 backgroundSize: 'cover',

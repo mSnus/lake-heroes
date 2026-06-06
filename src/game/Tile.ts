@@ -68,7 +68,13 @@ export class Tile implements TileJSON {
   }
 
   get fee(): number {
-    return this.defence * FEE_MULTIPLIER;
+    // Experiment: fee = sum of prices.gold up to the current level.
+    let gold = 0;
+    for (let lvl = 1; lvl <= this.level; lvl++) {
+      gold += this.prices[lvl]?.gold || 0;
+    }
+
+    return gold;
   }
 
   isOwned(): boolean {
@@ -120,10 +126,13 @@ export class Tile implements TileJSON {
   }
 
   getDefence(level: number = 1): number {
-    const MIN_DEFENCE = 3;
-    const defence = this.defences ? this.defences[level] || MIN_DEFENCE : MIN_DEFENCE;
+    // Experiment: defence = sum of prices.units up to the given level.
+    let units = 0;
+    for (let lvl = 1; lvl <= level; lvl++) {
+      units += this.prices[lvl]?.units || 0;
+    }
 
-    return defence;
+    return units;
   }
 
   toJSON(): TileJSON {
