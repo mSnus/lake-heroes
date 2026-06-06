@@ -6,6 +6,7 @@ import {
 } from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
+import { changeFame } from '../utils/fame';
 
 const ENCOUNTER_CHANCE = 1 / 12;
 const ATTACK_CHANCE = 1 / 6;
@@ -81,7 +82,7 @@ function handleWeakPlayerAttack(
 ) {
   const player = board.activePlayer;
 
-  player.fame = Math.max(0, player.fame - 1);
+  changeFame(player, -1, 0);
 
   let mostExpensiveIdx: number | null = null;
   let maxGold = -1;

@@ -22,12 +22,15 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
 
   if (board.activePlayer.turnsToSkip > 0) {
     board.activePlayer.turnsToSkip--;
+    board.skippingTurn = true;
     board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;
     say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
     updateGameState(board);
     setEndTurn();
     return;
   }
+
+  board.skippingTurn = false;
 
   if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
     say(

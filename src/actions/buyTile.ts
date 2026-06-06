@@ -1,5 +1,6 @@
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
+import { changeFame } from '../utils/fame';
 
 export async function buyTile(
   gameState: GameState | null,
@@ -21,7 +22,7 @@ export async function buyTile(
     player.units -= tile.prices['1']?.units ?? 0;
     tile.owner = player.name;
     player.ownedTiles.push(player.position);
-    player.fame++;
+    changeFame(player, 1);
     updateGameState(gameState);
     gameEvent('displayTile', {});
   }

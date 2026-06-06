@@ -15,6 +15,9 @@ export class GameState {
   turnPhase: TurnPhase;
   gameMessage: string = '';
   gameOver: boolean = false;
+  // True while the active player is serving a skipped (prison) turn — persisted
+  // so a reload doesn't offer them the dice.
+  skippingTurn: boolean = false;
 
   constructor(tiles: Tile[], players: Player[]) {
     this.tiles = tiles;

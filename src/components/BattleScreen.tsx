@@ -5,6 +5,7 @@ import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
+import { changeFame } from '../utils/fame';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
@@ -100,6 +101,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const defenderLabel = defender ? defender.name : isDragon ? 'The Dragon' : 'Caravan Guards';
   const defenderColor = isDragon ? '#ff5816' : isCaravan ? '#f6b03e' : defender?.color;
+
+  // Log the opening conditions of the battle once (ref guards against React
+  // StrictMode's double mount in development).
+  const loggedStartRef = useRef(false);
+  useEffect(() => {
+    if (loggedStartRef.current) return;
+    loggedStartRef.current = true;
+    const goal = isCaravan
+      ? caravanSlaves
+        ? `${caravanPrize}🧍 in chains`
+        : `${caravanPrize}🟡 of loot`
+      : isDragon
+        ? 'the kingdom'
+        : tile!.name;
+    say(
+      `⚔️ ${attacker.name} attacks ${defenderLabel} for ${goal}, ${attacker.units}🧍 vs ${defence}🧍!`,
+      'info'
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Auto-roll defender in caravan/dragon mode
   useEffect(() => {
@@ -218,20 +239,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           if (o === 'attacker') {
             const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
-            if (prevOwner) prevOwner.fame = Math.max(1, prevOwner.fame - 1);
+            if (prevOwner) changeFame(prevOwner, -1);
             gameState.players.forEach((p) => {
               p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
             });
             tile!.owner = attacker.name;
             tile!._level = 1;
             attacker.ownedTiles.push(attacker.position);
-            attacker.fame++;
+            changeFame(attacker, 1);
             gameState.gameMessage = `Glorious victory! ${attacker.name} conquered ${tile!.name}${lossStr}!`;
             msg = `${attacker.name} wins ${tile!.name}${lossStr}! ${defender?.name} finds out that the tiles should be upgraded for better defence`;
             setShowVictoryBg(true);
             setOutcome('attacker');
           } else if (o === 'defender') {
-            attacker.fame = Math.max(1, attacker.fame - 1);
+            changeFame(attacker, -1);
             gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}${lossStr}`;
             msg = `${attacker.name} retreats from ${tile!.name}${lossStr}`;
             setOutcome('defender');

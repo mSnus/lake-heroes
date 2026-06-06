@@ -357,18 +357,20 @@ function App() {
                 });
                 break;
               default:
-                if (restored.turnPhase === 'before-move') {
+                if (restored.skippingTurn) {
+                  setEndTurn();
+                } else if (restored.turnPhase === 'before-move') {
                   showDice(handleDiceRollAndMove);
                 } else {
                   afterMoveLogic(restored, updateGameState);
                 }
             }
+          } else if (restored.skippingTurn) {
+            setEndTurn();
+          } else if (restored.turnPhase === 'before-move') {
+            showDice(handleDiceRollAndMove);
           } else {
-            if (restored.turnPhase === 'before-move') {
-              showDice(handleDiceRollAndMove);
-            } else {
-              afterMoveLogic(restored, updateGameState);
-            }
+            afterMoveLogic(restored, updateGameState);
           }
 
           gameEvent('setPhase', restored.turnPhase);

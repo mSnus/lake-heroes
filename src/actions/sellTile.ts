@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { say } from '../utils/say';
+import { changeFame } from '../utils/fame';
 
 export function sellTile(
   gameState: GameState,
@@ -43,7 +44,7 @@ export function sellTile(
   const tileIndex = gameState.tiles.indexOf(tile);
   if (tileIndex !== -1) {
     player.ownedTiles = player.ownedTiles.filter((idx) => idx !== tileIndex);
-    player.fame = Math.max(1, player.fame - 1);
+    changeFame(player, -1);
   }
 
   say(`${player.name} sold ${tile.name} for ${totalGold} gold and ${totalUnits} units`, 'info');

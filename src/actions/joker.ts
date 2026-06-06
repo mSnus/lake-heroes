@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { changeFame } from '../utils/fame';
 
 const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Gift", 'Earthquake'] as const;
 type JokerEvent = (typeof EVENTS)[number];
@@ -45,7 +46,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           t.owner = null;
           t._level = 1;
           p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
-          p.fame = Math.max(1, p.fame - 1);
+          changeFame(p, -1);
         }
       }
 
@@ -78,7 +79,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         const { t, i } = free[Math.floor(Math.random() * free.length)];
         t.owner = player.name;
         player.ownedTiles.push(i);
-        player.fame++;
+        changeFame(player, 1);
         message = `${player.name} receives ${t.name} for free!`;
       } else {
         player.gold += 2000;
