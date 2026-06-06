@@ -6,18 +6,18 @@
     "spriteImage": "assets/sprites/water.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 0,
+    "requiredFame": 2,
     "prices": {
       "1": {
-        "gold": 200,
+        "gold": 300,
         "units": 2
       },
       "2": {
-        "gold": 300,
+        "gold": 400,
         "units": 5
       },
       "3": {
-        "gold": 500,
+        "gold": 550,
         "units": 10
       }
     },
@@ -39,14 +39,14 @@
     "spriteImage": "assets/sprites/windmill.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 0,
+    "requiredFame": 3,
     "prices": {
       "1": {
-        "gold": 250,
+        "gold": 350,
         "units": 3
       },
       "2": {
-        "gold": 360,
+        "gold": 460,
         "units": 6
       },
       "3": {
@@ -75,15 +75,15 @@
     "requiredFame": 4,
     "prices": {
       "1": {
-        "gold": 300,
+        "gold": 400,
         "units": 6
       },
       "2": {
-        "gold": 360,
+        "gold": 580,
         "units": 6
       },
       "3": {
-        "gold": 600,
+        "gold": 740,
         "units": 12
       }
     },
@@ -171,7 +171,7 @@
     "spriteImage": "assets/sprites/sheep.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 0,
+    "requiredFame": 3,
     "prices": {
       "1": {
         "gold": 400,
@@ -270,7 +270,7 @@
     "spriteImage": "assets/sprites/fruit.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 0,
+    "requiredFame": 3,
     "prices": {
       "1": {
         "gold": 350,
@@ -369,7 +369,7 @@
     "spriteImage": "assets/sprites/fur.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 0,
+    "requiredFame": 3,
     "prices": {
       "1": {
         "gold": 450,

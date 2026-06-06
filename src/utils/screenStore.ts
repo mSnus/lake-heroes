@@ -151,7 +151,7 @@ export function showDragonSkyScreen(
     htmlMessage: `${who} sees a giant black dragon passing on the sky`,
     buttons: [
       {
-        label: 'Continue',
+        label: "Scatter and hide, so he doesn'\t attack",
         action: 'continue',
         onClick: () => {
           clearScreen();
@@ -179,6 +179,7 @@ export function showDragonAttackScreen(message: string, onContinue: () => void):
   });
 }
 
+// `message` may contain HTML (e.g. a colored player-name span).
 export function showDragonChallengeScreen(
   message: string,
   onFight: () => void,
@@ -188,7 +189,7 @@ export function showDragonChallengeScreen(
   showScreen({
     screenType: 'dragon',
     background: 'assets/screens/dragon.jpg',
-    message,
+    htmlMessage: message,
     buttons: [
       {
         label: 'Challenge the Dragon 🐉',

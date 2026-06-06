@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
 import topImage from '../../public/assets/top1.jpg';
+import { UNIT_PRICE } from '../game/constants';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -14,7 +15,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
   const player = gameState.activePlayer;
   const [amount, setAmount] = useState(0);
 
-  const maxAmount = Math.floor(player.gold / 100);
+  const maxForFame = player.fame * 5;
+  const maxAmount = Math.min(Math.floor(player.gold / UNIT_PRICE), maxForFame);
 
   const handleBuy = () => {
     onBuy(amount);
@@ -38,7 +40,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
         <h3>{gameState.gameMessage}</h3>
 
         <h3>
-          You may recruit {maxAmount} units for {maxAmount * 100}🟡
+          With fame of {player.fame}🏆, you may recruit up to {maxAmount} units for a cost of {maxAmount * UNIT_PRICE}🟡
         </h3>
 
         <div

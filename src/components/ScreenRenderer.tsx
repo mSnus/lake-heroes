@@ -5,6 +5,7 @@ import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { OwnedTiles } from './OwnedTiles';
+import { DecoratedButton } from './DecoratedButton';
 import { gameEvent } from '../utils/events';
 
 interface ScreenRendererProps {
@@ -110,16 +111,26 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
       {!config.sellMode && (
         <div className="game-menu" style={{ top: '80vh' }}>
           <div>
-            {buttons.map((btn, i) => (
-              <button
-                key={i}
-                className="game-menu-button"
-                disabled={btn.disabled}
-                onClick={() => handleButtonClick(btn.onClick, btn.action)}
-              >
-                {btn.label}
-              </button>
-            ))}
+            {buttons.map((btn, i) =>
+              buttons.length === 1 ? (
+                <DecoratedButton
+                  key={i}
+                  disabled={btn.disabled}
+                  onClick={() => handleButtonClick(btn.onClick, btn.action)}
+                >
+                  {btn.label}
+                </DecoratedButton>
+              ) : (
+                <button
+                  key={i}
+                  className="game-menu-button"
+                  disabled={btn.disabled}
+                  onClick={() => handleButtonClick(btn.onClick, btn.action)}
+                >
+                  {btn.label}
+                </button>
+              )
+            )}
           </div>
         </div>
       )}

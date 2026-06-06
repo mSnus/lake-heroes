@@ -33,6 +33,8 @@ export type TileCardProps = {
   gameState?: GameState;
   updateGameState?: (board: GameState) => void;
   couldBuy?: boolean;
+  defaultExpanded?: boolean;
+  showClose?: boolean;
 };
 
 export const TileCard: React.FC<TileCardProps> = ({
@@ -41,8 +43,10 @@ export const TileCard: React.FC<TileCardProps> = ({
   gameState,
   updateGameState,
   couldBuy = false,
+  defaultExpanded = false,
+  showClose = true,
 }) => {
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(defaultExpanded);
 
   if (!tile || !tile.name) return null;
 
@@ -237,7 +241,7 @@ export const TileCard: React.FC<TileCardProps> = ({
           {tile.name}
         </div>
 
-        {mode === 'display' && (
+        {mode === 'display' && showClose && (
           <button
             onClick={() => handleClose()}
             className="tile-card-close"

@@ -39,8 +39,9 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     );
     board.gameMessage = `Terrifying dragon guards a pile of gold and jewels`;
     updateGameState(board);
+    const p = board.activePlayer;
     showDragonChallengeScreen(
-      board.gameMessage,
+      `A terrifying dragon guards a pile of gold and jewels. Will <span style="color:${p.color}">${p.name}</span> dare to challenge it?`,
       () => fightDragon(board, updateGameState),
       () => gameEvent('showDice', null)
     );

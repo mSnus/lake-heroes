@@ -44,10 +44,12 @@ import { fightDragon } from './actions/fightDragon';
 import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
+import { UNIT_PRICE, DRAGON_GOLD } from './game/constants';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
 import { ScreenRenderer } from './components/ScreenRenderer';
+import { DecoratedButton } from './components/DecoratedButton';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -191,7 +193,7 @@ function App() {
                 break;
               case 'dragon':
                 showDragonChallengeScreen(
-                  savedScreen.message ?? '',
+                  savedScreen.htmlMessage ?? savedScreen.message ?? '',
                   () => fightDragon(restored, updateGameState),
                   () => gameEvent('showDice', null)
                 );
@@ -445,37 +447,66 @@ function App() {
 
       {!gameState && screen?.content && <>{screen.content}</>}
 
-      {gameState?.gameOver && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'rgba(0,0,0,0.82)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#ffe066',
-            fontSize: '2.5rem',
-            textAlign: 'center',
-            gap: '1.5rem',
-          }}
-        >
-          <div>🐉 Congratulations! You won the hardest battle, all the treasures are yours! 🐉</div>
-          <button
-            style={{ fontSize: '1.2rem', padding: '0.6rem 2rem', cursor: 'pointer' }}
-            onClick={() => {
-              localStorage.removeItem('game-state');
-              localStorage.removeItem('game-screen');
-              setGameState(null);
-              showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
-            }}
-          >
-            New Game
-          </button>
-        </div>
-      )}
+      {gameState?.gameOver &&
+        (() => {
+          const winner = gameState.activePlayer;
+          const tilesGold = winner.ownedTiles.reduce((sum, idx) => {
+            const t = gameState.tiles[idx];
+            return t && t.owner === winner.name ? sum + t.currentPrice.gold : sum;
+          }, 0);
+          const totalGold = winner.gold + tilesGold + winner.units * UNIT_PRICE + DRAGON_GOLD;
+          const years = winner.circles;
+
+          return (
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                background:
+                  'linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), url(assets/screens/game_won.jpg) center/cover no-repeat',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffe066',
+                textAlign: 'center',
+                gap: '1.5rem',
+                padding: '24px',
+              }}
+            >
+              <div className="text-title">Glorious victory!</div>
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  maxWidth: '640px',
+                  lineHeight: 1.5,
+                  textShadow: '1px 1px 6px #000',
+                }}
+              >
+                Oh mighty <span style={{ color: winner.color }}>{winner.name}</span>,<br/>
+                it took you {years}{' '} years to slain that dragon!<br /> 
+                <i>Boromir would do it in only {years-1}...</i><br /> 
+                <br/>
+                You leave that kingdom <br />
+                with a fame of {winner.fame}🏆 and{' '}
+                {totalGold.toLocaleString()}🟡<br/>
+                <br/>
+                Congratulations! Time for a new challenge!
+              </div>
+              <DecoratedButton
+                onClick={() => {
+                  localStorage.removeItem('game-state');
+                  localStorage.removeItem('game-screen');
+                  setGameState(null);
+                  showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
+                }}
+              >
+                New Game
+              </DecoratedButton>
+            </div>
+          );
+        })()}
 
       {gameState && (
         <div id="mainContainer">

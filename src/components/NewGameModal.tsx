@@ -4,6 +4,7 @@ import { MAX_PLAYERS, MONEY_START, UNITS_START } from './board/common';
 import GameModal from './GameModal';
 import '../styles/modal.css';
 import { PlayerSetup } from '../utils/playerSetup';
+import { DecoratedButton } from './DecoratedButton';
 
 interface NewGameModalProps {
   onStart: (players: PlayerSetup[]) => void;
@@ -144,13 +145,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
           </div>
         ))}
         <div className="button-group">
-          <button
-            onClick={() => onStart(players)}
-            className="decorated"
-            style={{ backgroundImage: `url(assets/button.png)` }}
-          >
-            Start Game
-          </button>
+          <DecoratedButton onClick={() => onStart(players)}>Start Game</DecoratedButton>
         </div>
       </>
     </GameModal>

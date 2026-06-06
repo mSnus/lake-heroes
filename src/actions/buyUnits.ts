@@ -1,8 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
-
-const UNIT_COST = 100;
+import { UNIT_PRICE } from '../game/constants';
 
 export function buyUnits(
   board: GameState | null,
@@ -12,7 +11,7 @@ export function buyUnits(
   if (!board) return;
 
   const player = board.activePlayer;
-  const cost = amount * UNIT_COST;
+  const cost = amount * UNIT_PRICE;
 
   if (player.gold >= cost) {
     player.gold -= cost;

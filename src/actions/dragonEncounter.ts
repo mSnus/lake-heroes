@@ -63,7 +63,7 @@ export function checkDragonEncounter(
   } else {
     updateGameState(board);
     showDragonChallengeScreen(
-      `The Dragon descends from the skies! Your ${player.units} warriors stand ready. Face it or flee?`,
+      `The Dragon descends from the skies upon <span style="color:${player.color}">${player.name}</span>! ${player.units} warriors stand ready. Face it or flee?`,
       () => fightDragon(board, updateGameState),
       onContinue,
       'Flee! 🏃'

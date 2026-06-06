@@ -1,5 +1,6 @@
 import React from 'react';
 import GameModal from './GameModal';
+import { DecoratedButton } from './DecoratedButton';
 import { SayLevel } from '../utils/say';
 import '../styles/modal.css';
 
@@ -74,9 +75,7 @@ const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
             ))}
         </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <button className="game-menu-button" onClick={onClose}>
-            Close
-          </button>
+          <DecoratedButton onClick={onClose}>Close</DecoratedButton>
         </div>
       </div>
     </GameModal>
