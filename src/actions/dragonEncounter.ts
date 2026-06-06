@@ -9,9 +9,9 @@ import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
 
 const ENCOUNTER_CHANCE = 1 / 12;
-const ATTACK_CHANCE = 1 / 6;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
-const FAME_THRESHOLD = 5;
+const FAME_THRESHOLD_ENCOUNTER = 4;
+const FAME_THRESHOLD_ATTACK = 5;
 const CIRCLE_THRESHOLD = 3;
 
 export function checkDragonEncounter(
@@ -20,6 +20,9 @@ export function checkDragonEncounter(
   onContinue: () => void
 ): boolean {
   const player = board.activePlayer;
+
+  const ATTACK_CHANCE = player.fame > FAME_THRESHOLD_ATTACK ? 1/2 : 1 / 3;
+
 
   if ((player.circles ?? 0) <= 2) {
     return false;
@@ -42,15 +45,15 @@ export function checkDragonEncounter(
   player.dragonEncounters = (player.dragonEncounters ?? 0) + 1;
   player.dragonEncounteredLastTurn = true;
 
-  if (player.fame < FAME_THRESHOLD || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
+  if (player.fame < FAME_THRESHOLD_ENCOUNTER || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
     updateGameState(board);
-    dragonSkyWithSay(onContinue);
+    dragonSkyWithSay(board, onContinue);
     return true;
   }
 
   if (Math.random() >= ATTACK_CHANCE) {
     updateGameState(board);
-    dragonSkyWithSay(onContinue);
+    dragonSkyWithSay(board, onContinue);
     return true;
   }
 
@@ -70,9 +73,10 @@ export function checkDragonEncounter(
   return true;
 }
 
-function dragonSkyWithSay(onContinue: () => void) {
+function dragonSkyWithSay(board: GameState, onContinue: () => void) {
+  const player = board.activePlayer;
   say('A massive black dragon soars overhead...', 'info');
-  showDragonSkyScreen(onContinue);
+  showDragonSkyScreen(onContinue, player.name, player.color);
 }
 
 function handleWeakPlayerAttack(

@@ -49,7 +49,10 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   say(`${player.name} receives ${summary}`, 'success');
 
   if (!board.activeTile.name.toLowerCase().startsWith('king')) {
-    board.gameMessage = `The King rewards you with ${summary} for your service and properties`;
+    const years = player.circles < 3 ? "a year" : `${player.circles - 1} years`;
+    board.gameMessage = `The King rewards you with ${summary} for ${years} of your service and properties`;
+
+    say(`${player.name} is serving the state for ${player.circles - 1} years already!`, 'debug');
   }
 
   updateGameState(board);

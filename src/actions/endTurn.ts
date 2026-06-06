@@ -37,7 +37,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
       `${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`,
       'info'
     );
-    board.gameMessage = `Challenge the Dragon or roll dice?`;
+    board.gameMessage = `Terrifying dragon guards a pile of gold and jewels`;
     updateGameState(board);
     showDragonChallengeScreen(
       board.gameMessage,

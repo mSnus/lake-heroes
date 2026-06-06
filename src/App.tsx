@@ -270,7 +270,11 @@ function App() {
                 });
                 break;
               case 'dragon-sky':
-                showDragonSkyScreen(() => gameEvent('showDice', null));
+                showDragonSkyScreen(
+                  () => gameEvent('showDice', null),
+                  restored.activePlayer.name,
+                  restored.activePlayer.color
+                );
                 break;
               case 'dragon-attack':
                 showDragonAttackScreen(savedScreen.message ?? '', () =>

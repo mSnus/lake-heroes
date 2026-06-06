@@ -4,7 +4,7 @@ import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
 
-const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Gift", 'Earthquake'] as const;
+const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Grace", 'Earthquake'] as const;
 type JokerEvent = (typeof EVENTS)[number];
 
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
@@ -70,7 +70,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       message = 'All owned tiles lose one level.';
       break;
 
-    case "King's Gift": {
+    case "King's Grace": {
       const player = board.activePlayer;
       const free = board.tiles
         .map((t, i) => ({ t, i }))
@@ -84,7 +84,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       } else {
         player.gold += 2000;
         player.units += 5;
-        message = `All Camps & Towers owned — ${player.name} receives 2000🟡 and 5🧍.`;
+        message = `King sends 2000🟡 and 5🧍 to ${player.name}`;
       }
 
       break;

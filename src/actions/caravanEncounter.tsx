@@ -9,9 +9,11 @@ export function checkCaravanEncounter(
   onContinue: () => void
 ): boolean {
   const player = board.activePlayer;
+  const ENCOUNTER_CHANCE = 1 / 12;
 
   // Not enough units to threaten a caravan
   if (player.units < 3) return false;
+
   // No back-to-back
   if (player.caravanEncounteredLastTurn) {
     player.caravanEncounteredLastTurn = false;
@@ -21,7 +23,7 @@ export function checkCaravanEncounter(
   // Max 2 per year
   if ((player.caravanEncounters ?? 0) >= 2) return false;
   // 1/12 chance
-  if (Math.random() >= 1 / 12) return false;
+  if (Math.random() >= ENCOUNTER_CHANCE) return false;
 
   // Encounter!
   player.caravanEncounters = (player.caravanEncounters ?? 0) + 1;
@@ -29,10 +31,10 @@ export function checkCaravanEncounter(
   updateGameState(board);
 
   const defendingUnits = Math.floor((0.7 + Math.random() * 0.3) * player.units);
-  const isSlaves = Math.random() < 0.5;
+  const isSlaves = Math.random() < 0.4;
   const prize = isSlaves
-    ? Math.max(1, Math.floor(defendingUnits * (0.5 + Math.random() * 0.5)))
-    : 100 * defendingUnits * (Math.floor(Math.random() * 2) + 1);
+    ? Math.max(1, Math.floor(defendingUnits * (0.5 + Math.random() * 0.3)))
+    : 100 * defendingUnits * (Math.floor(Math.random() * 2.5) + 1);
 
   const startBattle = () => {
     showScreen({
@@ -63,7 +65,7 @@ export function checkCaravanEncounter(
     background: 'assets/screens/caravan.jpg',
     caravanDefence: defendingUnits,
     caravanPrize: prize,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan ${caravanDesc}. It is guarded by ${defendingUnits}🧍. Would you attack?`,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan<br /> ${caravanDesc}.<br /><br /> It is guarded by ${defendingUnits}🧍. Would you attack?`,
     buttons: [
       { label: 'Attack!', onClick: startBattle },
       {

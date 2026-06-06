@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { becomeBeggar } from './becomeBeggar';
-import { showScreen, showPrisonScreen, ScreenButton } from '../utils/screenStore';
+import { showScreen, showPrisonScreen, clearScreen, ScreenButton } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { payFee } from './payFee';
 import { fightTile } from './fightTile';
@@ -26,11 +26,8 @@ export function afterMoveLogic(
   if (tile.isOwned() && tile.owner !== player.name) {
     const owner = board.players.find((p) => p.name === tile.owner);
 
-    // Owner is in prison — no fee collected
-    if (owner && (owner.turnsToSkip ?? 0) > 0) {
-      setEndTurn();
-      return;
-    }
+    // A jailed owner can't collect a fee, so paying is replaced by a free pass.
+    const ownerInPrison = !!(owner && (owner.turnsToSkip ?? 0) > 0);
 
     const fee = tile.fee;
     const defence = tile.defence;
@@ -74,13 +71,23 @@ export function afterMoveLogic(
       encounter,
     };
 
+    const feeButton: ScreenButton = ownerInPrison
+      ? {
+          label: `Send him flowers 🌹 to the prison`,
+          onClick: () => {
+            clearScreen();
+            setEndTurn();
+          },
+        }
+      : {
+          label: `Pay fee ${fee}🟡`,
+          action: 'pay-fee',
+          onClick: () => payFee(board, updateGameState),
+          disabled: player.gold < fee,
+        };
+
     const baseButtons: ScreenButton[] = [
-      {
-        label: `Pay fee ${fee}🟡`,
-        action: 'pay-fee',
-        onClick: () => payFee(board, updateGameState),
-        disabled: player.gold < fee,
-      },
+      feeButton,
       {
         label: `Battle ⚔️ (${defence}🧍)`,
         action: 'fight',
@@ -99,7 +106,7 @@ export function afterMoveLogic(
     };
 
     const extraButtons: ScreenButton[] = [];
-    if (canSell) {
+    if (!ownerInPrison && canSell) {
       const sellModeConfig = {
         ...baseConfig,
         sellMode: true,
@@ -113,7 +120,7 @@ export function afterMoveLogic(
       });
     }
 
-    if (showAcceptLoss) extraButtons.push(acceptLossButton);
+    if (!ownerInPrison && showAcceptLoss) extraButtons.push(acceptLossButton);
     showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
     return;
   }

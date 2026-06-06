@@ -137,11 +137,18 @@ export function showJokerScreen(message: string, title?: string): void {
   });
 }
 
-export function showDragonSkyScreen(onContinue: () => void): void {
+export function showDragonSkyScreen(
+  onContinue: () => void,
+  playerName?: string,
+  playerColor?: string
+): void {
+  const who = playerName
+    ? `<span style="color:${playerColor ?? 'inherit'}">${playerName}</span>`
+    : 'You';
   showScreen({
     screenType: 'dragon-sky',
     background: 'assets/screens/dragon-sky.jpg',
-    message: 'You see a giant black dragon passing on the sky',
+    htmlMessage: `${who} sees a giant black dragon passing on the sky`,
     buttons: [
       {
         label: 'Continue',

@@ -30,7 +30,7 @@ const RULES_HTML = `
   <li>🍺 <strong>Tavern</strong> — roll: gain or lose gold and warriors.</li>
   <li>🦁 <strong>Sphynx</strong> — roll: pay tribute or receive a reward.</li>
   <li>⛓️ <strong>Prison</strong> — skip 2 turns.</li>
-  <li>🃏 <strong>Joker</strong> — random event: Taxes, Plague, Hurricane, Blessing, King's Gift, or Earthquake.</li>
+  <li>🃏 <strong>Joker</strong> — random event: Taxes, Plague, Hurricane, Blessing, King's Grace, or Earthquake.</li>
 </ul>
 
 <h3>Dragon</h3>
