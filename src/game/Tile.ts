@@ -129,10 +129,10 @@ export class Tile implements TileJSON {
     // Experiment: defence = sum of prices.units up to the given level.
     let units = 0;
     for (let lvl = 1; lvl <= level; lvl++) {
-      units += this.prices[lvl]?.units || 0;
+      units += (this.prices[lvl]?.units || 2) * (level < 3 ? 2 : 1.5);
     }
 
-    return units;
+    return Math.ceil(units);
   }
 
   toJSON(): TileJSON {

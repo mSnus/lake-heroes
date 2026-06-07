@@ -91,6 +91,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     return (
       <>
         <span>{icon}</span>
+        {level > currentLevel ? '+' : ' '}
         {hasGold && (
           <span style={lacksGold ? redBold : undefined}>
             {lacksGold && '🔻'}
@@ -109,7 +110,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
-  const defence = (level: number) => tile.defences[level] ?? 0;
+  const defence = (level: number) => tile.getDefence(level);
 
   const diamonds = (level: number = tile.level) =>
     Array.from({ length: level }).map((_, d) => (
