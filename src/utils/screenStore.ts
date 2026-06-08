@@ -32,6 +32,7 @@ export interface ScreenConfig {
     tileDefence?: number;
     ownerName?: string;
     ownerColor?: string;
+    canFight?: boolean;
     outcomeText?: string;
     subMessage?: string;
     gold?: number;

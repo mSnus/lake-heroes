@@ -156,7 +156,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setRoundResults(newResults);
     setPendingAttackerRoll(null);
 
-    const maxLevel = 3;
     const nextRound = roundIdx + 1;
 
     const processLostInAction = () => {
@@ -247,36 +246,48 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             setOutcome('defender');
           }
         } else {
-          const unitLoss = processLostInAction();
+          // Attacker only bleeds units on a win or a tie (per-round rule); a
+          // defeat costs fame instead.
+          const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
+          const roundsLost = newResults.filter((r) => r.winner === 'defender').length;
+          const unitLoss = roundsLost * unitsPerRound;
           const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
 
           if (o === 'attacker') {
-            const prevOwner = gameState.players.find((p) => p.name === tile!.owner);
-            if (prevOwner) changeFame(prevOwner, -1);
+            // Win = raze: the tile is burned to the ground, ownership cleared and
+            // its level reset, so the attacker can claim it after the battle.
+            attacker.units = Math.max(0, attacker.units - unitLoss);
             gameState.players.forEach((p) => {
               p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
             });
-            tile!.owner = attacker.name;
+            tile!.owner = null;
             tile!._level = 1;
-            attacker.ownedTiles.push(attacker.position);
-            
+
             changeFame(attacker, 1);
             if (defender) changeFame(defender, -1);
-            
-            gameState.gameMessage = `Glorious victory! ${attacker.name} conquered ${tile!.name}${lossStr}!`;
-            msg = `${attacker.name} wins ${tile!.name}${lossStr}!`;
-            if (tile!.level < maxLevel) msg += ` 📝 ${defender?.name} finds out that the tiles should be upgraded for better defence`;
+
+            gameState.gameMessage = `${attacker.name} razed ${tile!.name} to the ground${lossStr}! The land lies open to claim.`;
+            msg = `${attacker.name} razes ${tile!.name}${lossStr}! Claim the open land now.`;
 
             setShowVictoryBg(true);
             setOutcome('attacker');
           } else if (o === 'defender') {
+            // Loss = fame penalty only, no units lost.
             changeFame(attacker, -1);
-            gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}${lossStr}`;
-            msg = `${attacker.name} retreats from ${tile!.name}${lossStr}`;
+            gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}`;
+            msg = `${attacker.name} retreats from ${tile!.name}`;
             setOutcome('defender');
           } else {
-            msg = `${attacker.name}'s army retreats${lossStr}`;
-            gameState.gameMessage = msg;
+            // Tie = no fee paid, and the defender's tile drops a level.
+            attacker.units = Math.max(0, attacker.units - unitLoss);
+            if (tile!.level > 1) {
+              tile!._level = tile!.level - 1;
+              gameState.gameMessage = `${attacker.name}'s assault battered ${tile!.name} down to level ${tile!.level}${lossStr}`;
+              msg = `No fee paid — ${attacker.name} battered ${tile!.name} down to level ${tile!.level}${lossStr}`;
+            } else {
+              gameState.gameMessage = `${attacker.name}'s army retreats${lossStr}`;
+              msg = `${attacker.name}'s army retreats${lossStr}`;
+            }
             if (unitLoss > 0) setShowLostBg(true);
             setOutcome('tie');
           }
@@ -285,7 +296,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         // Single summary log entry
         const outcomeVerb =
           o === 'attacker' ? 'wins a battle' : o === 'defender' ? 'loses a battle' : 'ties';
-        const capturePart = o === 'attacker' && tile ? `, captured ${tile.name}` : '';
+        const capturePart = o === 'attacker' && tile ? `, razed ${tile.name}` : '';
         const unitsAfter = attacker.units;
         const goldAfter = attacker.gold;
         const unitDiff = unitsBefore - unitsAfter;

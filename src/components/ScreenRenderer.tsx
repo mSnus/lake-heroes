@@ -81,6 +81,12 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 <strong style={{ color: config.encounter.ownerColor }}>
                   {config.encounter.ownerName}
                 </strong>
+                {config.encounter.canFight && config.encounter.tileDefence !== undefined && (
+                  <>
+                    <br />
+                    Send {config.encounter.tileDefence} units to raze it?
+                  </>
+                )}
               </>
             )}
             {config.encounter.outcomeText && (

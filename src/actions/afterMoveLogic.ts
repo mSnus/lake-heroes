@@ -59,6 +59,7 @@ export function afterMoveLogic(
       tileDefence: tile.defence,
       ownerName: tile.owner ?? undefined,
       ownerColor,
+      canFight,
       outcomeText: undefined,
       gold: player.gold,
       units: player.units,
