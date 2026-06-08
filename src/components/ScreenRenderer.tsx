@@ -84,7 +84,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 {config.encounter.canFight && config.encounter.tileDefence !== undefined && (
                   <>
                     <br />
-                    Send {config.encounter.tileDefence} units to raze it?
+                    Risk {config.encounter.tileDefence} 🧍 to raze it?
                   </>
                 )}
               </>

@@ -246,8 +246,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             setOutcome('defender');
           }
         } else {
-          // Attacker only bleeds units on a win or a tie (per-round rule); a
-          // defeat costs fame instead.
+          // Attacker bleeds units on every outcome (per-round rule); a defeat
+          // also costs fame.
           const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
           const roundsLost = newResults.filter((r) => r.winner === 'defender').length;
           const unitLoss = roundsLost * unitsPerRound;
@@ -272,18 +272,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             setShowVictoryBg(true);
             setOutcome('attacker');
           } else if (o === 'defender') {
-            // Loss = fame penalty only, no units lost.
+            // Loss = fame penalty plus the units lost in the failed assault.
+            attacker.units = Math.max(0, attacker.units - unitLoss);
             changeFame(attacker, -1);
-            gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}`;
-            msg = `${attacker.name} retreats from ${tile!.name}`;
+            gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}${lossStr}`;
+            msg = `${attacker.name} retreats from ${tile!.name}${lossStr}`;
             setOutcome('defender');
           } else {
             // Tie = no fee paid, and the defender's tile drops a level.
             attacker.units = Math.max(0, attacker.units - unitLoss);
             if (tile!.level > 1) {
               tile!._level = tile!.level - 1;
-              gameState.gameMessage = `${attacker.name}'s assault battered ${tile!.name} down to level ${tile!.level}${lossStr}`;
-              msg = `No fee paid — ${attacker.name} battered ${tile!.name} down to level ${tile!.level}${lossStr}`;
+              gameState.gameMessage = `${attacker.name}'s assault degraded ${tile!.name} to level ${tile!.level}${lossStr}`;
+              msg = `No fee paid and ${tile!.name} degraded${lossStr}`;
             } else {
               gameState.gameMessage = `${attacker.name}'s army retreats${lossStr}`;
               msg = `${attacker.name}'s army retreats${lossStr}`;
@@ -476,7 +477,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                 {outcome === 'attacker'
                   ? `Glorious victory!`
                   : outcome === 'defender'
-                    ? `The battle is lost!`
+                    ? `Defeat!`
                     : 'A tie!'}
               </span>
             </div>
