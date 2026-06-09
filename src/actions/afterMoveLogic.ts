@@ -101,6 +101,9 @@ export function afterMoveLogic(
       label: `Accept loss 😢`,
       action: 'fight',
       onClick: () => {
+        // Yielding on the battlefield makes the player a prisoner of war, which
+        // the King later ransoms when they're about to leave prison.
+        player.isPrisonerOfWar = true;
         becomeBeggar(board, updateGameState);
         showPrisonScreen(board.gameMessage);
       },

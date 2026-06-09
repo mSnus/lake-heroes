@@ -6,6 +6,7 @@ import { showDragonChallengeScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
+import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -31,6 +32,13 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   }
 
   board.skippingTurn = false;
+
+  // A prisoner of war who has served their skipped turn is ransomed by the King
+  // before they roll to leave prison.
+  if (board.activePlayer.isPrisonerOfWar) {
+    releasePrisonerOfWar(board);
+    updateGameState(board);
+  }
 
   if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
     say(

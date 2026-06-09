@@ -15,7 +15,9 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
   const player = gameState.activePlayer;
   const [amount, setAmount] = useState(0);
 
-  const maxForFame = player.fame * 5;
+  // The fame cap is a per-turn allowance: subtract what was already hired this
+  // visit so the limit holds even if the screen was closed and reopened.
+  const maxForFame = Math.max(0, player.fame * 5 - player.unitsHiredThisTurn);
   const maxAmount = Math.min(Math.floor(player.gold / UNIT_PRICE), maxForFame);
 
   const handleBuy = () => {

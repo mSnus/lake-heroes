@@ -23,6 +23,8 @@ export class Player {
   dragonEncounteredLastTurn: boolean;
   caravanEncounters: number;
   caravanEncounteredLastTurn: boolean;
+  unitsHiredThisTurn: number;
+  isPrisonerOfWar: boolean;
 
   constructor(params: PlayerParams) {
     this.name = params.name;
@@ -39,5 +41,7 @@ export class Player {
     this.dragonEncounteredLastTurn = false;
     this.caravanEncounters = 0;
     this.caravanEncounteredLastTurn = false;
+    this.unitsHiredThisTurn = 0;
+    this.isPrisonerOfWar = false;
   }
 }

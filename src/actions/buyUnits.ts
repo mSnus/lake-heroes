@@ -16,6 +16,7 @@ export function buyUnits(
   if (player.gold >= cost) {
     player.gold -= cost;
     player.units += amount;
+    player.unitsHiredThisTurn += amount;
     say(`${player.name} bought ${amount} units for ${cost}🟡.`, 'success');
     updateGameState(board);
   } else {

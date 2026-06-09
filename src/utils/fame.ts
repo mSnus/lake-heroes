@@ -17,16 +17,18 @@ export function changeFame(player: Player, delta: number, floor = 1): void {
 
   player.fame = after;
 
+  // Fold any knighthood threshold crossing into the same fame-change message.
   if (after > before) {
-    say(`${player.name} becomes more famous`, 'success');
+    const knighted = before < KNIGHT_FAME && after >= KNIGHT_FAME;
+    say(
+      `${player.name} becomes more famous${knighted ? ' and was promoted to a Knight!' : ''}`,
+      'success'
+    );
   } else {
-    say(`${player.name} becomes less famous`, 'warning');
-  }
-
-  // Knighthood threshold crossings.
-  if (before < KNIGHT_FAME && after >= KNIGHT_FAME) {
-    say(`${player.name} is promoted to the knight!`, 'success');
-  } else if (before >= KNIGHT_FAME && after < KNIGHT_FAME) {
-    say(`${player.name} is demoted from knights`, 'warning');
+    const demoted = before >= KNIGHT_FAME && after < KNIGHT_FAME;
+    say(
+      `${player.name} becomes less famous${demoted ? ' and was demoted from knights' : ''}`,
+      'warning'
+    );
   }
 }

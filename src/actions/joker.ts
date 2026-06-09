@@ -3,9 +3,29 @@ import { say } from '../utils/say';
 import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
+import { richestPlayer } from '../game/wealth';
 
-const EVENTS = ['Taxes', 'Plague', 'Hurricane', 'Blessing', "King's Grace", 'Earthquake'] as const;
+const EVENTS = [
+  'Taxes',
+  'Plague',
+  'Hurricane',
+  'Blessing',
+  "Queen's Gift",
+  'Earthquake',
+  'Meteor',
+] as const;
 type JokerEvent = (typeof EVENTS)[number];
+
+// Emoji shown only on the Joker screen title (not in toasts/gameMessage).
+const EVENT_EMOJI: Record<JokerEvent, string> = {
+  Taxes: '🧾',
+  Plague: '🦠',
+  Hurricane: '🌪️',
+  Blessing: '👑',
+  "Queen's Gift": '📿',
+  Earthquake: '🪨',
+  Meteor: '☄️',
+};
 
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
   const event: JokerEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
@@ -29,6 +49,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       break;
 
     case 'Hurricane': {
+      const lostMsgs: string[] = [];
       for (const p of board.players) {
         if (!p.ownedTiles.length) continue;
         let maxGold = -1;
@@ -47,9 +68,11 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           t._level = 1;
           p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
           changeFame(p, -1);
+          lostMsgs.push(`${p.name} loses ${t.name}`);
         }
       }
 
+      if (lostMsgs.length) say(`Hurricane sweeps away: ${lostMsgs.join(', ')}`, 'debug');
       message = 'Every player loses their most expensive tile.';
       break;
     }
@@ -62,15 +85,67 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       message = 'All owned tiles are upgraded one level.';
       break;
 
-    case 'Earthquake':
-      for (const t of board.tiles) {
-        if (t?.isOwned() && t.level > 1) t._level = t.level - 1;
+    case 'Earthquake': {
+      const lostMsgs: string[] = [];
+      for (const p of board.players) {
+        if (!p.ownedTiles.length) continue;
+
+        const hasUpgraded = p.ownedTiles.some((idx) => (board.tiles[idx]?.level ?? 1) > 1);
+
+        if (hasUpgraded) {
+          // Upgraded tiles crumble one level.
+          for (const idx of p.ownedTiles) {
+            const t = board.tiles[idx];
+            if (t && t.level > 1) t._level = t.level - 1;
+          }
+        } else {
+          // No level 2/3 tile to absorb the shock: the cheapest tile collapses.
+          let minGold = Infinity;
+          let targetIdx = -1;
+          for (const idx of p.ownedTiles) {
+            const t = board.tiles[idx];
+            if (t && t.currentPrice.gold < minGold) {
+              minGold = t.currentPrice.gold;
+              targetIdx = idx;
+            }
+          }
+
+          if (targetIdx >= 0) {
+            const t = board.tiles[targetIdx];
+            t.owner = null;
+            t._level = 1;
+            p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
+            changeFame(p, -1);
+            lostMsgs.push(`${p.name} loses ${t.name}`);
+          }
+        }
       }
 
-      message = 'All owned tiles lose one level.';
+      if (lostMsgs.length) say(`Earthquake destroys: ${lostMsgs.join(', ')}`, 'debug');
+      message = 'Upgraded tiles crumble a level; the unprepared lose their cheapest tile.';
       break;
+    }
 
-    case "King's Grace": {
+    case 'Meteor': {
+      // A meteor strikes one of the richest player's tiles, razing it.
+      const richest = richestPlayer(board);
+      if (richest && richest.ownedTiles.length > 0) {
+        const targetIdx =
+          richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
+        const t = board.tiles[targetIdx];
+        t.owner = null;
+        t._level = 1;
+        richest.ownedTiles = richest.ownedTiles.filter((i) => i !== targetIdx);
+        changeFame(richest, -1);
+        message = `Meteor shower falls on ${t.name}, destroying it`;
+      } else {
+        message = 'Meteor shower falls on the wilderness, harming no one';
+      }
+
+      break;
+    }
+
+    case "Queen's Gift": {
       const player = board.activePlayer;
       const free = board.tiles
         .map((t, i) => ({ t, i }))
@@ -84,7 +159,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       } else {
         player.gold += 2000;
         player.units += 5;
-        message = `King sends 2000🟡 and 5🧍 to ${player.name}`;
+        message = `Queen sends 2000🟡 and 5🧍 to ${player.name}`;
       }
 
       break;
@@ -95,5 +170,5 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   board.gameMessage = `${event}: ${message}`;
   updateGameState(board);
   setEndTurn();
-  showJokerScreen(message, event);
+  showJokerScreen(message, `${EVENT_EMOJI[event]} ${event}`);
 }
