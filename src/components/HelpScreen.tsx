@@ -119,7 +119,8 @@ const HelpScreen: React.FC = () => (
             🍺 <strong>Tavern</strong> — recruit units
           </li>
           <li>
-            🦁 <strong>Sphynx</strong> — roll: pay tribute or receive a reward.
+            🦁 <strong>Sphynx</strong>: <br />
+            Roll dice 🎲:<br /> <b>1,2</b> - lose half of your 🟡<br /><b>3,4</b>  - lose 1/3 🧍<br /> <b>5</b> - nothing, exhale 🌬️<br /> <b>6</b> - gain half of your 🟡
           </li>
           <li>
             ⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for

@@ -84,6 +84,8 @@ button.decorated {
   line-height: 1;
   padding-bottom: 7px;
   text-align: center;
+  scale: 0.9;
+  cursor: pointer;
 }
 
 .modal-content input[type='text'],
@@ -91,10 +93,11 @@ button.decorated {
   height: 32px;
   width: 40vw;
   border: solid 1px #623e1b;
-  padding: 4px 12px;
+  padding: 3px 6px 10px 6px;
   font-size: 20px;
   border-radius: 5px;
   color: #7b2d0a;
+  font-family: 'Texturina';
 }
 
 .modal-content select {

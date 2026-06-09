@@ -37,14 +37,11 @@ const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
         className="modal-content"
         style={{ maxHeight: '80vh', display: 'flex', flexDirection: 'column', minWidth: '300px' }}
       >
-        <h2>Game Log</h2>
-        <div
+        <ul
           style={{
             flex: 1,
             overflowY: 'auto',
             textAlign: 'left',
-            padding: '10px',
-            background: 'rgba(255,255,255,0.5)',
             borderRadius: '4px',
             marginBottom: '10px',
             minHeight: '200px',
@@ -55,11 +52,10 @@ const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
             .slice()
             .reverse()
             .map((msg, idx) => (
-              <div
+              <li
                 key={idx}
                 style={{
                   marginBottom: '8px',
-                  borderBottom: '1px solid #ccc',
                   paddingBottom: '4px',
                 }}
               >
@@ -71,9 +67,9 @@ const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
                 >
                   {msg.message}
                 </span>
-              </div>
+              </li>
             ))}
-        </div>
+        </ul>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <DecoratedButton onClick={onClose}>Close</DecoratedButton>
         </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
+import { getPlayerImageSrc } from '../game/PlayerOptions';
 
 export function checkCaravanEncounter(
   board: GameState,
@@ -63,6 +64,7 @@ export function checkCaravanEncounter(
   showScreen({
     screenType: 'caravan',
     background: 'assets/screens/caravan.jpg',
+    spriteImage: getPlayerImageSrc(player.image, player.fame),
     caravanDefence: defendingUnits,
     caravanPrize: prize,
     htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan<br /> ${caravanDesc}.<br /><br /> It is guarded by ${defendingUnits}🧍. Would you attack?`,

@@ -1,6 +1,6 @@
 {
   "name": "board-game-simulator",
-  "version": "0.37.0",
+  "version": "0.74.0",
   "private": true,
   "type": "module",
   "dependencies": {

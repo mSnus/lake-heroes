@@ -13,12 +13,11 @@ interface BuyUnitsModalProps {
 
 const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip }) => {
   const player = gameState.activePlayer;
-  const [amount, setAmount] = useState(0);
 
-  // The fame cap is a per-turn allowance: subtract what was already hired this
-  // visit so the limit holds even if the screen was closed and reopened.
   const maxForFame = Math.max(0, player.fame * 5 - player.unitsHiredThisTurn);
   const maxAmount = Math.min(Math.floor(player.gold / UNIT_PRICE), maxForFame);
+
+  const [amount, setAmount] = useState(maxAmount);
 
   const handleBuy = () => {
     onBuy(amount);
@@ -41,46 +40,76 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
         <h2 className="game-title">The King's Castle</h2>
         <h3>{gameState.gameMessage}</h3>
 
-        <h3>
-          With fame of {player.fame}🏆, you may recruit up to {maxAmount} units for a cost of{' '}
-          {maxAmount * UNIT_PRICE}🟡
+        <div style={{ fontFamily: 'Texturina' }}>
+          The King welcomes <span style={{ color: player.color }}>{player.name}</span>
+          <div>
+            {player.fame}🏆 {player.gold}🟡 {player.units}🧍
+          </div>
+        </div>
+
+        <h3 style={{ fontFamily: 'Texturina' }}>
+          Your money and fame are enough to recruit up to {maxAmount}🧍
+          <br />
         </h3>
 
         <div
-          className="input-group"
-          style={{ display: 'flex', gap: '1rem', justifyContent: 'center', alignItems: 'center' }}
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <button className="game-menu-button" onClick={handleInc}>
-              +
-            </button>
-            <button className="game-menu-button" onClick={handleDec}>
-              −
-            </button>
+          <div className='units-input-row'>
+            Recruit 
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(parseInt(e.target.value, 10))}
+              min="0"
+              max={maxAmount}
+              id="unitsInput"
+              style={{ width: '3rem' }}
+              className='units-input'
+            />
+            = {amount * UNIT_PRICE}🟡
+        </div>
+          <div
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+            }}
+          >
+            <div className="game-menu-small-buttons">
+              <button className="game-menu-button small silver" onClick={handleInc} disabled={amount >= maxAmount}>
+                +
+              </button>
+              <button className="game-menu-button small silver" onClick={handleDec}>
+                −
+              </button>
+            </div>
+            <div className="game-menu-amounts">
+              <button className="game-menu-button silver" onClick={handleHalf}>
+                {Math.floor(maxAmount/2)}🧍
+              </button>
+              <button className="game-menu-button silver" onClick={handleThreeQuarters}>
+                {Math.floor(maxAmount*3/4)}🧍
+              </button>
+              <button className="game-menu-button silver" onClick={handleMax}>
+                {maxAmount}🧍
+              </button>
+            </div>
           </div>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(parseInt(e.target.value, 10))}
-            min="0"
-            max={maxAmount}
-          />
-          <button className="game-menu-button" onClick={handleHalf}>
-            1/2
-          </button>
-          <button className="game-menu-button" onClick={handleThreeQuarters}>
-            3/4
-          </button>
-          <button className="game-menu-button" onClick={handleMax}>
-            Max
-          </button>
         </div>
         <div
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
         >
           <button className="game-menu-button" onClick={onSkip}>
-            Skip
+            ✖ I don't need 'em 
           </button>
 
           <button
@@ -88,7 +117,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
             onClick={handleBuy}
             disabled={amount <= 0 || amount > maxAmount}
           >
-            Buy
+            Hire {amount}🧍
           </button>
         </div>
       </div>

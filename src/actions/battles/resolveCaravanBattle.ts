@@ -28,6 +28,8 @@ export function resolveCaravanBattle(
 
   const unitLoss = perRoundUnitLoss(defence, totalRounds, results);
   if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+  
+  const unitLossMessage = unitLoss > 0 ? `And ${unitLoss}🧍 were lost in battle` : '';
 
   let message = '';
   let victoryBg = false;
@@ -48,16 +50,19 @@ export function resolveCaravanBattle(
     if (slaves) {
       attacker.units += halfPrize;
       board.gameMessage = `${attacker.name} freed ${halfPrize}🧍 from the caravan`;
-      message = `Freed ${halfPrize}🧍, but others stay in chains`;
+      message = `Freed only ${halfPrize}🧍`;
     } else {
       attacker.gold += halfPrize;
-      board.gameMessage = `${attacker.name} tied with the caravan guards, receiving ${halfPrize}🟡`;
-      message = `Caravan defence was too strong, pillaged only ${halfPrize}🟡`;
+      board.gameMessage = `${attacker.name} pillaged only ${halfPrize}🟡.`;
+      message = `Caravan guards defendce, you pillaged only ${halfPrize}🟡.`;
     }
   } else {
     board.gameMessage = `${attacker.name} failed to raid the caravan`;
     message = `The caravan got away`;
   }
+
+  board.gameMessage += unitLossMessage;
+  message += unitLossMessage;
 
   logBattleSummary(attacker, 'Caravan Guards', outcome, null, unitsBefore, goldBefore);
 
