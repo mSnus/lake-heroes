@@ -5,21 +5,21 @@ import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
-import { changeFame } from '../utils/fame';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget } from './DiceWidget';
+import {
+  BattleOutcome,
+  RoundResult,
+  roundCount,
+} from '../actions/battles/common';
+import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
+import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
+import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'attacker-roll' | 'defender-roll' | 'result';
-type BattleOutcome = 'attacker' | 'defender' | 'tie';
-
-type RoundResult = {
-  attackerRoll: number;
-  defenderRoll: number;
-  winner: 'attacker' | 'defender' | 'tie';
-};
 
 export type BattleScreenProps =
   | {
@@ -52,18 +52,6 @@ export type BattleScreenProps =
       tile?: never;
       onClose?: never;
     };
-
-function roundCount(defence: number): number {
-  return Math.max(1, Math.ceil(defence / 6));
-}
-
-function determineBattleOutcome(results: RoundResult[]): BattleOutcome {
-  const aWins = results.filter((r) => r.winner === 'attacker').length;
-  const dWins = results.filter((r) => r.winner === 'defender').length;
-  if (aWins > dWins) return 'attacker';
-  if (dWins > aWins) return 'defender';
-  return 'tie';
-}
 
 const DRAGON_UNITS = 50;
 
@@ -158,15 +146,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
     const nextRound = roundIdx + 1;
 
-    const processLostInAction = () => {
-      const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
-      const roundsLost = newResults.filter((r) => r.winner === 'defender').length;
-      const unitLoss = roundsLost * unitsPerRound;
-      if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-
-      return unitLoss;
-    }
-
     if (nextRound < totalRounds) {
       currentRoundRef.current = nextRound;
       setCurrentRound(nextRound);
@@ -174,155 +153,34 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     } else {
       // Pause briefly on the final roll before revealing the result screen.
       setTimeout(() => {
-        const o = determineBattleOutcome(newResults);
-        let msg = '';
-        const unitsBefore = attacker.units;
-        const goldBefore = attacker.gold;
+        const res = isDragon
+          ? resolveDragonBattle(gameState, attacker, defence, totalRounds, newResults)
+          : isCaravan
+            ? resolveCaravanBattle(
+                gameState,
+                attacker,
+                { prize: caravanPrize!, slaves: caravanSlaves },
+                defence,
+                totalRounds,
+                newResults
+              )
+            : resolveTileBattle(
+                gameState,
+                attacker,
+                defender,
+                tile!,
+                defence,
+                totalRounds,
+                newResults
+              );
 
-      
-
-        if (isDragon) {
-          if (o === 'attacker') {
-            gameState.gameMessage = `${attacker.name} slays the Dragon! 🐉 VICTORY!`;
-            gameState.gameOver = true;
-            msg = 'The Dragon is slain! 🐉 VICTORY!';
-            setShowVictoryBg(true);
-            setOutcome('attacker');
-          } else if (o === 'tie') {
-            const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
-            const roundsLost = newResults.filter((r) => r.winner === 'defender').length;            
-            const unitLoss = roundsLost * unitsPerRound;
-
-            if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-            
-            const lossStr = unitLoss > 0 ? `. ${unitLoss}🧍 were eaten by the Dragon` : '';
-            gameState.gameMessage = `${attacker.name} wounded the Dragon, but he escaped. ${lossStr}`;
-            msg = `The Dragon retreats, wounded${lossStr}`;
-            setShowLostBg(true);
-            setOutcome('tie');
-          } else {
-            const unitLoss = Math.ceil(attacker.units / 2);
-            const goldLoss = attacker.gold;
-            attacker.units = Math.max(0, attacker.units - unitLoss);
-            attacker.gold = 0;
-            gameState.gameMessage = `${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
-            msg = `Lost all gold and ${unitLoss}🧍`;
-            setShowLostBg(true);
-            setOutcome('defender');
-          }
-        } else if (isCaravan) {
-          const unitLoss = processLostInAction();
-          const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
-
-          if (o === 'attacker') {
-            if (caravanSlaves) {
-              attacker.units += caravanPrize!;
-              gameState.gameMessage = `${attacker.name} freed ${caravanPrize}🧍 from the slavers!`;
-              msg = `${caravanPrize}🧍 freed from the slavers join your army!`;
-            } else {
-              attacker.gold += caravanPrize!;
-              gameState.gameMessage = `${attacker.name} raided the caravan and pillaged ${caravanPrize}🟡!`;
-              msg = `Pillaged ${caravanPrize}🟡`;
-            }
-
-            setShowVictoryBg(true);
-            setOutcome('attacker');
-          } else if (o === 'tie') {
-            const halfPrize = Math.floor(caravanPrize! / 2);
-            if (caravanSlaves) {
-              attacker.units += halfPrize;
-              gameState.gameMessage = `${attacker.name} freed ${halfPrize}🧍 from the caravan`;
-              msg = `Freed ${halfPrize}🧍, but others stay in chains`;
-            } else {
-              attacker.gold += halfPrize;
-              gameState.gameMessage = `${attacker.name} tied with the caravan guards, receiving ${halfPrize}🟡`;
-              msg = `Caravan defence was too strong, pillaged only ${halfPrize}🟡`;
-            }
-
-            setOutcome('tie');
-          } else {
-            gameState.gameMessage = `${attacker.name} failed to raid the caravan`;
-            msg = `The caravan got away`;
-            setOutcome('defender');
-          }
-        } else {
-          // Attacker bleeds units on every outcome (per-round rule); a defeat
-          // also costs fame.
-          const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
-          const roundsLost = newResults.filter((r) => r.winner === 'defender').length;
-          const unitLoss = roundsLost * unitsPerRound;
-          const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
-
-          if (o === 'attacker') {
-            // Win = raze: the tile is burned to the ground, ownership cleared and
-            // its level reset, so the attacker can claim it after the battle.
-            attacker.units = Math.max(0, attacker.units - unitLoss);
-            gameState.players.forEach((p) => {
-              p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-            });
-            tile!.owner = null;
-            tile!._level = 1;
-
-            changeFame(attacker, 1);
-            if (defender) changeFame(defender, -1);
-
-            gameState.gameMessage = `${attacker.name} razed ${tile!.name} to the ground${lossStr}! The land lies open to claim.`;
-            msg = `${attacker.name} razes ${tile!.name}${lossStr}! Claim the open land now.`;
-
-            setShowVictoryBg(true);
-            setOutcome('attacker');
-          } else if (o === 'defender') {
-            // Loss = fame penalty plus the units lost in the failed assault.
-            attacker.units = Math.max(0, attacker.units - unitLoss);
-            changeFame(attacker, -1);
-            gameState.gameMessage = `${attacker.name} lost the battle for ${tile!.name}${lossStr}`;
-            msg = `${attacker.name} retreats from ${tile!.name}${lossStr}`;
-            setOutcome('defender');
-          } else {
-            // Tie = no fee paid, and the defender's tile drops a level.
-            attacker.units = Math.max(0, attacker.units - unitLoss);
-            if (tile!.level > 1) {
-              tile!._level = tile!.level - 1;
-              gameState.gameMessage = `${attacker.name}'s assault degraded ${tile!.name} to level ${tile!.level}${lossStr}`;
-              msg = `No fee paid and ${tile!.name} degraded${lossStr}`;
-            } else {
-              gameState.gameMessage = `${attacker.name}'s army retreats${lossStr}`;
-              msg = `${attacker.name}'s army retreats${lossStr}`;
-            }
-            if (unitLoss > 0) setShowLostBg(true);
-            setOutcome('tie');
-          }
-        }
-
-        // Single summary log entry
-        const outcomeVerb =
-          o === 'attacker' ? 'wins a battle' : o === 'defender' ? 'loses a battle' : 'ties';
-        const capturePart = o === 'attacker' && tile ? `, razed ${tile.name}` : '';
-        const unitsAfter = attacker.units;
-        const goldAfter = attacker.gold;
-        const unitDiff = unitsBefore - unitsAfter;
-        const goldDiff = goldAfter - goldBefore;
-        const unitsPart =
-          unitDiff > 0
-            ? `, lost ${unitDiff}🧍 (${unitsBefore}→${unitsAfter})`
-            : unitDiff < 0
-              ? `, gained ${-unitDiff}🧍 (${unitsBefore}→${unitsAfter})`
-              : '';
-        const goldPart =
-          goldDiff > 0
-            ? `, gained ${goldDiff}🟡`
-            : goldDiff < 0
-              ? `, lost ${-goldDiff}🟡 (${goldBefore}→${goldAfter})`
-              : '';
-        const logLevel = o === 'attacker' ? 'success' : o === 'defender' ? 'error' : 'info';
-        say(
-          `⚔️ ${attacker.name} ${outcomeVerb} with ${defenderLabel}${capturePart}${unitsPart}${goldPart}`,
-          logLevel
-        );
+        setOutcome(res.outcome);
+        if (res.victoryBg) setShowVictoryBg(true);
+        if (res.lostBg) setShowLostBg(true);
 
         markScreenResolved();
         updateGameState(gameState);
-        setResultMsg(msg);
+        setResultMsg(res.message);
         setPhase('result');
       }, 500);
     }

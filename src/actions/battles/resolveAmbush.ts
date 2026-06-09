@@ -1,8 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
-
-type RoundResult = { winner: 'attacker' | 'defender' | 'tie' };
+import { RoundResult } from './common';
 
 export type AmbushOutcome = 'win' | 'defeat' | 'tie';
 

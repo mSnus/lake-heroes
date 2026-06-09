@@ -8,16 +8,10 @@ import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget } from './DiceWidget';
 import { resolveAmbush } from '../actions/battles/resolveAmbush';
+import { RoundResult, roundCount } from '../actions/battles/common';
 import '../styles/BattleScreen.css';
 
 type Phase = 'attacker-roll' | 'defender-roll' | 'result';
-
-export type RoundResult = {
-  attackerRoll: number;
-  defenderRoll: number;
-  // 'attacker' = the ambushers won the round, 'defender' = the player did.
-  winner: 'attacker' | 'defender' | 'tie';
-};
 
 interface AmbushScreenProps {
   player: Player;
@@ -25,10 +19,6 @@ interface AmbushScreenProps {
   gameState: GameState;
   updateGameState: (gs: GameState) => void;
   onClose: () => void;
-}
-
-function roundCount(force: number): number {
-  return Math.max(1, Math.ceil(force / 6));
 }
 
 const ATTACKER_IMG = 'assets/figures/npc-saracen.png';
