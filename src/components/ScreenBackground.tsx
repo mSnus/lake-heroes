@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/screen.css';
 
 interface ScreenBackgroundProps {
   image: string;
@@ -7,18 +8,9 @@ interface ScreenBackgroundProps {
 
 export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({ image, children }) => (
   <div
+    className='screen-common'
     style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 5500,
       backgroundImage: `url(${image})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      animation: 'screenFadeIn 0.4s ease',
     }}
   >
     {children}

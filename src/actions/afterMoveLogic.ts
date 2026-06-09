@@ -1,8 +1,9 @@
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { becomeBeggar } from './becomeBeggar';
-import { showScreen, showPrisonScreen, clearScreen, ScreenButton } from '../utils/screenStore';
+import { showScreen, showPrisonScreen, ScreenButton } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { say } from '../utils/say';
 import { payFee } from './payFee';
 import { fightTile } from './fightTile';
 
@@ -26,8 +27,18 @@ export function afterMoveLogic(
   if (tile.isOwned() && tile.owner !== player.name) {
     const owner = board.players.find((p) => p.name === tile.owner);
 
-    // A jailed owner can't collect a fee, so paying is replaced by a free pass.
-    const ownerInPrison = !!(owner && (owner.turnsToSkip ?? 0) > 0);
+    // A jailed owner can't collect a fee or defend their land. They count as
+    // imprisoned while sitting on the Prison tile (turnsToSkip can already be 0
+    // in the turn before they roll out). Landing players simply pass for free.
+    const ownerInPrison =
+      !!owner &&
+      ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.name === 'Prison');
+
+    if (ownerInPrison) {
+      say(`While ${owner!.name} is in prison, others send him flowers 🌹 while visiting his property`, 'info');
+      setEndTurn();
+      return;
+    }
 
     const fee = tile.fee;
     const defence = tile.defence;
@@ -72,20 +83,12 @@ export function afterMoveLogic(
       encounter,
     };
 
-    const feeButton: ScreenButton = ownerInPrison
-      ? {
-          label: `Send him flowers 🌹 to the prison`,
-          onClick: () => {
-            clearScreen();
-            setEndTurn();
-          },
-        }
-      : {
-          label: `Pay fee ${fee}🟡`,
-          action: 'pay-fee',
-          onClick: () => payFee(board, updateGameState),
-          disabled: player.gold < fee,
-        };
+    const feeButton: ScreenButton = {
+      label: `Pay fee ${fee}🟡`,
+      action: 'pay-fee',
+      onClick: () => payFee(board, updateGameState),
+      disabled: player.gold < fee,
+    };
 
     const baseButtons: ScreenButton[] = [
       feeButton,
@@ -110,7 +113,7 @@ export function afterMoveLogic(
     };
 
     const extraButtons: ScreenButton[] = [];
-    if (!ownerInPrison && canSell) {
+    if (canSell) {
       const sellModeConfig = {
         ...baseConfig,
         sellMode: true,
@@ -124,7 +127,7 @@ export function afterMoveLogic(
       });
     }
 
-    if (!ownerInPrison && showAcceptLoss) extraButtons.push(acceptLossButton);
+    if (showAcceptLoss) extraButtons.push(acceptLossButton);
     showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
     return;
   }

@@ -67,11 +67,12 @@ export function checkCaravanEncounter(
     spriteImage: getPlayerImageSrc(player.image, player.fame),
     caravanDefence: defendingUnits,
     caravanPrize: prize,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> encounters a caravan<br /> ${caravanDesc}.<br /><br /> It is guarded by ${defendingUnits}🧍. Would you attack?`,
+    fade: true,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span><br /> encounters a caravan<br /> ${caravanDesc}.<br /><br /> It is guarded by ${defendingUnits}🧍. Would you attack?`,
     buttons: [
-      { label: 'Attack!', onClick: startBattle },
+      { label: '⚔️ Attack!', onClick: startBattle },
       {
-        label: 'Let it pass..',
+        label: '✖ Let \'em pass..',
         onClick: () => {
           clearScreen();
           onContinue();
