@@ -68,7 +68,7 @@
 }
 
 button.decorated {
-  margin: 0 5px;
+  margin: 0 auto;
   border: none;
   background: transparent;
   background-repeat: no-repeat;
@@ -83,6 +83,7 @@ button.decorated {
   font-family: 'Texturina';
   line-height: 1;
   padding-bottom: 7px;
+  text-align: center;
 }
 
 .modal-content input[type='text'],

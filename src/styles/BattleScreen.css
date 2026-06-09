@@ -107,11 +107,11 @@
   text-shadow: 1px 1px 4px #000;
 }
 
-.battle-round-result-icon>div:nth-child(1) {
+.battle-round-result-icon > div:nth-child(1) {
   font-size: 1.8rem;
 }
 
-.battle-round-result-icon>div:nth-child(2) {
+.battle-round-result-icon > div:nth-child(2) {
   font-size: 0.9rem;
 }
 

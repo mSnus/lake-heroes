@@ -16,8 +16,8 @@
   color: #ebe5d5;
 }
 
-.help-screen-header, 
- .help-screen-body h3{
+.help-screen-header,
+.help-screen-body h3 {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;

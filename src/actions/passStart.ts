@@ -14,6 +14,8 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   player.caravanEncounters = 0;
   console.log('Action: pass start for', player.name);
 
+  say(`${player.name} spent ${player.circles} years wandering, looking for a glory`, 'debug');
+
   // Calculate profits from owned tiles based on their bonusType and level
   let goldProfit = 0;
   let unitsProfit = 0;
@@ -49,10 +51,8 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   say(`${player.name} receives ${summary}`, 'success');
 
   if (!board.activeTile.name.toLowerCase().startsWith('king')) {
-    const years = player.circles < 3 ? "a year" : `${player.circles - 1} years`;
+    const years = player.circles < 3 ? 'a year' : `${player.circles - 1} years`;
     board.gameMessage = `The King rewards you with ${summary} for ${years} of your service and properties`;
-
-    say(`${player.name} is serving the state for ${player.circles - 1} years already!`, 'debug');
   }
 
   updateGameState(board);

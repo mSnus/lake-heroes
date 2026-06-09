@@ -12,13 +12,18 @@ export function handleTreasureBox(
   if (!board) return;
   console.log('Action: treasure box');
 
-  const MULTIPLIER_CIRCLES_START = 1.;
+  const MULTIPLIER_CIRCLES_START = 1;
   const MULTIPLIER_CIRCLES_6 = 2;
   const MULTIPLIER_CIRCLES_12 = 2.5;
 
   const player = board.activePlayer;
   const circles = player.circles ?? 0;
-  const circleMultiplier = circles >= 12 ? MULTIPLIER_CIRCLES_12 : circles >= 6 ? MULTIPLIER_CIRCLES_6 : MULTIPLIER_CIRCLES_START;
+  const circleMultiplier =
+    circles >= 12
+      ? MULTIPLIER_CIRCLES_12
+      : circles >= 6
+        ? MULTIPLIER_CIRCLES_6
+        : MULTIPLIER_CIRCLES_START;
   const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier);
 
   player.gold += goldReward;

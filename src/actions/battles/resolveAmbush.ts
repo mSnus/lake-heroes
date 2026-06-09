@@ -78,7 +78,12 @@ export function resolveAmbush(
   const unitsPart = unitDiff > 0 ? `, lost ${unitDiff}🧍` : '';
   const goldPart =
     goldDiff > 0 ? `, gained ${goldDiff}🟡` : goldDiff < 0 ? `, lost ${-goldDiff}🟡` : '';
-  const verb = outcome === 'win' ? 'repels an ambush' : outcome === 'defeat' ? 'is ambushed' : 'survives an ambush';
+  const verb =
+    outcome === 'win'
+      ? 'repels an ambush'
+      : outcome === 'defeat'
+        ? 'is ambushed'
+        : 'survives an ambush';
   say(
     `${player.name} ${verb}${unitsPart}${goldPart}`,
     outcome === 'win' ? 'success' : outcome === 'defeat' ? 'error' : 'info'

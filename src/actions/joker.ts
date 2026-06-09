@@ -130,8 +130,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       // A meteor strikes one of the richest player's tiles, razing it.
       const richest = richestPlayer(board);
       if (richest && richest.ownedTiles.length > 0) {
-        const targetIdx =
-          richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
+        const targetIdx = richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
         const t = board.tiles[targetIdx];
         t.owner = null;
         t._level = 1;

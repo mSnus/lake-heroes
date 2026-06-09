@@ -59,7 +59,8 @@ export function logBattleSummary(
 ): void {
   const outcomeVerb =
     outcome === 'attacker' ? 'wins a battle' : outcome === 'defender' ? 'loses a battle' : 'ties';
-  const capturePart = outcome === 'attacker' && capturedTileName ? `, razed ${capturedTileName}` : '';
+  const capturePart =
+    outcome === 'attacker' && capturedTileName ? `, razed ${capturedTileName}` : '';
   const unitsAfter = attacker.units;
   const goldAfter = attacker.gold;
   const unitDiff = unitsBefore - unitsAfter;

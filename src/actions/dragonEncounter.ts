@@ -21,8 +21,7 @@ export function checkDragonEncounter(
 ): boolean {
   const player = board.activePlayer;
 
-  const ATTACK_CHANCE = player.fame > FAME_THRESHOLD_ATTACK ? 1/2 : 1 / 3;
-
+  const ATTACK_CHANCE = player.fame > FAME_THRESHOLD_ATTACK ? 1 / 2 : 1 / 3;
 
   if ((player.circles ?? 0) <= 2) {
     return false;
@@ -63,7 +62,7 @@ export function checkDragonEncounter(
   } else {
     updateGameState(board);
     showDragonChallengeScreen(
-      `The Dragon descends from the skies upon <span style="color:${player.color}">${player.name}</span>! ${player.units} warriors stand ready. Face it or flee?`,
+      `The Dragon descends from the skies upon <span style="color:${player.color}">${player.name}</span>!`,
       () => fightDragon(board, updateGameState),
       onContinue,
       'Flee! 🏃'
@@ -108,7 +107,7 @@ function handleWeakPlayerAttack(
   } else {
     const tile = board.tiles[mostExpensiveIdx];
     const tileName = tile.name;
-    message = `Dragon attacks your ${tileName} and destroys it`;
+    message = `Dragon burns your ${tileName}!`;
 
     if (tile.level === 1) {
       tile.owner = null;

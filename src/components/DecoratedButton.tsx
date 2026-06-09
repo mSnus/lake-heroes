@@ -1,7 +1,6 @@
 import React from 'react';
 
-interface DecoratedButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface DecoratedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Background image for the decorated button. Defaults to assets/button.png. */
   image?: string;
 }

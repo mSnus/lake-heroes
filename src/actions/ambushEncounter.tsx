@@ -11,10 +11,9 @@ export function checkAmbushEncounter(
 ): boolean {
   const player = board.activePlayer;
   const ENCOUNTER_CHANCE = 1 / 14;
+  const ENCOUNTER_FAME = 3;
 
-  // Only knights (fame above KNIGHT_FAME) are worth ambushing.
-  if (player.fame < KNIGHT_FAME) return false;
-  // Need a meaningful force to be worth ambushing.
+  if (player.fame < 3) return false;
   if (player.units < 5) return false;
   if (Math.random() >= ENCOUNTER_CHANCE) return false;
 

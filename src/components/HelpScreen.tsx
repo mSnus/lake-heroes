@@ -66,7 +66,9 @@ const HelpScreen: React.FC = () => (
         <ul>
           <li>
             <strong>Discover</strong> new tiles and get rewarded for that
-            <div className="tile-sprite-container"><div className="tile-sprite tile-sprite-unowned"></div></div>
+            <div className="tile-sprite-container">
+              <div className="tile-sprite tile-sprite-unowned"></div>
+            </div>
           </li>
 
           <li>
@@ -155,13 +157,18 @@ const HelpScreen: React.FC = () => (
 
         <h3>Battle ⚔️</h3>
         <ul>
-          <li>The attacker sends a <strong>squad of units in amount equal to Defence  value</strong>, risking their lifes for some goal</li>
           <li>
-            <strong>Rounds:</strong> Combat is resolved in rounds. Each round both sides roll; higher roll wins the round.Attacker loses units on each unsuccessfull round.
+            The attacker sends a <strong>squad of units in amount equal to Defence value</strong>,
+            risking their lifes for some goal
+          </li>
+          <li>
+            <strong>Rounds:</strong> Combat is resolved in rounds. Each round both sides roll;
+            higher roll wins the round.Attacker loses units on each unsuccessfull round.
           </li>
           <li>The bigger is the Defence value, the more rounds happen</li>
           <li>
-            The battle is won ⚔️ if most of the rounds are won, otherwise it's lost ☠️ . Equal number of lost/won rounds leads to Tie 🛡️
+            The battle is won ⚔️ if most of the rounds are won, otherwise it's lost ☠️ . Equal
+            number of lost/won rounds leads to Tie 🛡️
           </li>
         </ul>
 

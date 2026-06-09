@@ -42,7 +42,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
         <h3>{gameState.gameMessage}</h3>
 
         <h3>
-          With fame of {player.fame}🏆, you may recruit up to {maxAmount} units for a cost of {maxAmount * UNIT_PRICE}🟡
+          With fame of {player.fame}🏆, you may recruit up to {maxAmount} units for a cost of{' '}
+          {maxAmount * UNIT_PRICE}🟡
         </h3>
 
         <div

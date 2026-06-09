@@ -446,7 +446,7 @@ export const TileCard: React.FC<TileCardProps> = ({
               >
                 <div
                   onClick={() => (canUpgrade ? handleUpgrade() : handleInfoClick())}
-                  className={'tile-card-button' + (canUpgrade || demoMode  ? '' : ' disabled')}
+                  className={'tile-card-button' + (canUpgrade || demoMode ? '' : ' disabled')}
                 >
                   <div className="big-icon-hint">
                     <div>⬆️</div>

@@ -484,14 +484,16 @@ function App() {
                   textShadow: '1px 1px 6px #000',
                 }}
               >
-                Oh mighty <span style={{ color: winner.color }}>{winner.name}</span>,<br/>
-                it took you {years}{' '} years to slain that dragon!<br /> 
-                <i>Boromir would do it in only {years-1}...</i><br /> 
-                <br/>
+                Oh mighty <span style={{ color: winner.color }}>{winner.name}</span>,<br />
+                it took you {years} years to slain that dragon!
+                <br />
+                <i style={{fontSize: '0.8rem', fontFamily: 'Texturina'}}>Boromir would do it in only {years - 1}...</i>
+                <br />
+                <br />
                 You leave that kingdom <br />
-                with a fame of {winner.fame}🏆 and{' '}
-                {totalGold.toLocaleString()}🟡<br/>
-                <br/>
+                with a fame of {winner.fame}🏆 and {totalGold.toLocaleString()}🟡
+                <br />
+                <br />
                 Congratulations! Time for a new challenge!
               </div>
               <DecoratedButton

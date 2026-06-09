@@ -24,12 +24,12 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   if (player.units < 0) player.units = 0;
 
   // 3. Player looses all gold
-  player.gold = 0
+  player.gold = 0;
 
   say(`${loss} units leave ${player.name} as his reputation vanishes`, 'warning');
   changeFame(player, -1);
 
-  // 4. Moved to prison 
+  // 4. Moved to prison
   // Prison index is 13.
   player.position = 13;
   player.turnsToSkip = 1;
