@@ -18,6 +18,22 @@
   overflow-x: scroll;
 }
 
+/* Each tile group is laid out in the same direction as the cards pane. */
+.owned-group {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+/* Owning a whole group (a syndicate) frames it in gold. */
+.owned-group-syndicate {
+  border: dotted 3px gold;
+  border-radius: 8px;
+  padding: 6px;
+}
+
 .player-stats-container {
   margin-top: 20px;
   width: 100%;
@@ -88,5 +104,9 @@
     width: 50vw;
     box-sizing: border-box;
     float: right;
+  }
+
+  .owned-group {
+    flex-direction: column;
   }
 }

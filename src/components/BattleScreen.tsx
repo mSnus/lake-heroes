@@ -9,11 +9,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget } from './DiceWidget';
-import {
-  BattleOutcome,
-  RoundResult,
-  roundCount,
-} from '../actions/battles/common';
+import { BattleOutcome, RoundResult, roundCount } from '../actions/battles/common';
 import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
@@ -103,10 +99,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       : isDragon
         ? 'the kingdom'
         : tile!.name;
-    say(
-      `⚔️ ${attacker.name} attacks ${defenderLabel} for ${goal}, ${attacker.units}🧍 vs ${defence}🧍!`,
-      'info'
-    );
+    say(`${attacker.name} attacks ${defenderLabel}'s ${defence}🧍 for ${goal}`, 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -278,10 +271,17 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <div className="bc-roll bc-roll-attacker">🎲 {r.attackerRoll}</div>
               <div className="battle-round-result">
                 <div className="battle-round-result-icon">
-                  <div>
-                    {r.winner === 'attacker' ? '⚔️' : r.winner === 'tie' ? '🛡️' : '☠️'}
-                  </div>
-                  <div style={{ color: r.winner === 'attacker' ? attacker.color : r.winner === 'defender' ? defenderColor : 'white' }}>
+                  <div>{r.winner === 'attacker' ? '⚔️' : r.winner === 'tie' ? '🛡️' : '☠️'}</div>
+                  <div
+                    style={{
+                      color:
+                        r.winner === 'attacker'
+                          ? attacker.color
+                          : r.winner === 'defender'
+                            ? defenderColor
+                            : 'white',
+                    }}
+                  >
                     {r.winner === 'attacker' ? 'victory' : r.winner === 'tie' ? 'tie' : 'loss'}
                   </div>
                 </div>

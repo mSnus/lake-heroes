@@ -125,11 +125,6 @@
   box-shadow: inset 0px 0px 15px rgb(127 127 127);
 }
 
-/* Tiles whose owner holds the whole group (a syndicate) are framed in gold. */
-.tile-sprite-syndicate {
-  border: dotted 3px gold;
-}
-
 .tile-sprite-unowned {
   background-image: url(/assets/fog.png); 
   background-size: cover; 

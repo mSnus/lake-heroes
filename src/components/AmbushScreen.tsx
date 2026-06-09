@@ -52,7 +52,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
     if (loggedStartRef.current) return;
     loggedStartRef.current = true;
     say(
-      `🏹 ${player.name} is ambushed! ${attackerUnits}🧍 strike at ${player.units}🧍.`,
+      `${player.name} is ambushed! ${attackerUnits}🧍 attack from the cover`,
       'warning'
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -9,7 +9,6 @@ import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
 import { handleKingCastle } from '../actions/king';
-import { syndicateMultiplier } from '../game/syndicate';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -81,9 +80,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const ownerColor = owner?.color || '#444';
     const ownerShadow = tile.isOwned() ? ownerColor + ' 0px 0px 0px 4px inset' : 'none';
 
-    // Tiles belonging to a completed syndicate get a gold frame.
-    const isSyndicateTile = !!owner && syndicateMultiplier(board, owner, tile.group) > 1;
-
     return (
       <div
         key={`tile-${i}`}
@@ -121,7 +117,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                   {(tile.spriteImage || isFogged) && (
                     <div className={tileSizeClass}>
                       <div
-                        className={`tile-sprite ${ownedClass}${isSyndicateTile ? ' tile-sprite-syndicate' : ''}`}
+                        className={`tile-sprite ${ownedClass}`}
                         style={
                           isFogged
                             ? undefined
