@@ -28,8 +28,8 @@ export function resolveCaravanBattle(
 
   const unitLoss = perRoundUnitLoss(defence, totalRounds, results);
   if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-  
-  const unitLossMessage = unitLoss > 0 ? `And ${unitLoss}🧍 were lost in battle` : '';
+
+  const unitLossMessage = unitLoss > 0 ? `, ${unitLoss}🧍 were lost in battle` : '';
 
   let message = '';
   let victoryBg = false;

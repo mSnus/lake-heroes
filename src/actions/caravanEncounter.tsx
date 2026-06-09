@@ -58,8 +58,8 @@ export function checkCaravanEncounter(
   };
 
   const caravanDesc = isSlaves
-    ? `bringing ${prize}🧍 in chains`
-    : `bringing gold and jewels worth ${prize}🟡`;
+    ? `of ${prize}🧍 in chains`
+    : `of gold and jewels worth ${prize}🟡`;
 
   showScreen({
     screenType: 'caravan',
@@ -68,9 +68,8 @@ export function checkCaravanEncounter(
     caravanDefence: defendingUnits,
     caravanPrize: prize,
     fade: true,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span><br /> encounters a caravan<br /> ${caravanDesc}.<br /><br /> It is guarded by ${defendingUnits}🧍. Would you attack?`,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span><br /> encounters a caravan<br /> ${caravanDesc},<br /> guarded by ${defendingUnits}🛡️<br /> Would you attack?`,
     buttons: [
-      { label: '⚔️ Attack!', onClick: startBattle },
       {
         label: '✖ Let \'em pass..',
         onClick: () => {
@@ -78,6 +77,7 @@ export function checkCaravanEncounter(
           onContinue();
         },
       },
+      { label: '⚔️ Attack!', onClick: startBattle },
     ],
   });
 

@@ -7,7 +7,9 @@ const GameMessage: React.FC<{ message: string }> = ({ message }) => {
   if (!message || dismissed) return <div />;
   return (
     <div className="game-message" onClick={() => setDismissed(true)}>
-      {message}
+      <div className='game-message-text'>
+        {message}
+      </div>
     </div>
   );
 };
