@@ -48,9 +48,9 @@ export function handleSphynx(
     message += `Nothing happens.`;
     gameState.gameMessage = `Sphynx remained silent. Nothing happened.`;
   } else if (roll === 6) {
-    // Gain 20% gold, rounded up to nearest 100
+    // Gain 20% gold, rounded up to nearest 100, with a floor of 800
     const bonusBase = player.gold * 0.2;
-    const gain = Math.ceil(bonusBase / 100) * 100;
+    const gain = Math.max(800, Math.ceil(bonusBase / 100) * 100);
     player.gold += gain;
     message += `Received ${gain}🟡 (20%).`;
     gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
