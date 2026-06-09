@@ -66,7 +66,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isDragon
       ? DRAGON_UNITS
       : (tile?.defence ?? 1);
-  const totalRounds = isDragon ? 7 : roundCount(defence);
+  const totalRounds = isDragon ? 5 : roundCount(defence);
 
   const [currentRound, setCurrentRound] = useState(0);
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');

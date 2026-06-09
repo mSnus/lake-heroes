@@ -101,7 +101,7 @@ body {
   text-align: center;
   background: linear-gradient(90deg, #3f591e, #6b8e23);
   width: 100vw;
-  padding-left: 26px;
+  padding-left: 27px;
   box-sizing: border-box;
   z-index: 999;
   height: 48px;
@@ -116,7 +116,7 @@ body {
   font-size: 15px;
   padding: 10px 9px;
   font-weight: 500;
-  padding-right: 52px;
+  padding-right: 54px;
 }
 
 .board-section {

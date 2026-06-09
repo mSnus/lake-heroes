@@ -248,7 +248,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <button className="game-menu-button" onClick={handleClose}>
-              🩸 Move on
+              Ride on
             </button>
           </div>
         )}

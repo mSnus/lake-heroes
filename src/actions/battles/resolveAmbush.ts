@@ -53,8 +53,8 @@ export function resolveAmbush(
     player.units = Math.max(0, player.units - unitLoss);
 
     const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
-    board.gameMessage = `${player.name} repels the ambush, slaying ${killed}🧍 for ${reward}🟡${lossStr}`;
-    message = `Ambush repelled! Slew ${killed}🧍 for ${reward}🟡${lossStr}`;
+    board.gameMessage = `${player.name} repels the ambush, receiving ${reward}🟡${lossStr}`;
+    message = `Ambush repelled! Your reward is ${reward}🟡${lossStr}`;
   } else if (outcome === 'tie') {
     const unitLoss = Math.min(player.units, Math.floor(attackerUnits * 0.5));
     player.units = Math.max(0, player.units - unitLoss);

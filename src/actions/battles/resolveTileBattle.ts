@@ -49,8 +49,8 @@ export function resolveTileBattle(
     changeFame(attacker, 1);
     if (defender) changeFame(defender, -1);
 
-    board.gameMessage = `${attacker.name} razed ${tile.name} to the ground${lossStr}! The land lies open to claim.`;
-    message = `${attacker.name} razes ${tile.name}${lossStr}! Claim the open land now.`;
+    board.gameMessage = `${attacker.name} razed ${tile.name}${lossStr}! Claim it if you can.`;
+    message = `${attacker.name} razes ${tile.name}${lossStr}!`;
     victoryBg = true;
   } else if (outcome === 'defender') {
     changeFame(attacker, -1);

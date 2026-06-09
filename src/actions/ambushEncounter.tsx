@@ -39,8 +39,9 @@ export function checkAmbushEncounter(
     screenType: 'ambush',
     background: 'assets/screens/caravan.jpg',
     title: 'Ambush',
+    fade: true,
     spriteImage: 'assets/figures/npc-saracen.png',
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> is ambushed!<br /><br />A squad of ${attackerUnits}🧍 suddenly attacks. Fight for your lives!`,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span> is ambushed!<br />A squad of ${attackerUnits}🥷 suddenly attacks. Fight for your lifes!`,
     buttons: [{ label: 'Defend', onClick: startBattle }],
   });
 
