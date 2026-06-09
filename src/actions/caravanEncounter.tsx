@@ -33,8 +33,9 @@ export function checkCaravanEncounter(
 
   const defendingUnits = Math.floor((0.7 + Math.random() * 0.3) * player.units);
   const isSlaves = Math.random() < 0.4;
+  // Slave caravans carry at least 1.2× the guards in chains (1.2×–1.5×).
   const prize = isSlaves
-    ? Math.max(1, Math.floor(defendingUnits * (0.5 + Math.random() * 0.3)))
+    ? Math.max(1, Math.ceil(defendingUnits * (1.2 + Math.random() * 0.3)))
     : 100 * defendingUnits * (Math.floor(Math.random() * 2.5) + 1);
 
   const startBattle = () => {
@@ -68,7 +69,8 @@ export function checkCaravanEncounter(
     caravanDefence: defendingUnits,
     caravanPrize: prize,
     fade: true,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span><br /> encounters a caravan<br /> ${caravanDesc},<br /> guarded by ${defendingUnits}🛡️<br /> Would you attack?`,
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span><br /> encounters a caravan<br /> ${caravanDesc},
+    <br /> guarded by ${defendingUnits}🥷<br /> Would you attack?`,
     buttons: [
       {
         label: '✖ Let \'em pass..',

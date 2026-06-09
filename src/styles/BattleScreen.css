@@ -7,6 +7,7 @@
   max-width: 480px;
   padding: 16px;
   z-index: 6000;
+  margin-top: -8rem;
 }
 
 .battle-header {
@@ -54,7 +55,7 @@
   display: contents;
 }
 
-.battle-action-row > div {
+.battle-action-row>div {
   text-align: center;
 }
 
@@ -107,11 +108,11 @@
   text-shadow: 1px 1px 4px #000;
 }
 
-.battle-round-result-icon > div:nth-child(1) {
+.battle-round-result-icon>div:nth-child(1) {
   font-size: 1.8rem;
 }
 
-.battle-round-result-icon > div:nth-child(2) {
+.battle-round-result-icon>div:nth-child(2) {
   font-size: 0.9rem;
 }
 

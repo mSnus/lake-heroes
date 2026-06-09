@@ -196,7 +196,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
                             : 'white',
                     }}
                   >
-                    {r.winner === 'defender' ? 'held' : r.winner === 'tie' ? 'clash' : 'breach'}
+                    {r.winner === 'defender' ? 'repelled' : r.winner === 'tie' ? 'victory' : 'defeated'}
                   </div>
                 </div>
               </div>
@@ -248,7 +248,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <button className="game-menu-button" onClick={handleClose}>
-              Ride on
+              🧭 Ride on
             </button>
           </div>
         )}

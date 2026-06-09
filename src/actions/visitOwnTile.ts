@@ -15,7 +15,7 @@ export function handleVisitOwnTile(
   console.log('Action: visit own tile', player, tile);
 
   const mult = syndicateMultiplier(board, player, tile.group);
-  const syndicateTag = mult > 1 ? ' (Syndicate ×2)' : '';
+  const syndicateTag = mult > 1 ? ' (💰×2)' : '';
 
   const rewards = [];
   if (tile.bonusType === 'gold') {
