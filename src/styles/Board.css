@@ -131,7 +131,7 @@
 }
 
 .tile-sprite-unowned {
-  background-image: url(assets/fog.png); 
+  background-image: url(/assets/fog.png); 
   background-size: cover; 
   border-radius: 50%; 
   box-shadow: none;
