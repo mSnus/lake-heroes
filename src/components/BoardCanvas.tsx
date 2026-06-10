@@ -162,6 +162,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           top: pos.y - offsetY + '%',
           left: pos.x - offsetX + shiftOffset + '%',
         }}
+        onClick={(e) => {
+          e.stopPropagation();
+          gameEvent('displayPlayer', player);
+        }}
       >
         <div className="player-col">
           <img

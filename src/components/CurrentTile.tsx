@@ -12,6 +12,8 @@ interface CurrentTileProps {
 export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameState }) => {
   const [displayedTile, setDisplayedTile] = useState<Tile | null>(null);
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(true);
+  // Hidden while the player card is shown (the two cards are mutually exclusive).
+  const [playerShown, setPlayerShown] = useState<boolean>(false);
 
   const currentTile = gameState.activeTile;
 
@@ -20,6 +22,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
       const detail = (e as CustomEvent).detail as Tile | null;
       console.log('✉️ displayTile received', detail);
 
+      setPlayerShown(false);
       if (detail && detail.name) {
         setDisplayedTile(detail);
         setShouldDisplay(true);
@@ -29,8 +32,17 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
       }
     }
 
+    function onDisplayPlayer(e: Event) {
+      const detail = (e as CustomEvent).detail as { name?: string } | null;
+      if (detail && detail.name) setPlayerShown(true);
+    }
+
     window.addEventListener('displayTile', onDisplayTile as EventListener);
-    return () => window.removeEventListener('displayTile', onDisplayTile as EventListener);
+    window.addEventListener('displayPlayer', onDisplayPlayer as EventListener);
+    return () => {
+      window.removeEventListener('displayTile', onDisplayTile as EventListener);
+      window.removeEventListener('displayPlayer', onDisplayPlayer as EventListener);
+    };
   }, []);
 
   // Buy is only offered for the active tile (where the active player stands),
@@ -46,8 +58,9 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   //   onClick: () => buyTile(board, updateGameState),
 
   const isVisible =
-    (shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move')) ||
-    (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned());
+    !playerShown &&
+    ((shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move')) ||
+      (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned()));
   const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
   const ownerPlayer = shownTile?.owner
     ? gameState.players.find((p) => p.id === shownTile.owner)

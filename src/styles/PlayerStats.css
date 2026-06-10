@@ -1,0 +1,17 @@
+.player-stats {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.player-stat {
+  font-size: 1rem;
+}
+
+.player-stat-fame {
+  color: goldenrod;
+  letter-spacing: -2px;
+}

@@ -9,6 +9,7 @@ import { GameState, TurnPhase } from './game/GameState';
 import { Tile, TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
 import { PlayerLabel } from './components/PlayerLabel';
+import { CurrentPlayerCard } from './components/CurrentPlayerCard';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
@@ -522,6 +523,7 @@ function App() {
           <div className="board-section">
             {!screen && <GameMessage message={gameState.gameMessage} />}
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
+            <CurrentPlayerCard />
             <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
             <ShieldColumn
