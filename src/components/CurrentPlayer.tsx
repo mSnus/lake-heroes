@@ -4,6 +4,7 @@ import '../styles/CurrentPlayer.css';
 import { Tile } from '../game/Tile';
 import { MONEY_PASS_START } from './board/common';
 import { say } from '../utils/say';
+import { PlayerLabel } from './PlayerLabel';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -46,7 +47,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         }}
         className="current-player"
       >
-        <span style={{ color: activePlayer.color }}>{activePlayer.name} </span>
+        <PlayerLabel player={activePlayer} />
         {/* fame */}
         <div
           className="player-stats-fame"

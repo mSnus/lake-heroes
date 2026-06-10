@@ -1,0 +1,17 @@
+.player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.player-card-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 4px #000;
+  white-space: nowrap;
+}

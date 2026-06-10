@@ -8,6 +8,7 @@ import { Player } from './game/Player';
 import { GameState, TurnPhase } from './game/GameState';
 import { Tile, TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
+import { PlayerLabel } from './components/PlayerLabel';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { say } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
@@ -488,7 +489,7 @@ function App() {
                   fontFamily: 'Texturina',
                 }}
               >
-                Oh mighty <span style={{ color: winner.color }}>{winner.name}</span>,<br />
+                Oh mighty <PlayerLabel player={winner} />,<br />
                 it took you {years} years to slain that dragon!
                 <br />
                 <i style={{ fontSize: '0.8rem', fontFamily: 'Texturina' }}>

@@ -6,6 +6,7 @@ import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { OwnedTiles } from './OwnedTiles';
 import { DecoratedButton } from './DecoratedButton';
+import { PlayerLabel } from './PlayerLabel';
 import { gameEvent } from '../utils/events';
 
 interface ScreenRendererProps {
@@ -55,9 +56,8 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         )}
         {config.encounter && (
           <div className="text-message">
-            <strong style={{ color: config.encounter.playerColor }}>
-              {config.encounter.playerName}
-            </strong>
+            <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />
+
             {config.encounter?.gold !== undefined && (
               <div
                 className="player-stats-savings"
@@ -78,9 +78,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               <>
                 <br />
                 that belongs to{' '}
-                <strong style={{ color: config.encounter.ownerColor }}>
-                  {config.encounter.ownerName}
-                </strong>
+                <PlayerLabel name={config.encounter.ownerName} color={config.encounter.ownerColor} bold />
                 {config.encounter.canFight && config.encounter.tileDefence !== undefined && (
                   <>
                     <br />

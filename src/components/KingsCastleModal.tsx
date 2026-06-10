@@ -4,6 +4,7 @@ import '../styles/modal.css';
 import GameModal from './GameModal';
 import topImage from '../../public/assets/top1.jpg';
 import { UNIT_PRICE } from '../game/constants';
+import { PlayerLabel } from './PlayerLabel';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -41,7 +42,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
         <h3>{gameState.gameMessage}</h3>
 
         <div style={{ fontFamily: 'Texturina' }}>
-          The King welcomes <span style={{ color: player.color }}>{player.name}</span>
+          The King welcomes <PlayerLabel player={player} />
           <div>
             {player.fame}🏆 {player.gold}🟡 {player.units}🧍
           </div>

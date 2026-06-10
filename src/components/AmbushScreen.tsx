@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { say } from '../utils/say';
-import { getPlayerImageSrc } from '../game/PlayerOptions';
+import { PlayerCard } from './PlayerCard';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget } from './DiceWidget';
@@ -114,8 +114,6 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
     onClose();
   };
 
-  const playerImg = getPlayerImageSrc(player.image, player.fame);
-
   // Winner of a round keeps their figure 🧍🏻, loser shows 💥.
   const attackerRoundIcon = (r: RoundResult) => (r.winner === 'defender' ? '💥' : '🧍🏻');
   const defenderRoundIcon = (r: RoundResult) => (r.winner === 'attacker' ? '💥' : '🧍🏻');
@@ -161,18 +159,10 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
 
         <div className="battle-names-row">
           <div className="bc-attacker">
-            <img src={ATTACKER_IMG} alt="Ambushers" className="battle-player-icon" />
-            <br />
-            <span className="battle-player-name" style={{ color: '#f6b03e' }}>
-              ⚔️ Ambushers
-            </span>
+            <PlayerCard imageSrc={ATTACKER_IMG} name="Ambushers" color="#f6b03e" prefix="⚔️" />
           </div>
           <div className="bc-defender">
-            <img src={playerImg} alt={player.name} className="battle-player-icon" />
-            <br />
-            <span className="battle-player-name" style={{ color: player.color }}>
-              🛡️ {player.name}
-            </span>
+            <PlayerCard player={player} prefix="🛡️" />
           </div>
         </div>
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { TileCard } from './TileCard';
 import { Tile } from '../game/Tile';
+import { PlayerLabel } from './PlayerLabel';
 
 interface CurrentTileProps {
   gameState: GameState;
@@ -57,8 +58,8 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     <div className="current-tile-card-wrapper">
       {ownerPlayer && ownerColor && (
         <div className="tile-card-owner-info">
-          <div className="tile-owner" style={{ color: ownerColor }}>
-            🚩 owned by {ownerPlayer.name}
+          <div className="tile-owner">
+            🚩 owned by <PlayerLabel player={ownerPlayer} />
           </div>
         </div>
       )}

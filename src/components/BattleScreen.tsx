@@ -9,6 +9,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget } from './DiceWidget';
+import { PlayerCard } from './PlayerCard';
 import { BattleOutcome, RoundResult, roundCount } from '../actions/battles/common';
 import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
@@ -190,7 +191,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     }
   };
 
-  const attackerImg = getPlayerImageSrc(attacker.image, attacker.fame);
   const defenderImg = defender
     ? getPlayerImageSrc(defender.image, defender.fame)
     : isDragon
@@ -246,18 +246,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
         <div className="battle-names-row">
           <div className="bc-attacker">
-            <img src={attackerImg} alt={attacker.name} className="battle-player-icon" />
-            <br />
-            <span className="battle-player-name" style={{ color: attacker.color }}>
-              ⚔️ {attacker.name}
-            </span>
+            <PlayerCard player={attacker} prefix="⚔️" />
           </div>
           <div className="bc-defender">
-            <img src={defenderImg} alt={defenderLabel} className="battle-player-icon" />
-            <br />
-            <span className="battle-player-name" style={{ color: defenderColor }}>
-              🛡️ {defenderLabel}
-            </span>
+            <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} prefix="🛡️" />
           </div>
         </div>
 
