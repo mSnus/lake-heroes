@@ -13,7 +13,7 @@ export function fightTile(board: GameState | null, updateGameState: (board: Game
 
   if (attacker.units < defence) return;
 
-  const defender = board.players.find((p: Player) => p.name === tile.owner);
+  const defender = board.players.find((p: Player) => p.id === tile.owner);
   if (!defender) return;
 
   showScreen({

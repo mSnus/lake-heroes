@@ -91,7 +91,7 @@ function handleWeakPlayerAttack(
   let maxGold = -1;
   for (const idx of player.ownedTiles) {
     const tile = board.tiles[idx];
-    if (!tile || tile.owner !== player.name) continue;
+    if (!tile || tile.owner !== player.id) continue;
     const gold = tile.currentPrice.gold;
     if (gold > maxGold) {
       maxGold = gold;

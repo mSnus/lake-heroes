@@ -9,7 +9,7 @@ export interface TileJSON {
   prices?: { [level: number]: { gold: number; units: number } };
   bonuses?: { [level: number]: number };
   defences?: { [level: number]: number };
-  owner?: string | null;
+  owner?: number | null;
   level?: number;
   description?: string;
   sprite?: { x: number; y: number };
@@ -26,7 +26,7 @@ export class Tile implements TileJSON {
   prices: { [level: number]: { gold: number; units: number } };
   bonuses: { [level: number]: number };
   defences: { [level: number]: number };
-  owner?: string | null;
+  owner?: number | null;
   _level?: number;
   description?: string;
   sprite?: { x: number; y: number };

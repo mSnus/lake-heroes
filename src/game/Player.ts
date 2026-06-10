@@ -1,4 +1,5 @@
 export interface PlayerParams {
+  id?: number;
   name: string;
   color: string;
   gold: number;
@@ -9,6 +10,8 @@ export interface PlayerParams {
 }
 
 export class Player {
+  // Stable 1-based identity used for tile ownership and player lookups.
+  id: number;
   name: string;
   color: string;
   gold: number;
@@ -27,6 +30,7 @@ export class Player {
   isPrisonerOfWar: boolean;
 
   constructor(params: PlayerParams) {
+    this.id = params.id ?? 0;
     this.name = params.name;
     this.color = params.color;
     this.gold = params.gold;

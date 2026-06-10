@@ -151,7 +151,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         .filter(({ t }) => t && (t.group === 'Camps' || t.group === 'Towers') && !t.isOwned());
       if (free.length > 0) {
         const { t, i } = free[Math.floor(Math.random() * free.length)];
-        t.owner = player.name;
+        t.owner = player.id;
         player.ownedTiles.push(i);
         changeFame(player, 1);
         message = `${player.name} receives ${t.name} for free!`;

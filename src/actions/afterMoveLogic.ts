@@ -24,8 +24,8 @@ export function afterMoveLogic(
     return;
   }
 
-  if (tile.isOwned() && tile.owner !== player.name) {
-    const owner = board.players.find((p) => p.name === tile.owner);
+  if (tile.isOwned() && tile.owner !== player.id) {
+    const owner = board.players.find((p) => p.id === tile.owner);
 
     // A jailed owner can't collect a fee or defend their land. They count as
     // imprisoned while sitting on the Prison tile (turnsToSkip can already be 0
@@ -47,7 +47,7 @@ export function afterMoveLogic(
     const sellable = player.ownedTiles.reduce(
       (acc, posIdx) => {
         const t = board.tiles[posIdx];
-        if (!t || t.owner !== player.name) return acc;
+        if (!t || t.owner !== player.id) return acc;
         acc.gold += t.currentPrice.gold;
         acc.units += t.currentPrice.units;
         return acc;
@@ -68,7 +68,7 @@ export function afterMoveLogic(
       playerColor: player.color,
       tileName: tile.name,
       tileDefence: tile.defence,
-      ownerName: tile.owner ?? undefined,
+      ownerName: owner?.name ?? undefined,
       ownerColor,
       canFight,
       outcomeText: undefined,
@@ -117,7 +117,7 @@ export function afterMoveLogic(
       const sellModeConfig = {
         ...baseConfig,
         sellMode: true,
-        sellHeader: `Sell tiles to pay the ${fee}🟡 fee, raise an army, or yield to ${tile.owner}`,
+        sellHeader: `Sell tiles to pay the ${fee}🟡 fee, raise an army, or yield to ${owner?.name ?? 'the owner'}`,
         buttons: baseButtons,
       };
       extraButtons.push({

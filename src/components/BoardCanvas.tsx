@@ -76,7 +76,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const isFogged = tile.fogged();
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
 
-    const owner = tile.owner ? board.players.find((p) => p.name === tile.owner) : null;
+    const owner = tile.owner ? board.players.find((p) => p.id === tile.owner) : null;
     const ownerColor = owner?.color || '#444';
     const ownerShadow = tile.isOwned() ? ownerColor + ' 0px 0px 0px 4px inset' : 'none';
 

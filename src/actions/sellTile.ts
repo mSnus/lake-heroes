@@ -10,7 +10,7 @@ export function sellTile(
   tile: Tile
 ): { gold: number; units: number } {
   if (!tile) return { gold: 0, units: 0 };
-  if (tile.owner !== player.name) return { gold: 0, units: 0 };
+  if (tile.owner !== player.id) return { gold: 0, units: 0 };
 
   // Base refund: purchase price
   const baseGold = tile.prices['1']?.gold ?? (0 || 0);
@@ -34,7 +34,7 @@ export function sellTile(
   const totalUnits = baseUnits + upgradesUnits;
 
   // Mutate tile and player
-  tile.owner = undefined;
+  tile.owner = null;
   tile._level = 1;
 
   player.gold = (player.gold || 0) + totalGold;

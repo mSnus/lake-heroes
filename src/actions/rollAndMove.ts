@@ -122,7 +122,7 @@ export async function rollAndMove(
       return;
     }
 
-    if (tile.isOwned() && tile.owner === player.name) {
+    if (tile.isOwned() && tile.owner === player.id) {
       handleVisitOwnTile(board, updateGameState);
       return;
     }

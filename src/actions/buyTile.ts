@@ -20,7 +20,7 @@ export async function buyTile(
   ) {
     player.gold -= tile.prices['1']?.gold ?? 0;
     player.units -= tile.prices['1']?.units ?? 0;
-    tile.owner = player.name;
+    tile.owner = player.id;
     player.ownedTiles.push(player.position);
     changeFame(player, 1);
     updateGameState(gameState);

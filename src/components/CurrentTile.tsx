@@ -48,16 +48,17 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     (shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move')) ||
     (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned());
   const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
-  const ownerColor = shownTile?.owner
-    ? gameState.players.find((p) => p.name === shownTile.owner)?.color
+  const ownerPlayer = shownTile?.owner
+    ? gameState.players.find((p) => p.id === shownTile.owner)
     : undefined;
+  const ownerColor = ownerPlayer?.color;
 
   return (
     <div className="current-tile-card-wrapper">
-      {shownTile?.owner && ownerColor && (
+      {ownerPlayer && ownerColor && (
         <div className="tile-card-owner-info">
           <div className="tile-owner" style={{ color: ownerColor }}>
-            🚩 owned by {shownTile?.owner}
+            🚩 owned by {ownerPlayer.name}
           </div>
         </div>
       )}

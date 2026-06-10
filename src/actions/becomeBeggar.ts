@@ -10,7 +10,7 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   // 1. If player has any tiles, they are set unowned, level 1 (and all upgrades are removed)
   let lostTilesCount = 0;
   board.tiles.forEach((tile) => {
-    if (tile.owner === player.name) {
+    if (tile.owner === player.id) {
       tile.owner = null;
       tile._level = 1;
       lostTilesCount++;

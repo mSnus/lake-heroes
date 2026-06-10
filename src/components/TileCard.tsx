@@ -51,7 +51,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   if (!tile || !tile.name) return null;
 
   const groupColor = tile.groupColor;
-  const ownerPlayer = gameState?.players.find((p) => p.name === tile.owner) ?? null;
+  const ownerPlayer = gameState?.players.find((p) => p.id === tile.owner) ?? null;
   const ownerColor = ownerPlayer?.color || '#444';
 
   // Syndicate: the owner holds every ownable tile of this group, which doubles
@@ -70,7 +70,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     const units = tile.prices[level]?.units ?? 0;
     const hasGold = gold > 0;
     const hasUnits = units > 0;
-    const isOwnedByActive = mode === 'owned' && tile.owner === activePlayer?.name;
+    const isOwnedByActive = mode === 'owned' && tile.owner === activePlayer?.id;
     const isUpgradeTarget = isOwnedByActive && level === nextLevel && !maxLevelReached;
     const lacksGold = !!isUpgradeTarget && !!activePlayer && (activePlayer.gold ?? 0) < gold;
     const lacksUnits = !!isUpgradeTarget && !!activePlayer && (activePlayer.units ?? 0) < units;
@@ -277,7 +277,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       {diamonds()}
                     </div>
 
-                    {tile.owner !== activePlayer?.name && (
+                    {tile.owner !== activePlayer?.id && (
                       <div>
                         <div className="big-icon-hint">
                           <div>{tile.fee}🟡</div>
@@ -286,7 +286,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       </div>
                     )}
 
-                    {tile.owner === activePlayer?.name && (
+                    {tile.owner === activePlayer?.id && (
                       <div>
                         <div className="big-icon-hint">
                           <div>

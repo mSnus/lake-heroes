@@ -18,7 +18,7 @@ export function syndicateMultiplier(
 
   // Derive ownership from tile.owner (authoritative) rather than
   // player.ownedTiles, which can be stale after a reload.
-  const ownsAll = groupTiles.every((t) => t.owner === player.name);
+  const ownsAll = groupTiles.every((t) => t.owner === player.id);
 
   return ownsAll ? 2 : 1;
 }

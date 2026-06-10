@@ -16,7 +16,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   const owned = useMemo(() => {
     const res: { tile: Tile; idx: number }[] = [];
     gameState.tiles.forEach((t: any, idx: number) => {
-      if (t && t.owner === activePlayer.name) res.push({ tile: t as Tile, idx });
+      if (t && t.owner === activePlayer.id) res.push({ tile: t as Tile, idx });
     });
     return res;
   }, [gameState, activePlayer.name]);

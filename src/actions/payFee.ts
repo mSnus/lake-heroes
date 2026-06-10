@@ -8,7 +8,7 @@ export function payFee(board: GameState | null, updateGameState: (board: GameSta
   if (!board) return;
   const tile = board.activeTile;
   const player = board.activePlayer;
-  const owner = board.players.find((p: Player) => p.name === tile.owner);
+  const owner = board.players.find((p: Player) => p.id === tile.owner);
 
   const fee = tile.fee;
 

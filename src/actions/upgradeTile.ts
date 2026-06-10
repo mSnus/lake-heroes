@@ -12,7 +12,7 @@ export function upgradeTile(
   const player = board.activePlayer;
   const tile = board.tiles[tileIdx];
 
-  if (tile.owner !== player.name) return;
+  if (tile.owner !== player.id) return;
 
   const currentlevel = tile.level;
 

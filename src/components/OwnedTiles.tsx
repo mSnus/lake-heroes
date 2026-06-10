@@ -29,7 +29,7 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState }) => {
   const grouped = useMemo(() => {
     const res: { tile: Tile; idx: number }[] = [];
     gameState.tiles.forEach((t: any, idx: number) => {
-      if (t && t.owner === activePlayer.name) res.push({ tile: t as Tile, idx });
+      if (t && t.owner === activePlayer.id) res.push({ tile: t as Tile, idx });
     });
     res.sort((a, b) => {
       const groupDiff = groupOrder(a.tile.group) - groupOrder(b.tile.group);

@@ -170,8 +170,11 @@ function App() {
           const savedRaw = saved as SavedGameState;
           const tiles = rehydrateSavedTiles(savedRaw);
           // new Player() resets ownedTiles/turnsToSkip/circles/etc; copy the
-          // saved fields back so per-player state survives a reload.
-          const players = (savedRaw.players || []).map((p) => Object.assign(new Player(p), p));
+          // saved fields back so per-player state survives a reload. The 1-based
+          // id is derived from array order, which is stable across save/load.
+          const players = (savedRaw.players || []).map((p, i) =>
+            Object.assign(new Player(p), p, { id: i + 1 })
+          );
           const restored = Object.assign(new GameState(tiles, players), {
             ...savedRaw,
             tiles,
@@ -419,7 +422,7 @@ function App() {
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[]) => {
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
-      const players = playersSetup.map((p) => new Player(p));
+      const players = playersSetup.map((p, i) => new Player({ ...p, id: i + 1 }));
       const initialGameState = new GameState(tiles, players);
       gameStart(initialGameState, updateGameState);
 
@@ -452,7 +455,7 @@ function App() {
           const winner = gameState.activePlayer;
           const tilesGold = winner.ownedTiles.reduce((sum, idx) => {
             const t = gameState.tiles[idx];
-            return t && t.owner === winner.name ? sum + t.currentPrice.gold : sum;
+            return t && t.owner === winner.id ? sum + t.currentPrice.gold : sum;
           }, 0);
           const totalGold = winner.gold + tilesGold + winner.units * UNIT_PRICE + DRAGON_GOLD;
           const years = winner.circles;

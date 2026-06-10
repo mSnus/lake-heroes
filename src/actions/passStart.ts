@@ -22,7 +22,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   for (const idx of player.ownedTiles) {
     const tile = board.tiles[idx];
     if (!tile) continue;
-    if (tile.owner && tile.owner !== player.name) continue; // safety check
+    if (tile.owner && tile.owner !== player.id) continue; // safety check
 
     const bonus = tile.bonuses[tile.level] || 0;
     const mult = syndicateMultiplier(board, player, tile.group);
