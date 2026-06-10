@@ -96,6 +96,13 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             className="input-group"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
           >
+            
+            <input
+              type="text"
+              value={player.name}
+              onChange={(e) => handlePlayerChange(index, 'name', e.target.value)}
+              style={{paddingRight: '30px'}}
+            />
             <button
               onClick={() =>
                 handlePlayerChange(
@@ -110,16 +117,12 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 cursor: 'pointer',
                 fontSize: '1.2rem',
                 padding: '0 4px',
+                marginLeft: '-42px',
               }}
               title="Random name"
             >
               ↪️
             </button>
-            <input
-              type="text"
-              value={player.name}
-              onChange={(e) => handlePlayerChange(index, 'name', e.target.value)}
-            />
             <select
               value={player.color}
               onChange={(e) => handlePlayerChange(index, 'color', e.target.value)}
@@ -139,7 +142,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
                 alt={getSelectedOption(player)?.colorName}
                 style={{ width: '60px', height: '60px' }}
-                className="player-image current-player"
+                className="player-image"
               />
             )}
           </div>
