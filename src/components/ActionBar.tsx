@@ -4,6 +4,7 @@ import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
+import { useScreen } from '../utils/screenStore';
 import { CurrentPlayer } from './CurrentPlayer';
 import '../styles/ActionBar.css';
 
@@ -15,7 +16,10 @@ interface ActionBarProps {
 export const ActionBar: React.FC<ActionBarProps> = ({ gameState, updateGameState }) => {
   const { active: diceActive } = useModal();
   const endTurnReady = useEndTurnReady();
-  const canEndTurn = endTurnReady && !diceActive;
+  // A fullscreen overlay (battle, dragon challenge, guards, …) owns its own
+  // controls, so Space must not end the turn behind it.
+  const screenActive = !!useScreen();
+  const canEndTurn = endTurnReady && !diceActive && !screenActive;
 
   useEffect(() => {
     if (!diceActive && !canEndTurn) return;

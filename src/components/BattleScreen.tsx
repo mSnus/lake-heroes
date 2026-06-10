@@ -293,8 +293,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             </div>
           ))}
 
-          {/* Current round action row */}
-          {phase !== 'result' && (
+          {/* Current round action row (hidden during the pause after the last round) */}
+          {phase !== 'result' && roundResults.length < totalRounds && (
             <div className="battle-action-row">
               <div className="bc-side bc-attacker">
                 {phase === 'attacker-roll' && !rollingAttacker && (

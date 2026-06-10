@@ -207,7 +207,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
             </div>
           ))}
 
-          {phase !== 'result' && (
+          {phase !== 'result' && roundResults.length < totalRounds && (
             <div className="battle-action-row">
               <div className="bc-side bc-attacker">
                 {phase === 'defender-roll' && <span className="battle-round-icon">🧍🏻</span>}
