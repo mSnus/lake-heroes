@@ -8,6 +8,7 @@ import { buyTile } from '../actions/buyTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
+import DecoratedButton from './DecoratedButton';
 
 const fmtPrice = (gold: number, units: number, join: string = ''): string => {
   const hasGold = gold > 0;
@@ -363,19 +364,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                         </div>
                       </div>
                     </div>
-
-                    <div>
-                      {couldBuy &&
-                        tile.isAffordable(
-                          activePlayer?.gold ?? 0,
-                          activePlayer?.units ?? 0,
-                          activePlayer?.fame ?? 1
-                        ) && (
-                          <button className="game-menu-button" onClick={(e) => handleBuyClick(e)}>
-                            Buy
-                          </button>
-                        )}
-                    </div>
                   </div>
                   <div className="tile-card-base-row">
                     <div className="big-icon-hint">
@@ -470,6 +458,21 @@ export const TileCard: React.FC<TileCardProps> = ({
           className="tile-card-description"
           dangerouslySetInnerHTML={{ __html: tile.description }}
         />
+      )}
+
+      {!tile.owner && (
+        <div>
+          {couldBuy &&
+            tile.isAffordable(
+              activePlayer?.gold ?? 0,
+              activePlayer?.units ?? 0,
+              activePlayer?.fame ?? 1
+            ) && (              
+              <DecoratedButton onClick={(e) => handleBuyClick(e)} style={{width: '100%', marginBottom: '0', height: '80px', paddingBottom: '8px', filter: 'drop-shadow(2px 2px 3px #00000050);'}}>
+                Claim it!
+              </DecoratedButton>
+            )}
+        </div>
       )}
     </div>
   );

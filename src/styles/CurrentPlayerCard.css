@@ -14,7 +14,15 @@
   gap: 14px;
   padding: 16px 20px;
   border-radius: 10px;
-  background: #fff;
+  background: #ffffffdb;
   color: #444;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+
+.current-player-card .battle-player-icon{
+  filter: none;
+}
+
+.current-player-card .player-card-name{
+  text-shadow: none;
 }

@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Player } from '../game/Player';
+import { GameState } from '../game/GameState';
+import { playerIncome } from '../game/income';
+import { useModal } from '../utils/diceStore';
 import { PlayerCard } from './PlayerCard';
 import { PlayerStats } from './PlayerStats';
 import '../styles/CurrentPlayerCard.css';
+
+interface CurrentPlayerCardProps {
+  gameState: GameState;
+}
 
 /**
  * Floating card shown when a player icon on the board is clicked (mirrors
  * CurrentTile). Listens for the `displayPlayer` event; click the card to close.
  */
-export const CurrentPlayerCard: React.FC = () => {
+export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState }) => {
   const [player, setPlayer] = useState<Player | null>(null);
+  const { active: diceActive } = useModal();
+
+  // A dice roll display takes over the screen — dismiss the player card.
+  useEffect(() => {
+    if (diceActive) setPlayer(null);
+  }, [diceActive]);
 
   useEffect(() => {
     function onDisplayPlayer(e: Event) {
@@ -35,7 +48,7 @@ export const CurrentPlayerCard: React.FC = () => {
     <div className="current-player-card-wrapper" onClick={() => setPlayer(null)}>
       <div className="current-player-card">
         <PlayerCard player={player} />
-        <PlayerStats player={player} />
+        <PlayerStats player={player} income={playerIncome(gameState, player)} />
       </div>
     </div>
   );

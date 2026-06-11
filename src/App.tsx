@@ -523,7 +523,7 @@ function App() {
           <div className="board-section">
             {!screen && <GameMessage message={gameState.gameMessage} />}
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
-            <CurrentPlayerCard />
+            <CurrentPlayerCard gameState={gameState} />
             <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
             <ShieldColumn

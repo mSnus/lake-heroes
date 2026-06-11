@@ -1,10 +1,32 @@
+.player-stats-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
 .player-stats {
   display: flex;
   flex-direction: row;
   gap: 14px;
   align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.player-stats-income {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: baseline;
   justify-content: center;
   white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.player-stats-income-label {
+  font-style: italic;
 }
 
 .player-stat {
@@ -14,4 +36,6 @@
 .player-stat-fame {
   color: goldenrod;
   letter-spacing: -2px;
+  font-size: 1.2rem;
+  padding-bottom: 8px;
 }

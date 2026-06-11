@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { TileCard } from './TileCard';
 import { Tile } from '../game/Tile';
 import { PlayerLabel } from './PlayerLabel';
+import { gameEvent } from '../utils/events';
 
 interface CurrentTileProps {
   gameState: GameState;
@@ -61,6 +62,19 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     !playerShown &&
     ((shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move')) ||
       (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned()));
+  // A turn-phase change lets the tile card reclaim the spotlight from a
+  // lingering player card.
+  React.useEffect(() => {
+    setPlayerShown(false);
+  }, [gameState.turnPhase]);
+
+  // The tile card and player card are mutually exclusive: whenever the tile
+  // card becomes visible (including phase-driven auto-shows that emit no event),
+  // dismiss the player card.
+  React.useEffect(() => {
+    if (isVisible) gameEvent('displayPlayer', {});
+  }, [isVisible]);
+
   const shownTile = isVisible ? (displayedTile ?? currentTile) : null;
   const ownerPlayer = shownTile?.owner
     ? gameState.players.find((p) => p.id === shownTile.owner)
