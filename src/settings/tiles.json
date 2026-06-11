@@ -607,7 +607,7 @@
     },
     "bonuses": {},
     "defences": {},
-    "description": "Allows to recruit 🧍<br>Each visit pays you reward for your tiles"
+    "description": "Recruit 🧍"
   },
   {
     "group": "Special",
@@ -671,6 +671,6 @@
     },
     "bonuses": {},
     "defences": {},
-    "description": "Random chance of evil joke"
+    "description": "Random evil joke"
   }
 ]

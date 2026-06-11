@@ -35,7 +35,7 @@ export function handlePortal(
     screenType: 'portal',
     background: 'assets/screens/portal.jpg',
     title: 'Colored lights blind you',
-    message: `You are feeling desoriented and lost`,
+    message: `You feel desoriented and lost 🌀`,
     buttons: [
       {
         label: 'Where am I?',
