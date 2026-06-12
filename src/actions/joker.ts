@@ -122,7 +122,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       }
 
       if (lostMsgs.length) say(`Earthquake destroys: ${lostMsgs.join(', ')}`, 'debug');
-      message = 'All upgraded tiles lose a level, some are destroyed.';
+      message = 'All upgraded tiles lose a level, some are destroyed';
       break;
     }
 

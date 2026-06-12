@@ -69,7 +69,7 @@ export function checkCaravanEncounter(
     caravanDefence: defendingUnits,
     caravanPrize: prize,
     fade: true,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span><br /> encounters a caravan<br /> ${caravanDesc},
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span> — ${player.gold}🟡 ${player.units}🧍<br /> encounters a caravan<br /> ${caravanDesc},
     <br /> guarded by ${defendingUnits}🥷<br /> Would you attack?`,
     buttons: [
       {

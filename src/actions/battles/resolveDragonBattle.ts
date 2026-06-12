@@ -38,9 +38,9 @@ export function resolveDragonBattle(
     const unitLoss = perRoundUnitLoss(defence, totalRounds, results);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
 
-    const lossStr = unitLoss > 0 ? `. ${unitLoss}🧍 were eaten by the Dragon` : '';
-    board.gameMessage = `${attacker.name} wounded the Dragon, but he escaped. ${lossStr}`;
-    message = `The Dragon retreats, wounded${lossStr}`;
+    const lossStr = unitLoss > 0 ? ` after eating ${unitLoss}🧍` : '';
+    board.gameMessage = `${attacker.name} wounded the Dragon, but he escaped${lossStr}`;
+    message = `The wounded Dragon retreats ${lossStr}`;
     lostBg = true;
   } else {
     const unitLoss = Math.ceil(attacker.units / 2);

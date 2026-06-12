@@ -11,10 +11,24 @@
   overflow-y: hidden;
   padding-right: 12px;
   font-size: 0.9rem;
+  margin-top: -16px;
+  z-index: 999;
 }
 
 .current-player {
   display: flex;
+  font-weight: 600;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  gap: 8px;
+  text-align: center;
+}
+
+.action-bar .current-player {
+  background-color: white;
+  padding: 8px 16px 4px 16px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #f5ffe0, #fff);
 }
 
 .player-marker-indicator {

@@ -14,15 +14,18 @@ export function payFee(board: GameState | null, updateGameState: (board: GameSta
 
   if (player.gold >= fee && owner) {
     player.gold -= fee;
+
+    let msg: string;
     if (owner.turnsToSkip > 0) {
-      say(
-        `${player.name} paid ${fee}🟡 for ${tile.name}, but ${owner.name} is in prison and collects nothing.`,
-        'info'
-      );
+      msg = `${player.name} paid ${fee}🟡 for ${tile.name}, but ${owner.name} is in prison and collects nothing.`;
     } else {
       owner.gold += fee;
-      say(`${player.name} paid ${fee}🟡 to ${owner.name} for ${tile.name}.`, 'info');
+      msg = `${player.name} paid ${fee}🟡 to ${owner.name} for ${tile.name}.`;
     }
+
+    // Set the banner too, otherwise it lingers on a stale (e.g. battle) message.
+    say(msg, 'info');
+    board.gameMessage = msg;
 
     updateGameState(board);
   }

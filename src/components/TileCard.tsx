@@ -385,6 +385,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       }
                     >
                       <td className={class1}>{priceCell(1)}</td>
+                      <td className={class1}>→</td>
                       <td className={class1}>
                         +{bonus(1)} {bonusTypeIcon}
                       </td>
@@ -396,6 +397,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       }
                     >
                       <td className={class2}>{priceCell(2)}</td>
+                      <td className={class2}>→</td>
                       <td className={class2}>
                         +{bonus(2)} {bonusTypeIcon}
                       </td>
@@ -407,6 +409,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       }
                     >
                       <td className={class3}>{priceCell(3)}</td>
+                      <td className={class3}>→</td>
                       <td className={class3}>
                         +{bonus(3)} {bonusTypeIcon}
                       </td>

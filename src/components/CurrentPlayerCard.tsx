@@ -45,7 +45,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
   if (!player) return null;
 
   return (
-    <div className="current-player-card-wrapper" onClick={() => setPlayer(null)}>
+    <div className="current-player-card-wrapper game-modal-border" onClick={() => setPlayer(null)}>
       <div className="current-player-card">
         <PlayerCard player={player} />
         <PlayerStats player={player} income={playerIncome(gameState, player)} />

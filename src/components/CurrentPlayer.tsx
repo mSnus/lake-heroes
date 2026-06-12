@@ -38,13 +38,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   return (
     <div className="player-pane">
       <div
-        style={{
-          fontWeight: 600,
-          paddingBottom: '4px',
-          paddingTop: '4px',
-          gap: '8px',
-          textAlign: 'center',
-        }}
         className="current-player"
       >
         <PlayerLabel player={activePlayer} />

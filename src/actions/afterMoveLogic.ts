@@ -35,7 +35,7 @@ export function afterMoveLogic(
       ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.name === 'Prison');
 
     if (ownerInPrison) {
-      say(`While ${owner!.name} is in prison, others send him flowers 🌹 while visiting his property`, 'info');
+      say(`${owner!.name} is in prison, so others just send him the flowers 🌹 while visiting his property`, 'info');
       setEndTurn();
       return;
     }
@@ -67,6 +67,7 @@ export function afterMoveLogic(
       playerName: player.name,
       playerColor: player.color,
       tileName: tile.name,
+      tileFee: tile.fee,
       tileDefence: tile.defence,
       ownerName: owner?.name ?? undefined,
       ownerColor,

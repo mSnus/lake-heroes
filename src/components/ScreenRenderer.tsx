@@ -82,7 +82,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 {config.encounter.canFight && config.encounter.tileDefence !== undefined && (
                   <>
                     <br />
-                    Risk {config.encounter.tileDefence} 🧍 to raze it?
+                    Risk {config.encounter.tileDefence}🧍 to raze it or pay {config.encounter.tileFee}🟡 and go?
                   </>
                 )}
               </>

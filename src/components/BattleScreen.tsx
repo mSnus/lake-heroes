@@ -197,7 +197,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ? 'assets/figures/npc-drac.png'
       : 'assets/figures/npc-saracen.png';
 
-  // Per-round icons: winner keeps 🧍🏻, loser gets 💥, tie gets 🛡️
   const attackerRoundIcon = (r: RoundResult) =>
     r.winner === 'attacker' ? '🧍🏻' : r.winner === 'defender' ? '💥' : '🧍🏻';
   const defenderRoundIcon = (r: RoundResult) =>
@@ -242,7 +241,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         <div className="battle-header">
           {isCaravan ? 'Caravan raid!' : isDragon ? 'Dragon Battle' : <>Battle for{tile!.name}</>}
         </div>
-        <div className="battle-total-rounds">{totalRounds > 1 ? `${totalRounds} rounds` : ''}</div>
+        <div className="battle-total-rounds">{defence}⚔️{defence}{totalRounds > 1 ? `, ${totalRounds} rounds` : ''}</div>
 
         <div className="battle-names-row">
           <div className="bc-attacker">
@@ -263,7 +262,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <div className="bc-roll bc-roll-attacker">🎲 {r.attackerRoll}</div>
               <div className="battle-round-result">
                 <div className="battle-round-result-icon">
-                  <div>{r.winner === 'attacker' ? '⚔️' : r.winner === 'tie' ? '🛡️' : '☠️'}</div>
+                  <div>{r.winner === 'attacker' ? '⚔️' : r.winner === 'tie' ? '🟰' : '☠️'}</div>
                   <div
                     style={{
                       color:

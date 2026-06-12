@@ -29,6 +29,7 @@ export interface ScreenConfig {
     playerName: string;
     playerColor: string;
     tileName: string;
+    tileFee?: number;
     tileDefence?: number;
     ownerName?: string;
     ownerColor?: string;
