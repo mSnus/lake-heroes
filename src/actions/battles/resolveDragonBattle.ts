@@ -1,27 +1,19 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import {
-  BattleResolution,
-  RoundResult,
-  determineBattleOutcome,
-  logBattleSummary,
-  perRoundUnitLoss,
-} from './common';
+import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 
 /**
- * Resolve the dragon challenge (the player attacks).
- * - Win: the game is won.
- * - Tie: the dragon escapes; attacker loses per-round units.
- * - Defeat: attacker loses half their units and all their gold.
+ * Resolve the dragon challenge.
+ * - Win: game is won.
+ * - Tie: attacker loses 1/4 of their units.
+ * - Defeat: attacker loses 1/2 units and 1/2 gold.
  */
 export function resolveDragonBattle(
   board: GameState,
   attacker: Player,
-  defence: number,
-  totalRounds: number,
-  results: RoundResult[]
+  _attackerUnitsKilled: number,
+  outcome: BattleOutcome
 ): BattleResolution {
-  const outcome = determineBattleOutcome(results);
   const unitsBefore = attacker.units;
   const goldBefore = attacker.gold;
 
@@ -35,20 +27,18 @@ export function resolveDragonBattle(
     message = 'The Dragon is slain! 🐉 VICTORY!';
     victoryBg = true;
   } else if (outcome === 'tie') {
-    const unitLoss = perRoundUnitLoss(defence, totalRounds, results);
+    const unitLoss = Math.ceil(attacker.units / 4);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-
-    const lossStr = unitLoss > 0 ? ` after eating ${unitLoss}🧍` : '';
-    board.gameMessage = `${attacker.name} wounded the Dragon, but he escaped${lossStr}`;
-    message = `The wounded Dragon retreats ${lossStr}`;
+    board.gameMessage = `${attacker.name} wounded the Dragon, but he escaped, taking ${unitLoss}🧍`;
+    message = `The wounded Dragon retreats, taking ${unitLoss}🧍 with him`;
     lostBg = true;
   } else {
     const unitLoss = Math.ceil(attacker.units / 2);
-    const goldLoss = attacker.gold;
+    const goldLoss = Math.ceil(attacker.gold / 2);
     attacker.units = Math.max(0, attacker.units - unitLoss);
-    attacker.gold = 0;
+    attacker.gold = Math.max(0, attacker.gold - goldLoss);
     board.gameMessage = `${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
-    message = `Lost all gold and ${unitLoss}🧍`;
+    message = `Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
     lostBg = true;
   }
 

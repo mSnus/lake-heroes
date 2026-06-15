@@ -21,27 +21,12 @@
   text-align: center;
 }
 
-/* ── Grid: one row per round ── */
-
-.battle-table {
-  width: 100%;
-  border-radius: 10px;
-  display: grid;
-  grid-template-columns: 1fr min-content min-content min-content 1fr;
-  margin-top: 1.5rem;
-}
+/* ── Names row ── */
 
 .battle-names-row {
   display: flex;
   gap: 20vw;
   align-items: flex-end;
-}
-
-.battle-total-rounds {
-  color: #fff;
-  font-size: 1.4rem;
-  font-family: 'Texturina';
-  margin-top: -1.4rem;
 }
 
 .battle-names-row .bc-attacker,
@@ -50,111 +35,72 @@
   filter: drop-shadow(0px 2px 12px #333333) drop-shadow(0px 2px 12px #333333);
 }
 
-.battle-result-row,
-.battle-action-row {
-  display: contents;
+/* ── Battlefield: two unit columns with center roll display ── */
+
+.battle-field {
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  gap: 6px;
+  width: 100%;
+  margin-top: 0.75rem;
 }
 
-.battle-action-row>div {
-  text-align: center;
+.battle-units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 10px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  min-height: 48px;
+  align-content: flex-start;
 }
 
-.bc-side {
-  padding: 4px;
-  min-height: 40px;
-  font-size: 2rem;
+.battle-units.bc-attacker {
+  justify-content: flex-end;
 }
 
-.bc-side.bc-attacker {
-  text-align: right;
+.battle-units.bc-defender {
+  justify-content: flex-start;
 }
 
-.bc-side.bc-defender {
-  text-align: left;
+.battle-unit {
+  font-size: 1.35rem;
+  line-height: 1.1;
 }
 
-.bc-roll {
-  font-size: 1.4rem;
-  color: #dedede;
-  text-shadow: 1px 1px 3px #000;
-  text-align: center;
-  white-space: nowrap;
-  align-content: center;
-}
+/* ── Center column: roll display ── */
 
-.bc-roll-attacker {
-  text-align: right;
-  padding-right: 6px;
-}
-
-.bc-roll-defender {
-  text-align: left;
-  padding-left: 6px;
-}
-
-.battle-round-result {
-  font-size: 1.8rem;
-  text-align: center;
-  white-space: nowrap;
-  align-content: center;
-}
-
-.battle-round-result-icon {
+.battle-field-vs {
   display: flex;
   flex-direction: column;
-  color: white;
-  margin: 0.4rem 1rem;
-  font-weight: 600;
-  text-shadow: 1px 1px 4px #000;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 2px;
 }
 
-.battle-round-result-icon>div:nth-child(1) {
-  font-size: 1.8rem;
-}
-
-.battle-round-result-icon>div:nth-child(2) {
-  font-size: 0.9rem;
-}
-
-.dim {
-  opacity: 0.25;
-  font-weight: 400;
-}
-
-/* Icons */
-.battle-player-icon {
-  width: 86px;
-  height: 86px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px #000);
-  flex-shrink: 0;
-}
-
-.battle-emoji-icon {
-  font-size: 3rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.battle-player-name {
-  font-size: 0.9rem;
+.bf-roll {
+  font-size: 1rem;
   font-weight: 700;
-  text-shadow: 1px 1px 4px #000;
+  color: #fff;
+  text-shadow: 1px 1px 3px #000;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
 }
 
-.battle-round-icon {
-  font-size: 2rem;
-  line-height: 1;
+.bf-sep {
+  font-size: 1.3rem;
+  opacity: 0.4;
 }
 
-/* Roll button */
+/* ── Roll button ── */
+
 .battle-roll-btn {
   font-size: 0.9rem !important;
   padding: 6px 12px !important;
   white-space: nowrap;
+  margin-top: 4px;
 }
 
 /* ── Inline result ── */
@@ -195,4 +141,38 @@
   margin: 0;
   line-height: 1.5;
   text-shadow: 1px 1px 3px #000;
+}
+
+/* ── Hero's Hour selection screen ── */
+
+.hero-hour-message {
+  color: #eee;
+  font-size: 1.2rem;
+  text-align: center;
+  text-shadow: 1px 1px 3px #000;
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.hero-hour-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+/* ── Shared ── */
+
+.dim {
+  opacity: 0.25;
+  font-weight: 400;
+}
+
+.battle-player-icon {
+  width: 86px;
+  height: 86px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px #000);
+  flex-shrink: 0;
 }

@@ -1,35 +1,33 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import {
-  BattleResolution,
-  RoundResult,
-  determineBattleOutcome,
-  logBattleSummary,
-  perRoundUnitLoss,
-} from './common';
+import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 
 /**
- * Resolve a caravan raid (the player attacks). The attacker loses per-round
- * units, then on a win takes the whole prize, on a tie half of it, and nothing
- * on a defeat. Slave caravans pay the prize in freed units instead of gold.
+ * Resolve a caravan raid.
+ * - Win: attacker loses killed units, takes the full prize.
+ * - Tie: no unit loss, takes 1/4 of the prize.
+ * - Defeat: attacker loses killed units, no prize.
+ * Slave caravans pay the prize in freed units instead of gold.
  */
 export function resolveCaravanBattle(
   board: GameState,
   attacker: Player,
   opts: { prize: number; slaves: boolean },
-  defence: number,
-  totalRounds: number,
-  results: RoundResult[]
+  attackerUnitsKilled: number,
+  outcome: BattleOutcome
 ): BattleResolution {
-  const outcome = determineBattleOutcome(results);
   const unitsBefore = attacker.units;
   const goldBefore = attacker.gold;
   const { prize, slaves } = opts;
 
-  const unitLoss = perRoundUnitLoss(defence, totalRounds, results);
-  if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+  // Win/defeat: attacker loses units killed in battle; tie: no loss
+  if (outcome !== 'tie' && attackerUnitsKilled > 0) {
+    attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+  }
 
-  const unitLossMessage = unitLoss > 0 ? `, ${unitLoss}🧍 were lost in battle` : '';
+  const unitLossMsg = attackerUnitsKilled > 0 && outcome !== 'tie'
+    ? `, ${attackerUnitsKilled}🧍 were lost in battle`
+    : '';
 
   let message = '';
   let victoryBg = false;
@@ -46,23 +44,23 @@ export function resolveCaravanBattle(
     }
     victoryBg = true;
   } else if (outcome === 'tie') {
-    const halfPrize = Math.floor(prize / 2);
+    const quarterPrize = Math.floor(prize / 4);
     if (slaves) {
-      attacker.units += halfPrize;
-      board.gameMessage = `${attacker.name} freed ${halfPrize}🧍 from the caravan`;
-      message = `Freed only ${halfPrize}🧍`;
+      attacker.units += quarterPrize;
+      board.gameMessage = `${attacker.name} freed ${quarterPrize}🧍 from the caravan`;
+      message = `Freed only ${quarterPrize}🧍`;
     } else {
-      attacker.gold += halfPrize;
-      board.gameMessage = `${attacker.name} pillaged only ${halfPrize}🟡.`;
-      message = `Caravan guards defendce, you pillaged only ${halfPrize}🟡.`;
+      attacker.gold += quarterPrize;
+      board.gameMessage = `${attacker.name} pillaged only ${quarterPrize}🟡.`;
+      message = `Caravan guards held, you pillaged only ${quarterPrize}🟡.`;
     }
   } else {
     board.gameMessage = `${attacker.name} failed to raid the caravan`;
     message = `The caravan got away`;
   }
 
-  board.gameMessage += unitLossMessage;
-  message += unitLossMessage;
+  board.gameMessage += unitLossMsg;
+  message += unitLossMsg;
 
   logBattleSummary(attacker, 'Caravan Guards', outcome, null, unitsBefore, goldBefore);
 

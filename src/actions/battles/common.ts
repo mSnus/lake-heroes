@@ -1,54 +1,24 @@
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
 
-export type RoundWinner = 'attacker' | 'defender' | 'tie';
+export type BattleOutcome = 'attacker' | 'defender' | 'tie';
 
-export type RoundResult = {
+export interface RoundResult {
   attackerRoll: number;
   defenderRoll: number;
-  winner: RoundWinner;
-};
-
-export type BattleOutcome = 'attacker' | 'defender' | 'tie';
+  /** Attacker units killed this round (by defender's roll). */
+  attackerKilled: number;
+  /** Defender units killed this round (by attacker's roll). */
+  defenderKilled: number;
+}
 
 export interface BattleResolution {
   outcome: BattleOutcome;
-  /** Message shown on the battle result screen. */
   message: string;
-  /** Whether to fade in the victory / lost background. */
   victoryBg?: boolean;
   lostBg?: boolean;
 }
 
-/** Number of rounds a force of the given size fights. */
-export function roundCount(defence: number): number {
-  return Math.max(1, Math.ceil(defence / 6));
-}
-
-/** The side that won the most rounds; equal rounds is a tie. */
-export function determineBattleOutcome(results: RoundResult[]): BattleOutcome {
-  const aWins = results.filter((r) => r.winner === 'attacker').length;
-  const dWins = results.filter((r) => r.winner === 'defender').length;
-  if (aWins > dWins) return 'attacker';
-  if (dWins > aWins) return 'defender';
-  return 'tie';
-}
-
-/**
- * Per-round unit attrition: the attacker loses `round(defence/totalRounds)`
- * units for every round the defender won.
- */
-export function perRoundUnitLoss(
-  defence: number,
-  totalRounds: number,
-  results: RoundResult[]
-): number {
-  const unitsPerRound = Math.max(1, Math.round(defence / totalRounds));
-  const roundsLost = results.filter((r) => r.winner === 'defender').length;
-  return roundsLost * unitsPerRound;
-}
-
-/** Single summary log line for a resolved battle, from the attacker's view. */
 export function logBattleSummary(
   attacker: Player,
   defenderLabel: string,

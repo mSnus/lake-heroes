@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
@@ -8,15 +8,16 @@ import { say } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
-import { DiceWidget } from './DiceWidget';
+import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
 import { PlayerCard } from './PlayerCard';
-import { BattleOutcome, RoundResult, roundCount } from '../actions/battles/common';
+import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
+import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import '../styles/BattleScreen.css';
 
-type BattlePhase = 'attacker-roll' | 'defender-roll' | 'result';
+type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
 
 export type BattleScreenProps =
   | {
@@ -48,136 +49,239 @@ export type BattleScreenProps =
       defender?: never;
       tile?: never;
       onClose?: never;
+    }
+  | {
+      attacker: Player;
+      gameState: GameState;
+      updateGameState: (gs: GameState) => void;
+      mode: 'player';
+      defender: Player;
+      battlefieldUnits: number;
+      onClose: () => void;
+      tile?: never;
+      caravanDefence?: never;
+      caravanPrize?: never;
+      caravanSlaves?: never;
     };
 
 const DRAGON_UNITS = 50;
 
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const { attacker, gameState, updateGameState } = props;
+
+  // ── Mode extraction (TypeScript narrowing per branch) ──
   const isCaravan = props.mode === 'caravan';
   const isDragon = props.mode === 'dragon';
-  const defender = !isCaravan && !isDragon ? props.defender : undefined;
-  const tile = !isCaravan && !isDragon ? props.tile : undefined;
-  const caravanDefence = isCaravan ? props.caravanDefence : undefined;
-  const caravanPrize = isCaravan ? props.caravanPrize : undefined;
-  const caravanSlaves = isCaravan ? (props.caravanSlaves ?? false) : false;
+  const isPlayerBattle = props.mode === 'player';
+  const isTile = !isCaravan && !isDragon && !isPlayerBattle;
+  const isAutoDefender = isCaravan || isDragon;
 
-  const defence = isCaravan
-    ? (caravanDefence ?? 1)
-    : isDragon
-      ? DRAGON_UNITS
-      : (tile?.defence ?? 1);
-  const totalRounds = isDragon ? 5 : roundCount(defence);
+  let defence: number;
+  let defender: Player | undefined;
+  let tile: Tile | undefined;
+  let caravanPrize: number | undefined;
+  let caravanSlaves = false;
+  let battlefieldUnits: number | undefined;
 
-  const [currentRound, setCurrentRound] = useState(0);
+  if (props.mode === 'caravan') {
+    defence = props.caravanDefence;
+    caravanPrize = props.caravanPrize;
+    caravanSlaves = props.caravanSlaves ?? false;
+  } else if (props.mode === 'dragon') {
+    defence = DRAGON_UNITS;
+  } else if (props.mode === 'player') {
+    defence = props.battlefieldUnits;
+    defender = props.defender;
+    battlefieldUnits = props.battlefieldUnits;
+  } else {
+    defence = props.tile?.defence ?? 1;
+    defender = props.defender;
+    tile = props.tile;
+  }
+
+  const doubleDice = defence > 12;
+
+  // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
   const [rollingAttacker, setRollingAttacker] = useState(false);
   const [rollingDefender, setRollingDefender] = useState(false);
-  const [pendingAttackerRoll, setPendingAttackerRoll] = useState<number | null>(null);
-  const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
+  const [displayedAtkKilled, setDisplayedAtkKilled] = useState(0);
+  const [displayedDefKilled, setDisplayedDefKilled] = useState(0);
+  const [pendingAtkRoll, setPendingAtkRoll] = useState<number | null>(null);
+  const [lastDefRoll, setLastDefRoll] = useState<number | null>(null);
   const [outcome, setOutcome] = useState<BattleOutcome | null>(null);
   const [resultMsg, setResultMsg] = useState('');
   const [showLostBg, setShowLostBg] = useState(false);
   const [showVictoryBg, setShowVictoryBg] = useState(false);
+  const [atkRollKey, setAtkRollKey] = useState(0);
+  const [defRollKey, setDefRollKey] = useState(0);
 
-  const roundResultsRef = useRef<RoundResult[]>([]);
-  const currentRoundRef = useRef(0);
-  const attackerRollRef = useRef(0);
+  // ── Refs (stable across animation timeouts) ──
+  const atkUnitsLeftRef = useRef(defence);
+  const defUnitsLeftRef = useRef(defence);
+  const totalAtkKilledRef = useRef(0);
+  const totalDefKilledRef = useRef(0);
+  const pendingAtkRollRef = useRef(0);
 
-  const defenderLabel = defender ? defender.name : isDragon ? 'The Dragon' : 'Caravan Guards';
+  // ── Labels ──
+  const defenderLabel = isDragon
+    ? 'The Dragon'
+    : isCaravan
+      ? 'Caravan Guards'
+      : (defender?.name ?? 'Guards');
   const defenderColor = isDragon ? '#ff5816' : isCaravan ? '#f6b03e' : defender?.color;
+  const defenderImg = isDragon
+    ? 'assets/figures/npc-drac.png'
+    : isCaravan
+      ? 'assets/figures/npc-saracen.png'
+      : defender
+        ? getPlayerImageSrc(defender.image, defender.fame)
+        : 'assets/figures/npc-saracen.png';
 
-  // Log the opening conditions of the battle once (ref guards against React
-  // StrictMode's double mount in development).
-  const loggedStartRef = useRef(false);
+  // ── Initial log ──
+  const loggedRef = useRef(false);
   useEffect(() => {
-    if (loggedStartRef.current) return;
-    loggedStartRef.current = true;
+    if (loggedRef.current) return;
+    loggedRef.current = true;
     const goal = isCaravan
-      ? caravanSlaves
-        ? `${caravanPrize}🧍 in chains`
-        : `${caravanPrize}🟡 of loot`
+      ? (caravanSlaves ? `${caravanPrize}🧍 in chains` : `${caravanPrize}🟡 of loot`)
       : isDragon
         ? 'the kingdom'
-        : tile!.name;
+        : isPlayerBattle
+          ? 'glory'
+          : tile!.name;
     say(`${attacker.name} attacks ${defenderLabel}'s ${defence}🧍 for ${goal}`, 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-roll defender in caravan/dragon mode
+  // ── Auto-roll defender (NPC) ──
   useEffect(() => {
-    if (phase !== 'defender-roll' || (!isCaravan && !isDragon)) return;
-    const t = setTimeout(() => setRollingDefender(true), 600);
+    if (phase !== 'defender-roll' || !isAutoDefender) return;
+    const t = setTimeout(() => {
+      setDefRollKey((k) => k + 1);
+      setRollingDefender(true);
+    }, 600);
     return () => clearTimeout(t);
-  }, [phase, isCaravan, isDragon]);
+  }, [phase, isAutoDefender]);
 
-  const handleAttackerRoll = () => setRollingAttacker(true);
-  const handleDefenderRoll = () => setRollingDefender(true);
+  // ── Kill animation: defender column first, then attacker column ──
+  const animateKills = useCallback(
+    (defKills: number, atkKills: number, onDone: () => void) => {
+      const total = defKills + atkKills;
+      if (total === 0) {
+        onDone();
+        return;
+      }
+      let step = 0;
+      const next = () => {
+        if (step < defKills) {
+          setDisplayedDefKilled((prev) => prev + 1);
+        } else {
+          setDisplayedAtkKilled((prev) => prev + 1);
+        }
+        step++;
+        if (step < total) {
+          setTimeout(next, 100);
+        } else {
+          setTimeout(onDone, 200);
+        }
+      };
+      setTimeout(next, 100);
+    },
+    []
+  );
+
+  // ── Resolve result ──
+  const resolveResult = useCallback(
+    (battleOutcome: BattleOutcome, atkKilled: number, defKilled: number): BattleResolution => {
+      if (isDragon) return resolveDragonBattle(gameState, attacker, atkKilled, battleOutcome);
+      if (isCaravan)
+        return resolveCaravanBattle(
+          gameState,
+          attacker,
+          { prize: caravanPrize!, slaves: caravanSlaves },
+          atkKilled,
+          battleOutcome
+        );
+      if (isPlayerBattle)
+        return resolvePlayerBattle(
+          gameState,
+          attacker,
+          defender!,
+          battlefieldUnits!,
+          atkKilled,
+          defKilled,
+          battleOutcome
+        );
+      return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, battleOutcome);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  // ── Roll handlers ──
+  const handleAttackerRoll = () => {
+    setAtkRollKey((k) => k + 1);
+    setRollingAttacker(true);
+  };
+
+  const handleDefenderRoll = () => {
+    setDefRollKey((k) => k + 1);
+    setRollingDefender(true);
+  };
 
   const onAttackerRollDone = (roll: number) => {
-    attackerRollRef.current = roll;
+    pendingAtkRollRef.current = roll;
     setRollingAttacker(false);
-    setPendingAttackerRoll(roll);
+    setPendingAtkRoll(roll);
     setPhase('defender-roll');
   };
 
   const onDefenderRollDone = (roll: number) => {
     setRollingDefender(false);
+    setLastDefRoll(roll);
+    setPhase('animating');
 
-    const roundIdx = currentRoundRef.current;
-    const aRoll = attackerRollRef.current;
+    const aRoll = pendingAtkRollRef.current;
+    // Kills from this round, capped at remaining units
+    const defKills = Math.min(aRoll, defUnitsLeftRef.current);
+    const atkKills = Math.min(roll, atkUnitsLeftRef.current);
 
-    const result: RoundResult = {
-      attackerRoll: aRoll,
-      defenderRoll: roll,
-      winner: aRoll > roll ? 'attacker' : roll > aRoll ? 'defender' : 'tie',
-    };
+    const newDefLeft = defUnitsLeftRef.current - defKills;
+    const newAtkLeft = atkUnitsLeftRef.current - atkKills;
+    const newTotalAtkKilled = totalAtkKilledRef.current + atkKills;
+    const newTotalDefKilled = totalDefKilledRef.current + defKills;
 
-    const newResults = [...roundResultsRef.current, result];
-    roundResultsRef.current = newResults;
-    setRoundResults(newResults);
-    setPendingAttackerRoll(null);
+    animateKills(defKills, atkKills, () => {
+      atkUnitsLeftRef.current = newAtkLeft;
+      defUnitsLeftRef.current = newDefLeft;
+      totalAtkKilledRef.current = newTotalAtkKilled;
+      totalDefKilledRef.current = newTotalDefKilled;
 
-    const nextRound = roundIdx + 1;
+      if (newDefLeft <= 0 || newAtkLeft <= 0) {
+        const battleOutcome: BattleOutcome =
+          newDefLeft <= 0 && newAtkLeft > 0
+            ? 'attacker'
+            : newAtkLeft <= 0 && newDefLeft > 0
+              ? 'defender'
+              : 'tie';
 
-    if (nextRound < totalRounds) {
-      currentRoundRef.current = nextRound;
-      setCurrentRound(nextRound);
-      setPhase('attacker-roll');
-    } else {
-      // Pause briefly on the final roll before revealing the result screen.
-      setTimeout(() => {
-        const res = isDragon
-          ? resolveDragonBattle(gameState, attacker, defence, totalRounds, newResults)
-          : isCaravan
-            ? resolveCaravanBattle(
-                gameState,
-                attacker,
-                { prize: caravanPrize!, slaves: caravanSlaves },
-                defence,
-                totalRounds,
-                newResults
-              )
-            : resolveTileBattle(
-                gameState,
-                attacker,
-                defender,
-                tile!,
-                defence,
-                totalRounds,
-                newResults
-              );
-
-        setOutcome(res.outcome);
-        if (res.victoryBg) setShowVictoryBg(true);
-        if (res.lostBg) setShowLostBg(true);
-
-        markScreenResolved();
-        updateGameState(gameState);
-        setResultMsg(res.message);
-        setPhase('result');
-      }, 500);
-    }
+        setTimeout(() => {
+          const res = resolveResult(battleOutcome, newTotalAtkKilled, newTotalDefKilled);
+          setOutcome(battleOutcome);
+          if (res.victoryBg) setShowVictoryBg(true);
+          if (res.lostBg) setShowLostBg(true);
+          markScreenResolved();
+          updateGameState(gameState);
+          setResultMsg(res.message);
+          setPhase('result');
+        }, 400);
+      } else {
+        setPendingAtkRoll(null);
+        setLastDefRoll(null);
+        setPhase('attacker-roll');
+      }
+    });
   };
 
   const handleClose = () => {
@@ -186,23 +290,35 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       (props as { onClose: () => void }).onClose();
     } else if (isDragon) {
       if (outcome !== 'attacker') setEndTurn();
+    } else if (isPlayerBattle) {
+      (props as { onClose: () => void }).onClose();
     } else {
       setEndTurn();
     }
   };
 
-  const defenderImg = defender
-    ? getPlayerImageSrc(defender.image, defender.fame)
+  // ── Unit grid: killed 💥 accumulate on the inner side (toward center) ──
+  // Attacker column (left): killed appear at the right end
+  const attackerGrid = Array.from({ length: defence }, (_, i) =>
+    i >= defence - displayedAtkKilled ? '💥' : '🧍'
+  );
+  // Defender column (right): killed appear at the left end
+  const defenderGrid = Array.from({ length: defence }, (_, i) =>
+    i < displayedDefKilled ? '💥' : '🧍'
+  );
+
+  const battleResultEmoji =
+    outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️';
+
+  const headerText = isCaravan
+    ? 'Caravan Raid!'
     : isDragon
-      ? 'assets/figures/npc-drac.png'
-      : 'assets/figures/npc-saracen.png';
-
-  const attackerRoundIcon = (r: RoundResult) =>
-    r.winner === 'attacker' ? '🧍🏻' : r.winner === 'defender' ? '💥' : '🧍🏻';
-  const defenderRoundIcon = (r: RoundResult) =>
-    r.winner === 'defender' ? '🧍🏻' : r.winner === 'attacker' ? '💥' : '🧍🏻';
-
-  const battleResultEmoji = outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️';
+      ? 'Dragon Battle'
+      : isPlayerBattle
+        ? "Hero's Hour"
+        : isTile
+          ? `Battle for ${tile!.name}`
+          : 'Battle';
 
   return (
     <ScreenBackground image="assets/screens/battle.jpg">
@@ -230,93 +346,75 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       />
       <Fade />
 
-      {rollingAttacker && (
-        <DiceWidget key={`a-${currentRound}`} rolling={true} onRoll={onAttackerRollDone} />
-      )}
-      {rollingDefender && (
-        <DiceWidget key={`d-${currentRound}`} rolling={true} onRoll={onDefenderRollDone} />
-      )}
+      {rollingAttacker &&
+        (doubleDice ? (
+          <DiceWidgetDouble key={`a-${atkRollKey}`} onRoll={onAttackerRollDone} />
+        ) : (
+          <DiceWidget key={`a-${atkRollKey}`} rolling={true} onRoll={onAttackerRollDone} />
+        ))}
+      {rollingDefender &&
+        (doubleDice ? (
+          <DiceWidgetDouble key={`d-${defRollKey}`} onRoll={onDefenderRollDone} />
+        ) : (
+          <DiceWidget key={`d-${defRollKey}`} rolling={true} onRoll={onDefenderRollDone} />
+        ))}
 
       <div className="battle-screen">
-        <div className="battle-header">
-          {isCaravan ? 'Caravan raid!' : isDragon ? 'Dragon Battle' : <>Battle for{tile!.name}</>}
-        </div>
-        <div className="battle-total-rounds">{defence}⚔️{defence}{totalRounds > 1 ? `, ${totalRounds} rounds` : ''}</div>
+        <div className="battle-header">{headerText}</div>
 
         <div className="battle-names-row">
           <div className="bc-attacker">
             <PlayerCard player={attacker} prefix="⚔️" />
           </div>
           <div className="bc-defender">
-            <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} prefix="🛡️" />
+            <PlayerCard
+              imageSrc={defenderImg}
+              name={defenderLabel}
+              color={defenderColor}
+              prefix="🛡️"
+            />
           </div>
         </div>
 
-        <div className="battle-table">
-          {/* Completed round rows */}
-          {roundResults.map((r, i) => (
-            <div key={i} className="battle-result-row">
-              <div className="bc-side bc-attacker">
-                <span className="battle-round-icon">{attackerRoundIcon(r)}</span>
-              </div>
-              <div className="bc-roll bc-roll-attacker">🎲 {r.attackerRoll}</div>
-              <div className="battle-round-result">
-                <div className="battle-round-result-icon">
-                  <div>{r.winner === 'attacker' ? '⚔️' : r.winner === 'tie' ? '🟰' : '☠️'}</div>
-                  <div
-                    style={{
-                      color:
-                        r.winner === 'attacker'
-                          ? attacker.color
-                          : r.winner === 'defender'
-                            ? defenderColor
-                            : 'white',
-                    }}
-                  >
-                    {r.winner === 'attacker' ? 'victory' : r.winner === 'tie' ? 'tie' : 'loss'}
-                  </div>
-                </div>
-              </div>
-              <div className="bc-roll bc-roll-defender">{r.defenderRoll} 🎲</div>
-              <div className="bc-side bc-defender">
-                <span className="battle-round-icon">{defenderRoundIcon(r)}</span>
-              </div>
-            </div>
-          ))}
+        <div className="battle-field">
+          <div className="battle-units bc-attacker">
+            {attackerGrid.map((emoji, i) => (
+              <span key={i} className="battle-unit">
+                {emoji}
+              </span>
+            ))}
+          </div>
 
-          {/* Current round action row (hidden during the pause after the last round) */}
-          {phase !== 'result' && roundResults.length < totalRounds && (
-            <div className="battle-action-row">
-              <div className="bc-side bc-attacker">
-                {phase === 'attacker-roll' && !rollingAttacker && (
-                  <button className="game-menu-button battle-roll-btn" onClick={handleAttackerRoll}>
-                    ⚔️ Attack!
-                  </button>
-                )}
-                {phase === 'defender-roll' && <span className="battle-round-icon">🧍🏻</span>}
-              </div>
-              <div className="bc-roll bc-roll-attacker">
-                {phase === 'defender-roll' && pendingAttackerRoll !== null ? (
-                  <>🎲 {pendingAttackerRoll}</>
-                ) : (
-                  <span className="dim">·</span>
-                )}
-              </div>
-              <div className="bc-roll bc-roll-defender">
-                <span className="dim">·</span>
-              </div>
-              <div className="bc-side bc-defender">
-                {phase === 'defender-roll' && !isCaravan && !isDragon && !rollingDefender && (
-                  <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
-                    🛡️ Defend!
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          <div className="battle-field-vs">
+            {pendingAtkRoll !== null && (
+              <span className="bf-roll">⚔️&nbsp;{pendingAtkRoll}</span>
+            )}
+            <span className="bf-sep">⚔️</span>
+            {lastDefRoll !== null && (
+              <span className="bf-roll">{lastDefRoll}&nbsp;🛡️</span>
+            )}
+          </div>
+
+          <div className="battle-units bc-defender">
+            {defenderGrid.map((emoji, i) => (
+              <span key={i} className="battle-unit">
+                {emoji}
+              </span>
+            ))}
+          </div>
         </div>
 
-        {/* Result */}
+        {phase === 'attacker-roll' && !rollingAttacker && (
+          <button className="game-menu-button battle-roll-btn" onClick={handleAttackerRoll}>
+            ⚔️ Attack!
+          </button>
+        )}
+        {phase === 'defender-roll' && !isAutoDefender && !rollingDefender && (
+          <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
+            🛡️ Defend!
+          </button>
+        )}
+
         {phase === 'result' && (
           <div className="battle-result-inline">
             <div className="battle-result-sequence">
@@ -324,9 +422,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <br />
               <span className="battle-result-verdict">
                 {outcome === 'attacker'
-                  ? `Glorious victory!`
+                  ? 'Glorious victory!'
                   : outcome === 'defender'
-                    ? `Defeat!`
+                    ? 'Defeat!'
                     : 'A tie!'}
               </span>
             </div>

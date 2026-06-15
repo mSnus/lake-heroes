@@ -1,3 +1,4 @@
+import React from 'react';
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { becomeBeggar } from './becomeBeggar';
@@ -6,6 +7,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
 import { payFee } from './payFee';
 import { fightTile } from './fightTile';
+import { HeroHourScreen } from '../components/HeroHourScreen';
 
 export function afterMoveLogic(
   board: GameState | null,
@@ -24,114 +26,152 @@ export function afterMoveLogic(
     return;
   }
 
+  // Hero's Hour: other players at the same tile
+  const playersHere = board.players.filter(
+    (p) => p.id !== player.id && p.position === player.position
+  );
+  if (playersHere.length > 0) {
+    const tileOwner =
+      tile.isOwned() && tile.owner !== player.id
+        ? (board.players.find((p) => p.id === tile.owner) ?? null)
+        : null;
+
+    showScreen({
+      content: React.createElement(HeroHourScreen, {
+        activePlayer: player,
+        opponents: playersHere,
+        tile,
+        tileOwner,
+        gameState: board,
+        updateGameState,
+        onFightDone: () => setEndTurn(),
+        onGreetDone: () => {
+          if (tileOwner) {
+            showTileEncounterScreen(board, updateGameState);
+          } else {
+            setEndTurn();
+          }
+        },
+      }),
+    });
+    return;
+  }
+
   if (tile.isOwned() && tile.owner !== player.id) {
-    const owner = board.players.find((p) => p.id === tile.owner);
-
-    // A jailed owner can't collect a fee or defend their land. They count as
-    // imprisoned while sitting on the Prison tile (turnsToSkip can already be 0
-    // in the turn before they roll out). Landing players simply pass for free.
-    const ownerInPrison =
-      !!owner &&
-      ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.name === 'Prison');
-
-    if (ownerInPrison) {
-      say(`${owner!.name} is in prison, so others just send him the flowers 🌹 while visiting his property`, 'info');
-      setEndTurn();
-      return;
-    }
-
-    const fee = tile.fee;
-    const defence = tile.defence;
-    const ownerColor = owner?.color;
-
-    const sellable = player.ownedTiles.reduce(
-      (acc, posIdx) => {
-        const t = board.tiles[posIdx];
-        if (!t || t.owner !== player.id) return acc;
-        acc.gold += t.currentPrice.gold;
-        acc.units += t.currentPrice.units;
-        return acc;
-      },
-      { gold: 0, units: 0 }
-    );
-    const canPay = player.gold >= fee;
-    const canFight = player.units >= defence;
-    // Selling tops up existing gold/units, so combine both when deciding whether
-    // selling could unlock paying the fee or fighting for the tile.
-    const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
-    const canSellForFight = !canFight && player.units + sellable.units >= defence;
-    const canSell = canSellForFee || canSellForFight;
-    const showAcceptLoss = !canPay && !canFight && !canSell;
-
-    const encounter = {
-      playerName: player.name,
-      playerColor: player.color,
-      tileName: tile.name,
-      tileFee: tile.fee,
-      tileDefence: tile.defence,
-      ownerName: owner?.name ?? undefined,
-      ownerColor,
-      canFight,
-      outcomeText: undefined,
-      gold: player.gold,
-      units: player.units,
-    };
-
-    const baseConfig = {
-      background: 'assets/screens/guards.jpg',
-      fade: true as const,
-      spriteImage: tile.spriteImage,
-      encounter,
-    };
-
-    const feeButton: ScreenButton = {
-      label: `Pay fee ${fee}🟡`,
-      action: 'pay-fee',
-      onClick: () => payFee(board, updateGameState),
-      disabled: player.gold < fee,
-    };
-
-    const baseButtons: ScreenButton[] = [
-      feeButton,
-      {
-        label: `Battle ⚔️ (${defence}🧍)`,
-        action: 'fight',
-        onClick: () => fightTile(board, updateGameState),
-        disabled: player.units < defence,
-      },
-    ];
-
-    const acceptLossButton: ScreenButton = {
-      label: `Accept loss 😢`,
-      action: 'fight',
-      onClick: () => {
-        // Yielding on the battlefield makes the player a prisoner of war, which
-        // the King later ransoms when they're about to leave prison.
-        player.isPrisonerOfWar = true;
-        becomeBeggar(board, updateGameState);
-        showPrisonScreen(board.gameMessage);
-      },
-    };
-
-    const extraButtons: ScreenButton[] = [];
-    if (canSell) {
-      const sellModeConfig = {
-        ...baseConfig,
-        sellMode: true,
-        sellHeader: `Sell tiles to pay the ${fee}🟡 fee, raise an army, or yield to ${owner?.name ?? 'the owner'}`,
-        buttons: baseButtons,
-      };
-      extraButtons.push({
-        label: 'Sell tiles 💰',
-        action: 'fight',
-        onClick: () => showScreen(sellModeConfig),
-      });
-    }
-
-    if (showAcceptLoss) extraButtons.push(acceptLossButton);
-    showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
+    showTileEncounterScreen(board, updateGameState);
     return;
   }
 
   setEndTurn();
+}
+
+/** Show the guards / pay-fee / fight encounter for the active tile. */
+export function showTileEncounterScreen(
+  board: GameState,
+  updateGameState: (board: GameState) => void
+) {
+  const player = board.activePlayer;
+  const tile = board.activeTile;
+  const owner = board.players.find((p) => p.id === tile.owner);
+
+  // A jailed owner can't collect a fee or defend their land.
+  const ownerInPrison =
+    !!owner &&
+    ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.name === 'Prison');
+
+  if (ownerInPrison) {
+    say(
+      `${owner!.name} is in prison, so others just send him the flowers 🌹 while visiting his property`,
+      'info'
+    );
+    setEndTurn();
+    return;
+  }
+
+  const fee = tile.fee;
+  const defence = tile.defence;
+  const ownerColor = owner?.color;
+
+  const sellable = player.ownedTiles.reduce(
+    (acc, posIdx) => {
+      const t = board.tiles[posIdx];
+      if (!t || t.owner !== player.id) return acc;
+      acc.gold += t.currentPrice.gold;
+      acc.units += t.currentPrice.units;
+      return acc;
+    },
+    { gold: 0, units: 0 }
+  );
+  const canPay = player.gold >= fee;
+  const canFight = player.units >= defence;
+  const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
+  const canSellForFight = !canFight && player.units + sellable.units >= defence;
+  const canSell = canSellForFee || canSellForFight;
+  const showAcceptLoss = !canPay && !canFight && !canSell;
+
+  const encounter = {
+    playerName: player.name,
+    playerColor: player.color,
+    tileName: tile.name,
+    tileFee: tile.fee,
+    tileDefence: tile.defence,
+    ownerName: owner?.name ?? undefined,
+    ownerColor,
+    canFight,
+    outcomeText: undefined,
+    gold: player.gold,
+    units: player.units,
+  };
+
+  const baseConfig = {
+    background: 'assets/screens/guards.jpg',
+    fade: true as const,
+    spriteImage: tile.spriteImage,
+    encounter,
+  };
+
+  const feeButton: ScreenButton = {
+    label: `Pay fee ${fee}🟡`,
+    action: 'pay-fee',
+    onClick: () => payFee(board, updateGameState),
+    disabled: player.gold < fee,
+  };
+
+  const baseButtons: ScreenButton[] = [
+    feeButton,
+    {
+      label: `Battle ⚔️ (${defence}🧍)`,
+      action: 'fight',
+      onClick: () => fightTile(board, updateGameState),
+      disabled: player.units < defence,
+    },
+  ];
+
+  const acceptLossButton: ScreenButton = {
+    label: `Accept loss 😢`,
+    action: 'fight',
+    onClick: () => {
+      player.isPrisonerOfWar = true;
+      becomeBeggar(board, updateGameState);
+      showPrisonScreen(board.gameMessage);
+    },
+  };
+
+  const extraButtons: ScreenButton[] = [];
+  if (canSell) {
+    const sellModeConfig = {
+      ...baseConfig,
+      sellMode: true,
+      sellHeader: `Sell tiles to pay the ${fee}🟡 fee, raise an army, or yield to ${owner?.name ?? 'the owner'}`,
+      buttons: baseButtons,
+    };
+    extraButtons.push({
+      label: 'Sell tiles 💰',
+      action: 'fight',
+      onClick: () => showScreen(sellModeConfig),
+    });
+  }
+
+  if (showAcceptLoss) extraButtons.push(acceptLossButton);
+  showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
 }

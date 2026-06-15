@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Player } from '../game/Player';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
@@ -6,12 +6,11 @@ import { say } from '../utils/say';
 import { PlayerCard } from './PlayerCard';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
-import { DiceWidget } from './DiceWidget';
-import { resolveAmbush } from '../actions/battles/resolveAmbush';
-import { RoundResult, roundCount } from '../actions/battles/common';
+import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
+import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import '../styles/BattleScreen.css';
 
-type Phase = 'attacker-roll' | 'defender-roll' | 'result';
+type Phase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
 
 interface AmbushScreenProps {
   player: Player;
@@ -30,83 +29,142 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
   updateGameState,
   onClose,
 }) => {
-  const totalRounds = roundCount(attackerUnits);
+  const doubleDice = attackerUnits > 12;
 
-  const [currentRound, setCurrentRound] = useState(0);
+  // ── State ──
   const [phase, setPhase] = useState<Phase>('attacker-roll');
   const [rollingAttacker, setRollingAttacker] = useState(false);
   const [rollingDefender, setRollingDefender] = useState(false);
-  const [pendingAttackerRoll, setPendingAttackerRoll] = useState<number | null>(null);
-  const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
-  const [outcome, setOutcome] = useState<'win' | 'defeat' | 'tie' | null>(null);
+  const [displayedAtkKilled, setDisplayedAtkKilled] = useState(0);
+  const [displayedDefKilled, setDisplayedDefKilled] = useState(0);
+  const [pendingAtkRoll, setPendingAtkRoll] = useState<number | null>(null);
+  const [lastDefRoll, setLastDefRoll] = useState<number | null>(null);
+  const [outcome, setOutcome] = useState<AmbushOutcome | null>(null);
   const [resultMsg, setResultMsg] = useState('');
   const [showLostBg, setShowLostBg] = useState(false);
   const [showVictoryBg, setShowVictoryBg] = useState(false);
+  const [atkRollKey, setAtkRollKey] = useState(0);
+  const [defRollKey, setDefRollKey] = useState(0);
 
-  const roundResultsRef = useRef<RoundResult[]>([]);
-  const currentRoundRef = useRef(0);
-  const attackerRollRef = useRef(0);
+  // ── Refs ──
+  const atkUnitsLeftRef = useRef(attackerUnits);
+  const defUnitsLeftRef = useRef(attackerUnits);
+  const totalAtkKilledRef = useRef(0); // ambushers killed by player
+  const totalDefKilledRef = useRef(0); // player units killed by ambushers
+  const pendingAtkRollRef = useRef(0);
 
-  const loggedStartRef = useRef(false);
+  // ── Initial log ──
+  const loggedRef = useRef(false);
   useEffect(() => {
-    if (loggedStartRef.current) return;
-    loggedStartRef.current = true;
+    if (loggedRef.current) return;
+    loggedRef.current = true;
     say(`${player.name} is ambushed! ${attackerUnits}🧍 attack from the cover`, 'warning');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // The ambushers (attacker) always roll first, automatically.
+  // ── Ambushers auto-roll first ──
   useEffect(() => {
     if (phase !== 'attacker-roll') return;
-    const t = setTimeout(() => setRollingAttacker(true), 600);
+    const t = setTimeout(() => {
+      setAtkRollKey((k) => k + 1);
+      setRollingAttacker(true);
+    }, 600);
     return () => clearTimeout(t);
   }, [phase]);
 
-  const handleDefenderRoll = () => setRollingDefender(true);
+  // ── Kill animation: defender column first (attacker's kills), then attacker column ──
+  const animateKills = useCallback(
+    (defKills: number, atkKills: number, onDone: () => void) => {
+      const total = defKills + atkKills;
+      if (total === 0) {
+        onDone();
+        return;
+      }
+      let step = 0;
+      const next = () => {
+        if (step < defKills) {
+          setDisplayedDefKilled((prev) => prev + 1);
+        } else {
+          setDisplayedAtkKilled((prev) => prev + 1);
+        }
+        step++;
+        if (step < total) {
+          setTimeout(next, 100);
+        } else {
+          setTimeout(onDone, 200);
+        }
+      };
+      setTimeout(next, 100);
+    },
+    []
+  );
 
   const onAttackerRollDone = (roll: number) => {
-    attackerRollRef.current = roll;
+    pendingAtkRollRef.current = roll;
     setRollingAttacker(false);
-    setPendingAttackerRoll(roll);
+    setPendingAtkRoll(roll);
     setPhase('defender-roll');
+  };
+
+  const handleDefenderRoll = () => {
+    setDefRollKey((k) => k + 1);
+    setRollingDefender(true);
   };
 
   const onDefenderRollDone = (roll: number) => {
     setRollingDefender(false);
+    setLastDefRoll(roll);
+    setPhase('animating');
 
-    const roundIdx = currentRoundRef.current;
-    const aRoll = attackerRollRef.current;
+    const aRoll = pendingAtkRollRef.current;
+    // In ambush: attacker = saracen (left), defender = player (right)
+    // aRoll kills player units (def column), roll kills saracen units (atk column)
+    const defKills = Math.min(aRoll, defUnitsLeftRef.current);  // saracen kills from player side
+    const atkKills = Math.min(roll, atkUnitsLeftRef.current);   // player kills from saracen side
 
-    const result: RoundResult = {
-      attackerRoll: aRoll,
-      defenderRoll: roll,
-      winner: aRoll > roll ? 'attacker' : roll > aRoll ? 'defender' : 'tie',
-    };
+    const newDefLeft = defUnitsLeftRef.current - defKills;
+    const newAtkLeft = atkUnitsLeftRef.current - atkKills;
+    const newTotalAtkKilled = totalAtkKilledRef.current + atkKills; // ambushers killed
+    const newTotalDefKilled = totalDefKilledRef.current + defKills; // player units killed
 
-    const newResults = [...roundResultsRef.current, result];
-    roundResultsRef.current = newResults;
-    setRoundResults(newResults);
-    setPendingAttackerRoll(null);
+    animateKills(defKills, atkKills, () => {
+      atkUnitsLeftRef.current = newAtkLeft;
+      defUnitsLeftRef.current = newDefLeft;
+      totalAtkKilledRef.current = newTotalAtkKilled;
+      totalDefKilledRef.current = newTotalDefKilled;
 
-    const nextRound = roundIdx + 1;
+      if (newDefLeft <= 0 || newAtkLeft <= 0) {
+        // Outcome from player's perspective: player wins if ambushers are wiped
+        const battleOutcome: AmbushOutcome =
+          newAtkLeft <= 0 && newDefLeft > 0
+            ? 'win'
+            : newDefLeft <= 0 && newAtkLeft > 0
+              ? 'defeat'
+              : 'tie';
 
-    if (nextRound < totalRounds) {
-      currentRoundRef.current = nextRound;
-      setCurrentRound(nextRound);
-      setPhase('attacker-roll');
-    } else {
-      setTimeout(() => {
-        const res = resolveAmbush(gameState, player, attackerUnits, totalRounds, newResults);
-        setOutcome(res.outcome);
-        if (res.outcome === 'win') setShowVictoryBg(true);
-        else setShowLostBg(true);
-
-        markScreenResolved();
-        updateGameState(gameState);
-        setResultMsg(res.message);
-        setPhase('result');
-      }, 500);
-    }
+        setTimeout(() => {
+          const res = resolveAmbush(
+            gameState,
+            player,
+            attackerUnits,
+            newTotalDefKilled,  // player units killed by ambushers
+            newTotalAtkKilled,  // ambusher units killed by player
+            battleOutcome
+          );
+          setOutcome(res.outcome);
+          if (res.outcome === 'win') setShowVictoryBg(true);
+          else setShowLostBg(true);
+          markScreenResolved();
+          updateGameState(gameState);
+          setResultMsg(res.message);
+          setPhase('result');
+        }, 400);
+      } else {
+        setPendingAtkRoll(null);
+        setLastDefRoll(null);
+        setPhase('attacker-roll');
+      }
+    });
   };
 
   const handleClose = () => {
@@ -114,9 +172,15 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
     onClose();
   };
 
-  // Winner of a round keeps their figure 🧍🏻, loser shows 💥.
-  const attackerRoundIcon = (r: RoundResult) => (r.winner === 'defender' ? '💥' : '🧍🏻');
-  const defenderRoundIcon = (r: RoundResult) => (r.winner === 'attacker' ? '💥' : '🧍🏻');
+  // ── Unit grid ──
+  // Attacker (saracen, left): killed at right end (inner side)
+  const attackerGrid = Array.from({ length: attackerUnits }, (_, i) =>
+    i >= attackerUnits - displayedAtkKilled ? '💥' : '🧍'
+  );
+  // Defender (player, right): killed at left end (inner side)
+  const defenderGrid = Array.from({ length: attackerUnits }, (_, i) =>
+    i < displayedDefKilled ? '💥' : '🧍'
+  );
 
   const resultEmoji = outcome === 'win' ? '🛡️' : outcome === 'defeat' ? '☠️' : '⚔️';
 
@@ -146,16 +210,21 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
       />
       <Fade />
 
-      {rollingAttacker && (
-        <DiceWidget key={`a-${currentRound}`} rolling={true} onRoll={onAttackerRollDone} />
-      )}
-      {rollingDefender && (
-        <DiceWidget key={`d-${currentRound}`} rolling={true} onRoll={onDefenderRollDone} />
-      )}
+      {rollingAttacker &&
+        (doubleDice ? (
+          <DiceWidgetDouble key={`a-${atkRollKey}`} onRoll={onAttackerRollDone} />
+        ) : (
+          <DiceWidget key={`a-${atkRollKey}`} rolling={true} onRoll={onAttackerRollDone} />
+        ))}
+      {rollingDefender &&
+        (doubleDice ? (
+          <DiceWidgetDouble key={`d-${defRollKey}`} onRoll={onDefenderRollDone} />
+        ) : (
+          <DiceWidget key={`d-${defRollKey}`} rolling={true} onRoll={onDefenderRollDone} />
+        ))}
 
       <div className="battle-screen">
         <div className="battle-header">Ambush</div>
-        <div className="battle-total-rounds">{totalRounds > 1 ? `${totalRounds} rounds` : ''}</div>
 
         <div className="battle-names-row">
           <div className="bc-attacker">
@@ -166,62 +235,39 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
           </div>
         </div>
 
-        <div className="battle-table">
-          {roundResults.map((r, i) => (
-            <div key={i} className="battle-result-row">
-              <div className="bc-side bc-attacker">
-                <span className="battle-round-icon">{attackerRoundIcon(r)}</span>
-              </div>
-              <div className="bc-roll bc-roll-attacker">🎲 {r.attackerRoll}</div>
-              <div className="battle-round-result">
-                <div className="battle-round-result-icon">
-                  <div>{r.winner === 'defender' ? '🛡️' : r.winner === 'tie' ? '⚔️' : '☠️'}</div>
-                  <div
-                    style={{
-                      color:
-                        r.winner === 'defender'
-                          ? player.color
-                          : r.winner === 'attacker'
-                            ? '#f6b03e'
-                            : 'white',
-                    }}
-                  >
-                    {r.winner === 'defender' ? 'repelled' : r.winner === 'tie' ? 'victory' : 'defeated'}
-                  </div>
-                </div>
-              </div>
-              <div className="bc-roll bc-roll-defender">{r.defenderRoll} 🎲</div>
-              <div className="bc-side bc-defender">
-                <span className="battle-round-icon">{defenderRoundIcon(r)}</span>
-              </div>
-            </div>
-          ))}
+        <div className="battle-field">
+          <div className="battle-units bc-attacker">
+            {attackerGrid.map((emoji, i) => (
+              <span key={i} className="battle-unit">
+                {emoji}
+              </span>
+            ))}
+          </div>
 
-          {phase !== 'result' && roundResults.length < totalRounds && (
-            <div className="battle-action-row">
-              <div className="bc-side bc-attacker">
-                {phase === 'defender-roll' && <span className="battle-round-icon">🧍🏻</span>}
-              </div>
-              <div className="bc-roll bc-roll-attacker">
-                {phase === 'defender-roll' && pendingAttackerRoll !== null ? (
-                  <>🎲 {pendingAttackerRoll}</>
-                ) : (
-                  <span className="dim">·</span>
-                )}
-              </div>
-              <div className="bc-roll bc-roll-defender">
-                <span className="dim">·</span>
-              </div>
-              <div className="bc-side bc-defender">
-                {phase === 'defender-roll' && !rollingDefender && (
-                  <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
-                    🛡️ Defend!
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          <div className="battle-field-vs">
+            {pendingAtkRoll !== null && (
+              <span className="bf-roll">⚔️&nbsp;{pendingAtkRoll}</span>
+            )}
+            <span className="bf-sep">⚔️</span>
+            {lastDefRoll !== null && (
+              <span className="bf-roll">{lastDefRoll}&nbsp;🛡️</span>
+            )}
+          </div>
+
+          <div className="battle-units bc-defender">
+            {defenderGrid.map((emoji, i) => (
+              <span key={i} className="battle-unit">
+                {emoji}
+              </span>
+            ))}
+          </div>
         </div>
+
+        {phase === 'defender-roll' && !rollingDefender && (
+          <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
+            🛡️ Defend!
+          </button>
+        )}
 
         {phase === 'result' && (
           <div className="battle-result-inline">

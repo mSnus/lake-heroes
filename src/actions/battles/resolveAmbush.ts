@@ -1,7 +1,6 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
-import { RoundResult } from './common';
 
 export type AmbushOutcome = 'win' | 'defeat' | 'tie';
 
@@ -13,64 +12,43 @@ export interface AmbushResolution {
 const GOLD_PER_KILL = 200;
 
 /**
- * Apply the outcome of an ambush (the game attacks the player) and return the
- * result screen message. Mutates the player's gold/units directly.
- *
- * - Win: 200🟡 per enemy unit killed (per-round rule), and the player still
- *   loses units for every round the ambushers won (per-round rule).
- * - Tie: the player loses 50% of the ambushers' units.
- * - Defeat: the player loses units equal to the ambushers' force (100%) plus
- *   20–30% of their gold.
+ * Apply the outcome of an ambush (the game attacks the player).
+ * - Win (ambush fails): player loses killed units; earns 200🟡 per ambusher killed.
+ * - Tie: no unit loss; player loses 1/4 gold.
+ * - Defeat: player loses killed units; loses 1/4 gold.
  */
 export function resolveAmbush(
   board: GameState,
   player: Player,
-  attackerUnits: number,
-  totalRounds: number,
-  results: RoundResult[]
+  _attackerUnits: number,
+  playerUnitsKilled: number,
+  ambusherUnitsKilled: number,
+  outcome: AmbushOutcome
 ): AmbushResolution {
-  const perRound = Math.max(1, Math.round(attackerUnits / totalRounds));
-  const roundsWonByPlayer = results.filter((r) => r.winner === 'defender').length;
-  const roundsWonByAttacker = results.filter((r) => r.winner === 'attacker').length;
-
-  const outcome: AmbushOutcome =
-    roundsWonByPlayer > roundsWonByAttacker
-      ? 'win'
-      : roundsWonByAttacker > roundsWonByPlayer
-        ? 'defeat'
-        : 'tie';
-
-  let message = '';
   const goldBefore = player.gold;
   const unitsBefore = player.units;
 
+  let message = '';
+
   if (outcome === 'win') {
-    const killed = roundsWonByPlayer * perRound;
-    const reward = killed * GOLD_PER_KILL;
-    const unitLoss = Math.min(player.units, roundsWonByAttacker * perRound);
-
+    const reward = ambusherUnitsKilled * GOLD_PER_KILL;
+    if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold += reward;
-    player.units = Math.max(0, player.units - unitLoss);
 
-    const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
+    const lossStr = playerUnitsKilled > 0 ? `, losing ${playerUnitsKilled}🧍` : '';
     board.gameMessage = `${player.name} repels the ambush, receiving ${reward}🟡${lossStr}`;
     message = `Ambush repelled! Your reward is ${reward}🟡${lossStr}`;
   } else if (outcome === 'tie') {
-    const unitLoss = Math.min(player.units, Math.floor(attackerUnits * 0.5));
-    player.units = Math.max(0, player.units - unitLoss);
-
-    board.gameMessage = `${player.name} barely survives the ambush, losing ${unitLoss}🧍`;
-    message = `A bloody stalemate — lost ${unitLoss}🧍`;
-  } else {
-    const unitLoss = Math.min(player.units, attackerUnits);
-    const goldPct = 0.2 + Math.random() * 0.1; // 20–30%
-    const goldLoss = Math.floor(player.gold * goldPct);
-
-    player.units = Math.max(0, player.units - unitLoss);
+    const goldLoss = Math.floor(player.gold / 4);
     player.gold = Math.max(0, player.gold - goldLoss);
-
-    board.gameMessage = `${player.name} is overwhelmed by the ambush, losing ${unitLoss}🧍 and ${goldLoss}🟡`;
-    message = `Overwhelmed! Lost ${unitLoss}🧍 and ${goldLoss}🟡`;
+    board.gameMessage = `${player.name} barely survives the ambush, losing ${goldLoss}🟡`;
+    message = `A bloody stalemate — lost ${goldLoss}🟡`;
+  } else {
+    const goldLoss = Math.floor(player.gold / 4);
+    if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
+    player.gold = Math.max(0, player.gold - goldLoss);
+    board.gameMessage = `${player.name} is overwhelmed by the ambush, losing ${playerUnitsKilled}🧍 and ${goldLoss}🟡`;
+    message = `Overwhelmed! Lost ${playerUnitsKilled}🧍 and ${goldLoss}🟡`;
   }
 
   const unitDiff = unitsBefore - player.units;
