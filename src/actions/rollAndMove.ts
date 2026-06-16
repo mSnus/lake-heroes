@@ -15,6 +15,9 @@ import { say } from '../utils/say';
 import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
+import { checkDragonEncounter } from './dragonEncounter';
+import { checkCaravanEncounter } from './caravanEncounter';
+import { checkAmbushEncounter } from './ambushEncounter';
 
 export async function rollAndMove(
   board: GameState | null,
@@ -47,89 +50,95 @@ export async function rollAndMove(
 
   gameEvent('displayTile', {});
 
-  // Step-by-step move with 0.2s delay per tile
-  for (let step = 1; step <= roll; step++) {
-    const nextPos = (player.position + 1) % TILE_COUNT;
-    const willWrap = player.position + 1 >= TILE_COUNT;
+  const proceedWithMove = async () => {
+    // Step-by-step move with 0.2s delay per tile
+    for (let step = 1; step <= roll; step++) {
+      const nextPos = (player.position + 1) % TILE_COUNT;
+      const willWrap = player.position + 1 >= TILE_COUNT;
 
-    gameEvent('setPhase', 'moving');
-    player.position = nextPos;
+      gameEvent('setPhase', 'moving');
+      player.position = nextPos;
+      updateGameState(board);
+
+      if (willWrap) {
+        passStart(board, updateGameState);
+      }
+
+      gameEvent('displayTile', board.tiles[nextPos].fogged() ? {} : board.tiles[nextPos]);
+      await new Promise((res) => setTimeout(res, 300));
+    }
+
+    board.setPhase('after-move');
+    board.incTurns();
+    const wasFogged = board.activeTile.fog;
+    board.activeTile.fog = false;
+    if (wasFogged) {
+      revealTile(board);
+      gameEvent('displayTile', board.activeTile);
+    }
+
     updateGameState(board);
 
-    if (willWrap) {
-      passStart(board, updateGameState);
-    }
+    const continueTileLogic = () => {
+      const tile = board.activeTile;
+      if (tile.name.includes('Treasure')) {
+        board.gameMessage = `Roll dice! Discover the treasure inside...`;
+        updateGameState(board);
+        showTreasureScreen('Treasure found!', (roll) =>
+          handleTreasureBox(board, updateGameState, roll)
+        );
+        return;
+      }
 
-    gameEvent('displayTile', board.tiles[nextPos].fogged() ? {} : board.tiles[nextPos]);
-    // Delay before the next step to visualize movement
-    await new Promise((res) => setTimeout(res, 300));
-  }
+      if (tile.name.includes('Tavern')) {
+        board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
+        updateGameState(board);
+        showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
+        return;
+      }
 
-  board.setPhase('after-move');
-  board.incTurns();
-  const wasFogged = board.activeTile.fog;
-  board.activeTile.fog = false;
-  if (wasFogged) {
-    revealTile(board);
-    gameEvent('displayTile', board.activeTile);
-  }
+      if (tile.name.includes('Prison')) {
+        handlePrison(board, updateGameState);
+        return;
+      }
 
-  updateGameState(board);
+      if (tile.name.includes('Sphynx')) {
+        board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
+        updateGameState(board);
+        showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
+        return;
+      }
 
-  // After finishing the movement, determine landing tile and proceed with existing logic
-  const continueTileLogic = () => {
-    const tile = board.activeTile;
-    if (tile.name.includes('Treasure')) {
-      board.gameMessage = `Roll dice! Discover the treasure inside...`;
-      updateGameState(board);
-      showTreasureScreen('Treasure found!', (roll) =>
-        handleTreasureBox(board, updateGameState, roll)
-      );
-      return;
-    }
+      if (tile.name.includes('Portal')) {
+        handlePortal(board, updateGameState, continueTileLogic);
+        return;
+      }
 
-    if (tile.name.includes('Tavern')) {
-      board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
-      updateGameState(board);
-      showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
-      return;
-    }
+      if (tile.name.includes('King')) {
+        handleKingCastle(board, updateGameState);
+        return;
+      }
 
-    if (tile.name.includes('Prison')) {
-      handlePrison(board, updateGameState);
-      return;
-    }
+      if (tile.name.includes('Joker')) {
+        handleJoker(board, updateGameState);
+        return;
+      }
 
-    if (tile.name.includes('Sphynx')) {
-      board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
-      updateGameState(board);
-      showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
-      return;
-    }
+      if (tile.isOwned() && tile.owner === player.id) {
+        handleVisitOwnTile(board, updateGameState);
+        return;
+      }
 
-    if (tile.name.includes('Portal')) {
-      handlePortal(board, updateGameState, continueTileLogic);
-      return;
-    }
+      afterMoveLogic(board, updateGameState);
+    };
 
-    if (tile.name.includes('King')) {
-      handleKingCastle(board, updateGameState);
-      return;
-    }
-
-    if (tile.name.includes('Joker')) {
-      handleJoker(board, updateGameState);
-      return;
-    }
-
-    if (tile.isOwned() && tile.owner === player.id) {
-      handleVisitOwnTile(board, updateGameState);
-      return;
-    }
-
-    // Normal move - delegate to afterMoveLogic (buy/fee/fight/auto-end)
-    afterMoveLogic(board, updateGameState);
+    continueTileLogic();
   };
 
-  continueTileLogic();
+  // Check random encounters after roll, before movement starts
+  if (checkDragonEncounter(board, updateGameState, proceedWithMove)) return;
+  if (checkCaravanEncounter(board, updateGameState, proceedWithMove)) return;
+  if (checkAmbushEncounter(board, updateGameState, proceedWithMove)) return;
+
+  await proceedWithMove();
 }

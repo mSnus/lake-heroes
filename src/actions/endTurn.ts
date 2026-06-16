@@ -4,9 +4,6 @@ import { say } from '../utils/say';
 import { DRAGON_UNITS_THRESHOLD, fightDragon } from './fightDragon';
 import { showDragonChallengeScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
-import { checkDragonEncounter } from './dragonEncounter';
-import { checkCaravanEncounter } from './caravanEncounter';
-import { checkAmbushEncounter } from './ambushEncounter';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -57,11 +54,6 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     return;
   }
 
-  // Check random encounters before the player rolls
   updateGameState(board);
-  const showDice = () => gameEvent('showDice', null);
-  if (checkDragonEncounter(board, updateGameState, showDice)) return;
-  if (checkCaravanEncounter(board, updateGameState, showDice)) return;
-  if (checkAmbushEncounter(board, updateGameState, showDice)) return;
   gameEvent('showDice', null);
 }
