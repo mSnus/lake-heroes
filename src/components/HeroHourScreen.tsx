@@ -59,7 +59,7 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
         <p className="hero-hour-message">
           {activePlayer.name} surprisingly encounters {opponentList}.
           <br />
-          Challenge one of them to fight?
+          {opponents.length === 1 ? 'Challenge him to fight?' : 'Challenge one of them to fight?'}
         </p>
         <div className="hero-hour-buttons">
           {opponents.map((opponent) => (
