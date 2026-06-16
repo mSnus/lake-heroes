@@ -16,6 +16,7 @@ import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { BRAWL_THRESHOLD } from '../game/constants';
+import { computeBrawlRound } from '../actions/battles/common';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
@@ -247,24 +248,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
     const aRoll = pendingAtkRollRef.current;
 
-    // Brawl (≤BRAWL_THRESHOLD units): 1 round, higher roll wins, loser loses all
-    let defKills: number;
-    let atkKills: number;
-    let newDefLeft: number;
-    let newAtkLeft: number;
-
+    let defKills: number, atkKills: number, newDefLeft: number, newAtkLeft: number;
     if (isBrawl) {
-      if (aRoll > roll) {
-        defKills = defence; atkKills = 0;
-        newDefLeft = 0; newAtkLeft = defence;
-      } else if (roll > aRoll) {
-        defKills = 0; atkKills = defence;
-        newDefLeft = defence; newAtkLeft = 0;
-      } else {
-        // Tie: no kills, retain current unit counts
-        defKills = 0; atkKills = 0;
-        newDefLeft = defUnitsLeftRef.current; newAtkLeft = atkUnitsLeftRef.current;
-      }
+      ({ defKills, atkKills, newDefLeft, newAtkLeft } = computeBrawlRound(
+        aRoll, roll, defence, defUnitsLeftRef.current, atkUnitsLeftRef.current
+      ));
     } else {
       defKills = Math.min(aRoll, defUnitsLeftRef.current);
       atkKills = Math.min(roll, atkUnitsLeftRef.current);

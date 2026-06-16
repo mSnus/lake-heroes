@@ -9,6 +9,7 @@ import { Fade } from './Fade';
 import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD } from '../game/constants';
+import { computeBrawlRound } from '../actions/battles/common';
 import '../styles/BattleScreen.css';
 
 type Phase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
@@ -122,26 +123,11 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
     // In ambush: attacker = saracen (left), defender = player (right)
     // aRoll kills player units (def column), roll kills saracen units (atk column)
 
-    // Brawl (≤BRAWL_THRESHOLD units): 1 round, higher roll wins, loser loses all
-    let defKills: number;
-    let atkKills: number;
-    let newDefLeft: number;
-    let newAtkLeft: number;
-
+    let defKills: number, atkKills: number, newDefLeft: number, newAtkLeft: number;
     if (isBrawl) {
-      if (aRoll > roll) {
-        // Saracen wins → all player units killed
-        defKills = attackerUnits; atkKills = 0;
-        newDefLeft = 0; newAtkLeft = attackerUnits;
-      } else if (roll > aRoll) {
-        // Player wins → all saracen units killed
-        defKills = 0; atkKills = attackerUnits;
-        newDefLeft = attackerUnits; newAtkLeft = 0;
-      } else {
-        // Tie: no kills, retain current unit counts
-        defKills = 0; atkKills = 0;
-        newDefLeft = defUnitsLeftRef.current; newAtkLeft = atkUnitsLeftRef.current;
-      }
+      ({ defKills, atkKills, newDefLeft, newAtkLeft } = computeBrawlRound(
+        aRoll, roll, attackerUnits, defUnitsLeftRef.current, atkUnitsLeftRef.current
+      ));
     } else {
       defKills = Math.min(aRoll, defUnitsLeftRef.current);
       atkKills = Math.min(roll, atkUnitsLeftRef.current);

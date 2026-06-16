@@ -19,6 +19,33 @@ export interface BattleResolution {
   lostBg?: boolean;
 }
 
+export interface BrawlRound {
+  defKills: number;
+  atkKills: number;
+  newDefLeft: number;
+  newAtkLeft: number;
+}
+
+/**
+ * Resolve one brawl round: higher roll wipes the loser's side; tie retains both counts.
+ * `units` is the starting unit count for both sides (brawl grids are always symmetric).
+ */
+export function computeBrawlRound(
+  aRoll: number,
+  dRoll: number,
+  units: number,
+  currentDefLeft: number,
+  currentAtkLeft: number
+): BrawlRound {
+  if (aRoll > dRoll) {
+    return { defKills: units, atkKills: 0, newDefLeft: 0, newAtkLeft: units };
+  } else if (dRoll > aRoll) {
+    return { defKills: 0, atkKills: units, newDefLeft: units, newAtkLeft: 0 };
+  } else {
+    return { defKills: 0, atkKills: 0, newDefLeft: currentDefLeft, newAtkLeft: currentAtkLeft };
+  }
+}
+
 export function logBattleSummary(
   attacker: Player,
   defenderLabel: string,
