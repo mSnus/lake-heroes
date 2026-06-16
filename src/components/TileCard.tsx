@@ -217,6 +217,11 @@ export const TileCard: React.FC<TileCardProps> = ({
     setExpanded(!expanded);
   };
 
+  const upgradeRowProps = (level: number) =>
+    mode === 'owned' && canUpgrade && level === nextLevel
+      ? { onClick: handleUpgrade, style: { cursor: 'pointer' as const } }
+      : {};
+
   const handleBuyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!gameState || !updateGameState) return;
@@ -383,6 +388,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       className={
                         mode === 'owned' && currentLevel > 1 ? 'upgrade-unreachable' : undefined
                       }
+                      {...upgradeRowProps(1)}
                     >
                       <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>→</td>
@@ -395,6 +401,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       className={
                         mode === 'owned' && currentLevel > 2 ? 'upgrade-unreachable' : undefined
                       }
+                      {...upgradeRowProps(2)}
                     >
                       <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>→</td>
@@ -407,6 +414,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       className={
                         mode === 'owned' && upgradeUnreachable ? 'upgrade-unreachable' : undefined
                       }
+                      {...upgradeRowProps(3)}
                     >
                       <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>→</td>
