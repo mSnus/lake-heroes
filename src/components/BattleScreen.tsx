@@ -414,7 +414,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             {pendingAtkRoll !== null && (
               <span className="bf-roll">⚔️&nbsp;{pendingAtkRoll}</span>
             )}
-            <span className="bf-sep">⚔️</span>
+            <span className="bf-sep"></span>
             {lastDefRoll !== null && (
               <span className="bf-roll">{lastDefRoll}&nbsp;🛡️</span>
             )}
