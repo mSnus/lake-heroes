@@ -84,6 +84,19 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 📜
               </button>
             </div>
+            <div className="shield-button-container" title="Reload">
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigator.serviceWorker?.getRegistrations().then((regs) =>
+                    Promise.all(regs.map((r) => r.update()))
+                  ).finally(() => window.location.reload());
+                }}
+                className="shield-button"
+              >
+                🔄
+              </button>
+            </div>
           </>
         )}
       </div>
