@@ -44,11 +44,24 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
 
   if (!player) return null;
 
+  const ownedTiles = player.ownedTiles
+    .map((idx) => gameState.tiles[idx])
+    .filter(Boolean);
+
   return (
     <div className="current-player-card-wrapper game-modal-border" onClick={() => setPlayer(null)}>
       <div className="current-player-card">
         <PlayerCard player={player} />
         <PlayerStats player={player} income={playerIncome(gameState, player)} />
+        {ownedTiles.length > 0 && (
+          <div className="cpc-owned-tiles">
+            {ownedTiles.map((tile) => (
+              <span key={tile.name} className="cpc-tile-name" style={{ color: tile.groupColor }}>
+                {tile.name.split(' ')[0]}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
