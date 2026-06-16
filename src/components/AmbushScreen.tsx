@@ -61,7 +61,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
   useEffect(() => {
     if (loggedRef.current) return;
     loggedRef.current = true;
-    say(`${player.name} is ambushed! ${attackerUnits}🥷 attack from the cover`, 'warning');
+    say(`${player.name} is ambushed by ${attackerUnits}🥷!`, 'warning');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -262,7 +262,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
             {pendingAtkRoll !== null && (
               <span className="bf-roll">⚔️&nbsp;{pendingAtkRoll}</span>
             )}
-            <span className="bf-sep">⚔️</span>
+            <span className="bf-sep"></span>
             {lastDefRoll !== null && (
               <span className="bf-roll">{lastDefRoll}&nbsp;🛡️</span>
             )}
@@ -292,7 +292,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
                 {outcome === 'win'
                   ? 'The ambush is repelled!'
                   : outcome === 'defeat'
-                    ? 'Overwhelmed!'
+                    ? 'Defeat!'
                     : 'A bloody stalemate!'}
               </span>
             </div>

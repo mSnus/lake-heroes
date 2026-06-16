@@ -47,8 +47,9 @@ export function resolveAmbush(
     const goldLoss = Math.floor(player.gold / 4);
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
-    board.gameMessage = `${player.name} is overwhelmed by the ambush, losing ${playerUnitsKilled}🧍 and ${goldLoss}🟡`;
-    message = `Overwhelmed! Lost ${playerUnitsKilled}🧍 and ${goldLoss}🟡`;
+    const lossStr = playerUnitsKilled > 0 ? ` and ${playerUnitsKilled}🧍` : '';
+    board.gameMessage = `${player.name} is overwhelmed by the ambush, losing ${goldLoss}🟡${lossStr}`;
+    message = `Lost ${goldLoss}🟡${lossStr}`;
   }
 
   const unitDiff = unitsBefore - player.units;
