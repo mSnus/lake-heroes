@@ -268,8 +268,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       newDefLeft = defUnitsLeftRef.current - defKills;
       newAtkLeft = atkUnitsLeftRef.current - atkKills;
     }
-    const newTotalAtkKilled = totalAtkKilledRef.current + atkKills;
-    const newTotalDefKilled = totalDefKilledRef.current + defKills;
+    // Brawl kills are visual only — no actual unit loss applied to players
+    const resolveAtkKilled = isBrawl ? 0 : atkKills;
+    const resolveDefKilled = isBrawl ? 0 : defKills;
+    const newTotalAtkKilled = totalAtkKilledRef.current + resolveAtkKilled;
+    const newTotalDefKilled = totalDefKilledRef.current + resolveDefKilled;
 
     animateKills(defKills, atkKills, () => {
       atkUnitsLeftRef.current = newAtkLeft;

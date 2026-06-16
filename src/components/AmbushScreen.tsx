@@ -146,8 +146,11 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
       newDefLeft = defUnitsLeftRef.current - defKills;
       newAtkLeft = atkUnitsLeftRef.current - atkKills;
     }
-    const newTotalAtkKilled = totalAtkKilledRef.current + atkKills; // ambushers killed
-    const newTotalDefKilled = totalDefKilledRef.current + defKills; // player units killed
+    // Brawl kills are visual only — no actual unit loss applied to players
+    const resolveAtkKilled = isBrawl ? 0 : atkKills;
+    const resolveDefKilled = isBrawl ? 0 : defKills;
+    const newTotalAtkKilled = totalAtkKilledRef.current + resolveAtkKilled; // ambushers killed
+    const newTotalDefKilled = totalDefKilledRef.current + resolveDefKilled; // player units killed
 
     animateKills(defKills, atkKills, () => {
       atkUnitsLeftRef.current = newAtkLeft;
