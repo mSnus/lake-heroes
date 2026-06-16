@@ -1,5 +1,4 @@
 import { GameState } from '../game/GameState';
-import { say } from '../utils/say';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 
@@ -19,7 +18,6 @@ export function handleTavern(
 
   board.gameMessage = `${unitsReward}🧍 joined your mighty forces`;
   updateGameState(board);
-  say(`${player.name} recruited units! Rolled ${roll}, received ${unitsReward} U!`, 'success');
 
   showScreen({
     screenType: 'tavern-result',
