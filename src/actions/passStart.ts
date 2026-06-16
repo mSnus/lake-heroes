@@ -4,8 +4,8 @@ import { MONEY_PASS_START } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
 import { changeFame } from '../utils/fame';
 
-export function passStart(board: GameState | null, updateGameState: (board: GameState) => void) {
-  if (!board) return;
+export function passStart(board: GameState | null, updateGameState: (board: GameState) => void): string {
+  if (!board) return '';
 
   const player = board.activePlayer;
   const baseGold = MONEY_PASS_START * (player.fame || 1);
@@ -52,10 +52,11 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
 
   say(`${player.name} receives ${summary}`, 'success');
 
-  if (!board.activeTile.name.toLowerCase().startsWith('king')) {
-    const years = player.circles < 3 ? 'a year' : `${player.circles - 1} years`;
-    board.gameMessage = `The King rewards you with ${summary} for ${years} of your service and properties`;
-  }
+  const years = player.circles < 3 ? 'a year' : `${player.circles - 1} years`;
+  const rewardMessage = `The King rewards you with ${summary} for ${years} of your service and properties`;
+  board.gameMessage = rewardMessage;
+  board.kingRewardMessage = rewardMessage;
 
   updateGameState(board);
+  return rewardMessage;
 }

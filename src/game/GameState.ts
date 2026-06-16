@@ -14,6 +14,7 @@ export class GameState {
   gameStarted: boolean = false;
   turnPhase: TurnPhase;
   gameMessage: string = '';
+  kingRewardMessage: string = '';
   gameOver: boolean = false;
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.
