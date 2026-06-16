@@ -27,10 +27,11 @@ export function afterMoveLogic(
   }
 
   // Hero's Hour: other players at the same tile with enough units to fight
+  // (not at King's Castle — it's neutral ground)
   const playersHere = board.players.filter(
     (p) => p.id !== player.id && p.position === player.position && p.units >= 5
   );
-  if (playersHere.length > 0 && player.units >= 5) {
+  if (playersHere.length > 0 && player.units >= 5 && !tile.name.includes('King')) {
     const tileOwner =
       tile.isOwned() && tile.owner !== player.id
         ? (board.players.find((p) => p.id === tile.owner) ?? null)
