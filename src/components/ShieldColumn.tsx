@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
@@ -21,8 +21,10 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   const { active: diceActive } = useModal();
   const endTurnReady = useEndTurnReady();
   const canEndTurn = endTurnReady && !diceActive;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function handleNewGame() {
+    setMenuOpen(false);
     if (
       window.confirm(
         'Are you sure you want to start a new game? Your current progress will be lost.'
@@ -57,21 +59,33 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   return (
     <>
       <div style={{ ...colStyle, top: 8 }}>
-        <div className="shield-button-container" title="New Game">
-          <button onClick={handleNewGame} className="shield-button">
+        <div className="shield-button-container" title="Menu">
+          <button onClick={() => setMenuOpen((o) => !o)} className="shield-button">
             🐲
           </button>
         </div>
-        <div className="shield-button-container" title="Help">
-          <button onClick={() => showScreen({ content: <HelpScreen /> })} className="shield-button">
-            ?
-          </button>
-        </div>
-        <div className="shield-button-container" title="Game Log">
-          <button onClick={onOpenLog} className="shield-button">
-            📜
-          </button>
-        </div>
+        {menuOpen && (
+          <>
+            <div className="shield-button-container" title="New Game">
+              <button onClick={handleNewGame} className="shield-button">
+                🏆
+              </button>
+            </div>
+            <div className="shield-button-container" title="Help">
+              <button
+                onClick={() => { setMenuOpen(false); showScreen({ content: <HelpScreen /> }); }}
+                className="shield-button"
+              >
+                ?
+              </button>
+            </div>
+            <div className="shield-button-container" title="Game Log">
+              <button onClick={() => { setMenuOpen(false); onOpenLog(); }} className="shield-button">
+                📜
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {(diceActive || canEndTurn) && (
