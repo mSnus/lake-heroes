@@ -15,7 +15,8 @@ import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
-import { BRAWL_THRESHOLD } from '../game/constants';
+import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
+import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound } from '../actions/battles/common';
 import '../styles/BattleScreen.css';
 
@@ -64,9 +65,21 @@ export type BattleScreenProps =
       caravanDefence?: never;
       caravanPrize?: never;
       caravanSlaves?: never;
+    }
+  | {
+      attacker: Player;
+      gameState: GameState;
+      updateGameState: (gs: GameState) => void;
+      mode: 'ambush';
+      ambushAttackerUnits: number;
+      onClose: () => void;
+      defender?: never;
+      tile?: never;
+      caravanDefence?: never;
+      caravanPrize?: never;
+      caravanSlaves?: never;
+      battlefieldUnits?: never;
     };
-
-const DRAGON_UNITS = 50;
 
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const { attacker, gameState, updateGameState } = props;
@@ -75,8 +88,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const isCaravan = props.mode === 'caravan';
   const isDragon = props.mode === 'dragon';
   const isPlayerBattle = props.mode === 'player';
-  const isTile = !isCaravan && !isDragon && !isPlayerBattle;
+  const isAmbush = props.mode === 'ambush';
+  const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush;
   const isAutoDefender = isCaravan || isDragon;
+  const isAutoAttacker = isAmbush;
 
   let defence: number;
   let defender: Player | undefined;
@@ -84,6 +99,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   let caravanPrize: number | undefined;
   let caravanSlaves = false;
   let battlefieldUnits: number | undefined;
+  let ambushAttackerUnits: number | undefined;
 
   if (props.mode === 'caravan') {
     defence = props.caravanDefence;
@@ -95,6 +111,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defence = props.battlefieldUnits;
     defender = props.defender;
     battlefieldUnits = props.battlefieldUnits;
+  } else if (props.mode === 'ambush') {
+    defence = props.ambushAttackerUnits;
+    ambushAttackerUnits = props.ambushAttackerUnits;
   } else {
     defence = props.tile?.defence ?? 1;
     defender = props.defender;
@@ -129,13 +148,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // ── Labels ──
   const defenderLabel = isDragon
     ? 'The Dragon'
-    : isCaravan
-      ? 'Caravan Guards'
+    : isCaravan || isAmbush
+      ? isAmbush ? 'Ambushers' : 'Caravan Guards'
       : (defender?.name ?? 'Guards');
-  const defenderColor = isDragon ? '#ff5816' : isCaravan ? '#f6b03e' : defender?.color;
+  const defenderColor = isDragon ? '#ff5816' : isCaravan || isAmbush ? '#f6b03e' : defender?.color;
   const defenderImg = isDragon
     ? 'assets/figures/npc-drac.png'
-    : isCaravan
+    : isCaravan || isAmbush
       ? 'assets/figures/npc-saracen.png'
       : defender
         ? getPlayerImageSrc(defender.image, defender.fame)
@@ -146,6 +165,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   useEffect(() => {
     if (loggedRef.current) return;
     loggedRef.current = true;
+    if (isAmbush) {
+      say(`${attacker.name} is ambushed by ${ambushAttackerUnits}🥷!`, 'warning');
+      return;
+    }
     const goal = isCaravan
       ? (caravanSlaves ? `${caravanPrize}🧍 in chains` : `${caravanPrize}🟡 of loot`)
       : isDragon
@@ -157,6 +180,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     say(`${attacker.name} attacks ${defenderLabel}'s ${defence}${defEmoji} for ${goal}`, 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Auto-roll attacker (NPC in ambush) ──
+  useEffect(() => {
+    if (phase !== 'attacker-roll' || !isAutoAttacker) return;
+    const t = setTimeout(() => {
+      setAtkRollKey((k) => k + 1);
+      setRollingAttacker(true);
+    }, 600);
+    return () => clearTimeout(t);
+  }, [phase, isAutoAttacker]);
 
   // ── Auto-roll defender (NPC) ──
   useEffect(() => {
@@ -203,7 +236,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         return resolveCaravanBattle(
           gameState,
           attacker,
-          { prize: caravanPrize!, slaves: caravanSlaves },
+          { prize: caravanPrize!, slaves: caravanSlaves, defence },
           atkKilled,
           battleOutcome
         );
@@ -217,6 +250,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           defKilled,
           battleOutcome
         );
+      if (isAmbush) {
+        // In ambush: attacker=NPC(left), defender=player(right).
+        // BattleOutcome 'defender' means player wins the ambush.
+        const ambushOutcome: AmbushOutcome =
+          battleOutcome === 'defender' ? 'win' : battleOutcome === 'attacker' ? 'defeat' : 'tie';
+        const res = resolveAmbush(
+          gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome
+        );
+        return {
+          outcome: battleOutcome,
+          message: res.message,
+          victoryBg: ambushOutcome === 'win',
+          lostBg: ambushOutcome !== 'win',
+        };
+      }
       return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, battleOutcome);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -300,12 +348,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const handleClose = () => {
     clearScreen();
-    if (isCaravan) {
+    if (isCaravan || isPlayerBattle || isAmbush) {
       (props as { onClose: () => void }).onClose();
     } else if (isDragon) {
       if (outcome !== 'attacker') setEndTurn();
-    } else if (isPlayerBattle) {
-      (props as { onClose: () => void }).onClose();
     } else {
       setEndTurn();
     }
@@ -321,8 +367,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     i < displayedDefKilled ? '💥' : '🧍'
   );
 
-  const battleResultEmoji =
-    outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️';
+  const battleResultEmoji = isAmbush
+    ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')
+    : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
 
   const headerText = isCaravan
     ? 'Caravan Raid!'
@@ -330,12 +377,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ? 'Dragon Battle'
       : isPlayerBattle
         ? "Hero's Hour"
-        : isTile
-          ? `Battle for ${tile!.name}`
-          : 'Battle';
+        : isAmbush
+          ? 'Ambush'
+          : isTile
+            ? `Battle for ${tile!.name}`
+            : 'Battle';
 
   return (
-    <ScreenBackground image="assets/screens/battle.jpg">
+    <ScreenBackground image={isAmbush ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
       <div
         style={{
           position: 'absolute',
@@ -379,15 +428,18 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
         <div className="battle-names-row">
           <div className="bc-attacker">
-            <PlayerCard player={attacker} prefix="⚔️" />
+            {isAmbush ? (
+              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} prefix="⚔️" />
+            ) : (
+              <PlayerCard player={attacker} prefix="⚔️" />
+            )}
           </div>
           <div className="bc-defender">
-            <PlayerCard
-              imageSrc={defenderImg}
-              name={defenderLabel}
-              color={defenderColor}
-              prefix="🛡️"
-            />
+            {isAmbush ? (
+              <PlayerCard player={attacker} prefix="🛡️" />
+            ) : (
+              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} prefix="🛡️" />
+            )}
           </div>
         </div>
 
@@ -419,7 +471,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
         </div>
 
-        {phase === 'attacker-roll' && !rollingAttacker && (
+        {phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker && (
           <button className="game-menu-button battle-roll-btn" onClick={handleAttackerRoll}>
             ⚔️ Attack!
           </button>
@@ -436,16 +488,22 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               {battleResultEmoji}
               <br />
               <span className="battle-result-verdict">
-                {outcome === 'attacker'
-                  ? 'Glorious victory!'
-                  : outcome === 'defender'
-                    ? 'Defeat!'
-                    : 'A tie!'}
+                {isAmbush
+                  ? (outcome === 'defender'
+                      ? 'The ambush is repelled!'
+                      : outcome === 'attacker'
+                        ? 'Defeat!'
+                        : 'A bloody stalemate!')
+                  : (outcome === 'attacker'
+                      ? 'Glorious victory!'
+                      : outcome === 'defender'
+                        ? 'Defeat!'
+                        : 'A tie!')}
               </span>
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <button className="game-menu-button" onClick={handleClose}>
-              🩸 Was it worth it?
+              {isAmbush ? '🧭 Ride on' : '🩸 Was it worth it?'}
             </button>
           </div>
         )}

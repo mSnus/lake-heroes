@@ -1,6 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
+import { lossStr } from './common';
 
 export type AmbushOutcome = 'win' | 'defeat' | 'tie';
 
@@ -14,13 +15,13 @@ const GOLD_PER_KILL = 200;
 /**
  * Apply the outcome of an ambush (the game attacks the player).
  * - Win (ambush fails): player loses killed units; earns 200🟡 per ambusher killed.
- * - Tie: no unit loss; player loses 1/4 gold.
+ * - Tie: player loses 1/4 of involved units and 1/2 gold.
  * - Defeat: player loses killed units; loses 1/4 gold.
  */
 export function resolveAmbush(
   board: GameState,
   player: Player,
-  _attackerUnits: number,
+  attackerUnits: number,
   playerUnitsKilled: number,
   ambusherUnitsKilled: number,
   outcome: AmbushOutcome
@@ -39,17 +40,20 @@ export function resolveAmbush(
     board.gameMessage = `${player.name} repels the ambush, receiving ${reward}🟡${lossStr}`;
     message = `Ambush repelled! Your reward is ${reward}🟡${lossStr}`;
   } else if (outcome === 'tie') {
-    const goldLoss = Math.floor(player.gold / 4);
+    const unitLoss = Math.floor(attackerUnits / 4);
+    const goldLoss = Math.floor(player.gold / 2);
+    if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
-    board.gameMessage = `${player.name} barely survives the ambush, losing ${goldLoss}🟡`;
-    message = `A bloody stalemate — lost ${goldLoss}🟡`;
+    const loss = lossStr(goldLoss, unitLoss);
+    board.gameMessage = `${player.name} barely survives the ambush${loss ? `, losing ${loss}` : ''}`;
+    message = `A bloody stalemate${loss ? ` — lost ${loss}` : ''}`;
   } else {
     const goldLoss = Math.floor(player.gold / 4);
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
-    const lossStr = playerUnitsKilled > 0 ? ` and ${playerUnitsKilled}🧍` : '';
-    board.gameMessage = `${player.name} is overwhelmed by the ambush, losing ${goldLoss}🟡${lossStr}`;
-    message = `Lost ${goldLoss}🟡${lossStr}`;
+    const loss = lossStr(goldLoss, playerUnitsKilled);
+    board.gameMessage = `${player.name} is overwhelmed by the ambush${loss ? `, losing ${loss}` : ''}`;
+    message = `${loss ? `Lost ${loss}` : 'Overwhelmed'}`;
   }
 
   const unitDiff = unitsBefore - player.units;

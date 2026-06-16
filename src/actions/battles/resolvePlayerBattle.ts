@@ -39,11 +39,13 @@ export function resolvePlayerBattle(
     message = `${defender.name} flees to the King's Castle!${lossStr}`;
     victoryBg = true;
   } else if (outcome === 'tie') {
-    const halfLoss = Math.ceil(battlefieldUnits / 2);
-    attacker.units = Math.max(0, attacker.units - halfLoss);
-    defender.units = Math.max(0, defender.units - halfLoss);
-    board.gameMessage = `${attacker.name} and ${defender.name} fight to a bloody tie — both lose ${halfLoss}🧍`;
-    message = `A bloody tie — both sides lose ${halfLoss}🧍`;
+    const quarterLoss = Math.floor(battlefieldUnits / 4);
+    if (quarterLoss > 0) {
+      attacker.units = Math.max(0, attacker.units - quarterLoss);
+      defender.units = Math.max(0, defender.units - quarterLoss);
+    }
+    board.gameMessage = `${attacker.name} and ${defender.name} fight to a bloody tie — both lose ${quarterLoss}🧍`;
+    message = `A bloody tie — both sides lose ${quarterLoss}🧍`;
   } else {
     attacker.units = 0;
     attacker.position = 0;

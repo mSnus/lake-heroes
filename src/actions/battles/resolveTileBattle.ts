@@ -51,14 +51,16 @@ export function resolveTileBattle(
     message = `${attacker.name} retreats from ${tile.name}${lossStr}`;
     lostBg = true;
   } else {
-    // Tie: no unit loss
+    const unitLoss = Math.floor(tile.defence / 4);
+    if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+    const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;
-      board.gameMessage = `${attacker.name}'s assault degraded ${tile.name} to level ${tile.level}`;
-      message = `No fee paid and ${tile.name} degraded`;
+      board.gameMessage = `${attacker.name}'s assault degraded ${tile.name} to level ${tile.level}${lossStr}`;
+      message = `No fee paid and ${tile.name} degraded${lossStr}`;
     } else {
-      board.gameMessage = `${attacker.name}'s assault on ${tile.name} ends in a stalemate`;
-      message = `${attacker.name}'s army retreats`;
+      board.gameMessage = `${attacker.name}'s assault on ${tile.name} ends in a stalemate${lossStr}`;
+      message = `${attacker.name}'s army retreats${lossStr}`;
     }
   }
 

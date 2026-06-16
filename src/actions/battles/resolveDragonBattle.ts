@@ -1,6 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
+import { DRAGON_UNITS } from '../../game/constants';
+import { BattleResolution, BattleOutcome, logBattleSummary, lossStr } from './common';
 
 /**
  * Resolve the dragon challenge.
@@ -27,8 +28,8 @@ export function resolveDragonBattle(
     message = 'The Dragon is slain! 🐉 VICTORY!';
     victoryBg = true;
   } else if (outcome === 'tie') {
-    const unitLoss = Math.ceil(attacker.units / 4);
-    if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+    const unitLoss = Math.floor(DRAGON_UNITS / 4);
+    attacker.units = Math.max(0, attacker.units - unitLoss);
     board.gameMessage = `${attacker.name} wounded the Dragon, but he escaped, taking ${unitLoss}🧍`;
     message = `The wounded Dragon retreats, taking ${unitLoss}🧍 with him`;
     lostBg = true;
@@ -37,8 +38,9 @@ export function resolveDragonBattle(
     const goldLoss = Math.ceil(attacker.gold / 2);
     attacker.units = Math.max(0, attacker.units - unitLoss);
     attacker.gold = Math.max(0, attacker.gold - goldLoss);
-    board.gameMessage = `${attacker.name} was defeated by the Dragon! Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
-    message = `Lost ${goldLoss}🟡 and ${unitLoss}🧍`;
+    const loss = lossStr(goldLoss, unitLoss);
+    board.gameMessage = `${attacker.name} was defeated by the Dragon!${loss ? ` Lost ${loss}` : ''}`;
+    message = `${loss ? `Lost ${loss}` : 'Defeated'}`;
     lostBg = true;
   }
 

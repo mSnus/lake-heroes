@@ -1,8 +1,7 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
-import { AmbushScreen } from '../components/AmbushScreen';
-import { KNIGHT_FAME } from '../game/constants';
+import { BattleScreen } from '../components/BattleScreen';
 
 export function checkAmbushEncounter(
   board: GameState,
@@ -11,7 +10,6 @@ export function checkAmbushEncounter(
 ): boolean {
   const player = board.activePlayer;
   const ENCOUNTER_CHANCE = 1 / 14;
-  const ENCOUNTER_FAME = 3;
 
   if (player.fame < 3) return false;
   if (player.units < 5) return false;
@@ -24,9 +22,10 @@ export function checkAmbushEncounter(
     showScreen({
       screenType: 'ambush-battle',
       content: (
-        <AmbushScreen
-          player={player}
-          attackerUnits={attackerUnits}
+        <BattleScreen
+          mode="ambush"
+          attacker={player}
+          ambushAttackerUnits={attackerUnits}
           gameState={board}
           updateGameState={updateGameState}
           onClose={onContinue}

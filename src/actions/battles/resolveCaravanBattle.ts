@@ -12,15 +12,15 @@ import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 export function resolveCaravanBattle(
   board: GameState,
   attacker: Player,
-  opts: { prize: number; slaves: boolean },
+  opts: { prize: number; slaves: boolean; defence: number },
   attackerUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
   const unitsBefore = attacker.units;
   const goldBefore = attacker.gold;
-  const { prize, slaves } = opts;
+  const { prize, slaves, defence } = opts;
 
-  // Win/defeat: attacker loses units killed in battle; tie: no loss
+  // Win/defeat: attacker loses units killed in battle
   if (outcome !== 'tie' && attackerUnitsKilled > 0) {
     attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
   }
@@ -45,14 +45,17 @@ export function resolveCaravanBattle(
     victoryBg = true;
   } else if (outcome === 'tie') {
     const quarterPrize = Math.floor(prize / 4);
+    const unitLoss = Math.floor(defence / 4);
+    if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+    const tieLossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
     if (slaves) {
       attacker.units += quarterPrize;
-      board.gameMessage = `${attacker.name} freed ${quarterPrize}🧍 from the caravan`;
-      message = `Freed only ${quarterPrize}🧍`;
+      board.gameMessage = `${attacker.name} freed only ${quarterPrize}🧍 from the caravan${tieLossStr}`;
+      message = `Freed only ${quarterPrize}🧍${tieLossStr}`;
     } else {
       attacker.gold += quarterPrize;
-      board.gameMessage = `${attacker.name} pillaged only ${quarterPrize}🟡.`;
-      message = `Caravan guards held, you pillaged only ${quarterPrize}🟡.`;
+      board.gameMessage = `${attacker.name} pillaged only ${quarterPrize}🟡${tieLossStr}`;
+      message = `Caravan guards held, pillaged only ${quarterPrize}🟡${tieLossStr}`;
     }
   } else {
     board.gameMessage = `${attacker.name} failed to raid the caravan`;

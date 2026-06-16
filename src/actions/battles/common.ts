@@ -46,6 +46,11 @@ export function computeBrawlRound(
   }
 }
 
+export function lossStr(gold: number, units: number): string {
+  const parts = [...(gold > 0 ? [`${gold}🟡`] : []), ...(units > 0 ? [`${units}🧍`] : [])];
+  return parts.join(' and ');
+}
+
 export function logBattleSummary(
   attacker: Player,
   defenderLabel: string,
