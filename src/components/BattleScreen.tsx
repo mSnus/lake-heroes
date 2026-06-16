@@ -100,7 +100,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   }
 
   const doubleDice = defence > 12;
-  const isBrawl = defence <= 5;
+  const isBrawl = defence <= 5 && !isCaravan;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -151,7 +151,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         : isPlayerBattle
           ? 'glory'
           : tile!.name;
-    say(`${attacker.name} attacks ${defenderLabel}'s ${defence}🧍 for ${goal}`, 'info');
+    const defEmoji = isCaravan ? '🥷' : '🧍';
+    say(`${attacker.name} attacks ${defenderLabel}'s ${defence}${defEmoji} for ${goal}`, 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -268,9 +269,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       newDefLeft = defUnitsLeftRef.current - defKills;
       newAtkLeft = atkUnitsLeftRef.current - atkKills;
     }
-    // Brawl kills are visual only — no actual unit loss applied to players
-    const resolveAtkKilled = isBrawl ? 0 : atkKills;
-    const resolveDefKilled = isBrawl ? 0 : defKills;
+    // Brawl kills are visual only — except tile defeats, which always cost units
+    const willBeDefeat = newAtkLeft <= 0 && newDefLeft > 0;
+    const resolveAtkKilled = isBrawl && !(isTile && willBeDefeat) ? 0 : atkKills;
+    const resolveDefKilled = isBrawl && !(isTile && willBeDefeat) ? 0 : defKills;
     const newTotalAtkKilled = totalAtkKilledRef.current + resolveAtkKilled;
     const newTotalDefKilled = totalDefKilledRef.current + resolveDefKilled;
 
