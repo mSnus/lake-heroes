@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { MONEY_PASS_START } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
+import { changeFame } from '../utils/fame';
 
 export function passStart(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -12,6 +13,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
   player.caravanEncounters = 0;
+  changeFame(player, 1);
   console.log('Action: pass start for', player.name);
 
   say(`${player.name} spent ${player.circles} years wandering, looking for a glory`, 'debug');
