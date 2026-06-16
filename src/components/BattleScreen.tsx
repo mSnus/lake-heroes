@@ -100,6 +100,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   }
 
   const doubleDice = defence > 12;
+  const isBrawl = defence <= 6;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -243,12 +244,30 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setPhase('animating');
 
     const aRoll = pendingAtkRollRef.current;
-    // Kills from this round, capped at remaining units
-    const defKills = Math.min(aRoll, defUnitsLeftRef.current);
-    const atkKills = Math.min(roll, atkUnitsLeftRef.current);
 
-    const newDefLeft = defUnitsLeftRef.current - defKills;
-    const newAtkLeft = atkUnitsLeftRef.current - atkKills;
+    // Brawl (≤6 units): 1 round, higher roll wins, loser loses all
+    let defKills: number;
+    let atkKills: number;
+    let newDefLeft: number;
+    let newAtkLeft: number;
+
+    if (isBrawl) {
+      if (aRoll > roll) {
+        defKills = defence; atkKills = 0;
+        newDefLeft = 0; newAtkLeft = defence;
+      } else if (roll > aRoll) {
+        defKills = 0; atkKills = defence;
+        newDefLeft = defence; newAtkLeft = 0;
+      } else {
+        defKills = 0; atkKills = 0;
+        newDefLeft = 0; newAtkLeft = 0;
+      }
+    } else {
+      defKills = Math.min(aRoll, defUnitsLeftRef.current);
+      atkKills = Math.min(roll, atkUnitsLeftRef.current);
+      newDefLeft = defUnitsLeftRef.current - defKills;
+      newAtkLeft = atkUnitsLeftRef.current - atkKills;
+    }
     const newTotalAtkKilled = totalAtkKilledRef.current + atkKills;
     const newTotalDefKilled = totalDefKilledRef.current + defKills;
 
@@ -361,6 +380,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
       <div className="battle-screen">
         <div className="battle-header">{headerText}</div>
+        {isBrawl && <div className="battle-brawl-tag">Brawl!</div>}
 
         <div className="battle-names-row">
           <div className="bc-attacker">

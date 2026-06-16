@@ -30,6 +30,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
   onClose,
 }) => {
   const doubleDice = attackerUnits > 12;
+  const isBrawl = attackerUnits <= 6;
 
   // ── State ──
   const [phase, setPhase] = useState<Phase>('attacker-roll');
@@ -119,11 +120,32 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
     const aRoll = pendingAtkRollRef.current;
     // In ambush: attacker = saracen (left), defender = player (right)
     // aRoll kills player units (def column), roll kills saracen units (atk column)
-    const defKills = Math.min(aRoll, defUnitsLeftRef.current);  // saracen kills from player side
-    const atkKills = Math.min(roll, atkUnitsLeftRef.current);   // player kills from saracen side
 
-    const newDefLeft = defUnitsLeftRef.current - defKills;
-    const newAtkLeft = atkUnitsLeftRef.current - atkKills;
+    // Brawl (≤6 units): 1 round, higher roll wins, loser loses all
+    let defKills: number;
+    let atkKills: number;
+    let newDefLeft: number;
+    let newAtkLeft: number;
+
+    if (isBrawl) {
+      if (aRoll > roll) {
+        // Saracen wins → all player units killed
+        defKills = attackerUnits; atkKills = 0;
+        newDefLeft = 0; newAtkLeft = attackerUnits;
+      } else if (roll > aRoll) {
+        // Player wins → all saracen units killed
+        defKills = 0; atkKills = attackerUnits;
+        newDefLeft = attackerUnits; newAtkLeft = 0;
+      } else {
+        defKills = 0; atkKills = 0;
+        newDefLeft = 0; newAtkLeft = 0;
+      }
+    } else {
+      defKills = Math.min(aRoll, defUnitsLeftRef.current);
+      atkKills = Math.min(roll, atkUnitsLeftRef.current);
+      newDefLeft = defUnitsLeftRef.current - defKills;
+      newAtkLeft = atkUnitsLeftRef.current - atkKills;
+    }
     const newTotalAtkKilled = totalAtkKilledRef.current + atkKills; // ambushers killed
     const newTotalDefKilled = totalDefKilledRef.current + defKills; // player units killed
 
@@ -225,6 +247,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
 
       <div className="battle-screen">
         <div className="battle-header">Ambush</div>
+        {isBrawl && <div className="battle-brawl-tag">Brawl!</div>}
 
         <div className="battle-names-row">
           <div className="bc-attacker">
