@@ -8,7 +8,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   if (!board) return;
 
   const player = board.activePlayer;
-  const baseGold = MONEY_PASS_START;
+  const baseGold = MONEY_PASS_START * (player.fame || 1);
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
