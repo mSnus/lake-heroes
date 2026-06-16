@@ -15,6 +15,7 @@ import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
+import { BRAWL_THRESHOLD } from '../game/constants';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
@@ -100,7 +101,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   }
 
   const doubleDice = defence > 12;
-  const isBrawl = defence <= 5 && !isCaravan;
+  const isBrawl = defence <= BRAWL_THRESHOLD && !isCaravan;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -246,7 +247,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
     const aRoll = pendingAtkRollRef.current;
 
-    // Brawl (≤6 units): 1 round, higher roll wins, loser loses all
+    // Brawl (≤BRAWL_THRESHOLD units): 1 round, higher roll wins, loser loses all
     let defKills: number;
     let atkKills: number;
     let newDefLeft: number;
@@ -260,8 +261,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         defKills = 0; atkKills = defence;
         newDefLeft = defence; newAtkLeft = 0;
       } else {
+        // Tie: no kills, retain current unit counts
         defKills = 0; atkKills = 0;
-        newDefLeft = 0; newAtkLeft = 0;
+        newDefLeft = defUnitsLeftRef.current; newAtkLeft = atkUnitsLeftRef.current;
       }
     } else {
       defKills = Math.min(aRoll, defUnitsLeftRef.current);
@@ -282,7 +284,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       totalAtkKilledRef.current = newTotalAtkKilled;
       totalDefKilledRef.current = newTotalDefKilled;
 
-      if (newDefLeft <= 0 || newAtkLeft <= 0) {
+      if (isBrawl || newDefLeft <= 0 || newAtkLeft <= 0) {
         const battleOutcome: BattleOutcome =
           newDefLeft <= 0 && newAtkLeft > 0
             ? 'attacker'

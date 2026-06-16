@@ -135,10 +135,13 @@ export async function rollAndMove(
     continueTileLogic();
   };
 
-  // Check random encounters after roll, before movement starts
-  if (checkDragonEncounter(board, updateGameState, proceedWithMove)) return;
-  if (checkCaravanEncounter(board, updateGameState, proceedWithMove)) return;
-  if (checkAmbushEncounter(board, updateGameState, proceedWithMove)) return;
+  // Check random encounters after roll, before movement starts.
+  // Phase resets to before-move so encounter screens don't show rolling UI.
+  gameEvent('setPhase', 'before-move');
+  const continueFn = () => { proceedWithMove().catch(console.error); };
+  if (checkDragonEncounter(board, updateGameState, continueFn)) return;
+  if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
+  if (checkAmbushEncounter(board, updateGameState, continueFn)) return;
 
   await proceedWithMove();
 }

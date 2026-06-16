@@ -8,6 +8,7 @@ import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
+import { BRAWL_THRESHOLD } from '../game/constants';
 import '../styles/BattleScreen.css';
 
 type Phase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
@@ -30,7 +31,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
   onClose,
 }) => {
   const doubleDice = attackerUnits > 12;
-  const isBrawl = attackerUnits <= 5;
+  const isBrawl = attackerUnits <= BRAWL_THRESHOLD;
 
   // ── State ──
   const [phase, setPhase] = useState<Phase>('attacker-roll');
@@ -121,7 +122,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
     // In ambush: attacker = saracen (left), defender = player (right)
     // aRoll kills player units (def column), roll kills saracen units (atk column)
 
-    // Brawl (≤6 units): 1 round, higher roll wins, loser loses all
+    // Brawl (≤BRAWL_THRESHOLD units): 1 round, higher roll wins, loser loses all
     let defKills: number;
     let atkKills: number;
     let newDefLeft: number;
@@ -137,8 +138,9 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
         defKills = 0; atkKills = attackerUnits;
         newDefLeft = attackerUnits; newAtkLeft = 0;
       } else {
+        // Tie: no kills, retain current unit counts
         defKills = 0; atkKills = 0;
-        newDefLeft = 0; newAtkLeft = 0;
+        newDefLeft = defUnitsLeftRef.current; newAtkLeft = atkUnitsLeftRef.current;
       }
     } else {
       defKills = Math.min(aRoll, defUnitsLeftRef.current);
@@ -158,7 +160,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
       totalAtkKilledRef.current = newTotalAtkKilled;
       totalDefKilledRef.current = newTotalDefKilled;
 
-      if (newDefLeft <= 0 || newAtkLeft <= 0) {
+      if (isBrawl || newDefLeft <= 0 || newAtkLeft <= 0) {
         // Outcome from player's perspective: player wins if ambushers are wiped
         const battleOutcome: AmbushOutcome =
           newAtkLeft <= 0 && newDefLeft > 0

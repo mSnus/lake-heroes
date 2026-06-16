@@ -10,5 +10,6 @@ export const REVEAL_GOLD = 100;
 export const UNIT_PRICE = 100; // gold per unit (King's Castle recruit price)
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
 export const KNIGHT_FAME = 4; // fame at or above this makes a player a knight (rider sprite)
+export const BRAWL_THRESHOLD = 5; // defence at or below this triggers brawl mode (1-round, winner takes all)
 
 export const SPRITE_SIZE = 96;
