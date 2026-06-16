@@ -28,9 +28,9 @@ export function afterMoveLogic(
 
   // Hero's Hour: other players at the same tile with enough units to fight
   const playersHere = board.players.filter(
-    (p) => p.id !== player.id && p.position === player.position && p.units >= 6
+    (p) => p.id !== player.id && p.position === player.position && p.units >= 5
   );
-  if (playersHere.length > 0 && player.units >= 6) {
+  if (playersHere.length > 0 && player.units >= 5) {
     const tileOwner =
       tile.isOwned() && tile.owner !== player.id
         ? (board.players.find((p) => p.id === tile.owner) ?? null)

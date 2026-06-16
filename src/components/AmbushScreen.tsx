@@ -30,7 +30,7 @@ export const AmbushScreen: React.FC<AmbushScreenProps> = ({
   onClose,
 }) => {
   const doubleDice = attackerUnits > 12;
-  const isBrawl = attackerUnits <= 6;
+  const isBrawl = attackerUnits <= 5;
 
   // ── State ──
   const [phase, setPhase] = useState<Phase>('attacker-roll');

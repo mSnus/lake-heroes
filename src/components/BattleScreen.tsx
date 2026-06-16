@@ -100,7 +100,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   }
 
   const doubleDice = defence > 12;
-  const isBrawl = defence <= 6;
+  const isBrawl = defence <= 5;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
