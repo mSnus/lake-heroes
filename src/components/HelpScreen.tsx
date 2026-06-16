@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { clearScreen } from '../utils/screenStore';
 import pkg from '../../package.json';
 import tilesData from '../settings/tiles.json';
@@ -11,13 +11,23 @@ import { KNIGHT_FAME } from '../utils/fame';
 const waterMillData = (tilesData as TileJSON[]).find((t) => t.name === 'Water mill');
 const waterMillTile = waterMillData ? new Tile(waterMillData) : null;
 
-const HelpScreen: React.FC = () => (
+const HelpScreen: React.FC = () => {
+  const [version, setVersion] = useState(pkg.version);
+
+  useEffect(() => {
+    fetch('/version.txt')
+      .then((r) => r.ok ? r.text() : null)
+      .then((text) => { if (text?.trim()) setVersion(text.trim()); })
+      .catch(() => {});
+  }, []);
+
+  return (
   <div className="help-screen">
     <div className="help-screen-inner">
       <div className="help-screen-header">
         <h2 className="help-screen-title">
           Dragon's Bounty&nbsp;
-          <span className="help-screen-version">v.{pkg.version}</span>
+          <span className="help-screen-version">v.{version}</span>
         </h2>
         <button onClick={clearScreen} className="help-screen-close">
           ✕
@@ -179,6 +189,7 @@ const HelpScreen: React.FC = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default HelpScreen;
