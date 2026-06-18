@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 import React from 'react';
 import { setEndTurn } from './endTurnStore';
 import { showDice, startDiceRoll } from './diceStore';
+import { Tile } from '../game/Tile';
 
 export interface ScreenButton {
   label: string;
@@ -28,9 +29,7 @@ export interface ScreenConfig {
   encounter?: {
     playerName: string;
     playerColor: string;
-    tileName: string;
-    tileFee?: number;
-    tileDefence?: number;
+    tile?: Tile;
     ownerName?: string;
     ownerColor?: string;
     canFight?: boolean;
@@ -123,7 +122,8 @@ export function showSphynxScreen(handler: (roll: number) => void): void {
   showScreen({
     screenType: 'sphynx',
     background: 'assets/screens/sphynx.jpg',
-    title: 'Sphynx stares at you',
+    title: 'Sphynx',
+    message: 'His stare is heavy as stone',
     fade: true,
     buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
   });

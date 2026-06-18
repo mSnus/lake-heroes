@@ -10,7 +10,6 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
   const playerName = board.players[board.playerOrder[player]].name;
   console.log('Action: prison for', playerName);
 
-  board.gameMessage = `${playerName} dwells in prison`;
   updateGameState(board);
 
   showPrisonScreen(board.gameMessage, board.activeTile.name);

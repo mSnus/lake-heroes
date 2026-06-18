@@ -44,32 +44,27 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         {config.encounter && (
           <div className="text-message">
             <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />
-
+            {' '}
             {config.encounter?.gold !== undefined && (
-              <div
-                className="player-stats-savings"
-                style={{
-                  justifyContent: 'center',
-                  marginBottom: '8px',
-                  color: config.encounter.playerColor,
-                }}
-              >
+              <>
                 <strong>{config.encounter.gold} 🟡</strong>
                 &nbsp;
                 <strong>{config.encounter.units} 🧍</strong>
-              </div>
+              </>
             )}
-            encounters <strong>{config.encounter.tileName}</strong>
-            {config.encounter.tileDefence !== undefined && <> 🛡️ {config.encounter.tileDefence}</>}
+            <br />
+            encounters <strong style={{color: config.encounter.tile?.groupTextColor}}>{config.encounter.tile?.name}</strong>
+            {config.encounter.tile && <> 🛡️ {config.encounter.tile.defence}</>}
             {config.encounter.ownerName && (
               <>
                 <br />
                 that belongs to{' '}
                 <PlayerLabel name={config.encounter.ownerName} color={config.encounter.ownerColor} bold />
-                {config.encounter.canFight && config.encounter.tileDefence !== undefined && (
+                {config.encounter.canFight && config.encounter.tile && (
                   <>
                     <br />
-                    Risk {config.encounter.tileDefence}🧍 to raze it or pay {config.encounter.tileFee}🟡 and go?
+                    <br />
+                    Risk {config.encounter.tile.defence}🧍 to raze it or pay {config.encounter.tile.fee}🟡 and go?
                   </>
                 )}
               </>

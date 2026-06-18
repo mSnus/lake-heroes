@@ -39,7 +39,7 @@ export function resolveTileBattle(
     changeFame(attacker, 1);
     if (defender) changeFame(defender, -1);
 
-    board.gameMessage = `${attacker.name} razed ${tile.name}${lossStr} and now could claim it.`;
+    board.gameMessage = `${attacker.name} razed ${tile.name}${lossStr}!`;
     message = `${attacker.name} razes ${tile.name}${lossStr}!`;
     victoryBg = true;
   } else if (outcome === 'defender') {

@@ -53,7 +53,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   say(`${player.name} receives ${summary}`, 'success');
 
   const years = player.circles < 3 ? 'a year' : `${player.circles - 1} years`;
-  const rewardMessage = `The King rewards you with ${summary} for ${years} of your service and properties`;
+  const rewardMessage = `The King rewards you for ${years} of your service`;
   board.gameMessage = rewardMessage;
   board.kingRewardMessage = rewardMessage;
 

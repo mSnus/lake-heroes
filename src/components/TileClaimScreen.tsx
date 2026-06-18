@@ -20,41 +20,46 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({ tile, player }
   const levels = [1, 2, 3];
 
   return (
-    <ScreenBackground image="assets/screens/victory.jpg">
+    <ScreenBackground image="assets/screens/victory.jpg" style={{paddingTop: '8rem'}}>
       <Fade />
-      <div className="text-title">{tile.name}</div>
-      {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} />}
+      <Fade />
+      {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size='5rem'/>}
+      <div className="text-title" style={{ marginBottom: '0'}}>{tile.name}</div>
 
-      <div className="text-message">
-        is now owned by <PlayerLabel player={player} bold />, who now has a fame of 🏆{player.fame}
+      <div className="text-message" style={{lineHeight: '1.2'}}>
+        was claimed by <PlayerLabel player={player} bold /><br />
+        who's fame is now 🏆{player.fame}
+      </div>
+    
+
+
+      <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
+        <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
+                <div className="tc-td" style={{borderBottom: 'solid 1px #eeeeee50', textAlign:'center', paddingBottom: '2rem'}}>
+                  income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}{' '}
+                  defence: <span className="value">{tile.getDefence(1)}</span>🛡️
+                </div>
+                <div className="tc-td" style={{paddingTop: '2rem'}}>
+                    👛 <span className="value">+{tile.prices[2]?.gold ?? 0}</span>🟡{' '}
+                    <span className="value">{tile.prices[2]?.units ?? 0}</span>🧍{' '}
+                    to upgrade to <span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon}
+                  
+                  {' '}and{' '}<span className="value">{tile.getDefence(2)}</span>🛡️
+                </div>
+                <div className="tc-td">
+                    👛 <span className="value">+{tile.prices[3]?.gold ?? 0}</span>🟡{' '}
+                    <span className="value">{tile.prices[3]?.units ?? 0}</span>🧍{' '}
+                    to upgrade to <span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon}
+                  
+                  {' '}and{' '}<span className="value">{tile.getDefence(3)}</span>🛡️
+                </div>
+        </div>
       </div>
 
-      <div className="text-message tile-card-table-wrap" style={{ marginTop: '24px' }}>
-        <table className="tile-card-table">
-          <tbody>
-            {levels.map((level) => (
-              <tr key={level} className={tile.level === level ? 'level-highlighted' : undefined}>
-                <td className="tc-td">
-                  {tile.prices[level]?.gold ?? 0}🟡 {tile.prices[level]?.units ?? 0}🧍
-                </td>
-                <td className="tc-td">→</td>
-                <td className="tc-td">
-                  +{tile.bonuses[level] ?? 0} {bonusTypeIcon}
-                </td>
-                <td className="tc-td">{tile.getDefence(level)}🛡️</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="text-message" style={{ marginTop: '24px' }}>
-        Upgrade the tile to improve its income and defence.
-      </div>
 
       <div className="game-menu" style={{ top: '40px' }}>
         <div>
-          <DecoratedButton onClick={() => clearScreen()}>I am the greatest</DecoratedButton>
+          <DecoratedButton onClick={() => clearScreen()}>I am the greatest!</DecoratedButton>
         </div>
       </div>
     </ScreenBackground>

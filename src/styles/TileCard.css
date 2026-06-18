@@ -246,6 +246,11 @@
   width: fit-content;
 }
 
+.tc-td .value {
+  font-weight: 600;
+  color: #fff;
+}
+
 .tile-owner {
   font-weight: 600;
   padding-left: 12px;

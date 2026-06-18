@@ -249,7 +249,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           battlefieldUnits!,
           atkKilled,
           defKilled,
-          battleOutcome
+          battleOutcome,
+          isBrawl
         );
       if (isAmbush) {
         // In ambush: attacker=NPC(left), defender=player(right).
@@ -287,7 +288,24 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     pendingAtkRollRef.current = roll;
     setRollingAttacker(false);
     setPendingAtkRoll(roll);
-    setPhase('defender-roll');
+
+    // Brawl outcomes are winner-take-all and depend on comparing both rolls,
+    // so defender casualties can't be shown until the defender also rolls.
+    if (isBrawl) {
+      setPhase('defender-roll');
+      return;
+    }
+
+    // Non-brawl: the attacker's roll alone determines defender casualties —
+    // mark them dead right away instead of waiting for the round to end.
+    const defKills = Math.min(roll, defUnitsLeftRef.current);
+    const newDefLeft = defUnitsLeftRef.current - defKills;
+
+    animateKills(defKills, 0, () => {
+      defUnitsLeftRef.current = newDefLeft;
+      totalDefKilledRef.current += defKills;
+      setPhase('defender-roll');
+    });
   };
 
   const onDefenderRollDone = (roll: number) => {
@@ -304,9 +322,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ));
       brawlRoundsRef.current += 1;
     } else {
-      defKills = Math.min(aRoll, defUnitsLeftRef.current);
+      // Defender casualties were already resolved and animated in onAttackerRollDone.
+      defKills = 0;
       atkKills = Math.min(roll, atkUnitsLeftRef.current);
-      newDefLeft = defUnitsLeftRef.current - defKills;
+      newDefLeft = defUnitsLeftRef.current;
       newAtkLeft = atkUnitsLeftRef.current - atkKills;
     }
     // Brawl kills are visual only — except tile defeats, which always cost units

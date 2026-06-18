@@ -49,7 +49,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
         </div>
 
         <h3 style={{ fontFamily: 'Texturina' }}>
-          Your money and fame are enough to recruit up to {maxAmount}🧍
+          Your money and fame are enough<br /> to recruit up to {maxAmount}🧍
           <br />
         </h3>
 

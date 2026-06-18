@@ -7,9 +7,10 @@ import { BattleResolution, BattleOutcome } from './common';
 /**
  * Resolve a Hero's Hour battle (player vs player).
  * battlefieldUnits = min(attacker.units, defender.units) — same for both sides.
- * - Win: attacker loses killed units; defender loses all units and flees to King's Castle (tile 0).
+ * - Win: attacker loses killed units; loser flees to King's Castle (tile 0), losing
+ *   all units in a brawl, or just the units killed in battle otherwise.
  * - Tie: both lose half of battlefield units.
- * - Defeat: attacker loses all units and flees to King's Castle; defender loses killed units.
+ * - Defeat: mirror of win, from the defender's perspective.
  */
 export function resolvePlayerBattle(
   board: GameState,
@@ -18,7 +19,8 @@ export function resolvePlayerBattle(
   battlefieldUnits: number,
   attackerUnitsKilled: number,
   defenderUnitsKilled: number,
-  outcome: BattleOutcome
+  outcome: BattleOutcome,
+  isBrawl: boolean
 ): BattleResolution {
   const aUnitsBefore = attacker.units;
   const aGoldBefore = attacker.gold;
@@ -29,7 +31,8 @@ export function resolvePlayerBattle(
 
   if (outcome === 'attacker') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
-    defender.units = 0;
+    const defenderLoss = isBrawl ? defender.units : defenderUnitsKilled;
+    if (defenderLoss > 0) defender.units = Math.max(0, defender.units - defenderLoss);
     defender.position = 0;
     changeFame(attacker, 1);
     changeFame(defender, -1);
@@ -47,7 +50,8 @@ export function resolvePlayerBattle(
     board.gameMessage = `${attacker.name} and ${defender.name} fight to a bloody tie — both lose ${quarterLoss}🧍`;
     message = `A bloody tie — both sides lose ${quarterLoss}🧍`;
   } else {
-    attacker.units = 0;
+    const attackerLoss = isBrawl ? attacker.units : attackerUnitsKilled;
+    if (attackerLoss > 0) attacker.units = Math.max(0, attacker.units - attackerLoss);
     attacker.position = 0;
     if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
     changeFame(attacker, -1);

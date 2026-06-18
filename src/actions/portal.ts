@@ -34,11 +34,11 @@ export function handlePortal(
   showScreen({
     screenType: 'portal',
     background: 'assets/screens/portal.jpg',
-    title: 'Colored lights blind you',
-    message: `You feel desoriented and lost 🌀`,
+    title: 'Whirlpool of lights',
+    message: `${player.name} feels desoriented and lost 🌀`,
     buttons: [
       {
-        label: 'Where am I?',
+        label: 'Where are you?',
         onClick: () => {
           clearScreen();
           onContinue();

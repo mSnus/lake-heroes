@@ -29,9 +29,9 @@ export function afterMoveLogic(
   // Hero's Hour: other players at the same tile with enough units to fight
   // (not at King's Castle — it's neutral ground)
   const playersHere = board.players.filter(
-    (p) => p.id !== player.id && p.position === player.position && p.units >= 5
+    (p) => p.id !== player.id && p.position === player.position
   );
-  if (playersHere.length > 0 && player.units >= 5 && !tile.name.includes('King')) {
+  if (playersHere.length > 0 && player.units > 0 && !tile.name.includes('King')) {
     const tileOwner =
       tile.isOwned() && tile.owner !== player.id
         ? (board.players.find((p) => p.id === tile.owner) ?? null)
@@ -107,15 +107,15 @@ export function showTileEncounterScreen(
   const canFight = player.units >= defence;
   const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
   const canSellForFight = !canFight && player.units + sellable.units >= defence;
-  const canSell = canSellForFee || canSellForFight;
+  // Even if selling everything wouldn't fully cover the fee, offer the option
+  // when fighting is available — the player may still prefer to sell first.
+  const canSell = canSellForFee || canSellForFight || (canFight && !canPay);
   const showAcceptLoss = !canPay && !canFight && !canSell;
 
   const encounter = {
     playerName: player.name,
     playerColor: player.color,
-    tileName: tile.name,
-    tileFee: tile.fee,
-    tileDefence: tile.defence,
+    tile,
     ownerName: owner?.name ?? undefined,
     ownerColor,
     canFight,
