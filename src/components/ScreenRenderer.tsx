@@ -7,6 +7,7 @@ import { Fade } from './Fade';
 import { OwnedTiles } from './OwnedTiles';
 import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
+import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { gameEvent } from '../utils/events';
 
 interface ScreenRendererProps {
@@ -39,21 +40,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
       <ScreenBackground image={config.background!}>
         {config.fade && <Fade />}
         {config.title && <div className="text-title">{config.title.trim()}</div>}
-        {config.spriteImage && (
-          <div
-            style={{
-              width: '30vw',
-              height: '30vw',
-              borderRadius: '50%',
-              marginBottom: '16px',
-              flexShrink: 0,
-              zIndex: 6000,
-              backgroundImage: `url(${config.spriteImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          />
-        )}
+        {config.spriteImage && <SpriteCircleIcon src={config.spriteImage} />}
         {config.encounter && (
           <div className="text-message">
             <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />

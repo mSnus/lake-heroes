@@ -1,6 +1,9 @@
+import React from 'react';
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { changeFame } from '../utils/fame';
+import { showScreen } from '../utils/screenStore';
+import { TileClaimScreen } from '../components/TileClaimScreen';
 
 export async function buyTile(
   gameState: GameState | null,
@@ -25,5 +28,6 @@ export async function buyTile(
     changeFame(player, 1);
     updateGameState(gameState);
     gameEvent('displayTile', {});
+    showScreen({ content: React.createElement(TileClaimScreen, { tile, player }) });
   }
 }

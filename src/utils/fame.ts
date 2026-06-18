@@ -22,7 +22,7 @@ export function changeFame(player: Player, delta: number, floor = 1): void {
     const knighted = before < KNIGHT_FAME && after >= KNIGHT_FAME;
     say(
       `${player.name} is now of fame ${after}🏆${knighted ? ' and was promoted to a Knight!' : ''}`,
-      'success'
+      'debug'
     );
   } else {
     const demoted = before >= KNIGHT_FAME && after < KNIGHT_FAME;
