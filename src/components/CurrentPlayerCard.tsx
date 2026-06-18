@@ -56,7 +56,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
         {ownedTiles.length > 0 && (
           <div className="cpc-owned-tiles">
             {ownedTiles.map((tile) => (
-              <span key={tile.name} className="cpc-tile-name" style={{ color: tile.groupColor }}>
+              <span key={tile.name} className="cpc-tile-name" style={{ color: tile.groupTextColor }}>
                 {tile.name.split(' ')[0]}
               </span>
             ))}

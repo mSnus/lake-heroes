@@ -58,6 +58,13 @@ export class Tile implements TileJSON {
     return meta?.color ?? '#eee';
   }
 
+  get groupTextColor(): string {
+    const meta = (groups as { name: string; icon: string; color: string; textColor: string }[]).find(
+      (g) => g.name === this.group
+    );
+    return meta?.textColor ?? '#444';
+  }
+
   get level(): number {
     return this._level ?? 1;
   }

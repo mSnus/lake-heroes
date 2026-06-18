@@ -2,36 +2,43 @@
   {
     "name": "Mills",
     "icon": "🏭",
-    "color": "#FFD166"
+    "color": "#FFD166",
+    "textColor": "#FAAF00"
   },
   {
     "name": "Farms",
     "icon": "🚜",
-    "color": "#aaec84"
+    "color": "#aaec84",
+    "textColor": "#68DD24"
   },
   {
     "name": "Fields",
     "icon": "🌾",
-    "color": "#e3f667"
+    "color": "#e3f667",
+    "textColor": "#CAE70E"
   },
   {
     "name": "Camps",
     "icon": "⛺",
-    "color": "#74b6bd"
+    "color": "#74b6bd",
+    "textColor": "#458991"
   },
   {
     "name": "Traders",
     "icon": "🪓",
-    "color": "#f6b0ca"
+    "color": "#f6b0ca",
+    "textColor": "#E93E7E"
   },
   {
     "name": "Towers",
     "icon": "🗼",
-    "color": "#4f84e5"
+    "color": "#4f84e5",
+    "textColor": "#1C54BC"
   },
   {
     "name": "Special",
     "icon": "⭐",
-    "color": "#CCCCCC"
+    "color": "#CCCCCC",
+    "textColor": "#8F8F8F"
   }
 ]
