@@ -144,6 +144,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const totalAtkKilledRef = useRef(0);
   const totalDefKilledRef = useRef(0);
   const pendingAtkRollRef = useRef(0);
+  const brawlRoundsRef = useRef(0);
 
   // ── Labels ──
   const defenderLabel = isDragon
@@ -301,6 +302,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ({ defKills, atkKills, newDefLeft, newAtkLeft } = computeBrawlRound(
         aRoll, roll, defence, defUnitsLeftRef.current, atkUnitsLeftRef.current
       ));
+      brawlRoundsRef.current += 1;
     } else {
       defKills = Math.min(aRoll, defUnitsLeftRef.current);
       atkKills = Math.min(roll, atkUnitsLeftRef.current);
@@ -320,7 +322,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       totalAtkKilledRef.current = newTotalAtkKilled;
       totalDefKilledRef.current = newTotalDefKilled;
 
-      if (isBrawl || newDefLeft <= 0 || newAtkLeft <= 0) {
+      const brawlRoundsExhausted = isBrawl && brawlRoundsRef.current >= defence;
+      if (newDefLeft <= 0 || newAtkLeft <= 0 || brawlRoundsExhausted) {
         const battleOutcome: BattleOutcome =
           newDefLeft <= 0 && newAtkLeft > 0
             ? 'attacker'
