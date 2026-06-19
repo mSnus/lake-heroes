@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
-import { clearScreen, markScreenResolved } from '../utils/screenStore';
+import { clearScreen, markScreenResolved, showScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
@@ -18,6 +18,7 @@ import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound } from '../actions/battles/common';
+import { TileClaimScreen } from './TileClaimScreen';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
@@ -376,6 +377,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       if (outcome !== 'attacker') setEndTurn();
     } else {
       setEndTurn();
+      // Winning a fight for a previously unowned tile claims it — show the claim screen.
+      if (isTile && tile && outcome === 'attacker' && tile.owner === attacker.id) {
+        showScreen({ content: React.createElement(TileClaimScreen, { tile, player: attacker }) });
+      }
     }
   };
 

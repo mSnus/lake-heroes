@@ -6,7 +6,9 @@ import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 
 /**
  * Resolve a battle for a tile.
- * - Win = RAZE: attacker loses killed units, ownership cleared, level reset.
+ * - Win on an unowned tile = CLAIM: attacker loses killed units, pays the
+ *   level-1 gold price (units are already spent in the fight), and gains ownership.
+ * - Win on an owned tile = RAZE: attacker loses killed units, ownership cleared, level reset.
  * - Defeat: attacker loses killed units, tile unchanged.
  * - Tie: no unit loss, no fee, tile drops a level (if above 1).
  * Defender's real units are never changed (static guards).
@@ -21,6 +23,7 @@ export function resolveTileBattle(
 ): BattleResolution {
   const unitsBefore = attacker.units;
   const goldBefore = attacker.gold;
+  const claiming = !tile.isOwned();
 
   let message = '';
   let victoryBg = false;
@@ -30,18 +33,29 @@ export function resolveTileBattle(
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     const lossStr = attackerUnitsKilled > 0 ? `, losing ${attackerUnitsKilled}🧍` : '';
 
-    board.players.forEach((p) => {
-      p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-    });
-    tile.owner = null;
-    tile._level = 1;
+    if (claiming) {
+      attacker.gold -= tile.prices['1']?.gold ?? 0;
+      tile.owner = attacker.id;
+      attacker.ownedTiles.push(attacker.position);
+      changeFame(attacker, 1);
 
-    changeFame(attacker, 1);
-    if (defender) changeFame(defender, -1);
+      board.gameMessage = `${attacker.name} claims ${tile.name}${lossStr}!`;
+      message = `${attacker.name} claims ${tile.name}${lossStr}!`;
+      victoryBg = true;
+    } else {
+      board.players.forEach((p) => {
+        p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
+      });
+      tile.owner = null;
+      tile._level = 1;
 
-    board.gameMessage = `${attacker.name} razed ${tile.name}${lossStr}!`;
-    message = `${attacker.name} razes ${tile.name}${lossStr}!`;
-    victoryBg = true;
+      changeFame(attacker, 1);
+      if (defender) changeFame(defender, -1);
+
+      board.gameMessage = `${attacker.name} razed ${tile.name}${lossStr}!`;
+      message = `${attacker.name} razes ${tile.name}${lossStr}!`;
+      victoryBg = true;
+    }
   } else if (outcome === 'defender') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     const lossStr = attackerUnitsKilled > 0 ? `, losing ${attackerUnitsKilled}🧍` : '';

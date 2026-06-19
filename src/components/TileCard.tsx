@@ -4,7 +4,7 @@ import '../styles/TileCard.css';
 import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
-import { buyTile } from '../actions/buyTile';
+import { claimTile } from '../actions/claimTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
@@ -226,7 +226,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     e.stopPropagation();
     if (!gameState || !updateGameState) return;
 
-    buyTile(gameState, updateGameState);
+    claimTile(gameState, updateGameState);
   };
 
   return (
