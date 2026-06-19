@@ -20,8 +20,10 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,ttf,ico,webmanifest}'],
         // Largest asset is ~560KB; keep a comfortable cap.
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        // SPA fallback so deep navigations work offline.
+        // SPA fallback so deep navigations work offline. Excludes plain files
+        // like version.txt, which should be served as-is, not the app shell.
         navigateFallback: 'index.html',
+        navigateFallbackDenylist: [/version\.txt$/],
       },
     }),
   ],
