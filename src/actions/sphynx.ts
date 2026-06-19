@@ -20,7 +20,7 @@ export function handleSphynx(
   if (!gameState) return;
 
   const player = gameState.activePlayer;
-  let message = `${player.name} met the Sphynx and rolled ${roll}. `;
+  let message = '';
 
   if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
@@ -30,10 +30,10 @@ export function handleSphynx(
       const loss = Math.min(player.gold, roundedUp50);
 
       player.gold -= loss;
-      message += `Lost half of gold: -${loss}🟡`;
+      message = `Lost half of gold: -${loss}🟡`;
       gameState.gameMessage = `You escape the Sphynx losing ${loss}🟡`;
     } else {
-      message += `He sees your poverty and lets you go.`;
+      message = `He sees your poverty and lets you go.`;
       gameState.gameMessage = `The Sphinx refuses to deal with beggars`;
     }
   } else if (roll === 3 || roll === 4) {
@@ -42,17 +42,17 @@ export function handleSphynx(
     const loss = Math.max(1, raw);
 
     player.units = Math.max(0, player.units - loss);
-    message += `Lost ${loss}🧍 (1/3).`;
+    message = `Lost ${loss}🧍 (1/3).`;
     gameState.gameMessage = `Sphynx eats ${loss}🧍, but you escape.`;
   } else if (roll === 5) {
-    message += `Nothing happens.`;
+    message = `Nothing happens.`;
     gameState.gameMessage = `Sphynx remained silent. Nothing happened.`;
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100, with a floor of 800
     const bonusBase = player.gold * 0.2;
     const gain = Math.max(800, Math.ceil(bonusBase / 100) * 100);
     player.gold += gain;
-    message += `Received ${gain}🟡 (20%).`;
+    message = `Received ${gain}🟡 (20%).`;
     gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
   }
 

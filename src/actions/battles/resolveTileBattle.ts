@@ -39,7 +39,6 @@ export function resolveTileBattle(
       attacker.ownedTiles.push(attacker.position);
       changeFame(attacker, 1);
 
-      board.gameMessage = `${attacker.name} claims ${tile.name}${lossStr}!`;
       message = `${attacker.name} claims ${tile.name}${lossStr}!`;
       victoryBg = true;
     } else {
@@ -60,7 +59,6 @@ export function resolveTileBattle(
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     const lossStr = attackerUnitsKilled > 0 ? `, losing ${attackerUnitsKilled}🧍` : '';
 
-    changeFame(attacker, -1);
     board.gameMessage = `${attacker.name} lost the battle for ${tile.name}${lossStr}`;
     message = `${attacker.name} retreats from ${tile.name}${lossStr}`;
     lostBg = true;
@@ -84,7 +82,8 @@ export function resolveTileBattle(
     outcome,
     outcome === 'attacker' ? tile.name : null,
     unitsBefore,
-    goldBefore
+    goldBefore,
+    claiming
   );
 
   return { outcome, message, victoryBg, lostBg };

@@ -57,16 +57,28 @@ export function logBattleSummary(
   outcome: BattleOutcome,
   capturedTileName: string | null,
   unitsBefore: number,
-  goldBefore: number
+  goldBefore: number,
+  claimed: boolean = false
 ): void {
-  const outcomeVerb =
-    outcome === 'attacker' ? 'wins a battle' : outcome === 'defender' ? 'loses a battle' : 'ties';
-  const capturePart =
-    outcome === 'attacker' && capturedTileName ? `, razed ${capturedTileName}` : '';
   const unitsAfter = attacker.units;
   const goldAfter = attacker.gold;
   const unitDiff = unitsBefore - unitsAfter;
   const goldDiff = goldAfter - goldBefore;
+
+  if (outcome === 'attacker' && claimed && capturedTileName) {
+    const unitsPart = unitDiff > 0 ? ` losing ${unitDiff}🧍` : '';
+    const paidPart = goldDiff < 0 ? ` and paid ${-goldDiff}🟡 to own it` : '';
+    say(
+      `⚔️ ${attacker.name} won the battle for ${capturedTileName}${unitsPart}${paidPart}`,
+      'success'
+    );
+    return;
+  }
+
+  const outcomeVerb =
+    outcome === 'attacker' ? 'wins a battle' : outcome === 'defender' ? 'loses a battle' : 'ties';
+  const capturePart =
+    outcome === 'attacker' && capturedTileName ? `, razed ${capturedTileName}` : '';
   const unitsPart =
     unitDiff > 0
       ? `, lost ${unitDiff}🧍 (${unitsBefore}→${unitsAfter})`

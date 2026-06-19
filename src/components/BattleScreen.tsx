@@ -153,7 +153,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isCaravan || isAmbush
       ? isAmbush ? 'Ambushers' : 'Caravan Guards'
       : (defender?.name ?? 'Guards');
-  const defenderColor = isDragon ? '#ff5816' : isCaravan || isAmbush ? '#f6b03e' : defender?.color;
+  const defenderColor = isDragon
+    ? '#ff5816'
+    : isCaravan || isAmbush
+      ? '#f6b03e'
+      : defender?.color ?? '#eee';
   const defenderImg = isDragon
     ? 'assets/figures/npc-drac.png'
     : isCaravan || isAmbush
