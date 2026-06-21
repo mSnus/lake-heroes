@@ -95,6 +95,7 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
           announce(player, 'sell tiles to pay the fee');
           return sellThenResolve(true, undefined, sortTilesBySacrifice(board, player));
         case 'accept-loss':
+          announce(player, 'accept the loss');
           return buttons.find((b) => b.action === 'accept-loss')?.onClick ?? null;
       }
     }
@@ -112,6 +113,7 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
     };
     if (decision === 'pay') announce(player, 'pay the fee');
     if (decision === 'fight') announce(player, 'fight');
+    if (decision === 'accept-loss') announce(player, 'accept the loss');
     const button = buttons.find((b) => b.action === actionByDecision[decision]);
     return button ? button.onClick : null;
   }
@@ -127,6 +129,7 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
   // Caravan — screenType 'caravan', buttons carry no action tag: [0]=pass, [1]=attack.
   if (screen!.screenType === 'caravan' && buttons.length === 2) {
     const attack = shouldAttackCaravan(player, screen!.caravanDefence ?? 0);
+    if (attack) announce(player, 'attack the caravan');
     return buttons[attack ? 1 : 0].onClick;
   }
 
@@ -170,6 +173,7 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
       if (getCharacterConfig(player)?.buildsSyndicates && tile.requiredFame <= player.fame) {
         const saleCandidate = findSyndicateSaleCandidate(board, player, tile);
         if (saleCandidate) {
+          announce(player, `sell ${saleCandidate.name} to complete a syndicate with ${tile.name}`);
           sellTile(board, player, saleCandidate);
         }
       }
