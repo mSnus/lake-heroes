@@ -42,8 +42,18 @@ export async function rollAndMove(
 
   let tileMessage = `${player.name} rolled ${roll} and went to ${nextTile.name}`;
 
-  if (!nextTile.isOwned() && !nextTile.isAffordable(player.gold, player.units, player.fame)) {
-    tileMessage += `, but cannot afford to buy it.`;
+  if (!nextTile.isOwned()) {
+    const cannotBuy =
+      player.gold < nextTile.currentPrice.gold || player.fame < nextTile.requiredFame;
+    const defenceTooStrong = player.units < nextTile.getDefence(1);
+
+    if (cannotBuy || defenceTooStrong) {
+      const reasons = [
+        ...(cannotBuy ? ['cannot buy it'] : []),
+        ...(defenceTooStrong ? ['the defence seems too strong'] : []),
+      ];
+      tileMessage += `, but ${reasons.join(' and ')}.`;
+    }
   }
 
   say(tileMessage, 'debug');
