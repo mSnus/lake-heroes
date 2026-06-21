@@ -127,7 +127,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const activePlayer = gameState?.activePlayer ?? null;
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
-    (activePlayer && (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)) ||
+    (activePlayer && (activePlayer.units ?? 0) < tile.defence) ||
     (tile.requiredFame > 0 && activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame);
 
   const currentLevel = tile.level || 1;

@@ -95,7 +95,7 @@ export class Tile implements TileJSON {
   isAffordable(playerGold: number, playerUnits: number, playerFame: number): boolean {
     return (
       playerGold >= this.prices['1'].gold &&
-      playerUnits >= this.prices['1'].units &&
+      playerUnits >= this.getDefence(1) &&
       playerFame >= this.requiredFame
     );
   }
