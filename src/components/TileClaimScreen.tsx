@@ -21,7 +21,7 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({ tile, player }
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const t = setTimeout(() => clearScreen(), 600);
+    const t = setTimeout(() => clearScreen(), 800);
     return () => clearTimeout(t);
   }, [player]);
 

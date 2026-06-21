@@ -26,9 +26,21 @@ import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards
 
 // Matches the ~600ms auto-roll delay BattleScreen already uses for NPC sides.
 const BOT_ACTION_DELAY_MS = 600;
+// Closing a result screen gets a beat longer, so a human watching has time
+// to read the outcome before it's dismissed.
+const BOT_CLOSE_DELAY_MS = 800;
 
 function announce(player: Player, decision: string) {
   say(`${player.name} decided to ${decision}`, 'info');
+}
+
+interface BotAction {
+  run: () => void;
+  delayMs: number;
+}
+
+function action(run: () => void, delayMs: number = BOT_ACTION_DELAY_MS): BotAction {
+  return { run, delayMs };
 }
 
 interface Props {
@@ -46,7 +58,7 @@ interface BotContext {
   updateGameState: (gs: GameState) => void;
 }
 
-function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
+function pickGenericScreenAction(ctx: BotContext): BotAction | null {
   const { screen, player, board } = ctx;
   const buttons = screen?.buttons;
   if (!buttons || buttons.length === 0) return null;
@@ -81,29 +93,29 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
       switch (decision.kind) {
         case 'pay':
           announce(player, 'pay the fee');
-          return buttons.find((b) => b.action === 'pay-fee')?.onClick ?? null;
+          return action(buttons.find((b) => b.action === 'pay-fee')?.onClick ?? (() => {}));
         case 'fight':
           announce(player, 'fight');
-          return buttons.find((b) => b.action === 'fight-tile')?.onClick ?? null;
+          return action(buttons.find((b) => b.action === 'fight-tile')?.onClick ?? (() => {}));
         case 'sell-one-then-fight':
           announce(player, 'sell tiles to fight');
-          return sellThenResolve(false, decision.tile);
+          return action(sellThenResolve(false, decision.tile));
         case 'sell-one-then-pay':
           announce(player, 'sell tiles to pay the fee');
-          return sellThenResolve(true, decision.tile);
+          return action(sellThenResolve(true, decision.tile));
         case 'sell-multiple-then-pay':
           announce(player, 'sell tiles to pay the fee');
-          return sellThenResolve(true, undefined, sortTilesBySacrifice(board, player));
+          return action(sellThenResolve(true, undefined, sortTilesBySacrifice(board, player)));
         case 'accept-loss':
           announce(player, 'accept the loss');
-          return buttons.find((b) => b.action === 'accept-loss')?.onClick ?? null;
+          return action(buttons.find((b) => b.action === 'accept-loss')?.onClick ?? (() => {}));
       }
     }
 
     const decision = pickGuardsAction(player, opts);
     if (decision === 'sell-then-resolve') {
       announce(player, opts.canSellForFee ? 'sell tiles to pay the fee' : 'sell tiles to fight');
-      return sellThenResolve(opts.canSellForFee);
+      return action(sellThenResolve(opts.canSellForFee));
     }
 
     const actionByDecision: Record<string, string> = {
@@ -115,7 +127,7 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
     if (decision === 'fight') announce(player, 'fight');
     if (decision === 'accept-loss') announce(player, 'accept the loss');
     const button = buttons.find((b) => b.action === actionByDecision[decision]);
-    return button ? button.onClick : null;
+    return button ? action(button.onClick) : null;
   }
 
   // Dragon challenge (proactive offer or random ambush) — screenType 'dragon'.
@@ -123,24 +135,25 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
     const fight = shouldChallengeDragon(player);
     if (fight) announce(player, 'fight the dragon');
     const button = buttons.find((b) => b.action === (fight ? 'fight' : 'continue'));
-    return button ? button.onClick : null;
+    return button ? action(button.onClick) : null;
   }
 
   // Caravan — screenType 'caravan', buttons carry no action tag: [0]=pass, [1]=attack.
   if (screen!.screenType === 'caravan' && buttons.length === 2) {
     const attack = shouldAttackCaravan(player, screen!.caravanDefence ?? 0);
     if (attack) announce(player, 'attack the caravan');
-    return buttons[attack ? 1 : 0].onClick;
+    return action(buttons[attack ? 1 : 0].onClick);
   }
 
   // Single-button "Continue"-style screens (prison, joker, dice prompts,
-  // result screens, dragon-sky/dragon-attack, portal) — no real decision.
-  if (buttons.length === 1) return buttons[0].onClick;
+  // result screens, dragon-sky/dragon-attack, portal) — no real decision, just
+  // dismissing a screen, so give it the longer close delay.
+  if (buttons.length === 1) return action(buttons[0].onClick, BOT_CLOSE_DELAY_MS);
 
   return null;
 }
 
-function computeNextBotAction(ctx: BotContext): (() => void) | null {
+function computeNextBotAction(ctx: BotContext): BotAction | null {
   const { board, player, screen, diceActive, rolling, endTurnReady, updateGameState } = ctx;
 
   // Custom content: screens self-drive (HeroHourScreen, KingsCastleModal,
@@ -148,12 +161,10 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
   if (screen?.content) return null;
 
   if (screen?.buttons?.length) {
-    const action = pickGenericScreenAction(ctx);
-    if (action) return action;
-    return null; // unrecognized multi-button screen — don't guess
+    return pickGenericScreenAction(ctx); // unrecognized multi-button screen -> null, don't guess
   }
 
-  if (diceActive && !rolling) return () => startDiceRoll();
+  if (diceActive && !rolling) return action(() => startDiceRoll());
   if (diceActive && rolling) return null; // mid-animation, wait
   if (screen) return null; // some other screen we don't recognize is up
 
@@ -169,7 +180,7 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
     !tile.isOwned() &&
     !player.hasConsideredClaimThisTurn
   ) {
-    return () => {
+    return action(() => {
       if (getCharacterConfig(player)?.buildsSyndicates && tile.requiredFame <= player.fame) {
         const saleCandidate = findSyndicateSaleCandidate(board, player, tile);
         if (saleCandidate) {
@@ -183,7 +194,7 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
         claimTile(board, updateGameState);
       }
       updateGameState(board);
-    };
+    });
   }
 
   // Upgrade decision — up to the character's per-turn cap, scanning all owned tiles.
@@ -191,26 +202,26 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
   if (upgradeCfg && player.upgradesThisTurn < upgradeCfg.upgrade.maxPerTurn) {
     const candidate = pickUpgradeCandidate(board, player);
     if (candidate) {
-      return () => {
+      return action(() => {
         const price = candidate.prices[candidate.level + 1];
         player.gold -= price.gold;
         player.units -= price.units;
         candidate._level = candidate.level + 1;
         player.upgradesThisTurn += 1;
         updateGameState(board);
-      };
+      });
     }
   }
 
   if (endTurnReady) {
-    return () => {
+    return action(() => {
       // Matches ShieldColumn/ActionBar's human end-turn path: clears any
       // tile a human inspector had pinned and resets the phase, otherwise
       // the bot's last-viewed tile sticks around into the next turn.
       gameEvent('setPhase', 'before-move');
       gameEvent('displayTile', {});
       endTurn(board, updateGameState);
-    };
+    });
   }
 
   return null;
@@ -225,7 +236,7 @@ export function BotController({ gameState, updateGameState }: Props) {
     const player = gameState?.activePlayer;
     if (!gameState || !player?.isComputer) return;
 
-    const action = computeNextBotAction({
+    const nextAction = computeNextBotAction({
       board: gameState,
       player,
       screen,
@@ -234,9 +245,9 @@ export function BotController({ gameState, updateGameState }: Props) {
       endTurnReady,
       updateGameState,
     });
-    if (!action) return;
+    if (!nextAction) return;
 
-    const t = setTimeout(action, BOT_ACTION_DELAY_MS);
+    const t = setTimeout(nextAction.run, nextAction.delayMs);
     return () => clearTimeout(t);
   }, [gameState, screen, diceActive, rolling, endTurnReady, updateGameState]);
 

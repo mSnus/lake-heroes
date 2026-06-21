@@ -414,10 +414,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // Auto-close the result screen when every real participant is a bot
   // (a human-vs-NPC battle still has a real human to click "Continue").
+  // Longer delay than the roll auto-triggers, so there's time to read the outcome.
   const bothSidesAutomated = attacker.isComputer && (!defender || defender.isComputer);
   useEffect(() => {
     if (phase !== 'result' || !bothSidesAutomated) return;
-    const t = setTimeout(() => handleClose(), 600);
+    const t = setTimeout(() => handleClose(), 800);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, bothSidesAutomated]);
