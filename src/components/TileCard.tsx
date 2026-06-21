@@ -336,19 +336,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                             {tile.currentPrice.gold ?? 0} 🟡
                           </span>
                           {'  '}
-                          <span
-                            style={
-                              activePlayer &&
-                              (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0)
-                                ? { color: '#ff4444' }
-                                : {}
-                            }
-                          >
-                            {activePlayer &&
-                              (activePlayer.units ?? 0) < (tile.currentPrice.units ?? 0) &&
-                              '🔻'}
-                            {tile.currentPrice.units ?? 0}🧍
-                          </span>
+                          <span>{defence(1)}⚔️</span>
                           {tile.requiredFame > 0 && (
                             <>
                               {'  '}
@@ -390,7 +378,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       }
                       {...upgradeRowProps(1)}
                     >
-                      <td className={class1}>{priceCell(1)}</td>
+                      <td className={class1}>base</td>
                       <td className={class1}>→</td>
                       <td className={class1}>
                         +{bonus(1)} {bonusTypeIcon}
