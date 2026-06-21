@@ -74,11 +74,11 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
       <div className="battle-screen">
         <div className="battle-header">Hero's Hour</div>
         <p className="hero-hour-message">
-          <PlayerLabel player={activePlayer} /> surprisingly encounters{' '}
+          <PlayerLabel player={activePlayer} /> 🧍{activePlayer.units} surprisingly encounters{' '}
           {opponents.map((opponent, i) => (
             <React.Fragment key={opponent.id}>
               {i > 0 && ', '}
-              <PlayerLabel player={opponent} />
+              <PlayerLabel player={opponent} /> 🧍{opponent.units}
             </React.Fragment>
           ))}
           .
