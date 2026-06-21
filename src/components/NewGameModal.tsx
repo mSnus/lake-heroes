@@ -108,7 +108,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     <GameModal className="modal-new-game" backgroundImage="assets/screens/dragon.jpg" noBorder>
       <>
         <div className="game-title">Dragon's Bounty</div>
-        <div style={{ textAlign: 'center', fontSize: '1rem', opacity: 0.7, marginTop: '-8px' }}>
+        <div style={{ textAlign: 'center', fontSize: '1rem', color: 'gold', marginTop: '-8px' }}>
           v.{version}
         </div>
         <div className="input-group">
