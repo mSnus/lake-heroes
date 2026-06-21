@@ -26,7 +26,7 @@ export function resolveCaravanBattle(
   }
 
   const unitLossMsg = attackerUnitsKilled > 0 && outcome !== 'tie'
-    ? ` <br />while ${attackerUnitsKilled}🧍 were lost fighting for it`
+    ? ` while ${attackerUnitsKilled}🧍 were lost fighting for it`
     : '';
 
   let message = '';
