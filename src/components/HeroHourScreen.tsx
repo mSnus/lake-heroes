@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
@@ -50,10 +50,8 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
     onGreetDone();
   };
 
-  const actedRef = useRef(false);
   useEffect(() => {
-    if (!activePlayer.isComputer || actedRef.current) return;
-    actedRef.current = true;
+    if (!activePlayer.isComputer) return;
     const t = setTimeout(() => {
       const target = pickHeroHourTarget(activePlayer, opponents);
       if (target) handleFight(target);

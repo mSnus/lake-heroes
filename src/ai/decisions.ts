@@ -72,15 +72,17 @@ export function pickUpgradeCandidate(board: GameState, player: Player): Tile | n
   return best;
 }
 
-/** Hero's Hour: fight the eligible opponent with the fewest units (safest), or null to greet. */
+/**
+ * Hero's Hour: check opponents weakest-first (fewest units first) and fight
+ * the first one that clears the character's army-ratio threshold, or null
+ * to greet if none do.
+ */
 export function pickHeroHourTarget(player: Player, opponents: Player[]): Player | null {
   const cfg = getCharacterConfig(player);
   if (!cfg) return null;
 
-  const eligible = opponents.filter((o) => player.units >= cfg.fightThreshold.heroHour * o.units);
-  if (eligible.length === 0) return null;
-
-  return eligible.reduce((a, b) => (b.units < a.units ? b : a));
+  const byWeakest = [...opponents].sort((a, b) => a.units - b.units);
+  return byWeakest.find((o) => player.units >= cfg.fightThreshold.heroHour * o.units) ?? null;
 }
 
 /** Caravan: attack iff the player's army is big enough relative to the caravan's guards. */
