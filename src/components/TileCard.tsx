@@ -336,7 +336,16 @@ export const TileCard: React.FC<TileCardProps> = ({
                             {tile.currentPrice.gold ?? 0} 🟡
                           </span>
                           {'  '}
-                          <span>{defence(1)}⚔️</span>
+                          <span
+                            style={
+                              activePlayer && (activePlayer.units ?? 0) < defence(1)
+                                ? { color: '#ff4444' }
+                                : {}
+                            }
+                          >
+                            {activePlayer && (activePlayer.units ?? 0) < defence(1) && '🔻'}
+                            {defence(1)}⚔️
+                          </span>
                           {tile.requiredFame > 0 && (
                             <>
                               {'  '}
