@@ -18,6 +18,7 @@ import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound } from '../actions/battles/common';
+import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { TileClaimScreen } from './TileClaimScreen';
 import '../styles/BattleScreen.css';
 
@@ -295,6 +296,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setDefRollKey((k) => k + 1);
     setRollingDefender(true);
   };
+
+  useShakeToRoll(phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker, handleAttackerRoll);
+  useShakeToRoll(phase === 'defender-roll' && !isAutoDefender && !rollingDefender, handleDefenderRoll);
 
   const onAttackerRollDone = (roll: number) => {
     pendingAtkRollRef.current = roll;
