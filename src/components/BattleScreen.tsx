@@ -398,11 +398,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // ── Unit grid: killed 💥 accumulate on the inner side (toward center) ──
   // Attacker column (left): killed appear at the right end
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) =>
-    i >= attackerUnits - displayedAtkKilled ? '💥' : '🧍'
+    i >= attackerUnits - displayedAtkKilled ? '💥' : isAmbush ? '👹' : '🧍'
   );
   // Defender column (right): killed appear at the left end
   const defenderGrid = Array.from({ length: defence }, (_, i) =>
-    i < displayedDefKilled ? '💥' : isDragon ? '🐉' : '🧍'
+    i < displayedDefKilled ? '💥' : isDragon ? '🐉' : isCaravan ? '👹' : '🧍'
   );
 
   const battleResultEmoji = isAmbush
