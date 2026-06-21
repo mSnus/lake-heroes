@@ -126,9 +126,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
+  // Claiming a tile shows the attacker's actual unit count rather than
+  // mirroring the tile's defence — this is what makes Banzai (attacking with
+  // fewer units than the defence) visible as e.g. 8 vs 10.
   const attackerUnits = isDragon
     ? gameState.players.reduce((sum, p) => sum + p.units, 0)
-    : defence;
+    : isClaim
+      ? attacker.units
+      : defence;
 
   const doubleDice = defence > 12 || attackerUnits > 12;
   const isBrawl = defence <= BRAWL_THRESHOLD;
