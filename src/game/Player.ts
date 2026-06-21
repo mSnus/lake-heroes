@@ -28,6 +28,8 @@ export class Player {
   caravanEncounteredLastTurn: boolean;
   unitsHiredThisTurn: number;
   isPrisonerOfWar: boolean;
+  hasClaimedThisTurn: boolean;
+  hasBeenOfferedDragonChallenge: boolean;
 
   constructor(params: PlayerParams) {
     this.id = params.id ?? 0;
@@ -47,5 +49,7 @@ export class Player {
     this.caravanEncounteredLastTurn = false;
     this.unitsHiredThisTurn = 0;
     this.isPrisonerOfWar = false;
+    this.hasClaimedThisTurn = false;
+    this.hasBeenOfferedDragonChallenge = false;
   }
 }

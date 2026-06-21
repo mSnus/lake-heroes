@@ -11,6 +11,9 @@ export function claimTile(board: GameState | null, updateGameState: (board: Game
 
   if (tile.isOwned()) return;
   if (!tile.isAffordable(attacker.gold, attacker.units, attacker.fame)) return;
+  if (attacker.hasClaimedThisTurn) return;
+
+  attacker.hasClaimedThisTurn = true;
 
   showScreen({
     content: React.createElement(BattleScreen, {

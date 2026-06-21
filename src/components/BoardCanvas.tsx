@@ -9,6 +9,7 @@ import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
 import { handleKingCastle } from '../actions/king';
+import { challengeDragonFromBoard } from '../actions/fightDragon';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -202,6 +203,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         <div className="layer-tiles" aria-hidden>
           {board.tiles.map((tile, i) => renderTile(tile, i))}
         </div>
+
+        <img
+          className="dragon-center-icon"
+          src="assets/figures/npc-drac.png"
+          alt="Challenge the Dragon"
+          onClick={() => challengeDragonFromBoard(board, updateGameState)}
+        />
 
         <img className="bg-image" src={mapUrl} alt={'Map bg'}></img>
       </div>

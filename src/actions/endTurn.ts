@@ -1,8 +1,7 @@
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
-import { DRAGON_UNITS_THRESHOLD, fightDragon } from './fightDragon';
-import { showDragonChallengeScreen } from '../utils/screenStore';
+import { DRAGON_UNITS_THRESHOLD, offerDragonChallenge } from './fightDragon';
 import { setEndTurn } from '../utils/endTurnStore';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 
@@ -13,6 +12,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.gameMessage = '';
+  board.activePlayer.hasClaimedThisTurn = false;
 
   if (board.activePlayerIndex === 0) {
     board.round++;
@@ -38,19 +38,18 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     updateGameState(board);
   }
 
-  if (board.activePlayer.units >= DRAGON_UNITS_THRESHOLD) {
+  if (
+    board.activePlayer.units >= DRAGON_UNITS_THRESHOLD &&
+    !board.activePlayer.hasBeenOfferedDragonChallenge
+  ) {
+    board.activePlayer.hasBeenOfferedDragonChallenge = true;
     say(
       `${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`,
       'info'
     );
     board.gameMessage = `Terrifying dragon guards a pile of gold and jewels`;
     updateGameState(board);
-    const p = board.activePlayer;
-    showDragonChallengeScreen(
-      `A terrifying dragon guards a pile of gold and jewels. Will <span style="color:${p.color}">${p.name}</span> dare to challenge it?`,
-      () => fightDragon(board, updateGameState),
-      () => gameEvent('showDice', null)
-    );
+    offerDragonChallenge(board, updateGameState, () => gameEvent('showDice', null));
     return;
   }
 

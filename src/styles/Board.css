@@ -50,6 +50,19 @@
   /* allow clicks to pass through to tiles unless specifically on player markers */
 }
 
+.dragon-center-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  z-index: 4;
+  cursor: pointer;
+  filter: drop-shadow(0px 2px 4px #00000080);
+}
+
 /* Static tile shell and content */
 .tile {
   position: absolute;

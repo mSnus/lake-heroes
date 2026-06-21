@@ -91,7 +91,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const isPlayerBattle = props.mode === 'player';
   const isAmbush = props.mode === 'ambush';
   const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush;
-  const isAutoDefender = isCaravan || isDragon;
+  const isClaim = isTile && !props.defender;
+  const isAutoDefender = isCaravan || isDragon || isClaim;
   const isAutoAttacker = isAmbush;
 
   let defence: number;
@@ -121,7 +122,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     tile = props.tile;
   }
 
-  const doubleDice = defence > 12;
+  // The whole kingdom rallies against the dragon, so the attacker's army is the
+  // combined units of every player rather than mirroring the dragon's 50.
+  const attackerUnits = isDragon
+    ? gameState.players.reduce((sum, p) => sum + p.units, 0)
+    : defence;
+
+  const doubleDice = defence > 12 || attackerUnits > 12;
   const isBrawl = defence <= BRAWL_THRESHOLD && !isCaravan;
 
   // ── State ──
@@ -140,7 +147,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const [defRollKey, setDefRollKey] = useState(0);
 
   // ── Refs (stable across animation timeouts) ──
-  const atkUnitsLeftRef = useRef(defence);
+  const atkUnitsLeftRef = useRef(attackerUnits);
   const defUnitsLeftRef = useRef(defence);
   const totalAtkKilledRef = useRef(0);
   const totalDefKilledRef = useRef(0);
@@ -182,7 +189,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         : isPlayerBattle
           ? 'glory'
           : tile!.name;
-    const defEmoji = isCaravan ? '🥷' : '🧍';
+    const defEmoji = isDragon ? '🐉' : isCaravan ? '🥷' : '🧍';
     say(`${attacker.name} attacks ${defenderLabel}'s ${defence}${defEmoji} for ${goal}`, 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -390,12 +397,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // ── Unit grid: killed 💥 accumulate on the inner side (toward center) ──
   // Attacker column (left): killed appear at the right end
-  const attackerGrid = Array.from({ length: defence }, (_, i) =>
-    i >= defence - displayedAtkKilled ? '💥' : '🧍'
+  const attackerGrid = Array.from({ length: attackerUnits }, (_, i) =>
+    i >= attackerUnits - displayedAtkKilled ? '💥' : '🧍'
   );
   // Defender column (right): killed appear at the left end
   const defenderGrid = Array.from({ length: defence }, (_, i) =>
-    i < displayedDefKilled ? '💥' : '🧍'
+    i < displayedDefKilled ? '💥' : isDragon ? '🐉' : '🧍'
   );
 
   const battleResultEmoji = isAmbush
