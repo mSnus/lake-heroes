@@ -15,7 +15,7 @@ interface BuyUnitsModalProps {
 const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip }) => {
   const player = gameState.activePlayer;
 
-  const maxForFame = Math.max(0, player.fame * 5 - player.unitsHiredThisTurn);
+  const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
   const maxAmount = Math.min(Math.floor(player.gold / UNIT_PRICE), maxForFame);
 
   const [amount, setAmount] = useState(maxAmount);
