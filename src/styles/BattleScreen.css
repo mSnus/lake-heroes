@@ -66,6 +66,8 @@
   background: rgba(0, 0, 0, 0.35);
   border-radius: 8px;
   min-height: 48px;
+  max-height: 45vh;
+  overflow-y: auto;
   align-content: flex-start;
 }
 

@@ -204,10 +204,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           {board.tiles.map((tile, i) => renderTile(tile, i))}
         </div>
 
-        <img
+        <div
           className="dragon-center-icon"
-          src="assets/figures/npc-drac.png"
-          alt="Challenge the Dragon"
+          role="button"
+          aria-label="Challenge the Dragon"
           onClick={() => challengeDragonFromBoard(board, updateGameState)}
         />
 
