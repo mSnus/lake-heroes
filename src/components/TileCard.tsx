@@ -8,6 +8,7 @@ import { claimTile } from '../actions/claimTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
+import { BRAWL_THRESHOLD } from '../game/constants';
 import DecoratedButton from './DecoratedButton';
 
 const fmtPrice = (gold: number, units: number, join: string = ''): string => {
@@ -125,9 +126,25 @@ export const TileCard: React.FC<TileCardProps> = ({
   const class3 = tile.isOwned() && tile.level == 3 ? 'tc-td level-highlighted' : 'tc-td';
 
   const activePlayer = gameState?.activePlayer ?? null;
+
+  // Brawl tiles (low defence) always require enough units to win the
+  // winner-take-all round. Above that threshold, an attacker with more than
+  // BRAWL_THRESHOLD units may "banzai" — attack despite having fewer units
+  // than the tile's defence — as a deliberate gamble.
+  const lvl1Defence = defence(1);
+  const isBrawlTile = lvl1Defence <= BRAWL_THRESHOLD;
+  const isBanzai =
+    !isBrawlTile &&
+    !!activePlayer &&
+    (activePlayer.units ?? 0) > BRAWL_THRESHOLD &&
+    (activePlayer.units ?? 0) < lvl1Defence;
+  const attackEmoji = isBrawlTile ? '✊' : isBanzai ? '🩸' : '⚔️';
+  const unitsInsufficient =
+    !isBanzai && !!activePlayer && (activePlayer.units ?? 0) < lvl1Defence;
+
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
-    (activePlayer && (activePlayer.units ?? 0) < tile.defence) ||
+    unitsInsufficient ||
     (tile.requiredFame > 0 && activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame);
 
   const currentLevel = tile.level || 1;
@@ -336,15 +353,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                             {tile.currentPrice.gold ?? 0} 🟡
                           </span>
                           {'  '}
-                          <span
-                            style={
-                              activePlayer && (activePlayer.units ?? 0) < defence(1)
-                                ? { color: '#ff4444' }
-                                : {}
-                            }
-                          >
-                            {activePlayer && (activePlayer.units ?? 0) < defence(1) && '🔻'}
-                            {defence(1)}⚔️
+                          <span style={unitsInsufficient ? { color: '#ff4444' } : {}}>
+                            {unitsInsufficient && '🔻'}
+                            {defence(1)}{attackEmoji}
                           </span>
                           {tile.requiredFame > 0 && (
                             <>
@@ -477,7 +488,7 @@ export const TileCard: React.FC<TileCardProps> = ({
               activePlayer?.fame ?? 1
             ) && (              
               <DecoratedButton onClick={(e) => handleBuyClick(e)} style={{width: '100%', marginBottom: '0', height: '80px', paddingBottom: '8px', filter: 'drop-shadow(2px 2px 3px #00000050);'}}>
-                Claim it!
+                {isBanzai ? 'Banzai!' : 'Claim it!'} {attackEmoji}{defence(1)}
               </DecoratedButton>
             )}
         </div>

@@ -1,4 +1,4 @@
-import { FEE_MULTIPLIER } from './constants';
+import { FEE_MULTIPLIER, BRAWL_THRESHOLD } from './constants';
 import groups from '../settings/groups.json';
 
 export interface TileJSON {
@@ -93,9 +93,16 @@ export class Tile implements TileJSON {
   }
 
   isAffordable(playerGold: number, playerUnits: number, playerFame: number): boolean {
+    const lvl1Defence = this.getDefence(1);
+    // Brawl tiles (low defence) always require enough units to win the
+    // winner-take-all round. Above the brawl threshold, an attacker with
+    // more than that many units may "banzai" — attack a tougher tile than
+    // their army could normally win — as a deliberate gamble.
+    const isBrawlTile = lvl1Defence <= BRAWL_THRESHOLD;
+    const canBanzai = !isBrawlTile && playerUnits > BRAWL_THRESHOLD;
     return (
       playerGold >= this.prices['1'].gold &&
-      playerUnits >= this.getDefence(1) &&
+      (canBanzai || playerUnits >= lvl1Defence) &&
       playerFame >= this.requiredFame
     );
   }
