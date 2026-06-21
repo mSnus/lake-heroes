@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
@@ -7,6 +7,7 @@ import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { BattleScreen } from './BattleScreen';
 import { PlayerLabel } from './PlayerLabel';
+import { pickHeroHourTarget } from '../ai/decisions';
 import '../styles/BattleScreen.css';
 
 interface HeroHourScreenProps {
@@ -48,6 +49,19 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
   const handleGreet = () => {
     onGreetDone();
   };
+
+  const actedRef = useRef(false);
+  useEffect(() => {
+    if (!activePlayer.isComputer || actedRef.current) return;
+    actedRef.current = true;
+    const t = setTimeout(() => {
+      const target = pickHeroHourTarget(activePlayer, opponents);
+      if (target) handleFight(target);
+      else handleGreet();
+    }, 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const greetLabel = tileOwner ? `Go to ${tile.name}'s guards` : '✖ Greet and pass';
 

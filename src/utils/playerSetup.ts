@@ -1,3 +1,5 @@
+import { CharacterId } from '../ai/characters';
+
 export interface PlayerSetup {
   name: string;
   color: string;
@@ -5,4 +7,6 @@ export interface PlayerSetup {
   gold: number;
   units: number;
   position: number;
+  isComputer?: boolean;
+  character?: CharacterId;
 }

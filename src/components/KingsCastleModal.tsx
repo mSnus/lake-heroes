@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
 import topImage from '../../public/assets/top1.jpg';
 import { UNIT_PRICE } from '../game/constants';
 import { PlayerLabel } from './PlayerLabel';
+import { pickKingsCastleHireAmount } from '../ai/decisions';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -29,6 +30,16 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
   const handleMax = () => setAmount(maxAmount);
   const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
   const handleDec = () => setAmount((a) => Math.max(0, a - 1));
+
+  const actedRef = useRef(false);
+  useEffect(() => {
+    if (!player.isComputer || actedRef.current) return;
+    actedRef.current = true;
+    const hireAmount = pickKingsCastleHireAmount(player, maxAmount);
+    const t = setTimeout(() => (hireAmount > 0 ? onBuy(hireAmount) : onSkip()), 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <GameModal

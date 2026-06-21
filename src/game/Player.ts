@@ -1,3 +1,5 @@
+import { CharacterId } from '../ai/characters';
+
 export interface PlayerParams {
   id?: number;
   name: string;
@@ -7,6 +9,8 @@ export interface PlayerParams {
   position: number;
   image: string;
   fame?: number;
+  isComputer?: boolean;
+  character?: CharacterId;
 }
 
 export class Player {
@@ -30,6 +34,9 @@ export class Player {
   isPrisonerOfWar: boolean;
   hasClaimedThisTurn: boolean;
   hasBeenOfferedDragonChallenge: boolean;
+  upgradesThisTurn: number;
+  isComputer: boolean;
+  character?: CharacterId;
 
   constructor(params: PlayerParams) {
     this.id = params.id ?? 0;
@@ -51,5 +58,8 @@ export class Player {
     this.isPrisonerOfWar = false;
     this.hasClaimedThisTurn = false;
     this.hasBeenOfferedDragonChallenge = false;
+    this.upgradesThisTurn = 0;
+    this.isComputer = params.isComputer ?? false;
+    this.character = params.character;
   }
 }

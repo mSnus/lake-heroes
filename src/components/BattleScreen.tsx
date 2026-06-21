@@ -94,8 +94,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const isAmbush = props.mode === 'ambush';
   const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush;
   const isClaim = isTile && !props.defender;
-  const isAutoDefender = isCaravan || isDragon || isClaim;
-  const isAutoAttacker = isAmbush;
+  const isAutoDefender = isCaravan || isDragon || isClaim || (props.defender?.isComputer ?? false);
+  const isAutoAttacker = isAmbush || attacker.isComputer;
 
   let defence: number;
   let defender: Player | undefined;

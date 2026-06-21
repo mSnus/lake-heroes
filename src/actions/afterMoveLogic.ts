@@ -8,6 +8,7 @@ import { say } from '../utils/say';
 import { payFee } from './payFee';
 import { fightTile } from './fightTile';
 import { HeroHourScreen } from '../components/HeroHourScreen';
+import { computeFeeOptions } from './feeOptions';
 
 export function afterMoveLogic(
   board: GameState | null,
@@ -89,28 +90,13 @@ export function showTileEncounterScreen(
     return;
   }
 
-  const fee = tile.fee;
-  const defence = tile.defence;
   const ownerColor = owner?.color;
 
-  const sellable = player.ownedTiles.reduce(
-    (acc, posIdx) => {
-      const t = board.tiles[posIdx];
-      if (!t || t.owner !== player.id) return acc;
-      acc.gold += t.currentPrice.gold;
-      acc.units += t.currentPrice.units;
-      return acc;
-    },
-    { gold: 0, units: 0 }
+  const { fee, defence, canPay, canFight, canSell, showAcceptLoss } = computeFeeOptions(
+    board,
+    player,
+    tile
   );
-  const canPay = player.gold >= fee;
-  const canFight = player.units >= defence;
-  const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
-  const canSellForFight = !canFight && player.units + sellable.units >= defence;
-  // Even if selling everything wouldn't fully cover the fee, offer the option
-  // when fighting is available — the player may still prefer to sell first.
-  const canSell = canSellForFee || canSellForFight || (canFight && !canPay);
-  const showAcceptLoss = !canPay && !canFight && !canSell;
 
   const encounter = {
     playerName: player.name,
@@ -142,7 +128,7 @@ export function showTileEncounterScreen(
     feeButton,
     {
       label: `Battle ⚔️ (${defence}🧍)`,
-      action: 'fight',
+      action: 'fight-tile',
       onClick: () => fightTile(board, updateGameState),
       disabled: player.units < defence,
     },
@@ -150,7 +136,7 @@ export function showTileEncounterScreen(
 
   const acceptLossButton: ScreenButton = {
     label: `Accept loss 😢`,
-    action: 'fight',
+    action: 'accept-loss',
     onClick: () => {
       player.isPrisonerOfWar = true;
       becomeBeggar(board, updateGameState);
@@ -168,7 +154,7 @@ export function showTileEncounterScreen(
     };
     extraButtons.push({
       label: 'Sell tiles 💰',
-      action: 'fight',
+      action: 'sell-tiles',
       onClick: () => showScreen(sellModeConfig),
     });
   }

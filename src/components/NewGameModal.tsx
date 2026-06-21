@@ -5,12 +5,24 @@ import GameModal from './GameModal';
 import '../styles/modal.css';
 import { PlayerSetup } from '../utils/playerSetup';
 import { DecoratedButton } from './DecoratedButton';
+import { CharacterId } from '../ai/characters';
+import { useAppVersion } from '../utils/useAppVersion';
+
+// Cycle order for the per-player mode toggle: human -> explorer -> warrior -> wizard -> human...
+const MODE_CYCLE: (CharacterId | null)[] = [null, 'explorer', 'warrior', 'wizard'];
+const MODE_EMOJI: Record<CharacterId | 'human', string> = {
+  human: '🧒',
+  explorer: '🤖🧑‍🌾',
+  warrior: '🤖💂',
+  wizard: '🤖🧙',
+};
 
 interface NewGameModalProps {
   onStart: (players: PlayerSetup[]) => void;
 }
 
 const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
+  const version = useAppVersion();
   const [numPlayers, setNumPlayers] = useState(2);
   const [players, setPlayers] = useState<PlayerSetup[]>(() => {
     const initialPlayers: PlayerSetup[] = [];
@@ -75,10 +87,29 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     return playerOptions.find((opt) => opt.color === player.color);
   };
 
+  const handleCycleMode = (index: number) => {
+    const newPlayers = [...players];
+    const player = { ...newPlayers[index] };
+    const currentKey: CharacterId | 'human' = player.isComputer
+      ? player.character ?? 'explorer'
+      : 'human';
+    const currentIdx = MODE_CYCLE.findIndex((c) => (c ?? 'human') === currentKey);
+    const next = MODE_CYCLE[(currentIdx + 1) % MODE_CYCLE.length];
+
+    player.isComputer = next !== null;
+    player.character = next ?? undefined;
+
+    newPlayers[index] = player;
+    setPlayers(newPlayers);
+  };
+
   return (
     <GameModal className="modal-new-game" backgroundImage="assets/screens/dragon.jpg" noBorder>
       <>
         <div className="game-title">Dragon's Bounty</div>
+        <div style={{ textAlign: 'center', fontSize: '1rem', opacity: 0.7, marginTop: '-8px' }}>
+          v.{version}
+        </div>
         <div className="input-group">
           <label>Heroes: </label>
           <select value={numPlayers} onChange={handleNumPlayersChange}>
@@ -101,8 +132,20 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
               type="text"
               value={player.name}
               onChange={(e) => handlePlayerChange(index, 'name', e.target.value)}
-              style={{paddingRight: '30px'}}
             />
+            <button
+              onClick={() => handleCycleMode(index)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1.4rem',
+                padding: '0 4px',
+              }}
+              title="Human / Computer (click to cycle)"
+            >
+              {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
+            </button>
             <button
               onClick={() =>
                 handlePlayerChange(
@@ -117,7 +160,6 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 cursor: 'pointer',
                 fontSize: '1.2rem',
                 padding: '0 4px',
-                marginLeft: '-42px',
               }}
               title="Random name"
             >

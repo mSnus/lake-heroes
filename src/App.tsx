@@ -24,6 +24,7 @@ import GameLogModal, { LogMessage } from './components/GameLogModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
+import { BotController } from './components/BotController';
 import { showDice } from './utils/diceStore';
 import { requestShakeToRollPermission } from './utils/useShakeToRoll';
 import {
@@ -454,6 +455,7 @@ function App() {
       />
 
       <ModalRenderer />
+      <BotController gameState={gameState} updateGameState={updateGameState} />
 
       {!gameState && screen?.content && <>{screen.content}</>}
 

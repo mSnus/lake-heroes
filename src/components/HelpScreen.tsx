@@ -1,27 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { clearScreen } from '../utils/screenStore';
-import pkg from '../../package.json';
 import tilesData from '../settings/tiles.json';
 import { Tile, TileJSON } from '../game/Tile';
 import { TileCard } from './TileCard';
 import { DecoratedButton } from './DecoratedButton';
 import '../styles/HelpScreen.css';
 import { KNIGHT_FAME } from '../utils/fame';
+import { useAppVersion } from '../utils/useAppVersion';
 
 const waterMillData = (tilesData as TileJSON[]).find((t) => t.name === 'Water mill');
 const waterMillTile = waterMillData ? new Tile(waterMillData) : null;
 
 const HelpScreen: React.FC = () => {
-  const [version, setVersion] = useState(pkg.version);
-
-  useEffect(() => {
-    fetch('/version.txt')
-      .then((r) => (r.ok ? r.text() : null))
-      .then((text) => {
-        if (text?.trim()) setVersion(text.trim());
-      })
-      .catch(() => {});
-  }, []);
+  const version = useAppVersion();
 
   return (
     <div className="help-screen">
