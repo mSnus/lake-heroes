@@ -22,7 +22,7 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
   Plague: '🦠',
   Hurricane: '🌪️',
   Blessing: '👑',
-  "Queen's Gift": '📿',
+  "Queen's Gift": '💍',
   Earthquake: '🪨',
   Meteor: '☄️',
 };
