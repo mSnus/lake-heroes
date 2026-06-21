@@ -57,7 +57,8 @@ export function handleTreasureBox(
   showScreen({
     screenType: 'treasure-result',
     background: 'assets/screens/treasure.jpg',
-    message: board.gameMessage,
+    title: 'Treasure found!',
+    htmlMessage: `<span style="color:${player.color}">${player.name}</span> found a ${size} chest`,
     fade: true,
     buttons: [
       {
