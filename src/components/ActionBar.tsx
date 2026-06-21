@@ -20,9 +20,10 @@ export const ActionBar: React.FC<ActionBarProps> = ({ gameState, updateGameState
   // controls, so Space must not end the turn behind it.
   const screenActive = !!useScreen();
   const canEndTurn = endTurnReady && !diceActive && !screenActive;
+  const isBotTurn = !!gameState?.activePlayer.isComputer;
 
   useEffect(() => {
-    if (!diceActive && !canEndTurn) return;
+    if (isBotTurn || (!diceActive && !canEndTurn)) return;
     const handler = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault();
@@ -38,7 +39,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({ gameState, updateGameState
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [diceActive, canEndTurn, gameState, updateGameState]);
+  }, [isBotTurn, diceActive, canEndTurn, gameState, updateGameState]);
 
   return (
     <div

@@ -22,11 +22,13 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   const { active: diceActive, rolling } = useModal();
   const endTurnReady = useEndTurnReady();
   const canEndTurn = endTurnReady && !diceActive;
+  const isBotTurn = gameState.activePlayer.isComputer;
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Covers movement rolls and the Tavern/Sphynx/Treasure dice prompts, since
-  // they all funnel through the same diceStore (active && !rolling).
-  useShakeToRoll(diceActive && !rolling, startDiceRoll);
+  // they all funnel through the same diceStore (active && !rolling). Disabled
+  // during a bot's turn — BotController already rolls for it automatically.
+  useShakeToRoll(diceActive && !rolling && !isBotTurn, startDiceRoll);
 
   function handleNewGame() {
     setMenuOpen(false);
@@ -106,23 +108,33 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         )}
       </div>
 
-      {(diceActive || canEndTurn) && (
+      {isBotTurn ? (
         <div style={{ ...colStyle, bottom: '60px' }}>
-          {diceActive && (
-            <div className="shield-button-container main-button" title="Roll Dice">
-              <button onClick={startDiceRoll} className="shield-button">
-                🎲
-              </button>
-            </div>
-          )}
-          {canEndTurn && (
-            <div className="shield-button-container main-button" title="End Turn">
-              <button onClick={handleEndTurn} className="shield-button">
-                ⏳
-              </button>
-            </div>
-          )}
+          <div className="shield-button-container main-button" title="AI is taking its turn">
+            <button className="shield-button" disabled style={{ cursor: 'default' }}>
+              🤖
+            </button>
+          </div>
         </div>
+      ) : (
+        (diceActive || canEndTurn) && (
+          <div style={{ ...colStyle, bottom: '60px' }}>
+            {diceActive && (
+              <div className="shield-button-container main-button" title="Roll Dice">
+                <button onClick={startDiceRoll} className="shield-button">
+                  🎲
+                </button>
+              </div>
+            )}
+            {canEndTurn && (
+              <div className="shield-button-container main-button" title="End Turn">
+                <button onClick={handleEndTurn} className="shield-button">
+                  ⏳
+                </button>
+              </div>
+            )}
+          </div>
+        )
       )}
     </>
   );
