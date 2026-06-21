@@ -134,19 +134,6 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
               onChange={(e) => handlePlayerChange(index, 'name', e.target.value)}
             />
             <button
-              onClick={() => handleCycleMode(index)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1.4rem',
-                padding: '0 4px',
-              }}
-              title="Human / Computer (click to cycle)"
-            >
-              {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
-            </button>
-            <button
               onClick={() =>
                 handlePlayerChange(
                   index,
@@ -165,19 +152,35 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             >
               ↪️
             </button>
+            <button
+              onClick={() => handleCycleMode(index)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                padding: '0 4px',
+                whiteSpace: 'nowrap',
+              }}
+              title="Human / Computer (click to cycle)"
+            >
+              {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
+            </button>
             <select
               value={player.color}
               onChange={(e) => handlePlayerChange(index, 'color', e.target.value)}
             >
-              {playerOptions.map((opt) => (
-                <option
-                  key={opt.color}
-                  value={opt.color}
-                  disabled={players.some((p, i) => i !== index && p.color === opt.color)}
-                >
-                  {opt.colorName}
-                </option>
-              ))}
+              {playerOptions
+                .filter(
+                  (opt) =>
+                    opt.color === player.color ||
+                    !players.some((p, i) => i !== index && p.color === opt.color)
+                )
+                .map((opt) => (
+                  <option key={opt.color} value={opt.color}>
+                    {opt.colorName}
+                  </option>
+                ))}
             </select>
             {getSelectedOption(player) && (
               <img
