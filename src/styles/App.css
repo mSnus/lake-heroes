@@ -114,6 +114,7 @@ body {
 .game-message-text {
   color: #fdf599;
   font-size: 15px;
+  line-height: 1;
   padding: 10px 9px;
   font-weight: 500;
   padding-right: 54px;
