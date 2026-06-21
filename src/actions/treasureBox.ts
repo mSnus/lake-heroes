@@ -8,11 +8,17 @@ type TreasureSize = 'small' | 'medium' | 'large';
 
 const TREASURE_SIZE_MULTIPLIERS: Record<TreasureSize, number> = {
   small: 1,
-  medium: 3,
-  large: 5,
+  medium: 1.5,
+  large: 2,
 };
 
-const TREASURE_SIZES: TreasureSize[] = ['small', 'medium', 'large'];
+// 0-70 small, 70-90 medium, 90-100 large
+function rollTreasureSize(): TreasureSize {
+  const roll = Math.random() * 100;
+  if (roll < 70) return 'small';
+  if (roll < 90) return 'medium';
+  return 'large';
+}
 
 export function handleTreasureBox(
   board: GameState | null,
@@ -35,7 +41,7 @@ export function handleTreasureBox(
         ? MULTIPLIER_CIRCLES_6
         : MULTIPLIER_CIRCLES_START;
 
-  const size = TREASURE_SIZES[Math.floor(Math.random() * TREASURE_SIZES.length)];
+  const size = rollTreasureSize();
   const sizeMultiplier = TREASURE_SIZE_MULTIPLIERS[size];
   const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier * sizeMultiplier);
 
