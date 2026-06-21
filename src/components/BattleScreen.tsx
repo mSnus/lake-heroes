@@ -129,7 +129,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : defence;
 
   const doubleDice = defence > 12 || attackerUnits > 12;
-  const isBrawl = defence <= BRAWL_THRESHOLD && !isCaravan;
+  const isBrawl = defence <= BRAWL_THRESHOLD;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
