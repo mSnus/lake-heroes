@@ -223,6 +223,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     return () => clearTimeout(t);
   }, [phase, isAutoDefender]);
 
+
   // ── Kill animation: defender column first, then attacker column ──
   const animateKills = useCallback(
     (defKills: number, atkKills: number, onDone: () => void) => {
@@ -410,6 +411,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       }
     }
   };
+
+  // Auto-close the result screen when every real participant is a bot
+  // (a human-vs-NPC battle still has a real human to click "Continue").
+  const bothSidesAutomated = attacker.isComputer && (!defender || defender.isComputer);
+  useEffect(() => {
+    if (phase !== 'result' || !bothSidesAutomated) return;
+    const t = setTimeout(() => handleClose(), 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, bothSidesAutomated]);
 
   // ── Unit grid: killed 💥 accumulate on the inner side (toward center) ──
   // Attacker column (left): killed appear at the right end

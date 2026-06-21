@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { ScreenBackground } from './ScreenBackground';
@@ -18,6 +18,14 @@ interface TileClaimScreenProps {
 export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({ tile, player }) => {
   const bonusTypeIcon = tile.bonusType === 'units' ? '👬' : '🟡';
   const levels = [1, 2, 3];
+
+  const actedRef = useRef(false);
+  useEffect(() => {
+    if (!player.isComputer || actedRef.current) return;
+    actedRef.current = true;
+    const t = setTimeout(() => clearScreen(), 600);
+    return () => clearTimeout(t);
+  }, [player]);
 
   return (
     <ScreenBackground image="assets/screens/victory.jpg" style={{paddingTop: '8rem'}}>
