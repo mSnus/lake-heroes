@@ -126,7 +126,7 @@ const HelpScreen: React.FC = () => {
               all your properties.
             </li>
             <li>
-              📦 <strong>Treasure Box</strong> — gold reward.
+              📦 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.
             </li>
             <li>
               🍺 <strong>Tavern</strong> — recruit units

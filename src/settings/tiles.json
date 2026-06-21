@@ -563,7 +563,7 @@
   {
     "group": "Special",
     "icon": "🪙",
-    "name": "Treasure box",
+    "name": "Treasure chest",
     "spriteImage": "assets/sprites/treasure.png",
     "isOwnable": false,
     "prices": {

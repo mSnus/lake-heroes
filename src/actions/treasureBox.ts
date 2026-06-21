@@ -4,6 +4,16 @@ import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 
+type TreasureSize = 'small' | 'medium' | 'large';
+
+const TREASURE_SIZE_MULTIPLIERS: Record<TreasureSize, number> = {
+  small: 1,
+  medium: 3,
+  large: 5,
+};
+
+const TREASURE_SIZES: TreasureSize[] = ['small', 'medium', 'large'];
+
 export function handleTreasureBox(
   board: GameState | null,
   updateGameState: (board: GameState) => void,
@@ -24,13 +34,19 @@ export function handleTreasureBox(
       : circles >= 6
         ? MULTIPLIER_CIRCLES_6
         : MULTIPLIER_CIRCLES_START;
-  const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier);
+
+  const size = TREASURE_SIZES[Math.floor(Math.random() * TREASURE_SIZES.length)];
+  const sizeMultiplier = TREASURE_SIZE_MULTIPLIERS[size];
+  const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier * sizeMultiplier);
 
   player.gold += goldReward;
-  board.gameMessage = `${player.name} found ${goldReward}🟡 in the treasure!`;
+  board.gameMessage = `${player.name} found a ${size} treasure chest with ${goldReward}🟡 inside!`;
 
   updateGameState(board);
-  say(`${player.name} found treasure! Rolled ${roll}, received ${goldReward}🟡!`, 'success');
+  say(
+    `${player.name} found a ${size} treasure chest! Rolled ${roll}, received ${goldReward}🟡!`,
+    'success'
+  );
 
   showScreen({
     screenType: 'treasure-result',
