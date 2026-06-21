@@ -6,6 +6,7 @@ import { showScreen } from '../utils/screenStore';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { BattleScreen } from './BattleScreen';
+import { PlayerLabel } from './PlayerLabel';
 import '../styles/BattleScreen.css';
 
 interface HeroHourScreenProps {
@@ -48,7 +49,6 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
     onGreetDone();
   };
 
-  const opponentList = opponents.map((p) => p.name).join(', ');
   const greetLabel = tileOwner ? `Go to ${tile.name}'s guards` : '✖ Greet and pass';
 
   return (
@@ -57,9 +57,19 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
       <div className="battle-screen">
         <div className="battle-header">Hero's Hour</div>
         <p className="hero-hour-message">
-          {activePlayer.name} surprisingly encounters {opponentList}.
+          <PlayerLabel player={activePlayer} /> surprisingly encounters{' '}
+          {opponents.map((opponent, i) => (
+            <React.Fragment key={opponent.id}>
+              {i > 0 && ', '}
+              <PlayerLabel player={opponent} />
+            </React.Fragment>
+          ))}
+          .
           <br />
-          {opponents.length === 1 ? 'Challenge him to fight?' : 'Challenge one of them to fight?'}
+          <br />
+          {opponents.length === 1
+            ? 'Wouldst thou challenge for a fight?'
+            : 'Challenge one of them to fight?'}
         </p>
         <div className="hero-hour-buttons">
           {opponents.map((opponent) => (
