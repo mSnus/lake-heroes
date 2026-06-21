@@ -18,6 +18,14 @@ export interface CharacterConfig {
   buildsSyndicates: boolean;
 }
 
+// Appended to a bot's name once the game starts, so it's visible in-game but
+// not editable in the NewGameModal name field.
+export const CHARACTER_EMOJI: Record<CharacterId, string> = {
+  explorer: '🧑‍🌾',
+  warrior: '💂',
+  wizard: '🧙',
+};
+
 export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
   explorer: {
     id: 'explorer',

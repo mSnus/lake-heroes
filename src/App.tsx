@@ -5,6 +5,7 @@ import './styles/App.css';
 import './styles/GameMenu.css';
 
 import { Player } from './game/Player';
+import { CHARACTER_EMOJI } from './ai/characters';
 import { GameState, TurnPhase } from './game/GameState';
 import { Tile, TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
@@ -426,7 +427,11 @@ function App() {
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[]) => {
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
-      const players = playersSetup.map((p, i) => new Player({ ...p, id: i + 1 }));
+      const players = playersSetup.map((p, i) => {
+        const name =
+          p.isComputer && p.character ? `${p.name} ${CHARACTER_EMOJI[p.character]}` : p.name;
+        return new Player({ ...p, name, id: i + 1 });
+      });
       const initialGameState = new GameState(tiles, players);
       gameStart(initialGameState, updateGameState);
 
