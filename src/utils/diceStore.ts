@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { vibrateDiceRoll } from './vibrateDiceRoll';
 
 type ModalState = {
   active: boolean;
@@ -33,6 +34,9 @@ export function closeModal() {
 
 export function startDiceRoll() {
   if (!state.active || state.rolling) return;
+  // Called directly from the click/keypress handler, so this is still
+  // within the user-gesture window the Vibration API requires on Chrome.
+  vibrateDiceRoll();
   state = { ...state, rolling: true };
   emit();
 }

@@ -19,6 +19,7 @@ import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound } from '../actions/battles/common';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
+import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 import { TileClaimScreen } from './TileClaimScreen';
 import '../styles/BattleScreen.css';
 
@@ -288,11 +289,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // ── Roll handlers ──
   const handleAttackerRoll = () => {
+    // Called directly from the click handler, so this is still within the
+    // user-gesture window the Vibration API requires on Chrome.
+    vibrateDiceRoll();
     setAtkRollKey((k) => k + 1);
     setRollingAttacker(true);
   };
 
   const handleDefenderRoll = () => {
+    vibrateDiceRoll();
     setDefRollKey((k) => k + 1);
     setRollingDefender(true);
   };

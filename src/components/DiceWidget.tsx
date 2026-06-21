@@ -3,7 +3,6 @@ import ReactDice, { ReactDiceRef } from 'react-dice-complete';
 import '../styles/dice.css';
 import { closeModal } from '../utils/diceStore';
 import { rollDice } from '../game/Dice';
-import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 
 // Must match the rollTime prop passed to ReactDice (in ms)
 const ROLL_TIME_MS = 1500;
@@ -31,7 +30,6 @@ export const DiceWidget: React.FC<Props> = ({ onRoll, rolling }) => {
   useEffect(() => {
     if (!rolling) return;
     rollValueRef.current = rollDice();
-    vibrateDiceRoll();
     diceRef.current?.rollAll([rollValueRef.current]);
     const timer = setTimeout(() => {
       closeModal();
@@ -58,7 +56,6 @@ export const DiceWidgetDouble: React.FC<{ onRoll: (total: number) => void }> = (
   useEffect(() => {
     val1Ref.current = rollDice();
     val2Ref.current = rollDice();
-    vibrateDiceRoll();
     diceRef.current?.rollAll([val1Ref.current, val2Ref.current]);
     const timer = setTimeout(() => {
       closeModal();
