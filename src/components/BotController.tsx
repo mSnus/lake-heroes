@@ -5,6 +5,7 @@ import { Tile } from '../game/Tile';
 import { ScreenConfig, useScreen } from '../utils/screenStore';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
+import { gameEvent } from '../utils/events';
 import { endTurn } from '../actions/endTurn';
 import { claimTile } from '../actions/claimTile';
 import { sellTile } from '../actions/sellTile';
@@ -180,7 +181,16 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
     }
   }
 
-  if (endTurnReady) return () => endTurn(board, updateGameState);
+  if (endTurnReady) {
+    return () => {
+      // Matches ShieldColumn/ActionBar's human end-turn path: clears any
+      // tile a human inspector had pinned and resets the phase, otherwise
+      // the bot's last-viewed tile sticks around into the next turn.
+      gameEvent('setPhase', 'before-move');
+      gameEvent('displayTile', {});
+      endTurn(board, updateGameState);
+    };
+  }
 
   return null;
 }
