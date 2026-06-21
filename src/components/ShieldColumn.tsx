@@ -5,7 +5,7 @@ import { gameEvent } from '../utils/events';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
 import { showScreen } from '../utils/screenStore';
-import { useShakeToRoll, requestShakeToRollPermission } from '../utils/useShakeToRoll';
+import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
 
 interface ShieldColumnProps {
@@ -87,14 +87,6 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
             <div className="shield-button-container" title="Game Log">
               <button onClick={() => { setMenuOpen(false); onOpenLog(); }} className="shield-button">
                 📜
-              </button>
-            </div>
-            <div className="shield-button-container" title="Enable Shake to Roll">
-              <button
-                onClick={() => { setMenuOpen(false); requestShakeToRollPermission(); }}
-                className="shield-button"
-              >
-                📳
               </button>
             </div>
             <div className="shield-button-container" title="Reload">

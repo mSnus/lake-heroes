@@ -25,6 +25,7 @@ import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/ModalRenderer';
 import { showDice } from './utils/diceStore';
+import { requestShakeToRollPermission } from './utils/useShakeToRoll';
 import {
   useScreen,
   showScreen,
@@ -427,6 +428,10 @@ function App() {
       const players = playersSetup.map((p, i) => new Player({ ...p, id: i + 1 }));
       const initialGameState = new GameState(tiles, players);
       gameStart(initialGameState, updateGameState);
+
+      // "Start Game" is a real user gesture, which iOS requires before it
+      // will grant devicemotion access for shake-to-roll.
+      requestShakeToRollPermission();
 
       clearScreen();
       gameEvent('setPhase', initialGameState.turnPhase);

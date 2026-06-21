@@ -45,10 +45,7 @@ const HelpScreen: React.FC = () => {
 
           <h3>Turn order</h3>
           <ol>
-            <li>
-              Roll the dice 🎲 (or shake your phone 📳 once enabled in the menu) and move your
-              hero around the board
-            </li>
+            <li>Roll the dice 🎲 (or shake your phone 📳) and move your hero around the board</li>
             <li>Take action based on the tile you land on</li>
             <li>Upgrade or sell your tiles if needed</li>
             <li>End your turn ⏳ </li>
