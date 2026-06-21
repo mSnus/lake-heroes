@@ -1,11 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/CurrentPlayer.css';
-import { Tile } from '../game/Tile';
-import { MONEY_PASS_START } from './board/common';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
-import { syndicateMultiplier } from '../game/syndicate';
+import { computeKingsGraceReward } from '../game/kingsGrace';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -14,29 +12,8 @@ interface CurrentPlayerProps {
 export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   const activePlayer = gameState.activePlayer;
 
-  // Map owned tiles and keep their indices
-  const owned = useMemo(() => {
-    const res: { tile: Tile; idx: number }[] = [];
-    gameState.tiles.forEach((t: any, idx: number) => {
-      if (t && t.owner === activePlayer.id) res.push({ tile: t as Tile, idx });
-    });
-    return res;
-  }, [gameState, activePlayer.name]);
-
-  let totalGold = 0;
-  let totalUnits = activePlayer.fame ?? 1;
-
-  owned.forEach(({ tile }) => {
-    const bonus = (tile.bonuses[tile.level] ?? 0) * syndicateMultiplier(gameState, activePlayer, tile.group);
-    if (tile.bonusType === 'gold') {
-      totalGold += bonus;
-    } else {
-      totalUnits += bonus;
-    }
-  });
-
-  // Matches passStart.ts: the King's grace gold scales with fame.
-  totalGold += MONEY_PASS_START * (activePlayer.fame ?? 1);
+  const { tileGold, tileUnits, kingsGold, kingsUnits, totalGold, totalUnits } =
+    computeKingsGraceReward(gameState, activePlayer);
 
   return (
     <div className="player-pane">
@@ -89,11 +66,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           className="player-stats-data"
           id="statsPerTurn"
           onClick={() => {
-            const kingsGold = MONEY_PASS_START * (activePlayer.fame ?? 1);
-            const kingsUnits = activePlayer.fame ?? 1;
-            const tileGold = totalGold - kingsGold;
-            const tileUnits = totalUnits - kingsUnits;
-
             const fmt = (gold: number, units: number, label: string) => {
               const items = [gold > 0 ? `${gold}🟡` : null, units > 0 ? `${units}🧍` : null].filter(
                 Boolean
