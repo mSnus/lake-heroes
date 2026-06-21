@@ -68,8 +68,9 @@ export function resolvePlayerBattle(
     lostBg = true;
   }
 
+  const goldPart = attacker.gold !== aGoldBefore ? `, ${aGoldBefore}→${attacker.gold}🟡` : '';
   say(
-    `⚔️ Hero's Hour: ${attacker.name} vs ${defender.name} — ${outcome === 'attacker' ? 'attacker wins' : outcome === 'defender' ? 'defender wins' : 'tie'} (${aUnitsBefore}→${attacker.units}🧍, ${aGoldBefore}→${attacker.gold}🟡)`,
+    `⚔️ Hero's Hour: ${attacker.name} vs ${defender.name} — ${outcome === 'attacker' ? 'attacker wins' : outcome === 'defender' ? 'defender wins' : 'tie'} (${aUnitsBefore}→${attacker.units}🧍${goldPart})`,
     outcome === 'attacker' ? 'success' : outcome === 'defender' ? 'error' : 'info'
   );
 
