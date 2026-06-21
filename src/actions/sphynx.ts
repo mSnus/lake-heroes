@@ -56,6 +56,11 @@ export function handleSphynx(
     gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
   }
 
+  // Visiting the Sphynx always grants fame, win or lose.
+  player.fame += 1;
+  message += ` Gained 1🏆 for the visit.`;
+  gameState.gameMessage += ` (+1🏆)`;
+
   updateGameState(gameState);
 
   say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');
