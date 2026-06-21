@@ -28,9 +28,10 @@ export function afterMoveLogic(
   }
 
   // Hero's Hour: other players at the same tile with enough units to fight
-  // (not at King's Castle — it's neutral ground)
+  // (not at King's Castle — it's neutral ground). Players with 0 units can
+  // neither attack nor be attacked.
   const playersHere = board.players.filter(
-    (p) => p.id !== player.id && p.position === player.position
+    (p) => p.id !== player.id && p.position === player.position && p.units > 0
   );
   if (playersHere.length > 0 && player.units > 0 && !tile.name.includes('King')) {
     const tileOwner =
