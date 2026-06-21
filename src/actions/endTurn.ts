@@ -13,6 +13,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.gameMessage = '';
   board.activePlayer.hasClaimedThisTurn = false;
+  board.activePlayer.hasConsideredClaimThisTurn = false;
   board.activePlayer.upgradesThisTurn = 0;
 
   if (board.activePlayerIndex === 0) {

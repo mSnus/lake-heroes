@@ -138,24 +138,29 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
   if (screen) return null; // some other screen we don't recognize is up
 
   // Claim decision — not a screen at all, TileCard's button calls claimTile().
+  // Gated on hasConsideredClaimThisTurn (not hasClaimedThisTurn) so a "decide
+  // not to claim" outcome is still recorded — otherwise, since that outcome
+  // doesn't change any state, this branch would keep matching forever and
+  // the bot would never progress to the upgrade/end-turn checks below.
   const tile = board.activeTile;
   if (
     board.turnPhase === 'after-move' &&
     tile.isOwnable &&
     !tile.isOwned() &&
-    !player.hasClaimedThisTurn
+    !player.hasConsideredClaimThisTurn
   ) {
     return () => {
       if (getCharacterConfig(player)?.buildsSyndicates && tile.requiredFame <= player.fame) {
         const saleCandidate = findSyndicateSaleCandidate(board, player, tile);
         if (saleCandidate) {
           sellTile(board, player, saleCandidate);
-          updateGameState(board);
         }
       }
+      player.hasConsideredClaimThisTurn = true;
       if (shouldClaimTile(player, tile)) {
         claimTile(board, updateGameState);
       }
+      updateGameState(board);
     };
   }
 

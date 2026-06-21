@@ -33,6 +33,7 @@ export class Player {
   unitsHiredThisTurn: number;
   isPrisonerOfWar: boolean;
   hasClaimedThisTurn: boolean;
+  hasConsideredClaimThisTurn: boolean;
   hasBeenOfferedDragonChallenge: boolean;
   upgradesThisTurn: number;
   isComputer: boolean;
@@ -57,6 +58,7 @@ export class Player {
     this.unitsHiredThisTurn = 0;
     this.isPrisonerOfWar = false;
     this.hasClaimedThisTurn = false;
+    this.hasConsideredClaimThisTurn = false;
     this.hasBeenOfferedDragonChallenge = false;
     this.upgradesThisTurn = 0;
     this.isComputer = params.isComputer ?? false;
