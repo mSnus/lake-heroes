@@ -124,19 +124,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     tile = props.tile;
   }
 
+  const isBrawl = defence <= BRAWL_THRESHOLD;
+
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
-  // Claiming a tile shows the attacker's actual unit count rather than
-  // mirroring the tile's defence — this is what makes Banzai (attacking with
-  // fewer units than the defence) visible as e.g. 8 vs 10.
+  // Banzai claims (non-brawl, attacking with fewer units than the defence)
+  // show the attacker's real unit count, e.g. 8 vs 10 — brawl and normal
+  // claims still mirror the defence on both sides.
+  const isBanzaiClaim = isClaim && !isBrawl && attacker.units < defence;
   const attackerUnits = isDragon
     ? gameState.players.reduce((sum, p) => sum + p.units, 0)
-    : isClaim
+    : isBanzaiClaim
       ? attacker.units
       : defence;
 
   const doubleDice = defence > 12 || attackerUnits > 12;
-  const isBrawl = defence <= BRAWL_THRESHOLD;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
