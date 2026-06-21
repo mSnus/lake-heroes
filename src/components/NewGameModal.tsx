@@ -17,6 +17,13 @@ const MODE_EMOJI: Record<CharacterId | 'human', string> = {
   wizard: '🤖🧙',
 };
 
+// Swapped into the last word of the name when a character is picked.
+const CHARACTER_NAME_SUFFIX: Record<CharacterId, string> = {
+  explorer: 'Farmer',
+  warrior: 'Warrior',
+  wizard: 'Wizard',
+};
+
 interface NewGameModalProps {
   onStart: (players: PlayerSetup[]) => void;
 }
@@ -99,6 +106,12 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
 
     player.isComputer = next !== null;
     player.character = next ?? undefined;
+
+    const nameParts = player.name.split(' ');
+    const pronoun = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : nameParts[0];
+    player.name = next
+      ? `${pronoun} ${CHARACTER_NAME_SUFFIX[next]}`
+      : generatePlayerName(players.filter((_, i) => i !== index).map((p) => p.name));
 
     newPlayers[index] = player;
     setPlayers(newPlayers);
