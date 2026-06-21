@@ -2,7 +2,7 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { becomeBeggar } from './becomeBeggar';
-import { showScreen, showPrisonScreen, ScreenButton } from '../utils/screenStore';
+import { showScreen, showPrisonScreen, clearScreen, ScreenButton } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
 import { payFee } from './payFee';
@@ -52,6 +52,7 @@ export function afterMoveLogic(
           if (tileOwner) {
             showTileEncounterScreen(board, updateGameState);
           } else {
+            clearScreen();
             setEndTurn();
           }
         },
