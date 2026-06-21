@@ -6,6 +6,7 @@ import { ScreenConfig, useScreen } from '../utils/screenStore';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
+import { say } from '../utils/say';
 import { endTurn } from '../actions/endTurn';
 import { claimTile } from '../actions/claimTile';
 import { sellTile } from '../actions/sellTile';
@@ -25,6 +26,10 @@ import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards
 
 // Matches the ~600ms auto-roll delay BattleScreen already uses for NPC sides.
 const BOT_ACTION_DELAY_MS = 600;
+
+function announce(player: Player, decision: string) {
+  say(`${player.name} decided to ${decision}`, 'info');
+}
 
 interface Props {
   gameState: GameState | null;
@@ -75,14 +80,19 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
       const decision = pickWizardGuardsAction(board, player, tile, opts);
       switch (decision.kind) {
         case 'pay':
+          announce(player, 'pay the fee');
           return buttons.find((b) => b.action === 'pay-fee')?.onClick ?? null;
         case 'fight':
+          announce(player, 'fight');
           return buttons.find((b) => b.action === 'fight-tile')?.onClick ?? null;
         case 'sell-one-then-fight':
+          announce(player, 'sell tiles to fight');
           return sellThenResolve(false, decision.tile);
         case 'sell-one-then-pay':
+          announce(player, 'sell tiles to pay the fee');
           return sellThenResolve(true, decision.tile);
         case 'sell-multiple-then-pay':
+          announce(player, 'sell tiles to pay the fee');
           return sellThenResolve(true, undefined, sortTilesBySacrifice(board, player));
         case 'accept-loss':
           return buttons.find((b) => b.action === 'accept-loss')?.onClick ?? null;
@@ -90,13 +100,18 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
     }
 
     const decision = pickGuardsAction(player, opts);
-    if (decision === 'sell-then-resolve') return sellThenResolve(opts.canSellForFee);
+    if (decision === 'sell-then-resolve') {
+      announce(player, opts.canSellForFee ? 'sell tiles to pay the fee' : 'sell tiles to fight');
+      return sellThenResolve(opts.canSellForFee);
+    }
 
     const actionByDecision: Record<string, string> = {
       pay: 'pay-fee',
       fight: 'fight-tile',
       'accept-loss': 'accept-loss',
     };
+    if (decision === 'pay') announce(player, 'pay the fee');
+    if (decision === 'fight') announce(player, 'fight');
     const button = buttons.find((b) => b.action === actionByDecision[decision]);
     return button ? button.onClick : null;
   }
@@ -104,6 +119,7 @@ function pickGenericScreenAction(ctx: BotContext): (() => void) | null {
   // Dragon challenge (proactive offer or random ambush) — screenType 'dragon'.
   if (screen!.screenType === 'dragon') {
     const fight = shouldChallengeDragon(player);
+    if (fight) announce(player, 'fight the dragon');
     const button = buttons.find((b) => b.action === (fight ? 'fight' : 'continue'));
     return button ? button.onClick : null;
   }
@@ -159,6 +175,7 @@ function computeNextBotAction(ctx: BotContext): (() => void) | null {
       }
       player.hasConsideredClaimThisTurn = true;
       if (shouldClaimTile(player, tile)) {
+        announce(player, `claim ${tile.name}`);
         claimTile(board, updateGameState);
       }
       updateGameState(board);

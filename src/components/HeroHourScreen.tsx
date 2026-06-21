@@ -8,6 +8,7 @@ import { Fade } from './Fade';
 import { BattleScreen } from './BattleScreen';
 import { PlayerLabel } from './PlayerLabel';
 import { pickHeroHourTarget } from '../ai/decisions';
+import { say } from '../utils/say';
 import '../styles/BattleScreen.css';
 
 interface HeroHourScreenProps {
@@ -54,8 +55,12 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
     if (!activePlayer.isComputer) return;
     const t = setTimeout(() => {
       const target = pickHeroHourTarget(activePlayer, opponents);
-      if (target) handleFight(target);
-      else handleGreet();
+      if (target) {
+        say(`${activePlayer.name} decided to attack ${target.name}`, 'info');
+        handleFight(target);
+      } else {
+        handleGreet();
+      }
     }, 600);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
