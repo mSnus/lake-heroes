@@ -5,6 +5,7 @@ import { Tile } from '../game/Tile';
 import { MONEY_PASS_START } from './board/common';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
+import { syndicateMultiplier } from '../game/syndicate';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -26,14 +27,16 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   let totalUnits = activePlayer.fame ?? 1;
 
   owned.forEach(({ tile }) => {
+    const bonus = (tile.bonuses[tile.level] ?? 0) * syndicateMultiplier(gameState, activePlayer, tile.group);
     if (tile.bonusType === 'gold') {
-      totalGold += tile.bonuses[tile.level] ?? 0;
+      totalGold += bonus;
     } else {
-      totalUnits += tile.bonuses[tile.level] ?? 0;
+      totalUnits += bonus;
     }
   });
 
-  totalGold += MONEY_PASS_START;
+  // Matches passStart.ts: the King's grace gold scales with fame.
+  totalGold += MONEY_PASS_START * (activePlayer.fame ?? 1);
 
   return (
     <div className="player-pane">
@@ -86,7 +89,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           className="player-stats-data"
           id="statsPerTurn"
           onClick={() => {
-            const kingsGold = MONEY_PASS_START;
+            const kingsGold = MONEY_PASS_START * (activePlayer.fame ?? 1);
             const kingsUnits = activePlayer.fame ?? 1;
             const tileGold = totalGold - kingsGold;
             const tileUnits = totalUnits - kingsUnits;

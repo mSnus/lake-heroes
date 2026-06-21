@@ -8,7 +8,10 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   if (!board) return '';
 
   const player = board.activePlayer;
-  const baseGold = MONEY_PASS_START * (player.fame || 1);
+  // Captured once so the gold and unit portions of this reward both use the
+  // same fame value, rather than one before and one after changeFame below.
+  const rewardFame = player.fame || 1;
+  const baseGold = MONEY_PASS_START * rewardFame;
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
@@ -37,7 +40,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
 
   // Apply rewards
   const totalGold = baseGold + goldProfit;
-  const fameUnits = player.fame ?? 1;
+  const fameUnits = rewardFame;
   player.gold += totalGold;
   player.units += unitsProfit + fameUnits;
 
