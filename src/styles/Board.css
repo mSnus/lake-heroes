@@ -245,15 +245,15 @@
 }
 
 .player-image {
-  width: 56px;
-  min-height: 56px;
+  width: 47.6px;
+  min-height: 47.6px;
   z-index: 500;
   filter: drop-shadow(0px 0px 6px #000);
 }
 
 .player-image.current-player {
   filter: drop-shadow(-1px 2px 12px #fff5ac) drop-shadow(-1px 2px 3px #f6e24c);
-  transform: scale(1.5);
+  transform: scale(1.275);
 }
 
 .player-name {
