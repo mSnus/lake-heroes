@@ -150,8 +150,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Uses each side's real Player.units where one exists (not attackerUnits/
   // defence, which are just the mirrored grid-display sizes for most modes
   // and would always compare 1:1 to itself).
-  const attackerRollBonus = rollBonus(attacker.units, defence);
-  const defenderRollBonus = rollBonus(defender ? defender.units : defence, attackerUnits);
+  // Ambush is exempt — the player is forced into it, not choosing to bring
+  // overwhelming numbers, so no tactical edge is awarded either way.
+  const attackerRollBonus = isAmbush ? 0 : rollBonus(attacker.units, defence);
+  const defenderRollBonus = isAmbush ? 0 : rollBonus(defender ? defender.units : defence, attackerUnits);
   const attackerBonusBadge = attackerRollBonus > 0 ? `⚔️+${attackerRollBonus}` : undefined;
   const defenderBonusBadge = defenderRollBonus > 0 ? `🛡️+${defenderRollBonus}` : undefined;
 
