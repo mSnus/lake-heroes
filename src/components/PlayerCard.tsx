@@ -14,6 +14,8 @@ interface PlayerCardProps {
   imageSrc?: string;
   /** Emoji shown before the name (e.g. ⚔️ for the attacker, 🛡️ for the defender). */
   prefix?: string;
+  /** Shown after the name, e.g. an army-size dice bonus badge ("⚔️+1"). */
+  suffix?: string;
   className?: string;
 }
 
@@ -27,6 +29,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   color,
   imageSrc,
   prefix,
+  suffix,
   className,
 }) => {
   const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.fame) : undefined);
@@ -38,6 +41,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
       <div className="player-card-name">
         {prefix ? <span className="player-card-prefix">{prefix}</span> : null}
         <PlayerLabel player={player ?? undefined} name={name} color={color} bold />
+        {suffix ? <span className="player-card-suffix">{suffix}</span> : null}
       </div>
     </div>
   );

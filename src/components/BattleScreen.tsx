@@ -150,6 +150,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // battle's starting force sizes, not the dwindling counts mid-fight.
   const attackerRollBonus = rollBonus(attackerUnits, defence);
   const defenderRollBonus = rollBonus(defence, attackerUnits);
+  const attackerBonusBadge = attackerRollBonus > 0 ? `⚔️+${attackerRollBonus}` : undefined;
+  const defenderBonusBadge = defenderRollBonus > 0 ? `🛡️+${defenderRollBonus}` : undefined;
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -508,16 +510,28 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         <div className="battle-names-row">
           <div className="bc-attacker">
             {isAmbush ? (
-              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} prefix="⚔️" />
+              <PlayerCard
+                imageSrc={defenderImg}
+                name={defenderLabel}
+                color={defenderColor}
+                prefix="⚔️"
+                suffix={attackerBonusBadge}
+              />
             ) : (
-              <PlayerCard player={attacker} prefix="⚔️" />
+              <PlayerCard player={attacker} prefix="⚔️" suffix={attackerBonusBadge} />
             )}
           </div>
           <div className="bc-defender">
             {isAmbush ? (
-              <PlayerCard player={attacker} prefix="🛡️" />
+              <PlayerCard player={attacker} prefix="🛡️" suffix={defenderBonusBadge} />
             ) : (
-              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} prefix="🛡️" />
+              <PlayerCard
+                imageSrc={defenderImg}
+                name={defenderLabel}
+                color={defenderColor}
+                prefix="🛡️"
+                suffix={defenderBonusBadge}
+              />
             )}
           </div>
         </div>
