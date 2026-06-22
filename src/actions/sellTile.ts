@@ -12,26 +12,9 @@ export function sellTile(
   if (!tile) return { gold: 0, units: 0 };
   if (tile.owner !== player.id) return { gold: 0, units: 0 };
 
-  // Base refund: purchase price
-  const baseGold = tile.prices['1']?.gold ?? (0 || 0);
-  const baseUnits = tile.prices['1']?.units ?? (0 || 0);
-
-  // Refund upgrades that were already purchased
-  const prices = tile.prices || {};
-  let upgradesGold = 0;
-  let upgradesUnits = 0;
-  const level = tile.level || 1;
-
-  for (let l = 2; l <= level; l++) {
-    const p = prices[l];
-    if (p) {
-      upgradesGold += p.gold || 0;
-      upgradesUnits += p.units || 0;
-    }
-  }
-
-  const totalGold = baseGold + upgradesGold;
-  const totalUnits = baseUnits + upgradesUnits;
+  // Refund = the tile's currentPrice (base level's units mirrors its
+  // defence, same as isAffordable(); upgrade levels refund their price).
+  const { gold: totalGold, units: totalUnits } = tile.currentPrice;
 
   // Mutate tile and player
   tile.owner = null;

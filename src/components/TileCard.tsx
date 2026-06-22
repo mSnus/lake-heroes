@@ -167,12 +167,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const prices = tile.prices || {};
   const nextPrice = prices[nextLevel];
 
-  let sellPrice = { units: 0, gold: 0 };
-
-  for (let i = 1; i <= currentLevel; i++) {
-    sellPrice.gold += tile.prices[i].gold;
-    sellPrice.units += tile.prices[i].units;
-  }
+  const sellPrice = tile.currentPrice;
 
   const handleUpgrade = () => {
     if (demoMode) return;

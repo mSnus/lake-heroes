@@ -129,7 +129,9 @@ export class Tile implements TileJSON {
 
     for (let lvl = 1; lvl <= this.level; lvl++) {
       priceGold += this.prices[lvl].gold || 0;
-      priceUnits += this.prices[lvl].units || 0;
+      // Base level's units cost mirrors the base-level defence (matches
+      // isAffordable()'s units check); upgrade levels still use their price.
+      priceUnits += lvl === 1 ? this.getDefence(1) : this.prices[lvl].units || 0;
     }
 
     return { gold: priceGold, units: priceUnits };
