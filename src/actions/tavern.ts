@@ -16,7 +16,7 @@ export function handleTavern(
   const unitsReward = Math.round(roll * circleMultiplier);
   player.units += unitsReward;
 
-  board.gameMessage = `${unitsReward}🧍 joined your mighty forces`;
+  board.gameMessage = `${unitsReward}🧍 joined ${player.name}'s mighty forces`;
   updateGameState(board);
 
   showScreen({
