@@ -47,6 +47,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
     >
       <div className="modal-content" style={{ color: `white` }}>
         <h2 className="game-title">The King's Castle</h2>
+        <h3>{gameState.kingRewardMessage}</h3>
 
         <div style={{ fontFamily: 'Texturina' }}>
           The King welcomes <PlayerLabel player={player} />
