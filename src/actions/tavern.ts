@@ -21,7 +21,7 @@ export function handleTavern(
   showScreen({
     screenType: 'tavern-result',
     background: 'assets/screens/tavern.jpg',
-    htmlMessage: `${unitsReward}🧍 joined <span style="color:${player.color}">${player.name}</span>'s mighty forces`,
+    htmlMessage: `${unitsReward}🧍 joined<br /><span style="color:${player.color}">${player.name}</span>`,
     buttons: [
       {
         label: 'New folks are always welcome!',
