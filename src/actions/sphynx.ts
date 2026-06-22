@@ -21,6 +21,7 @@ export function handleSphynx(
 
   const player = gameState.activePlayer;
   let message = '';
+  let screenMessage = '';
 
   if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
@@ -31,10 +32,10 @@ export function handleSphynx(
 
       player.gold -= loss;
       message = `Lost half of gold: -${loss}🟡`;
-      gameState.gameMessage = `You escape the Sphynx losing ${loss}🟡`;
+      screenMessage = `You escape the Sphynx losing ${loss}🟡`;
     } else {
       message = `He sees your poverty and lets you go.`;
-      gameState.gameMessage = `The Sphinx refuses to deal with beggars`;
+      screenMessage = `The Sphinx refuses to deal with beggars`;
     }
   } else if (roll === 3 || roll === 4) {
     // Lose 33% units, minimum 1, floor at 0
@@ -43,17 +44,17 @@ export function handleSphynx(
 
     player.units = Math.max(0, player.units - loss);
     message = `Lost ${loss}🧍 (1/3).`;
-    gameState.gameMessage = `Sphynx eats ${loss}🧍, but you escape.`;
+    screenMessage = `Sphynx eats ${loss}🧍, but you escape.`;
   } else if (roll === 5) {
     message = `Nothing happens.`;
-    gameState.gameMessage = `Sphynx remained silent. Nothing happened.`;
+    screenMessage = `Sphynx remained silent. Nothing happened.`;
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100, with a floor of 800
     const bonusBase = player.gold * 0.2;
     const gain = Math.max(800, Math.ceil(bonusBase / 100) * 100);
     player.gold += gain;
     message = `Received ${gain}🟡 (20%).`;
-    gameState.gameMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
+    screenMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
   }
 
   // Visiting the Sphynx always grants fame, win or lose.
@@ -68,7 +69,7 @@ export function handleSphynx(
     screenType: 'sphynx-result',
     background: 'assets/screens/sphynx.jpg',
     fade: true,
-    message: gameState.gameMessage,
+    message: screenMessage,
     buttons: [
       {
         label: 'Continue',
