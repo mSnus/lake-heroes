@@ -145,11 +145,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const doubleDice = defence > 12 || attackerUnits > 12;
 
-  // A side with a big enough army relative to the opponent's force rolls
-  // smarter: +1 at 2x the opponent's size, +2 at 4x or more. Based on the
-  // battle's starting force sizes, not the dwindling counts mid-fight.
-  const attackerRollBonus = rollBonus(attackerUnits, defence);
-  const defenderRollBonus = rollBonus(defence, attackerUnits);
+  // A side with a big enough TOTAL army relative to the actual force
+  // committed to this encounter rolls smarter: +1 at 2x, +2 at 4x or more.
+  // Uses each side's real Player.units where one exists (not attackerUnits/
+  // defence, which are just the mirrored grid-display sizes for most modes
+  // and would always compare 1:1 to itself).
+  const attackerRollBonus = rollBonus(attacker.units, defence);
+  const defenderRollBonus = rollBonus(defender ? defender.units : defence, attackerUnits);
   const attackerBonusBadge = attackerRollBonus > 0 ? `⚔️+${attackerRollBonus}` : undefined;
   const defenderBonusBadge = defenderRollBonus > 0 ? `🛡️+${defenderRollBonus}` : undefined;
 
