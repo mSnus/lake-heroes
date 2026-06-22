@@ -603,7 +603,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <button className="game-menu-button" onClick={handleClose}>
-              {isAmbush ? '🧭 Ride on' : '🩸 Was it worth it?'}
+              {isAmbush ? '🍀 Keep calm and carry on' : '🩸 Was it worth it?'}
             </button>
           </div>
         )}
