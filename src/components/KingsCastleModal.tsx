@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
-import topImage from '../../public/assets/top1.jpg';
 import { UNIT_PRICE } from '../game/constants';
 import { PlayerLabel } from './PlayerLabel';
 import { pickKingsCastleHireAmount } from '../ai/decisions';
@@ -48,7 +47,6 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
     >
       <div className="modal-content" style={{ color: `white` }}>
         <h2 className="game-title">The King's Castle</h2>
-        <h3>{gameState.kingRewardMessage}</h3>
 
         <div style={{ fontFamily: 'Texturina' }}>
           The King welcomes <PlayerLabel player={player} />
