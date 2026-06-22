@@ -10,6 +10,7 @@ import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
 import { PlayerCard } from './PlayerCard';
+import { DecoratedButton } from './DecoratedButton';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
@@ -580,14 +581,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         </div>
 
         {phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker && (
-          <button className="game-menu-button battle-roll-btn" onClick={handleAttackerRoll}>
+          <DecoratedButton className="battle-roll-btn" onClick={handleAttackerRoll}>
             ⚔️ Attack!
-          </button>
+          </DecoratedButton>
         )}
         {phase === 'defender-roll' && !isAutoDefender && !rollingDefender && (
-          <button className="game-menu-button battle-roll-btn" onClick={handleDefenderRoll}>
+          <DecoratedButton className="battle-roll-btn" onClick={handleDefenderRoll}>
             🛡️ Defend!
-          </button>
+          </DecoratedButton>
         )}
 
         {phase === 'result' && (
