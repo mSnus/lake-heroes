@@ -29,11 +29,21 @@ export function afterMoveLogic(
 
   // Hero's Hour: other players at the same tile with enough units to fight
   // (not at King's Castle — it's neutral ground). Players with 0 units can
-  // neither attack nor be attacked.
+  // neither attack nor be attacked. Heroes who've circled the board 2 times
+  // or fewer are too green for Hero's Hour, on either side of the encounter.
   const playersHere = board.players.filter(
-    (p) => p.id !== player.id && p.position === player.position && p.units > 0
+    (p) =>
+      p.id !== player.id &&
+      p.position === player.position &&
+      p.units > 0 &&
+      (p.circles ?? 0) > 2
   );
-  if (playersHere.length > 0 && player.units > 0 && !tile.name.includes('King')) {
+  if (
+    playersHere.length > 0 &&
+    player.units > 0 &&
+    (player.circles ?? 0) > 2 &&
+    !tile.name.includes('King')
+  ) {
     const tileOwner =
       tile.isOwned() && tile.owner !== player.id
         ? (board.players.find((p) => p.id === tile.owner) ?? null)
