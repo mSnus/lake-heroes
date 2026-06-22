@@ -19,16 +19,20 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   const config = useScreen();
   if (!config) return null;
 
-  // Bots don't need anything shown — they drive these screens headlessly
-  // (BotController / each screen's own self-driving effect), so render them
-  // invisibly rather than flashing King's Castle, guards/fee, etc. at a human
-  // who has nothing to do this turn.
-  const hideForBot = gameState.activePlayer.isComputer;
+  // King's Castle and the guards/fee encounter are pure bookkeeping for a
+  // bot — it drives them headlessly (KingsCastleModal's self-driving effect
+  // / BotController), so hide just these two rather than flashing them at a
+  // human who has nothing to do this turn. Other screens stay visible.
+  const isKingsCastle = config.screenType === 'kings-castle';
+  const isGuardsFee = !!config.encounter && config.encounter.canFight !== undefined;
+  const hideForBot = gameState.activePlayer.isComputer && (isKingsCastle || isGuardsFee);
   const hiddenStyle: React.CSSProperties | undefined = hideForBot
     ? { opacity: 0, pointerEvents: 'none' }
     : undefined;
 
-  if (config.content) return <div style={hiddenStyle}>{config.content}</div>;
+  if (config.content) {
+    return isKingsCastle ? <div style={hiddenStyle}>{config.content}</div> : <>{config.content}</>;
+  }
 
   const sellAndRecheck = (gs: GameState) => {
     updateGameState(gs);

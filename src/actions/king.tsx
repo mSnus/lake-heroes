@@ -20,6 +20,7 @@ export function handleKingCastle(
   board.activePlayer.unitsHiredThisTurn = 0;
 
   showScreen({
+    screenType: 'kings-castle',
     content: (
       <KingsCastleModal
         gameState={board}
