@@ -487,7 +487,7 @@ export const TileCard: React.FC<TileCardProps> = ({
               activePlayer?.units ?? 0,
               activePlayer?.fame ?? 1
             ) && (              
-              <DecoratedButton onClick={(e) => handleBuyClick(e)} style={{width: '100%', marginBottom: '0', height: '80px', paddingBottom: '8px', filter: 'drop-shadow(2px 2px 3px #00000050);'}}>
+              <DecoratedButton onClick={(e) => handleBuyClick(e)} style={{width: '100%', marginBottom: '0', height: '80px', paddingBottom: '8px', filter: 'drop-shadow(2px 2px 3px #00000050)'}}>
                 {isBanzai ? (
                   <>
                     Banzai! {attackEmoji}{activePlayer?.units ?? 0}{' '}

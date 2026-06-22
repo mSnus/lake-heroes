@@ -44,7 +44,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
       className="game-modal"
       backgroundImage="assets/screens/king.jpg"
       noBorder={true}
-      style={{ backgroundColor: 'background-color: rgba(0, 0, 0, 0.3);' }}
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
       <div className="modal-content" style={{ color: `white` }}>
         <h2 className="game-title">The King's Castle</h2>
