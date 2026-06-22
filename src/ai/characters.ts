@@ -16,6 +16,9 @@ export interface CharacterConfig {
   dragonThreshold: number;
   kingsCastleHireFraction: number; // unused by 'wizard' strategy, see pickKingsCastleHireAmount
   buildsSyndicates: boolean;
+  // Skip buying a tile (unless it completes a syndicate) when the dragon-
+  // challenge goal is reachable within ~3 laps on current income alone.
+  skipBuyingNearDragonGoal: boolean;
 }
 
 // Appended to a bot's name once the game starts, so it's visible in-game but
@@ -37,6 +40,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     dragonThreshold: 70,
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,
+    skipBuyingNearDragonGoal: false,
   },
   warrior: {
     id: 'warrior',
@@ -48,6 +52,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     dragonThreshold: 50,
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
+    skipBuyingNearDragonGoal: true,
   },
   wizard: {
     id: 'wizard',
@@ -59,5 +64,6 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     dragonThreshold: 60,
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,
+    skipBuyingNearDragonGoal: true,
   },
 };

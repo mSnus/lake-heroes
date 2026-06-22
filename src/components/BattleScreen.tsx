@@ -17,7 +17,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
-import { computeBrawlRound } from '../actions/battles/common';
+import { computeBrawlRound, rollBonus } from '../actions/battles/common';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 import { TileClaimScreen } from './TileClaimScreen';
@@ -94,7 +94,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const isAmbush = props.mode === 'ambush';
   const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush;
   const isClaim = isTile && !props.defender;
-  const isAutoDefender = isCaravan || isDragon || isClaim || (props.defender?.isComputer ?? false);
+  // Ambush is narratively reversed: the `attacker` prop holds the real
+  // player (the one who must click "Defend"), while the NPC ambushers
+  // occupy the attacker role and always auto-roll. So the defender side's
+  // bot-check has to look at `attacker.isComputer` for this mode specifically.
+  const isAutoDefender =
+    isCaravan || isDragon || isClaim || (props.defender?.isComputer ?? false) || (isAmbush && attacker.isComputer);
   const isAutoAttacker = isAmbush || attacker.isComputer;
 
   let defence: number;
@@ -139,6 +144,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       : defence;
 
   const doubleDice = defence > 12 || attackerUnits > 12;
+
+  // A side with a big enough army relative to the opponent's force rolls
+  // smarter: +1 at 2x the opponent's size, +2 at 4x or more. Based on the
+  // battle's starting force sizes, not the dwindling counts mid-fight.
+  const attackerRollBonus = rollBonus(attackerUnits, defence);
+  const defenderRollBonus = rollBonus(defence, attackerUnits);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -312,7 +323,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   useShakeToRoll(phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker, handleAttackerRoll);
   useShakeToRoll(phase === 'defender-roll' && !isAutoDefender && !rollingDefender, handleDefenderRoll);
 
-  const onAttackerRollDone = (roll: number) => {
+  const onAttackerRollDone = (rawRoll: number) => {
+    const roll = rawRoll + attackerRollBonus;
     pendingAtkRollRef.current = roll;
     setRollingAttacker(false);
     setPendingAtkRoll(roll);
@@ -336,7 +348,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     });
   };
 
-  const onDefenderRollDone = (roll: number) => {
+  const onDefenderRollDone = (rawRoll: number) => {
+    const roll = rawRoll + defenderRollBonus;
     setRollingDefender(false);
     setLastDefRoll(roll);
     setPhase('animating');

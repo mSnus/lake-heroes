@@ -95,7 +95,6 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
   };
 
   const handleCycleMode = (index: number) => {
-    if (index === 0) return; // the first player is always human
     const newPlayers = [...players];
     const player = { ...newPlayers[index] };
     const currentKey: CharacterId | 'human' = player.isComputer
@@ -166,29 +165,20 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             >
               ↪️
             </button>
-            {index === 0 ? (
-              <span
-                style={{ fontSize: '1rem', padding: '0 4px', whiteSpace: 'nowrap' }}
-                title="The first hero is always human"
-              >
-                🙋
-              </span>
-            ) : (
-              <button
-                onClick={() => handleCycleMode(index)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  padding: '0 4px',
-                  whiteSpace: 'nowrap',
-                }}
-                title="Human / Computer (click to cycle)"
-              >
-                {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
-              </button>
-            )}
+            <button
+              onClick={() => handleCycleMode(index)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                padding: '0 4px',
+                whiteSpace: 'nowrap',
+              }}
+              title="Human / Computer (click to cycle)"
+            >
+              {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
+            </button>
             <select
               value={player.color}
               onChange={(e) => handlePlayerChange(index, 'color', e.target.value)}

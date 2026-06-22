@@ -19,7 +19,16 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   const config = useScreen();
   if (!config) return null;
 
-  if (config.content) return <>{config.content}</>;
+  // Bots don't need anything shown — they drive these screens headlessly
+  // (BotController / each screen's own self-driving effect), so render them
+  // invisibly rather than flashing King's Castle, guards/fee, etc. at a human
+  // who has nothing to do this turn.
+  const hideForBot = gameState.activePlayer.isComputer;
+  const hiddenStyle: React.CSSProperties | undefined = hideForBot
+    ? { opacity: 0, pointerEvents: 'none' }
+    : undefined;
+
+  if (config.content) return <div style={hiddenStyle}>{config.content}</div>;
 
   const sellAndRecheck = (gs: GameState) => {
     updateGameState(gs);
@@ -36,7 +45,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   }
 
   return (
-    <>
+    <div style={hiddenStyle}>
       <ScreenBackground image={config.background!}>
         {config.fade && <Fade />}
         {config.title && <div className="text-title">{config.title.trim()}</div>}
@@ -161,6 +170,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
           <OwnedTiles gameState={gameState} updateGameState={sellAndRecheck} />
         </div>
       )}
-    </>
+    </div>
   );
 };

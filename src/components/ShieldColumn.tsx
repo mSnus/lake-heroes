@@ -110,10 +110,19 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
 
       {isBotTurn ? (
         <div style={{ ...colStyle, bottom: '60px' }}>
-          <div className="shield-button-container main-button" title="AI is taking its turn">
-            <button className="shield-button" disabled style={{ cursor: 'default', fontSize: '17.6px' }}>
-              🤖
-            </button>
+          <div
+            className="main-button"
+            title="AI is taking its turn"
+            style={{
+              width: '52px',
+              height: '52px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '17.6px',
+            }}
+          >
+            🤖
           </div>
         </div>
       ) : (

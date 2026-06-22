@@ -4,15 +4,42 @@ import { Tile } from '../game/Tile';
 import { CHARACTERS, CharacterConfig } from './characters';
 import { FeeOptions } from '../actions/feeOptions';
 import { UNIT_PRICE } from '../game/constants';
+import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
+import { computeKingsGraceReward } from '../game/kingsGrace';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
 }
 
+function wouldFormSyndicate(board: GameState, tile: Tile): boolean {
+  const groupTiles = board.tiles.filter((t) => t?.isOwnable && t.group === tile.group);
+  const unowned = groupTiles.filter((t) => !t.isOwned());
+  return unowned.length === 1 && unowned[0] === tile;
+}
+
+// "current income" = units gained per lap of the board (the King's grace
+// reward), since that's the only recurring unit income most players have.
+function closeToDragonGoalWithoutBuying(board: GameState, player: Player): boolean {
+  const perLapUnits = computeKingsGraceReward(board, player).totalUnits;
+  return player.units + perLapUnits * 3 >= DRAGON_UNITS_THRESHOLD;
+}
+
 /** Should this bot claim the unowned tile it's standing on? */
-export function shouldClaimTile(player: Player, tile: Tile): boolean {
+export function shouldClaimTile(player: Player, tile: Tile, board: GameState): boolean {
   const cfg = getCharacterConfig(player);
   if (!cfg) return false;
+
+  // Warrior/Wizard: if the dragon-challenge goal is only ~3 laps away on
+  // current income alone, skip buying tiles that don't complete a syndicate
+  // — no point diluting gold/units into real estate this close to the goal.
+  if (
+    cfg.skipBuyingNearDragonGoal &&
+    !wouldFormSyndicate(board, tile) &&
+    closeToDragonGoalWithoutBuying(board, player)
+  ) {
+    return false;
+  }
+
   if (!tile.isAffordable(player.gold, player.units, player.fame)) return false;
 
   if (cfg.claim.type === 'chance') {

@@ -189,7 +189,7 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
         }
       }
       player.hasConsideredClaimThisTurn = true;
-      if (shouldClaimTile(player, tile)) {
+      if (shouldClaimTile(player, tile, board)) {
         announce(player, `claim ${tile.name}`);
         claimTile(board, updateGameState);
       }
