@@ -50,15 +50,20 @@
 }
 
 .battle-vs-units {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: #9d9d9d;
   text-shadow: 1px 1px 4px #000;
   white-space: nowrap;
+  text-align: center;
+}
+
+.battle-vs-units .vs-icon {
+  font-size: 2rem;
+}
+
+.battle-vs-units .vs {
+  font-size: 0.9rem;
 }
 
 /* ── Battlefield: two unit columns with center roll display ── */
@@ -76,8 +81,7 @@
   flex-wrap: wrap;
   gap: 3px;
   padding: 10px 8px;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 8px;
+  text-shadow: 1px 1px 4px #000;
   min-height: 48px;
   max-height: 45vh;
   overflow-y: auto;
