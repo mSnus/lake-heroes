@@ -533,9 +533,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
           <div className="battle-vs-units">
             <div className='vs-icon'>⚔️</div>
-            {isAmbush ? defenderSideUnits : attackerSideUnits} 
+            {isAmbush ? defence : attackerUnits}
             <span className="vs"> vs </span>
-            {isAmbush ? attackerSideUnits : defenderSideUnits}
+            {isAmbush ? attackerUnits : defence}
           </div>
           <div className="bc-defender">
             {isAmbush ? (
