@@ -25,13 +25,13 @@
 
 .battle-brawl-tag {
   font-family: 'Texturina', serif;
-  color: #f6b03e;
+  color: #ffca28;
   font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 3px;
+  font-weight: 900;
+  letter-spacing: 1px;
   text-transform: uppercase;
   text-shadow: 1px 1px 4px #000;
-  margin-top: -0.6rem;
+  margin-top: 0;
 }
 
 /* ── Names row ── */
@@ -40,12 +40,25 @@
   display: flex;
   gap: 20vw;
   align-items: flex-end;
+  position: relative;
 }
 
 .battle-names-row .bc-attacker,
 .battle-names-row .bc-defender {
   text-align: center;
   filter: drop-shadow(0px 2px 12px #333333) drop-shadow(0px 2px 12px #333333);
+}
+
+.battle-vs-units {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 4px #000;
+  white-space: nowrap;
 }
 
 /* ── Battlefield: two unit columns with center roll display ── */

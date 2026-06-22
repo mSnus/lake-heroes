@@ -152,8 +152,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // and would always compare 1:1 to itself).
   // Ambush is exempt — the player is forced into it, not choosing to bring
   // overwhelming numbers, so no tactical edge is awarded either way.
-  const attackerRollBonus = isAmbush ? 0 : rollBonus(attacker.units, defence);
-  const defenderRollBonus = isAmbush ? 0 : rollBonus(defender ? defender.units : defence, attackerUnits);
+  const attackerSideUnits = attacker.units;
+  const defenderSideUnits = defender ? defender.units : defence;
+  const attackerRollBonus = isAmbush ? 0 : rollBonus(attackerSideUnits, defence);
+  const defenderRollBonus = isAmbush ? 0 : rollBonus(defenderSideUnits, attackerUnits);
   const attackerBonusBadge = attackerRollBonus > 0 ? `⚔️+${attackerRollBonus}` : undefined;
   const defenderBonusBadge = defenderRollBonus > 0 ? `🛡️+${defenderRollBonus}` : undefined;
 
@@ -509,7 +511,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
       <div className="battle-screen">
         <div className="battle-header">{headerText}</div>
-        {isBrawl && <div className="battle-brawl-tag">Brawl!</div>}
+        {isBrawl && <div className="battle-brawl-tag">Brawl! ✊</div>}
 
         <div className="battle-names-row">
           <div className="bc-attacker">
@@ -527,6 +529,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             ) : (
               <PlayerCard player={attacker} prefix="⚔️" suffix={attackerBonusBadge} />
             )}
+          </div>
+          <div className="battle-vs-units">
+            {isAmbush ? defenderSideUnits : attackerSideUnits}🧍⚔️
+            {isAmbush ? attackerSideUnits : defenderSideUnits}🧍
           </div>
           <div className="bc-defender">
             {isAmbush ? (
