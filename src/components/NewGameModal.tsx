@@ -12,9 +12,9 @@ import { useAppVersion } from '../utils/useAppVersion';
 const MODE_CYCLE: (CharacterId | null)[] = [null, 'explorer', 'warrior', 'wizard'];
 const MODE_EMOJI: Record<CharacterId | 'human', string> = {
   human: '🧒',
-  explorer: '🤖🧑‍🌾',
-  warrior: '🤖💂',
-  wizard: '🤖🧙',
+  explorer: '🧑‍🌾',
+  warrior: '💂',
+  wizard: '🧙',
 };
 
 // Swapped into the last word of the name when a character is picked.
@@ -145,6 +145,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
               type="text"
               value={player.name}
               onChange={(e) => handlePlayerChange(index, 'name', e.target.value)}
+              style={{paddingRight: '1.75rem'}}
             />
             <button
               onClick={() =>
@@ -160,6 +161,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 cursor: 'pointer',
                 fontSize: '1.2rem',
                 padding: '0 4px',
+                marginLeft: '-2.5rem'
               }}
               title="Random name"
             >

@@ -139,8 +139,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     (activePlayer.units ?? 0) > BRAWL_THRESHOLD &&
     (activePlayer.units ?? 0) < lvl1Defence;
   const attackEmoji = isBrawlTile ? '✊' : isBanzai ? '🩸' : '⚔️';
-  const unitsInsufficient =
-    !isBanzai && !!activePlayer && (activePlayer.units ?? 0) < lvl1Defence;
+  const unitsInsufficient = !isBanzai && !!activePlayer && (activePlayer.units ?? 0) < lvl1Defence;
 
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
@@ -328,12 +327,37 @@ export const TileCard: React.FC<TileCardProps> = ({
               {!tile.owner && (
                 <div className="tile-card-base-info">
                   <div className="tile-card-base-row">
+                    <div className="big-icon-hint">
+                      +{bonus(tile.level)} {bonusTypeIcon}
+                      <div>per year</div>
+                    </div>
+                  </div>
+
+                  <div className="tile-card-base-row">
                     <div>
                       <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                        {cantAfford ? "can't afford" : '👛 to own:'}
+                        {cantAfford ? "can't afford" : 'to own:'}
                       </div>
                       <div>
                         <div>
+                          {tile.requiredFame > 0 && (
+                            <>
+                              <span
+                                style={
+                                  activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
+                                    ? { color: '#ff4444', marginRight: '8px' }
+                                    : { marginRight: '8px' }
+                                }
+                              >
+                                {activePlayer &&
+                                  (activePlayer.fame ?? 1) < tile.requiredFame &&
+                                  '🔻'}
+                                🏆{tile.requiredFame}
+                              </span>
+                              {'  '}
+                            </>
+                          )}
+
                           <span
                             style={
                               activePlayer &&
@@ -343,40 +367,20 @@ export const TileCard: React.FC<TileCardProps> = ({
                             }
                           >
                             {activePlayer &&
-                              (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0) &&
-                              '🔻'}
+                              (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0) ?
+                              '🔻' : '👛 '}
                             {tile.currentPrice.gold ?? 0} 🟡
                           </span>
                           {'  '}
-                          <span style={unitsInsufficient ? { color: '#ff4444' } : {}}>
-                            {unitsInsufficient && '🔻'}
-                            {defence(1)}{attackEmoji}
-                          </span>
-                          {tile.requiredFame > 0 && (
-                            <>
-                              {'  '}
-                              <span
-                                style={
-                                  activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
-                                    ? { color: '#ff4444' }
-                                    : {}
-                                }
-                              >
-                                {activePlayer &&
-                                  (activePlayer.fame ?? 1) < tile.requiredFame &&
-                                  '🔻'}
-                                {tile.requiredFame} 🏆
-                              </span>
-                            </>
+
+                          {unitsInsufficient && (
+                            <span style={{ color: '#ff4444' }}>
+                              🔻{defence(1)}
+                              🛡️
+                            </span>
                           )}
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="tile-card-base-row">
-                    <div className="big-icon-hint">
-                      +{bonus(tile.level)} {bonusTypeIcon}
-                      <div>per year</div>
                     </div>
                   </div>
                 </div>
@@ -481,12 +485,22 @@ export const TileCard: React.FC<TileCardProps> = ({
               activePlayer?.gold ?? 0,
               activePlayer?.units ?? 0,
               activePlayer?.fame ?? 1
-            ) && (              
-              <DecoratedButton onClick={(e) => handleBuyClick(e)} style={{width: '100%', marginBottom: '0', height: '80px', paddingBottom: '8px', filter: 'drop-shadow(2px 2px 3px #00000050)'}}>
+            ) && (
+              <DecoratedButton
+                onClick={(e) => handleBuyClick(e)}
+                style={{
+                  width: '100%',
+                  marginBottom: '0',
+                  height: '80px',
+                  paddingBottom: '8px',
+                  filter: 'drop-shadow(2px 2px 3px #00000050)',
+                }}
+              >
                 {isBanzai ? (
                   <>
-                    Banzai! {attackEmoji}{activePlayer?.units ?? 0}{' '}
-                    <span style={{ fontSize: '0.9rem' }}>vs</span> {defence(1)}
+                    Banzai! {attackEmoji}
+                    {activePlayer?.units ?? 0} <span style={{ fontSize: '0.9rem' }}>vs</span>{' '}
+                    {defence(1)}
                   </>
                 ) : (
                   `Claim it! ${attackEmoji}${defence(1)}`
