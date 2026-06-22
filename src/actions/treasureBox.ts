@@ -46,7 +46,6 @@ export function handleTreasureBox(
   const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier * sizeMultiplier);
 
   player.gold += goldReward;
-  board.gameMessage = `${player.name} found a ${size} treasure chest with ${goldReward}🟡 inside!`;
 
   updateGameState(board);
   say(
