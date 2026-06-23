@@ -128,15 +128,6 @@
   opacity: 0.4;
 }
 
-/* ── Roll button ── */
-
-.battle-roll-btn {
-  font-size: 0.9rem !important;
-  padding: 6px 12px !important;
-  white-space: nowrap;
-  margin-top: 4px;
-}
-
 /* ── Inline result ── */
 
 .battle-result-inline {

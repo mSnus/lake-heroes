@@ -581,12 +581,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         </div>
 
         {phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker && (
-          <DecoratedButton className="battle-roll-btn" onClick={handleAttackerRoll}>
+          <DecoratedButton onClick={handleAttackerRoll}>
             ⚔️ Attack!
           </DecoratedButton>
         )}
         {phase === 'defender-roll' && !isAutoDefender && !rollingDefender && (
-          <DecoratedButton className="battle-roll-btn" onClick={handleDefenderRoll}>
+          <DecoratedButton onClick={handleDefenderRoll}>
             🛡️ Defend!
           </DecoratedButton>
         )}
@@ -611,9 +611,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               </span>
             </div>
             <p className="battle-result-message">{resultMsg}</p>
-            <button className="game-menu-button" onClick={handleClose}>
+            <DecoratedButton onClick={handleClose}>
               {isAmbush ? '🍀 Keep calm and carry on' : '🩸 Was it worth it?'}
-            </button>
+            </DecoratedButton>
           </div>
         )}
       </div>
