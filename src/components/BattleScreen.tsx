@@ -154,8 +154,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // and would always compare 1:1 to itself).
   // Ambush is exempt — the player is forced into it, not choosing to bring
   // overwhelming numbers, so no tactical edge is awarded either way.
-  const attackerSideUnits = attacker.units;
-  const defenderSideUnits = defender ? defender.units : defence;
+  // Snapshotted once on mount: resolving the battle mutates attacker/defender.units
+  // in place, and recomputing from the live value would change the bonus (and the
+  // "Great Army" badge) after the fight is already decided.
+  const attackerSideUnitsRef = useRef(attacker.units);
+  const defenderSideUnitsRef = useRef(defender ? defender.units : defence);
+  const attackerSideUnits = attackerSideUnitsRef.current;
+  const defenderSideUnits = defenderSideUnitsRef.current;
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
   const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
   const attackerArmyBonus = isAmbush ? 0 : rollBonus(attackerSideUnits, defence);
@@ -178,6 +183,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
   const attackerBonusEntries = buildBonusEntries(attacker, attackerArmyBonus);
   const defenderBonusEntries = buildBonusEntries(defender, defenderArmyBonus);
+  const attackerVisibleArtifactIds = attackerBonusEntries
+    .filter((e) => e.key !== 'army')
+    .map((e) => e.key);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -541,7 +549,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               // is the real player's, shown in the bc-defender slot below).
               <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} />
             ) : (
-              <PlayerCard player={attacker} />
+              <PlayerCard player={attacker} artifactIds={attackerVisibleArtifactIds} />
             )}
           </div>
           <div className="battle-vs-units">
@@ -552,7 +560,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
           <div className="bc-defender">
             {isAmbush ? (
-              <PlayerCard player={attacker} />
+              <PlayerCard player={attacker} artifactIds={attackerVisibleArtifactIds} />
             ) : (
               <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} />
             )}
@@ -638,7 +646,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <DecoratedButton onClick={handleClose}>
-              {isAmbush ? '🍀 Keep calm and carry on' : '🩸 Was it worth it?'}
+              {isAmbush ? '🍀 Keep calm & carry on' : '🩸 Was it worth it?'}
             </DecoratedButton>
           </div>
         )}

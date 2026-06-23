@@ -7,6 +7,7 @@ import { DecoratedButton } from './DecoratedButton';
 import '../styles/HelpScreen.css';
 import { KNIGHT_FAME } from '../utils/fame';
 import { useAppVersion } from '../utils/useAppVersion';
+import { ARTIFACTS } from '../game/artifacts';
 
 const waterMillData = (tilesData as TileJSON[]).find((t) => t.name === 'Water mill');
 const waterMillTile = waterMillData ? new Tile(waterMillData) : null;
@@ -136,8 +137,40 @@ const HelpScreen: React.FC = () => {
               visiting your tiles
             </li>
             <li>
-              🃏 <strong>Joker</strong> — random global event: Taxes, Plague, Hurricane, Blessing,
-              King's Grace, or Earthquake.
+              🃏 <strong>Joker</strong> — triggers a random global event, see below for the full
+              list.
+            </li>
+          </ul>
+
+          <h3>Joker 🃏</h3>
+          <ul>
+            <li>
+              Landing on the Joker tile triggers one random event, affecting everyone (or, in some
+              cases, just one player):
+            </li>
+            <li>
+              🧾 <strong>Taxes</strong> — all players lose half of their gold.
+            </li>
+            <li>
+              🦠 <strong>Plague</strong> — all players lose half of their units.
+            </li>
+            <li>
+              🌪️ <strong>Hurricane</strong> — every player loses their most expensive tile.
+            </li>
+            <li>
+              👑 <strong>Blessing</strong> — all owned tiles are upgraded one level.
+            </li>
+            <li>
+              💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower
+              tile, or 2000🟡 and 5🧍 if none are free.
+            </li>
+            <li>
+              🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no
+              upgraded tiles lose their cheapest tile instead.
+            </li>
+            <li>
+              ☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player,
+              razing it.
             </li>
           </ul>
 
@@ -178,6 +211,19 @@ const HelpScreen: React.FC = () => {
               The victory comes with a price! As a result of a battle, winner loses units killed in
               battle.
             </li>
+          </ul>
+
+          <h3>Artifacts</h3>
+          <ul>
+            <li>
+              Found inside Treasure Chests 📦 — each artifact grants its owner a permanent bonus
+              for the rest of the game.
+            </li>
+            {ARTIFACTS.map((artifact) => (
+              <li key={artifact.id}>
+                {artifact.emoji} <strong>{artifact.name}</strong> — {artifact.description}
+              </li>
+            ))}
           </ul>
 
           <h3>Dragon 🐉</h3>

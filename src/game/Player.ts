@@ -4,6 +4,7 @@ export interface PlayerParams {
   id?: number;
   name: string;
   color: string;
+  lightColor?: string;
   gold: number;
   units: number;
   position: number;
@@ -14,10 +15,10 @@ export interface PlayerParams {
 }
 
 export class Player {
-  // Stable 1-based identity used for tile ownership and player lookups.
   id: number;
   name: string;
   color: string;
+  lightColor: string;
   gold: number;
   units: number;
   ownedTiles: number[];
@@ -44,6 +45,7 @@ export class Player {
     this.id = params.id ?? 0;
     this.name = params.name;
     this.color = params.color;
+    this.lightColor = params.lightColor ?? params.color;
     this.gold = params.gold;
     this.units = params.units;
     this.position = params.position;

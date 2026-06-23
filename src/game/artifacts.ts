@@ -30,7 +30,7 @@ export function pickRandomUnownedArtifact(board: GameState): Artifact | null {
 /**
  * Battle dice bonus from owned artifacts, on top of the army-size rollBonus.
  * Broken Blade: +2 vs the Dragon, +1 in every battle (additive with the +2).
- * Daedric Axe: +1 vs the Dragon, +1 in brawl-mode battles.
+ * Dwemer Axe: +1 vs the Dragon, +1 in brawl-mode battles.
  */
 export function getArtifactRollBonus(
   player: Player,
@@ -41,7 +41,7 @@ export function getArtifactRollBonus(
     bonus += 1;
     if (opts.isDragon) bonus += 2;
   }
-  if (hasArtifact(player, 'daedric-axe')) {
+  if (hasArtifact(player, 'dwemer-axe')) {
     if (opts.isDragon) bonus += 1;
     if (opts.isBrawl) bonus += 1;
   }
@@ -51,7 +51,7 @@ export function getArtifactRollBonus(
 /** The battle-relevant artifacts a player owns, for display under the names row. */
 export function getBattleArtifacts(player: Player): Artifact[] {
   return ARTIFACTS.filter(
-    (a) => (a.id === 'broken-blade' || a.id === 'daedric-axe') && hasArtifact(player, a.id)
+    (a) => (a.id === 'broken-blade' || a.id === 'dwemer-axe') && hasArtifact(player, a.id)
   );
 }
 
@@ -66,9 +66,9 @@ export function getArtifactRollBonusBreakdown(
     const artifact = getArtifact('broken-blade');
     if (artifact) breakdown.push({ artifact, bonus });
   }
-  if (hasArtifact(player, 'daedric-axe')) {
+  if (hasArtifact(player, 'dwemer-axe')) {
     const bonus = (opts.isDragon ? 1 : 0) + (opts.isBrawl ? 1 : 0);
-    const artifact = getArtifact('daedric-axe');
+    const artifact = getArtifact('dwemer-axe');
     if (artifact && bonus > 0) breakdown.push({ artifact, bonus });
   }
   return breakdown;

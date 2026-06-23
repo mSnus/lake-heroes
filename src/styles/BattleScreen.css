@@ -39,8 +39,11 @@
 .battle-names-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  justify-items: center;
   position: relative;
+  gap: 12px;
+  text-align: center;
 }
 
 .battle-names-row .bc-attacker,
@@ -120,8 +123,8 @@
 }
 
 .battle-unit {
-  font-size: 1.35rem;
-  line-height: 1.1;
+  font-size: 1.6rem;
+  line-height: 1.2;
 }
 
 /* ── Center column: roll display ── */
@@ -221,4 +224,10 @@
   object-fit: contain;
   filter: drop-shadow(0 2px 4px #000);
   flex-shrink: 0;
+}
+
+.battle-screen button.decorated {
+  font-size: 1.6rem;
+  padding-left: 20px;
+  padding-right: 38px;
 }

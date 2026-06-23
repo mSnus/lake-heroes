@@ -18,6 +18,8 @@ interface PlayerCardProps {
   prefix?: string;
   /** Shown after the name, e.g. an army-size dice bonus badge ("⚔️+1"). */
   suffix?: string;
+  /** Restricts the artifact badges shown to these ids (e.g. only artifacts with an active bonus this battle). Omit to show all owned artifacts. */
+  artifactIds?: string[];
   className?: string;
 }
 
@@ -32,10 +34,16 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   imageSrc,
   prefix,
   suffix,
+  artifactIds,
   className,
 }) => {
   const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.fame) : undefined);
   const altName = player?.name ?? name ?? '';
+  const visibleArtifacts = player
+    ? artifactIds
+      ? player.artifacts.filter((id) => artifactIds.includes(id))
+      : player.artifacts
+    : [];
 
   return (
     <div className={'player-card' + (className ? ' ' + className : '')}>
@@ -45,9 +53,9 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         <PlayerLabel player={player ?? undefined} name={name} color={color} bold />
         {suffix ? <span className="player-card-suffix">{suffix}</span> : null}
       </div>
-      {player && player.artifacts.length > 0 && (
+      {visibleArtifacts.length > 0 && (
         <div className="player-card-artifacts">
-          {player.artifacts.map((id) => {
+          {visibleArtifacts.map((id) => {
             const artifact = getArtifact(id);
             if (!artifact) return null;
             return (

@@ -27,27 +27,30 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
           <strong>🏆 {player.fame ?? 1}</strong>
         </div>
       )}
-      
 
       <div className="player-stats">
-        <div className="player-stats-hint" style={{backgroundColor: player.color}}>⚜️</div>
+        <div className="player-stats-hint" style={{ backgroundColor: player.color }}>
+          ⚜️
+        </div>
 
         {showGold && (
           <span className="player-stat">
-            <strong>{player.gold ?? 0} 🟡</strong>
+            <strong>{player.gold ?? 0}🟡</strong>
           </span>
         )}
         {showUnits && (
           <span className="player-stat">
-            <strong>{player.units ?? 0} 🧍</strong>
+            <strong>{player.units ?? 0}🧍</strong>
           </span>
         )}
       </div>
       {income && (
-        <div className="player-stats-income" title="Income per year">          
-          <div className="player-stats-hint" style={{backgroundColor: player.color}}>🏰</div>
-          <span className="player-stat">+{income.gold} 🟡</span>
-          <span className="player-stat">+{income.units} 🧍</span>
+        <div className="player-stats-income" title="Income per year">
+          <div className="player-stats-hint" style={{ backgroundColor: player.color }}>
+            🏰
+          </div>
+          <span className="player-stat">+{income.gold}🟡</span>
+          <span className="player-stat">+{income.units}👬</span>
         </div>
       )}
     </div>

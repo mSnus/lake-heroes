@@ -1,6 +1,5 @@
 .player-pane {
   width: 100vw;
-  height: var(--player-pane-height);
   display: flex;
   flex-direction: column;
   justify-content: center;

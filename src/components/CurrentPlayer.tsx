@@ -13,14 +13,12 @@ interface CurrentPlayerProps {
 export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   const activePlayer = gameState.activePlayer;
 
-  const { tileGold, tileUnits, kingsGold, kingsUnits, totalGold, totalUnits } =
+  const { tileGold, tileUnits, kingsGold, kingsUnits, diamondGold, totalGold, totalUnits } =
     computeKingsGraceReward(gameState, activePlayer);
 
   return (
     <div className="player-pane">
-      <div
-        className="current-player"
-      >
+      <div className="current-player">
         <PlayerLabel player={activePlayer} />
         {/* fame */}
         <div
@@ -36,28 +34,12 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             <strong>🏆 {activePlayer.fame ?? 1}</strong>
           </div>
         </div>
-        <span>is&nbsp;at</span>
-        <span style={{ color: gameState.activeTile.groupTextColor }}>{gameState.activeTile.name} </span>
-      </div>
 
-      {activePlayer.artifacts.length > 0 && (
-        <div className="player-stats-artifacts">
-          {activePlayer.artifacts.map((id) => {
-            const artifact = getArtifact(id);
-            if (!artifact) return null;
-            return (
-              <span
-                key={id}
-                className="player-artifact-badge"
-                onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
-                style={{ cursor: 'pointer' }}
-              >
-                {artifact.emoji}
-              </span>
-            );
-          })}
-        </div>
-      )}
+        <span>is&nbsp;at</span>
+        <span style={{ color: gameState.activeTile.groupTextColor }}>
+          {gameState.activeTile.name}{' '}
+        </span>
+      </div>
 
       {gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) && (
         <div className="player-stats-contracts">
@@ -70,7 +52,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                 <span
                   key={c.tilePosition}
                   className="player-contract-badge"
-                  onClick={() => say(`King's contract: claim ${tile.name} for ${c.award}🟡!`, 'info')}
+                  onClick={() =>
+                    say(`King's contract: claim ${tile.name} for ${c.award}🟡!`, 'info')
+                  }
                   style={{ cursor: 'pointer' }}
                 >
                   📜 {tile.name}
@@ -95,10 +79,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
           <div></div>
           <div>
-            <strong>{activePlayer.gold ?? 0} 🟡</strong>
+            <strong>{activePlayer.gold ?? 0}🟡</strong>
           </div>
           <div>
-            <strong>{activePlayer.units ?? 0} 🧍</strong>
+            <strong>{activePlayer.units ?? 0}🧍</strong>
           </div>
         </div>
 
@@ -117,6 +101,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             const parts = [
               fmt(tileGold, tileUnits, 'from your own tiles'),
               fmt(kingsGold, kingsUnits, "as the King's grace"),
+              fmt(diamondGold, 0, 'from the Pristine Diamond 💎'),
             ].filter(Boolean);
 
             say(
@@ -135,7 +120,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
 
             {totalGold > 0 ? (
               <div>
-                <strong>+{totalGold} 🟡</strong>
+                <strong>+{totalGold}🟡</strong>
               </div>
             ) : (
               <div />
@@ -150,6 +135,38 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             )}
           </div>
         </div>
+
+        {/* player's artifacts */}
+        {activePlayer.artifacts.length > 0 && (
+            <div
+              className="player-stats-data"
+              id="statsArtifacts"
+            >
+              <div
+                className="player-stats-hint"
+                style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+              >
+                📯
+              </div>
+              <div></div>
+              <div className="player-stats-artifacts">
+                {activePlayer.artifacts.map((id) => {
+                  const artifact = getArtifact(id);
+                  if (!artifact) return null;
+                  return (
+                    <span
+                      key={id}
+                      className="player-artifact-badge"
+                      onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {artifact.emoji}
+                    </span>
+                  );
+                })}
+              </div>
+          </div>
+        )}
       </div>
     </div>
   );

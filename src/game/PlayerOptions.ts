@@ -3,16 +3,18 @@ import { KNIGHT_FAME } from './constants';
 export interface PlayerOption {
   colorName: string;
   color: string;
+  lightColor: string;
   image: string;
 }
 
+// lightColor = color lightened by 10 points of HSL lightness (clamped at 100%).
 export const playerOptions: PlayerOption[] = [
-  { colorName: 'Red', color: '#FF4444', image: 'red' },
-  { colorName: 'Blue', color: '#286cff', image: 'blue' },
-  { colorName: 'Yellow', color: '#FFD700', image: 'yellow' },
-  { colorName: 'Green', color: '#00C851', image: 'green' },
-  { colorName: 'Violet', color: '#9933CC', image: 'violet' },
-  { colorName: 'Black', color: '#212121', image: 'black' },
+  { colorName: 'Red', color: '#FF4444', lightColor: '#FF7777', image: 'red' },
+  { colorName: 'Blue', color: '#286cff', lightColor: '#5B8FFF', image: 'blue' },
+  { colorName: 'Yellow', color: '#FFD700', lightColor: '#FFDF33', image: 'yellow' },
+  { colorName: 'Green', color: '#00C851', lightColor: '#00FB66', image: 'green' },
+  { colorName: 'Violet', color: '#9933CC', lightColor: '#AD5CD6', image: 'violet' },
+  { colorName: 'Black', color: '#212121', lightColor: '#3B3B3B', image: 'black' },
 ];
 
 // Blue has no footman sprite — always uses rider
@@ -42,6 +44,11 @@ const pronouns = [
   'Noble',
   'Valiant',
   'Squint-eyed',
+  'Happy',
+  'Drooling',
+  'Eyesore',
+  'Coward',
+  'Mystic'
 ];
 
 const nouns = [
@@ -53,12 +60,15 @@ const nouns = [
   'Champion',
   'Monk',
   'Nun',
+  'Dwarf',
   'Baron',
   'Lady',
   'Prince',
   'Princess',
   'Bandit',
   'Assassin',
+  'Clown',
+  'Lady',
 ];
 
 export function generatePlayerName(usedNames: string[] = []): string {

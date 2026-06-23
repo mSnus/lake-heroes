@@ -367,9 +367,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                             }
                           >
                             {activePlayer &&
-                              (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0) ?
-                              '🔻' : '👛 '}
-                            {tile.currentPrice.gold ?? 0} 🟡
+                            (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
+                              ? '🔻'
+                              : '👛 '}
+                            {tile.currentPrice.gold ?? 0}🟡
                           </span>
                           {'  '}
 

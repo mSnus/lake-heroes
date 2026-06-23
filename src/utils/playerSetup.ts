@@ -3,6 +3,7 @@ import { CharacterId } from '../ai/characters';
 export interface PlayerSetup {
   name: string;
   color: string;
+  lightColor: string;
   image: string;
   gold: number;
   units: number;

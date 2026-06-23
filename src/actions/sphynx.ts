@@ -43,11 +43,11 @@ export function handleSphynx(
     const loss = Math.max(1, raw);
 
     player.units = Math.max(0, player.units - loss);
-    message = `Lost ${loss}🧍 (1/3).`;
+    message = `Sphynx ate ${loss}🧍`;
     screenMessage = `Sphynx eats ${loss}🧍, but you escape.`;
   } else if (roll === 5) {
     message = `Nothing happens.`;
-    screenMessage = `Sphynx remained silent. Nothing happened.`;
+    screenMessage = `Sphynx remained silent.`;
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100, with a floor of 800
     const bonusBase = player.gold * 0.2;
@@ -59,7 +59,7 @@ export function handleSphynx(
 
   // Visiting the Sphynx always grants fame, win or lose.
   player.fame += 1;
-  message += ` Gained 1🏆 for the visit.`;
+  message += ` Fame +1🏆 for the adventure.`;
 
   updateGameState(gameState);
 

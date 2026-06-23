@@ -56,28 +56,39 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         {config.spriteImage && <SpriteCircleIcon src={config.spriteImage} />}
         {config.encounter && (
           <div className="text-message">
-            <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />
-            {' '}
+            <PlayerLabel
+              name={config.encounter.playerName}
+              color={config.encounter.playerColor}
+              bold
+            />{' '}
             {config.encounter?.gold !== undefined && (
               <>
-                <strong>{config.encounter.gold} 🟡</strong>
+                <strong>{config.encounter.gold}🟡</strong>
                 &nbsp;
-                <strong>{config.encounter.units} 🧍</strong>
+                <strong>{config.encounter.units}🧍</strong>
               </>
             )}
             <br />
-            encounters <strong style={{color: config.encounter.tile?.groupTextColor}}>{config.encounter.tile?.name}</strong>
+            encounters{' '}
+            <strong style={{ color: config.encounter.tile?.groupTextColor }}>
+              {config.encounter.tile?.name}
+            </strong>
             {config.encounter.tile && <> 🛡️ {config.encounter.tile.defence}</>}
             {config.encounter.ownerName && (
               <>
                 <br />
                 that belongs to{' '}
-                <PlayerLabel name={config.encounter.ownerName} color={config.encounter.ownerColor} bold />
+                <PlayerLabel
+                  name={config.encounter.ownerName}
+                  color={config.encounter.ownerColor}
+                  bold
+                />
                 {config.encounter.canFight && config.encounter.tile && (
                   <>
                     <br />
                     <br />
-                    Risk {config.encounter.tile.defence}🧍 to raze it or pay {config.encounter.fee ?? config.encounter.tile.fee}🟡 and go?
+                    Risk {config.encounter.tile.defence}🧍 to raze it or pay{' '}
+                    {config.encounter.fee ?? config.encounter.tile.fee}🟡 and go?
                   </>
                 )}
               </>

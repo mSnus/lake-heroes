@@ -36,7 +36,7 @@ export function resolveAmbush(
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold += reward;
 
-    const lossStr = playerUnitsKilled > 0 ? `, losing ${playerUnitsKilled}🧍` : '';
+    const lossStr = playerUnitsKilled > 0 ? `, ${playerUnitsKilled}🧍 lost` : '';
     board.gameMessage = `${player.name} repels the ambush, receiving ${reward}🟡${lossStr}`;
     message = `Ambush repelled! Your reward is ${reward}🟡${lossStr}`;
   } else if (outcome === 'tie') {
@@ -45,14 +45,14 @@ export function resolveAmbush(
     if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);
-    board.gameMessage = `${player.name} barely survives the ambush${loss ? `, losing ${loss}` : ''}`;
+    board.gameMessage = `${player.name} barely survives the ambush${loss ? `, ${loss}🧍 lost` : ''}`;
     message = `A bloody stalemate${loss ? ` — lost ${loss}` : ''}`;
   } else {
     const goldLoss = Math.floor(player.gold / 4 / 100) * 100;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, playerUnitsKilled);
-    board.gameMessage = `${player.name} is overwhelmed by the ambush${loss ? `, losing ${loss}` : ''}`;
+    board.gameMessage = `${player.name} is overwhelmed by the ambush${loss ? `, ${loss}🧍 lost` : ''}`;
     message = `${loss ? `Lost ${loss}` : 'Overwhelmed'}`;
   }
 

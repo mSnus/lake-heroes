@@ -9,6 +9,7 @@ export interface KingsGraceReward {
   tileUnits: number;
   kingsGold: number;
   kingsUnits: number;
+  diamondGold: number;
   totalGold: number;
   totalUnits: number;
 }
@@ -47,6 +48,7 @@ export function computeKingsGraceReward(board: GameState, player: Player): Kings
     tileUnits,
     kingsGold,
     kingsUnits,
+    diamondGold,
     totalGold: tileGold + kingsGold + diamondGold,
     totalUnits: tileUnits + kingsUnits,
   };

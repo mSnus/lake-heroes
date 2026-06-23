@@ -55,7 +55,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     !gameState.activePlayer.hasClaimedThisTurn &&
     gameState.turnPhase === 'after-move';
 
-  // label: `Buy for ${currentTile.prices['1']?.gold ?? 0} 🟡 ${currentTile.prices['1']?.units ?? 0} 🧍`,
+  // label: `Buy for ${currentTile.prices['1']?.gold ?? 0}🟡 ${currentTile.prices['1']?.units ?? 0}🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
   const isVisible =

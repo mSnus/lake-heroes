@@ -6,8 +6,8 @@
     "description": "+2 to rolls against the Dragon, +1 to rolls in all battles."
   },
   {
-    "id": "daedric-axe",
-    "name": "Daedric Axe",
+    "id": "dwemer-axe",
+    "name": "Dwemer Axe",
     "emoji": "🪓",
     "description": "+1 to rolls against the Dragon, +1 to rolls in brawl-mode battles."
   },
@@ -39,6 +39,6 @@
     "id": "medal-of-honor",
     "name": "Medal of Honor",
     "emoji": "🎖️",
-    "description": "Grants +5 Fame immediately when found."
+    "description": "Grants +5🏆. Keeps the owner from dwelling in Prison."
   }
 ]

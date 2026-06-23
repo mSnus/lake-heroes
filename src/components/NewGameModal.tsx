@@ -37,6 +37,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
       initialPlayers.push({
         name: generatePlayerName(initialPlayers.map((p) => p.name)),
         color: playerOptions[i].color,
+        lightColor: playerOptions[i].lightColor,
         image: playerOptions[i].image,
         gold: MONEY_START,
         units: UNITS_START,
@@ -65,6 +66,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
       newPlayers.push({
         name: generatePlayerName(newPlayers.map((p) => p.name)),
         color: availableOption?.color || '#FFFFFF',
+        lightColor: availableOption?.lightColor || '#FFFFFF',
         image: availableOption?.image || '',
         gold: MONEY_START,
         units: UNITS_START,
@@ -81,6 +83,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
       const selectedOption = playerOptions.find((opt) => opt.color === value);
       if (selectedOption) {
         newPlayers[index].color = selectedOption.color;
+        newPlayers[index].lightColor = selectedOption.lightColor;
         newPlayers[index].image = selectedOption.image;
       }
     } else {

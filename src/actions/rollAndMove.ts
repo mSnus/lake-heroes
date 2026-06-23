@@ -24,13 +24,10 @@ export async function rollAndMove(
   updateGameState: (board: GameState) => void,
   preRolledValue?: number
 ) {
-  console.log('Roll and move');
-
-  if (!board) return;
+    if (!board) return;
 
   // Use the value already rolled by the dice widget (avoids re-triggering the animation)
   const roll = preRolledValue !== undefined ? preRolledValue : rollDice();
-  console.log('Rolled ', roll);
   const player = board.activePlayer;
 
   const nextTileIdx = (player.position + roll) % TILE_COUNT;
@@ -99,8 +96,6 @@ export async function rollAndMove(
       }
 
       if (tile.name.includes('Tavern')) {
-        board.gameMessage = `Roll dice! The tavern keeper awaits your roll...`;
-        updateGameState(board);
         showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
         return;
       }
@@ -111,8 +106,6 @@ export async function rollAndMove(
       }
 
       if (tile.name.includes('Sphynx')) {
-        board.gameMessage = `Roll dice! The Sphynx awaits your fate...`;
-        updateGameState(board);
         showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
         return;
       }

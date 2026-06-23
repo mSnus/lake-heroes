@@ -7,3 +7,5 @@ nothing here is committed to — just worth keeping around so we don't lose trac
   claiming unowned tiles supports attacking with fewer units than defence).
 - Big army should give a bonus in battle, maybe +1 to the roll for each 10
   extra units beyond what's needed.
+- Add a button to pay a fine and leave Prison immediately, without skipping
+  the turn (currently the only way out is waiting out the skipped turns).
