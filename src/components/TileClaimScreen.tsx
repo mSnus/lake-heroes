@@ -6,6 +6,7 @@ import { Fade } from './Fade';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
+import IncomeDefence from './IncomeDefence';
 import { clearScreen } from '../utils/screenStore';
 import '../styles/TileCard.css';
 import '../styles/GameMenu.css';
@@ -41,23 +42,27 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({ tile, player }
 
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
-                <div className="tc-td" style={{borderBottom: 'solid 1px #eeeeee50', textAlign:'center', paddingBottom: '2rem'}}>
-                  income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}{' '}
-                  defence: <span className="value">{tile.getDefence(1)}</span>🛡️
-                </div>
+          <IncomeDefence 
+          income={tile.bonuses[1] ?? 0}
+          defence={tile.getDefence(1)}
+          incomeHint="income"
+          defenceHint="defence"
+          bonusTypeIcon={bonusTypeIcon}
+          />
+
                 <div className="tc-td" style={{paddingTop: '2rem'}}>
                     👛 <span className="value">+{tile.prices[2]?.gold ?? 0}</span>🟡{' '}
                     <span className="value">{tile.prices[2]?.units ?? 0}</span>🧍{' '}
                     to upgrade to <span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon}
                   
-                  {' '}and{' '}<span className="value">{tile.getDefence(2)}</span>🛡️
+                  {' '}/{' '}<span className="value">{tile.getDefence(2)}</span>🛡️
                 </div>
                 <div className="tc-td">
                     👛 <span className="value">+{tile.prices[3]?.gold ?? 0}</span>🟡{' '}
                     <span className="value">{tile.prices[3]?.units ?? 0}</span>🧍{' '}
                     to upgrade to <span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon}
                   
-                  {' '}and{' '}<span className="value">{tile.getDefence(3)}</span>🛡️
+                  {' '}/{' '}<span className="value">{tile.getDefence(3)}</span>🛡️
                 </div>
         </div>
       </div>

@@ -178,7 +178,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           bonus,
         }))
       : [];
-    if (armyBonus > 0) entries.push({ key: 'army', label: 'Great Army', bonus: armyBonus });
+    if (armyBonus > 0) entries.push({ key: 'army', label: 'Swarm ⭐', bonus: armyBonus });
     return entries;
   };
   const attackerBonusEntries = buildBonusEntries(attacker, attackerArmyBonus);
@@ -548,6 +548,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             ) : (
               <PlayerCard player={attacker} showArtifacts={false} />
             )}
+
+            {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
+            <div className="battle-artifacts-row">
+                {(isAmbush ? defenderBonusEntries : attackerBonusEntries).map((e) => (
+                  <span key={e.key} className="battle-artifact-badge">
+                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
+                  </span>
+                ))}
+            </div>
+          )}
           </div>
           <div className="battle-vs-units">
             <div className='vs-icon'>⚔️</div>
@@ -561,27 +571,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             ) : (
               <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} showArtifacts={false} />
             )}
+
+            {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
+            <div className="battle-artifacts-row">
+                {(isAmbush ? attackerBonusEntries : defenderBonusEntries).map((e) => (
+                  <span key={e.key} className="battle-artifact-badge">
+                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}<br />
+                  </span>
+                ))}
+            </div>
+          )}
           </div>
         </div>
 
-        {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
-          <div className="battle-artifacts-row">
-            <div className="bc-attacker">
-              {(isAmbush ? defenderBonusEntries : attackerBonusEntries).map((e) => (
-                <span key={e.key} className="battle-artifact-badge">
-                  {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
-                </span>
-              ))}
-            </div>
-            <div className="bc-defender">
-              {(isAmbush ? attackerBonusEntries : defenderBonusEntries).map((e) => (
-                <span key={e.key} className="battle-artifact-badge">
-                  {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        
 
         <div className="battle-field">
           <div className="battle-units bc-attacker">

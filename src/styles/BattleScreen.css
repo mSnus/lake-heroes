@@ -54,17 +54,10 @@
 
 .battle-artifacts-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 4px;
 }
 
-.battle-artifacts-row .bc-attacker,
-.battle-artifacts-row .bc-defender {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
 
 .battle-artifact-badge {
   font-size: 0.75rem;

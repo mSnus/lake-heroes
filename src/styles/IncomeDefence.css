@@ -1,0 +1,9 @@
+.income-defence-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.income-defence-wrapper .value{
+  font-weight: 600;
+  color: #fff;
+}
