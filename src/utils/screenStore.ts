@@ -33,6 +33,7 @@ export interface ScreenConfig {
     ownerName?: string;
     ownerColor?: string;
     canFight?: boolean;
+    fee?: number;
     outcomeText?: string;
     subMessage?: string;
     gold?: number;

@@ -117,6 +117,7 @@ export function showTileEncounterScreen(
     ownerName: owner?.name ?? undefined,
     ownerColor,
     canFight,
+    fee,
     outcomeText: undefined,
     gold: player.gold,
     units: player.units,

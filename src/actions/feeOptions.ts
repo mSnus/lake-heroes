@@ -1,6 +1,12 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
+import { getFeeMultiplier } from '../game/artifacts';
+
+/** Flute of Hammeln halves fees the payer owes to other players' tiles. */
+export function getEffectiveFee(tile: Tile, payer: Player): number {
+  return Math.round(tile.fee * getFeeMultiplier(payer));
+}
 
 export interface FeeOptions {
   fee: number;
@@ -16,7 +22,7 @@ export interface FeeOptions {
 
 /** Shared by the Guards-encounter UI and the bot's guards decision. */
 export function computeFeeOptions(board: GameState, player: Player, tile: Tile): FeeOptions {
-  const fee = tile.fee;
+  const fee = getEffectiveFee(tile, player);
   const defence = tile.defence;
 
   const sellable = player.ownedTiles.reduce(

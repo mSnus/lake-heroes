@@ -4,6 +4,7 @@ import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
 import { richestPlayer } from '../game/wealth';
+import { checkArtifactProtection } from '../game/artifacts';
 
 const EVENTS = [
   'Taxes',
@@ -87,8 +88,15 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
     case 'Earthquake': {
       const lostMsgs: string[] = [];
+      const savedMsgs: string[] = [];
       for (const p of board.players) {
         if (!p.ownedTiles.length) continue;
+
+        const protection = checkArtifactProtection(p, 'earthquake');
+        if (protection.saved) {
+          savedMsgs.push(`${p.name} is saved by the ${protection.artifact!.name} ${protection.artifact!.emoji}`);
+          continue;
+        }
 
         const hasUpgraded = p.ownedTiles.some((idx) => (board.tiles[idx]?.level ?? 1) > 1);
 
@@ -123,6 +131,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
       if (lostMsgs.length) say(`Earthquake destroys: ${lostMsgs.join(', ')}`, 'debug');
       message = 'All upgraded tiles lose a level, some are destroyed';
+      if (savedMsgs.length) message += `. ${savedMsgs.join('; ')}`;
       break;
     }
 
@@ -130,13 +139,18 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       // A meteor strikes one of the richest player's tiles, razing it.
       const richest = richestPlayer(board);
       if (richest && richest.ownedTiles.length > 0) {
-        const targetIdx = richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
-        const t = board.tiles[targetIdx];
-        t.owner = null;
-        t._level = 1;
-        richest.ownedTiles = richest.ownedTiles.filter((i) => i !== targetIdx);
-        changeFame(richest, -1);
-        message = `Meteor shower falls on ${t.name}, destroying it`;
+        const protection = checkArtifactProtection(richest, 'meteor');
+        if (protection.saved) {
+          message = `Meteor shower falls on ${richest.name}'s land, but the ${protection.artifact!.name} ${protection.artifact!.emoji} saves it from harm!`;
+        } else {
+          const targetIdx = richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
+          const t = board.tiles[targetIdx];
+          t.owner = null;
+          t._level = 1;
+          richest.ownedTiles = richest.ownedTiles.filter((i) => i !== targetIdx);
+          changeFame(richest, -1);
+          message = `Meteor shower falls on ${t.name}, destroying it`;
+        }
       } else {
         message = 'Meteor shower falls on the wilderness, harming no one';
       }

@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { say } from '../utils/say';
 import { clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { getEffectiveFee } from './feeOptions';
 
 export function payFee(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -10,7 +11,7 @@ export function payFee(board: GameState | null, updateGameState: (board: GameSta
   const player = board.activePlayer;
   const owner = board.players.find((p: Player) => p.id === tile.owner);
 
-  const fee = tile.fee;
+  const fee = getEffectiveFee(tile, player);
 
   if (player.gold >= fee && owner) {
     player.gold -= fee;

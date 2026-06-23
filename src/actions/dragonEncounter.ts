@@ -7,6 +7,7 @@ import {
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
+import { checkArtifactProtection } from '../game/artifacts';
 
 const ENCOUNTER_CHANCE = 1 / 12;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
@@ -84,6 +85,15 @@ function handleWeakPlayerAttack(
   onContinue: () => void
 ) {
   const player = board.activePlayer;
+
+  const protection = checkArtifactProtection(player, 'dragon-attack');
+  if (protection.saved) {
+    const savedMessage = `The Dragon swoops down upon ${player.name}, but the ${protection.artifact!.name} ${protection.artifact!.emoji} saves them from harm!`;
+    say(savedMessage, 'success');
+    updateGameState(board);
+    showDragonAttackScreen(savedMessage, onContinue);
+    return;
+  }
 
   changeFame(player, -1, 0);
 

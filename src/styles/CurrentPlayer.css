@@ -49,6 +49,19 @@
   margin-right: 8px;
 }
 
+.player-stats-artifacts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #8a6d00;
+}
+
+.player-artifact-badge {
+  white-space: nowrap;
+}
+
 .player-stats-gold {
   display: flex;
   flex-direction: row;

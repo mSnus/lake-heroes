@@ -2,6 +2,7 @@ import { GameState } from './GameState';
 import { Player } from './Player';
 import { MONEY_PASS_START } from './constants';
 import { syndicateMultiplier } from './syndicate';
+import { getDiamondGoldBonus } from './artifacts';
 
 export interface KingsGraceReward {
   tileGold: number;
@@ -39,12 +40,14 @@ export function computeKingsGraceReward(board: GameState, player: Player): Kings
     }
   }
 
+  const diamondGold = getDiamondGoldBonus(player);
+
   return {
     tileGold,
     tileUnits,
     kingsGold,
     kingsUnits,
-    totalGold: tileGold + kingsGold,
+    totalGold: tileGold + kingsGold + diamondGold,
     totalUnits: tileUnits + kingsUnits,
   };
 }

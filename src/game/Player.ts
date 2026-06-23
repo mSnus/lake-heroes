@@ -38,6 +38,7 @@ export class Player {
   upgradesThisTurn: number;
   isComputer: boolean;
   character?: CharacterId;
+  artifacts: string[];
 
   constructor(params: PlayerParams) {
     this.id = params.id ?? 0;
@@ -63,5 +64,6 @@ export class Player {
     this.upgradesThisTurn = 0;
     this.isComputer = params.isComputer ?? false;
     this.character = params.character;
+    this.artifacts = [];
   }
 }

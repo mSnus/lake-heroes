@@ -1,0 +1,44 @@
+[
+  {
+    "id": "broken-blade",
+    "name": "Broken Blade",
+    "emoji": "🗡️",
+    "description": "+2 to rolls against the Dragon, +1 to rolls in all battles."
+  },
+  {
+    "id": "daedric-axe",
+    "name": "Daedric Axe",
+    "emoji": "🪓",
+    "description": "+1 to rolls against the Dragon, +1 to rolls in brawl-mode battles."
+  },
+  {
+    "id": "pristine-diamond",
+    "name": "Pristine Diamond",
+    "emoji": "💎",
+    "description": "+1000🟡 every year (each lap of the board)."
+  },
+  {
+    "id": "indestructible-umbrella",
+    "name": "Indestructible Umbrella",
+    "emoji": "☂️",
+    "description": "Saves the player from Dragon attacks and the Joker's Meteor event."
+  },
+  {
+    "id": "divine-beads",
+    "name": "Divine Beads",
+    "emoji": "📿",
+    "description": "50% chance to save the player from Earthquake, Meteor, and Dragon attack events."
+  },
+  {
+    "id": "flute-of-hammeln",
+    "name": "Flute of Hammeln",
+    "emoji": "🪈",
+    "description": "Reduces fees owed to other players' tiles by 50%."
+  },
+  {
+    "id": "medal-of-honor",
+    "name": "Medal of Honor",
+    "emoji": "🎖️",
+    "description": "Grants +5 Fame immediately when found."
+  }
+]

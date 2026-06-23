@@ -4,6 +4,7 @@ import '../styles/CurrentPlayer.css';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
 import { computeKingsGraceReward } from '../game/kingsGrace';
+import { getArtifact } from '../game/artifacts';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -38,6 +39,20 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <span>is&nbsp;at</span>
         <span style={{ color: gameState.activeTile.groupTextColor }}>{gameState.activeTile.name} </span>
       </div>
+
+      {activePlayer.artifacts.length > 0 && (
+        <div className="player-stats-artifacts">
+          {activePlayer.artifacts.map((id) => {
+            const artifact = getArtifact(id);
+            if (!artifact) return null;
+            return (
+              <span key={id} className="player-artifact-badge">
+                {artifact.name} {artifact.emoji}
+              </span>
+            );
+          })}
+        </div>
+      )}
 
       <div className="player-stats-gold">
         {/* wealth */}

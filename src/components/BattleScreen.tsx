@@ -19,6 +19,7 @@ import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound, rollBonus } from '../actions/battles/common';
+import { getArtifactRollBonus, getBattleArtifacts } from '../game/artifacts';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 import { TileClaimScreen } from './TileClaimScreen';
@@ -155,10 +156,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // overwhelming numbers, so no tactical edge is awarded either way.
   const attackerSideUnits = attacker.units;
   const defenderSideUnits = defender ? defender.units : defence;
-  const attackerRollBonus = isAmbush ? 0 : rollBonus(attackerSideUnits, defence);
-  const defenderRollBonus = isAmbush ? 0 : rollBonus(defenderSideUnits, attackerUnits);
+  const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
+  const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
+  const attackerRollBonus =
+    (isAmbush ? 0 : rollBonus(attackerSideUnits, defence)) + attackerArtifactBonus;
+  const defenderRollBonus =
+    (isAmbush ? 0 : rollBonus(defenderSideUnits, attackerUnits)) + defenderArtifactBonus;
   const attackerBonusBadge = attackerRollBonus > 0 ? `⚔️+${attackerRollBonus}` : undefined;
   const defenderBonusBadge = defenderRollBonus > 0 ? `🛡️+${defenderRollBonus}` : undefined;
+  const attackerBattleArtifacts = getBattleArtifacts(attacker);
+  const defenderBattleArtifacts = defender ? getBattleArtifacts(defender) : [];
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -551,6 +558,25 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             )}
           </div>
         </div>
+
+        {(attackerBattleArtifacts.length > 0 || defenderBattleArtifacts.length > 0) && (
+          <div className="battle-artifacts-row">
+            <div className="bc-attacker">
+              {(isAmbush ? defenderBattleArtifacts : attackerBattleArtifacts).map((a) => (
+                <span key={a.id} className="battle-artifact-badge">
+                  {a.name} {a.emoji}
+                </span>
+              ))}
+            </div>
+            <div className="bc-defender">
+              {(isAmbush ? attackerBattleArtifacts : defenderBattleArtifacts).map((a) => (
+                <span key={a.id} className="battle-artifact-badge">
+                  {a.name} {a.emoji}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="battle-field">
           <div className="battle-units bc-attacker">

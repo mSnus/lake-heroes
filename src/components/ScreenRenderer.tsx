@@ -77,7 +77,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   <>
                     <br />
                     <br />
-                    Risk {config.encounter.tile.defence}🧍 to raze it or pay {config.encounter.tile.fee}🟡 and go?
+                    Risk {config.encounter.tile.defence}🧍 to raze it or pay {config.encounter.fee ?? config.encounter.tile.fee}🟡 and go?
                   </>
                 )}
               </>
