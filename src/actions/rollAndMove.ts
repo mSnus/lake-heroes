@@ -92,8 +92,6 @@ export async function rollAndMove(
     const continueTileLogic = () => {
       const tile = board.activeTile;
       if (tile.name.includes('Treasure')) {
-        board.gameMessage = `Roll dice! Discover the treasure inside...`;
-        updateGameState(board);
         showTreasureScreen('Treasure found!', (roll) =>
           handleTreasureBox(board, updateGameState, roll)
         );
