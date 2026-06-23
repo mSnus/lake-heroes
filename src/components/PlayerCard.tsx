@@ -2,6 +2,8 @@ import React from 'react';
 import { Player } from '../game/Player';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { PlayerLabel } from './PlayerLabel';
+import { getArtifact } from '../game/artifacts';
+import { say } from '../utils/say';
 import '../styles/PlayerCard.css';
 
 interface PlayerCardProps {
@@ -43,6 +45,24 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         <PlayerLabel player={player ?? undefined} name={name} color={color} bold />
         {suffix ? <span className="player-card-suffix">{suffix}</span> : null}
       </div>
+      {player && player.artifacts.length > 0 && (
+        <div className="player-card-artifacts">
+          {player.artifacts.map((id) => {
+            const artifact = getArtifact(id);
+            if (!artifact) return null;
+            return (
+              <span
+                key={id}
+                className="player-card-artifact-badge"
+                onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                style={{ cursor: 'pointer' }}
+              >
+                {artifact.emoji}
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

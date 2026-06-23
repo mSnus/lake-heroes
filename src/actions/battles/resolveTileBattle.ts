@@ -3,6 +3,7 @@ import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
+import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
 
 /**
  * Resolve a battle for a tile.
@@ -40,6 +41,13 @@ export function resolveTileBattle(
       changeFame(attacker, 1);
 
       message = `${attacker.name} claims ${tile.name}${lossStr}!`;
+
+      const contractResult = resolveKingsContractOnClaim(board, attacker.position, attacker);
+      if (contractResult.fulfilled && contractResult.award) {
+        attacker.gold += contractResult.award;
+        message += ` 📜 King's contract fulfilled: +${contractResult.award}🟡!`;
+      }
+
       victoryBg = true;
     } else {
       board.players.forEach((p) => {

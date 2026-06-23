@@ -2,6 +2,7 @@ export type TurnPhase = 'before-move' | 'rolling' | 'moving' | 'after-move';
 
 import { Player } from './Player';
 import { Tile } from './Tile';
+import { KingsContract } from './kingsContracts';
 
 export class GameState {
   tiles: Tile[];
@@ -15,6 +16,7 @@ export class GameState {
   turnPhase: TurnPhase;
   gameMessage: string = '';
   kingRewardMessage: string = '';
+  kingsContracts: KingsContract[] = [];
   gameOver: boolean = false;
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.

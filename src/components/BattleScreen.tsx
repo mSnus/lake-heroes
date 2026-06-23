@@ -19,7 +19,7 @@ import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound, rollBonus } from '../actions/battles/common';
-import { getArtifactRollBonus, getBattleArtifacts } from '../game/artifacts';
+import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 import { TileClaimScreen } from './TileClaimScreen';
@@ -158,14 +158,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderSideUnits = defender ? defender.units : defence;
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
   const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
-  const attackerRollBonus =
-    (isAmbush ? 0 : rollBonus(attackerSideUnits, defence)) + attackerArtifactBonus;
-  const defenderRollBonus =
-    (isAmbush ? 0 : rollBonus(defenderSideUnits, attackerUnits)) + defenderArtifactBonus;
-  const attackerBonusBadge = attackerRollBonus > 0 ? `⚔️+${attackerRollBonus}` : undefined;
-  const defenderBonusBadge = defenderRollBonus > 0 ? `🛡️+${defenderRollBonus}` : undefined;
-  const attackerBattleArtifacts = getBattleArtifacts(attacker);
-  const defenderBattleArtifacts = defender ? getBattleArtifacts(defender) : [];
+  const attackerArmyBonus = isAmbush ? 0 : rollBonus(attackerSideUnits, defence);
+  const defenderArmyBonus = isAmbush ? 0 : rollBonus(defenderSideUnits, attackerUnits);
+  const attackerRollBonus = attackerArmyBonus + attackerArtifactBonus;
+  const defenderRollBonus = defenderArmyBonus + defenderArtifactBonus;
+
+  type BonusEntry = { key: string; label: string; emoji?: string; bonus: number };
+  const buildBonusEntries = (player: Player | undefined, armyBonus: number): BonusEntry[] => {
+    const entries: BonusEntry[] = player
+      ? getArtifactRollBonusBreakdown(player, { isDragon, isBrawl }).map(({ artifact, bonus }) => ({
+          key: artifact.id,
+          label: artifact.name,
+          emoji: artifact.emoji,
+          bonus,
+        }))
+      : [];
+    if (armyBonus > 0) entries.push({ key: 'army', label: 'Great Army', bonus: armyBonus });
+    return entries;
+  };
+  const attackerBonusEntries = buildBonusEntries(attacker, attackerArmyBonus);
+  const defenderBonusEntries = buildBonusEntries(defender, defenderArmyBonus);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -527,15 +539,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               // Ambush is visually reversed: this slot shows the NPC
               // ambushers, whose bonus is defenderRollBonus (attackerRollBonus
               // is the real player's, shown in the bc-defender slot below).
-              <PlayerCard
-                imageSrc={defenderImg}
-                name={defenderLabel}
-                color={defenderColor}
-                prefix="⚔️"
-                suffix={defenderBonusBadge}
-              />
+              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} />
             ) : (
-              <PlayerCard player={attacker} prefix="⚔️" suffix={attackerBonusBadge} />
+              <PlayerCard player={attacker} />
             )}
           </div>
           <div className="battle-vs-units">
@@ -546,32 +552,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
           <div className="bc-defender">
             {isAmbush ? (
-              <PlayerCard player={attacker} prefix="🛡️" suffix={attackerBonusBadge} />
+              <PlayerCard player={attacker} />
             ) : (
-              <PlayerCard
-                imageSrc={defenderImg}
-                name={defenderLabel}
-                color={defenderColor}
-                prefix="🛡️"
-                suffix={defenderBonusBadge}
-              />
+              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} />
             )}
           </div>
         </div>
 
-        {(attackerBattleArtifacts.length > 0 || defenderBattleArtifacts.length > 0) && (
+        {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
           <div className="battle-artifacts-row">
             <div className="bc-attacker">
-              {(isAmbush ? defenderBattleArtifacts : attackerBattleArtifacts).map((a) => (
-                <span key={a.id} className="battle-artifact-badge">
-                  {a.name} {a.emoji}
+              {(isAmbush ? defenderBonusEntries : attackerBonusEntries).map((e) => (
+                <span key={e.key} className="battle-artifact-badge">
+                  {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
                 </span>
               ))}
             </div>
             <div className="bc-defender">
-              {(isAmbush ? attackerBattleArtifacts : defenderBattleArtifacts).map((a) => (
-                <span key={a.id} className="battle-artifact-badge">
-                  {a.name} {a.emoji}
+              {(isAmbush ? attackerBonusEntries : defenderBonusEntries).map((e) => (
+                <span key={e.key} className="battle-artifact-badge">
+                  {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
                 </span>
               ))}
             </div>

@@ -62,6 +62,19 @@
   white-space: nowrap;
 }
 
+.player-stats-contracts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #5b4636;
+}
+
+.player-contract-badge {
+  white-space: nowrap;
+}
+
 .player-stats-gold {
   display: flex;
   flex-direction: row;

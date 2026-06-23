@@ -55,6 +55,25 @@ export function getBattleArtifacts(player: Player): Artifact[] {
   );
 }
 
+/** Per-artifact breakdown of `getArtifactRollBonus`, for display under the names row. */
+export function getArtifactRollBonusBreakdown(
+  player: Player,
+  opts: { isDragon: boolean; isBrawl: boolean }
+): { artifact: Artifact; bonus: number }[] {
+  const breakdown: { artifact: Artifact; bonus: number }[] = [];
+  if (hasArtifact(player, 'broken-blade')) {
+    const bonus = 1 + (opts.isDragon ? 2 : 0);
+    const artifact = getArtifact('broken-blade');
+    if (artifact) breakdown.push({ artifact, bonus });
+  }
+  if (hasArtifact(player, 'daedric-axe')) {
+    const bonus = (opts.isDragon ? 1 : 0) + (opts.isBrawl ? 1 : 0);
+    const artifact = getArtifact('daedric-axe');
+    if (artifact && bonus > 0) breakdown.push({ artifact, bonus });
+  }
+  return breakdown;
+}
+
 /** Pristine Diamond: +1000 gold added to the King's-grace reward each lap. */
 export function getDiamondGoldBonus(player: Player): number {
   return hasArtifact(player, 'pristine-diamond') ? 1000 : 0;

@@ -35,7 +35,7 @@ export function resolveDragonBattle(
     lostBg = true;
   } else {
     const unitLoss = Math.ceil(attacker.units / 2);
-    const goldLoss = Math.ceil(attacker.gold / 2);
+    const goldLoss = Math.floor(attacker.gold / 2 / 100) * 100;
     attacker.units = Math.max(0, attacker.units - unitLoss);
     attacker.gold = Math.max(0, attacker.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);

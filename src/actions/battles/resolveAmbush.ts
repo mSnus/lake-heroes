@@ -41,14 +41,14 @@ export function resolveAmbush(
     message = `Ambush repelled! Your reward is ${reward}🟡${lossStr}`;
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(attackerUnits / 4);
-    const goldLoss = Math.floor(player.gold / 2);
+    const goldLoss = Math.floor(player.gold / 2 / 100) * 100;
     if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);
     board.gameMessage = `${player.name} barely survives the ambush${loss ? `, losing ${loss}` : ''}`;
     message = `A bloody stalemate${loss ? ` — lost ${loss}` : ''}`;
   } else {
-    const goldLoss = Math.floor(player.gold / 4);
+    const goldLoss = Math.floor(player.gold / 4 / 100) * 100;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, playerUnitsKilled);

@@ -46,11 +46,37 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             const artifact = getArtifact(id);
             if (!artifact) return null;
             return (
-              <span key={id} className="player-artifact-badge">
-                {artifact.name} {artifact.emoji}
+              <span
+                key={id}
+                className="player-artifact-badge"
+                onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                style={{ cursor: 'pointer' }}
+              >
+                {artifact.emoji}
               </span>
             );
           })}
+        </div>
+      )}
+
+      {gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) && (
+        <div className="player-stats-contracts">
+          {gameState.kingsContracts
+            .filter((c) => c.playerId === activePlayer.id)
+            .map((c) => {
+              const tile = gameState.tiles[c.tilePosition];
+              if (!tile) return null;
+              return (
+                <span
+                  key={c.tilePosition}
+                  className="player-contract-badge"
+                  onClick={() => say(`King's contract: claim ${tile.name} for ${c.award}🟡!`, 'info')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  📜 {tile.name}
+                </span>
+              );
+            })}
         </div>
       )}
 
