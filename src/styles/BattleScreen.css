@@ -38,7 +38,7 @@
 
 .battle-names-row {
   display: flex;
-  gap: 20vw;
+  justify-content: space-between;
   align-items: flex-end;
   position: relative;
 }
@@ -56,6 +56,8 @@
   text-shadow: 1px 1px 4px #000;
   white-space: nowrap;
   text-align: center;
+  flex: 0 0 auto;
+  width: fit-content;
 }
 
 .battle-vs-units .vs-icon {
