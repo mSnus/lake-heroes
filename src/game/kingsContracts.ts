@@ -7,7 +7,7 @@ export interface KingsContract {
   award: number;
 }
 
-const ISSUE_CHANCE = 1; // TODO: temporary for testing, revert to 0.2
+const ISSUE_CHANCE = 0.2;
 const MIN_MULTIPLIER = 2;
 const MAX_MULTIPLIER = 5;
 
