@@ -3,10 +3,10 @@ export const DICE_VIBRATION_ENABLED = true;
 
 const PULSE_MS = 30;
 const PAUSE_MS = 50;
-const PULSE_COUNT = 8;
+const PULSE_COUNT = 5;
 
 /**
- * Fires a short vibration burst (8 x 30ms pulses, 50ms apart) when a dice
+ * Fires a short vibration burst (5 x 30ms pulses, 50ms apart) when a dice
  * roll starts. No-op on browsers without the Vibration API (notably iOS Safari).
  */
 export function vibrateDiceRoll(): void {

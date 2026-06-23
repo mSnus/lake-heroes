@@ -16,13 +16,19 @@ export function useAppVersion(): string {
   const [version, setVersion] = useState(pkg.version);
 
   useEffect(() => {
-    fetch('version.txt')
-      .then((r) => (r.ok ? r.text() : null))
-      .then((text) => {
-        if (text?.trim()) setVersion(text.trim());
-      })
-      .catch(() => {});
+    resolveAppVersion().then(setVersion);
   }, []);
 
   return version;
+}
+
+/** Non-hook variant for one-off lookups outside a component, e.g. a toast fired from a mount effect. */
+export async function resolveAppVersion(): Promise<string> {
+  try {
+    const r = await fetch('version.txt');
+    const text = r.ok ? await r.text() : null;
+    return text?.trim() ? text.trim() : pkg.version;
+  } catch {
+    return pkg.version;
+  }
 }

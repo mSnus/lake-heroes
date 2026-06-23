@@ -28,6 +28,7 @@ import { ModalRenderer } from './components/ModalRenderer';
 import { BotController } from './components/BotController';
 import { showDice } from './utils/diceStore';
 import { requestShakeToRollPermission } from './utils/useShakeToRoll';
+import { resolveAppVersion } from './utils/useAppVersion';
 import {
   useScreen,
   showScreen,
@@ -170,7 +171,9 @@ function App() {
       const saved = loadFromStorage('game-state', null);
       if (saved) {
         try {
-          say('Restoring saved game...', 'info');
+          resolveAppVersion().then((version) =>
+            say(`Dragon's Bounty v.${version}: restoring saved game`, 'info')
+          );
 
           const savedRaw = saved as SavedGameState;
           const tiles = rehydrateSavedTiles(savedRaw);
