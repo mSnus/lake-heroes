@@ -16,8 +16,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Pull latest code
-        run: git -C ${{ github.workspace }} pull origin master
+      - name: Sync to latest code
+        run: |
+          git -C ${{ github.workspace }} fetch origin master
+          git -C ${{ github.workspace }} reset --hard origin/master
 
       - name: Increment version
         id: version
