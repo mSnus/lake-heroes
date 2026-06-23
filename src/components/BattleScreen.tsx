@@ -183,9 +183,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
   const attackerBonusEntries = buildBonusEntries(attacker, attackerArmyBonus);
   const defenderBonusEntries = buildBonusEntries(defender, defenderArmyBonus);
-  const attackerVisibleArtifactIds = attackerBonusEntries
-    .filter((e) => e.key !== 'army')
-    .map((e) => e.key);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -547,9 +544,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               // Ambush is visually reversed: this slot shows the NPC
               // ambushers, whose bonus is defenderRollBonus (attackerRollBonus
               // is the real player's, shown in the bc-defender slot below).
-              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} />
+              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} showArtifacts={false} />
             ) : (
-              <PlayerCard player={attacker} artifactIds={attackerVisibleArtifactIds} />
+              <PlayerCard player={attacker} showArtifacts={false} />
             )}
           </div>
           <div className="battle-vs-units">
@@ -560,9 +557,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
           <div className="bc-defender">
             {isAmbush ? (
-              <PlayerCard player={attacker} artifactIds={attackerVisibleArtifactIds} />
+              <PlayerCard player={attacker} showArtifacts={false} />
             ) : (
-              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} />
+              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} showArtifacts={false} />
             )}
           </div>
         </div>

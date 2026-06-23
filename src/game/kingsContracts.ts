@@ -7,7 +7,7 @@ export interface KingsContract {
   award: number;
 }
 
-const ISSUE_CHANCE = 0.2;
+const ISSUE_CHANCE = 1; // TODO: temporary for testing, revert to 0.2
 const MIN_MULTIPLIER = 2;
 const MAX_MULTIPLIER = 5;
 
@@ -29,7 +29,7 @@ export function issueKingsContract(board: GameState, player: Player): KingsContr
   const { t, i } = candidates[Math.floor(Math.random() * candidates.length)];
   const price = t.prices['1']?.gold ?? 0;
   const multiplier = MIN_MULTIPLIER + Math.random() * (MAX_MULTIPLIER - MIN_MULTIPLIER);
-  const award = Math.round(price * multiplier);
+  const award = Math.ceil((price * multiplier) / 500) * 500;
 
   const contract: KingsContract = { playerId: player.id, tilePosition: i, award };
   board.kingsContracts.push(contract);

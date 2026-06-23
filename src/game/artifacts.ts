@@ -29,7 +29,7 @@ export function pickRandomUnownedArtifact(board: GameState): Artifact | null {
 
 /**
  * Battle dice bonus from owned artifacts, on top of the army-size rollBonus.
- * Broken Blade: +2 vs the Dragon, +1 in every battle (additive with the +2).
+ * Broken Blade: +2 vs the Dragon, +1 in every non-brawl battle (additive with the +2). No bonus in brawl mode.
  * Dwemer Axe: +1 vs the Dragon, +1 in brawl-mode battles.
  */
 export function getArtifactRollBonus(
@@ -37,7 +37,7 @@ export function getArtifactRollBonus(
   opts: { isDragon: boolean; isBrawl: boolean }
 ): number {
   let bonus = 0;
-  if (hasArtifact(player, 'broken-blade')) {
+  if (hasArtifact(player, 'broken-blade') && !opts.isBrawl) {
     bonus += 1;
     if (opts.isDragon) bonus += 2;
   }
@@ -61,7 +61,7 @@ export function getArtifactRollBonusBreakdown(
   opts: { isDragon: boolean; isBrawl: boolean }
 ): { artifact: Artifact; bonus: number }[] {
   const breakdown: { artifact: Artifact; bonus: number }[] = [];
-  if (hasArtifact(player, 'broken-blade')) {
+  if (hasArtifact(player, 'broken-blade') && !opts.isBrawl) {
     const bonus = 1 + (opts.isDragon ? 2 : 0);
     const artifact = getArtifact('broken-blade');
     if (artifact) breakdown.push({ artifact, bonus });

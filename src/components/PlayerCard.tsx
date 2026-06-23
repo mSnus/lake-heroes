@@ -20,6 +20,8 @@ interface PlayerCardProps {
   suffix?: string;
   /** Restricts the artifact badges shown to these ids (e.g. only artifacts with an active bonus this battle). Omit to show all owned artifacts. */
   artifactIds?: string[];
+  /** Set to false to hide the artifacts row entirely (e.g. when it's shown elsewhere already). Defaults to true. */
+  showArtifacts?: boolean;
   className?: string;
 }
 
@@ -35,15 +37,17 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   prefix,
   suffix,
   artifactIds,
+  showArtifacts = true,
   className,
 }) => {
   const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.fame) : undefined);
   const altName = player?.name ?? name ?? '';
-  const visibleArtifacts = player
-    ? artifactIds
-      ? player.artifacts.filter((id) => artifactIds.includes(id))
-      : player.artifacts
-    : [];
+  const visibleArtifacts =
+    player && showArtifacts
+      ? artifactIds
+        ? player.artifacts.filter((id) => artifactIds.includes(id))
+        : player.artifacts
+      : [];
 
   return (
     <div className={'player-card' + (className ? ' ' + className : '')}>

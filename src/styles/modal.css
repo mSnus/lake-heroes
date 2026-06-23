@@ -44,6 +44,11 @@
   min-width: 350px;
 }
 
+.value {
+  color: wheat;
+  font-size: 1.3rem;
+}
+
 .modal-background {
   background-color: rgba(255, 255, 255, 0.9);
 }
@@ -92,11 +97,15 @@ button.decorated {
 .modal-content input[type='number'] {
   height: 32px;
   width: 40vw;
-  border: solid 1px #623e1b;
+  border: none;
+  background: none;
+  text-align: center;
+  font-size: 1.3rem;
+  border-bottom: solid 1px wheat;
   padding: 3px 6px 10px 6px;
   font-size: 20px;
-  border-radius: 5px;
-  color: #7b2d0a;
+  border-radius: 0;
+  color: wheat;
   font-family: 'Texturina';
 }
 
@@ -116,4 +125,13 @@ button.decorated {
   font-weight: bold;
   color: #f2e7d1;
   text-shadow: 1px 0px 3px #4e4747;
+}
+
+.king-contract {
+  border: solid 1px #f2e7d1;
+  padding: 1rem;
+  background-color: #f5f5dc29;
+  border-radius: 12px;
+  width: fit-content;
+  margin: 0 auto;
 }

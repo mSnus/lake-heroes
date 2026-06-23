@@ -15,6 +15,9 @@ interface BuyUnitsModalProps {
 const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip }) => {
   const player = gameState.activePlayer;
 
+  const contract = gameState.kingsContracts.find((c) => c.playerId === player.id);
+  const contractTile = contract ? gameState.tiles[contract.tilePosition] : null;
+
   const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
   const maxAmount = Math.min(Math.floor(player.gold / UNIT_PRICE), maxForFame);
 
@@ -45,19 +48,17 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
       noBorder={true}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
-      <div className="modal-content" style={{ color: `white` }}>
+      <div className="modal-content" style={{ color: `white`, fontFamily: 'Texturina' }}>
         <h2 className="game-title">The King's Castle</h2>
-        <h3>{gameState.kingRewardMessage}</h3>
+        <h3>{gameState.kingRewardMessage}, <PlayerLabel player={player} /></h3>
 
-        <div style={{ fontFamily: 'Texturina' }}>
-          The King welcomes <PlayerLabel player={player} />
-          <div>
-            {player.fame}🏆 {player.gold}🟡 {player.units}🧍
-          </div>
-        </div>
+        {contract && contractTile && (
+          <h3 className='king-contract'>📜 New contract: be the first to claim<br/> {contractTile.name} for a reward of <span className="value">{contract.award}</span>🟡!</h3>
+        )}
 
-        <h3 style={{ fontFamily: 'Texturina' }}>
-          Your money and fame are enough<br /> to recruit up to {maxAmount}🧍
+        <h3>
+          Your money <span className="value">{player.gold}🟡</span> and fame <span className="value">{player.fame}</span>🏆  are enough<br />
+          to grow your army from <span className="value">{player.units}</span>🧍 up to <span className="value">{player.units + maxAmount}</span>🧍
           <br />
         </h3>
 
@@ -79,10 +80,11 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
               min="0"
               max={maxAmount}
               id="unitsInput"
-              style={{ width: '3rem' }}
+              style={{ width: '2rem' }}
               className='units-input'
             />
-            = {amount * UNIT_PRICE}🟡
+            {amount > 0 && amount <= maxAmount && (<>so you'll have <span className="value">{player.units + amount}🧍</span> and <span className="value">{player.gold - amount * UNIT_PRICE}🟡</span></>)}
+            
         </div>
           <div
             style={{
@@ -124,9 +126,9 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSk
           <button
             className="game-menu-button"
             onClick={handleBuy}
-            disabled={amount <= 0 || amount > maxAmount}
+            disabled={!amount || amount <= 0 || amount > maxAmount}
           >
-            Hire {amount}🧍
+            Hire {amount > 0 ? amount : ''}🧍
           </button>
         </div>
       </div>

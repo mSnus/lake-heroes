@@ -3,7 +3,7 @@
     "id": "broken-blade",
     "name": "Broken Blade",
     "emoji": "🗡️",
-    "description": "+2 to rolls against the Dragon, +1 to rolls in all battles."
+    "description": "+2 to rolls against the Dragon, +1 to rolls in non-brawl battles."
   },
   {
     "id": "dwemer-axe",
