@@ -15,25 +15,25 @@
     "id": "pristine-diamond",
     "name": "Pristine Diamond",
     "emoji": "💎",
-    "description": "+1000🟡 every year (each lap of the board)."
+    "description": "+1000🟡 every year."
   },
   {
     "id": "indestructible-umbrella",
     "name": "Indestructible Umbrella",
     "emoji": "☂️",
-    "description": "Saves the player from Dragon attacks and the Joker's Meteor event."
+    "description": "Saves the player from Dragon attacks and the Meteor fall."
   },
   {
     "id": "divine-beads",
     "name": "Divine Beads",
     "emoji": "📿",
-    "description": "50% chance to save the player from Earthquake, Meteor, and Dragon attack events."
+    "description": "50% chance to save the player from Earthquake, Meteor, Hurricane, and Dragon attack."
   },
   {
     "id": "flute-of-hammeln",
     "name": "Flute of Hammeln",
     "emoji": "🪈",
-    "description": "Reduces fees owed to other players' tiles by 50%."
+    "description": "Reduces fees owed to other players' tiles by 50%. Protects from the Plague."
   },
   {
     "id": "medal-of-honor",

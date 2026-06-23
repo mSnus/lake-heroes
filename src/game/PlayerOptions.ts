@@ -14,7 +14,7 @@ export const playerOptions: PlayerOption[] = [
   { colorName: 'Yellow', color: '#FFD700', lightColor: '#FFDF33', image: 'yellow' },
   { colorName: 'Green', color: '#00C851', lightColor: '#00FB66', image: 'green' },
   { colorName: 'Violet', color: '#9933CC', lightColor: '#AD5CD6', image: 'violet' },
-  { colorName: 'Black', color: '#212121', lightColor: '#3B3B3B', image: 'black' },
+  { colorName: 'Black', color: '#5a5a5a', lightColor: '#adadad', image: 'black' },
 ];
 
 // Blue has no footman sprite — always uses rider

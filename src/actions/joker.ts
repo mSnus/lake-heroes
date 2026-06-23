@@ -41,18 +41,34 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       message = 'All players lose half of their gold.';
       break;
 
-    case 'Plague':
+    case 'Plague': {
+      const savedMsgs: string[] = [];
       for (const p of board.players) {
+        const protection = checkArtifactProtection(p, 'plague');
+        if (protection.saved) {
+          savedMsgs.push(`${p.name} is saved by the ${protection.artifact!.name} ${protection.artifact!.emoji}`);
+          continue;
+        }
         if (p.units > 0) p.units = Math.max(1, Math.round(p.units / 2));
       }
 
       message = 'All players lose half of their units.';
+      if (savedMsgs.length) message += ` ${savedMsgs.join('; ')}`;
       break;
+    }
 
     case 'Hurricane': {
       const lostMsgs: string[] = [];
+      const savedMsgs: string[] = [];
       for (const p of board.players) {
         if (!p.ownedTiles.length) continue;
+
+        const protection = checkArtifactProtection(p, 'hurricane');
+        if (protection.saved) {
+          savedMsgs.push(`${p.name} is saved by the ${protection.artifact!.name} ${protection.artifact!.emoji}`);
+          continue;
+        }
+
         let maxGold = -1;
         let targetIdx = -1;
         for (const idx of p.ownedTiles) {
@@ -75,6 +91,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
       if (lostMsgs.length) say(`Hurricane sweeps away: ${lostMsgs.join(', ')}`, 'debug');
       message = 'Every player loses their most expensive tile.';
+      if (savedMsgs.length) message += ` ${savedMsgs.join('; ')}`;
       break;
     }
 
