@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { hasArtifact } from '../game/artifacts';
 
 /**
  * Handle landing on Sphynx tile.
@@ -22,8 +23,13 @@ export function handleSphynx(
   const player = gameState.activePlayer;
   let message = '';
   let screenMessage = '';
+  const pipeSaved = roll <= 4 && hasArtifact(player, 'pipe-of-hamelin');
 
-  if (roll === 1 || roll === 2) {
+  // Pipe of Hamelin charms the Sphynx, negating any negative outcome (rolls 1–4).
+  if (pipeSaved) {
+    message = `You calm the growling Sphynx with your Pipe 🪈 and hastily leave.`;
+    screenMessage = `You calm growling Sphynx with your Pipe 🪈 and hastily leave`;
+  } else if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
     if (player.gold > 0) {
       const half = player.gold / 2;
@@ -63,7 +69,7 @@ export function handleSphynx(
 
   updateGameState(gameState);
 
-  say(message, roll === 6 ? 'success' : roll === 5 ? 'info' : 'warning');
+  say(message, roll === 6 ? 'success' : roll === 5 || pipeSaved ? 'info' : 'warning');
 
   showScreen({
     screenType: 'sphynx-result',

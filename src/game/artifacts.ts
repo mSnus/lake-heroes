@@ -79,9 +79,9 @@ export function getDiamondGoldBonus(player: Player): number {
   return hasArtifact(player, 'pristine-diamond') ? 1000 : 0;
 }
 
-/** Flute of Hammeln: halves fees owed to other players' tiles. */
+/** Pipe of Hamelin: halves fees owed to other players' tiles. */
 export function getFeeMultiplier(player: Player): number {
-  return hasArtifact(player, 'flute-of-hammeln') ? 0.5 : 1;
+  return hasArtifact(player, 'pipe-of-hamelin') ? 0.5 : 1;
 }
 
 export type ProtectableEvent = 'dragon-attack' | 'meteor' | 'earthquake' | 'plague' | 'hurricane';
@@ -90,7 +90,7 @@ export type ProtectableEvent = 'dragon-attack' | 'meteor' | 'earthquake' | 'plag
  * Checks whether an artifact saves the player from a damaging event.
  * Indestructible Umbrella: always saves from dragon-attack/meteor (not earthquake/plague/hurricane).
  * Divine Beads: 50% chance to save from any of the five.
- * Flute of Hammeln: always saves from plague.
+ * Pipe of Hamelin: always saves from plague.
  */
 export function checkArtifactProtection(
   player: Player,
@@ -102,8 +102,8 @@ export function checkArtifactProtection(
   ) {
     return { saved: true, artifact: getArtifact('indestructible-umbrella') };
   }
-  if (event === 'plague' && hasArtifact(player, 'flute-of-hammeln')) {
-    return { saved: true, artifact: getArtifact('flute-of-hammeln') };
+  if (event === 'plague' && hasArtifact(player, 'pipe-of-hamelin')) {
+    return { saved: true, artifact: getArtifact('pipe-of-hamelin') };
   }
   if (hasArtifact(player, 'divine-beads') && Math.random() < 0.5) {
     return { saved: true, artifact: getArtifact('divine-beads') };

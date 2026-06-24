@@ -30,8 +30,8 @@
     "description": "50% chance to save the player from Earthquake, Meteor, Hurricane, and Dragon attack."
   },
   {
-    "id": "flute-of-hammeln",
-    "name": "Flute of Hammeln",
+    "id": "pipe-of-hamelin",
+    "name": "Pipe of Hamelin",
     "emoji": "🪈",
     "description": "Reduces fees owed to other players' tiles by 50%. Protects from the Plague."
   },

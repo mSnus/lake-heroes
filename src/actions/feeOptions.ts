@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { getFeeMultiplier } from '../game/artifacts';
 
-/** Flute of Hammeln halves fees the payer owes to other players' tiles. */
+/** Pipe of Hamelin halves fees the payer owes to other players' tiles. */
 export function getEffectiveFee(tile: Tile, payer: Player): number {
   return Math.round(tile.fee * getFeeMultiplier(payer));
 }
@@ -45,5 +45,15 @@ export function computeFeeOptions(board: GameState, player: Player, tile: Tile):
   const canSell = canSellForFee || canSellForFight || (canFight && !canPay);
   const showAcceptLoss = !canPay && !canFight && !canSell;
 
-  return { fee, defence, canPay, canFight, canSellForFee, canSellForFight, canSell, showAcceptLoss, sellable };
+  return {
+    fee,
+    defence,
+    canPay,
+    canFight,
+    canSellForFee,
+    canSellForFight,
+    canSell,
+    showAcceptLoss,
+    sellable,
+  };
 }
