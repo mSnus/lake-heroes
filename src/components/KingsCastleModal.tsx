@@ -5,17 +5,20 @@ import GameModal from './GameModal';
 import { UNIT_PRICE } from '../game/constants';
 import { PlayerLabel } from './PlayerLabel';
 import { pickKingsCastleHireAmount } from '../ai/decisions';
+import { KingsContract } from '../game/kingsContracts';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
+  /** Only a contract issued on THIS visit is shown; carried-over ones are not. */
+  newContract?: KingsContract | null;
   onBuy: (amount: number) => void;
   onSkip: () => void;
 }
 
-const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, onBuy, onSkip }) => {
+const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract, onBuy, onSkip }) => {
   const player = gameState.activePlayer;
 
-  const contract = gameState.kingsContracts.find((c) => c.playerId === player.id);
+  const contract = newContract ?? null;
   const contractTile = contract ? gameState.tiles[contract.tilePosition] : null;
 
   const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);

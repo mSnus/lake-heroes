@@ -33,6 +33,7 @@ export function handleKingCastle(
     content: (
       <KingsCastleModal
         gameState={board}
+        newContract={contract}
         onBuy={(amount) => {
           clearScreen();
           buyUnits(board, amount, updateGameState);
