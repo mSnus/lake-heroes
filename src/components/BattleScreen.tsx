@@ -139,11 +139,18 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // show the attacker's real unit count, e.g. 8 vs 10 — brawl and normal
   // claims still mirror the defence on both sides.
   const isBanzaiClaim = isClaim && !isBrawl && attacker.units < defence;
-  const attackerUnits = isDragon
-    ? gameState.players.reduce((sum, p) => sum + p.units, 0)
-    : isBanzaiClaim
-      ? attacker.units
-      : defence;
+  // Snapshotted once on mount: the dragon (sum of all armies) and banzai
+  // (attacker.units) branches read live Player.units, and resolving the battle
+  // mutates those in place. Recomputing from the live value would shrink the
+  // grid and the "X vs Y" readout after the fight is already decided.
+  const attackerUnitsRef = useRef(
+    isDragon
+      ? gameState.players.reduce((sum, p) => sum + p.units, 0)
+      : isBanzaiClaim
+        ? attacker.units
+        : defence
+  );
+  const attackerUnits = attackerUnitsRef.current;
 
   const doubleDice = defence > 12 || attackerUnits > 12;
 
@@ -164,7 +171,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
   const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
   const attackerArmyBonus = isAmbush ? 0 : rollBonus(attackerSideUnits, defence);
-  const defenderArmyBonus = isAmbush ? 0 : rollBonus(defenderSideUnits, attackerUnits);
+  // A real player defending their own tile gets no swarm bonus — only the
+  // attacker's overwhelming numbers (and NPC defenders: caravan/dragon) earn one.
+  const defenderArmyBonus = isAmbush || defender ? 0 : rollBonus(defenderSideUnits, attackerUnits);
   const attackerRollBonus = attackerArmyBonus + attackerArtifactBonus;
   const defenderRollBonus = defenderArmyBonus + defenderArtifactBonus;
 
