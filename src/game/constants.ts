@@ -1,6 +1,7 @@
 export const MONEY_START = 150;
 export const UNITS_START = 6;
-export const MONEY_PASS_START = 300;
+export const MONEY_PASS_START = 500;
+export const MONEY_PASS_START_FAME = 200;
 export const FEE_MULTIPLIER = 50;
 export const TREASURE_BOX_MULTIPLIER = 200;
 export const TILE_COUNT = 25;

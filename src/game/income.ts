@@ -1,6 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { MONEY_PASS_START } from './constants';
+import { MONEY_PASS_START, MONEY_PASS_START_FAME } from './constants';
 import { syndicateMultiplier } from './syndicate';
 
 /**
@@ -9,7 +9,7 @@ import { syndicateMultiplier } from './syndicate';
  * Mirrors the reward logic in passStart.ts.
  */
 export function playerIncome(board: GameState, player: Player): { gold: number; units: number } {
-  let gold = MONEY_PASS_START;
+  let gold = MONEY_PASS_START + MONEY_PASS_START_FAME * player.fame;
   let units = player.fame ?? 1;
 
   for (const idx of player.ownedTiles) {
@@ -25,4 +25,16 @@ export function playerIncome(board: GameState, player: Player): { gold: number; 
   }
 
   return { gold, units };
+}
+
+export function playerIncomeGold(board: GameState, player: Player): number {
+  let { gold, units } = playerIncome(board, player);
+
+  return gold;
+}
+
+export function playerIncomeUnits(board: GameState, player: Player): number {
+  let { gold, units } = playerIncome(board, player);
+
+  return units;
 }

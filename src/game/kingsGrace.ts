@@ -1,6 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { MONEY_PASS_START } from './constants';
+import { MONEY_PASS_START, MONEY_PASS_START_FAME } from './constants';
 import { syndicateMultiplier } from './syndicate';
 import { getDiamondGoldBonus } from './artifacts';
 
@@ -22,7 +22,7 @@ export interface KingsGraceReward {
  */
 export function computeKingsGraceReward(board: GameState, player: Player): KingsGraceReward {
   const fame = player.fame || 1;
-  const kingsGold = MONEY_PASS_START * fame;
+  const kingsGold = MONEY_PASS_START + MONEY_PASS_START_FAME * fame;
   const kingsUnits = fame;
 
   let tileGold = 0;
