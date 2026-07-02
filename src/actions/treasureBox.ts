@@ -13,7 +13,7 @@ const TREASURE_SIZE_MULTIPLIERS: Record<TreasureSize, number> = {
   large: 3,
 };
 
-const ARTIFACT_CHANCE = 0.2; // 20% chance to find an artifact
+const ARTIFACT_CHANCE = 0.25; // 25% chance to find an artifact
 
 // 0-60 small, 60-85 medium, 85-100 large
 function rollTreasureSize(): TreasureSize {
