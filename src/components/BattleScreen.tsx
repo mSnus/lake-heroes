@@ -131,7 +131,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     tile = props.tile;
   }
 
-  const isBrawl = defence <= BRAWL_THRESHOLD;
+  // Brawl (single winner-take-all roll-off) requires a small defence. For tile
+  // claims/attacks and caravan raids, it additionally requires the attacker's
+  // own army to be small — a big army attacking a weakly-defended tile or
+  // caravan fights a normal multi-round battle instead of a coin-flip brawl.
+  const isBrawl =
+    defence <= BRAWL_THRESHOLD &&
+    ((isTile || isCaravan) ? attacker.units <= BRAWL_THRESHOLD : true);
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
