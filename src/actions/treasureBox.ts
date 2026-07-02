@@ -9,17 +9,17 @@ type TreasureSize = 'small' | 'medium' | 'large';
 
 const TREASURE_SIZE_MULTIPLIERS: Record<TreasureSize, number> = {
   small: 1,
-  medium: 1.5,
-  large: 2,
+  medium: 2,
+  large: 3,
 };
 
 const ARTIFACT_CHANCE = 0.2; // 20% chance to find an artifact
 
-// 0-70 small, 70-90 medium, 90-100 large
+// 0-60 small, 60-85 medium, 85-100 large
 function rollTreasureSize(): TreasureSize {
   const roll = Math.random() * 100;
-  if (roll < 70) return 'small';
-  if (roll < 90) return 'medium';
+  if (roll < 60) return 'small';
+  if (roll < 85) return 'medium';
   return 'large';
 }
 

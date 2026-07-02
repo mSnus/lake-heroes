@@ -11,6 +11,9 @@ export function checkAmbushEncounter(
   const player = board.activePlayer;
   const ENCOUNTER_CHANCE = 1 / 14;
 
+  // No ambushes during the first lap around the board
+  if ((player.circles ?? 0) < 1) return false;
+
   if (player.fame < 3) return false;
   if (player.units < 5) return false;
   if (Math.random() >= ENCOUNTER_CHANCE) return false;

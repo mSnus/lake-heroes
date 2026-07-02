@@ -32,13 +32,21 @@ export function resolveAmbush(
   let message = '';
 
   if (outcome === 'win') {
-    const reward = ambusherUnitsKilled * GOLD_PER_KILL;
+    // A win routs the ambush. In a brawl the individual kills are visual-only
+    // (never tracked), so fall back to the whole ambusher force for the reward
+    // rather than crediting 0 gold for a decisive victory.
+    const ambushersDefeated = ambusherUnitsKilled > 0 ? ambusherUnitsKilled : attackerUnits;
+    const reward = ambushersDefeated * GOLD_PER_KILL;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold += reward;
 
+    const rewardStr = reward > 0 ? `, receiving ${reward}🟡` : '';
     const lossStr = playerUnitsKilled > 0 ? `, ${playerUnitsKilled}🧍 lost` : '';
-    board.gameMessage = `${player.name} repels the ambush, receiving ${reward}🟡${lossStr}`;
-    message = `Ambush repelled! Your reward is ${reward}🟡${lossStr}`;
+    board.gameMessage = `${player.name} repels the ambush${rewardStr}${lossStr}`;
+    message =
+      reward > 0
+        ? `Ambush repelled! Your reward is ${reward}🟡${lossStr}`
+        : `Ambush repelled!${lossStr}`;
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(attackerUnits / 4);
     const goldLoss = Math.floor(player.gold / 2 / 100) * 100;

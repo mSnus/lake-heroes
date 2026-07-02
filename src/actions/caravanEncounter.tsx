@@ -12,6 +12,9 @@ export function checkCaravanEncounter(
   const player = board.activePlayer;
   const ENCOUNTER_CHANCE = 1 / 12;
 
+  // No caravans during the first lap around the board
+  if ((player.circles ?? 0) < 1) return false;
+
   // Not enough units to threaten a caravan
   if (player.units < 3) return false;
 
