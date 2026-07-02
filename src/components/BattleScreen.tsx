@@ -135,20 +135,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
-  // Banzai claims (non-brawl, attacking with fewer units than the defence)
-  // show the attacker's real unit count, e.g. 8 vs 10 — brawl and normal
-  // claims still mirror the defence on both sides.
-  const isBanzaiClaim = isClaim && !isBrawl && attacker.units < defence;
-  // Snapshotted once on mount: the dragon (sum of all armies) and banzai
-  // (attacker.units) branches read live Player.units, and resolving the battle
-  // mutates those in place. Recomputing from the live value would shrink the
-  // grid and the "X vs Y" readout after the fight is already decided.
+  // For any other (non-brawl) attack the player commits their FULL army, so the
+  // attacker's force is attacker.units — e.g. 20 vs a defence of 6. Brawls stay
+  // symmetric single roll-offs (both sides mirror the defence), and ambush keeps
+  // the NPC ambusher force here since the player is the defender there.
+  // Snapshotted once on mount: the dragon (sum of all armies) and full-army
+  // branches read live Player.units, and resolving the battle mutates those in
+  // place. Recomputing from the live value would shrink the grid and the
+  // "X vs Y" readout after the fight is already decided.
   const attackerUnitsRef = useRef(
     isDragon
       ? gameState.players.reduce((sum, p) => sum + p.units, 0)
-      : isBanzaiClaim
-        ? attacker.units
-        : defence
+      : isAmbush || isBrawl
+        ? defence
+        : attacker.units
   );
   const attackerUnits = attackerUnitsRef.current;
 
@@ -479,9 +479,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   }, [phase, bothSidesAutomated]);
 
   // ── Unit grid: killed 💥 accumulate on the inner side (toward center) ──
-  // Attacker column (left): killed appear at the right end
+  // Attacker column (left): killed appear at the right end — except the dragon
+  // battle, where the attacker's casualties fill from the start like the dragon's.
+  const attackerKilled = (i: number) =>
+    isDragon ? i < displayedAtkKilled : i >= attackerUnits - displayedAtkKilled;
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) =>
-    i >= attackerUnits - displayedAtkKilled ? '💥' : isAmbush ? '👹' : '🧍'
+    attackerKilled(i) ? '💥' : isAmbush ? '👹' : '🧍'
   );
   // Defender column (right): killed appear at the left end
   const defenderGrid = Array.from({ length: defence }, (_, i) =>
