@@ -1,7 +1,17 @@
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
+import { BRAWL_THRESHOLD } from '../../game/constants';
 
 export type BattleOutcome = 'attacker' | 'defender' | 'tie';
+
+/**
+ * A brawl (single winner-take-all roll-off) requires BOTH a small defence
+ * and a small attacking force — a big army attacking a weakly-defended tile
+ * or caravan fights a normal multi-round battle instead.
+ */
+export function isBrawlMatchup(defence: number, attackerUnits: number): boolean {
+  return defence <= BRAWL_THRESHOLD && attackerUnits <= BRAWL_THRESHOLD;
+}
 
 export interface RoundResult {
   attackerRoll: number;

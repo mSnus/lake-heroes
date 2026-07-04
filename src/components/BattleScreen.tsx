@@ -17,8 +17,8 @@ import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
-import { BRAWL_THRESHOLD, DRAGON_UNITS } from '../game/constants';
-import { computeBrawlRound, rollBonus } from '../actions/battles/common';
+import { DRAGON_UNITS } from '../game/constants';
+import { computeBrawlRound, isBrawlMatchup, rollBonus } from '../actions/battles/common';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
@@ -135,9 +135,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // claims/attacks and caravan raids, it additionally requires the attacker's
   // own army to be small — a big army attacking a weakly-defended tile or
   // caravan fights a normal multi-round battle instead of a coin-flip brawl.
-  const isBrawl =
-    defence <= BRAWL_THRESHOLD &&
-    ((isTile || isCaravan) ? attacker.units <= BRAWL_THRESHOLD : true);
+  // Other modes (dragon/player/ambush) don't gate on the attacker's army here.
+  const isBrawl = isBrawlMatchup(defence, isTile || isCaravan ? attacker.units : 0);
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.

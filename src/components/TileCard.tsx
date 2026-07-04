@@ -9,6 +9,7 @@ import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
 import { BRAWL_THRESHOLD } from '../game/constants';
+import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
 
 const fmtPrice = (gold: number, units: number, join: string = ''): string => {
@@ -128,18 +129,21 @@ export const TileCard: React.FC<TileCardProps> = ({
   const activePlayer = gameState?.activePlayer ?? null;
 
   // Brawl tiles (low defence) always require enough units to win the
-  // winner-take-all round. Above that threshold, an attacker with more than
-  // BRAWL_THRESHOLD units may "banzai" — attack despite having fewer units
-  // than the tile's defence — as a deliberate gamble.
+  // winner-take-all round — but only when the attacker's own army is also
+  // small; a big army attacking a weak tile fights a normal battle instead
+  // (mirrors BattleScreen's isBrawl rule). Above the brawl threshold, an
+  // attacker with more than BRAWL_THRESHOLD units may "banzai" — attack
+  // despite having fewer units than the tile's defence — as a deliberate gamble.
   const lvl1Defence = defence(1);
-  const isBrawlTile = lvl1Defence <= BRAWL_THRESHOLD;
+  const attackerUnits = activePlayer?.units ?? 0;
+  const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerUnits);
   const isBanzai =
     !isBrawlTile &&
     !!activePlayer &&
-    (activePlayer.units ?? 0) > BRAWL_THRESHOLD &&
-    (activePlayer.units ?? 0) < lvl1Defence;
+    attackerUnits > BRAWL_THRESHOLD &&
+    attackerUnits < lvl1Defence;
   const attackEmoji = isBrawlTile ? '✊' : isBanzai ? '🩸' : '⚔️';
-  const unitsInsufficient = !isBanzai && !!activePlayer && (activePlayer.units ?? 0) < lvl1Defence;
+  const unitsInsufficient = !isBanzai && !!activePlayer && attackerUnits < lvl1Defence;
 
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
