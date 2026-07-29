@@ -156,20 +156,6 @@
   align-items: center;
 }
 
-.tile-card-base-info .diamonds {
-  display: block;
-  margin-top: -4px;
-}
-
-.tile-card-base-info .diamond {
-  float: right;
-  margin-top: -5px;
-}
-
-.tile-card-base-info .diamond:first-child {
-  margin-left: 0;
-}
-
 .tile-card-base-info tr:first-child {
   margin-bottom: 8px;
   border-bottom: 1px solid #ddd;
@@ -263,11 +249,6 @@
   font-size: 14px;
 }
 
-.tile-owner .diamond {
-  width: 10px;
-  height: 10px;
-}
-
 .level-highlighted {
   background-color: #f5f2eb;
   color: #000;
@@ -315,23 +296,6 @@
 
 .tile-card-base-info-data {
   text-align: center;
-}
-
-.diamond {
-  width: 10px;
-  height: 10px;
-}
-
-.upgrade-diamonds {
-  margin-top: 4px;
-  display: flex;
-  flex-direction: row;
-  opacity: 0.8;
-}
-
-.upgrade-diamonds .diamond {
-  width: 5px;
-  height: 5px;
 }
 
 .tile-card-sell {
