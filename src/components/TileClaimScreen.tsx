@@ -9,7 +9,7 @@ import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
 import { clearScreen } from '../utils/screenStore';
 import { setTileGarrison } from '../actions/garrisonTile';
-import { ARMY_SLOT_CAPACITY } from '../game/constants';
+import { remainingCapacity } from '../game/army';
 import '../styles/TileCard.css';
 import '../styles/GameMenu.css';
 
@@ -29,7 +29,13 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
   const bonusTypeIcon = tile.bonusType === 'units' ? '👬' : '🟡';
   const levels = [1, 2, 3];
 
-  const maxGarrison = Math.min(tile.garrisonSlots * ARMY_SLOT_CAPACITY, player.militia);
+  // Capped by both the tile's slot capacity and whatever Militia the player
+  // actually has left (post-battle casualties already applied by the time
+  // this screen shows).
+  const maxGarrison = Math.min(
+    remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia'),
+    player.militia
+  );
   const [garrisonAmount, setGarrisonAmount] = useState(0);
 
   useEffect(() => {
@@ -60,11 +66,30 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
 
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
-                <div className="tc-td" style={{borderBottom: 'solid 1px #eeeeee50', textAlign:'center', paddingBottom: '2rem'}}>
+                <div className="tc-td" style={{textAlign:'center', paddingBottom: '2rem'}}>
                   income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}
                 </div>
                 <div className="tc-td" style={{paddingTop: '2rem', textAlign: 'center'}}>
-                  garrison how many? <span className="value">{garrisonAmount}</span>🧍
+                  How many?
+                  <div className="units-input-row">
+                    <input
+                      type="number"
+                      value={garrisonAmount}
+                      onChange={(e) => {
+                        const parsed = parseInt(e.target.value, 10);
+                        const clamped = Number.isNaN(parsed)
+                          ? 0
+                          : Math.min(maxGarrison, Math.max(0, parsed));
+                        setGarrisonAmount(clamped);
+                      }}
+                      min="0"
+                      max={maxGarrison}
+                      id="garrisonInput"
+                      style={{ width: '2rem' }}
+                      className="units-input"
+                    />
+                    ({player.militia - garrisonAmount}🧍 stay in army)
+                  </div>
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '0.5rem' }}>
                     <button
                       className="game-menu-button small silver"
@@ -105,11 +130,10 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
 
 
       <div className="game-menu" style={{ top: '40px' }}>
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+        <div>
           <DecoratedButton onClick={handleSetGarrison}>
-            Set {garrisonAmount} to guard 🛡️
+            {garrisonAmount === 0 ? 'Leave unguarded' : `Set ${garrisonAmount} to guard 🛡️`}
           </DecoratedButton>
-          <DecoratedButton onClick={() => clearScreen()}>I am the greatest!</DecoratedButton>
         </div>
       </div>
     </ScreenBackground>
