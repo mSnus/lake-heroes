@@ -12,7 +12,7 @@ export const UNIT_PRICE = 100; // gold per militia unit (King's Castle recruit p
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
 export const KNIGHT_FAME = 4; // fame at or above this makes a player a knight (rider sprite) and unlocks Rider recruiting
-export const BRAWL_THRESHOLD = 5; // defence at or below this triggers brawl mode (1-round, winner takes all)
+export const BRAWL_THRESHOLD = 6; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
 export const RIDER_UNIT_PRICE = 300; // gold per rider

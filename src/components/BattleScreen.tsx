@@ -9,6 +9,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
+import { rollDice } from '../game/Dice';
 import { PlayerCard } from './PlayerCard';
 import { DecoratedButton } from './DecoratedButton';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
@@ -18,7 +19,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { DRAGON_UNITS } from '../game/constants';
-import { computeBrawlRound, isBrawlMatchup, rollBonus } from '../actions/battles/common';
+import { isBrawlMatchup, rollBonus } from '../actions/battles/common';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { proportionalTierSplit } from '../game/army';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
@@ -87,6 +88,25 @@ export type BattleScreenProps =
       battlefieldUnits?: never;
     };
 
+// Duel pair selection: brawl always picks the frontmost survivor of each
+// side (rightmost attacker, leftmost defender — the same edge the tier
+// split places Militia on, so Militia keeps dying first); a normal battle
+// picks uniformly at random from whoever's still alive.
+function rightmostAliveIndex(alive: boolean[]): number {
+  for (let i = alive.length - 1; i >= 0; i--) if (alive[i]) return i;
+  return -1;
+}
+function leftmostAliveIndex(alive: boolean[]): number {
+  for (let i = 0; i < alive.length; i++) if (alive[i]) return i;
+  return -1;
+}
+function randomAliveIndex(alive: boolean[]): number {
+  const candidates: number[] = [];
+  for (let i = 0; i < alive.length; i++) if (alive[i]) candidates.push(i);
+  if (candidates.length === 0) return -1;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const { attacker, gameState, updateGameState } = props;
 
@@ -132,10 +152,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     tile = props.tile;
   }
 
-  // Brawl (single winner-take-all roll-off) requires a small defence. For tile
+  // Brawl (manual, duel-by-duel) requires a small defence. For tile
   // claims/attacks and caravan raids, it additionally requires the attacker's
   // own army to be small — a big army attacking a weakly-defended tile or
-  // caravan fights a normal multi-round battle instead of a coin-flip brawl.
+  // caravan fights a normal automatic battle instead of a manual brawl.
   // Other modes (dragon/player/ambush) don't gate on the attacker's army here.
   const isBrawl = isBrawlMatchup(defence, isTile || isCaravan ? attacker.armyPower : 0);
 
@@ -203,8 +223,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
   const [rollingAttacker, setRollingAttacker] = useState(false);
   const [rollingDefender, setRollingDefender] = useState(false);
-  const [displayedAtkKilled, setDisplayedAtkKilled] = useState(0);
-  const [displayedDefKilled, setDisplayedDefKilled] = useState(0);
   const [pendingAtkRoll, setPendingAtkRoll] = useState<number | null>(null);
   const [lastDefRoll, setLastDefRoll] = useState<number | null>(null);
   const [outcome, setOutcome] = useState<BattleOutcome | null>(null);
@@ -214,12 +232,22 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const [atkRollKey, setAtkRollKey] = useState(0);
   const [defRollKey, setDefRollKey] = useState(0);
 
+  // Per-unit alive tracking (replaces the old "how many left" counters) so a
+  // single duel can kill exactly one specific unit — the rightmost/leftmost
+  // survivor in a brawl, a random survivor in a normal battle — rather than
+  // a roll wiping out `roll` units at once.
+  const atkAliveRef = useRef<boolean[]>(Array(attackerUnits).fill(true));
+  const defAliveRef = useRef<boolean[]>(Array(defence).fill(true));
+  const [atkAlive, setAtkAlive] = useState<boolean[]>(() => [...atkAliveRef.current]);
+  const [defAlive, setDefAlive] = useState<boolean[]>(() => [...defAliveRef.current]);
+  const [selectedAtkIdx, setSelectedAtkIdx] = useState<number | null>(null);
+  const [selectedDefIdx, setSelectedDefIdx] = useState<number | null>(null);
+
   // ── Refs (stable across animation timeouts) ──
-  const atkUnitsLeftRef = useRef(attackerUnits);
-  const defUnitsLeftRef = useRef(defence);
   const totalAtkKilledRef = useRef(0);
   const totalDefKilledRef = useRef(0);
   const pendingAtkRollRef = useRef(0);
+  const currentDuelRef = useRef<{ atkIdx: number; defIdx: number }>({ atkIdx: -1, defIdx: -1 });
 
   // ── Labels ──
   const defenderLabel = isDragon
@@ -261,55 +289,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Auto-roll attacker (NPC in ambush) ──
-  useEffect(() => {
-    if (phase !== 'attacker-roll' || !isAutoAttacker) return;
-    const t = setTimeout(() => {
-      setAtkRollKey((k) => k + 1);
-      setRollingAttacker(true);
-    }, 600);
-    return () => clearTimeout(t);
-  }, [phase, isAutoAttacker]);
-
-  // ── Auto-roll defender (NPC) ──
-  useEffect(() => {
-    if (phase !== 'defender-roll' || !isAutoDefender) return;
-    const t = setTimeout(() => {
-      setDefRollKey((k) => k + 1);
-      setRollingDefender(true);
-    }, 600);
-    return () => clearTimeout(t);
-  }, [phase, isAutoDefender]);
-
-
-  // ── Kill animation: defender column first, then attacker column ──
-  const animateKills = useCallback(
-    (defKills: number, atkKills: number, onDone: () => void) => {
-      const total = defKills + atkKills;
-      if (total === 0) {
-        onDone();
-        return;
-      }
-      let step = 0;
-      const next = () => {
-        if (step < defKills) {
-          setDisplayedDefKilled((prev) => prev + 1);
-        } else {
-          setDisplayedAtkKilled((prev) => prev + 1);
-        }
-        step++;
-        if (step < total) {
-          setTimeout(next, 100);
-        } else {
-          setTimeout(onDone, 200);
-        }
-      };
-      setTimeout(next, 100);
-    },
-    []
-  );
-
-  // ── Resolve result ──
+  // ── Resolve result (shared by the brawl click-flow and the automatic loop) ──
   const resolveResult = useCallback(
     (battleOutcome: BattleOutcome, atkKilled: number, defKilled: number): BattleResolution => {
       if (isDragon) return resolveDragonBattle(gameState, attacker, atkKilled, battleOutcome);
@@ -329,8 +309,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           battlefieldUnits!,
           atkKilled,
           defKilled,
-          battleOutcome,
-          isBrawl
+          battleOutcome
         );
       if (isAmbush) {
         // In ambush: attacker=NPC(left), defender=player(right).
@@ -353,7 +332,85 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     []
   );
 
-  // ── Roll handlers ──
+  const finishBattle = useCallback(
+    (battleOutcome: BattleOutcome) => {
+      setTimeout(() => {
+        const res = resolveResult(battleOutcome, totalAtkKilledRef.current, totalDefKilledRef.current);
+        setOutcome(battleOutcome);
+        if (res.victoryBg) setShowVictoryBg(true);
+        if (res.lostBg) setShowLostBg(true);
+        markScreenResolved();
+        updateGameState(gameState);
+        setResultMsg(res.message);
+        setPhase('result');
+      }, 400);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  // ── Brawl: pick the next duel pair (rightmost attacker, leftmost defender) ──
+  const selectBrawlDuel = useCallback(() => {
+    const atkIdx = rightmostAliveIndex(atkAliveRef.current);
+    const defIdx = leftmostAliveIndex(defAliveRef.current);
+    currentDuelRef.current = { atkIdx, defIdx };
+    setSelectedAtkIdx(atkIdx);
+    setSelectedDefIdx(defIdx);
+  }, []);
+
+  useEffect(() => {
+    if (!isBrawl) return;
+    selectBrawlDuel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Automatic battle: random pairs, no manual rolls, no visible dice, one
+  // duel every 100ms until a side is wiped. ──
+  useEffect(() => {
+    if (isBrawl) return;
+    let cancelled = false;
+
+    const runDuel = () => {
+      if (cancelled) return;
+      const atkIdx = randomAliveIndex(atkAliveRef.current);
+      const defIdx = randomAliveIndex(defAliveRef.current);
+      if (atkIdx === -1 || defIdx === -1) return;
+
+      const rollA = (doubleDice ? rollDice() + rollDice() : rollDice()) + attackerRollBonus;
+      const rollD = (doubleDice ? rollDice() + rollDice() : rollDice()) + defenderRollBonus;
+
+      if (rollA > rollD) {
+        defAliveRef.current[defIdx] = false;
+        totalDefKilledRef.current += 1;
+      } else if (rollD > rollA) {
+        atkAliveRef.current[atkIdx] = false;
+        totalAtkKilledRef.current += 1;
+      } // tie: neither dies
+
+      setSelectedAtkIdx(atkIdx);
+      setSelectedDefIdx(defIdx);
+      setAtkAlive([...atkAliveRef.current]);
+      setDefAlive([...defAliveRef.current]);
+
+      const atkLeft = atkAliveRef.current.filter(Boolean).length;
+      const defLeft = defAliveRef.current.filter(Boolean).length;
+
+      if (atkLeft === 0 || defLeft === 0) {
+        finishBattle(defLeft === 0 ? 'attacker' : 'defender');
+        return;
+      }
+
+      setTimeout(runDuel, 100);
+    };
+
+    runDuel();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Roll handlers (brawl only) ──
   const handleAttackerRoll = () => {
     // Called directly from the click handler, so this is still within the
     // user-gesture window the Vibration API requires on Chrome.
@@ -368,32 +425,35 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setRollingDefender(true);
   };
 
-  useShakeToRoll(phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker, handleAttackerRoll);
-  useShakeToRoll(phase === 'defender-roll' && !isAutoDefender && !rollingDefender, handleDefenderRoll);
+  useShakeToRoll(isBrawl && phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker, handleAttackerRoll);
+  useShakeToRoll(isBrawl && phase === 'defender-roll' && !isAutoDefender && !rollingDefender, handleDefenderRoll);
+
+  // ── Auto-roll attacker (NPC in ambush, or any bot) — brawl only ──
+  useEffect(() => {
+    if (!isBrawl || phase !== 'attacker-roll' || !isAutoAttacker) return;
+    const t = setTimeout(() => {
+      setAtkRollKey((k) => k + 1);
+      setRollingAttacker(true);
+    }, 600);
+    return () => clearTimeout(t);
+  }, [isBrawl, phase, isAutoAttacker]);
+
+  // ── Auto-roll defender (NPC) — brawl only ──
+  useEffect(() => {
+    if (!isBrawl || phase !== 'defender-roll' || !isAutoDefender) return;
+    const t = setTimeout(() => {
+      setDefRollKey((k) => k + 1);
+      setRollingDefender(true);
+    }, 600);
+    return () => clearTimeout(t);
+  }, [isBrawl, phase, isAutoDefender]);
 
   const onAttackerRollDone = (rawRoll: number) => {
     const roll = rawRoll + attackerRollBonus;
     pendingAtkRollRef.current = roll;
     setRollingAttacker(false);
     setPendingAtkRoll(roll);
-
-    // Brawl outcomes are winner-take-all and depend on comparing both rolls,
-    // so defender casualties can't be shown until the defender also rolls.
-    if (isBrawl) {
-      setPhase('defender-roll');
-      return;
-    }
-
-    // Non-brawl: the attacker's roll alone determines defender casualties —
-    // mark them dead right away instead of waiting for the round to end.
-    const defKills = Math.min(roll, defUnitsLeftRef.current);
-    const newDefLeft = defUnitsLeftRef.current - defKills;
-
-    animateKills(defKills, 0, () => {
-      defUnitsLeftRef.current = newDefLeft;
-      totalDefKilledRef.current += defKills;
-      setPhase('defender-roll');
-    });
+    setPhase('defender-roll');
   };
 
   const onDefenderRollDone = (rawRoll: number) => {
@@ -403,59 +463,32 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setPhase('animating');
 
     const aRoll = pendingAtkRollRef.current;
+    const { atkIdx, defIdx } = currentDuelRef.current;
 
-    let defKills: number, atkKills: number, newDefLeft: number, newAtkLeft: number;
-    if (isBrawl) {
-      ({ defKills, atkKills, newDefLeft, newAtkLeft } = computeBrawlRound(
-        aRoll, roll, defence, defUnitsLeftRef.current, atkUnitsLeftRef.current
-      ));
-    } else {
-      // Defender casualties were already resolved and animated in onAttackerRollDone.
-      defKills = 0;
-      atkKills = Math.min(roll, atkUnitsLeftRef.current);
-      newDefLeft = defUnitsLeftRef.current;
-      newAtkLeft = atkUnitsLeftRef.current - atkKills;
-    }
-    // Brawl kills are visual only — except tile defeats, which always cost units
-    const willBeDefeat = newAtkLeft <= 0 && newDefLeft > 0;
-    const resolveAtkKilled = isBrawl && !(isTile && willBeDefeat) ? 0 : atkKills;
-    const resolveDefKilled = isBrawl && !(isTile && willBeDefeat) ? 0 : defKills;
-    const newTotalAtkKilled = totalAtkKilledRef.current + resolveAtkKilled;
-    const newTotalDefKilled = totalDefKilledRef.current + resolveDefKilled;
+    if (aRoll > roll) {
+      defAliveRef.current[defIdx] = false;
+      totalDefKilledRef.current += 1;
+    } else if (roll > aRoll) {
+      atkAliveRef.current[atkIdx] = false;
+      totalAtkKilledRef.current += 1;
+    } // tie: neither dies, same pair duels again
 
-    animateKills(defKills, atkKills, () => {
-      atkUnitsLeftRef.current = newAtkLeft;
-      defUnitsLeftRef.current = newDefLeft;
-      totalAtkKilledRef.current = newTotalAtkKilled;
-      totalDefKilledRef.current = newTotalDefKilled;
+    setTimeout(() => {
+      setAtkAlive([...atkAliveRef.current]);
+      setDefAlive([...defAliveRef.current]);
 
-      // A brawl is a single decisive roll-off — a tied roll ends it as a tie
-      // right away rather than retrying for another round.
-      const brawlTieRound = isBrawl && aRoll === roll;
-      if (newDefLeft <= 0 || newAtkLeft <= 0 || brawlTieRound) {
-        const battleOutcome: BattleOutcome =
-          newDefLeft <= 0 && newAtkLeft > 0
-            ? 'attacker'
-            : newAtkLeft <= 0 && newDefLeft > 0
-              ? 'defender'
-              : 'tie';
+      const atkLeft = atkAliveRef.current.filter(Boolean).length;
+      const defLeft = defAliveRef.current.filter(Boolean).length;
 
-        setTimeout(() => {
-          const res = resolveResult(battleOutcome, newTotalAtkKilled, newTotalDefKilled);
-          setOutcome(battleOutcome);
-          if (res.victoryBg) setShowVictoryBg(true);
-          if (res.lostBg) setShowLostBg(true);
-          markScreenResolved();
-          updateGameState(gameState);
-          setResultMsg(res.message);
-          setPhase('result');
-        }, 400);
+      if (atkLeft === 0 || defLeft === 0) {
+        finishBattle(defLeft === 0 ? 'attacker' : 'defender');
       } else {
         setPendingAtkRoll(null);
         setLastDefRoll(null);
+        selectBrawlDuel();
         setPhase('attacker-roll');
       }
-    });
+    }, 200);
   };
 
   const handleClose = () => {
@@ -491,19 +524,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, bothSidesAutomated]);
 
-  // ── Unit grid: killed 💥 accumulate on the inner side (toward center) ──
-  // Attacker column (left): killed appear at the right end — except the dragon
-  // battle, where the attacker's casualties fill from the start like the dragon's.
-  const attackerKilled = (i: number) =>
-    isDragon ? i < displayedAtkKilled : i >= attackerUnits - displayedAtkKilled;
-
+  // ── Unit grid: 💥 for the dead, a red ring around the current duel's pair ──
   // Riders (🐎) vs Militia (🧍): only a real single-Player army has a tier
   // breakdown to show — the dragon's combined kingdom army, and NPC caravan/
   // ambush/wild-guard defenders, render as plain Militia. Tile defence is
   // sized by weighted garrison *power*, not garrison headcount, so its split
   // is proportional rather than exact. Riders sit on the outer edge of their
   // column (survive longer) and Militia on the center-facing edge (dies
-  // first) — matching Player/Tile's actual militia-first loss ordering.
+  // first) — matching Player/Tile's actual militia-first loss ordering, and
+  // (in a brawl) the rightmost/leftmost duel-selection order.
   const attackerTierCounts =
     isDragon || isAmbush ? { militia: attackerUnits, riders: 0 } : { militia: attacker.militia, riders: attacker.riders };
   const defenderTierCounts = isTile && defender
@@ -515,16 +544,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderSplit = proportionalTierSplit(defence, defenderTierCounts.militia, defenderTierCounts.riders);
 
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) => {
-    if (attackerKilled(i)) return '💥';
-    if (isAmbush) return '👹';
-    return i < attackerSplit.ridersCount ? '🐎' : '🧍';
+    const emoji = !atkAlive[i] ? '💥' : isAmbush ? '👹' : i < attackerSplit.ridersCount ? '🐎' : '🧍';
+    return { emoji, selected: i === selectedAtkIdx };
   });
-  // Defender column (right): killed appear at the left end
   const defenderGrid = Array.from({ length: defence }, (_, i) => {
-    if (i < displayedDefKilled) return '💥';
-    if (isDragon) return '🐉';
-    if (isCaravan) return '👹';
-    return i < defenderSplit.militiaCount ? '🧍' : '🐎';
+    const emoji = !defAlive[i]
+      ? '💥'
+      : isDragon
+        ? '🐉'
+        : isCaravan
+          ? '👹'
+          : i < defenderSplit.militiaCount
+            ? '🧍'
+            : '🐎';
+    return { emoji, selected: i === selectedDefIdx };
   });
 
   const battleResultEmoji = isAmbush
@@ -569,13 +602,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       />
       <Fade />
 
-      {rollingAttacker &&
+      {isBrawl && rollingAttacker &&
         (doubleDice ? (
           <DiceWidgetDouble key={`a-${atkRollKey}`} onRoll={onAttackerRollDone} />
         ) : (
           <DiceWidget key={`a-${atkRollKey}`} rolling={true} onRoll={onAttackerRollDone} />
         ))}
-      {rollingDefender &&
+      {isBrawl && rollingDefender &&
         (doubleDice ? (
           <DiceWidgetDouble key={`d-${defRollKey}`} onRoll={onDefenderRollDone} />
         ) : (
@@ -632,13 +665,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
         </div>
 
-        
+
 
         <div className="battle-field">
           <div className="battle-units bc-attacker">
-            {attackerGrid.map((emoji, i) => (
-              <span key={i} className="battle-unit">
-                {emoji}
+            {attackerGrid.map((u, i) => (
+              <span key={i} className={'battle-unit' + (u.selected ? ' battle-unit-selected' : '')}>
+                {u.emoji}
               </span>
             ))}
           </div>
@@ -654,20 +687,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
 
           <div className="battle-units bc-defender">
-            {defenderGrid.map((emoji, i) => (
-              <span key={i} className="battle-unit">
-                {emoji}
+            {defenderGrid.map((u, i) => (
+              <span key={i} className={'battle-unit' + (u.selected ? ' battle-unit-selected' : '')}>
+                {u.emoji}
               </span>
             ))}
           </div>
         </div>
 
-        {phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker && (
+        {isBrawl && phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker && (
           <DecoratedButton onClick={handleAttackerRoll}>
             ⚔️ Attack!
           </DecoratedButton>
         )}
-        {phase === 'defender-roll' && !isAutoDefender && !rollingDefender && (
+        {isBrawl && phase === 'defender-roll' && !isAutoDefender && !rollingDefender && (
           <DecoratedButton onClick={handleDefenderRoll}>
             🛡️ Defend!
           </DecoratedButton>

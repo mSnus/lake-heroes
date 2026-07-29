@@ -1,6 +1,5 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import { BRAWL_THRESHOLD } from '../../game/constants';
 import { changeFame } from '../../utils/fame';
 import { say } from '../../utils/say';
 import { BattleResolution, BattleOutcome } from './common';
@@ -8,8 +7,8 @@ import { BattleResolution, BattleOutcome } from './common';
 /**
  * Resolve a Hero's Hour battle (player vs player).
  * battlefieldUnits = min(attacker.units, defender.units) — same for both sides.
- * - Win: attacker loses killed units; loser flees to King's Castle (tile 0), losing
- *   all units in a brawl, or just the units killed in battle otherwise.
+ * - Win: attacker loses killed units; loser flees to King's Castle (tile 0),
+ *   losing the units actually killed in the duel-by-duel fight.
  * - Tie: both lose half of battlefield units.
  * - Defeat: mirror of win, from the defender's perspective.
  */
@@ -20,8 +19,7 @@ export function resolvePlayerBattle(
   battlefieldUnits: number,
   attackerUnitsKilled: number,
   defenderUnitsKilled: number,
-  outcome: BattleOutcome,
-  isBrawl: boolean
+  outcome: BattleOutcome
 ): BattleResolution {
   const aUnitsBefore = attacker.units;
   const aGoldBefore = attacker.gold;
@@ -32,10 +30,7 @@ export function resolvePlayerBattle(
 
   if (outcome === 'attacker') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
-    const defenderLoss = isBrawl
-      ? Math.min(defender.units, BRAWL_THRESHOLD + 1)
-      : defenderUnitsKilled;
-    if (defenderLoss > 0) defender.units = Math.max(0, defender.units - defenderLoss);
+    if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
     defender.position = 0;
     changeFame(attacker, 1);
     changeFame(defender, -1);
@@ -53,10 +48,7 @@ export function resolvePlayerBattle(
     board.gameMessage = `${attacker.name} and ${defender.name} fight to a bloody tie — both lose ${quarterLoss}🧍`;
     message = `A bloody tie — both sides lose ${quarterLoss}🧍`;
   } else {
-    const attackerLoss = isBrawl
-      ? Math.min(attacker.units, BRAWL_THRESHOLD + 1)
-      : attackerUnitsKilled;
-    if (attackerLoss > 0) attacker.units = Math.max(0, attacker.units - attackerLoss);
+    if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     attacker.position = 0;
     if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
     changeFame(attacker, -1);

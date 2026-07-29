@@ -5,9 +5,10 @@ import { BRAWL_THRESHOLD } from '../../game/constants';
 export type BattleOutcome = 'attacker' | 'defender' | 'tie';
 
 /**
- * A brawl (single winner-take-all roll-off) requires BOTH a small defence
- * and a small attacking force — a big army attacking a weakly-defended tile
- * or caravan fights a normal multi-round battle instead.
+ * A brawl (manual, one duel at a time, rightmost attacker vs leftmost
+ * defender each round) requires BOTH a small defence and a small attacking
+ * force — a big army attacking a weakly-defended tile or caravan fights a
+ * normal automatic battle (random pairs) instead.
  */
 export function isBrawlMatchup(defence: number, attackerUnits: number): boolean {
   return defence <= BRAWL_THRESHOLD && attackerUnits <= BRAWL_THRESHOLD;
@@ -27,33 +28,6 @@ export interface BattleResolution {
   message: string;
   victoryBg?: boolean;
   lostBg?: boolean;
-}
-
-export interface BrawlRound {
-  defKills: number;
-  atkKills: number;
-  newDefLeft: number;
-  newAtkLeft: number;
-}
-
-/**
- * Resolve one brawl round: higher roll wipes the loser's side; tie retains both counts.
- * `units` is the starting unit count for both sides (brawl grids are always symmetric).
- */
-export function computeBrawlRound(
-  aRoll: number,
-  dRoll: number,
-  units: number,
-  currentDefLeft: number,
-  currentAtkLeft: number
-): BrawlRound {
-  if (aRoll > dRoll) {
-    return { defKills: units, atkKills: 0, newDefLeft: 0, newAtkLeft: units };
-  } else if (dRoll > aRoll) {
-    return { defKills: 0, atkKills: units, newDefLeft: units, newAtkLeft: 0 };
-  } else {
-    return { defKills: 0, atkKills: 0, newDefLeft: currentDefLeft, newAtkLeft: currentAtkLeft };
-  }
 }
 
 /**
