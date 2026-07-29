@@ -16,10 +16,10 @@ interface BoardCanvasProps {
   updateGameState: (board: GameState) => void;
 }
 
-// Camera: 2x, centered on the active player, while it's their turn. On a
-// turn change it zooms out to 1x, pauses, then zooms back in on whoever's
-// turn it is now — see the zoomLevel effect below.
-const ZOOM_SCALE = 2;
+// Camera: ZOOM_SCALE, centered on the active player, while it's their turn.
+// On a turn change it zooms out to 1x, pauses, then zooms back in on
+// whoever's turn it is now — see the zoomLevel effect below.
+const ZOOM_SCALE = 1.33;
 const ZOOM_TRANSITION_MS = 600;
 const ZOOM_OUT_PAUSE_MS = 400;
 // .layer-players sits `top: 46px` inside .bg-layer (see Board.css) — baked
