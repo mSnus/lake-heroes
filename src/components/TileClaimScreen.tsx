@@ -69,48 +69,51 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
                 <div className="tc-td" style={{textAlign:'center', paddingBottom: '0.5rem'}}>
                   income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}
                 </div>
-                <div className="tc-td" style={{paddingTop: '0.5rem', textAlign: 'center'}}>
-                  How many?
-                  <div className="units-input-row" style={{ justifyContent: 'center' }}>
-                    <input
-                      type="number"
-                      value={garrisonAmount}
-                      onChange={(e) => {
-                        const parsed = parseInt(e.target.value, 10);
-                        const clamped = Number.isNaN(parsed)
-                          ? 0
-                          : Math.min(maxGarrison, Math.max(0, parsed));
-                        setGarrisonAmount(clamped);
-                      }}
-                      min="0"
-                      max={maxGarrison}
-                      id="garrisonInput"
-                      style={{ width: '2rem' }}
-                      className="units-input"
-                    />
-                    ({player.militia - garrisonAmount}🧍 stay in army)
+                {player.militia > 0 && (
+                  <div className="tc-td" style={{paddingTop: '0.5rem', textAlign: 'center'}}>
+                    How many to leave on guard?
+                    <div className="units-input-row" style={{ justifyContent: 'center' }}>
+                      🛡️
+                      <input
+                        type="number"
+                        value={garrisonAmount}
+                        onChange={(e) => {
+                          const parsed = parseInt(e.target.value, 10);
+                          const clamped = Number.isNaN(parsed)
+                            ? 0
+                            : Math.min(maxGarrison, Math.max(0, parsed));
+                          setGarrisonAmount(clamped);
+                        }}
+                        min="0"
+                        max={maxGarrison}
+                        id="garrisonInput"
+                        style={{ width: '2rem', fontSize: '150%' }}
+                        className="units-input"
+                      />
+                      ({player.militia - garrisonAmount}🧍 stay in army)
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'stretch', marginTop: '0.5rem' }}>
+                      <button
+                        className="game-menu-button silver"
+                        onClick={() => setGarrisonAmount((a) => Math.max(0, a - 1))}
+                      >
+                        −
+                      </button>
+                      <button
+                        className="game-menu-button silver"
+                        onClick={() => setGarrisonAmount(Math.min(maxGarrison, Math.floor(player.militia / 2)))}
+                      >
+                        {Math.min(maxGarrison, Math.floor(player.militia / 2))}🧍
+                      </button>
+                      <button
+                        className="game-menu-button silver"
+                        onClick={() => setGarrisonAmount((a) => Math.min(maxGarrison, a + 1))}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '0.5rem' }}>
-                    <button
-                      className="game-menu-button small silver"
-                      onClick={() => setGarrisonAmount((a) => Math.max(0, a - 1))}
-                    >
-                      −
-                    </button>
-                    <button
-                      className="game-menu-button silver"
-                      onClick={() => setGarrisonAmount(Math.floor(maxGarrison / 2))}
-                    >
-                      + 1/2
-                    </button>
-                    <button
-                      className="game-menu-button small silver"
-                      onClick={() => setGarrisonAmount((a) => Math.min(maxGarrison, a + 1))}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
+                )}
                 <div className="tc-td" style={{paddingTop: '2rem', fontSize: '1rem'}}>
                     👛 <span className="value">{tile.prices[2]?.gold ?? 0}</span>🟡 →{' '}
                     +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year and{' '}
