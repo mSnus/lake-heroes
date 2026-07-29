@@ -66,12 +66,12 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
 
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
-                <div className="tc-td" style={{textAlign:'center', paddingBottom: '2rem'}}>
+                <div className="tc-td" style={{textAlign:'center', paddingBottom: '0.5rem'}}>
                   income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}
                 </div>
-                <div className="tc-td" style={{paddingTop: '2rem', textAlign: 'center'}}>
+                <div className="tc-td" style={{paddingTop: '0.5rem', textAlign: 'center'}}>
                   How many?
-                  <div className="units-input-row">
+                  <div className="units-input-row" style={{ justifyContent: 'center' }}>
                     <input
                       type="number"
                       value={garrisonAmount}

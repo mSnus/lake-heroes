@@ -24,6 +24,10 @@ const fmtPrice = (gold: number, units: number, join: string = ''): string => {
   return '0';
 };
 
+// Upgrades only ever cost gold now (see priceCell) — slots are what levels
+// grant instead of a computed defence number, and slots == level by design.
+const slotsAtLevel = (level: number): number => level;
+
 const getBonusType = (tile: Tile): 'gold' | 'units' => {
   if (tile.bonusType) return tile.bonusType;
   // Fallback rule
@@ -66,49 +70,34 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const bonusType = getBonusType(tile);
 
-  // Price cell for the level breakdown table. On the upgrade-target row of an
-  // owned tile that the player can't afford, the lacking resource is shown bold
-  // red with a 🔻 prefix (same treatment as the "can't own" case).
+  // Price cell for the level breakdown table. Upgrades only cost gold. On the
+  // upgrade-target row of an owned tile that the player can't afford, it's
+  // shown bold red with a 🔻 prefix (same treatment as the "can't own" case).
   const priceCell = (level: number) => {
     const gold = tile.prices[level]?.gold ?? 0;
-    const units = tile.prices[level]?.units ?? 0;
-    const hasGold = gold > 0;
-    const hasUnits = units > 0;
     const isOwnedByActive = mode === 'owned' && tile.owner === activePlayer?.id;
     const isUpgradeTarget = isOwnedByActive && level === nextLevel && !maxLevelReached;
     const lacksGold = !!isUpgradeTarget && !!activePlayer && (activePlayer.gold ?? 0) < gold;
-    const lacksUnits = !!isUpgradeTarget && !!activePlayer && (activePlayer.units ?? 0) < units;
     const redBold = { color: '#ff4444', fontWeight: 'bold' as const };
 
-    if (!hasGold && !hasUnits) return <>0</>;
+    if (gold <= 0) return <>0</>;
 
     let icon = 'ᅠ';
 
-    if (lacksGold || lacksUnits) {
+    if (lacksGold) {
       icon = '❌ ';
-    } else {
-      if (isUpgradeTarget) {
-        icon = '⬆️ ';
-      }
+    } else if (isUpgradeTarget) {
+      icon = '⬆️ ';
     }
 
     return (
       <>
         <span>{icon}</span>
         {level > currentLevel ? '+' : ' '}
-        {hasGold && (
-          <span style={lacksGold ? redBold : undefined}>
-            {lacksGold && '🔻'}
-            {gold}🟡
-          </span>
-        )}
-        {hasGold && hasUnits && ' '}
-        {hasUnits && (
-          <span style={lacksUnits ? redBold : undefined}>
-            {lacksUnits && '🔻'}
-            {units}🧍
-          </span>
-        )}
+        <span style={lacksGold ? redBold : undefined}>
+          {lacksGold && '🔻'}
+          {gold}🟡
+        </span>
       </>
     );
   };
@@ -157,7 +146,6 @@ export const TileCard: React.FC<TileCardProps> = ({
   const maxLevel = 3;
   const nextLevel = Math.min(currentLevel + 1, maxLevel);
   const nextLevelBonus = bonus(nextLevel);
-  const nextLevelDefence = defence(nextLevel);
   const maxLevelReached = currentLevel >= maxLevel;
 
   const canUpgrade =
@@ -165,8 +153,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     currentLevel < maxLevel &&
     tile.prices &&
     tile.prices[currentLevel + 1] &&
-    (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0) &&
-    (activePlayer.units ?? 0) >= (tile.prices[currentLevel + 1].units || 0);
+    (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0);
 
   const upgradeUnreachable = !canUpgrade || currentLevel === 1;
 
@@ -178,26 +165,16 @@ export const TileCard: React.FC<TileCardProps> = ({
   const handleUpgrade = () => {
     if (demoMode) return;
 
-    if (
-      !window.confirm(
-        `Really upgrade ${tile.name} for ${fmtPrice(nextPrice.gold, nextPrice.units, 'and')}?`
-      )
-    )
-      return;
+    if (!window.confirm(`Really upgrade ${tile.name} for ${nextPrice.gold}🟡?`)) return;
 
     if (!nextPrice || !activePlayer || !gameState) return;
 
-    if (
-      (activePlayer.gold || 0) < (nextPrice.gold || 0) ||
-      (activePlayer.units || 0) < (nextPrice.units || 0)
-    ) {
+    if ((activePlayer.gold || 0) < (nextPrice.gold || 0)) {
       return;
     }
 
     gameState.players[gameState.playerOrder[gameState.activePlayerIndex]].gold =
       (activePlayer.gold || 0) - (nextPrice.gold || 0);
-    gameState.players[gameState.playerOrder[gameState.activePlayerIndex]].units =
-      (activePlayer.units || 0) - (nextPrice.units || 0);
     tile._level = nextLevel;
     say(`${activePlayer.name} upgraded ${tile.name} to level ${nextLevel}`, 'info');
     updateGameState && updateGameState(gameState);
@@ -360,11 +337,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                       }}
                       style={tile.owner === activePlayer?.id ? { cursor: 'pointer' } : undefined}
                     >
-                      <div>{tile.defence}🛡️</div>
                       <div>
-                        defence ({tile.garrisonMilitia}🧍
-                        {tile.garrisonRiders > 0 ? ` ${tile.garrisonRiders}🐎` : ''})
+                        {tile.garrisonSlots}🏯 {tile.garrison}🛡️
                       </div>
+                      <div>defence</div>
                     </div>
                   </div>
                 </div>
@@ -449,7 +425,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class1}>
                         +{bonus(1)} {bonusTypeIcon}
                       </td>
-                      <td className={class1}>{defence(1)}🛡️ </td>
+                      <td className={class1}>{slotsAtLevel(1)}🏯 </td>
                     </tr>
                     <tr
                       className={
@@ -462,7 +438,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class2}>
                         +{bonus(2)} {bonusTypeIcon}
                       </td>
-                      <td className={class2}>{defence(2)}🛡️ </td>
+                      <td className={class2}>{slotsAtLevel(2)}🏯 </td>
                     </tr>
                     <tr
                       className={
@@ -475,7 +451,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class3}>
                         +{bonus(3)} {bonusTypeIcon}
                       </td>
-                      <td className={class3}>{defence(3)}🛡️ </td>
+                      <td className={class3}>{slotsAtLevel(3)}🏯 </td>
                     </tr>
                   </tbody>
                 </table>
@@ -487,11 +463,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                 <div onClick={() => handleSell()} className={'tile-card-button'}>
                   🪙 sell
                 </div>
-                {tile.owner === activePlayer?.id && (
-                  <div onClick={() => handleGarrison()} className={'tile-card-button'}>
-                    🛡️ garrison ({tile.garrisonMilitia}🧍{tile.garrisonRiders > 0 ? `/${tile.garrisonRiders}🐎` : ''})
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -515,7 +486,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     +{nextLevelBonus}
                     {bonusTypeIcon}
                   </div>
-                  <div>{nextLevelDefence}🛡️</div>
+                  <div>{slotsAtLevel(nextLevel)}🏯</div>
                 </div>
               </div>
             )}
