@@ -468,7 +468,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       setEndTurn();
       // Winning a fight for a previously unowned tile claims it — show the claim screen.
       if (isTile && tile && outcome === 'attacker' && tile.owner === attacker.id) {
-        showScreen({ content: React.createElement(TileClaimScreen, { tile, player: attacker }) });
+        showScreen({
+          content: React.createElement(TileClaimScreen, {
+            tile,
+            player: attacker,
+            gameState,
+            updateGameState,
+          }),
+        });
       }
     }
   };

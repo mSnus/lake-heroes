@@ -139,7 +139,17 @@ function App() {
       const updatedTiles = gs.tiles.map((tile) => {
         const fresh = byName.get(tile.name);
         if (!fresh) return tile;
-        return new Tile({ ...fresh, owner: tile.owner, level: tile._level });
+        return new Tile({
+          ...fresh,
+          owner: tile.owner,
+          level: tile._level,
+          garrison: tile.garrison,
+          garrisonMilitia: tile.garrisonMilitia,
+          garrisonRiders: tile.garrisonRiders,
+          baseGarrison: tile.baseGarrison,
+          unclaimedSinceTurn: tile.unclaimedSinceTurn,
+          razedInRound: tile.razedInRound,
+        });
       });
 
       updateGameState({ ...gs, tiles: updatedTiles } as GameState);

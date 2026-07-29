@@ -351,7 +351,15 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                     <div></div>
 
-                    <div className="big-icon-hint">
+                    <div
+                      className="big-icon-hint"
+                      onClick={(e) => {
+                        if (tile.owner !== activePlayer?.id) return;
+                        e.stopPropagation();
+                        handleGarrison();
+                      }}
+                      style={tile.owner === activePlayer?.id ? { cursor: 'pointer' } : undefined}
+                    >
                       <div>{tile.defence}🛡️</div>
                       <div>
                         defence ({tile.garrisonMilitia}🧍
