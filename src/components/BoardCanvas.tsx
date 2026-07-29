@@ -16,6 +16,17 @@ interface BoardCanvasProps {
   updateGameState: (board: GameState) => void;
 }
 
+// Camera: 2x, centered on the active player, while it's their turn. On a
+// turn change it zooms out to 1x, pauses, then zooms back in on whoever's
+// turn it is now — see the zoomLevel effect below.
+const ZOOM_SCALE = 2;
+const ZOOM_TRANSITION_MS = 600;
+const ZOOM_OUT_PAUSE_MS = 400;
+// .layer-players sits `top: 46px` inside .bg-layer (see Board.css) — baked
+// into the centering math so the camera targets the player marker itself,
+// not the tile's own (slightly higher) anchor point.
+const PLAYER_LAYER_TOP_OFFSET_PX = 46;
+
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState }) => {
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
@@ -36,6 +47,62 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     img.src = mapUrl;
     img.onload = () => setMapReady(true);
   }, [isMobile]);
+
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const bgLayerRef = React.useRef<HTMLDivElement>(null);
+  const [zoomLevel, setZoomLevel] = React.useState<1 | 2>(1);
+  const [resizeTick, setResizeTick] = React.useState(0);
+
+  useEffect(() => {
+    const onResize = () => setResizeTick((t) => t + 1);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Zoom out on a turn change, pause at 1x, then zoom back in on whoever's
+  // active now. Also plays once on mount (zooms in on the opening player).
+  const activePlayerId = board.activePlayer.id;
+  useEffect(() => {
+    setZoomLevel(1);
+    const t = setTimeout(() => setZoomLevel(2), ZOOM_TRANSITION_MS + ZOOM_OUT_PAUSE_MS);
+    return () => clearTimeout(t);
+  }, [activePlayerId]);
+
+  // Recomputed every render (cheap arithmetic) so the camera keeps tracking
+  // the active player as they move step-by-step during their turn. Reads
+  // offsetWidth/Height (layout-based) rather than getBoundingClientRect
+  // (paint-based) so it isn't circularly affected by the transform it's computing.
+  const zoomTransform = React.useMemo(() => {
+    if (zoomLevel === 1) return 'none';
+    const layerEl = bgLayerRef.current;
+    const wrapperEl = wrapperRef.current;
+    if (!layerEl || !wrapperEl) return 'none';
+
+    const layerW = layerEl.offsetWidth;
+    const layerH = layerEl.offsetHeight;
+    const wrapperW = wrapperEl.offsetWidth;
+    const wrapperH = wrapperEl.offsetHeight;
+    if (!layerW || !layerH || !wrapperW || !wrapperH) return 'none';
+
+    const activeTileNumber = board.activePlayer.position % TILE_COUNT;
+    const activePos = getTilePosition(activeTileNumber);
+    const localX = ((activePos.x - offsetX) / 100) * layerW;
+    const localY = PLAYER_LAYER_TOP_OFFSET_PX + ((activePos.y - offsetY) / 100) * layerH;
+
+    let dx = wrapperW / 2 - localX * ZOOM_SCALE;
+    let dy = wrapperH / 2 - localY * ZOOM_SCALE;
+
+    // Clamp so zooming near an edge never reveals empty space beyond the
+    // map — only on axes where the scaled map is actually big enough to
+    // fill the viewport (it already doesn't on some layouts at 1x).
+    const scaledW = layerW * ZOOM_SCALE;
+    const scaledH = layerH * ZOOM_SCALE;
+    dx = scaledW > wrapperW ? Math.min(0, Math.max(wrapperW - scaledW, dx)) : Math.min(0, dx);
+    dy = scaledH > wrapperH ? Math.min(0, Math.max(wrapperH - scaledH, dy)) : Math.min(0, dy);
+
+    return `translate(${dx}px, ${dy}px) scale(${ZOOM_SCALE})`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoomLevel, board.activePlayer.position, offsetX, offsetY, resizeTick, mapReady]);
 
   // groups lookup
   const groupsByName: Record<string, { name: string; icon: string; color: string }> =
@@ -196,8 +263,17 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       className="board-wrapper"
       style={{ width: CANVAS_WIDTH, height: WRAPPER_HEIGHT }}
       id="layerWrapper"
+      ref={wrapperRef}
     >
-      <div className="bg-layer">
+      <div
+        className="bg-layer"
+        ref={bgLayerRef}
+        style={{
+          transform: zoomTransform,
+          transformOrigin: '0 0',
+          transition: `transform ${ZOOM_TRANSITION_MS}ms ease`,
+        }}
+      >
         <div className="layer-players">{board.players.map((p, i) => renderPlayer(p, i))}</div>
 
         <div className="layer-tiles" aria-hidden>

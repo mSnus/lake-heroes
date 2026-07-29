@@ -8,11 +8,16 @@ import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
 /**
  * Resolve a battle for a tile.
  * - Win on an unowned tile = CLAIM: attacker loses killed units, pays the
- *   level-1 gold price (units are already spent in the fight), and gains ownership.
- * - Win on an owned tile = RAZE: attacker loses killed units, ownership cleared, level reset.
- * - Defeat: attacker loses killed units, tile unchanged.
- * - Tie: no unit loss, no fee, tile drops a level (if above 1).
- * Defender's real units are never changed (static guards).
+ *   level-1 gold price (units are already spent in the fight), and gains
+ *   ownership. New owner's garrison starts empty — they must station troops.
+ * - Win on an owned tile = RAZE: attacker loses killed units, ownership
+ *   cleared, level reset, garrison wiped to 0 and starts regrowing wild
+ *   (see wildGarrison.ts) — and the tile goes "on fire" (unbuyable) for the
+ *   rest of this round.
+ * - Defeat: attacker loses killed units; the owner's garrison takes real
+ *   losses too (defenderUnitsKilled), unlike the old static-guards model.
+ * - Tie: no fee; tile drops a level (if above 1); garrison still takes the
+ *   losses it suffered defending.
  */
 export function resolveTileBattle(
   board: GameState,
@@ -20,6 +25,7 @@ export function resolveTileBattle(
   defender: Player | undefined,
   tile: Tile,
   attackerUnitsKilled: number,
+  defenderUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
   const unitsBefore = attacker.units;
@@ -37,6 +43,8 @@ export function resolveTileBattle(
     if (claiming) {
       attacker.gold -= tile.prices['1']?.gold ?? 0;
       tile.owner = attacker.id;
+      tile.garrison = 0;
+      tile.unclaimedSinceTurn = undefined;
       attacker.ownedTiles.push(attacker.position);
       changeFame(attacker, 1);
 
@@ -55,6 +63,9 @@ export function resolveTileBattle(
       });
       tile.owner = null;
       tile._level = 1;
+      tile.garrison = 0;
+      tile.unclaimedSinceTurn = board.turns;
+      tile.razedInRound = board.round;
 
       changeFame(attacker, 1);
       if (defender) changeFame(defender, -1);
@@ -65,6 +76,7 @@ export function resolveTileBattle(
     }
   } else if (outcome === 'defender') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    if (defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const lossStr = attackerUnitsKilled > 0 ? `, losing ${attackerUnitsKilled}🧍` : '';
 
     board.gameMessage = `${attacker.name} lost the battle for ${tile.name}${lossStr}`;
@@ -73,6 +85,7 @@ export function resolveTileBattle(
   } else {
     const unitLoss = Math.floor(tile.defence / 4);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+    if (defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;

@@ -5,8 +5,9 @@ import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
+import { setTileGarrison } from '../actions/garrisonTile';
 import { gameEvent } from '../utils/events';
-import { SPRITE_SIZE } from '../game/constants';
+import { SPRITE_SIZE, KNIGHT_FAME } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
 import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
@@ -135,20 +136,22 @@ export const TileCard: React.FC<TileCardProps> = ({
   // attacker with more than BRAWL_THRESHOLD units may "banzai" — attack
   // despite having fewer units than the tile's defence — as a deliberate gamble.
   const lvl1Defence = defence(1);
-  const attackerUnits = activePlayer?.units ?? 0;
-  const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerUnits);
+  const attackerPower = activePlayer?.armyPower ?? 0;
+  const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
   const isBanzai =
     !isBrawlTile &&
     !!activePlayer &&
-    attackerUnits > BRAWL_THRESHOLD &&
-    attackerUnits < lvl1Defence;
+    attackerPower > BRAWL_THRESHOLD &&
+    attackerPower < lvl1Defence;
   const attackEmoji = isBrawlTile ? '✊' : isBanzai ? '🩸' : '⚔️';
-  const unitsInsufficient = !isBanzai && !!activePlayer && attackerUnits < lvl1Defence;
+  const unitsInsufficient = !isBanzai && !!activePlayer && attackerPower < lvl1Defence;
 
   const cantAfford =
     (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
     unitsInsufficient ||
     (tile.requiredFame > 0 && activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame);
+
+  const isOnFire = tile.isOnFire(gameState?.round ?? 0);
 
   const currentLevel = tile.level || 1;
   const maxLevel = 3;
@@ -230,6 +233,34 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const handleInfoClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleGarrison = () => {
+    if (demoMode) return;
+    if (!gameState || !updateGameState || !activePlayer) return;
+
+    const militiaInput = window.prompt(
+      `Militia to garrison at ${tile.name}? (${activePlayer.militia}🧍 traveling, ${tile.garrisonMilitia}🧍 already here, ${tile.garrisonSlots} slot${tile.garrisonSlots === 1 ? '' : 's'} of 10 here)`,
+      String(tile.garrisonMilitia)
+    );
+    if (militiaInput === null) return;
+    const targetMilitia = parseInt(militiaInput, 10);
+    if (Number.isNaN(targetMilitia) || targetMilitia < 0) return;
+
+    let targetRiders = tile.garrisonRiders;
+    if (activePlayer.fame >= KNIGHT_FAME) {
+      const ridersInput = window.prompt(
+        `Riders to garrison at ${tile.name}? (${activePlayer.riders}🐎 traveling, ${tile.garrisonRiders}🐎 already here)`,
+        String(tile.garrisonRiders)
+      );
+      if (ridersInput === null) return;
+      const parsed = parseInt(ridersInput, 10);
+      if (Number.isNaN(parsed) || parsed < 0) return;
+      targetRiders = parsed;
+    }
+
+    setTileGarrison(gameState, activePlayer, tile, targetMilitia, targetRiders);
+    updateGameState(gameState);
   };
 
   const upgradeRowProps = (level: number) =>
@@ -322,7 +353,10 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                     <div className="big-icon-hint">
                       <div>{tile.defence}🛡️</div>
-                      <div>defence</div>
+                      <div>
+                        defence ({tile.garrisonMilitia}🧍
+                        {tile.garrisonRiders > 0 ? ` ${tile.garrisonRiders}🐎` : ''})
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -441,10 +475,15 @@ export const TileCard: React.FC<TileCardProps> = ({
             )}
 
             {expanded && (mode === 'owned' || demoMode) && (
-              <div className="tile-card-sell" style={{ marginTop: '1rem' }}>
+              <div className="tile-card-sell" style={{ marginTop: '1rem', display: 'flex', gap: '8px' }}>
                 <div onClick={() => handleSell()} className={'tile-card-button'}>
                   🪙 sell
                 </div>
+                {tile.owner === activePlayer?.id && (
+                  <div onClick={() => handleGarrison()} className={'tile-card-button'}>
+                    🛡️ garrison ({tile.garrisonMilitia}🧍{tile.garrisonRiders > 0 ? `/${tile.garrisonRiders}🐎` : ''})
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -485,11 +524,17 @@ export const TileCard: React.FC<TileCardProps> = ({
 
       {!tile.owner && (
         <div>
+          {couldBuy && isOnFire && (
+            <div className="tile-card-onfire" style={{ textAlign: 'center', padding: '8px' }}>
+              🔥 still smoldering — claimable next round
+            </div>
+          )}
           {couldBuy &&
             tile.isAffordable(
               activePlayer?.gold ?? 0,
-              activePlayer?.units ?? 0,
-              activePlayer?.fame ?? 1
+              activePlayer?.armyPower ?? 0,
+              activePlayer?.fame ?? 1,
+              gameState?.round ?? 0
             ) && (
               <DecoratedButton
                 onClick={(e) => handleBuyClick(e)}
@@ -504,7 +549,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 {isBanzai ? (
                   <>
                     Banzai! {attackEmoji}
-                    {activePlayer?.units ?? 0} <span style={{ fontSize: '0.9rem' }}>vs</span>{' '}
+                    {Math.round(attackerPower)} <span style={{ fontSize: '0.9rem' }}>vs</span>{' '}
                     {defence(1)}
                   </>
                 ) : (

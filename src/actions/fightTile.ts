@@ -11,7 +11,7 @@ export function fightTile(board: GameState | null, updateGameState: (board: Game
   const tile = board.activeTile;
   const defence = tile.defence;
 
-  if (attacker.units < defence) return;
+  if (attacker.armyPower < defence) return;
 
   const defender = board.players.find((p: Player) => p.id === tile.owner);
   if (!defender) return;

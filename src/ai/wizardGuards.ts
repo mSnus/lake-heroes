@@ -41,7 +41,7 @@ export function pickWizardGuardsAction(
 ): WizardGuardsAction {
   if (opts.canPay && opts.canFight) {
     if (opts.fee < 0.25 * player.gold) return { kind: 'pay' };
-    if (player.units >= 1.5 * opts.defence) return { kind: 'fight' };
+    if (player.armyPower >= 1.5 * opts.defence) return { kind: 'fight' };
     const ownsGroupTile = player.ownedTiles.some((idx) => {
       const t = board.tiles[idx];
       return t && t.owner === player.id && t.group === tile.group;
@@ -56,7 +56,7 @@ export function pickWizardGuardsAction(
   const bySacrifice = sortTilesBySacrifice(board, player);
 
   for (const t of bySacrifice) {
-    if (player.units + t.currentPrice.units >= opts.defence) {
+    if (player.armyPower + t.currentPrice.units >= opts.defence) {
       return { kind: 'sell-one-then-fight', tile: t };
     }
   }

@@ -3,9 +3,10 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { CHARACTERS, CharacterConfig } from './characters';
 import { FeeOptions } from '../actions/feeOptions';
-import { UNIT_PRICE } from '../game/constants';
+import { KNIGHT_FAME, UNIT_PRICE } from '../game/constants';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeKingsGraceReward } from '../game/kingsGrace';
+import { UnitTier, remainingCapacity } from '../game/army';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
@@ -21,7 +22,7 @@ function wouldFormSyndicate(board: GameState, tile: Tile): boolean {
 // reward), since that's the only recurring unit income most players have.
 function closeToDragonGoalWithoutBuying(board: GameState, player: Player): boolean {
   const perLapUnits = computeKingsGraceReward(board, player).totalUnits;
-  return player.units + perLapUnits * 3 >= DRAGON_UNITS_THRESHOLD;
+  return player.armyPower + perLapUnits * 3 >= DRAGON_UNITS_THRESHOLD;
 }
 
 /** Should this bot claim the unowned tile it's standing on? */
@@ -40,7 +41,7 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
     return false;
   }
 
-  if (!tile.isAffordable(player.gold, player.units, player.fame)) return false;
+  if (!tile.isAffordable(player.gold, player.armyPower, player.fame, board.round)) return false;
 
   if (cfg.claim.type === 'chance') {
     return Math.random() < cfg.claim.chance;
@@ -49,14 +50,14 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
   if (cfg.claim.type === 'afford-no-banzai') {
     // Plain affordability, but reject the banzai exception isAffordable()
     // would otherwise allow (i.e. require the real, non-banzai defence).
-    return player.units >= tile.getDefence(1);
+    return player.armyPower >= tile.getDefence(1);
   }
 
   // threshold type (explorer): never banzai — require the plain (non-banzai)
   // defence to be met, then apply the tighter army/gold fractions on top.
   const lvl1Defence = tile.getDefence(1);
-  if (player.units < lvl1Defence) return false;
-  const armyOk = lvl1Defence <= cfg.claim.armyFraction * player.units;
+  if (player.armyPower < lvl1Defence) return false;
+  const armyOk = lvl1Defence <= cfg.claim.armyFraction * player.armyPower;
   const goldOk = tile.prices['1'].gold <= cfg.claim.goldFraction * player.gold;
   return armyOk && goldOk;
 }
@@ -108,15 +109,15 @@ export function pickHeroHourTarget(player: Player, opponents: Player[]): Player 
   const cfg = getCharacterConfig(player);
   if (!cfg) return null;
 
-  const byWeakest = [...opponents].sort((a, b) => a.units - b.units);
-  return byWeakest.find((o) => player.units >= cfg.fightThreshold.heroHour * o.units) ?? null;
+  const byWeakest = [...opponents].sort((a, b) => a.armyPower - b.armyPower);
+  return byWeakest.find((o) => player.armyPower >= cfg.fightThreshold.heroHour * o.armyPower) ?? null;
 }
 
 /** Caravan: attack iff the player's army is big enough relative to the caravan's guards. */
 export function shouldAttackCaravan(player: Player, defendingUnits: number): boolean {
   const cfg = getCharacterConfig(player);
   if (!cfg) return false;
-  return player.units >= cfg.fightThreshold.caravan * defendingUnits;
+  return player.armyPower >= cfg.fightThreshold.caravan * defendingUnits;
 }
 
 export type GuardsAction = 'pay' | 'sell-then-resolve' | 'fight' | 'accept-loss';
@@ -146,11 +147,48 @@ export function pickGuardsAction(player: Player, opts: FeeOptions): GuardsAction
 export function shouldChallengeDragon(player: Player): boolean {
   const cfg = getCharacterConfig(player);
   if (!cfg) return false;
-  return player.units >= cfg.dragonThreshold;
+  return player.armyPower >= cfg.dragonThreshold;
+}
+
+/**
+ * Top up the weakest-defended owned tile (lowest garrison first) with
+ * traveling units, up to the character's garrisonFraction of the bot's
+ * current army — so bot-owned tiles aren't free razes for a human/bot rival.
+ */
+export function pickGarrisonAction(
+  board: GameState,
+  player: Player
+): { tile: Tile; amount: number } | null {
+  const cfg = getCharacterConfig(player);
+  if (!cfg) return null;
+
+  const candidates = player.ownedTiles
+    .map((idx) => board.tiles[idx])
+    .filter(
+      (t): t is Tile => !!t && t.owner === player.id && t.garrisonMilitia < t.baseGarrison
+    );
+  if (candidates.length === 0) return null;
+
+  const target = candidates.sort((a, b) => a.garrisonMilitia - b.garrisonMilitia)[0];
+  const desired = target.baseGarrison - target.garrisonMilitia;
+  const affordable = Math.floor(cfg.garrisonFraction * player.militia);
+  const cap = remainingCapacity(target.garrisonMilitia, target.garrisonRiders, target.garrisonSlots, 'militia');
+  const amount = Math.min(desired, affordable, cap);
+
+  return amount > 0 ? { tile: target, amount } : null;
+}
+
+/** King's Castle: which tier a bot should recruit this visit. Riders are
+ * pricier but stronger per body — warrior/wizard lean into them once
+ * unlocked, explorer stays cheap and mobile on militia. */
+export function pickKingsCastleHireTier(player: Player): UnitTier {
+  const cfg = getCharacterConfig(player);
+  if (!cfg || player.fame < KNIGHT_FAME || cfg.id === 'explorer') return 'militia';
+  return 'riders';
 }
 
 /** King's Castle: how many units to hire out of the actually-allowed maxAmount. */
-export function pickKingsCastleHireAmount(player: Player, maxAmount: number): number {
+export function pickKingsCastleHireAmount(player: Player, maxAmount: number, unitPrice: number = UNIT_PRICE): number {
   const cfg = getCharacterConfig(player);
   if (!cfg) return 0;
 
@@ -159,7 +197,7 @@ export function pickKingsCastleHireAmount(player: Player, maxAmount: number): nu
     // 2/3 of his gold (keeping a comfortable reserve), down to 1 unit.
     let amount = maxAmount;
     while (amount >= 1) {
-      if (amount * UNIT_PRICE < (2 / 3) * player.gold) return amount;
+      if (amount * unitPrice < (2 / 3) * player.gold) return amount;
       if (amount === 1) return 0;
       amount = Math.max(1, Math.floor(amount * (2 / 3)));
     }

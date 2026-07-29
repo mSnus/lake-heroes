@@ -34,9 +34,9 @@ export function handleKingCastle(
       <KingsCastleModal
         gameState={board}
         newContract={contract}
-        onBuy={(amount) => {
+        onBuy={(amount, tier) => {
           clearScreen();
-          buyUnits(board, amount, updateGameState);
+          buyUnits(board, amount, updateGameState, tier);
         }}
         onSkip={() => {
           clearScreen();

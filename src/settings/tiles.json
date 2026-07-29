@@ -7,6 +7,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 2,
+    "garrison": 4,
     "prices": {
       "1": {
         "gold": 300,
@@ -40,6 +41,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 3,
+    "garrison": 6,
     "prices": {
       "1": {
         "gold": 350,
@@ -73,6 +75,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 4,
+    "garrison": 12,
     "prices": {
       "1": {
         "gold": 400,
@@ -106,6 +109,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
+    "garrison": 4,
     "prices": {
       "1": {
         "gold": 200,
@@ -139,6 +143,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
+    "garrison": 6,
     "prices": {
       "1": {
         "gold": 300,
@@ -172,6 +177,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 3,
+    "garrison": 8,
     "prices": {
       "1": {
         "gold": 400,
@@ -205,6 +211,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
+    "garrison": 4,
     "prices": {
       "1": {
         "gold": 150,
@@ -238,6 +245,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
+    "garrison": 6,
     "prices": {
       "1": {
         "gold": 250,
@@ -271,6 +279,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 3,
+    "garrison": 8,
     "prices": {
       "1": {
         "gold": 350,
@@ -304,6 +313,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
+    "garrison": 6,
     "prices": {
       "1": {
         "gold": 250,
@@ -337,6 +347,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
+    "garrison": 8,
     "prices": {
       "1": {
         "gold": 350,
@@ -370,6 +381,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 3,
+    "garrison": 8,
     "prices": {
       "1": {
         "gold": 450,
@@ -403,6 +415,7 @@
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 2,
+    "garrison": 10,
     "prices": {
       "1": {
         "gold": 400,
@@ -436,6 +449,7 @@
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 2,
+    "garrison": 4,
     "prices": {
       "1": {
         "gold": 600,
@@ -469,6 +483,7 @@
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 3,
+    "garrison": 10,
     "prices": {
       "1": {
         "gold": 600,
@@ -502,6 +517,7 @@
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 5,
+    "garrison": 10,
     "prices": {
       "1": {
         "gold": 800,
@@ -535,6 +551,7 @@
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 4,
+    "garrison": 10,
     "prices": {
       "1": {
         "gold": 1000,

@@ -15,7 +15,7 @@ export function checkAmbushEncounter(
   if ((player.circles ?? 0) < 1) return false;
 
   if (player.fame < 3) return false;
-  if (player.units < 5) return false;
+  if (player.armyPower < 5) return false;
   if (Math.random() >= ENCOUNTER_CHANCE) return false;
 
   // The ambushers field 50–70% of the player's units.

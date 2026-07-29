@@ -37,9 +37,9 @@ export function computeFeeOptions(board: GameState, player: Player, tile: Tile):
   );
 
   const canPay = player.gold >= fee;
-  const canFight = player.units >= defence;
+  const canFight = player.armyPower >= defence;
   const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
-  const canSellForFight = !canFight && player.units + sellable.units >= defence;
+  const canSellForFight = !canFight && player.armyPower + sellable.units >= defence;
   // Even if selling everything wouldn't fully cover the fee, offer the option
   // when fighting is available — the player may still prefer to sell first.
   const canSell = canSellForFee || canSellForFight || (canFight && !canPay);

@@ -34,7 +34,7 @@ export function findSyndicateSaleCandidate(
 
   // Confirm gold is the ONLY blocker.
   const lvl1Defence = tile.getDefence(1);
-  if (player.units < lvl1Defence) return null;
+  if (player.armyPower < lvl1Defence) return null;
   if (player.fame < tile.requiredFame) return null;
 
   // Groups the player is one tile away from completing (excluding tile's own group).

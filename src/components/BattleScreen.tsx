@@ -20,6 +20,7 @@ import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { DRAGON_UNITS } from '../game/constants';
 import { computeBrawlRound, isBrawlMatchup, rollBonus } from '../actions/battles/common';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
+import { proportionalTierSplit } from '../game/army';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 import { TileClaimScreen } from './TileClaimScreen';
@@ -136,7 +137,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // own army to be small — a big army attacking a weakly-defended tile or
   // caravan fights a normal multi-round battle instead of a coin-flip brawl.
   // Other modes (dragon/player/ambush) don't gate on the attacker's army here.
-  const isBrawl = isBrawlMatchup(defence, isTile || isCaravan ? attacker.units : 0);
+  const isBrawl = isBrawlMatchup(defence, isTile || isCaravan ? attacker.armyPower : 0);
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
@@ -169,8 +170,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Snapshotted once on mount: resolving the battle mutates attacker/defender.units
   // in place, and recomputing from the live value would change the bonus (and the
   // "Great Army" badge) after the fight is already decided.
-  const attackerSideUnitsRef = useRef(attacker.units);
-  const defenderSideUnitsRef = useRef(defender ? defender.units : defence);
+  const attackerSideUnitsRef = useRef(attacker.armyPower);
+  const defenderSideUnitsRef = useRef(defender ? defender.armyPower : defence);
   const attackerSideUnits = attackerSideUnitsRef.current;
   const defenderSideUnits = defenderSideUnitsRef.current;
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
@@ -346,7 +347,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           lostBg: ambushOutcome !== 'win',
         };
       }
-      return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, battleOutcome);
+      return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -488,13 +489,36 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // battle, where the attacker's casualties fill from the start like the dragon's.
   const attackerKilled = (i: number) =>
     isDragon ? i < displayedAtkKilled : i >= attackerUnits - displayedAtkKilled;
-  const attackerGrid = Array.from({ length: attackerUnits }, (_, i) =>
-    attackerKilled(i) ? '💥' : isAmbush ? '👹' : '🧍'
-  );
+
+  // Riders (🐎) vs Militia (🧍): only a real single-Player army has a tier
+  // breakdown to show — the dragon's combined kingdom army, and NPC caravan/
+  // ambush/wild-guard defenders, render as plain Militia. Tile defence is
+  // sized by weighted garrison *power*, not garrison headcount, so its split
+  // is proportional rather than exact. Riders sit on the outer edge of their
+  // column (survive longer) and Militia on the center-facing edge (dies
+  // first) — matching Player/Tile's actual militia-first loss ordering.
+  const attackerTierCounts =
+    isDragon || isAmbush ? { militia: attackerUnits, riders: 0 } : { militia: attacker.militia, riders: attacker.riders };
+  const defenderTierCounts = isTile && defender
+    ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
+    : isPlayerBattle
+      ? { militia: defender!.militia, riders: defender!.riders }
+      : { militia: defence, riders: 0 };
+  const attackerSplit = proportionalTierSplit(attackerUnits, attackerTierCounts.militia, attackerTierCounts.riders);
+  const defenderSplit = proportionalTierSplit(defence, defenderTierCounts.militia, defenderTierCounts.riders);
+
+  const attackerGrid = Array.from({ length: attackerUnits }, (_, i) => {
+    if (attackerKilled(i)) return '💥';
+    if (isAmbush) return '👹';
+    return i < attackerSplit.ridersCount ? '🐎' : '🧍';
+  });
   // Defender column (right): killed appear at the left end
-  const defenderGrid = Array.from({ length: defence }, (_, i) =>
-    i < displayedDefKilled ? '💥' : isDragon ? '🐉' : isCaravan ? '👹' : '🧍'
-  );
+  const defenderGrid = Array.from({ length: defence }, (_, i) => {
+    if (i < displayedDefKilled) return '💥';
+    if (isDragon) return '🐉';
+    if (isCaravan) return '👹';
+    return i < defenderSplit.militiaCount ? '🧍' : '🐎';
+  });
 
   const battleResultEmoji = isAmbush
     ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')

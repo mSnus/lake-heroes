@@ -13,6 +13,7 @@ import { sellTile } from '../actions/sellTile';
 import { payFee } from '../actions/payFee';
 import { fightTile } from '../actions/fightTile';
 import { computeFeeOptions } from '../actions/feeOptions';
+import { setTileGarrison } from '../actions/garrisonTile';
 import {
   getCharacterConfig,
   shouldClaimTile,
@@ -20,6 +21,7 @@ import {
   shouldAttackCaravan,
   shouldChallengeDragon,
   pickGuardsAction,
+  pickGarrisonAction,
 } from '../ai/decisions';
 import { findSyndicateSaleCandidate } from '../ai/syndicate';
 import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
@@ -79,7 +81,7 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
       // Bots skip the human-oriented sell-mode sub-screen and resolve directly.
       const candidates = only ? [only] : order;
       for (const t of candidates) {
-        const satisfied = wantsToPay ? player.gold >= opts.fee : player.units >= opts.defence;
+        const satisfied = wantsToPay ? player.gold >= opts.fee : player.armyPower >= opts.defence;
         if (satisfied) break;
         sellTile(board, player, t);
       }
@@ -211,6 +213,22 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
         updateGameState(board);
       });
     }
+  }
+
+  // Garrison decision — top up the weakest-defended owned tile once claim/
+  // upgrade decisions for this tick are exhausted.
+  const garrisonPick = pickGarrisonAction(board, player);
+  if (garrisonPick) {
+    return action(() => {
+      announce(player, `garrison ${garrisonPick.amount}🧍 at ${garrisonPick.tile.name}`);
+      setTileGarrison(
+        board,
+        player,
+        garrisonPick.tile,
+        garrisonPick.tile.garrisonMilitia + garrisonPick.amount
+      );
+      updateGameState(board);
+    });
   }
 
   if (endTurnReady) {

@@ -45,7 +45,7 @@ export function challengeDragonFromBoard(
 ) {
   if (!board) return;
   const player = board.activePlayer;
-  if (player.units < DRAGON_UNITS_THRESHOLD) {
+  if (player.armyPower < DRAGON_UNITS_THRESHOLD) {
     say(
       `${player.name} needs at least ${DRAGON_UNITS_THRESHOLD}🧍 to challenge the Dragon`,
       'warning'

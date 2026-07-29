@@ -58,7 +58,7 @@ export function checkDragonEncounter(
   }
 
   // Dragon attacks!
-  if (player.units < DRAGON_UNITS_THRESHOLD) {
+  if (player.armyPower < DRAGON_UNITS_THRESHOLD) {
     handleWeakPlayerAttack(board, updateGameState, onContinue);
   } else {
     updateGameState(board);

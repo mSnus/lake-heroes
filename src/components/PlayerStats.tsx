@@ -40,7 +40,9 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
         )}
         {showUnits && (
           <span className="player-stat">
-            <strong>{player.units ?? 0}🧍</strong>
+            <strong>
+              {player.units ?? 0}🧍{player.riders > 0 ? ` (${player.riders}🐎)` : ''}
+            </strong>
           </span>
         )}
       </div>

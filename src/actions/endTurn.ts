@@ -41,7 +41,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   }
 
   if (
-    board.activePlayer.units >= DRAGON_UNITS_THRESHOLD &&
+    board.activePlayer.armyPower >= DRAGON_UNITS_THRESHOLD &&
     !board.activePlayer.hasBeenOfferedDragonChallenge
   ) {
     board.activePlayer.hasBeenOfferedDragonChallenge = true;

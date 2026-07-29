@@ -1,5 +1,6 @@
 import { FEE_MULTIPLIER, BRAWL_THRESHOLD } from './constants';
 import groups from '../settings/groups.json';
+import { computeArmyPower, remainingCapacity } from './army';
 
 export interface TileJSON {
   group: string;
@@ -16,6 +17,23 @@ export interface TileJSON {
   spriteImage?: string;
   requiredFame?: number;
   fog?: boolean;
+  /** Current units stationed here (owner-assigned once owned, wild-guard
+   * count while unowned). Owned tiles: derived from garrisonMilitia/Riders
+   * below. Unowned: the wild-guard headcount (no tier). */
+  garrison?: number;
+  /** Owned-tile garrison composition (see game/army.ts for tiers). Absent
+   * on a legacy/pre-tier save — migrated from `garrison` on load. */
+  garrisonMilitia?: number;
+  garrisonRiders?: number;
+  /** Immutable authored baseline the wild garrison regrows toward. Falls
+   * back to `garrison` on first load (fresh/never-claimed tile). */
+  baseGarrison?: number;
+  /** Turn (GameState.turns) since this tile went unowned, or undefined if it
+   * was never razed — drives the wild-garrison regrowth timer. */
+  unclaimedSinceTurn?: number;
+  /** GameState.round the tile was last razed in — gates re-claiming until
+   * the round advances ("on fire"). */
+  razedInRound?: number;
 }
 
 export class Tile implements TileJSON {
@@ -33,6 +51,16 @@ export class Tile implements TileJSON {
   spriteImage?: string;
   requiredFame: number;
   fog: boolean;
+  /** Wild-guard headcount while unowned (no tier — see the `garrison`
+   * accessor below for the owned-tile path). */
+  private _garrison: number;
+  /** Owned-tile garrison composition. */
+  garrisonMilitia: number;
+  garrisonRiders: number;
+  /** Immutable authored baseline this tile's wild garrison regrows toward. */
+  baseGarrison: number;
+  unclaimedSinceTurn?: number;
+  razedInRound?: number;
 
   constructor(data: Partial<TileJSON> = {}) {
     this.group = data.group || '';
@@ -49,6 +77,54 @@ export class Tile implements TileJSON {
     this.spriteImage = data.spriteImage;
     this.requiredFame = data.requiredFame ?? 0;
     this.fog = data.fog !== false && this.isOwnable;
+    this._garrison = data.garrison ?? 0;
+    this.baseGarrison = data.baseGarrison ?? data.garrison ?? 0;
+    if (this.owner && data.garrisonMilitia === undefined && data.garrisonRiders === undefined) {
+      // Legacy (pre-tier) save: migrate the flat garrison to militia.
+      this.garrisonMilitia = data.garrison ?? 0;
+      this.garrisonRiders = 0;
+    } else {
+      this.garrisonMilitia = data.garrisonMilitia ?? 0;
+      this.garrisonRiders = data.garrisonRiders ?? 0;
+    }
+    this.unclaimedSinceTurn = data.unclaimedSinceTurn;
+    this.razedInRound = data.razedInRound;
+  }
+
+  /** Garrison slots this tile can hold — scales with level, same as a
+   * player's army slots scale with fame (see game/army.ts). */
+  get garrisonSlots(): number {
+    return this.level;
+  }
+
+  get garrisonPower(): number {
+    return computeArmyPower(this.garrisonMilitia, this.garrisonRiders);
+  }
+
+  /** Compatibility surface for every existing `tile.garrison +=/-=/= N` call
+   * site — mirrors Player.units: owned tiles read/write the tiered
+   * militia/riders pair (gains -> militia, losses drain militia first),
+   * unowned tiles read/write the untiered wild-guard headcount directly. */
+  get garrison(): number {
+    return this.owner ? this.garrisonMilitia + this.garrisonRiders : this._garrison;
+  }
+
+  set garrison(value: number) {
+    if (!this.owner) {
+      this._garrison = Math.max(0, Math.floor(value));
+      return;
+    }
+    const delta = value - this.garrison;
+    if (delta >= 0) {
+      const cap = remainingCapacity(this.garrisonMilitia, this.garrisonRiders, this.garrisonSlots, 'militia');
+      this.garrisonMilitia += Math.min(delta, cap);
+    } else {
+      let loss = -delta;
+      const militiaLoss = Math.min(this.garrisonMilitia, loss);
+      this.garrisonMilitia -= militiaLoss;
+      loss -= militiaLoss;
+      this.garrisonRiders = Math.max(0, this.garrisonRiders - loss);
+    }
   }
 
   get groupColor(): string {
@@ -92,7 +168,20 @@ export class Tile implements TileJSON {
     return this.fog;
   }
 
-  isAffordable(playerGold: number, playerUnits: number, playerFame: number): boolean {
+  /** True while a razed tile is still "on fire" — unbuyable for the rest of
+   * the round it was razed in (GameState.round hasn't advanced past it). */
+  isOnFire(currentRound: number): boolean {
+    return this.razedInRound !== undefined && currentRound <= this.razedInRound;
+  }
+
+  isAffordable(
+    playerGold: number,
+    playerUnits: number,
+    playerFame: number,
+    currentRound: number = Infinity
+  ): boolean {
+    if (this.isOnFire(currentRound)) return false;
+
     const lvl1Defence = this.getDefence(1);
     // Brawl tiles (low defence) always require enough units to win the
     // winner-take-all round. Above the brawl threshold, an attacker with
@@ -141,14 +230,17 @@ export class Tile implements TileJSON {
     return this.bonuses ? this.bonuses[level] || 0 : 0;
   }
 
-  getDefence(level: number = 1): number {
-    // Experiment: defence = sum of prices.units up to the given level.
-    let units = 0;
-    for (let lvl = 1; lvl <= level; lvl++) {
-      units += (this.prices[lvl]?.units || 2) * (level < 3 ? 2 : 1.5);
-    }
+  /** % bonus a garrison gets from being stationed on a tile of this level. */
+  getGarrisonBonusPct(level: number): number {
+    return level >= 3 ? 0.5 : level === 2 ? 0.25 : 0.1;
+  }
 
-    return Math.ceil(units);
+  getDefence(level: number = 1): number {
+    // Defence = the garrison's weighted power (Riders count for more than
+    // Militia — see game/army.ts), boosted by the tile's level. Wild/unowned
+    // guards have no tier, so their power is just their headcount.
+    const power = this.owner ? this.garrisonPower : this._garrison;
+    return Math.ceil(power * (1 + this.getGarrisonBonusPct(level)));
   }
 
   toJSON(): TileJSON {
@@ -167,6 +259,12 @@ export class Tile implements TileJSON {
       spriteImage: this.spriteImage,
       requiredFame: this.requiredFame,
       fog: this.fog,
+      garrison: this._garrison,
+      garrisonMilitia: this.garrisonMilitia,
+      garrisonRiders: this.garrisonRiders,
+      baseGarrison: this.baseGarrison,
+      unclaimedSinceTurn: this.unclaimedSinceTurn,
+      razedInRound: this.razedInRound,
     };
   }
 }

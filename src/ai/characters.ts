@@ -16,6 +16,9 @@ export interface CharacterConfig {
   dragonThreshold: number;
   kingsCastleHireFraction: number; // unused by 'wizard' strategy, see pickKingsCastleHireAmount
   buildsSyndicates: boolean;
+  // Fraction of the bot's traveling army it's willing to commit, per turn,
+  // toward topping up an under-garrisoned owned tile — see pickGarrisonAction.
+  garrisonFraction: number;
   // Skip buying a tile (unless it completes a syndicate) when the dragon-
   // challenge goal is reachable within ~3 laps on current income alone.
   skipBuyingNearDragonGoal: boolean;
@@ -41,6 +44,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: false,
+    garrisonFraction: 0.2,
   },
   warrior: {
     id: 'warrior',
@@ -53,6 +57,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
     skipBuyingNearDragonGoal: true,
+    garrisonFraction: 0.15,
   },
   wizard: {
     id: 'wizard',
@@ -65,5 +70,6 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: true,
+    garrisonFraction: 0.25,
   },
 };

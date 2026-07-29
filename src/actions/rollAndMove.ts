@@ -18,6 +18,7 @@ import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
 import { checkAmbushEncounter } from './ambushEncounter';
+import { tickWildGarrisons } from '../game/wildGarrison';
 
 export async function rollAndMove(
   board: GameState | null,
@@ -42,7 +43,7 @@ export async function rollAndMove(
   if (!nextTile.isOwned()) {
     const cannotBuy =
       player.gold < nextTile.currentPrice.gold || player.fame < nextTile.requiredFame;
-    const defenceTooStrong = player.units < nextTile.getDefence(1);
+    const defenceTooStrong = player.armyPower < nextTile.getDefence(1);
 
     if (cannotBuy || defenceTooStrong) {
       const reasons = [
@@ -77,6 +78,7 @@ export async function rollAndMove(
 
     board.setPhase('after-move');
     board.incTurns();
+    tickWildGarrisons(board);
     const wasFogged = board.activeTile.fog;
     board.activeTile.fog = false;
     if (wasFogged) {

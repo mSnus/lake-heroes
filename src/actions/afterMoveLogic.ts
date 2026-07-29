@@ -143,7 +143,7 @@ export function showTileEncounterScreen(
       label: `Battle ⚔️ (${defence}🧍)`,
       action: 'fight-tile',
       onClick: () => fightTile(board, updateGameState),
-      disabled: player.units < defence,
+      disabled: player.armyPower < defence,
     },
   ];
 
