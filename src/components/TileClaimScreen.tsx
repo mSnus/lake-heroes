@@ -10,6 +10,7 @@ import { DecoratedButton } from './DecoratedButton';
 import { clearScreen } from '../utils/screenStore';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { remainingCapacity } from '../game/army';
+import { getCharacterConfig } from '../ai/decisions';
 import '../styles/TileCard.css';
 import '../styles/GameMenu.css';
 
@@ -40,8 +41,17 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const t = setTimeout(() => clearScreen(), 800);
+    const fraction = getCharacterConfig(player)?.claimGarrisonFraction ?? 0;
+    const amount = Math.min(maxGarrison, Math.floor(fraction * player.militia));
+    const t = setTimeout(() => {
+      if (amount > 0) {
+        setTileGarrison(gameState, player, tile, amount);
+        updateGameState(gameState);
+      }
+      clearScreen();
+    }, 800);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player]);
 
   const handleSetGarrison = () => {
