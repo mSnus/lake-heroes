@@ -111,19 +111,15 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
                     </button>
                   </div>
                 </div>
-                <div className="tc-td" style={{paddingTop: '2rem'}}>
-                    👛 <span className="value">+{tile.prices[2]?.gold ?? 0}</span>🟡{' '}
-                    <span className="value">{tile.prices[2]?.units ?? 0}</span>🧍{' '}
-                    to upgrade to <span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon}
-
-                  {' '}and{' '}<span className="value">{tile.getDefence(2)}</span>🛡️
+                <div className="tc-td" style={{paddingTop: '2rem', fontSize: '1rem'}}>
+                    👛 <span className="value">{tile.prices[2]?.gold ?? 0}</span>🟡 →{' '}
+                    +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year and{' '}
+                    <span className="value">2</span>🏯
                 </div>
-                <div className="tc-td">
-                    👛 <span className="value">+{tile.prices[3]?.gold ?? 0}</span>🟡{' '}
-                    <span className="value">{tile.prices[3]?.units ?? 0}</span>🧍{' '}
-                    to upgrade to <span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon}
-
-                  {' '}and{' '}<span className="value">{tile.getDefence(3)}</span>🛡️
+                <div className="tc-td" style={{fontSize: '1rem'}}>
+                    👛 <span className="value">{tile.prices[3]?.gold ?? 0}</span>🟡 →{' '}
+                    +<span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon} per year and{' '}
+                    <span className="value">3</span>🏯
                 </div>
         </div>
       </div>
