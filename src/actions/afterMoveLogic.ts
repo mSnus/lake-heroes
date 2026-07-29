@@ -7,6 +7,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
 import { payFee } from './payFee';
 import { fightTile } from './fightTile';
+import { claimUndefendedTile } from './claimUndefendedTile';
 import { HeroHourScreen } from '../components/HeroHourScreen';
 import { computeFeeOptions } from './feeOptions';
 
@@ -109,6 +110,38 @@ export function showTileEncounterScreen(
     player,
     tile
   );
+
+  // An empty garrison means nothing to fight — skip straight to a free,
+  // no-battle takeover instead of the usual pay/fight/sell/accept-loss choice.
+  if (defence === 0) {
+    const encounter = {
+      playerName: player.name,
+      playerColor: player.color,
+      tile,
+      ownerName: owner?.name ?? undefined,
+      ownerColor,
+      canFight: false,
+      fee,
+      outcomeText: undefined,
+      gold: player.gold,
+      units: player.units,
+    };
+
+    showScreen({
+      background: 'assets/screens/guards.jpg',
+      fade: true,
+      spriteImage: tile.spriteImage,
+      encounter,
+      buttons: [
+        {
+          label: "Defenceless means it's mine",
+          action: 'claim-undefended',
+          onClick: () => claimUndefendedTile(board, updateGameState),
+        },
+      ],
+    });
+    return;
+  }
 
   const encounter = {
     playerName: player.name,

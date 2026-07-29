@@ -65,6 +65,13 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
   const buttons = screen?.buttons;
   if (!buttons || buttons.length === 0) return null;
 
+  // Undefended tile — a single free-takeover button, no decision to make.
+  const claimUndefended = buttons.find((b) => b.action === 'claim-undefended');
+  if (claimUndefended) {
+    announce(player, 'take the undefended tile');
+    return action(claimUndefended.onClick);
+  }
+
   // Guards / fee encounter — identified by the `encounter` payload.
   if (screen!.encounter && screen!.encounter.canFight !== undefined) {
     const tile = board.activeTile;
