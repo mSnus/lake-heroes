@@ -76,11 +76,21 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
 
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
-                <div className="tc-td" style={{textAlign:'center', paddingBottom: '0.5rem'}}>
-                  income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}
+                <div className="tc-td" style={{textAlign:'center'}}>
+                  Current income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}
+                </div>
+                <div className="tc-td" style={{paddingTop: '0.5rem', fontSize: '1rem'}}>
+                    👛 <span className="value">{tile.prices[2]?.gold ?? 0}</span>🟡 →{' '}
+                    <span className="value">2</span>🏯 and{' '}
+                    +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year
+                </div>
+                <div className="tc-td" style={{fontSize: '1rem'}}>
+                    👛 <span className="value">{tile.prices[3]?.gold ?? 0}</span>🟡 →{' '}
+                    <span className="value">3</span>🏯 and{' '}
+                    +<span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon} per year
                 </div>
                 {player.militia > 0 && (
-                  <div className="tc-td" style={{paddingTop: '0.5rem', textAlign: 'center'}}>
+                  <div className="tc-td" style={{paddingTop: '1.5rem', textAlign: 'center'}}>
                     How many to leave on guard?
                     <div className="units-input-row" style={{ justifyContent: 'center' }}>
                       🛡️
@@ -124,16 +134,6 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
                     </div>
                   </div>
                 )}
-                <div className="tc-td" style={{paddingTop: '2rem', fontSize: '1rem'}}>
-                    👛 <span className="value">{tile.prices[2]?.gold ?? 0}</span>🟡 →{' '}
-                    <span className="value">2</span>🏯 and{' '}
-                    +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year
-                </div>
-                <div className="tc-td" style={{fontSize: '1rem'}}>
-                    👛 <span className="value">{tile.prices[3]?.gold ?? 0}</span>🟡 →{' '}
-                    <span className="value">3</span>🏯 and{' '}
-                    +<span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon} per year
-                </div>
         </div>
       </div>
 
