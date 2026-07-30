@@ -3,7 +3,7 @@
   left: calc(30vw * 1vw / 1vh);
   top: calc(38vw * 1vw / 1vh);
   z-index: 100;
-  scale: calc(1vw / 1vh * 1.2);
+  scale: calc(1vw / 1vh * 1.44);
 }
 
 .current-tile {

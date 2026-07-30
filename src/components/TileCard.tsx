@@ -383,12 +383,11 @@ export const TileCard: React.FC<TileCardProps> = ({
                           </span>
                           {'  '}
 
-                          {unitsInsufficient && (
-                            <span style={{ color: '#ff4444' }}>
-                              🔻{defence(1)}
-                              🛡️
-                            </span>
-                          )}
+                          <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
+                            {unitsInsufficient && '🔻'}
+                            {defence(1)}
+                            🛡️
+                          </span>
                         </div>
                       </div>
                     </div>
