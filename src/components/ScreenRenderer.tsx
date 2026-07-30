@@ -9,6 +9,8 @@ import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { gameEvent } from '../utils/events';
+import { useT } from '../i18n';
+import { tJsx } from '../i18n/tJsx';
 
 interface ScreenRendererProps {
   gameState: GameState;
@@ -16,6 +18,7 @@ interface ScreenRendererProps {
 }
 
 export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updateGameState }) => {
+  const t = useT();
   const config = useScreen();
   if (!config) return null;
 
@@ -69,7 +72,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               </>
             )}
             <br />
-            encounters{' '}
+            {t('screenRenderer.encounters')}{' '}
             <strong style={{ color: config.encounter.tile?.groupTextColor }}>
               {config.encounter.tile?.name}
             </strong>
@@ -77,7 +80,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
             {config.encounter.ownerName && (
               <>
                 <br />
-                that belongs to{' '}
+                {t('screenRenderer.belongsTo')}{' '}
                 <PlayerLabel
                   name={config.encounter.ownerName}
                   color={config.encounter.ownerColor}
@@ -87,8 +90,10 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   <>
                     <br />
                     <br />
-                    Risk {config.encounter.tile.defence}🧍 to raze it or pay{' '}
-                    {config.encounter.fee ?? config.encounter.tile.fee}🟡 and go?
+                    {tJsx('screenRenderer.riskOrPay', {
+                      defence: config.encounter.tile.defence,
+                      fee: config.encounter.fee ?? config.encounter.tile.fee,
+                    })}
                   </>
                 )}
               </>

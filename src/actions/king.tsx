@@ -7,6 +7,7 @@ import { sellUnits } from './sellUnits';
 import KingsCastleModal from '../components/KingsCastleModal';
 import { say } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
+import { t } from '../i18n';
 
 export function handleKingCastle(
   board: GameState | null,
@@ -24,8 +25,8 @@ export function handleKingCastle(
 
   const contract = issueKingsContract(board, board.activePlayer);
   if (contract) {
-    const tileName = board.tiles[contract.tilePosition]?.name ?? 'a tile';
-    say(`📜 The King hands you a contract: claim ${tileName} for ${contract.award}🟡!`, 'success');
+    const tileName = board.tiles[contract.tilePosition]?.name ?? t('king.aTile');
+    say(t('king.contractOffered', { tileName, award: contract.award }), 'success');
     updateGameState(board);
   }
 

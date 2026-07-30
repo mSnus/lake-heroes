@@ -1,0 +1,721 @@
+{
+  "common": {
+    "language": "Language",
+    "hire": "Hire",
+    "slot": "slot",
+    "slots": "slots",
+    "and": "and",
+    "vs": "vs",
+    "close": "Close",
+    "continue": "Continue",
+    "tierMilitia": "militia",
+    "tierRiders": "riders"
+  },
+  "tiles": {
+    "water-mill": {
+      "name": "Water mill"
+    },
+    "windmill": {
+      "name": "Windmill"
+    },
+    "brick-factory": {
+      "name": "Brick factory"
+    },
+    "pigs-farm": {
+      "name": "Pigs farm"
+    },
+    "cows-farm": {
+      "name": "Cows farm"
+    },
+    "sheep-farm": {
+      "name": "Sheep farm"
+    },
+    "wheat-field": {
+      "name": "Wheat field"
+    },
+    "cabbage-field": {
+      "name": "Cabbage field"
+    },
+    "fruit-garden": {
+      "name": "Fruit garden"
+    },
+    "grapes": {
+      "name": "Grapes"
+    },
+    "fish": {
+      "name": "Fish"
+    },
+    "fur": {
+      "name": "Fur"
+    },
+    "bows": {
+      "name": "Bows"
+    },
+    "swords": {
+      "name": "Swords"
+    },
+    "archer-tower": {
+      "name": "Archer tower"
+    },
+    "arquebus-tower": {
+      "name": "Arquebus tower"
+    },
+    "cannon-tower": {
+      "name": "Cannon tower"
+    },
+    "treasure-chest": {
+      "name": "Treasure chest",
+      "description": "Chance to receive 🟡"
+    },
+    "tavern": {
+      "name": "Tavern",
+      "description": "Chance to hire 🧍"
+    },
+    "king-castle": {
+      "name": "King Castle",
+      "description": "Recruit 🧍"
+    },
+    "prison": {
+      "name": "Prison",
+      "description": "Miss a turn ⏳"
+    },
+    "sphynx": {
+      "name": "Sphynx",
+      "description": "He could eat you or reward you"
+    },
+    "portal": {
+      "name": "Portal",
+      "description": "Magic vortex. Where it will bring you?"
+    },
+    "joker": {
+      "name": "Joker",
+      "description": "Random evil joke"
+    }
+  },
+  "artifacts": {
+    "broken-blade": {
+      "name": "Broken Blade",
+      "description": "+2 to rolls against the Dragon, +1 to rolls in non-brawl battles."
+    },
+    "dwemer-axe": {
+      "name": "Dwemer Axe",
+      "description": "+1 to rolls against the Dragon, +1 to rolls in brawl-mode battles."
+    },
+    "pristine-diamond": {
+      "name": "Pristine Diamond",
+      "description": "+1000🟡 every year."
+    },
+    "indestructible-umbrella": {
+      "name": "Indestructible Umbrella",
+      "description": "Saves the player from Dragon attacks and the Meteor fall."
+    },
+    "divine-beads": {
+      "name": "Divine Beads",
+      "description": "50% chance to save the player from Earthquake, Meteor, Hurricane, and Dragon attack."
+    },
+    "pipe-of-hamelin": {
+      "name": "Pipe of Hamelin",
+      "description": "Reduces fees owed to other players' tiles by 50%. Protects from the Plague."
+    },
+    "medal-of-honor": {
+      "name": "Medal of Honor",
+      "description": "Grants +5🏆. Keeps the owner from dwelling in Prison."
+    }
+  },
+  "shieldColumn": {
+    "menu": "Menu",
+    "newGame": "New Game",
+    "help": "Help",
+    "gameLog": "Game Log",
+    "reload": "Reload",
+    "aiTurn": "AI is taking its turn",
+    "rollDice": "Roll Dice",
+    "endTurn": "End Turn",
+    "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost."
+  },
+  "kingsCastle": {
+    "title": "The King's Castle",
+    "newContract": "📜 New contract: be the first to claim\n{tileName} for a reward of {award}🟡!",
+    "squadsMessage": "With {gold} and {fame} fame\nyou may have {squads} squads",
+    "cannotRecruit": "Your money {gold} and fame {fame}\ndo not allow you to recruit more units",
+    "iAmTheGreatest": "⚜️ I am the greatest!"
+  },
+  "squadHirePanel": {
+    "hireTitle": "Hire:",
+    "militia": "Militia",
+    "knights": "Knights"
+  },
+  "squadDisplay": {
+    "sellSquad": "Sell this squad"
+  },
+  "tileCard": {
+    "confirmUpgrade": "Really upgrade {tileName} for {gold}🟡?",
+    "upgradedMessage": "{playerName} upgraded {tileName} to level {level}",
+    "confirmSell": "Sell {tileName} for {price}, seriously?",
+    "soldMessage": "{playerName} sold {tileName} and received {gold}🟡 and {units}🧍",
+    "garrisonMilitiaPrompt": "Militia to garrison at {tileName}? ({traveling}🧍 traveling, {here}🧍 already here, {slots} {slotWord} of 10 here)",
+    "garrisonRidersPrompt": "Riders to garrison at {tileName}? ({traveling}🐎 traveling, {here}🐎 already here)",
+    "fee": "fee",
+    "perYear": "per year",
+    "defence": "defence",
+    "defenceInfo": "Defence: {value}",
+    "garrisonWarning": "You could only set garrison while visiting your tile",
+    "cantAfford": "can't afford",
+    "toOwn": "to own:",
+    "base": "base",
+    "sell": "sell",
+    "stillSmoldering": "still smoldering — claimable next round",
+    "banzai": "Banzai!",
+    "claimIt": "Claim it!"
+  },
+  "tileClaimScreen": {
+    "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
+    "currentIncome": "Current income: {value}{icon}",
+    "upgradeLine": "👛 {gold}🟡 → {slots}🏯 and +{bonus}{icon} per year",
+    "howManyToGuard": "How many to leave on guard?",
+    "stayInArmy": "({count}🧍 stay in army)",
+    "leaveUnguarded": "Leave unguarded",
+    "setToGuard": "Set {amount} to guard 🛡️"
+  },
+  "battleScreen": {
+    "theDragon": "The Dragon",
+    "ambushers": "Ambushers",
+    "caravanGuards": "Caravan Guards",
+    "guards": "Guards",
+    "ambushedMessage": "{name} is ambushed by {units}🥷!",
+    "goalChains": "{amount}🧍 in chains",
+    "goalLoot": "{amount}🟡 of loot",
+    "goalKingdom": "the kingdom",
+    "goalGlory": "glory",
+    "attacksMessage": "{attacker} attacks {defender}'s {defence}{emoji} for {goal}",
+    "caravanRaid": "Caravan Raid!",
+    "dragonBattle": "Dragon Battle",
+    "heroHour": "Hero's Hour",
+    "ambush": "Ambush",
+    "battleFor": "Battle for {tileName}",
+    "battle": "Battle",
+    "brawl": "Brawl!",
+    "attack": "Attack!",
+    "defend": "Defend!",
+    "ambushRepelled": "The ambush is repelled!",
+    "defeat": "Defeat!",
+    "bloodyStalemate": "A bloody stalemate!",
+    "gloriousVictory": "Glorious victory!",
+    "aTie": "A tie!",
+    "keepCalmCarryOn": "🍀 Keep calm & carry on",
+    "wasItWorthIt": "🩸 Was it worth it?"
+  },
+  "heroHourScreen": {
+    "decidedToAttack": "{playerName} decided to attack {targetName}",
+    "goToGuards": "Go to {tileName}'s guards",
+    "greetAndPass": "✖ Greet and pass",
+    "encounters": "surprisingly encounters",
+    "challengeSingular": "Wouldst thou challenge for a fight?",
+    "challengePlural": "Challenge one of them to fight?",
+    "fightButton": "Fight {name} ⚔️"
+  },
+  "screenRenderer": {
+    "encounters": "encounters",
+    "belongsTo": "that belongs to",
+    "riskOrPay": "Risk {defence}🧍 to raze it or pay {fee}🟡 and go?"
+  },
+  "newGameModal": {
+    "heroes": "Heroes:",
+    "randomName": "Random name",
+    "humanComputerToggle": "Human / Computer (click to cycle)",
+    "startGame": "Start Game",
+    "characterSuffixFarmer": "Farmer",
+    "characterSuffixWarrior": "Warrior",
+    "characterSuffixWizard": "Wizard"
+  },
+  "ownedTiles": {
+    "ownsNothing": "Poor {name} owns nothing"
+  },
+  "gameLogModal": {
+    "noMessages": "No messages yet."
+  },
+  "playerStats": {
+    "incomePerYear": "Income per year"
+  },
+  "currentPlayer": {
+    "fameTooltip": "Your Fame. Gain it by owning the tiles and winning the battles!",
+    "isAt": "is at",
+    "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
+    "goldTooltip": "Current gold you own",
+    "fromYourTiles": "from your own tiles",
+    "asKingsGrace": "as the King's grace",
+    "fromPristineDiamond": "from the Pristine Diamond 💎",
+    "wagesMessage": "Your wages after passing the King's Castle{detail}",
+    "armyTooltip": "Your army: {used}/{total} slots used, each holding up to 10 of one kind",
+    "artifactTooltip": "{name}: {description}"
+  },
+  "botController": {
+    "decided": "{name} decided to {decision}",
+    "takeUndefendedTile": "take the undefended tile",
+    "payTheFee": "pay the fee",
+    "fight": "fight",
+    "sellTilesToFight": "sell tiles to fight",
+    "sellTilesToPayFee": "sell tiles to pay the fee",
+    "acceptTheLoss": "accept the loss",
+    "fightTheDragon": "fight the dragon",
+    "attackTheCaravan": "attack the caravan",
+    "sellForSyndicate": "sell {saleName} to complete a syndicate with {tileName}",
+    "claimTile": "claim {tileName}",
+    "garrisonTile": "garrison {amount}🧍 at {tileName}"
+  },
+  "boardCanvas": {
+    "challengeDragon": "Challenge the Dragon"
+  },
+  "helpScreen": {
+    "objective": {
+      "title": "Objective",
+      "body": "Be the first to amass <strong>50+ warriors 🧍</strong> and slay the Dragon 🐉 to claim victory!"
+    },
+    "turnOrder": {
+      "title": "Turn order",
+      "step1": "Roll the dice 🎲 (or shake your phone 📳) and move your hero around the board",
+      "step2": "Take action based on the tile you land on",
+      "step3": "Upgrade or sell your tiles if needed",
+      "step4": "End your turn ⏳",
+      "step5": "Each circle makes a year — pass the 🏰 King's Castle to receive the rewards"
+    },
+    "goldUnits": {
+      "title": "Gold 🟡 and units 🧍",
+      "item1": "Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final battle",
+      "item2": "Yearly income: more tiles you own, more you get each year"
+    },
+    "fame": {
+      "title": "Fame 🏆",
+      "item1": "It's your reputation. It depends on each battle won or lost and tiles owned.",
+      "item2": "Fame {knightFame} or more makes you eligible for promotion — the King knights you (unlocking Rider recruiting) next time you cross his Castle. It also makes you more visible for a dragon - beware, it could attack!",
+      "item3": "More fame allows to recruit more units at the King's Castle, increases your stable units 🧍 income and allows to own the best tiles"
+    },
+    "tiles": {
+      "title": "Tiles 🧩",
+      "discoverTitle": "Discover",
+      "discoverBody": "new tiles and get rewarded for that",
+      "own": "<strong>👛 Own tiles</strong> by spending gold 🟡 and 🧍 units. Visiting own tiles brings you bonus from it",
+      "upgrade": "<strong>⬆️ Upgrade tiles</strong> by spending gold 🟡 and 🧍 units to increase tile's income and defence. Click the bottom of the card to upgrade",
+      "landingOnOpponent": "<strong>Landing on opponent's tile</strong> — pay a fee 💰 or battle ⚔️ to overtake it. If you don't have enough gold or units, sell some of your tiles. Battle costs units to the attacker. If you can neither battle, nor pay, you become a prisoner of war: spend 2 turns in a prison, after that receive some starting bonus to continue playing.",
+      "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: income bonus and fee is <strong>doubled</strong>",
+      "clickToView": "<strong>Click on the tile's title or data</strong> to view its bonuses and defences on each level"
+    },
+    "specialTiles": {
+      "title": "Special tiles 🃏",
+      "kingsCastle": "🏰 <strong>King's Castle</strong> — visit to recruit 🧍 units for gold, the amount is limited by your fame. Passing the King's Castle grants base income plus bonuses from all your properties.",
+      "treasureChest": "📦 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.",
+      "tavern": "🍺 <strong>Tavern</strong> — recruit units",
+      "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
+      "prison": "⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for visiting your tiles",
+      "joker": "🃏 <strong>Joker</strong> — triggers a random global event, see below for the full list."
+    },
+    "joker": {
+      "title": "Joker 🃏",
+      "intro": "Landing on the Joker tile triggers one random event, affecting everyone (or, in some cases, just one player):",
+      "taxes": "🧾 <strong>Taxes</strong> — all players lose half of their gold.",
+      "plague": "🦠 <strong>Plague</strong> — all players lose half of their units.",
+      "hurricane": "🌪️ <strong>Hurricane</strong> — every player loses their most expensive tile.",
+      "blessing": "👑 <strong>Blessing</strong> — all owned tiles are upgraded one level.",
+      "queensGift": "💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower tile, or 2000🟡 and 5🧍 if none are free.",
+      "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
+      "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it."
+    },
+    "caravan": {
+      "title": "Caravan 🐪",
+      "item1": "At the <em>start</em> of your turn you have a chance to encounter a caravan bringing treasures or slaves",
+      "item2": "Defeat the caravan guards to free the slaves (they join your army) or pillage the treasures!"
+    },
+    "battle": {
+      "title": "Battle ⚔️",
+      "squad": "The attacker sends a <strong>squad of units in amount equal to 🛡️ Defence value</strong>, risking their lives for some goal: caravan goods or slaves, razing the tile or fighting the Dragon.",
+      "razing": "<strong>Razing</strong> means the tile loses all its upgrades and belongs to no one",
+      "twoModes": "There are two modes: brawl and normal battle",
+      "brawlMode": "In <strong>Brawl mode:</strong> Simple mode, used when squad is less than 6 units. Attacker and defender roll dice, who rolls more, wins the round.",
+      "normalMode": "<strong>Normal battle:</strong> Combat is resolved in rounds. Each round both sides roll the dice; the amount rolled is the number of enemy units destroyed. The one to destroy all enemy units first wins.",
+      "tie": "If all attacker and defender units are killed, that's a Tie",
+      "priceOfVictory": "The victory comes with a price! As a result of a battle, winner loses units killed in battle."
+    },
+    "artifacts": {
+      "title": "Artifacts",
+      "intro": "Found inside Treasure Chests 📦 — each artifact grants its owner a permanent bonus for the rest of the game."
+    },
+    "dragon": {
+      "title": "Dragon 🐉",
+      "item1": "If you have more than 50 warriors at the <em>start</em> of your turn — choose to challenge the Dragon or roll dice instead.",
+      "item2": "Sometimes while travelling you may see the dragon in the sky. And if you're rich and famous, beware: he could attack you and burn your tiles to the ground!"
+    }
+  },
+  "screenStore": {
+    "rollDice": "Roll Dice 🎲",
+    "tavernMessage": "By them a round and toss a coin!",
+    "sphynxTitle": "Sphynx",
+    "sphynxMessage": "His stare is heavy as stone",
+    "acceptYourDestiny": "Accept your destiny",
+    "you": "You",
+    "dragonInSky": "{who} sees a giant black dragon passing on the sky",
+    "scatterAndHide": "Scatter and hide, so he doesn't attack",
+    "rollDiceInstead": "Roll Dice Instead 🎲",
+    "challengeTheDragon": "Challenge the Dragon 🐉",
+    "promotionTitle": "Promotion",
+    "promotionMessage": "For your valor and fame, the King promotes {playerSpan} to a Knight!<br />Now you could also recruit riders 🐎",
+    "keepCalmAndCarryOn": "⚜️ Keep calm and carry on"
+  },
+  "treasureBox": {
+    "size": {
+      "small": "small",
+      "medium": "medium",
+      "large": "large"
+    },
+    "treasureFound": "Treasure found!",
+    "letTreasuresGrow": "Let the treasures grow!",
+    "foundArtifact": "{playerName} found a {size} treasure chest and discovered {artifactName}!",
+    "foundArtifactHtml": "{playerSpan} found a {size} chest containing {emoji} {artifactName}",
+    "foundGold": "{playerName} found a {size} treasure chest! Rolled {roll}, received {gold}🟡!",
+    "foundGoldHtml": "{playerSpan} found a {size} chest with {gold}🟡"
+  },
+  "sellUnits": {
+    "sold": "{playerName} sold {amount} {tier} for {gold}🟡."
+  },
+  "dragonEncounter": {
+    "descends": "The Dragon descends from the skies upon {playerSpan}!",
+    "flee": "Flee! 🏃",
+    "soarsOverhead": "A massive black dragon soars overhead...",
+    "savedByArtifact": "The Dragon swoops down upon {playerName}, but the {artifactName} {emoji} saves them from harm!",
+    "attacksYou": "The Dragon swoops down and attacks you!",
+    "attackedFameLost": "{playerName} is attacked by the dragon! Fame lost.",
+    "burnsYourTile": "Dragon burns your {tileName}!",
+    "tileDestroyed": "{playerName}'s {tileName} was destroyed by the Dragon!",
+    "tileDamaged": "{playerName}'s {tileName} was damaged by the Dragon (now level {level})!"
+  },
+  "sphynx": {
+    "pipeSavedMessage": "You calm the growling Sphynx with your Pipe 🪈 and hastily leave.",
+    "pipeSavedScreen": "You calm growling Sphynx with your Pipe 🪈 and hastily leave",
+    "lostGoldMessage": "Lost half of gold: -{gold}🟡",
+    "lostGoldScreen": "You escape the Sphynx losing {gold}🟡",
+    "povertyMessage": "He sees your poverty and lets you go.",
+    "povertyScreen": "The Sphinx refuses to deal with beggars",
+    "ateUnitsMessage": "Sphynx ate {units}🧍",
+    "ateUnitsScreen": "Sphynx eats {units}🧍, but you escape.",
+    "nothingMessage": "Nothing happens.",
+    "nothingScreen": "Sphynx remained silent.",
+    "gainGoldMessage": "Received {gold}🟡 (20%).",
+    "gainGoldScreen": "Sphynx rewarded you with {gold}🟡 for your wisdom!",
+    "fameSuffix": "Fame +1🏆 for the adventure."
+  },
+  "king": {
+    "aTile": "a tile",
+    "contractOffered": "📜 The King hands you a contract: claim {tileName} for {award}🟡!"
+  },
+  "becomeBeggar": {
+    "becomesBeggar": "{playerName} becomes a beggar!",
+    "unitsLeave": "{units} units leave {playerName} as his reputation vanishes",
+    "capturedAndMoved": "{playerName} is captured and moved to Prison",
+    "lostTileSingular": "Lost {count} tile and ",
+    "lostTilesPlural": "Lost {count} tiles and ",
+    "unitDesertedSingular": "{count} unit deserted",
+    "unitsDesertedPlural": "{count} units deserted",
+    "gameMessage": "{playerName} became a prisoner of war! {tilesMsg}{lostUnitsMsg}. Imprisoned, but still noble."
+  },
+  "endTurn": {
+    "prisonIsWetAndCold": "The prison is wet and cold, {playerName}",
+    "dwellsInPrison": "{playerName} dwells in prison and skips the turn",
+    "enoughToChallengeDragon": "{playerName} has {units}🧍 — enough to challenge the Dragon!",
+    "dragonGuardsGold": "Terrifying dragon guards a pile of gold and jewels"
+  },
+  "buyUnits": {
+    "bought": "{playerName} bought {amount} {tier} for {gold}🟡.",
+    "notEnoughGold": "Not enough gold to buy units."
+  },
+  "payFee": {
+    "paidButOwnerInPrison": "{playerName} paid {fee}🟡 for {tileName}, but {ownerName} is in prison and collects nothing.",
+    "paid": "{playerName} paid {fee}🟡 to {ownerName} for {tileName}."
+  },
+  "passStart": {
+    "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory",
+    "receives": "{playerName} receives {summary}",
+    "aYear": "a year",
+    "years": "{count} years",
+    "kingRewardsYou": "The King rewards you for {years} of your service"
+  },
+  "garrisonTile": {
+    "setGarrison": "{playerName} sets {tileName}'s garrison to {militia}🧍/{riders}🐎"
+  },
+  "resolvePlayerBattle": {
+    "losingUnits": ", losing {units}🧍",
+    "attackerWinsGameMessage": "{attackerName} defeats {defenderName}! {defenderName} flees to the King's Castle{lossStr}",
+    "attackerWinsMessage": "{defenderName} flees to the King's Castle!{lossStr}",
+    "tieGameMessage": "{attackerName} and {defenderName} fight to a bloody tie — both lose {loss}🧍",
+    "tieMessage": "A bloody tie — both sides lose {loss}🧍",
+    "defenderLoses": "{defenderName} loses {units}🧍.",
+    "defenderWinsGameMessage": "{attackerName} is defeated by {defenderName} and flees to the King's Castle",
+    "defenderWinsMessage": "Defeated! You flee to the King's Castle.{defLossStr}",
+    "attackerWinsLabel": "attacker wins",
+    "defenderWinsLabel": "defender wins",
+    "tieLabel": "tie",
+    "logLine": "⚔️ Hero's Hour: {attackerName} vs {defenderName} — {outcomeLabel} ({unitsBefore}→{unitsAfter}🧍{goldPart})"
+  },
+  "afterMoveLogic": {
+    "ownerInPrison": "{ownerName} is in prison, so others just send him the flowers 🌹 while visiting his property",
+    "defencelessItsMine": "Defenceless? it's mine",
+    "payFee": "Pay fee {fee}🟡",
+    "battle": "Battle ⚔️ ({defence}🧍)",
+    "acceptLoss": "Accept loss 😢",
+    "sellHeader": "Sell tiles to pay the {fee}🟡 fee, raise an army, or yield to {ownerName}",
+    "theOwner": "the owner",
+    "sellTiles": "Sell tiles 💰"
+  },
+  "fightDragon": {
+    "willDareChallenge": "A terrifying dragon guards a pile of gold and jewels. Will {playerSpan} dare to challenge it?",
+    "needsAtLeast": "{playerName} needs at least {threshold}🧍 to challenge the Dragon",
+    "notNow": "Not Now"
+  },
+  "sellTile": {
+    "sold": "{playerName} sold {tileName} for {gold} gold and {units} units"
+  },
+  "claimUndefendedTile": {
+    "findsDefenceless": "{attackerName} finds {tileName} defenceless and takes it!",
+    "claimsWithoutFight": "🏴 {attackerName} claims the undefended {tileName} without a fight"
+  },
+  "resolveAmbush": {
+    "receivingGold": ", receiving {reward}🟡",
+    "unitsLostSuffix": ", {units}🧍 lost",
+    "repelsGameMessage": "{playerName} repels the ambush{rewardStr}{lossStr}",
+    "repelledWithReward": "Ambush repelled! Your reward is {reward}🟡{lossStr}",
+    "repelled": "Ambush repelled!{lossStr}",
+    "barelySurvivesGameMessage": "{playerName} barely survives the ambush{lossStr}",
+    "bloodyStalemate": "A bloody stalemate{lossStr}",
+    "lostSuffix": " — lost {loss}",
+    "overwhelmedGameMessage": "{playerName} is overwhelmed by the ambush{lossStr}",
+    "lost": "Lost {loss}",
+    "overwhelmed": "Overwhelmed",
+    "lostUnitsPart": ", lost {units}🧍",
+    "gainedGoldPart": ", gained {gold}🟡",
+    "lostGoldPart": ", lost {gold}🟡",
+    "repelsVerb": "repels an ambush",
+    "isAmbushedVerb": "is ambushed",
+    "survivesVerb": "survives an ambush",
+    "logLine": "{playerName} {verb}{unitsPart}{goldPart}"
+  },
+  "revealTile": {
+    "discovered": "{playerName} discovered {tileName}. Reward: {reward}"
+  },
+  "rollAndMove": {
+    "rolledAndWentTo": "{playerName} rolled {roll} and went to {tileName}",
+    "cannotBuyIt": "cannot buy it",
+    "defenceTooStrong": "the defence seems too strong",
+    "butReasons": ", but {reasons}."
+  },
+  "joker": {
+    "eventName": {
+      "taxes": "Taxes",
+      "plague": "Plague",
+      "hurricane": "Hurricane",
+      "blessing": "Blessing",
+      "queensGift": "Queen's Gift",
+      "earthquake": "Earthquake",
+      "meteor": "Meteor"
+    },
+    "taxesMessage": "All players lose half of their gold.",
+    "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
+    "plagueMessage": "All players lose half of their units.",
+    "playerLosesTile": "{playerName} loses {tileName}",
+    "hurricaneSweepsAway": "Hurricane sweeps away: {list}",
+    "hurricaneMessage": "Every player loses their most expensive tile.",
+    "blessingMessage": "All owned tiles are upgraded one level.",
+    "earthquakeDestroys": "Earthquake destroys: {list}",
+    "earthquakeMessage": "All upgraded tiles lose a level, some are destroyed",
+    "meteorSaved": "Meteor shower falls on {playerName}'s land, but the {artifactName} {emoji} saves it from harm!",
+    "meteorDestroys": "Meteor shower falls on {tileName}, destroying it",
+    "meteorWilderness": "Meteor shower falls on the wilderness, harming no one",
+    "queensGiftTile": "{playerName} receives {tileName} for free!",
+    "queensGiftGold": "Queen sends 2000🟡 and 5🧍 to {playerName}",
+    "eventLogLine": "{eventName}: {message}"
+  },
+  "battleCommon": {
+    "losingUnitsPart": " losing {units}🧍",
+    "paidToOwnPart": " and paid {gold}🟡 to own it",
+    "wonBattleForTile": "⚔️ {attackerName} won the battle for {tileName}{unitsPart}{paidPart}",
+    "winsVerb": "wins a battle",
+    "losesVerb": "loses a battle",
+    "tiesVerb": "ties",
+    "razedPart": ", razed {tileName}",
+    "lostUnitsPart": ", lost {units}🧍 ({before}→{after})",
+    "gainedUnitsPart": ", gained {units}🧍 ({before}→{after})",
+    "gainedGoldPart": ", gained {gold}🟡",
+    "lostGoldPart": ", lost {gold}🟡 ({before}→{after})",
+    "logLine": "⚔️ {attackerName} {outcomeVerb} with {defenderLabel}{capturePart}{unitsPart}{goldPart}"
+  },
+  "resolveTileBattle": {
+    "losingSuffix": ", losing {units}🧍",
+    "claims": "{attackerName} claims {tileName}{lossStr}!",
+    "contractFulfilled": "📜 King's contract fulfilled: +{award}🟡!",
+    "razedGameMessage": "{attackerName} razed {tileName}{lossStr}!",
+    "razes": "{attackerName} razes {tileName}{lossStr}!",
+    "lostBattleGameMessage": "{attackerName} lost the battle for {tileName}{lossStr}",
+    "retreats": "{attackerName} retreats from {tileName}{lossStr}",
+    "degradedGameMessage": "{attackerName}'s assault degraded {tileName} to level {level}{lossStr}",
+    "degradedMessage": "No fee paid and {tileName} degraded{lossStr}",
+    "stalemateGameMessage": "{attackerName}'s assault on {tileName} ends in a stalemate{lossStr}",
+    "armyRetreats": "{attackerName}'s army retreats{lossStr}",
+    "theGuards": "the guards"
+  },
+  "resolveCaravanBattle": {
+    "whileUnitsLostGame": " while {units}🧍 were lost",
+    "whileUnitsLostScreen": " while {units}🧍 were lost fighting for it",
+    "freedGameMessage": "{attackerName} freed {prize}🧍!",
+    "freedMessage": "{prize}🧍 were freed and join your army!",
+    "pillagedGameMessage": "{attackerName} raided the caravan and pillaged {prize}🟡!",
+    "pillagedMessage": "Pillaged {prize}🟡",
+    "losingSuffix": ", losing {units}🧍",
+    "freedOnlyGameMessage": "{attackerName} freed only {prize}🧍 from the caravan{lossStr}",
+    "freedOnlyMessage": "Freed only {prize}🧍{lossStr}!",
+    "pillagedOnlyGameMessage": "{attackerName} pillaged only {prize}🟡{lossStr}",
+    "pillagedOnlyMessage": "Caravan guards held, pillaged only {prize}🟡{lossStr}",
+    "failedGameMessage": "{attackerName} failed to raid the caravan!",
+    "gotAway": "The caravan got away!",
+    "caravanGuards": "Caravan Guards"
+  },
+  "resolveDragonBattle": {
+    "slaysGameMessage": "{attackerName} slays the Dragon! 🐉 VICTORY!",
+    "slaysMessage": "The Dragon is slain! 🐉 VICTORY!",
+    "woundedGameMessage": "{attackerName} wounded the Dragon, but he escaped, taking {units}🧍",
+    "woundedMessage": "The wounded Dragon retreats, taking {units}🧍 with him",
+    "defeatedGameMessage": "{attackerName} was defeated by the Dragon!{lossStr}",
+    "lostSuffix": " Lost {loss}",
+    "lost": "Lost {loss}",
+    "defeated": "Defeated",
+    "theDragon": "The Dragon"
+  },
+  "playerNames": {
+    "pronouns": {
+      "m": [
+        "Drunken",
+        "Laughing",
+        "Singing",
+        "Angry",
+        "Sleepy",
+        "Filthy",
+        "Pathetic",
+        "Toothless",
+        "Brave",
+        "Ragged",
+        "Dirty",
+        "Shiny",
+        "Merciless",
+        "Golden",
+        "Radiant",
+        "Noble",
+        "Valiant",
+        "Squint-eyed",
+        "Happy",
+        "Drooling",
+        "Eyesore",
+        "Coward",
+        "Mystic"
+      ],
+      "f": [
+        "Drunken",
+        "Laughing",
+        "Singing",
+        "Angry",
+        "Sleepy",
+        "Filthy",
+        "Pathetic",
+        "Toothless",
+        "Brave",
+        "Ragged",
+        "Dirty",
+        "Shiny",
+        "Merciless",
+        "Golden",
+        "Radiant",
+        "Noble",
+        "Valiant",
+        "Squint-eyed",
+        "Happy",
+        "Drooling",
+        "Eyesore",
+        "Coward",
+        "Mystic"
+      ]
+    },
+    "nouns": [
+      {
+        "word": "Peasant",
+        "gender": "m"
+      },
+      {
+        "word": "Gravedigger",
+        "gender": "m"
+      },
+      {
+        "word": "Knight",
+        "gender": "m"
+      },
+      {
+        "word": "Squire",
+        "gender": "m"
+      },
+      {
+        "word": "Raider",
+        "gender": "m"
+      },
+      {
+        "word": "Champion",
+        "gender": "m"
+      },
+      {
+        "word": "Monk",
+        "gender": "m"
+      },
+      {
+        "word": "Nun",
+        "gender": "f"
+      },
+      {
+        "word": "Dwarf",
+        "gender": "m"
+      },
+      {
+        "word": "Baron",
+        "gender": "m"
+      },
+      {
+        "word": "Lady",
+        "gender": "f"
+      },
+      {
+        "word": "Prince",
+        "gender": "m"
+      },
+      {
+        "word": "Princess",
+        "gender": "f"
+      },
+      {
+        "word": "Bandit",
+        "gender": "m"
+      },
+      {
+        "word": "Assassin",
+        "gender": "m"
+      },
+      {
+        "word": "Clown",
+        "gender": "m"
+      },
+      {
+        "word": "Duchess",
+        "gender": "f"
+      }
+    ]
+  },
+  "playerOptions": {
+    "red": "Red",
+    "blue": "Blue",
+    "yellow": "Yellow",
+    "green": "Green",
+    "violet": "Violet",
+    "black": "Black"
+  }
+}

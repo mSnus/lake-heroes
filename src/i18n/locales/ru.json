@@ -1,0 +1,721 @@
+{
+  "common": {
+    "language": "Язык",
+    "hire": "Нанять",
+    "slot": "слот",
+    "slots": "слотов",
+    "and": "и",
+    "vs": "vs",
+    "close": "Закрыть",
+    "continue": "Продолжить",
+    "tierMilitia": "ополчение",
+    "tierRiders": "всадники"
+  },
+  "tiles": {
+    "water-mill": {
+      "name": "Водяная мельница"
+    },
+    "windmill": {
+      "name": "Ветряная мельница"
+    },
+    "brick-factory": {
+      "name": "Кирпичный завод"
+    },
+    "pigs-farm": {
+      "name": "Свиноферма"
+    },
+    "cows-farm": {
+      "name": "Коровья ферма"
+    },
+    "sheep-farm": {
+      "name": "Овечья ферма"
+    },
+    "wheat-field": {
+      "name": "Пшеничное поле"
+    },
+    "cabbage-field": {
+      "name": "Капустное поле"
+    },
+    "fruit-garden": {
+      "name": "Фруктовый сад"
+    },
+    "grapes": {
+      "name": "Виноградник"
+    },
+    "fish": {
+      "name": "Рыбный промысел"
+    },
+    "fur": {
+      "name": "Пушной промысел"
+    },
+    "bows": {
+      "name": "Луки"
+    },
+    "swords": {
+      "name": "Мечи"
+    },
+    "archer-tower": {
+      "name": "Башня лучников"
+    },
+    "arquebus-tower": {
+      "name": "Башня аркебузиров"
+    },
+    "cannon-tower": {
+      "name": "Пушечная башня"
+    },
+    "treasure-chest": {
+      "name": "Сундук с сокровищами",
+      "description": "Шанс получить 🟡"
+    },
+    "tavern": {
+      "name": "Таверна",
+      "description": "Шанс нанять 🧍"
+    },
+    "king-castle": {
+      "name": "Замок короля",
+      "description": "Нанять 🧍"
+    },
+    "prison": {
+      "name": "Тюрьма",
+      "description": "Пропустить ход ⏳"
+    },
+    "sphynx": {
+      "name": "Сфинкс",
+      "description": "Он может съесть вас или наградить"
+    },
+    "portal": {
+      "name": "Портал",
+      "description": "Волшебный портал. Куда он вас перенесёт?"
+    },
+    "joker": {
+      "name": "Джокер",
+      "description": "Случайная злая шутка"
+    }
+  },
+  "artifacts": {
+    "broken-blade": {
+      "name": "Сломанный клинок",
+      "description": "+2 к броскам против Дракона, +1 к броскам в обычных битвах (не в рукопашной)."
+    },
+    "dwemer-axe": {
+      "name": "Секира двемеров",
+      "description": "+1 к броскам против Дракона, +1 к броскам в рукопашных битвах."
+    },
+    "pristine-diamond": {
+      "name": "Чистейший алмаз",
+      "description": "+1000🟡 каждый год."
+    },
+    "indestructible-umbrella": {
+      "name": "Несокрушимый зонт",
+      "description": "Спасает игрока от атак Дракона и падения Метеорита."
+    },
+    "divine-beads": {
+      "name": "Божественные чётки",
+      "description": "50% шанс спасти игрока от Землетрясения, Метеорита, Урагана и атаки Дракона."
+    },
+    "pipe-of-hamelin": {
+      "name": "Дудочка гамельнского крысолова",
+      "description": "Снижает плату за чужие клетки на 50%. Защищает от Чумы."
+    },
+    "medal-of-honor": {
+      "name": "Медаль почёта",
+      "description": "Даёт +5🏆. Не позволяет владельцу попасть в Тюрьму."
+    }
+  },
+  "shieldColumn": {
+    "menu": "Меню",
+    "newGame": "Новая игра",
+    "help": "Помощь",
+    "gameLog": "Журнал игры",
+    "reload": "Перезагрузить",
+    "aiTurn": "Ход ИИ",
+    "rollDice": "Бросить кубик",
+    "endTurn": "Закончить ход",
+    "confirmNewGame": "Вы уверены, что хотите начать новую игру? Текущий прогресс будет потерян."
+  },
+  "kingsCastle": {
+    "title": "Замок короля",
+    "newContract": "📜 Новый контракт: будьте первым, кто захватит\n{tileName} за награду {award}🟡!",
+    "squadsMessage": "Имея {gold} и {fame} славы,\nвы можете содержать {squads} отрядов",
+    "cannotRecruit": "Ваших денег {gold} и славы {fame}\nне хватает, чтобы нанять больше воинов",
+    "iAmTheGreatest": "⚜️ Я величайший!"
+  },
+  "squadHirePanel": {
+    "hireTitle": "Нанять:",
+    "militia": "Ополчение",
+    "knights": "Рыцари"
+  },
+  "squadDisplay": {
+    "sellSquad": "Продать этот отряд"
+  },
+  "tileCard": {
+    "confirmUpgrade": "Действительно улучшить «{tileName}» за {gold}🟡?",
+    "upgradedMessage": "{playerName} улучшил «{tileName}» до уровня {level}",
+    "confirmSell": "Продать «{tileName}» за {price}, точно?",
+    "soldMessage": "{playerName} продал «{tileName}» и получил {gold}🟡 и {units}🧍",
+    "garrisonMilitiaPrompt": "Сколько ополчения оставить в «{tileName}»? ({traveling}🧍 в пути, {here}🧍 уже там, {slots} {slotWord} по 10 здесь)",
+    "garrisonRidersPrompt": "Сколько всадников оставить в «{tileName}»? ({traveling}🐎 в пути, {here}🐎 уже там)",
+    "fee": "плата",
+    "perYear": "в год",
+    "defence": "защита",
+    "defenceInfo": "Защита: {value}",
+    "garrisonWarning": "Настроить гарнизон можно только находясь на своей клетке",
+    "cantAfford": "не по карману",
+    "toOwn": "чтобы владеть:",
+    "base": "база",
+    "sell": "продать",
+    "stillSmoldering": "ещё дымится — можно занять со следующего круга",
+    "banzai": "Банзай!",
+    "claimIt": "Занять!"
+  },
+  "tileClaimScreen": {
+    "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
+    "currentIncome": "Текущий доход: {value}{icon}",
+    "upgradeLine": "👛 {gold}🟡 → {slots}🏯 и +{bonus}{icon} в год",
+    "howManyToGuard": "Сколько оставить в гарнизоне?",
+    "stayInArmy": "({count}🧍 останется в армии)",
+    "leaveUnguarded": "Оставить без охраны",
+    "setToGuard": "Оставить {amount} в гарнизоне 🛡️"
+  },
+  "battleScreen": {
+    "theDragon": "Дракон",
+    "ambushers": "Разбойники",
+    "caravanGuards": "Охрана каравана",
+    "guards": "Стража",
+    "ambushedMessage": "{name} попадает в засаду {units}🥷!",
+    "goalChains": "{amount}🧍 в цепях",
+    "goalLoot": "{amount}🟡 добычи",
+    "goalKingdom": "королевство",
+    "goalGlory": "славу",
+    "attacksMessage": "{attacker} атакует {defender} ({defence}{emoji}) ради {goal}",
+    "caravanRaid": "Набег на караван!",
+    "dragonBattle": "Битва с Драконом",
+    "heroHour": "Час героя",
+    "ambush": "Засада",
+    "battleFor": "Битва за «{tileName}»",
+    "battle": "Битва",
+    "brawl": "Рукопашная!",
+    "attack": "Атака!",
+    "defend": "Защита!",
+    "ambushRepelled": "Засада отражена!",
+    "defeat": "Поражение!",
+    "bloodyStalemate": "Кровавая ничья!",
+    "gloriousVictory": "Славная победа!",
+    "aTie": "Ничья!",
+    "keepCalmCarryOn": "🍀 Не унывать и жить дальше",
+    "wasItWorthIt": "🩸 Стоило ли оно того?"
+  },
+  "heroHourScreen": {
+    "decidedToAttack": "{playerName} решил атаковать {targetName}",
+    "goToGuards": "Пойти к страже клетки «{tileName}»",
+    "greetAndPass": "✖ Поприветствовать и пройти",
+    "encounters": "неожиданно встречает",
+    "challengeSingular": "Вызвать его на бой?",
+    "challengePlural": "Вызвать одного из них на бой?",
+    "fightButton": "Сразиться с {name} ⚔️"
+  },
+  "screenRenderer": {
+    "encounters": "встречает",
+    "belongsTo": "принадлежащую",
+    "riskOrPay": "Рискнуть {defence}🧍, чтобы сжечь её, или заплатить {fee}🟡 и уйти?"
+  },
+  "newGameModal": {
+    "heroes": "Герои:",
+    "randomName": "Случайное имя",
+    "humanComputerToggle": "Человек / Компьютер (нажмите для переключения)",
+    "startGame": "Начать игру",
+    "characterSuffixFarmer": "Фермер",
+    "characterSuffixWarrior": "Воин",
+    "characterSuffixWizard": "Волшебник"
+  },
+  "ownedTiles": {
+    "ownsNothing": "Бедный {name} ничем не владеет"
+  },
+  "gameLogModal": {
+    "noMessages": "Сообщений пока нет."
+  },
+  "playerStats": {
+    "incomePerYear": "Доход в год"
+  },
+  "currentPlayer": {
+    "fameTooltip": "Ваша слава. Растёт за владение клетками и победы в боях!",
+    "isAt": "на клетке",
+    "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
+    "goldTooltip": "Ваше текущее золото",
+    "fromYourTiles": "с ваших клеток",
+    "asKingsGrace": "в качестве королевской милости",
+    "fromPristineDiamond": "от Чистейшего алмаза 💎",
+    "wagesMessage": "Ваше жалование за проход через Замок короля{detail}",
+    "armyTooltip": "Ваша армия: занято {used}/{total} слотов, в каждом до 10 воинов одного вида",
+    "artifactTooltip": "{name}: {description}"
+  },
+  "botController": {
+    "decided": "{name} решил {decision}",
+    "takeUndefendedTile": "занять беззащитную клетку",
+    "payTheFee": "заплатить пошлину",
+    "fight": "сражаться",
+    "sellTilesToFight": "продать клетки, чтобы сражаться",
+    "sellTilesToPayFee": "продать клетки, чтобы заплатить пошлину",
+    "acceptTheLoss": "смириться с потерей",
+    "fightTheDragon": "сразиться с Драконом",
+    "attackTheCaravan": "напасть на караван",
+    "sellForSyndicate": "продать «{saleName}», чтобы собрать синдикат с «{tileName}»",
+    "claimTile": "захватить «{tileName}»",
+    "garrisonTile": "разместить {amount}🧍 в гарнизоне «{tileName}»"
+  },
+  "boardCanvas": {
+    "challengeDragon": "Бросить вызов Дракону"
+  },
+  "helpScreen": {
+    "objective": {
+      "title": "Цель игры",
+      "body": "Первым соберите <strong>50+ воинов 🧍</strong> и победите Дракона 🐉, чтобы одержать победу!"
+    },
+    "turnOrder": {
+      "title": "Порядок хода",
+      "step1": "Бросьте кубик 🎲 (или встряхните телефон 📳) и передвиньте своего героя по полю",
+      "step2": "Совершите действие в зависимости от клетки, на которую попали",
+      "step3": "При необходимости улучшите или продайте свои клетки",
+      "step4": "Закончите ход ⏳",
+      "step5": "Каждый круг — это год: пройдите через 🏰 Замок короля, чтобы получить награду"
+    },
+    "goldUnits": {
+      "title": "Золото 🟡 и воины 🧍",
+      "item1": "Золото 🟡 и воины 🧍 — основные ресурсы для покупки клеток, сражений и финальной битвы",
+      "item2": "Годовой доход: чем больше клеток вы владеете, тем больше получаете каждый год"
+    },
+    "fame": {
+      "title": "Слава 🏆",
+      "item1": "Это ваша репутация. Она зависит от побед и поражений в боях, а также от владения клетками.",
+      "item2": "Слава {knightFame} и выше даёт право на посвящение в рыцари — король посвятит вас (открыв набор всадников) при следующем прохождении через его замок. Это также делает вас более заметным для дракона — берегитесь, он может напасть!",
+      "item3": "Больше славы позволяет нанимать больше воинов в Замке короля, увеличивает постоянный доход воинами 🧍 и позволяет владеть лучшими клетками"
+    },
+    "tiles": {
+      "title": "Клетки 🧩",
+      "discoverTitle": "Открывайте",
+      "discoverBody": "новые клетки и получайте за это награду",
+      "own": "<strong>👛 Владейте клетками</strong>, тратя золото 🟡 и воинов 🧍. Посещение своих клеток приносит с них доход",
+      "upgrade": "<strong>⬆️ Улучшайте клетки</strong>, тратя золото 🟡 и воинов 🧍, чтобы увеличить доход и защиту клетки. Нажмите на нижнюю часть карточки, чтобы улучшить",
+      "landingOnOpponent": "<strong>Попадание на чужую клетку</strong> — заплатите пошлину 💰 или сразитесь ⚔️, чтобы захватить её. Если не хватает золота или воинов, продайте часть своих клеток. Битва стоит атакующему воинов. Если вы не можете ни сражаться, ни заплатить, вы попадаете в плен: проведите 2 хода в тюрьме, после чего получите стартовый бонус, чтобы продолжить игру.",
+      "syndicates": "<strong>Синдикаты</strong> — владейте всеми клетками одной группы, чтобы образовать синдикат: доход и пошлина <strong>удваиваются</strong>",
+      "clickToView": "<strong>Нажмите на название или данные клетки</strong>, чтобы увидеть её доход и защиту на каждом уровне"
+    },
+    "specialTiles": {
+      "title": "Особые клетки 🃏",
+      "kingsCastle": "🏰 <strong>Замок короля</strong> — посетите, чтобы нанять воинов 🧍 за золото; количество ограничено вашей славой. Прохождение через замок даёт базовый доход плюс бонусы со всех ваших владений.",
+      "treasureChest": "📦 <strong>Сундук с сокровищами</strong> — награда золотом, размер: малый/средний/большой.",
+      "tavern": "🍺 <strong>Таверна</strong> — наём воинов",
+      "sphynx": "🦁 <strong>Сфинкс</strong>: <br/>Бросьте кубик 🎲:<br/> <b>1,2</b> — теряете половину своего 🟡<br/><b>3,4</b> — теряете 1/3 🧍<br/> <b>5</b> — ничего, выдохните 🌬️<br/> <b>6</b> — получаете половину своего 🟡",
+      "prison": "⛓️ <strong>Тюрьма</strong> — пропустите ход. Пока вы в тюрьме, никто не платит за посещение ваших клеток",
+      "joker": "🃏 <strong>Джокер</strong> — запускает случайное глобальное событие, полный список ниже."
+    },
+    "joker": {
+      "title": "Джокер 🃏",
+      "intro": "Попадание на клетку Джокера запускает одно случайное событие, затрагивающее всех (а иногда — только одного игрока):",
+      "taxes": "🧾 <strong>Налоги</strong> — все игроки теряют половину своего золота.",
+      "plague": "🦠 <strong>Чума</strong> — все игроки теряют половину своих воинов.",
+      "hurricane": "🌪️ <strong>Ураган</strong> — каждый игрок теряет свою самую дорогую клетку.",
+      "blessing": "👑 <strong>Благословение</strong> — все клетки во владении улучшаются на один уровень.",
+      "queensGift": "💍 <strong>Дар королевы</strong> — игрок, выбросивший это событие, получает бесплатную клетку Лагеря/Башни, либо 2000🟡 и 5🧍, если свободных нет.",
+      "earthquake": "🪨 <strong>Землетрясение</strong> — улучшенные клетки теряют уровень; у игроков без улучшенных клеток отбирается их самая дешёвая клетка.",
+      "meteor": "☄️ <strong>Метеорит</strong> — поражает случайную клетку самого богатого игрока, сжигая её."
+    },
+    "caravan": {
+      "title": "Караван 🐪",
+      "item1": "В <em>начале</em> хода у вас есть шанс встретить караван, везущий сокровища или рабов",
+      "item2": "Победите охрану каравана, чтобы освободить рабов (они присоединятся к вашей армии) или разграбить сокровища!"
+    },
+    "battle": {
+      "title": "Битва ⚔️",
+      "squad": "Атакующий отправляет <strong>отряд воинов численностью равной значению 🛡️ Защиты</strong>, рискуя их жизнями ради цели: товаров или рабов каравана, захвата клетки или битвы с Драконом.",
+      "razing": "<strong>Сжигание</strong> означает, что клетка теряет все улучшения и становится ничьей",
+      "twoModes": "Есть два режима: рукопашная и обычная битва",
+      "brawlMode": "В режиме <strong>рукопашной:</strong> простой режим, используется когда отряд меньше 6 воинов. Атакующий и защитник бросают кубик, кто выбросил больше — побеждает в раунде.",
+      "normalMode": "<strong>Обычная битва:</strong> бой разрешается по раундам. В каждом раунде обе стороны бросают кубик; выпавшее число — это количество уничтоженных воинов противника. Побеждает тот, кто первым уничтожит всех воинов противника.",
+      "tie": "Если у атакующего и защитника погибли все воины — это Ничья",
+      "priceOfVictory": "Победа имеет свою цену! В результате битвы победитель теряет воинов, погибших в бою."
+    },
+    "artifacts": {
+      "title": "Артефакты",
+      "intro": "Находятся в Сундуках с сокровищами 📦 — каждый артефакт даёт владельцу постоянный бонус до конца игры."
+    },
+    "dragon": {
+      "title": "Дракон 🐉",
+      "item1": "Если у вас больше 50 воинов в <em>начале</em> хода — можете бросить вызов Дракону или просто бросить кубик.",
+      "item2": "Иногда во время путешествия вы можете увидеть дракона в небе. И если вы богаты и знамениты, берегитесь: он может напасть на вас и сжечь ваши клетки дотла!"
+    }
+  },
+  "screenStore": {
+    "rollDice": "Бросить кубик 🎲",
+    "tavernMessage": "Закажите по кружке и бросьте монетку!",
+    "sphynxTitle": "Сфинкс",
+    "sphynxMessage": "Его взгляд тяжёл, как камень",
+    "acceptYourDestiny": "Принять свою судьбу",
+    "you": "Вы",
+    "dragonInSky": "{who} видит в небе огромного чёрного дракона",
+    "scatterAndHide": "Разбежаться и спрятаться, чтобы он не напал",
+    "rollDiceInstead": "Бросить кубик вместо этого 🎲",
+    "challengeTheDragon": "Бросить вызов Дракону 🐉",
+    "promotionTitle": "Посвящение",
+    "promotionMessage": "За доблесть и славу король посвящает {playerSpan} в рыцари!<br />Теперь вы можете нанимать всадников 🐎",
+    "keepCalmAndCarryOn": "⚜️ Не унывать и жить дальше"
+  },
+  "treasureBox": {
+    "size": {
+      "small": "малый",
+      "medium": "средний",
+      "large": "большой"
+    },
+    "treasureFound": "Найдено сокровище!",
+    "letTreasuresGrow": "Пусть сокровища растут!",
+    "foundArtifact": "{playerName} нашёл {size} сундук с сокровищами и обнаружил {artifactName}!",
+    "foundArtifactHtml": "{playerSpan} нашёл {size} сундук, в котором лежит {emoji} {artifactName}",
+    "foundGold": "{playerName} нашёл {size} сундук с сокровищами! Выпало {roll}, получено {gold}🟡!",
+    "foundGoldHtml": "{playerSpan} нашёл {size} сундук с {gold}🟡"
+  },
+  "sellUnits": {
+    "sold": "{playerName} продал {amount} ({tier}) за {gold}🟡."
+  },
+  "dragonEncounter": {
+    "descends": "Дракон спускается с небес на {playerSpan}!",
+    "flee": "Бежать! 🏃",
+    "soarsOverhead": "Огромный чёрный дракон парит над головой...",
+    "savedByArtifact": "Дракон обрушивается на {playerName}, но {artifactName} {emoji} спасает от беды!",
+    "attacksYou": "Дракон обрушивается на вас с атакой!",
+    "attackedFameLost": "{playerName} атакован драконом! Потеряна слава.",
+    "burnsYourTile": "Дракон сжигает вашу постройку «{tileName}»!",
+    "tileDestroyed": "«{tileName}» игрока {playerName} уничтожена драконом!",
+    "tileDamaged": "«{tileName}» игрока {playerName} повреждена драконом (теперь уровень {level})!"
+  },
+  "sphynx": {
+    "pipeSavedMessage": "Вы усмиряете рычащего Сфинкса своей Дудочкой 🪈 и поспешно уходите.",
+    "pipeSavedScreen": "Вы усмиряете рычащего Сфинкса своей Дудочкой 🪈 и поспешно уходите",
+    "lostGoldMessage": "Потеряна половина золота: -{gold}🟡",
+    "lostGoldScreen": "Вы спасаетесь от Сфинкса, потеряв {gold}🟡",
+    "povertyMessage": "Он видит вашу бедность и отпускает вас.",
+    "povertyScreen": "Сфинкс не желает иметь дела с нищими",
+    "ateUnitsMessage": "Сфинкс съел {units}🧍",
+    "ateUnitsScreen": "Сфинкс съедает {units}🧍, но вы спасаетесь.",
+    "nothingMessage": "Ничего не происходит.",
+    "nothingScreen": "Сфинкс остался безмолвен.",
+    "gainGoldMessage": "Получено {gold}🟡 (20%).",
+    "gainGoldScreen": "Сфинкс вознаградил вас {gold}🟡 за вашу мудрость!",
+    "fameSuffix": "Слава +1🏆 за приключение."
+  },
+  "king": {
+    "aTile": "постройка",
+    "contractOffered": "📜 Король вручает вам контракт: захватите «{tileName}» за {award}🟡!"
+  },
+  "becomeBeggar": {
+    "becomesBeggar": "{playerName} становится нищим!",
+    "unitsLeave": "{units} юнитов покидают {playerName}, пока его репутация рушится",
+    "capturedAndMoved": "{playerName} схвачен и отправлен в темницу",
+    "lostTileSingular": "Потеряна {count} постройка и ",
+    "lostTilesPlural": "Потеряно построек: {count} и ",
+    "unitDesertedSingular": "{count} юнит дезертировал",
+    "unitsDesertedPlural": "юнитов дезертировало: {count}",
+    "gameMessage": "{playerName} стал военнопленным! {tilesMsg}{lostUnitsMsg}. В темнице, но всё ещё благороден."
+  },
+  "endTurn": {
+    "prisonIsWetAndCold": "В темнице сыро и холодно, {playerName}",
+    "dwellsInPrison": "{playerName} томится в темнице и пропускает ход",
+    "enoughToChallengeDragon": "У {playerName} {units}🧍 — достаточно, чтобы бросить вызов Дракону!",
+    "dragonGuardsGold": "Ужасающий дракон охраняет груду золота и драгоценностей"
+  },
+  "buyUnits": {
+    "bought": "{playerName} купил {amount} ({tier}) за {gold}🟡.",
+    "notEnoughGold": "Недостаточно золота, чтобы купить юнитов."
+  },
+  "payFee": {
+    "paidButOwnerInPrison": "{playerName} заплатил {fee}🟡 за «{tileName}», но {ownerName} в темнице и ничего не получает.",
+    "paid": "{playerName} заплатил {fee}🟡 игроку {ownerName} за «{tileName}»."
+  },
+  "passStart": {
+    "spentYearsWandering": "{playerName} провёл {circles} лет в странствиях в поисках славы",
+    "receives": "{playerName} получает {summary}",
+    "aYear": "год",
+    "years": "{count} лет",
+    "kingRewardsYou": "Король вознаграждает вас за {years} службы"
+  },
+  "garrisonTile": {
+    "setGarrison": "{playerName} устанавливает гарнизон «{tileName}»: {militia}🧍/{riders}🐎"
+  },
+  "resolvePlayerBattle": {
+    "losingUnits": ", потеряв {units}🧍",
+    "attackerWinsGameMessage": "{attackerName} побеждает {defenderName}! {defenderName} бежит в Королевский замок{lossStr}",
+    "attackerWinsMessage": "{defenderName} бежит в Королевский замок!{lossStr}",
+    "tieGameMessage": "{attackerName} и {defenderName} сражаются вничью в кровавой битве — оба теряют {loss}🧍",
+    "tieMessage": "Кровавая ничья — обе стороны теряют {loss}🧍",
+    "defenderLoses": "{defenderName} теряет {units}🧍.",
+    "defenderWinsGameMessage": "{attackerName} побеждён игроком {defenderName} и бежит в Королевский замок",
+    "defenderWinsMessage": "Поражение! Вы бежите в Королевский замок.{defLossStr}",
+    "attackerWinsLabel": "победа атакующего",
+    "defenderWinsLabel": "победа защитника",
+    "tieLabel": "ничья",
+    "logLine": "⚔️ Час героя: {attackerName} vs {defenderName} — {outcomeLabel} ({unitsBefore}→{unitsAfter}🧍{goldPart})"
+  },
+  "afterMoveLogic": {
+    "ownerInPrison": "{ownerName} в темнице, поэтому остальные просто шлют ему цветы 🌹, посещая его владения",
+    "defencelessItsMine": "Беззащитно? Теперь моё",
+    "payFee": "Заплатить пошлину {fee}🟡",
+    "battle": "Битва ⚔️ ({defence}🧍)",
+    "acceptLoss": "Смириться с потерей 😢",
+    "sellHeader": "Продайте постройки, чтобы заплатить пошлину {fee}🟡, собрать войско или уступить {ownerName}",
+    "theOwner": "владельцу",
+    "sellTiles": "Продать постройки 💰"
+  },
+  "fightDragon": {
+    "willDareChallenge": "Ужасающий дракон охраняет груду золота и драгоценностей. Осмелится ли {playerSpan} бросить ему вызов?",
+    "needsAtLeast": "{playerName} нужно минимум {threshold}🧍, чтобы бросить вызов Дракону",
+    "notNow": "Не сейчас"
+  },
+  "sellTile": {
+    "sold": "{playerName} продал «{tileName}» за {gold} золота и {units} юнитов"
+  },
+  "claimUndefendedTile": {
+    "findsDefenceless": "{attackerName} находит «{tileName}» беззащитной и захватывает её!",
+    "claimsWithoutFight": "🏴 {attackerName} захватывает беззащитную «{tileName}» без боя"
+  },
+  "resolveAmbush": {
+    "receivingGold": ", получив {reward}🟡",
+    "unitsLostSuffix": ", потеряно {units}🧍",
+    "repelsGameMessage": "{playerName} отражает засаду{rewardStr}{lossStr}",
+    "repelledWithReward": "Засада отражена! Ваша награда — {reward}🟡{lossStr}",
+    "repelled": "Засада отражена!{lossStr}",
+    "barelySurvivesGameMessage": "{playerName} едва переживает засаду{lossStr}",
+    "bloodyStalemate": "Кровавая ничья{lossStr}",
+    "lostSuffix": " — потеряно {loss}",
+    "overwhelmedGameMessage": "{playerName} разгромлен в засаде{lossStr}",
+    "lost": "Потеряно {loss}",
+    "overwhelmed": "Разгромлен",
+    "lostUnitsPart": ", потеряно {units}🧍",
+    "gainedGoldPart": ", получено {gold}🟡",
+    "lostGoldPart": ", потеряно {gold}🟡",
+    "repelsVerb": "отражает засаду",
+    "isAmbushedVerb": "попадает в засаду",
+    "survivesVerb": "переживает засаду",
+    "logLine": "{playerName} {verb}{unitsPart}{goldPart}"
+  },
+  "revealTile": {
+    "discovered": "{playerName} обнаружил «{tileName}». Награда: {reward}"
+  },
+  "rollAndMove": {
+    "rolledAndWentTo": "{playerName} выбросил {roll} и попал на «{tileName}»",
+    "cannotBuyIt": "не может её купить",
+    "defenceTooStrong": "оборона кажется слишком сильной",
+    "butReasons": ", но {reasons}."
+  },
+  "joker": {
+    "eventName": {
+      "taxes": "Налоги",
+      "plague": "Чума",
+      "hurricane": "Ураган",
+      "blessing": "Благословение",
+      "queensGift": "Дар королевы",
+      "earthquake": "Землетрясение",
+      "meteor": "Метеорит"
+    },
+    "taxesMessage": "Все игроки теряют половину золота.",
+    "savedByArtifact": "{playerName} спасён благодаря {artifactName} {emoji}",
+    "plagueMessage": "Все игроки теряют половину юнитов.",
+    "playerLosesTile": "{playerName} теряет «{tileName}»",
+    "hurricaneSweepsAway": "Ураган сметает: {list}",
+    "hurricaneMessage": "Каждый игрок теряет свою самую дорогую постройку.",
+    "blessingMessage": "Все принадлежащие постройки повышаются на один уровень.",
+    "earthquakeDestroys": "Землетрясение разрушает: {list}",
+    "earthquakeMessage": "Все улучшенные постройки теряют уровень, некоторые разрушены",
+    "meteorSaved": "Метеоритный дождь падает на владения {playerName}, но {artifactName} {emoji} спасает их от беды!",
+    "meteorDestroys": "Метеоритный дождь падает на «{tileName}», уничтожая её",
+    "meteorWilderness": "Метеоритный дождь падает на пустошь, никому не причиняя вреда",
+    "queensGiftTile": "{playerName} получает «{tileName}» бесплатно!",
+    "queensGiftGold": "Королева посылает 2000🟡 и 5🧍 игроку {playerName}",
+    "eventLogLine": "{eventName}: {message}"
+  },
+  "battleCommon": {
+    "losingUnitsPart": ", потеряв {units}🧍",
+    "paidToOwnPart": " и заплатив {gold}🟡, чтобы владеть ею",
+    "wonBattleForTile": "⚔️ {attackerName} выиграл битву за «{tileName}»{unitsPart}{paidPart}",
+    "winsVerb": "выигрывает битву",
+    "losesVerb": "проигрывает битву",
+    "tiesVerb": "сводит вничью",
+    "razedPart": ", разрушил «{tileName}»",
+    "lostUnitsPart": ", потерял {units}🧍 ({before}→{after})",
+    "gainedUnitsPart": ", получил {units}🧍 ({before}→{after})",
+    "gainedGoldPart": ", получил {gold}🟡",
+    "lostGoldPart": ", потерял {gold}🟡 ({before}→{after})",
+    "logLine": "⚔️ {attackerName} {outcomeVerb} против {defenderLabel}{capturePart}{unitsPart}{goldPart}"
+  },
+  "resolveTileBattle": {
+    "losingSuffix": ", потеряв {units}🧍",
+    "claims": "{attackerName} захватывает «{tileName}»{lossStr}!",
+    "contractFulfilled": "📜 Контракт короля выполнен: +{award}🟡!",
+    "razedGameMessage": "{attackerName} разрушил «{tileName}»{lossStr}!",
+    "razes": "{attackerName} разрушает «{tileName}»{lossStr}!",
+    "lostBattleGameMessage": "{attackerName} проиграл битву за «{tileName}»{lossStr}",
+    "retreats": "{attackerName} отступает от «{tileName}»{lossStr}",
+    "degradedGameMessage": "Штурм {attackerName} снизил уровень «{tileName}» до {level}{lossStr}",
+    "degradedMessage": "Пошлина не уплачена, «{tileName}» понижена в уровне{lossStr}",
+    "stalemateGameMessage": "Штурм {attackerName} против «{tileName}» заканчивается патом{lossStr}",
+    "armyRetreats": "Войско {attackerName} отступает{lossStr}",
+    "theGuards": "стражей"
+  },
+  "resolveCaravanBattle": {
+    "whileUnitsLostGame": ", потеряв {units}🧍",
+    "whileUnitsLostScreen": ", потеряв {units}🧍 в бою за него",
+    "freedGameMessage": "{attackerName} освобождает {prize}🧍!",
+    "freedMessage": "{prize}🧍 освобождены и присоединяются к вашей армии!",
+    "pillagedGameMessage": "{attackerName} совершает набег на караван и грабит {prize}🟡!",
+    "pillagedMessage": "Награблено {prize}🟡",
+    "losingSuffix": ", потеряв {units}🧍",
+    "freedOnlyGameMessage": "{attackerName} освобождает лишь {prize}🧍 из каравана{lossStr}",
+    "freedOnlyMessage": "Освобождено лишь {prize}🧍{lossStr}!",
+    "pillagedOnlyGameMessage": "{attackerName} грабит лишь {prize}🟡{lossStr}",
+    "pillagedOnlyMessage": "Стража каравана устояла, награблено лишь {prize}🟡{lossStr}",
+    "failedGameMessage": "{attackerName} не смог совершить набег на караван!",
+    "gotAway": "Каравану удалось скрыться!",
+    "caravanGuards": "Стража каравана"
+  },
+  "resolveDragonBattle": {
+    "slaysGameMessage": "{attackerName} убивает Дракона! 🐉 ПОБЕДА!",
+    "slaysMessage": "Дракон повержен! 🐉 ПОБЕДА!",
+    "woundedGameMessage": "{attackerName} ранил Дракона, но тот сбежал, унеся {units}🧍",
+    "woundedMessage": "Раненый Дракон отступает, унося с собой {units}🧍",
+    "defeatedGameMessage": "{attackerName} побеждён Драконом!{lossStr}",
+    "lostSuffix": " Потеряно {loss}",
+    "lost": "Потеряно {loss}",
+    "defeated": "Поражение",
+    "theDragon": "Дракон"
+  },
+  "playerNames": {
+    "pronouns": {
+      "m": [
+        "Пьяный",
+        "Смеющийся",
+        "Поющий",
+        "Злой",
+        "Сонный",
+        "Мерзкий",
+        "Жалкий",
+        "Беззубый",
+        "Храбрый",
+        "Оборванный",
+        "Грязный",
+        "Блестящий",
+        "Безжалостный",
+        "Золотой",
+        "Сияющий",
+        "Благородный",
+        "Доблестный",
+        "Косоглазый",
+        "Весёлый",
+        "Слюнявый",
+        "Страшный",
+        "Трусливый",
+        "Мистический"
+      ],
+      "f": [
+        "Пьяная",
+        "Смеющаяся",
+        "Поющая",
+        "Злая",
+        "Сонная",
+        "Мерзкая",
+        "Жалкая",
+        "Беззубая",
+        "Храбрая",
+        "Оборванная",
+        "Грязная",
+        "Блестящая",
+        "Безжалостная",
+        "Золотая",
+        "Сияющая",
+        "Благородная",
+        "Доблестная",
+        "Косоглазая",
+        "Весёлая",
+        "Слюнявая",
+        "Страшная",
+        "Трусливая",
+        "Мистическая"
+      ]
+    },
+    "nouns": [
+      {
+        "word": "Крестьянин",
+        "gender": "m"
+      },
+      {
+        "word": "Могильщик",
+        "gender": "m"
+      },
+      {
+        "word": "Рыцарь",
+        "gender": "m"
+      },
+      {
+        "word": "Оруженосец",
+        "gender": "m"
+      },
+      {
+        "word": "Налётчик",
+        "gender": "m"
+      },
+      {
+        "word": "Чемпион",
+        "gender": "m"
+      },
+      {
+        "word": "Монах",
+        "gender": "m"
+      },
+      {
+        "word": "Монахиня",
+        "gender": "f"
+      },
+      {
+        "word": "Гном",
+        "gender": "m"
+      },
+      {
+        "word": "Барон",
+        "gender": "m"
+      },
+      {
+        "word": "Дама",
+        "gender": "f"
+      },
+      {
+        "word": "Принц",
+        "gender": "m"
+      },
+      {
+        "word": "Принцесса",
+        "gender": "f"
+      },
+      {
+        "word": "Бандит",
+        "gender": "m"
+      },
+      {
+        "word": "Убийца",
+        "gender": "m"
+      },
+      {
+        "word": "Клоун",
+        "gender": "m"
+      },
+      {
+        "word": "Герцогиня",
+        "gender": "f"
+      }
+    ]
+  },
+  "playerOptions": {
+    "red": "Красный",
+    "blue": "Синий",
+    "yellow": "Жёлтый",
+    "green": "Зелёный",
+    "violet": "Фиолетовый",
+    "black": "Чёрный"
+  }
+}

@@ -7,6 +7,7 @@ import { PlayerSetup } from '../utils/playerSetup';
 import { DecoratedButton } from './DecoratedButton';
 import { CharacterId } from '../ai/characters';
 import { useAppVersion } from '../utils/useAppVersion';
+import { useT } from '../i18n';
 
 // Cycle order for the per-player mode toggle: human -> explorer -> warrior -> wizard -> human...
 const MODE_CYCLE: (CharacterId | null)[] = [null, 'explorer', 'warrior', 'wizard'];
@@ -18,10 +19,10 @@ const MODE_EMOJI: Record<CharacterId | 'human', string> = {
 };
 
 // Swapped into the last word of the name when a character is picked.
-const CHARACTER_NAME_SUFFIX: Record<CharacterId, string> = {
-  explorer: 'Farmer',
-  warrior: 'Warrior',
-  wizard: 'Wizard',
+const CHARACTER_NAME_SUFFIX_KEY: Record<CharacterId, string> = {
+  explorer: 'newGameModal.characterSuffixFarmer',
+  warrior: 'newGameModal.characterSuffixWarrior',
+  wizard: 'newGameModal.characterSuffixWizard',
 };
 
 interface NewGameModalProps {
@@ -29,6 +30,7 @@ interface NewGameModalProps {
 }
 
 const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
+  const t = useT();
   const version = useAppVersion();
   const [numPlayers, setNumPlayers] = useState(2);
   const [players, setPlayers] = useState<PlayerSetup[]>(() => {
@@ -112,7 +114,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
     const nameParts = player.name.split(' ');
     const pronoun = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : nameParts[0];
     player.name = next
-      ? `${pronoun} ${CHARACTER_NAME_SUFFIX[next]}`
+      ? `${pronoun} ${t(CHARACTER_NAME_SUFFIX_KEY[next])}`
       : generatePlayerName(players.filter((_, i) => i !== index).map((p) => p.name));
 
     newPlayers[index] = player;
@@ -127,7 +129,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
           v.{version}
         </div>
         <div className="input-group">
-          <label>Heroes: </label>
+          <label>{t('newGameModal.heroes')} </label>
           <select value={numPlayers} onChange={handleNumPlayersChange}>
             {Array.from({ length: MAX_PLAYERS - 1 }, (_, i) => i + 2).map((n) => (
               <option key={n} value={n}>
@@ -166,7 +168,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 padding: '0 4px',
                 marginLeft: '-2.5rem'
               }}
-              title="Random name"
+              title={t('newGameModal.randomName')}
             >
               ↪️
             </button>
@@ -180,7 +182,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 padding: '0 4px',
                 whiteSpace: 'nowrap',
               }}
-              title="Human / Computer (click to cycle)"
+              title={t('newGameModal.humanComputerToggle')}
             >
               {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
             </button>
@@ -197,14 +199,14 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
                 )
                 .map((opt) => (
                   <option key={opt.color} value={opt.color}>
-                    {opt.colorName}
+                    {t(`playerOptions.${opt.image}`)}
                   </option>
                 ))}
             </select>
             {getSelectedOption(player) && (
               <img
                 src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
-                alt={getSelectedOption(player)?.colorName}
+                alt={getSelectedOption(player) ? t(`playerOptions.${getSelectedOption(player)?.image}`) : undefined}
                 style={{ width: '60px', height: '60px' }}
                 className="player-image"
               />
@@ -212,7 +214,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
           </div>
         ))}
         <div className="button-group">
-          <DecoratedButton onClick={() => onStart(players)}>Start Game</DecoratedButton>
+          <DecoratedButton onClick={() => onStart(players)}>{t('newGameModal.startGame')}</DecoratedButton>
         </div>
       </>
     </GameModal>

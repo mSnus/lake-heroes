@@ -1,5 +1,6 @@
 import React from 'react';
 import { buildSquadChunks } from '../game/army';
+import { useT } from '../i18n';
 import '../styles/SquadDisplay.css';
 
 interface SquadDisplayProps {
@@ -20,6 +21,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
   onSellSquad,
   className,
 }) => {
+  const t = useT();
   const chunks = buildSquadChunks(militia, riders, totalSlots);
 
   return (
@@ -31,7 +33,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
           {onSellSquad && chunk.count > 0 && (
             <button
               className="squad-sell-button"
-              title="Sell this squad"
+              title={t('squadDisplay.sellSquad')}
               onClick={() => onSellSquad(chunk.tier, chunk.count)}
             >
               ✖️

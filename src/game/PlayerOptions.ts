@@ -1,4 +1,5 @@
 import { KNIGHT_FAME } from './constants';
+import { tRaw } from '../i18n';
 
 export interface PlayerOption {
   colorName: string;
@@ -25,63 +26,37 @@ export function getPlayerImageSrc(colorKey: string, fame: number): string {
   return `assets/figures/${type}-${color}.png`;
 }
 
-const pronouns = [
-  'Drunken',
-  'Laughing',
-  'Singing',
-  'Angry',
-  'Sleepy',
-  'Filthy',
-  'Pathetic',
-  'Toothless',
-  'Brave',
-  'Ragged',
-  'Dirty',
-  'Shiny',
-  'Merciless',
-  'Golden',
-  'Radiant',
-  'Noble',
-  'Valiant',
-  'Squint-eyed',
-  'Happy',
-  'Drooling',
-  'Eyesore',
-  'Coward',
-  'Mystic'
-];
+type Gender = 'm' | 'f';
+interface NameNoun {
+  word: string;
+  gender: Gender;
+}
 
-const nouns = [
-  'Peasant',
-  'Gravedigger',
-  'Knight',
-  'Squire',
-  'Raider',
-  'Champion',
-  'Monk',
-  'Nun',
-  'Dwarf',
-  'Baron',
-  'Lady',
-  'Prince',
-  'Princess',
-  'Bandit',
-  'Assassin',
-  'Clown',
-  'Lady',
-];
+/** Russian adjectives must agree in grammatical gender with the noun they
+ * modify (e.g. "Пьяный Крестьянин" vs "Пьяная Дама") — English doesn't
+ * inflect, so its `pronouns.m`/`pronouns.f` locale lists are just the same
+ * words duplicated under both genders. */
+function getNouns(): NameNoun[] {
+  return tRaw('playerNames.nouns') as NameNoun[];
+}
+
+function getPronouns(gender: Gender): string[] {
+  return tRaw(`playerNames.pronouns.${gender}`) as string[];
+}
 
 export function generatePlayerName(usedNames: string[] = []): string {
   const usedPronouns = new Set(usedNames.map((n) => n.split(' ')[0]));
   const usedNouns = new Set(usedNames.map((n) => n.split(' ')[1]));
 
-  const availablePronouns = pronouns.filter((p) => !usedPronouns.has(p));
-  const availableNouns = nouns.filter((n) => !usedNouns.has(n));
-
-  const pronounPool = availablePronouns.length > 0 ? availablePronouns : pronouns;
+  const nouns = getNouns();
+  const availableNouns = nouns.filter((n) => !usedNouns.has(n.word));
   const nounPool = availableNouns.length > 0 ? availableNouns : nouns;
-
-  const pronoun = pronounPool[Math.floor(Math.random() * pronounPool.length)];
   const noun = nounPool[Math.floor(Math.random() * nounPool.length)];
-  return `${pronoun} ${noun}`;
+
+  const pronouns = getPronouns(noun.gender);
+  const availablePronouns = pronouns.filter((p) => !usedPronouns.has(p));
+  const pronounPool = availablePronouns.length > 0 ? availablePronouns : pronouns;
+  const pronoun = pronounPool[Math.floor(Math.random() * pronounPool.length)];
+
+  return `${pronoun} ${noun.word}`;
 }

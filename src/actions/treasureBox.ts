@@ -4,6 +4,7 @@ import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { pickRandomUnownedArtifact } from '../game/artifacts';
+import { t } from '../i18n';
 
 type TreasureSize = 'small' | 'medium' | 'large';
 
@@ -33,6 +34,7 @@ export function handleTreasureBox(
 
   const player = board.activePlayer;
   const size = rollTreasureSize();
+  const sizeLabel = t(`treasureBox.size.${size}`);
 
   const foundArtifact =
     Math.random() < ARTIFACT_CHANCE ? pickRandomUnownedArtifact(board) : null;
@@ -42,17 +44,22 @@ export function handleTreasureBox(
     if (foundArtifact.id === 'medal-of-honor') player.fame += 5;
 
     updateGameState(board);
-    say(`${player.name} found a ${size} treasure chest containing the ${foundArtifact.name}!`, 'success');
+    say(t('treasureBox.foundArtifact', { playerName: player.name, size: sizeLabel, artifactName: foundArtifact.name }), 'success');
 
     showScreen({
       screenType: 'treasure-result',
       background: 'assets/screens/treasure.jpg',
-      title: 'Treasure found!',
-      htmlMessage: `<span style="color:${player.color}">${player.name}</span> found a ${size} chest containing<br />${foundArtifact.name} ${foundArtifact.emoji}`,
+      title: t('treasureBox.treasureFound'),
+      htmlMessage: t('treasureBox.foundArtifactHtml', {
+        playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+        size: sizeLabel,
+        artifactName: foundArtifact.name,
+        emoji: foundArtifact.emoji,
+      }),
       fade: true,
       buttons: [
         {
-          label: 'Let the treasures grow!',
+          label: t('treasureBox.letTreasuresGrow'),
           action: 'end-turn',
           onClick: () => {
             clearScreen();
@@ -83,19 +90,23 @@ export function handleTreasureBox(
 
   updateGameState(board);
   say(
-    `${player.name} found a ${size} treasure chest! Rolled ${roll}, received ${goldReward}🟡!`,
+    t('treasureBox.foundGold', { playerName: player.name, size: sizeLabel, roll, gold: goldReward }),
     'success'
   );
 
   showScreen({
     screenType: 'treasure-result',
     background: 'assets/screens/treasure.jpg',
-    title: 'Treasure found!',
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> found a ${size} chest with ${goldReward}🟡`,
+    title: t('treasureBox.treasureFound'),
+    htmlMessage: t('treasureBox.foundGoldHtml', {
+      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      size: sizeLabel,
+      gold: goldReward,
+    }),
     fade: true,
     buttons: [
       {
-        label: 'Let the treasures grow!',
+        label: t('treasureBox.letTreasuresGrow'),
         action: 'end-turn',
         onClick: () => {
           clearScreen();

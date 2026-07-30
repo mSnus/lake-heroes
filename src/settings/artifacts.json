@@ -1,44 +1,30 @@
 [
   {
     "id": "broken-blade",
-    "name": "Broken Blade",
-    "emoji": "🗡️",
-    "description": "+2 to rolls against the Dragon, +1 to rolls in non-brawl battles."
+    "emoji": "🗡️"
   },
   {
     "id": "dwemer-axe",
-    "name": "Dwemer Axe",
-    "emoji": "🪓",
-    "description": "+1 to rolls against the Dragon, +1 to rolls in brawl-mode battles."
+    "emoji": "🪓"
   },
   {
     "id": "pristine-diamond",
-    "name": "Pristine Diamond",
-    "emoji": "💎",
-    "description": "+1000🟡 every year."
+    "emoji": "💎"
   },
   {
     "id": "indestructible-umbrella",
-    "name": "Indestructible Umbrella",
-    "emoji": "☂️",
-    "description": "Saves the player from Dragon attacks and the Meteor fall."
+    "emoji": "☂️"
   },
   {
     "id": "divine-beads",
-    "name": "Divine Beads",
-    "emoji": "📿",
-    "description": "50% chance to save the player from Earthquake, Meteor, Hurricane, and Dragon attack."
+    "emoji": "📿"
   },
   {
     "id": "pipe-of-hamelin",
-    "name": "Pipe of Hamelin",
-    "emoji": "🪈",
-    "description": "Reduces fees owed to other players' tiles by 50%. Protects from the Plague."
+    "emoji": "🪈"
   },
   {
     "id": "medal-of-honor",
-    "name": "Medal of Honor",
-    "emoji": "🎖️",
-    "description": "Grants +5🏆. Keeps the owner from dwelling in Prison."
+    "emoji": "🎖️"
   }
 ]

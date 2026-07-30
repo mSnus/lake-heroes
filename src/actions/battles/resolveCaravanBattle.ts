@@ -1,6 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
+import { t } from '../../i18n';
 
 /**
  * Resolve a caravan raid.
@@ -28,8 +29,8 @@ export function resolveCaravanBattle(
   const lostUnits = attackerUnitsKilled > 0 && outcome !== 'tie';
   // The screen message keeps the full "fighting for it" phrasing; the game
   // log (board.gameMessage) drops it for a terser one-line log entry.
-  const unitLossMsgGame = lostUnits ? ` while ${attackerUnitsKilled}🧍 were lost` : '';
-  const unitLossMsgScreen = lostUnits ? ` while ${attackerUnitsKilled}🧍 were lost fighting for it` : '';
+  const unitLossMsgGame = lostUnits ? t('resolveCaravanBattle.whileUnitsLostGame', { units: attackerUnitsKilled }) : '';
+  const unitLossMsgScreen = lostUnits ? t('resolveCaravanBattle.whileUnitsLostScreen', { units: attackerUnitsKilled }) : '';
 
   let message = '';
   let victoryBg = false;
@@ -37,38 +38,38 @@ export function resolveCaravanBattle(
   if (outcome === 'attacker') {
     if (slaves) {
       attacker.units += prize;
-      board.gameMessage = `${attacker.name} freed ${prize}🧍!`;
-      message = `${prize}🧍 were freed and join your army!`;
+      board.gameMessage = t('resolveCaravanBattle.freedGameMessage', { attackerName: attacker.name, prize });
+      message = t('resolveCaravanBattle.freedMessage', { prize });
     } else {
       attacker.gold += prize;
-      board.gameMessage = `${attacker.name} raided the caravan and pillaged ${prize}🟡!`;
-      message = `Pillaged ${prize}🟡`;
+      board.gameMessage = t('resolveCaravanBattle.pillagedGameMessage', { attackerName: attacker.name, prize });
+      message = t('resolveCaravanBattle.pillagedMessage', { prize });
     }
     victoryBg = true;
   } else if (outcome === 'tie') {
     const quarterPrize = Math.floor(prize / 4);
     const unitLoss = Math.floor(defence / 4);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-    const tieLossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
+    const tieLossStr = unitLoss > 0 ? t('resolveCaravanBattle.losingSuffix', { units: unitLoss }) : '';
 
     if (slaves) {
       attacker.units += quarterPrize;
-      board.gameMessage = `${attacker.name} freed only ${quarterPrize}🧍 from the caravan${tieLossStr}`;
-      message = `Freed only ${quarterPrize}🧍${tieLossStr}!`;
+      board.gameMessage = t('resolveCaravanBattle.freedOnlyGameMessage', { attackerName: attacker.name, prize: quarterPrize, lossStr: tieLossStr });
+      message = t('resolveCaravanBattle.freedOnlyMessage', { prize: quarterPrize, lossStr: tieLossStr });
     } else {
       attacker.gold += quarterPrize;
-      board.gameMessage = `${attacker.name} pillaged only ${quarterPrize}🟡${tieLossStr}`;
-      message = `Caravan guards held, pillaged only ${quarterPrize}🟡${tieLossStr}`;
+      board.gameMessage = t('resolveCaravanBattle.pillagedOnlyGameMessage', { attackerName: attacker.name, prize: quarterPrize, lossStr: tieLossStr });
+      message = t('resolveCaravanBattle.pillagedOnlyMessage', { prize: quarterPrize, lossStr: tieLossStr });
     }
   } else {
-    board.gameMessage = `${attacker.name} failed to raid the caravan!`;
-    message = `The caravan got away!`;
+    board.gameMessage = t('resolveCaravanBattle.failedGameMessage', { attackerName: attacker.name });
+    message = t('resolveCaravanBattle.gotAway');
   }
 
   board.gameMessage += unitLossMsgGame;
   message += unitLossMsgScreen;
 
-  logBattleSummary(attacker, 'Caravan Guards', outcome, null, unitsBefore, goldBefore);
+  logBattleSummary(attacker, t('resolveCaravanBattle.caravanGuards'), outcome, null, unitsBefore, goldBefore);
 
   return { outcome, message, victoryBg };
 }

@@ -1,8 +1,8 @@
 [
   {
+    "id": "water-mill",
     "group": "Mills",
     "icon": "💧",
-    "name": "Water mill",
     "spriteImage": "assets/sprites/water.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -34,9 +34,9 @@
     }
   },
   {
+    "id": "windmill",
     "group": "Mills",
     "icon": "🌬️",
-    "name": "Windmill",
     "spriteImage": "assets/sprites/windmill.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -68,9 +68,9 @@
     }
   },
   {
+    "id": "brick-factory",
     "group": "Mills",
     "icon": "🧱",
-    "name": "Brick factory",
     "spriteImage": "assets/sprites/bricks.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -102,9 +102,9 @@
     }
   },
   {
+    "id": "pigs-farm",
     "group": "Farms",
     "icon": "🐷",
-    "name": "Pigs farm",
     "spriteImage": "assets/sprites/pigs.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -136,9 +136,9 @@
     }
   },
   {
+    "id": "cows-farm",
     "group": "Farms",
     "icon": "🐄",
-    "name": "Cows farm",
     "spriteImage": "assets/sprites/cows.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -170,9 +170,9 @@
     }
   },
   {
+    "id": "sheep-farm",
     "group": "Farms",
     "icon": "🐑",
-    "name": "Sheep farm",
     "spriteImage": "assets/sprites/sheep.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -204,9 +204,9 @@
     }
   },
   {
+    "id": "wheat-field",
     "group": "Fields",
     "icon": "🌾",
-    "name": "Wheat field",
     "spriteImage": "assets/sprites/wheat.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -238,9 +238,9 @@
     }
   },
   {
+    "id": "cabbage-field",
     "group": "Fields",
     "icon": "🥬",
-    "name": "Cabbage field",
     "spriteImage": "assets/sprites/cabbage.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -272,9 +272,9 @@
     }
   },
   {
+    "id": "fruit-garden",
     "group": "Fields",
     "icon": "🍎",
-    "name": "Fruit garden",
     "spriteImage": "assets/sprites/fruit.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -306,9 +306,9 @@
     }
   },
   {
+    "id": "grapes",
     "group": "Traders",
     "icon": "🍇",
-    "name": "Grapes",
     "spriteImage": "assets/sprites/grapes.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -340,9 +340,9 @@
     }
   },
   {
+    "id": "fish",
     "group": "Traders",
     "icon": "🐟",
-    "name": "Fish",
     "spriteImage": "assets/sprites/fish.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -374,9 +374,9 @@
     }
   },
   {
+    "id": "fur",
     "group": "Traders",
     "icon": "🦫",
-    "name": "Fur",
     "spriteImage": "assets/sprites/fur.png",
     "isOwnable": true,
     "bonusType": "gold",
@@ -408,9 +408,9 @@
     }
   },
   {
+    "id": "bows",
     "group": "Camps",
     "icon": "🏹",
-    "name": "Bows",
     "spriteImage": "assets/sprites/bows.png",
     "isOwnable": true,
     "bonusType": "units",
@@ -442,9 +442,9 @@
     }
   },
   {
+    "id": "swords",
     "group": "Camps",
     "icon": "🗡️",
-    "name": "Swords",
     "spriteImage": "assets/sprites/swords.png",
     "isOwnable": true,
     "bonusType": "units",
@@ -476,9 +476,9 @@
     }
   },
   {
+    "id": "archer-tower",
     "group": "Towers",
     "icon": "🏹",
-    "name": "Archer tower",
     "spriteImage": "assets/sprites/archer_tower.png",
     "isOwnable": true,
     "bonusType": "units",
@@ -510,9 +510,9 @@
     }
   },
   {
+    "id": "arquebus-tower",
     "group": "Towers",
     "icon": "💣",
-    "name": "Arquebus tower",
     "spriteImage": "assets/sprites/arquebus_tower.png",
     "isOwnable": true,
     "bonusType": "units",
@@ -544,9 +544,9 @@
     }
   },
   {
+    "id": "cannon-tower",
     "group": "Towers",
     "icon": "💥",
-    "name": "Cannon tower",
     "spriteImage": "assets/sprites/cannon_tower.png",
     "isOwnable": true,
     "bonusType": "units",
@@ -578,9 +578,9 @@
     }
   },
   {
+    "id": "treasure-chest",
     "group": "Special",
     "icon": "🪙",
-    "name": "Treasure chest",
     "spriteImage": "assets/sprites/treasure.png",
     "isOwnable": false,
     "prices": {
@@ -590,13 +590,12 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "Chance to receive 🟡"
+    "defences": {}
   },
   {
+    "id": "tavern",
     "group": "Special",
     "icon": "🏘️",
-    "name": "Tavern",
     "spriteImage": "assets/sprites/tavern.png",
     "isOwnable": false,
     "prices": {
@@ -606,13 +605,12 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "Chance to hire 🧍"
+    "defences": {}
   },
   {
+    "id": "king-castle",
     "group": "Special",
     "icon": "🏰",
-    "name": "King Castle",
     "spriteImage": "assets/sprites/castle.png",
     "isOwnable": false,
     "fog": false,
@@ -623,13 +621,12 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "Recruit 🧍"
+    "defences": {}
   },
   {
+    "id": "prison",
     "group": "Special",
     "icon": "🔒",
-    "name": "Prison",
     "spriteImage": "assets/sprites/prison.png",
     "isOwnable": false,
     "prices": {
@@ -639,13 +636,12 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "Miss a turn ⏳"
+    "defences": {}
   },
   {
+    "id": "sphynx",
     "group": "Special",
     "icon": "🐈",
-    "name": "Sphynx",
     "spriteImage": "assets/sprites/sphynx.png",
     "isOwnable": false,
     "prices": {
@@ -655,13 +651,12 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "He could eat you or reward you"
+    "defences": {}
   },
   {
+    "id": "portal",
     "group": "Special",
     "icon": "🌀",
-    "name": "Portal",
     "spriteImage": "assets/sprites/portal.png",
     "isOwnable": false,
     "prices": {
@@ -671,13 +666,12 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "Magic vortex. Where it will bring you?"
+    "defences": {}
   },
   {
+    "id": "joker",
     "group": "Special",
     "icon": "🃏",
-    "name": "Joker",
     "spriteImage": "assets/sprites/joker.png",
     "isOwnable": false,
     "prices": {
@@ -687,7 +681,6 @@
       }
     },
     "bonuses": {},
-    "defences": {},
-    "description": "Random evil joke"
+    "defences": {}
   }
 ]

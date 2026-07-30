@@ -10,6 +10,8 @@ import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
 import { pickKingsCastleHireAmount, pickKingsCastleHireTier } from '../ai/decisions';
 import { KingsContract } from '../game/kingsContracts';
+import { useT } from '../i18n';
+import { tJsx } from '../i18n/tJsx';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -27,6 +29,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   onSell,
   onSkip,
 }) => {
+  const t = useT();
   const player = gameState.activePlayer;
 
   const contract = newContract ?? null;
@@ -60,11 +63,11 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
       player.remainingCapacity(botTier)
     );
     const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, botUnitPrice);
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (hireAmount > 0) onBuy(hireAmount, botTier);
       onSkip();
     }, 600);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -76,16 +79,24 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
       <div className="modal-content" style={{ color: `white`, fontFamily: 'Texturina' }}>
-        <h2 className="game-title">The King's Castle</h2>
+        <h2 className="game-title">{t('kingsCastle.title')}</h2>
         <h3>{gameState.kingRewardMessage}, <PlayerLabel player={player} /></h3>
 
         {contract && contractTile && (
-          <h3 className='king-contract'>📜 New contract: be the first to claim<br/> {contractTile.name} for a reward of <span className="value">{contract.award}</span>🟡!</h3>
+          <h3 className='king-contract' style={{ whiteSpace: 'pre-line' }}>
+            {tJsx('kingsCastle.newContract', {
+              tileName: contractTile.name,
+              award: <span className="value">{contract.award}</span>,
+            })}
+          </h3>
         )}
 
-        <h3>
-          With <span className="value">{player.gold}🟡</span> and <span className="value">{player.fame}</span>🏆 fame<br />
-          you may have <span className="value">{player.armySlots}</span> squads
+        <h3 style={{ whiteSpace: 'pre-line' }}>
+          {tJsx('kingsCastle.squadsMessage', {
+            gold: <span className="value">{player.gold}🟡</span>,
+            fame: <span className="value">{player.fame}</span>,
+            squads: <span className="value">{player.armySlots}</span>,
+          })}
         </h3>
 
         <SquadDisplay
@@ -96,9 +107,11 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
         />
 
         {atMax ? (
-          <h3>
-            Your money <span className="value">{player.gold}🟡</span> and fame <span className="value">{player.fame}</span>🏆<br />
-            do not allow you to recruit more units
+          <h3 style={{ whiteSpace: 'pre-line' }}>
+            {tJsx('kingsCastle.cannotRecruit', {
+              gold: <span className="value">{player.gold}🟡</span>,
+              fame: <span className="value">{player.fame}</span>,
+            })}
           </h3>
         ) : (
           <SquadHirePanel player={player} showRiders={canRecruitRiders} onBuy={onBuy} />
@@ -108,7 +121,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
         >
-          <DecoratedButton onClick={onSkip}>⚜️ I am the greatest!</DecoratedButton>
+          <DecoratedButton onClick={onSkip}>{t('kingsCastle.iAmTheGreatest')}</DecoratedButton>
         </div>
       </div>
     </GameModal>

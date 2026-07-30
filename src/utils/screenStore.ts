@@ -3,6 +3,7 @@ import React from 'react';
 import { setEndTurn } from './endTurnStore';
 import { showDice, startDiceRoll } from './diceStore';
 import { Tile } from '../game/Tile';
+import { t } from '../i18n';
 
 export interface ScreenButton {
   label: string;
@@ -85,7 +86,7 @@ export function showPrisonScreen(message: string, title?: string): void {
     message,
     buttons: [
       {
-        label: 'Continue',
+        label: t('common.continue'),
         action: 'end-turn',
         onClick: () => {
           clearScreen();
@@ -102,7 +103,7 @@ export function showTreasureScreen(title: string, handler: (roll: number) => voi
     screenType: 'treasure',
     background: 'assets/screens/treasure.jpg',
     title,
-    buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+    buttons: [{ label: t('screenStore.rollDice'), action: 'roll-dice', onClick: startDiceRoll }],
   });
 }
 
@@ -112,9 +113,9 @@ export function showTavernScreen(title: string, handler: (roll: number) => void)
     screenType: 'tavern',
     background: 'assets/screens/tavern.jpg',
     title,
-    message: 'By them a round and toss a coin!',
+    message: t('screenStore.tavernMessage'),
     fade: true,
-    buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+    buttons: [{ label: t('screenStore.rollDice'), action: 'roll-dice', onClick: startDiceRoll }],
   });
 }
 
@@ -123,10 +124,10 @@ export function showSphynxScreen(handler: (roll: number) => void): void {
   showScreen({
     screenType: 'sphynx',
     background: 'assets/screens/sphynx.jpg',
-    title: 'Sphynx',
-    message: 'His stare is heavy as stone',
+    title: t('screenStore.sphynxTitle'),
+    message: t('screenStore.sphynxMessage'),
     fade: true,
-    buttons: [{ label: 'Roll Dice 🎲', action: 'roll-dice', onClick: startDiceRoll }],
+    buttons: [{ label: t('screenStore.rollDice'), action: 'roll-dice', onClick: startDiceRoll }],
   });
 }
 
@@ -136,7 +137,7 @@ export function showJokerScreen(message: string, title?: string): void {
     background: 'assets/screens/joker.jpg',
     title,
     htmlMessage: message,
-    buttons: [{ label: 'Accept your destiny', action: 'end-turn', onClick: clearScreen }],
+    buttons: [{ label: t('screenStore.acceptYourDestiny'), action: 'end-turn', onClick: clearScreen }],
   });
 }
 
@@ -147,14 +148,14 @@ export function showDragonSkyScreen(
 ): void {
   const who = playerName
     ? `<span style="color:${playerColor ?? 'inherit'}">${playerName}</span>`
-    : 'You';
+    : t('screenStore.you');
   showScreen({
     screenType: 'dragon-sky',
     background: 'assets/screens/dragon-sky.jpg',
-    htmlMessage: `${who} sees a giant black dragon passing on the sky`,
+    htmlMessage: t('screenStore.dragonInSky', { who }),
     buttons: [
       {
-        label: "Scatter and hide, so he doesn'\t attack",
+        label: t('screenStore.scatterAndHide'),
         action: 'continue',
         onClick: () => {
           clearScreen();
@@ -172,7 +173,7 @@ export function showDragonAttackScreen(message: string, onContinue: () => void):
     message,
     buttons: [
       {
-        label: 'Continue',
+        label: t('common.continue'),
         onClick: () => {
           clearScreen();
           onContinue();
@@ -187,7 +188,7 @@ export function showDragonChallengeScreen(
   message: string,
   onFight: () => void,
   onDecline: () => void,
-  declineLabel = 'Roll Dice Instead 🎲'
+  declineLabel = t('screenStore.rollDiceInstead')
 ): void {
   showScreen({
     screenType: 'dragon',
@@ -195,7 +196,7 @@ export function showDragonChallengeScreen(
     htmlMessage: message,
     buttons: [
       {
-        label: 'Challenge the Dragon 🐉',
+        label: t('screenStore.challengeTheDragon'),
         action: 'fight',
         onClick: () => {
           clearScreen();
@@ -223,11 +224,13 @@ export function showKnightPromotionScreen(
     screenType: 'promotion',
     background: 'assets/screens/promotion.jpg',
     fade: true,
-    title: 'Promotion',
-    htmlMessage: `For your valor and fame, the King promotes <span style="color:${playerColor}">${playerName}</span> to a Knight!<br />Now you could also recruit riders 🐎`,
+    title: t('screenStore.promotionTitle'),
+    htmlMessage: t('screenStore.promotionMessage', {
+      playerSpan: `<span style="color:${playerColor}">${playerName}</span>`,
+    }),
     buttons: [
       {
-        label: '⚜️ Keep calm and carry on',
+        label: t('screenStore.keepCalmAndCarryOn'),
         onClick: () => {
           clearScreen();
           onContinue();

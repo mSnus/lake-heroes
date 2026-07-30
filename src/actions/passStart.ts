@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { changeFame } from '../utils/fame';
+import { t } from '../i18n';
 
 export function passStart(board: GameState | null, updateGameState: (board: GameState) => void): string {
   if (!board) return '';
@@ -17,7 +18,7 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   changeFame(player, 1);
   console.log('Action: pass start for', player.name);
 
-  say(`${player.name} spent ${player.circles} years wandering, looking for a glory`, 'debug');
+  say(t('passStart.spentYearsWandering', { playerName: player.name, circles: player.circles }), 'debug');
 
   // Apply rewards
   player.gold += totalGold;
@@ -29,12 +30,12 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   if (totalGold > 0) parts.push(`${totalGold}🟡`);
   if (totalUnits > 0) parts.push(`${totalUnits}🧍`);
 
-  const summary = parts.join(' and ');
+  const summary = parts.join(` ${t('common.and')} `);
 
-  say(`${player.name} receives ${summary}`, 'success');
+  say(t('passStart.receives', { playerName: player.name, summary }), 'success');
 
-  const years = player.circles < 3 ? 'a year' : `${player.circles - 1} years`;
-  const rewardMessage = `The King rewards you for ${years} of your service`;
+  const years = player.circles < 3 ? t('passStart.aYear') : t('passStart.years', { count: player.circles - 1 });
+  const rewardMessage = t('passStart.kingRewardsYou', { years });
   board.kingRewardMessage = rewardMessage;
 
   updateGameState(board);

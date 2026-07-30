@@ -11,6 +11,8 @@ import { clearScreen } from '../utils/screenStore';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { remainingCapacity } from '../game/army';
 import { getCharacterConfig } from '../ai/decisions';
+import { useT } from '../i18n';
+import { tJsx } from '../i18n/tJsx';
 import '../styles/TileCard.css';
 import '../styles/GameMenu.css';
 
@@ -27,6 +29,7 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
   gameState,
   updateGameState,
 }) => {
+  const t = useT();
   const bonusTypeIcon = tile.bonusType === 'units' ? '👬' : '🟡';
   const levels = [1, 2, 3];
 
@@ -43,14 +46,14 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
     if (!player.isComputer) return;
     const fraction = getCharacterConfig(player)?.claimGarrisonFraction ?? 0;
     const amount = Math.min(maxGarrison, Math.floor(fraction * player.militia));
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (amount > 0) {
         setTileGarrison(gameState, player, tile, amount);
         updateGameState(gameState);
       }
       clearScreen();
     }, 800);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player]);
 
@@ -67,9 +70,11 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
       {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size='5rem'/>}
       <div className="text-title" style={{ marginBottom: '0'}}>{tile.name}</div>
 
-      <div className="text-message" style={{lineHeight: '1.2'}}>
-        was claimed by <PlayerLabel player={player} bold /><br />
-        who's fame is now 🏆{player.fame}
+      <div className="text-message" style={{lineHeight: '1.2', whiteSpace: 'pre-line'}}>
+        {tJsx('tileClaimScreen.claimedBy', {
+          player: <PlayerLabel player={player} bold />,
+          fame: <>🏆{player.fame}</>,
+        })}
       </div>
 
 
@@ -77,21 +82,27 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
                 <div className="tc-td" style={{textAlign:'center'}}>
-                  Current income: <span className="value">{tile.bonuses[1] ?? 0}</span>{bonusTypeIcon}
+                  {tJsx('tileClaimScreen.currentIncome', { value: <span className="value">{tile.bonuses[1] ?? 0}</span>, icon: bonusTypeIcon })}
                 </div>
                 <div className="tc-td" style={{paddingTop: '0.5rem', fontSize: '1rem'}}>
-                    👛 <span className="value">{tile.prices[2]?.gold ?? 0}</span>🟡 →{' '}
-                    <span className="value">2</span>🏯 and{' '}
-                    +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year
+                    {tJsx('tileClaimScreen.upgradeLine', {
+                      gold: <span className="value">{tile.prices[2]?.gold ?? 0}</span>,
+                      slots: <span className="value">2</span>,
+                      bonus: <span className="value">{tile.bonuses[2] ?? 0}</span>,
+                      icon: bonusTypeIcon,
+                    })}
                 </div>
                 <div className="tc-td" style={{fontSize: '1rem'}}>
-                    👛 <span className="value">{tile.prices[3]?.gold ?? 0}</span>🟡 →{' '}
-                    <span className="value">3</span>🏯 and{' '}
-                    +<span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon} per year
+                    {tJsx('tileClaimScreen.upgradeLine', {
+                      gold: <span className="value">{tile.prices[3]?.gold ?? 0}</span>,
+                      slots: <span className="value">3</span>,
+                      bonus: <span className="value">{tile.bonuses[3] ?? 0}</span>,
+                      icon: bonusTypeIcon,
+                    })}
                 </div>
                 {player.militia > 0 && (
                   <div className="tc-td" style={{paddingTop: '1.5rem', textAlign: 'center'}}>
-                    How many to leave on guard?
+                    {t('tileClaimScreen.howManyToGuard')}
                     <div className="units-input-row" style={{ justifyContent: 'center' }}>
                       🛡️
                       <input
@@ -110,7 +121,7 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
                         style={{ width: '2rem', fontSize: '150%' }}
                         className="units-input"
                       />
-                      ({player.militia - garrisonAmount}🧍 stay in army)
+                      {t('tileClaimScreen.stayInArmy', { count: player.militia - garrisonAmount })}
                     </div>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'stretch', marginTop: '0.5rem' }}>
                       <button
@@ -141,7 +152,7 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
       <div className="game-menu" style={{ top: '40px' }}>
         <div>
           <DecoratedButton onClick={handleSetGarrison}>
-            {garrisonAmount === 0 ? 'Leave unguarded' : `Set ${garrisonAmount} to guard 🛡️`}
+            {garrisonAmount === 0 ? t('tileClaimScreen.leaveUnguarded') : t('tileClaimScreen.setToGuard', { amount: garrisonAmount })}
           </DecoratedButton>
         </div>
       </div>

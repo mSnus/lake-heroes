@@ -5,6 +5,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
 import { richestPlayer } from '../game/wealth';
 import { checkArtifactProtection } from '../game/artifacts';
+import { t } from '../i18n';
 
 const EVENTS = [
   'Taxes',
@@ -28,6 +29,18 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
   Meteor: '☄️',
 };
 
+// EVENTS values are internal switch keys (never shown directly) — this maps
+// each to its translated display name.
+const EVENT_NAME_KEY: Record<JokerEvent, string> = {
+  Taxes: 'joker.eventName.taxes',
+  Plague: 'joker.eventName.plague',
+  Hurricane: 'joker.eventName.hurricane',
+  Blessing: 'joker.eventName.blessing',
+  "Queen's Gift": 'joker.eventName.queensGift',
+  Earthquake: 'joker.eventName.earthquake',
+  Meteor: 'joker.eventName.meteor',
+};
+
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
   const event: JokerEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
   let message = '';
@@ -41,7 +54,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         if (p.gold > 0) p.gold = Math.max(1, Math.round(p.gold / 2));
       }
 
-      message = 'All players lose half of their gold.';
+      message = t('joker.taxesMessage');
       break;
 
     case 'Plague': {
@@ -49,13 +62,13 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       for (const p of board.players) {
         const protection = checkArtifactProtection(p, 'plague');
         if (protection.saved) {
-          savedMsgs.push(`${p.name} is saved by the ${protection.artifact!.name} ${protection.artifact!.emoji}`);
+          savedMsgs.push(t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji }));
           continue;
         }
         if (p.units > 0) p.units = Math.max(1, Math.round(p.units / 2));
       }
 
-      message = 'All players lose half of their units.';
+      message = t('joker.plagueMessage');
       if (savedMsgs.length) message += ` ${savedMsgs.join('; ')}`;
       break;
     }
@@ -69,44 +82,44 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
         const protection = checkArtifactProtection(p, 'hurricane');
         if (protection.saved) {
-          savedMsgs.push(`${p.name} is saved by the ${protection.artifact!.name} ${protection.artifact!.emoji}`);
+          savedMsgs.push(t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji }));
           continue;
         }
 
         let maxGold = -1;
         let targetIdx = -1;
         for (const idx of p.ownedTiles) {
-          const t = board.tiles[idx];
-          if (t && t.currentPrice.gold > maxGold) {
-            maxGold = t.currentPrice.gold;
+          const candidate = board.tiles[idx];
+          if (candidate && candidate.currentPrice.gold > maxGold) {
+            maxGold = candidate.currentPrice.gold;
             targetIdx = idx;
           }
         }
 
         if (targetIdx >= 0) {
-          const t = board.tiles[targetIdx];
-          t.owner = null;
-          t._level = 1;
+          const tile = board.tiles[targetIdx];
+          tile.owner = null;
+          tile._level = 1;
           p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
           changeFame(p, -1);
-          lostMsgs.push(`${p.name} loses ${t.name}`);
-          lostListItems.push(`${p.name}: ${t.name} 🔥`);
+          lostMsgs.push(t('joker.playerLosesTile', { playerName: p.name, tileName: tile.name }));
+          lostListItems.push(`${p.name}: ${tile.name} 🔥`);
         }
       }
 
-      if (lostMsgs.length) say(`Hurricane sweeps away: ${lostMsgs.join(', ')}`, 'debug');
-      message = 'Every player loses their most expensive tile.';
+      if (lostMsgs.length) say(t('joker.hurricaneSweepsAway', { list: lostMsgs.join(', ') }), 'debug');
+      message = t('joker.hurricaneMessage');
       if (lostListItems.length) screenExtra = `<br/>${lostListItems.join('<br/>')}`;
       if (savedMsgs.length) message += ` ${savedMsgs.join('; ')}`;
       break;
     }
 
     case 'Blessing':
-      for (const t of board.tiles) {
-        if (t?.isOwned() && t.level < 3) t._level = t.level + 1;
+      for (const tile of board.tiles) {
+        if (tile?.isOwned() && tile.level < 3) tile._level = tile.level + 1;
       }
 
-      message = 'All owned tiles are upgraded one level.';
+      message = t('joker.blessingMessage');
       break;
 
     case 'Earthquake': {
@@ -117,7 +130,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
         const protection = checkArtifactProtection(p, 'earthquake');
         if (protection.saved) {
-          savedMsgs.push(`${p.name} is saved by the ${protection.artifact!.name} ${protection.artifact!.emoji}`);
+          savedMsgs.push(t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji }));
           continue;
         }
 
@@ -126,34 +139,34 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         if (hasUpgraded) {
           // Upgraded tiles crumble one level.
           for (const idx of p.ownedTiles) {
-            const t = board.tiles[idx];
-            if (t && t.level > 1) t._level = t.level - 1;
+            const tile = board.tiles[idx];
+            if (tile && tile.level > 1) tile._level = tile.level - 1;
           }
         } else {
           // No level 2/3 tile to absorb the shock: the cheapest tile collapses.
           let minGold = Infinity;
           let targetIdx = -1;
           for (const idx of p.ownedTiles) {
-            const t = board.tiles[idx];
-            if (t && t.currentPrice.gold < minGold) {
-              minGold = t.currentPrice.gold;
+            const candidate = board.tiles[idx];
+            if (candidate && candidate.currentPrice.gold < minGold) {
+              minGold = candidate.currentPrice.gold;
               targetIdx = idx;
             }
           }
 
           if (targetIdx >= 0) {
-            const t = board.tiles[targetIdx];
-            t.owner = null;
-            t._level = 1;
+            const tile = board.tiles[targetIdx];
+            tile.owner = null;
+            tile._level = 1;
             p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
             changeFame(p, -1);
-            lostMsgs.push(`${p.name} loses ${t.name}`);
+            lostMsgs.push(t('joker.playerLosesTile', { playerName: p.name, tileName: tile.name }));
           }
         }
       }
 
-      if (lostMsgs.length) say(`Earthquake destroys: ${lostMsgs.join(', ')}`, 'debug');
-      message = 'All upgraded tiles lose a level, some are destroyed';
+      if (lostMsgs.length) say(t('joker.earthquakeDestroys', { list: lostMsgs.join(', ') }), 'debug');
+      message = t('joker.earthquakeMessage');
       if (savedMsgs.length) message += `. ${savedMsgs.join('; ')}`;
       break;
     }
@@ -164,18 +177,18 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       if (richest && richest.ownedTiles.length > 0) {
         const protection = checkArtifactProtection(richest, 'meteor');
         if (protection.saved) {
-          message = `Meteor shower falls on ${richest.name}'s land, but the ${protection.artifact!.name} ${protection.artifact!.emoji} saves it from harm!`;
+          message = t('joker.meteorSaved', { playerName: richest.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji });
         } else {
           const targetIdx = richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
-          const t = board.tiles[targetIdx];
-          t.owner = null;
-          t._level = 1;
+          const tile = board.tiles[targetIdx];
+          tile.owner = null;
+          tile._level = 1;
           richest.ownedTiles = richest.ownedTiles.filter((i) => i !== targetIdx);
           changeFame(richest, -1);
-          message = `Meteor shower falls on ${t.name}, destroying it`;
+          message = t('joker.meteorDestroys', { tileName: tile.name });
         }
       } else {
-        message = 'Meteor shower falls on the wilderness, harming no one';
+        message = t('joker.meteorWilderness');
       }
 
       break;
@@ -184,27 +197,28 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     case "Queen's Gift": {
       const player = board.activePlayer;
       const free = board.tiles
-        .map((t, i) => ({ t, i }))
-        .filter(({ t }) => t && (t.group === 'Camps' || t.group === 'Towers') && !t.isOwned());
+        .map((tile, i) => ({ tile, i }))
+        .filter(({ tile }) => tile && (tile.group === 'Camps' || tile.group === 'Towers') && !tile.isOwned());
       if (free.length > 0) {
-        const { t, i } = free[Math.floor(Math.random() * free.length)];
-        t.owner = player.id;
+        const { tile, i } = free[Math.floor(Math.random() * free.length)];
+        tile.owner = player.id;
         player.ownedTiles.push(i);
         changeFame(player, 1);
-        message = `${player.name} receives ${t.name} for free!`;
+        message = t('joker.queensGiftTile', { playerName: player.name, tileName: tile.name });
       } else {
         player.gold += 2000;
         player.units += 5;
-        message = `Queen sends 2000🟡 and 5🧍 to ${player.name}`;
+        message = t('joker.queensGiftGold', { playerName: player.name });
       }
 
       break;
     }
   }
 
-  say(`${event}: ${message}`, 'info');
-  board.gameMessage = `${event}: ${message}`;
+  const eventName = t(EVENT_NAME_KEY[event]);
+  say(t('joker.eventLogLine', { eventName, message }), 'info');
+  board.gameMessage = t('joker.eventLogLine', { eventName, message });
   updateGameState(board);
   setEndTurn();
-  showJokerScreen(`${message}${screenExtra}`, `${EVENT_EMOJI[event]} ${event}`);
+  showJokerScreen(`${message}${screenExtra}`, `${EVENT_EMOJI[event]} ${eventName}`);
 }

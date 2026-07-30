@@ -20,6 +20,7 @@ import { checkCaravanEncounter } from './caravanEncounter';
 import { checkAmbushEncounter } from './ambushEncounter';
 import { checkKnightPromotion } from './knightPromotion';
 import { tickWildGarrisons } from '../game/wildGarrison';
+import { t } from '../i18n';
 
 export async function rollAndMove(
   board: GameState | null,
@@ -40,7 +41,7 @@ export async function rollAndMove(
 
   board.gameMessage = '';
 
-  let tileMessage = `${player.name} rolled ${roll} and went to ${nextTile.name}`;
+  let tileMessage = t('rollAndMove.rolledAndWentTo', { playerName: player.name, roll, tileName: nextTile.name });
 
   if (!nextTile.isOwned()) {
     const cannotBuy =
@@ -49,10 +50,10 @@ export async function rollAndMove(
 
     if (cannotBuy || defenceTooStrong) {
       const reasons = [
-        ...(cannotBuy ? ['cannot buy it'] : []),
-        ...(defenceTooStrong ? ['the defence seems too strong'] : []),
+        ...(cannotBuy ? [t('rollAndMove.cannotBuyIt')] : []),
+        ...(defenceTooStrong ? [t('rollAndMove.defenceTooStrong')] : []),
       ];
-      tileMessage += `, but ${reasons.join(' and ')}.`;
+      tileMessage += t('rollAndMove.butReasons', { reasons: reasons.join(` ${t('common.and')} `) });
     }
   }
 
@@ -92,39 +93,39 @@ export async function rollAndMove(
 
     const continueTileLogic = () => {
       const tile = board.activeTile;
-      if (tile.name.includes('Treasure')) {
-        showTreasureScreen('Treasure found!', (roll) =>
+      if (tile.id === 'treasure-chest') {
+        showTreasureScreen(t('treasureBox.treasureFound'), (roll) =>
           handleTreasureBox(board, updateGameState, roll)
         );
         return;
       }
 
-      if (tile.name.includes('Tavern')) {
+      if (tile.id === 'tavern') {
         showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
         return;
       }
 
-      if (tile.name.includes('Prison')) {
+      if (tile.id === 'prison') {
         handlePrison(board, updateGameState);
         return;
       }
 
-      if (tile.name.includes('Sphynx')) {
+      if (tile.id === 'sphynx') {
         showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
         return;
       }
 
-      if (tile.name.includes('Portal')) {
+      if (tile.id === 'portal') {
         handlePortal(board, updateGameState, continueTileLogic);
         return;
       }
 
-      if (tile.name.includes('King')) {
+      if (tile.id === 'king-castle') {
         handleKingCastle(board, updateGameState);
         return;
       }
 
-      if (tile.name.includes('Joker')) {
+      if (tile.id === 'joker') {
         handleJoker(board, updateGameState);
         return;
       }

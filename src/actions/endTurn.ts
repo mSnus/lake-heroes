@@ -4,6 +4,7 @@ import { say } from '../utils/say';
 import { DRAGON_UNITS_THRESHOLD, offerDragonChallenge } from './fightDragon';
 import { setEndTurn } from '../utils/endTurnStore';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
+import { t } from '../i18n';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -24,8 +25,8 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   if (board.activePlayer.turnsToSkip > 0) {
     board.activePlayer.turnsToSkip--;
     board.skippingTurn = true;
-    board.gameMessage = `The prison is wet and cold, ${board.activePlayer.name}`;
-    say(`${board.activePlayer.name} dwells in prison and skips the turn`, 'info');
+    board.gameMessage = t('endTurn.prisonIsWetAndCold', { playerName: board.activePlayer.name });
+    say(t('endTurn.dwellsInPrison', { playerName: board.activePlayer.name }), 'info');
     updateGameState(board);
     setEndTurn();
     return;
@@ -46,10 +47,13 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   ) {
     board.activePlayer.hasBeenOfferedDragonChallenge = true;
     say(
-      `${board.activePlayer.name} has ${board.activePlayer.units}🧍 — enough to challenge the Dragon!`,
+      t('endTurn.enoughToChallengeDragon', {
+        playerName: board.activePlayer.name,
+        units: board.activePlayer.units,
+      }),
       'info'
     );
-    board.gameMessage = `Terrifying dragon guards a pile of gold and jewels`;
+    board.gameMessage = t('endTurn.dragonGuardsGold');
     updateGameState(board);
     offerDragonChallenge(board, updateGameState, () => gameEvent('showDice', null));
     return;

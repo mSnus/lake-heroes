@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
 import { UnitTier } from '../game/army';
+import { t } from '../i18n';
 
 /** Disbands a squad for a full refund of its recruit price — the King's
  * Castle "✖️" sell button next to a squad. */
@@ -26,6 +27,7 @@ export function sellUnits(
     player.gold += sold * unitPrice;
   }
 
-  say(`${player.name} sold ${amount} ${tier} for ${amount * unitPrice}🟡.`, 'info');
+  const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
+  say(t('sellUnits.sold', { playerName: player.name, amount, tier: tierLabel, gold: amount * unitPrice }), 'info');
   updateGameState(board);
 }

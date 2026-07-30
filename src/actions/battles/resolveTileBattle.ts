@@ -4,6 +4,7 @@ import { Tile } from '../../game/Tile';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
+import { t } from '../../i18n';
 
 /**
  * Resolve a battle for a tile.
@@ -38,7 +39,7 @@ export function resolveTileBattle(
 
   if (outcome === 'attacker') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
-    const lossStr = attackerUnitsKilled > 0 ? `, losing ${attackerUnitsKilled}🧍` : '';
+    const lossStr = attackerUnitsKilled > 0 ? t('resolveTileBattle.losingSuffix', { units: attackerUnitsKilled }) : '';
 
     if (claiming) {
       attacker.gold -= tile.prices['1']?.gold ?? 0;
@@ -48,12 +49,12 @@ export function resolveTileBattle(
       attacker.ownedTiles.push(attacker.position);
       changeFame(attacker, 1);
 
-      message = `${attacker.name} claims ${tile.name}${lossStr}!`;
+      message = t('resolveTileBattle.claims', { attackerName: attacker.name, tileName: tile.name, lossStr });
 
       const contractResult = resolveKingsContractOnClaim(board, attacker.position, attacker);
       if (contractResult.fulfilled && contractResult.award) {
         attacker.gold += contractResult.award;
-        message += ` 📜 King's contract fulfilled: +${contractResult.award}🟡!`;
+        message += ' ' + t('resolveTileBattle.contractFulfilled', { award: contractResult.award });
       }
 
       victoryBg = true;
@@ -70,36 +71,41 @@ export function resolveTileBattle(
       changeFame(attacker, 1);
       if (defender) changeFame(defender, -1);
 
-      board.gameMessage = `${attacker.name} razed ${tile.name}${lossStr}!`;
-      message = `${attacker.name} razes ${tile.name}${lossStr}!`;
+      board.gameMessage = t('resolveTileBattle.razedGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr });
+      message = t('resolveTileBattle.razes', { attackerName: attacker.name, tileName: tile.name, lossStr });
       victoryBg = true;
     }
   } else if (outcome === 'defender') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     if (defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
-    const lossStr = attackerUnitsKilled > 0 ? `, losing ${attackerUnitsKilled}🧍` : '';
+    const lossStr = attackerUnitsKilled > 0 ? t('resolveTileBattle.losingSuffix', { units: attackerUnitsKilled }) : '';
 
-    board.gameMessage = `${attacker.name} lost the battle for ${tile.name}${lossStr}`;
-    message = `${attacker.name} retreats from ${tile.name}${lossStr}`;
+    board.gameMessage = t('resolveTileBattle.lostBattleGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr });
+    message = t('resolveTileBattle.retreats', { attackerName: attacker.name, tileName: tile.name, lossStr });
     lostBg = true;
   } else {
     const unitLoss = Math.floor(tile.defence / 4);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
     if (defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
-    const lossStr = unitLoss > 0 ? `, losing ${unitLoss}🧍` : '';
+    const lossStr = unitLoss > 0 ? t('resolveTileBattle.losingSuffix', { units: unitLoss }) : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;
-      board.gameMessage = `${attacker.name}'s assault degraded ${tile.name} to level ${tile.level}${lossStr}`;
-      message = `No fee paid and ${tile.name} degraded${lossStr}`;
+      board.gameMessage = t('resolveTileBattle.degradedGameMessage', {
+        attackerName: attacker.name,
+        tileName: tile.name,
+        level: tile.level,
+        lossStr,
+      });
+      message = t('resolveTileBattle.degradedMessage', { tileName: tile.name, lossStr });
     } else {
-      board.gameMessage = `${attacker.name}'s assault on ${tile.name} ends in a stalemate${lossStr}`;
-      message = `${attacker.name}'s army retreats${lossStr}`;
+      board.gameMessage = t('resolveTileBattle.stalemateGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr });
+      message = t('resolveTileBattle.armyRetreats', { attackerName: attacker.name, lossStr });
     }
   }
 
   logBattleSummary(
     attacker,
-    defender ? defender.name : 'the guards',
+    defender ? defender.name : t('resolveTileBattle.theGuards'),
     outcome,
     outcome === 'attacker' ? tile.name : null,
     unitsBefore,

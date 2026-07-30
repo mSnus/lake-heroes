@@ -5,6 +5,7 @@ import { Tile } from '../game/Tile';
 import TileCard from './TileCard';
 import groups from '../settings/groups.json';
 import { syndicateMultiplier } from '../game/syndicate';
+import { useT } from '../i18n';
 import '../styles/OwnedTiles.css';
 
 const groupOrder = (group: string): number => {
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState }) => {
+  const t = useT();
   if (!gameState) return <div></div>;
 
   const activePlayer = gameState.activePlayer as Player;
@@ -60,7 +62,7 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState }) => {
   return (
     <div className="cards-pane-wrapper">
       <div className="owned-cards">
-        {isEmpty && <div className="poor-player">Poor {activePlayer.name} owns nothing</div>}
+        {isEmpty && <div className="poor-player">{t('ownedTiles.ownsNothing', { name: activePlayer.name })}</div>}
 
         {grouped.map((bucket) => (
           <div

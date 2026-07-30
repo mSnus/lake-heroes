@@ -8,6 +8,7 @@ import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
 import { checkArtifactProtection } from '../game/artifacts';
+import { t } from '../i18n';
 
 const ENCOUNTER_CHANCE = 1 / 12;
 const MAX_ENCOUNTERS_PER_CIRCLE = 2;
@@ -63,10 +64,12 @@ export function checkDragonEncounter(
   } else {
     updateGameState(board);
     showDragonChallengeScreen(
-      `The Dragon descends from the skies upon <span style="color:${player.color}">${player.name}</span>!`,
+      t('dragonEncounter.descends', {
+        playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      }),
       () => fightDragon(board, updateGameState),
       onContinue,
-      'Flee! 🏃'
+      t('dragonEncounter.flee')
     );
   }
 
@@ -75,7 +78,7 @@ export function checkDragonEncounter(
 
 function dragonSkyWithSay(board: GameState, onContinue: () => void) {
   const player = board.activePlayer;
-  say('A massive black dragon soars overhead...', 'info');
+  say(t('dragonEncounter.soarsOverhead'), 'info');
   showDragonSkyScreen(onContinue, player.name, player.color);
 }
 
@@ -88,7 +91,11 @@ function handleWeakPlayerAttack(
 
   const protection = checkArtifactProtection(player, 'dragon-attack');
   if (protection.saved) {
-    const savedMessage = `The Dragon swoops down upon ${player.name}, but the ${protection.artifact!.name} ${protection.artifact!.emoji} saves them from harm!`;
+    const savedMessage = t('dragonEncounter.savedByArtifact', {
+      playerName: player.name,
+      artifactName: protection.artifact!.name,
+      emoji: protection.artifact!.emoji,
+    });
     say(savedMessage, 'success');
     updateGameState(board);
     showDragonAttackScreen(savedMessage, onContinue);
@@ -112,21 +119,21 @@ function handleWeakPlayerAttack(
   let message: string;
 
   if (mostExpensiveIdx === null) {
-    message = 'The Dragon swoops down and attacks you!';
-    say(`${player.name} is attacked by the dragon! Fame lost.`, 'error');
+    message = t('dragonEncounter.attacksYou');
+    say(t('dragonEncounter.attackedFameLost', { playerName: player.name }), 'error');
   } else {
     const tile = board.tiles[mostExpensiveIdx];
     const tileName = tile.name;
-    message = `Dragon burns your ${tileName}!`;
+    message = t('dragonEncounter.burnsYourTile', { tileName });
 
     if (tile.level === 1) {
       tile.owner = null;
       player.ownedTiles = player.ownedTiles.filter((i) => i !== mostExpensiveIdx);
-      say(`${player.name}'s ${tileName} was destroyed by the Dragon!`, 'error');
+      say(t('dragonEncounter.tileDestroyed', { playerName: player.name, tileName }), 'error');
     } else {
       tile._level = tile.level - 1;
       say(
-        `${player.name}'s ${tileName} was damaged by the Dragon (now level ${tile._level})!`,
+        t('dragonEncounter.tileDamaged', { playerName: player.name, tileName, level: tile._level }),
         'error'
       );
     }

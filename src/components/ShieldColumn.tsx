@@ -7,6 +7,7 @@ import { useEndTurnReady } from '../utils/endTurnStore';
 import { showScreen } from '../utils/screenStore';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
+import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 
 interface ShieldColumnProps {
   gameState: GameState;
@@ -24,6 +25,8 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   const canEndTurn = endTurnReady && !diceActive;
   const isBotTurn = gameState.activePlayer.isComputer;
   const [menuOpen, setMenuOpen] = useState(false);
+  const currentLanguage = useLanguage();
+  const currentFlag = LANGUAGES.find((l) => l.code === currentLanguage)?.flag ?? '🏳️';
 
   // Covers movement rolls and the Tavern/Sphynx/Treasure dice prompts, since
   // they all funnel through the same diceStore (active && !rolling). Disabled
@@ -32,11 +35,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
 
   function handleNewGame() {
     setMenuOpen(false);
-    if (
-      window.confirm(
-        'Are you sure you want to start a new game? Your current progress will be lost.'
-      )
-    ) {
+    if (window.confirm(t('shieldColumn.confirmNewGame'))) {
       try {
         localStorage.removeItem('game-state');
       } catch {
@@ -66,19 +65,28 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   return (
     <>
       <div style={{ ...colStyle, top: 8 }}>
-        <div className="shield-button-container" title="Menu">
-          <button onClick={() => setMenuOpen((o) => !o)} className="shield-button">
-            🐲
-          </button>
+        <div style={{ display: 'flex', flexDirection: 'row-reverse', gap: 8, justifyContent: 'flex-end' }}>
+          <div className="shield-button-container" title={t('shieldColumn.menu')}>
+            <button onClick={() => setMenuOpen((o) => !o)} className="shield-button">
+              🐲
+            </button>
+          </div>
+          {menuOpen && (
+            <div className="shield-button-container" title={t('common.language')}>
+              <button onClick={cycleLanguage} className="shield-button">
+                {currentFlag}
+              </button>
+            </div>
+          )}
         </div>
         {menuOpen && (
           <>
-            <div className="shield-button-container" title="New Game">
+            <div className="shield-button-container" title={t('shieldColumn.newGame')}>
               <button onClick={handleNewGame} className="shield-button">
                 🏆
               </button>
             </div>
-            <div className="shield-button-container" title="Help">
+            <div className="shield-button-container" title={t('shieldColumn.help')}>
               <button
                 onClick={() => { setMenuOpen(false); showScreen({ content: <HelpScreen /> }); }}
                 className="shield-button"
@@ -86,12 +94,12 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 ?
               </button>
             </div>
-            <div className="shield-button-container" title="Game Log">
+            <div className="shield-button-container" title={t('shieldColumn.gameLog')}>
               <button onClick={() => { setMenuOpen(false); onOpenLog(); }} className="shield-button">
                 📜
               </button>
             </div>
-            <div className="shield-button-container" title="Reload">
+            <div className="shield-button-container" title={t('shieldColumn.reload')}>
               <button
                 onClick={() => {
                   setMenuOpen(false);
@@ -112,7 +120,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         <div style={{ ...colStyle, bottom: '60px' }}>
           <div
             className="main-button"
-            title="AI is taking its turn"
+            title={t('shieldColumn.aiTurn')}
             style={{
               width: '52px',
               height: '52px',
@@ -129,14 +137,14 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         (diceActive || canEndTurn) && (
           <div style={{ ...colStyle, bottom: '60px' }}>
             {diceActive && (
-              <div className="shield-button-container main-button" title="Roll Dice">
+              <div className="shield-button-container main-button" title={t('shieldColumn.rollDice')}>
                 <button onClick={startDiceRoll} className="shield-button">
                   🎲
                 </button>
               </div>
             )}
             {canEndTurn && (
-              <div className="shield-button-container main-button" title="End Turn">
+              <div className="shield-button-container main-button" title={t('shieldColumn.endTurn')}>
                 <button onClick={handleEndTurn} className="shield-button">
                   ⏳
                 </button>

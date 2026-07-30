@@ -2,6 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
 import { lossStr } from './common';
+import { t } from '../../i18n';
 
 export type AmbushOutcome = 'win' | 'defeat' | 'tie';
 
@@ -40,43 +41,54 @@ export function resolveAmbush(
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold += reward;
 
-    const rewardStr = reward > 0 ? `, receiving ${reward}🟡` : '';
-    const lossStr = playerUnitsKilled > 0 ? `, ${playerUnitsKilled}🧍 lost` : '';
-    board.gameMessage = `${player.name} repels the ambush${rewardStr}${lossStr}`;
+    const rewardStr = reward > 0 ? t('resolveAmbush.receivingGold', { reward }) : '';
+    const killLossStr = playerUnitsKilled > 0 ? t('resolveAmbush.unitsLostSuffix', { units: playerUnitsKilled }) : '';
+    board.gameMessage = t('resolveAmbush.repelsGameMessage', { playerName: player.name, rewardStr, lossStr: killLossStr });
     message =
       reward > 0
-        ? `Ambush repelled! Your reward is ${reward}🟡${lossStr}`
-        : `Ambush repelled!${lossStr}`;
+        ? t('resolveAmbush.repelledWithReward', { reward, lossStr: killLossStr })
+        : t('resolveAmbush.repelled', { lossStr: killLossStr });
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(attackerUnits / 4);
     const goldLoss = Math.floor(player.gold / 2 / 100) * 100;
     if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);
-    board.gameMessage = `${player.name} barely survives the ambush${loss ? `, ${loss}🧍 lost` : ''}`;
-    message = `A bloody stalemate${loss ? ` — lost ${loss}` : ''}`;
+    board.gameMessage = t('resolveAmbush.barelySurvivesGameMessage', {
+      playerName: player.name,
+      lossStr: loss ? t('resolveAmbush.unitsLostSuffix', { units: loss }) : '',
+    });
+    message = t('resolveAmbush.bloodyStalemate', { lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '' });
   } else {
     const goldLoss = Math.floor(player.gold / 4 / 100) * 100;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, playerUnitsKilled);
-    board.gameMessage = `${player.name} is overwhelmed by the ambush${loss ? `, ${loss}🧍 lost` : ''}`;
-    message = `${loss ? `Lost ${loss}` : 'Overwhelmed'}`;
+    board.gameMessage = t('resolveAmbush.overwhelmedGameMessage', {
+      playerName: player.name,
+      lossStr: loss ? t('resolveAmbush.unitsLostSuffix', { units: loss }) : '',
+    });
+    message = loss ? t('resolveAmbush.lost', { loss }) : t('resolveAmbush.overwhelmed');
   }
 
   const unitDiff = unitsBefore - player.units;
   const goldDiff = player.gold - goldBefore;
-  const unitsPart = unitDiff > 0 ? `, lost ${unitDiff}🧍` : '';
+  const unitsPart = unitDiff > 0 ? t('resolveAmbush.lostUnitsPart', { units: unitDiff }) : '';
   const goldPart =
-    goldDiff > 0 ? `, gained ${goldDiff}🟡` : goldDiff < 0 ? `, lost ${-goldDiff}🟡` : '';
-  const verb =
+    goldDiff > 0
+      ? t('resolveAmbush.gainedGoldPart', { gold: goldDiff })
+      : goldDiff < 0
+        ? t('resolveAmbush.lostGoldPart', { gold: -goldDiff })
+        : '';
+  const verb = t(
     outcome === 'win'
-      ? 'repels an ambush'
+      ? 'resolveAmbush.repelsVerb'
       : outcome === 'defeat'
-        ? 'is ambushed'
-        : 'survives an ambush';
+        ? 'resolveAmbush.isAmbushedVerb'
+        : 'resolveAmbush.survivesVerb'
+  );
   say(
-    `${player.name} ${verb}${unitsPart}${goldPart}`,
+    t('resolveAmbush.logLine', { playerName: player.name, verb, unitsPart, goldPart }),
     outcome === 'win' ? 'success' : outcome === 'defeat' ? 'error' : 'info'
   );
 

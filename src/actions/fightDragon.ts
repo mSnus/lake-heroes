@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { showScreen, showDragonChallengeScreen, clearScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
+import { t } from '../i18n';
 
 export const DRAGON_UNITS_THRESHOLD = 50;
 
@@ -30,7 +31,9 @@ export function offerDragonChallenge(
 ) {
   const p = board.activePlayer;
   showDragonChallengeScreen(
-    `A terrifying dragon guards a pile of gold and jewels. Will <span style="color:${p.color}">${p.name}</span> dare to challenge it?`,
+    t('fightDragon.willDareChallenge', {
+      playerSpan: `<span style="color:${p.color}">${p.name}</span>`,
+    }),
     () => fightDragon(board, updateGameState),
     onDecline,
     declineLabel
@@ -47,10 +50,10 @@ export function challengeDragonFromBoard(
   const player = board.activePlayer;
   if (player.armyPower < DRAGON_UNITS_THRESHOLD) {
     say(
-      `${player.name} needs at least ${DRAGON_UNITS_THRESHOLD}🧍 to challenge the Dragon`,
+      t('fightDragon.needsAtLeast', { playerName: player.name, threshold: DRAGON_UNITS_THRESHOLD }),
       'warning'
     );
     return;
   }
-  offerDragonChallenge(board, updateGameState, () => clearScreen(), 'Not Now');
+  offerDragonChallenge(board, updateGameState, () => clearScreen(), t('fightDragon.notNow'));
 }

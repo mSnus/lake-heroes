@@ -6,12 +6,14 @@ import { PlayerLabel } from './PlayerLabel';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
+import { useT } from '../i18n';
 
 interface CurrentPlayerProps {
   gameState: GameState;
 }
 
 export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
+  const t = useT();
   const activePlayer = gameState.activePlayer;
 
   const { tileGold, tileUnits, kingsGold, kingsUnits, diamondGold, totalGold, totalUnits } =
@@ -26,7 +28,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           className="player-stats-fame"
           id="statsFame"
           onClick={() =>
-            say('Your Fame. Gain it by owning the tiles and winning the battles!', 'info')
+            say(t('currentPlayer.fameTooltip'), 'info')
           }
           style={{ cursor: 'pointer' }}
         >
@@ -36,7 +38,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        <span>is&nbsp;at</span>
+        <span>{t('currentPlayer.isAt')}</span>
         <span style={{ color: gameState.activeTile.groupTextColor }}>
           {gameState.activeTile.name}{' '}
         </span>
@@ -54,7 +56,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                   key={c.tilePosition}
                   className="player-contract-badge"
                   onClick={() =>
-                    say(`King's contract: claim ${tile.name} for ${c.award}🟡!`, 'info')
+                    say(t('currentPlayer.kingsContractTooltip', { tileName: tile.name, award: c.award }), 'info')
                   }
                   style={{ cursor: 'pointer' }}
                 >
@@ -70,7 +72,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <div
           className="player-stats-data"
           id="statsOwnedResources"
-          onClick={() => say('Current gold you own', 'info')}
+          onClick={() => say(t('currentPlayer.goldTooltip'), 'info')}
         >
           <div
             className="player-stats-hint"
@@ -92,17 +94,17 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
               const items = [gold > 0 ? `${gold}🟡` : null, units > 0 ? `${units}🧍` : null].filter(
                 Boolean
               );
-              return items.length > 0 ? `${items.join(' and ')} ${label}` : null;
+              return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
             };
 
             const parts = [
-              fmt(tileGold, tileUnits, 'from your own tiles'),
-              fmt(kingsGold, kingsUnits, "as the King's grace"),
-              fmt(diamondGold, 0, 'from the Pristine Diamond 💎'),
+              fmt(tileGold, tileUnits, t('currentPlayer.fromYourTiles')),
+              fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
+              fmt(diamondGold, 0, t('currentPlayer.fromPristineDiamond')),
             ].filter(Boolean);
 
             say(
-              `Your wages after passing the King's Castle${parts.length ? ': ' + parts.join(', ') : ''}`,
+              t('currentPlayer.wagesMessage', { detail: parts.length ? ': ' + parts.join(', ') : '' }),
               'info'
             );
           }}
@@ -125,7 +127,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           id="statsArmy"
           onClick={() =>
             say(
-              `Your army: ${activePlayer.slotsUsed}/${activePlayer.armySlots} slots used, each holding up to 10 of one kind`,
+              t('currentPlayer.armyTooltip', { used: activePlayer.slotsUsed, total: activePlayer.armySlots }),
               'info'
             )
           }
@@ -161,7 +163,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                   <span
                     key={id}
                     className="player-artifact-badge"
-                    onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                    onClick={() => say(t('currentPlayer.artifactTooltip', { name: artifact.name, description: artifact.description }), 'info')}
                     style={{ cursor: 'pointer' }}
                   >
                     {artifact.emoji}

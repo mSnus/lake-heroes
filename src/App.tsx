@@ -133,11 +133,11 @@ function App() {
       if (!res.ok) throw new Error(`Failed to fetch tiles.json: ${res.status}`);
       const freshTemplates: TileJSON[] = await res.json();
 
-      const byName = new Map<string, TileJSON>(freshTemplates.map((t) => [t.name, t]));
+      const byId = new Map<string, TileJSON>(freshTemplates.map((t) => [t.id, t]));
 
       // Rebuild each tile from fresh JSON but carry over runtime state
       const updatedTiles = gs.tiles.map((tile) => {
-        const fresh = byName.get(tile.name);
+        const fresh = byId.get(tile.id);
         if (!fresh) return tile;
         return new Tile({
           ...fresh,

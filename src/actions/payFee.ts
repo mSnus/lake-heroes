@@ -4,6 +4,7 @@ import { say } from '../utils/say';
 import { clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { getEffectiveFee } from './feeOptions';
+import { t } from '../i18n';
 
 export function payFee(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -18,10 +19,20 @@ export function payFee(board: GameState | null, updateGameState: (board: GameSta
 
     let msg: string;
     if (owner.turnsToSkip > 0) {
-      msg = `${player.name} paid ${fee}🟡 for ${tile.name}, but ${owner.name} is in prison and collects nothing.`;
+      msg = t('payFee.paidButOwnerInPrison', {
+        playerName: player.name,
+        fee,
+        tileName: tile.name,
+        ownerName: owner.name,
+      });
     } else {
       owner.gold += fee;
-      msg = `${player.name} paid ${fee}🟡 to ${owner.name} for ${tile.name}.`;
+      msg = t('payFee.paid', {
+        playerName: player.name,
+        fee,
+        ownerName: owner.name,
+        tileName: tile.name,
+      });
     }
 
     // Set the banner too, otherwise it lingers on a stale (e.g. battle) message.

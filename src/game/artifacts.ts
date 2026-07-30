@@ -1,6 +1,7 @@
 import artifactsData from '../settings/artifacts.json';
 import { GameState } from './GameState';
 import { Player } from './Player';
+import { t } from '../i18n';
 
 export interface Artifact {
   id: string;
@@ -9,10 +10,35 @@ export interface Artifact {
   description: string;
 }
 
-export const ARTIFACTS: Artifact[] = artifactsData as Artifact[];
+interface RawArtifact {
+  id: string;
+  emoji: string;
+}
+
+// Raw (untranslated) data — name/description live in the locale files,
+// looked up fresh by id every time an Artifact is handed to a caller, so it
+// always reflects whatever language is currently active.
+const RAW_ARTIFACTS: RawArtifact[] = artifactsData as RawArtifact[];
+
+function translate(raw: RawArtifact): Artifact {
+  return {
+    id: raw.id,
+    emoji: raw.emoji,
+    name: t(`artifacts.${raw.id}.name`),
+    description: t(`artifacts.${raw.id}.description`),
+  };
+}
+
+/** All artifacts, translated for the current language. Recomputed on every
+ * call (cheap — 7 entries) rather than cached, so it can't go stale after a
+ * language switch. */
+export function getArtifacts(): Artifact[] {
+  return RAW_ARTIFACTS.map(translate);
+}
 
 export function getArtifact(id: string): Artifact | undefined {
-  return ARTIFACTS.find((a) => a.id === id);
+  const raw = RAW_ARTIFACTS.find((a) => a.id === id);
+  return raw ? translate(raw) : undefined;
 }
 
 export function hasArtifact(player: Player, id: string): boolean {
@@ -22,9 +48,9 @@ export function hasArtifact(player: Player, id: string): boolean {
 /** Picks a random artifact no player currently owns, or null if none remain. */
 export function pickRandomUnownedArtifact(board: GameState): Artifact | null {
   const ownedIds = new Set(board.players.flatMap((p) => p.artifacts));
-  const available = ARTIFACTS.filter((a) => !ownedIds.has(a.id));
+  const available = RAW_ARTIFACTS.filter((a) => !ownedIds.has(a.id));
   if (available.length === 0) return null;
-  return available[Math.floor(Math.random() * available.length)];
+  return translate(available[Math.floor(Math.random() * available.length)]);
 }
 
 /**
@@ -50,9 +76,9 @@ export function getArtifactRollBonus(
 
 /** The battle-relevant artifacts a player owns, for display under the names row. */
 export function getBattleArtifacts(player: Player): Artifact[] {
-  return ARTIFACTS.filter(
-    (a) => (a.id === 'broken-blade' || a.id === 'dwemer-axe') && hasArtifact(player, a.id)
-  );
+  return RAW_ARTIFACTS
+    .filter((a) => (a.id === 'broken-blade' || a.id === 'dwemer-axe') && hasArtifact(player, a.id))
+    .map(translate);
 }
 
 /** Per-artifact breakdown of `getArtifactRollBonus`, for display under the names row. */

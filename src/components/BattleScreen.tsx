@@ -18,6 +18,7 @@ import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
+import { useT } from '../i18n';
 import { DRAGON_UNITS } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
@@ -111,6 +112,7 @@ function leftmostAliveIndex(alive: boolean[]): number {
 }
 
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
+  const t = useT();
   const { attacker, gameState, updateGameState } = props;
 
   // ── Mode extraction (TypeScript narrowing per branch) ──
@@ -268,10 +270,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // ── Labels ──
   const defenderLabel = isDragon
-    ? 'The Dragon'
+    ? t('battleScreen.theDragon')
     : isCaravan || isAmbush
-      ? isAmbush ? 'Ambushers' : 'Caravan Guards'
-      : (defender?.name ?? 'Guards');
+      ? isAmbush ? t('battleScreen.ambushers') : t('battleScreen.caravanGuards')
+      : (defender?.name ?? t('battleScreen.guards'));
   const defenderColor = isDragon
     ? '#ff5816'
     : isCaravan || isAmbush
@@ -291,18 +293,18 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (loggedRef.current) return;
     loggedRef.current = true;
     if (isAmbush) {
-      say(`${attacker.name} is ambushed by ${ambushAttackerUnits}🥷!`, 'warning');
+      say(t('battleScreen.ambushedMessage', { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
       return;
     }
     const goal = isCaravan
-      ? (caravanSlaves ? `${caravanPrize}🧍 in chains` : `${caravanPrize}🟡 of loot`)
+      ? (caravanSlaves ? t('battleScreen.goalChains', { amount: caravanPrize! }) : t('battleScreen.goalLoot', { amount: caravanPrize! }))
       : isDragon
-        ? 'the kingdom'
+        ? t('battleScreen.goalKingdom')
         : isPlayerBattle
-          ? 'glory'
+          ? t('battleScreen.goalGlory')
           : tile!.name;
     const defEmoji = isDragon ? '🐉' : isCaravan ? '🥷' : '🧍';
-    say(`${attacker.name} attacks ${defenderLabel}'s ${initialDefence}${defEmoji} for ${goal}`, 'info');
+    say(t('battleScreen.attacksMessage', { attacker: attacker.name, defender: defenderLabel, defence: initialDefence, emoji: defEmoji, goal }), 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -577,16 +579,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
 
   const headerText = isCaravan
-    ? 'Caravan Raid!'
+    ? t('battleScreen.caravanRaid')
     : isDragon
-      ? 'Dragon Battle'
+      ? t('battleScreen.dragonBattle')
       : isPlayerBattle
-        ? "Hero's Hour"
+        ? t('battleScreen.heroHour')
         : isAmbush
-          ? 'Ambush'
+          ? t('battleScreen.ambush')
           : isTile
-            ? `Battle for ${tile!.name}`
-            : 'Battle';
+            ? t('battleScreen.battleFor', { tileName: tile!.name })
+            : t('battleScreen.battle');
 
   return (
     <ScreenBackground image={isAmbush ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
@@ -629,7 +631,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
       <div className="battle-screen">
         <div className="battle-header">{headerText}</div>
-        {isBrawl && <div className="battle-brawl-tag">Brawl! ✊</div>}
+        {isBrawl && <div className="battle-brawl-tag">{t('battleScreen.brawl')} ✊</div>}
 
         <div className="battle-names-row">
           <div className="bc-attacker">
@@ -655,7 +657,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           <div className="battle-vs-units">
             <div className='vs-icon'>⚔️</div>
             {isAmbush ? initialDefence : attackerUnits}
-            <span className="vs"> vs </span>
+            <span className="vs"> {t('common.vs')} </span>
             {isAmbush ? attackerUnits : initialDefence}
           </div>
           <div className="bc-defender">
@@ -709,12 +711,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
         {isBrawl && phase === 'attacker-roll' && !rollingAttacker && !isAutoAttacker && (
           <DecoratedButton onClick={handleAttackerRoll}>
-            ⚔️ Attack!
+            ⚔️ {t('battleScreen.attack')}
           </DecoratedButton>
         )}
         {isBrawl && phase === 'defender-roll' && !isAutoDefender && !rollingDefender && (
           <DecoratedButton onClick={handleDefenderRoll}>
-            🛡️ Defend!
+            🛡️ {t('battleScreen.defend')}
           </DecoratedButton>
         )}
 
@@ -726,20 +728,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <span className="battle-result-verdict">
                 {isAmbush
                   ? (outcome === 'defender'
-                      ? 'The ambush is repelled!'
+                      ? t('battleScreen.ambushRepelled')
                       : outcome === 'attacker'
-                        ? 'Defeat!'
-                        : 'A bloody stalemate!')
+                        ? t('battleScreen.defeat')
+                        : t('battleScreen.bloodyStalemate'))
                   : (outcome === 'attacker'
-                      ? 'Glorious victory!'
+                      ? t('battleScreen.gloriousVictory')
                       : outcome === 'defender'
-                        ? 'Defeat!'
-                        : 'A tie!')}
+                        ? t('battleScreen.defeat')
+                        : t('battleScreen.aTie'))}
               </span>
             </div>
             <p className="battle-result-message">{resultMsg}</p>
             <DecoratedButton onClick={handleClose}>
-              {isAmbush ? '🍀 Keep calm & carry on' : '🩸 Was it worth it?'}
+              {isAmbush ? t('battleScreen.keepCalmCarryOn') : t('battleScreen.wasItWorthIt')}
             </DecoratedButton>
           </div>
         )}

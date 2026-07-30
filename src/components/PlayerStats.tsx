@@ -1,5 +1,6 @@
 import React from 'react';
 import { Player } from '../game/Player';
+import { useT } from '../i18n';
 import '../styles/PlayerStats.css';
 
 interface PlayerStatsProps {
@@ -20,6 +21,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
   income,
   className,
 }) => {
+  const t = useT();
   return (
     <div className={'player-stats-wrapper' + (className ? ' ' + className : '')}>
       {showFame && (
@@ -47,7 +49,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
         )}
       </div>
       {income && (
-        <div className="player-stats-income" title="Income per year">
+        <div className="player-stats-income" title={t('playerStats.incomePerYear')}>
           <div className="player-stats-hint" style={{ backgroundColor: player.color }}>
             🏰
           </div>

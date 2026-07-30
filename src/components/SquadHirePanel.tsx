@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { useT } from '../i18n';
 import '../styles/SquadHirePanel.css';
 
 interface HireRowProps {
@@ -15,6 +16,7 @@ interface HireRowProps {
 }
 
 const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice, maxForFame, onBuy }) => {
+  const t = useT();
   const goldCap = Math.floor(player.gold / unitPrice);
   const slotCap = player.remainingCapacity(tier);
   const maxAmount = Math.min(goldCap, maxForFame, slotCap);
@@ -81,7 +83,7 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
           onClick={handleBuy}
           disabled={!amount || amount <= 0 || amount > maxAmount}
         >
-          Hire {amount > 0 ? amount : ''}{emoji}
+          {t('common.hire')} {amount > 0 ? amount : ''}{emoji}
         </button>
       </div>
     </div>
@@ -99,15 +101,16 @@ interface SquadHirePanelProps {
  * only when `showRiders` is true. Each row hires independently, so a visit
  * can recruit both tiers without closing in between. */
 export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRiders, onBuy }) => {
+  const t = useT();
   const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
 
   return (
     <div className="squad-hire-panel">
-      <div className="squad-hire-panel-title">Hire:</div>
+      <div className="squad-hire-panel-title">{t('squadHirePanel.hireTitle')}</div>
       <HireRow
         player={player}
         tier="militia"
-        label="Militia"
+        label={t('squadHirePanel.militia')}
         emoji="🧍"
         unitPrice={UNIT_PRICE}
         maxForFame={maxForFame}
@@ -117,7 +120,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
         <HireRow
           player={player}
           tier="riders"
-          label="Knights"
+          label={t('squadHirePanel.knights')}
           emoji="🐎"
           unitPrice={RIDER_UNIT_PRICE}
           maxForFame={maxForFame}

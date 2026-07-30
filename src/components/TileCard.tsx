@@ -12,6 +12,7 @@ import { syndicateMultiplier } from '../game/syndicate';
 import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
+import { useT } from '../i18n';
 
 const fmtPrice = (gold: number, units: number, join: string = ''): string => {
   const hasGold = gold > 0;
@@ -54,6 +55,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   defaultExpanded = false,
   demoMode = false,
 }) => {
+  const t = useT();
   const [expanded, setExpanded] = React.useState(defaultExpanded);
 
   if (!tile || !tile.name) return null;
@@ -159,7 +161,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const handleUpgrade = () => {
     if (demoMode) return;
 
-    if (!window.confirm(`Really upgrade ${tile.name} for ${nextPrice.gold}🟡?`)) return;
+    if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: nextPrice.gold }))) return;
 
     if (!nextPrice || !activePlayer || !gameState) return;
 
@@ -170,7 +172,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     gameState.players[gameState.playerOrder[gameState.activePlayerIndex]].gold =
       (activePlayer.gold || 0) - (nextPrice.gold || 0);
     tile._level = nextLevel;
-    say(`${activePlayer.name} upgraded ${tile.name} to level ${nextLevel}`, 'info');
+    say(t('tileCard.upgradedMessage', { playerName: activePlayer.name, tileName: tile.name, level: nextLevel }), 'info');
     updateGameState && updateGameState(gameState);
   };
 
@@ -187,7 +189,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     if (
       !window.confirm(
-        `Sell ${tile.name} for ${fmtPrice(sellPrice.gold, sellPrice.units, 'and')}, seriously?`
+        t('tileCard.confirmSell', { tileName: tile.name, price: fmtPrice(sellPrice.gold, sellPrice.units, t('common.and')) })
       )
     )
       return;
@@ -197,7 +199,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     updateGameState && updateGameState(gameState);
 
     say(
-      `${activePlayer.name} sold ${tile.name} and received ${refunds.gold}🟡 and ${refunds.units}🧍`,
+      t('tileCard.soldMessage', { playerName: activePlayer.name, tileName: tile.name, gold: refunds.gold, units: refunds.units }),
       'info'
     );
   };
@@ -211,7 +213,13 @@ export const TileCard: React.FC<TileCardProps> = ({
     if (!gameState || !updateGameState || !activePlayer) return;
 
     const militiaInput = window.prompt(
-      `Militia to garrison at ${tile.name}? (${activePlayer.militia}🧍 traveling, ${tile.garrisonMilitia}🧍 already here, ${tile.garrisonSlots} slot${tile.garrisonSlots === 1 ? '' : 's'} of 10 here)`,
+      t('tileCard.garrisonMilitiaPrompt', {
+        tileName: tile.name,
+        traveling: activePlayer.militia,
+        here: tile.garrisonMilitia,
+        slots: tile.garrisonSlots,
+        slotWord: tile.garrisonSlots === 1 ? t('common.slot') : t('common.slots'),
+      }),
       String(tile.garrisonMilitia)
     );
     if (militiaInput === null) return;
@@ -221,7 +229,11 @@ export const TileCard: React.FC<TileCardProps> = ({
     let targetRiders = tile.garrisonRiders;
     if (activePlayer.isKnight) {
       const ridersInput = window.prompt(
-        `Riders to garrison at ${tile.name}? (${activePlayer.riders}🐎 traveling, ${tile.garrisonRiders}🐎 already here)`,
+        t('tileCard.garrisonRidersPrompt', {
+          tileName: tile.name,
+          traveling: activePlayer.riders,
+          here: tile.garrisonRiders,
+        }),
         String(tile.garrisonRiders)
       );
       if (ridersInput === null) return;
@@ -297,7 +309,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <div>
                         <div className="big-icon-hint">
                           <div>{tile.fee}🟡</div>
-                          <div>fee</div>
+                          <div>{t('tileCard.fee')}</div>
                         </div>
                       </div>
                     )}
@@ -308,7 +320,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                           <div>
                             +{bonus(tile.level)} {bonusTypeIcon}
                           </div>
-                          <div>per year</div>
+                          <div>{t('tileCard.perYear')}</div>
                         </div>
                       </div>
                     )}
@@ -320,11 +332,11 @@ export const TileCard: React.FC<TileCardProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         if (tile.owner !== activePlayer?.id) {
-                          say(`Defence: ${tile.defence}`, 'info');
+                          say(t('tileCard.defenceInfo', { value: tile.defence }), 'info');
                           return;
                         }
                         if (gameState?.activeTile !== tile) {
-                          say('You could only set garrison while visiting your tile', 'warning');
+                          say(t('tileCard.garrisonWarning'), 'warning');
                           return;
                         }
                         handleGarrison();
@@ -334,7 +346,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <div>
                         {tile.garrisonSlots}🏯 {tile.garrison}🛡️
                       </div>
-                      <div>defence</div>
+                      <div>{t('tileCard.defence')}</div>
                     </div>
                   </div>
                 </div>
@@ -345,14 +357,14 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div className="tile-card-base-row">
                     <div className="big-icon-hint">
                       +{bonus(tile.level)} {bonusTypeIcon}
-                      <div>per year</div>
+                      <div>{t('tileCard.perYear')}</div>
                     </div>
                   </div>
 
                   <div className="tile-card-base-row">
                     <div>
                       <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                        {cantAfford ? "can't afford" : 'to own:'}
+                        {cantAfford ? t('tileCard.cantAfford') : t('tileCard.toOwn')}
                       </div>
                       <div>
                         <div>
@@ -413,7 +425,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       }
                       {...upgradeRowProps(1)}
                     >
-                      <td className={class1}>base</td>
+                      <td className={class1}>{t('tileCard.base')}</td>
                       <td className={class1}>→</td>
                       <td className={class1}>
                         +{bonus(1)} {bonusTypeIcon}
@@ -454,7 +466,7 @@ export const TileCard: React.FC<TileCardProps> = ({
             {expanded && (mode === 'owned' || demoMode) && (
               <div className="tile-card-sell" style={{ marginTop: '1rem', display: 'flex', gap: '8px' }}>
                 <div onClick={() => handleSell()} className={'tile-card-button'}>
-                  🪙 sell
+                  🪙 {t('tileCard.sell')}
                 </div>
               </div>
             )}
@@ -497,7 +509,7 @@ export const TileCard: React.FC<TileCardProps> = ({
         <div>
           {couldBuy && isOnFire && (
             <div className="tile-card-onfire" style={{ textAlign: 'center', padding: '8px' }}>
-              🔥 still smoldering — claimable next round
+              🔥 {t('tileCard.stillSmoldering')}
             </div>
           )}
           {couldBuy &&
@@ -517,9 +529,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                   filter: 'drop-shadow(2px 2px 3px #00000050)',
                 }}
               >
-                {isBanzai ? 'Banzai! ' : 'Claim it! '}
+                {isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}{' '}
                 {attackEmoji}
-                {Math.round(attackerPower)} <span style={{ fontSize: '0.9rem' }}>vs</span>{' '}
+                {Math.round(attackerPower)} <span style={{ fontSize: '0.9rem' }}>{t('common.vs')}</span>{' '}
                 {defence(1)}
               </DecoratedButton>
             )}

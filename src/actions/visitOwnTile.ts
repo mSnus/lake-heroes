@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { syndicateMultiplier } from '../game/syndicate';
+import { t } from '../i18n';
 export function handleVisitOwnTile(
   board: GameState | null,
   updateGameState: (board: GameState) => void
@@ -30,9 +31,9 @@ export function handleVisitOwnTile(
     player.units += unitsReward;
   }
 
-  const rewardsStr = rewards.join(' and ');
-  say(`${tile.name} provides ${player.name} with ${rewardsStr}${syndicateTag}!`, 'debug');
-  board.gameMessage = `Your ${tile.name} provides you with ${rewardsStr}${syndicateTag}!`;
+  const rewardsStr = rewards.join(` ${t('common.and')} `);
+  say(t('visitOwnTile.provides', { tileName: tile.name, playerName: player.name, rewards: rewardsStr, syndicateTag }), 'debug');
+  board.gameMessage = t('visitOwnTile.yourTileProvides', { tileName: tile.name, rewards: rewardsStr, syndicateTag });
 
   updateGameState(board);
   setEndTurn();

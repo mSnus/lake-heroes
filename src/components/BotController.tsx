@@ -25,6 +25,7 @@ import {
 } from '../ai/decisions';
 import { findSyndicateSaleCandidate } from '../ai/syndicate';
 import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
+import { t } from '../i18n';
 
 // Matches the ~600ms auto-roll delay BattleScreen already uses for NPC sides.
 const BOT_ACTION_DELAY_MS = 600;
@@ -32,8 +33,12 @@ const BOT_ACTION_DELAY_MS = 600;
 // to read the outcome before it's dismissed.
 const BOT_CLOSE_DELAY_MS = 800;
 
-function announce(player: Player, decision: string) {
-  say(`${player.name} decided to ${decision}`, 'info');
+/** `decisionKey` is an i18n key (translated fresh at call time — this file
+ * has no React render cycle to subscribe to language changes, but that's
+ * fine since these are one-shot toasts fired in direct response to a bot
+ * action, always reading whatever language is active right now). */
+function announce(player: Player, decisionKey: string, params?: Record<string, string | number>) {
+  say(t('botController.decided', { name: player.name, decision: t(decisionKey, params) }), 'info');
 }
 
 interface BotAction {
@@ -68,7 +73,7 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
   // Undefended tile — a single free-takeover button, no decision to make.
   const claimUndefended = buttons.find((b) => b.action === 'claim-undefended');
   if (claimUndefended) {
-    announce(player, 'take the undefended tile');
+    announce(player, 'botController.takeUndefendedTile');
     return action(claimUndefended.onClick);
   }
 
@@ -101,29 +106,29 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
       const decision = pickWizardGuardsAction(board, player, tile, opts);
       switch (decision.kind) {
         case 'pay':
-          announce(player, 'pay the fee');
+          announce(player, 'botController.payTheFee');
           return action(buttons.find((b) => b.action === 'pay-fee')?.onClick ?? (() => {}));
         case 'fight':
-          announce(player, 'fight');
+          announce(player, 'botController.fight');
           return action(buttons.find((b) => b.action === 'fight-tile')?.onClick ?? (() => {}));
         case 'sell-one-then-fight':
-          announce(player, 'sell tiles to fight');
+          announce(player, 'botController.sellTilesToFight');
           return action(sellThenResolve(false, decision.tile));
         case 'sell-one-then-pay':
-          announce(player, 'sell tiles to pay the fee');
+          announce(player, 'botController.sellTilesToPayFee');
           return action(sellThenResolve(true, decision.tile));
         case 'sell-multiple-then-pay':
-          announce(player, 'sell tiles to pay the fee');
+          announce(player, 'botController.sellTilesToPayFee');
           return action(sellThenResolve(true, undefined, sortTilesBySacrifice(board, player)));
         case 'accept-loss':
-          announce(player, 'accept the loss');
+          announce(player, 'botController.acceptTheLoss');
           return action(buttons.find((b) => b.action === 'accept-loss')?.onClick ?? (() => {}));
       }
     }
 
     const decision = pickGuardsAction(player, opts);
     if (decision === 'sell-then-resolve') {
-      announce(player, opts.canSellForFee ? 'sell tiles to pay the fee' : 'sell tiles to fight');
+      announce(player, opts.canSellForFee ? 'botController.sellTilesToPayFee' : 'botController.sellTilesToFight');
       return action(sellThenResolve(opts.canSellForFee));
     }
 
@@ -132,9 +137,9 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
       fight: 'fight-tile',
       'accept-loss': 'accept-loss',
     };
-    if (decision === 'pay') announce(player, 'pay the fee');
-    if (decision === 'fight') announce(player, 'fight');
-    if (decision === 'accept-loss') announce(player, 'accept the loss');
+    if (decision === 'pay') announce(player, 'botController.payTheFee');
+    if (decision === 'fight') announce(player, 'botController.fight');
+    if (decision === 'accept-loss') announce(player, 'botController.acceptTheLoss');
     const button = buttons.find((b) => b.action === actionByDecision[decision]);
     return button ? action(button.onClick) : null;
   }
@@ -142,7 +147,7 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
   // Dragon challenge (proactive offer or random ambush) — screenType 'dragon'.
   if (screen!.screenType === 'dragon') {
     const fight = shouldChallengeDragon(player);
-    if (fight) announce(player, 'fight the dragon');
+    if (fight) announce(player, 'botController.fightTheDragon');
     const button = buttons.find((b) => b.action === (fight ? 'fight' : 'continue'));
     return button ? action(button.onClick) : null;
   }
@@ -150,7 +155,7 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
   // Caravan — screenType 'caravan', buttons carry no action tag: [0]=pass, [1]=attack.
   if (screen!.screenType === 'caravan' && buttons.length === 2) {
     const attack = shouldAttackCaravan(player, screen!.caravanDefence ?? 0);
-    if (attack) announce(player, 'attack the caravan');
+    if (attack) announce(player, 'botController.attackTheCaravan');
     return action(buttons[attack ? 1 : 0].onClick);
   }
 
@@ -193,13 +198,13 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
       if (getCharacterConfig(player)?.buildsSyndicates && tile.requiredFame <= player.fame) {
         const saleCandidate = findSyndicateSaleCandidate(board, player, tile);
         if (saleCandidate) {
-          announce(player, `sell ${saleCandidate.name} to complete a syndicate with ${tile.name}`);
+          announce(player, 'botController.sellForSyndicate', { saleName: saleCandidate.name, tileName: tile.name });
           sellTile(board, player, saleCandidate);
         }
       }
       player.hasConsideredClaimThisTurn = true;
       if (shouldClaimTile(player, tile, board)) {
-        announce(player, `claim ${tile.name}`);
+        announce(player, 'botController.claimTile', { tileName: tile.name });
         claimTile(board, updateGameState);
       }
       updateGameState(board);
@@ -227,7 +232,7 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
   const garrisonPick = pickGarrisonAction(board, player);
   if (garrisonPick) {
     return action(() => {
-      announce(player, `garrison ${garrisonPick.amount}🧍 at ${garrisonPick.tile.name}`);
+      announce(player, 'botController.garrisonTile', { amount: garrisonPick.amount, tileName: garrisonPick.tile.name });
       setTileGarrison(
         board,
         player,

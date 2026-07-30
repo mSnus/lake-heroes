@@ -2,6 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { DRAGON_UNITS } from '../../game/constants';
 import { BattleResolution, BattleOutcome, logBattleSummary, lossStr } from './common';
+import { t } from '../../i18n';
 
 /**
  * Resolve the dragon challenge.
@@ -23,15 +24,15 @@ export function resolveDragonBattle(
   let lostBg = false;
 
   if (outcome === 'attacker') {
-    board.gameMessage = `${attacker.name} slays the Dragon! 🐉 VICTORY!`;
+    board.gameMessage = t('resolveDragonBattle.slaysGameMessage', { attackerName: attacker.name });
     board.gameOver = true;
-    message = 'The Dragon is slain! 🐉 VICTORY!';
+    message = t('resolveDragonBattle.slaysMessage');
     victoryBg = true;
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(DRAGON_UNITS / 4);
     attacker.units = Math.max(0, attacker.units - unitLoss);
-    board.gameMessage = `${attacker.name} wounded the Dragon, but he escaped, taking ${unitLoss}🧍`;
-    message = `The wounded Dragon retreats, taking ${unitLoss}🧍 with him`;
+    board.gameMessage = t('resolveDragonBattle.woundedGameMessage', { attackerName: attacker.name, units: unitLoss });
+    message = t('resolveDragonBattle.woundedMessage', { units: unitLoss });
     lostBg = true;
   } else {
     const unitLoss = Math.ceil(attacker.units / 2);
@@ -39,12 +40,15 @@ export function resolveDragonBattle(
     attacker.units = Math.max(0, attacker.units - unitLoss);
     attacker.gold = Math.max(0, attacker.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);
-    board.gameMessage = `${attacker.name} was defeated by the Dragon!${loss ? ` Lost ${loss}` : ''}`;
-    message = `${loss ? `Lost ${loss}` : 'Defeated'}`;
+    board.gameMessage = t('resolveDragonBattle.defeatedGameMessage', {
+      attackerName: attacker.name,
+      lossStr: loss ? t('resolveDragonBattle.lostSuffix', { loss }) : '',
+    });
+    message = loss ? t('resolveDragonBattle.lost', { loss }) : t('resolveDragonBattle.defeated');
     lostBg = true;
   }
 
-  logBattleSummary(attacker, 'The Dragon', outcome, null, unitsBefore, goldBefore);
+  logBattleSummary(attacker, t('resolveDragonBattle.theDragon'), outcome, null, unitsBefore, goldBefore);
 
   return { outcome, message, victoryBg, lostBg };
 }

@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { UnitTier, remainingCapacity } from '../game/army';
 import { say } from '../utils/say';
+import { t } from '../i18n';
 
 function moveTier(player: Player, tile: Tile, tier: UnitTier, requestedDelta: number): void {
   if (requestedDelta === 0) return;
@@ -52,7 +53,12 @@ export function setTileGarrison(
   moveTier(player, tile, 'riders', Math.max(0, Math.floor(targetRiders)) - tile.garrisonRiders);
 
   say(
-    `${player.name} sets ${tile.name}'s garrison to ${tile.garrisonMilitia}🧍/${tile.garrisonRiders}🐎`,
+    t('garrisonTile.setGarrison', {
+      playerName: player.name,
+      tileName: tile.name,
+      militia: tile.garrisonMilitia,
+      riders: tile.garrisonRiders,
+    }),
     'debug'
   );
 }

@@ -1,11 +1,12 @@
 import { GameState } from '../game/GameState';
 import { changeFame } from '../utils/fame';
 import { say } from '../utils/say';
+import { t } from '../i18n';
 
 export function becomeBeggar(board: GameState, updateGameState: (board: GameState) => void) {
   const player = board.activePlayer;
 
-  say(`${player.name} becomes a beggar!`, 'error');
+  say(t('becomeBeggar.becomesBeggar', { playerName: player.name }), 'error');
 
   // 1. If player has any tiles, they are set unowned, level 1 (and all upgrades are removed)
   let lostTilesCount = 0;
@@ -26,7 +27,7 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   // 3. Player looses all gold
   player.gold = 0;
 
-  say(`${loss} units leave ${player.name} as his reputation vanishes`, 'warning');
+  say(t('becomeBeggar.unitsLeave', { units: loss, playerName: player.name }), 'warning');
   changeFame(player, -1);
 
   // 4. Moved to prison
@@ -34,12 +35,25 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   player.position = 13;
   player.turnsToSkip = 1;
 
-  say(`${player.name} is captured and moved to Prison`, 'warning');
+  say(t('becomeBeggar.capturedAndMoved', { playerName: player.name }), 'warning');
 
   const tilesMsg =
-    lostTilesCount > 0 ? `Lost ${lostTilesCount} tile${lostTilesCount > 1 ? 's' : ''} and ` : '';
-  const lostUnitsMsg = loss > 0 ? `${loss} unit${loss !== 1 ? 's' : ''} deserted` : ``;
-  board.gameMessage = `${player.name} became a prisoner of war! ${tilesMsg}${lostUnitsMsg}. Imprisoned, but still noble.`;
+    lostTilesCount > 0
+      ? t(lostTilesCount === 1 ? 'becomeBeggar.lostTileSingular' : 'becomeBeggar.lostTilesPlural', {
+          count: lostTilesCount,
+        })
+      : '';
+  const lostUnitsMsg =
+    loss > 0
+      ? t(loss === 1 ? 'becomeBeggar.unitDesertedSingular' : 'becomeBeggar.unitsDesertedPlural', {
+          count: loss,
+        })
+      : '';
+  board.gameMessage = t('becomeBeggar.gameMessage', {
+    playerName: player.name,
+    tilesMsg,
+    lostUnitsMsg,
+  });
 
   updateGameState(board);
 }

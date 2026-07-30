@@ -2,6 +2,7 @@ import React from 'react';
 import GameModal from './GameModal';
 import { DecoratedButton } from './DecoratedButton';
 import { SayLevel } from '../utils/say';
+import { useT } from '../i18n';
 import '../styles/modal.css';
 
 export interface LogMessage {
@@ -16,6 +17,7 @@ interface GameLogModalProps {
 }
 
 const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
+  const t = useT();
   const getColor = (level: SayLevel) => {
     switch (level) {
       case 'error':
@@ -47,7 +49,7 @@ const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
             minHeight: '200px',
           }}
         >
-          {messages.length === 0 && <p>No messages yet.</p>}
+          {messages.length === 0 && <p>{t('gameLogModal.noMessages')}</p>}
           {messages
             .slice()
             .reverse()
@@ -71,7 +73,7 @@ const GameLogModal: React.FC<GameLogModalProps> = ({ messages, onClose }) => {
             ))}
         </ul>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <DecoratedButton onClick={onClose}>Close</DecoratedButton>
+          <DecoratedButton onClick={onClose}>{t('common.close')}</DecoratedButton>
         </div>
       </div>
     </GameModal>

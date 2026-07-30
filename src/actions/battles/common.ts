@@ -1,6 +1,7 @@
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
 import { BRAWL_THRESHOLD } from '../../game/constants';
+import { t } from '../../i18n';
 
 export type BattleOutcome = 'attacker' | 'defender' | 'tie';
 
@@ -50,34 +51,51 @@ export function logBattleSummary(
   const goldDiff = goldAfter - goldBefore;
 
   if (outcome === 'attacker' && claimed && capturedTileName) {
-    const unitsPart = unitDiff > 0 ? ` losing ${unitDiff}🧍` : '';
-    const paidPart = goldDiff < 0 ? ` and paid ${-goldDiff}🟡 to own it` : '';
+    const unitsPart = unitDiff > 0 ? t('battleCommon.losingUnitsPart', { units: unitDiff }) : '';
+    const paidPart = goldDiff < 0 ? t('battleCommon.paidToOwnPart', { gold: -goldDiff }) : '';
     say(
-      `⚔️ ${attacker.name} won the battle for ${capturedTileName}${unitsPart}${paidPart}`,
+      t('battleCommon.wonBattleForTile', {
+        attackerName: attacker.name,
+        tileName: capturedTileName,
+        unitsPart,
+        paidPart,
+      }),
       'success'
     );
     return;
   }
 
-  const outcomeVerb =
-    outcome === 'attacker' ? 'wins a battle' : outcome === 'defender' ? 'loses a battle' : 'ties';
+  const outcomeVerb = t(
+    outcome === 'attacker'
+      ? 'battleCommon.winsVerb'
+      : outcome === 'defender'
+        ? 'battleCommon.losesVerb'
+        : 'battleCommon.tiesVerb'
+  );
   const capturePart =
-    outcome === 'attacker' && capturedTileName ? `, razed ${capturedTileName}` : '';
+    outcome === 'attacker' && capturedTileName ? t('battleCommon.razedPart', { tileName: capturedTileName }) : '';
   const unitsPart =
     unitDiff > 0
-      ? `, lost ${unitDiff}🧍 (${unitsBefore}→${unitsAfter})`
+      ? t('battleCommon.lostUnitsPart', { units: unitDiff, before: unitsBefore, after: unitsAfter })
       : unitDiff < 0
-        ? `, gained ${-unitDiff}🧍 (${unitsBefore}→${unitsAfter})`
+        ? t('battleCommon.gainedUnitsPart', { units: -unitDiff, before: unitsBefore, after: unitsAfter })
         : '';
   const goldPart =
     goldDiff > 0
-      ? `, gained ${goldDiff}🟡`
+      ? t('battleCommon.gainedGoldPart', { gold: goldDiff })
       : goldDiff < 0
-        ? `, lost ${-goldDiff}🟡 (${goldBefore}→${goldAfter})`
+        ? t('battleCommon.lostGoldPart', { gold: -goldDiff, before: goldBefore, after: goldAfter })
         : '';
   const logLevel = outcome === 'attacker' ? 'success' : outcome === 'defender' ? 'error' : 'info';
   say(
-    `⚔️ ${attacker.name} ${outcomeVerb} with ${defenderLabel}${capturePart}${unitsPart}${goldPart}`,
+    t('battleCommon.logLine', {
+      attackerName: attacker.name,
+      outcomeVerb,
+      defenderLabel,
+      capturePart,
+      unitsPart,
+      goldPart,
+    }),
     logLevel
   );
 }

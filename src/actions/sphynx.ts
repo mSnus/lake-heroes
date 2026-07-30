@@ -3,6 +3,7 @@ import { say } from '../utils/say';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { hasArtifact } from '../game/artifacts';
+import { t } from '../i18n';
 
 /**
  * Handle landing on Sphynx tile.
@@ -27,8 +28,8 @@ export function handleSphynx(
 
   // Pipe of Hamelin charms the Sphynx, negating any negative outcome (rolls 1–4).
   if (pipeSaved) {
-    message = `You calm the growling Sphynx with your Pipe 🪈 and hastily leave.`;
-    screenMessage = `You calm growling Sphynx with your Pipe 🪈 and hastily leave`;
+    message = t('sphynx.pipeSavedMessage');
+    screenMessage = t('sphynx.pipeSavedScreen');
   } else if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
     if (player.gold > 0) {
@@ -37,11 +38,11 @@ export function handleSphynx(
       const loss = Math.min(player.gold, roundedUp50);
 
       player.gold -= loss;
-      message = `Lost half of gold: -${loss}🟡`;
-      screenMessage = `You escape the Sphynx losing ${loss}🟡`;
+      message = t('sphynx.lostGoldMessage', { gold: loss });
+      screenMessage = t('sphynx.lostGoldScreen', { gold: loss });
     } else {
-      message = `He sees your poverty and lets you go.`;
-      screenMessage = `The Sphinx refuses to deal with beggars`;
+      message = t('sphynx.povertyMessage');
+      screenMessage = t('sphynx.povertyScreen');
     }
   } else if (roll === 3 || roll === 4) {
     // Lose 33% units, minimum 1, floor at 0
@@ -49,23 +50,23 @@ export function handleSphynx(
     const loss = Math.max(1, raw);
 
     player.units = Math.max(0, player.units - loss);
-    message = `Sphynx ate ${loss}🧍`;
-    screenMessage = `Sphynx eats ${loss}🧍, but you escape.`;
+    message = t('sphynx.ateUnitsMessage', { units: loss });
+    screenMessage = t('sphynx.ateUnitsScreen', { units: loss });
   } else if (roll === 5) {
-    message = `Nothing happens.`;
-    screenMessage = `Sphynx remained silent.`;
+    message = t('sphynx.nothingMessage');
+    screenMessage = t('sphynx.nothingScreen');
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 100, with a floor of 800
     const bonusBase = player.gold * 0.2;
     const gain = Math.max(800, Math.ceil(bonusBase / 100) * 100);
     player.gold += gain;
-    message = `Received ${gain}🟡 (20%).`;
-    screenMessage = `Sphynx rewarded you with ${gain}🟡 for your wisdom!`;
+    message = t('sphynx.gainGoldMessage', { gold: gain });
+    screenMessage = t('sphynx.gainGoldScreen', { gold: gain });
   }
 
   // Visiting the Sphynx always grants fame, win or lose.
   player.fame += 1;
-  message += ` Fame +1🏆 for the adventure.`;
+  message += ' ' + t('sphynx.fameSuffix');
 
   updateGameState(gameState);
 
@@ -78,7 +79,7 @@ export function handleSphynx(
     message: screenMessage,
     buttons: [
       {
-        label: 'Continue',
+        label: t('common.continue'),
         action: 'end-turn',
         onClick: () => {
           clearScreen();

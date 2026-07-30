@@ -5,6 +5,7 @@ import { say } from '../utils/say';
 import { showScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { TileClaimScreen } from '../components/TileClaimScreen';
+import { t } from '../i18n';
 
 /**
  * A rival's tile with an empty garrison (defence 0) needs no fight — the
@@ -39,8 +40,8 @@ export function claimUndefendedTile(
   changeFame(attacker, 1);
   if (defender) changeFame(defender, -1);
 
-  board.gameMessage = `${attacker.name} finds ${tile.name} defenceless and takes it!`;
-  say(`🏴 ${attacker.name} claims the undefended ${tile.name} without a fight`, 'success');
+  board.gameMessage = t('claimUndefendedTile.findsDefenceless', { attackerName: attacker.name, tileName: tile.name });
+  say(t('claimUndefendedTile.claimsWithoutFight', { attackerName: attacker.name, tileName: tile.name }), 'success');
 
   setEndTurn();
   updateGameState(board);

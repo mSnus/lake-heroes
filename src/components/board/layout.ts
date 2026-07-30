@@ -10,16 +10,15 @@ import { TILE_COUNT } from '../../game/constants';
 //     4. Distribute stack 0 → stack 1 → ... into free slots in order
 //   Guarantees: no same-group neighbours within a stack, cheapest tiles appear earliest
 export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefined)[] {
-  const byName = (substr: string) =>
-    allTemplates.find((t) => typeof t?.name === 'string' && t.name.includes(substr));
+  const byId = (id: string) => allTemplates.find((t) => t?.id === id);
 
-  const kingCastle = byName('King Castle');
-  const prison = byName('Prison');
-  const treasure = byName('Treasure');
-  const tavern = byName('Tavern');
-  const sphynx = byName('Sphynx');
-  const joker = byName('Joker');
-  const portal = byName('Portal');
+  const kingCastle = byId('king-castle');
+  const prison = byId('prison');
+  const treasure = byId('treasure-chest');
+  const tavern = byId('tavern');
+  const sphynx = byId('sphynx');
+  const joker = byId('joker');
+  const portal = byId('portal');
 
   if (!kingCastle) throw new Error('King Castle tile not found');
   if (!treasure) throw new Error('Treasure tile not found');

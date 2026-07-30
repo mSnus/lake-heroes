@@ -1,10 +1,18 @@
 import { FEE_MULTIPLIER, BRAWL_THRESHOLD } from './constants';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity } from './army';
+import { t, tOptional } from '../i18n';
 
 export interface TileJSON {
+  /** Stable, never-translated slug (e.g. "king-castle") — every game-logic
+   * check against "which tile is this" uses this, never the (translatable)
+   * display name. */
+  id: string;
   group: string;
-  name: string;
+  /** Not present in tiles.json (translated, computed from `id` — see the
+   * Tile class getter); optional here only so the raw JSON template shape
+   * type-checks. */
+  name?: string;
   isOwnable: boolean;
   bonusType?: 'gold' | 'units';
   prices?: { [level: number]: { gold: number; units: number } };
@@ -37,8 +45,8 @@ export interface TileJSON {
 }
 
 export class Tile implements TileJSON {
+  id: string;
   group: string;
-  name: string;
   isOwnable: boolean;
   bonusType: 'gold' | 'units';
   prices: { [level: number]: { gold: number; units: number } };
@@ -46,7 +54,6 @@ export class Tile implements TileJSON {
   defences: { [level: number]: number };
   owner?: number | null;
   _level?: number;
-  description?: string;
   sprite?: { x: number; y: number };
   spriteImage?: string;
   requiredFame: number;
@@ -63,8 +70,8 @@ export class Tile implements TileJSON {
   razedInRound?: number;
 
   constructor(data: Partial<TileJSON> = {}) {
+    this.id = data.id || '';
     this.group = data.group || '';
-    this.name = data.name || '';
     this.isOwnable = !!data.isOwnable;
     this.bonusType = data.bonusType || 'gold';
     this.prices = Object.assign({}, data.prices || {});
@@ -72,7 +79,6 @@ export class Tile implements TileJSON {
     this.defences = Object.assign({}, data.defences || {});
     this.owner = data.owner ?? null;
     this._level = typeof data.level === 'number' ? data.level : 1;
-    this.description = data.description;
     this.sprite = data.sprite;
     this.spriteImage = data.spriteImage;
     this.requiredFame = data.requiredFame ?? 0;
@@ -89,6 +95,18 @@ export class Tile implements TileJSON {
     }
     this.unclaimedSinceTurn = data.unclaimedSinceTurn;
     this.razedInRound = data.razedInRound;
+  }
+
+  /** Translated display name, looked up live by `id` — never store this,
+   * so it always reflects whatever language is currently active. */
+  get name(): string {
+    return t(`tiles.${this.id}.name`);
+  }
+
+  /** Only some tiles (the non-ownable "special" ones) have flavor text —
+   * undefined (not a fallback string) when this tile genuinely has none. */
+  get description(): string | undefined {
+    return tOptional(`tiles.${this.id}.description`);
   }
 
   /** Garrison slots this tile can hold — scales with level, same as a
@@ -245,6 +263,7 @@ export class Tile implements TileJSON {
 
   toJSON(): TileJSON {
     return {
+      id: this.id,
       group: this.group,
       name: this.name,
       isOwnable: this.isOwnable,

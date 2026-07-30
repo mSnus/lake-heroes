@@ -1,0 +1,68 @@
+import { useSyncExternalStore } from 'react';
+
+export type Language = 'en' | 'ru';
+
+export interface LanguageOption {
+  code: Language;
+  flag: string;
+  name: string;
+}
+
+// Order here is also the cycle order for the language switcher button.
+export const LANGUAGES: LanguageOption[] = [
+  { code: 'en', flag: '🇬🇧', name: 'English' },
+  { code: 'ru', flag: '🇷🇺', name: 'Русский' },
+];
+
+const STORAGE_KEY = 'language';
+
+function loadInitialLanguage(): Language {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (LANGUAGES.some((l) => l.code === saved)) return saved as Language;
+  } catch {
+    // ignore
+  }
+  return 'en';
+}
+
+let currentLanguage: Language = loadInitialLanguage();
+const listeners = new Set<() => void>();
+
+function emit() {
+  listeners.forEach((l) => l());
+}
+
+export function getLanguage(): Language {
+  return currentLanguage;
+}
+
+export function setLanguage(lang: Language): void {
+  if (lang === currentLanguage) return;
+  currentLanguage = lang;
+  try {
+    localStorage.setItem(STORAGE_KEY, lang);
+  } catch {
+    // ignore
+  }
+  emit();
+}
+
+/** Cycles to the next language in LANGUAGES order, wrapping around. */
+export function cycleLanguage(): void {
+  const idx = LANGUAGES.findIndex((l) => l.code === currentLanguage);
+  const next = LANGUAGES[(idx + 1) % LANGUAGES.length];
+  setLanguage(next.code);
+}
+
+/** Subscribes the calling component to language changes (re-renders on
+ * switch) and returns the current language code. */
+export function useLanguage(): Language {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => currentLanguage
+  );
+}

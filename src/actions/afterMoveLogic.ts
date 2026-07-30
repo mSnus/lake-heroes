@@ -10,6 +10,7 @@ import { fightTile } from './fightTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
 import { HeroHourScreen } from '../components/HeroHourScreen';
 import { computeFeeOptions } from './feeOptions';
+import { t } from '../i18n';
 
 export function afterMoveLogic(
   board: GameState | null,
@@ -43,7 +44,7 @@ export function afterMoveLogic(
     playersHere.length > 0 &&
     player.units > 0 &&
     (player.circles ?? 0) > 2 &&
-    !tile.name.includes('King')
+    tile.id !== 'king-castle'
   ) {
     const tileOwner =
       tile.isOwned() && tile.owner !== player.id
@@ -92,13 +93,10 @@ export function showTileEncounterScreen(
   // A jailed owner can't collect a fee or defend their land.
   const ownerInPrison =
     !!owner &&
-    ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.name === 'Prison');
+    ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.id === 'prison');
 
   if (ownerInPrison) {
-    say(
-      `${owner!.name} is in prison, so others just send him the flowers 🌹 while visiting his property`,
-      'info'
-    );
+    say(t('afterMoveLogic.ownerInPrison', { ownerName: owner!.name }), 'info');
     setEndTurn();
     return;
   }
@@ -134,7 +132,7 @@ export function showTileEncounterScreen(
       encounter,
       buttons: [
         {
-          label: "Defenceless? it's mine",
+          label: t('afterMoveLogic.defencelessItsMine'),
           action: 'claim-undefended',
           onClick: () => claimUndefendedTile(board, updateGameState),
         },
@@ -164,7 +162,7 @@ export function showTileEncounterScreen(
   };
 
   const feeButton: ScreenButton = {
-    label: `Pay fee ${fee}🟡`,
+    label: t('afterMoveLogic.payFee', { fee }),
     action: 'pay-fee',
     onClick: () => payFee(board, updateGameState),
     disabled: player.gold < fee,
@@ -173,7 +171,7 @@ export function showTileEncounterScreen(
   const baseButtons: ScreenButton[] = [
     feeButton,
     {
-      label: `Battle ⚔️ (${defence}🧍)`,
+      label: t('afterMoveLogic.battle', { defence }),
       action: 'fight-tile',
       onClick: () => fightTile(board, updateGameState),
       disabled: player.armyPower < defence,
@@ -181,7 +179,7 @@ export function showTileEncounterScreen(
   ];
 
   const acceptLossButton: ScreenButton = {
-    label: `Accept loss 😢`,
+    label: t('afterMoveLogic.acceptLoss'),
     action: 'accept-loss',
     onClick: () => {
       player.isPrisonerOfWar = true;
@@ -195,11 +193,14 @@ export function showTileEncounterScreen(
     const sellModeConfig = {
       ...baseConfig,
       sellMode: true,
-      sellHeader: `Sell tiles to pay the ${fee}🟡 fee, raise an army, or yield to ${owner?.name ?? 'the owner'}`,
+      sellHeader: t('afterMoveLogic.sellHeader', {
+        fee,
+        ownerName: owner?.name ?? t('afterMoveLogic.theOwner'),
+      }),
       buttons: baseButtons,
     };
     extraButtons.push({
-      label: 'Sell tiles 💰',
+      label: t('afterMoveLogic.sellTiles'),
       action: 'sell-tiles',
       onClick: () => showScreen(sellModeConfig),
     });

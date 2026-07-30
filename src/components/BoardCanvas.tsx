@@ -10,6 +10,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
 import { handleKingCastle } from '../actions/king';
 import { challengeDragonFromBoard } from '../actions/fightDragon';
+import { useT } from '../i18n';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -28,6 +29,7 @@ const ZOOM_OUT_PAUSE_MS = 400;
 const PLAYER_LAYER_TOP_OFFSET_PX = 46;
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState }) => {
+  const t = useT();
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
 
@@ -156,7 +158,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       }
 
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
-      if (isActivePlayerTile && tile.name.includes('King')) {
+      if (isActivePlayerTile && tile.id === 'king-castle') {
         handleKingCastle(board, updateGameState);
         return;
       }
@@ -190,7 +192,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           {tile?.name &&
             (() => {
               const { textPart1, textPart2 } = parseTileName(tile.name);
-              const isKingTile = textPart1?.substring(0, 4) === 'King';
+              const isKingTile = tile.id === 'king-castle';
               const tileSizeClass = isKingTile
                 ? 'tile-sprite-container tile-big'
                 : 'tile-sprite-container';
@@ -309,7 +311,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         <div
           className="dragon-center-icon"
           role="button"
-          aria-label="Challenge the Dragon"
+          aria-label={t('boardCanvas.challengeDragon')}
           onClick={() => challengeDragonFromBoard(board, updateGameState)}
         />
 

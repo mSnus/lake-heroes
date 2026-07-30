@@ -9,6 +9,7 @@ import { BattleScreen } from './BattleScreen';
 import { PlayerLabel } from './PlayerLabel';
 import { pickHeroHourTarget } from '../ai/decisions';
 import { say } from '../utils/say';
+import { useT } from '../i18n';
 import '../styles/BattleScreen.css';
 
 interface HeroHourScreenProps {
@@ -32,6 +33,7 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
   onFightDone,
   onGreetDone,
 }) => {
+  const t = useT();
   const handleFight = (opponent: Player) => {
     const battlefieldUnits = Math.min(activePlayer.units, opponent.units);
     showScreen({
@@ -53,28 +55,30 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
 
   useEffect(() => {
     if (!activePlayer.isComputer) return;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const target = pickHeroHourTarget(activePlayer, opponents);
       if (target) {
-        say(`${activePlayer.name} decided to attack ${target.name}`, 'info');
+        say(t('heroHourScreen.decidedToAttack', { playerName: activePlayer.name, targetName: target.name }), 'info');
         handleFight(target);
       } else {
         handleGreet();
       }
     }, 600);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const greetLabel = tileOwner ? `Go to ${tile.name}'s guards` : '✖ Greet and pass';
+  const greetLabel = tileOwner
+    ? t('heroHourScreen.goToGuards', { tileName: tile.name })
+    : t('heroHourScreen.greetAndPass');
 
   return (
     <ScreenBackground image="assets/screens/battle.jpg">
       <Fade />
       <div className="battle-screen">
-        <div className="battle-header">Hero's Hour</div>
+        <div className="battle-header">{t('battleScreen.heroHour')}</div>
         <p className="hero-hour-message">
-          <PlayerLabel player={activePlayer} /> 🧍{activePlayer.units} surprisingly encounters{' '}
+          <PlayerLabel player={activePlayer} /> 🧍{activePlayer.units} {t('heroHourScreen.encounters')}{' '}
           {opponents.map((opponent, i) => (
             <React.Fragment key={opponent.id}>
               {i > 0 && ', '}
@@ -85,8 +89,8 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
           <br />
           <br />
           {opponents.length === 1
-            ? 'Wouldst thou challenge for a fight?'
-            : 'Challenge one of them to fight?'}
+            ? t('heroHourScreen.challengeSingular')
+            : t('heroHourScreen.challengePlural')}
         </p>
         <div className="hero-hour-buttons">
           {opponents.map((opponent) => (
@@ -95,7 +99,7 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
               className="game-menu-button"
               onClick={() => handleFight(opponent)}
             >
-              Fight {opponent.name} ⚔️
+              {t('heroHourScreen.fightButton', { name: opponent.name })}
             </button>
           ))}
           <button className="game-menu-button" onClick={handleGreet}>

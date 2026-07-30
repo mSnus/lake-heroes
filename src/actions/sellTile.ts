@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
+import { t } from '../i18n';
 
 export function sellTile(
   gameState: GameState,
@@ -30,7 +31,7 @@ export function sellTile(
     changeFame(player, -1);
   }
 
-  say(`${player.name} sold ${tile.name} for ${totalGold} gold and ${totalUnits} units`, 'info');
+  say(t('sellTile.sold', { playerName: player.name, tileName: tile.name, gold: totalGold, units: totalUnits }), 'info');
 
   return { gold: totalGold, units: totalUnits };
 }
