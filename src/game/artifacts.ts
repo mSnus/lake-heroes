@@ -28,7 +28,7 @@ export function pickRandomUnownedArtifact(board: GameState): Artifact | null {
 }
 
 /**
- * Battle dice bonus from owned artifacts, on top of the army-size rollBonus.
+ * Battle dice bonus from owned artifacts.
  * Broken Blade: +2 vs the Dragon, +1 in every non-brawl battle (additive with the +2). No bonus in brawl mode.
  * Dwemer Axe: +1 vs the Dragon, +1 in brawl-mode battles.
  */

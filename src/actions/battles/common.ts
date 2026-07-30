@@ -30,18 +30,6 @@ export interface BattleResolution {
   lostBg?: boolean;
 }
 
-/**
- * A side with a big enough army relative to its opponent's force fights
- * smarter: +1 to every roll at 2x the opponent's size, +2 at 4x or more.
- */
-export function rollBonus(ownUnits: number, opposingUnits: number): number {
-  if (opposingUnits <= 0) return 0;
-  const ratio = ownUnits / opposingUnits;
-  if (ratio >= 4) return 2;
-  if (ratio >= 2) return 1;
-  return 0;
-}
-
 export function lossStr(gold: number, units: number): string {
   const parts = [...(gold > 0 ? [`${gold}🟡`] : []), ...(units > 0 ? [`${units}🧍`] : [])];
   return parts.join(' and ');

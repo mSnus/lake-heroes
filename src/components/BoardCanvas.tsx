@@ -61,11 +61,25 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
   // Zoom out on a turn change, pause at 1x, then zoom back in on whoever's
   // active now. Also plays once on mount (zooms in on the opening player).
+  // Skipped when the new active player is already standing on the same tile
+  // as the previous one — there's nowhere new to pan to, so zooming out and
+  // straight back in would just be a pointless flicker.
   const activePlayerId = board.activePlayer.id;
+  const lastZoomPositionRef = React.useRef<number | null>(null);
   useEffect(() => {
+    const newPosition = board.activePlayer.position;
+    const samePosition = lastZoomPositionRef.current === newPosition;
+    lastZoomPositionRef.current = newPosition;
+
+    if (samePosition) {
+      setZoomLevel(2);
+      return;
+    }
+
     setZoomLevel(1);
     const t = setTimeout(() => setZoomLevel(2), ZOOM_TRANSITION_MS + ZOOM_OUT_PAUSE_MS);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePlayerId]);
 
   // Recomputed every render (cheap arithmetic) so the camera keeps tracking

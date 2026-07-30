@@ -19,7 +19,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { DRAGON_UNITS } from '../game/constants';
-import { isBrawlMatchup, rollBonus } from '../actions/battles/common';
+import { isBrawlMatchup } from '../actions/battles/common';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { proportionalTierSplit } from '../game/army';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
@@ -28,6 +28,11 @@ import { TileClaimScreen } from './TileClaimScreen';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
+
+// Pause between one duel resolving and the next pair being selected/rolled —
+// applies to both the automatic (random-pair) loop and the brawl's manual
+// round-to-round transition.
+const DUEL_PAIR_DELAY_MS = 200;
 
 export type BattleScreenProps =
   | {
@@ -152,12 +157,24 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     tile = props.tile;
   }
 
+  // `defence` itself is read live from props.tile/etc. every render, which
+  // is fine while the fight is in progress — but resolving the battle
+  // mutates the underlying tile/player (garrison reset to 0 on a raze/claim,
+  // real losses on a defeat), and this component stays mounted showing the
+  // result afterward. Snapshot it once so everything derived from it below
+  // (isBrawl, the header, the defender grid) keeps showing the fight as it
+  // started, not what's left of it — otherwise a razed tile's defence
+  // dropping to 0 could even flip a non-brawl fight into showing the
+  // "Brawl!" tag retroactively.
+  const defenceRef = useRef(defence);
+  const initialDefence = defenceRef.current;
+
   // Brawl (manual, duel-by-duel) requires a small defence. For tile
   // claims/attacks and caravan raids, it additionally requires the attacker's
   // own army to be small — a big army attacking a weakly-defended tile or
   // caravan fights a normal automatic battle instead of a manual brawl.
   // Other modes (dragon/player/ambush) don't gate on the attacker's army here.
-  const isBrawl = isBrawlMatchup(defence, isTile || isCaravan ? attacker.armyPower : 0);
+  const isBrawl = isBrawlMatchup(initialDefence, isTile || isCaravan ? attacker.armyPower : 0);
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
@@ -173,39 +190,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     isDragon
       ? gameState.players.reduce((sum, p) => sum + p.units, 0)
       : isAmbush || isBrawl
-        ? defence
+        ? initialDefence
         : attacker.units
   );
   const attackerUnits = attackerUnitsRef.current;
 
-  const doubleDice = defence > 12 || attackerUnits > 12;
+  const doubleDice = initialDefence > 12 || attackerUnits > 12;
 
-  // A side with a big enough TOTAL army relative to the actual force
-  // committed to this encounter rolls smarter: +1 at 2x, +2 at 4x or more.
-  // Uses each side's real Player.units where one exists (not attackerUnits/
-  // defence, which are just the mirrored grid-display sizes for most modes
-  // and would always compare 1:1 to itself).
-  // Ambush is exempt — the player is forced into it, not choosing to bring
-  // overwhelming numbers, so no tactical edge is awarded either way.
-  // Snapshotted once on mount: resolving the battle mutates attacker/defender.units
-  // in place, and recomputing from the live value would change the bonus (and the
-  // "Great Army" badge) after the fight is already decided.
-  const attackerSideUnitsRef = useRef(attacker.armyPower);
-  const defenderSideUnitsRef = useRef(defender ? defender.armyPower : defence);
-  const attackerSideUnits = attackerSideUnitsRef.current;
-  const defenderSideUnits = defenderSideUnitsRef.current;
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
   const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
-  const attackerArmyBonus = isAmbush ? 0 : rollBonus(attackerSideUnits, defence);
-  // A real player defending their own tile gets no swarm bonus — only the
-  // attacker's overwhelming numbers (and NPC defenders: caravan/dragon) earn one.
-  const defenderArmyBonus = isAmbush || defender ? 0 : rollBonus(defenderSideUnits, attackerUnits);
-  const attackerRollBonus = attackerArmyBonus + attackerArtifactBonus;
-  const defenderRollBonus = defenderArmyBonus + defenderArtifactBonus;
+  const attackerRollBonus = attackerArtifactBonus;
+  const defenderRollBonus = defenderArtifactBonus;
 
   type BonusEntry = { key: string; label: string; emoji?: string; bonus: number };
-  const buildBonusEntries = (player: Player | undefined, armyBonus: number): BonusEntry[] => {
-    const entries: BonusEntry[] = player
+  const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
+    player
       ? getArtifactRollBonusBreakdown(player, { isDragon, isBrawl }).map(({ artifact, bonus }) => ({
           key: artifact.id,
           label: artifact.name,
@@ -213,11 +212,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           bonus,
         }))
       : [];
-    if (armyBonus > 0) entries.push({ key: 'army', label: 'Swarm ⭐', bonus: armyBonus });
-    return entries;
-  };
-  const attackerBonusEntries = buildBonusEntries(attacker, attackerArmyBonus);
-  const defenderBonusEntries = buildBonusEntries(defender, defenderArmyBonus);
+  const attackerBonusEntries = buildBonusEntries(attacker);
+  const defenderBonusEntries = buildBonusEntries(defender);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -237,7 +233,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // survivor in a brawl, a random survivor in a normal battle — rather than
   // a roll wiping out `roll` units at once.
   const atkAliveRef = useRef<boolean[]>(Array(attackerUnits).fill(true));
-  const defAliveRef = useRef<boolean[]>(Array(defence).fill(true));
+  const defAliveRef = useRef<boolean[]>(Array(initialDefence).fill(true));
   const [atkAlive, setAtkAlive] = useState<boolean[]>(() => [...atkAliveRef.current]);
   const [defAlive, setDefAlive] = useState<boolean[]>(() => [...defAliveRef.current]);
   const [selectedAtkIdx, setSelectedAtkIdx] = useState<number | null>(null);
@@ -285,7 +281,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           ? 'glory'
           : tile!.name;
     const defEmoji = isDragon ? '🐉' : isCaravan ? '🥷' : '🧍';
-    say(`${attacker.name} attacks ${defenderLabel}'s ${defence}${defEmoji} for ${goal}`, 'info');
+    say(`${attacker.name} attacks ${defenderLabel}'s ${initialDefence}${defEmoji} for ${goal}`, 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -297,7 +293,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         return resolveCaravanBattle(
           gameState,
           attacker,
-          { prize: caravanPrize!, slaves: caravanSlaves, defence },
+          { prize: caravanPrize!, slaves: caravanSlaves, defence: initialDefence },
           atkKilled,
           battleOutcome
         );
@@ -342,6 +338,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         markScreenResolved();
         updateGameState(gameState);
         setResultMsg(res.message);
+        setSelectedAtkIdx(null);
+        setSelectedDefIdx(null);
         setPhase('result');
       }, 400);
     },
@@ -400,7 +398,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         return;
       }
 
-      setTimeout(runDuel, 100);
+      setTimeout(runDuel, DUEL_PAIR_DELAY_MS);
     };
 
     runDuel();
@@ -488,7 +486,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         selectBrawlDuel();
         setPhase('attacker-roll');
       }
-    }, 200);
+    }, DUEL_PAIR_DELAY_MS);
   };
 
   const handleClose = () => {
@@ -539,15 +537,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
     : isPlayerBattle
       ? { militia: defender!.militia, riders: defender!.riders }
-      : { militia: defence, riders: 0 };
+      : { militia: initialDefence, riders: 0 };
   const attackerSplit = proportionalTierSplit(attackerUnits, attackerTierCounts.militia, attackerTierCounts.riders);
-  const defenderSplit = proportionalTierSplit(defence, defenderTierCounts.militia, defenderTierCounts.riders);
+  const defenderSplit = proportionalTierSplit(initialDefence, defenderTierCounts.militia, defenderTierCounts.riders);
 
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) => {
     const emoji = !atkAlive[i] ? '💥' : isAmbush ? '👹' : i < attackerSplit.ridersCount ? '🐎' : '🧍';
     return { emoji, selected: i === selectedAtkIdx };
   });
-  const defenderGrid = Array.from({ length: defence }, (_, i) => {
+  const defenderGrid = Array.from({ length: initialDefence }, (_, i) => {
     const emoji = !defAlive[i]
       ? '💥'
       : isDragon
@@ -642,9 +640,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
           <div className="battle-vs-units">
             <div className='vs-icon'>⚔️</div>
-            {isAmbush ? defence : attackerUnits}
+            {isAmbush ? initialDefence : attackerUnits}
             <span className="vs"> vs </span>
-            {isAmbush ? attackerUnits : defence}
+            {isAmbush ? attackerUnits : initialDefence}
           </div>
           <div className="bc-defender">
             {isAmbush ? (
