@@ -93,10 +93,10 @@ export type BattleScreenProps =
       battlefieldUnits?: never;
     };
 
-// Duel pair selection: brawl always picks the frontmost survivor of each
-// side (rightmost attacker, leftmost defender — the same edge the tier
-// split places Militia on, so Militia keeps dying first); a normal battle
-// picks uniformly at random from whoever's still alive.
+// Duel pair selection: brawl picks the frontmost survivor of each side
+// (rightmost attacker, leftmost defender — the same edge the tier split
+// places Militia on, so Militia keeps dying first); a normal battle works
+// left to right on both sides, one pair at a time.
 function rightmostAliveIndex(alive: boolean[]): number {
   for (let i = alive.length - 1; i >= 0; i--) if (alive[i]) return i;
   return -1;
@@ -104,12 +104,6 @@ function rightmostAliveIndex(alive: boolean[]): number {
 function leftmostAliveIndex(alive: boolean[]): number {
   for (let i = 0; i < alive.length; i++) if (alive[i]) return i;
   return -1;
-}
-function randomAliveIndex(alive: boolean[]): number {
-  const candidates: number[] = [];
-  for (let i = 0; i < alive.length; i++) if (alive[i]) candidates.push(i);
-  if (candidates.length === 0) return -1;
-  return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
@@ -363,16 +357,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Automatic battle: random pairs, no manual rolls, no visible dice, one
-  // duel every 100ms until a side is wiped. ──
+  // ── Automatic battle: leftmost pair on each side, no manual rolls, no
+  // visible dice, one duel every 100ms until a side is wiped. ──
   useEffect(() => {
     if (isBrawl) return;
     let cancelled = false;
 
     const runDuel = () => {
       if (cancelled) return;
-      const atkIdx = randomAliveIndex(atkAliveRef.current);
-      const defIdx = randomAliveIndex(defAliveRef.current);
+      const atkIdx = leftmostAliveIndex(atkAliveRef.current);
+      const defIdx = leftmostAliveIndex(defAliveRef.current);
       if (atkIdx === -1 || defIdx === -1) return;
 
       const rollA = (doubleDice ? rollDice() + rollDice() : rollDice()) + attackerRollBonus;

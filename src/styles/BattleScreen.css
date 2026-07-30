@@ -118,6 +118,12 @@
 .battle-unit {
   font-size: 1.6rem;
   line-height: 1.2;
+  width: 1.6em;
+  height: 1.6em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* The current duel's pair — the two units about to (or just did) roll off. */
