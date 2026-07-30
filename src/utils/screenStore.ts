@@ -82,7 +82,7 @@ export function showPrisonScreen(message: string, title?: string): void {
   showScreen({
     screenType: 'prison',
     background: 'assets/screens/prison.jpg',
-    title: '',
+    title: title || t('tiles.prison.name'),
     message,
     buttons: [
       {
