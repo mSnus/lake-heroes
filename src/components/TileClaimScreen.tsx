@@ -40,7 +40,9 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
     remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia'),
     player.militia
   );
-  const [garrisonAmount, setGarrisonAmount] = useState(0);
+  const [garrisonAmount, setGarrisonAmount] = useState(() =>
+    Math.min(maxGarrison, Math.floor(player.militia / 2))
+  );
 
   useEffect(() => {
     if (!player.isComputer) return;

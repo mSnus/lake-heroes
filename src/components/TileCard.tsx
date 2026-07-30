@@ -220,23 +220,9 @@ export const TileCard: React.FC<TileCardProps> = ({
     const targetMilitia = parseInt(militiaInput, 10);
     if (Number.isNaN(targetMilitia) || targetMilitia < 0) return;
 
-    let targetRiders = tile.garrisonRiders;
-    if (activePlayer.isKnight) {
-      const ridersInput = window.prompt(
-        t('tileCard.garrisonRidersPrompt', {
-          tileName: tile.name,
-          traveling: activePlayer.riders,
-          here: tile.garrisonRiders,
-        }),
-        String(tile.garrisonRiders)
-      );
-      if (ridersInput === null) return;
-      const parsed = parseInt(ridersInput, 10);
-      if (Number.isNaN(parsed) || parsed < 0) return;
-      targetRiders = parsed;
-    }
-
-    setTileGarrison(gameState, activePlayer, tile, targetMilitia, targetRiders);
+    // Riders never garrison a tile — they only travel with the player's
+    // hero — so targetRiders is left unset and stays whatever it already is.
+    setTileGarrison(gameState, activePlayer, tile, targetMilitia);
     updateGameState(gameState);
   };
 
