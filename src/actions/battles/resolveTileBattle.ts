@@ -15,10 +15,13 @@ import { t } from '../../i18n';
  *   cleared, level reset, garrison wiped to 0 and starts regrowing wild
  *   (see wildGarrison.ts) — and the tile goes "on fire" (unbuyable) for the
  *   rest of this round.
- * - Defeat: attacker loses killed units; the owner's garrison takes real
- *   losses too (defenderUnitsKilled), unlike the old static-guards model.
- * - Tie: no fee; tile drops a level (if above 1); garrison still takes the
- *   losses it suffered defending.
+ * - Defeat: attacker loses killed units. On an owned tile, the owner's real
+ *   garrison takes real losses too (defenderUnitsKilled); on an unowned
+ *   (wild-guarded) tile, the guard count is untouched -- they aren't a real
+ *   player's army to whittle down.
+ * - Tie: no fee; tile drops a level (if above 1); an owned tile's garrison
+ *   still takes the losses it suffered defending (wild guards, again,
+ *   don't).
  */
 export function resolveTileBattle(
   board: GameState,
@@ -77,7 +80,10 @@ export function resolveTileBattle(
     }
   } else if (outcome === 'defender') {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
-    if (defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    // Wild guards on an unowned tile aren't a real player's army — a failed
+    // claim leaves their numbers untouched. Only a real owner's garrison
+    // takes real losses.
+    if (!claiming && defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const lossStr = attackerUnitsKilled > 0 ? t('resolveTileBattle.losingSuffix', { units: attackerUnitsKilled }) : '';
 
     board.gameMessage = t('resolveTileBattle.lostBattleGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr });
@@ -86,7 +92,7 @@ export function resolveTileBattle(
   } else {
     const unitLoss = Math.floor(tile.defence / 4);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-    if (defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    if (!claiming && defenderUnitsKilled > 0) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const lossStr = unitLoss > 0 ? t('resolveTileBattle.losingSuffix', { units: unitLoss }) : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;
