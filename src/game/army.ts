@@ -62,6 +62,27 @@ export function slotChunks(count: number): number[] {
   return chunks;
 }
 
+export interface SquadChunk {
+  tier: UnitTier;
+  /** 0 for a still-empty slot. */
+  count: number;
+}
+
+/**
+ * Every army slot's contents, in display order: militia chunks, then rider
+ * chunks, then any remaining slots padded out as empty (militia by default —
+ * there's no tier to distinguish when a slot holds nothing yet). Used by
+ * SquadDisplay to show the player's whole army, filled and empty slots alike.
+ */
+export function buildSquadChunks(militia: number, riders: number, totalSlots: number): SquadChunk[] {
+  const chunks: SquadChunk[] = [
+    ...slotChunks(militia).map((count) => ({ tier: 'militia' as const, count })),
+    ...slotChunks(riders).map((count) => ({ tier: 'riders' as const, count })),
+  ];
+  while (chunks.length < totalSlots) chunks.push({ tier: 'militia', count: 0 });
+  return chunks;
+}
+
 /**
  * Split a battle grid of `gridSize` cells into a militia/riders count,
  * proportional to a real militia/riders pair — used when the grid's cell

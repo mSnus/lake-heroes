@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { buyUnits } from './buyUnits';
+import { sellUnits } from './sellUnits';
 import KingsCastleModal from '../components/KingsCastleModal';
 import { say } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
@@ -35,8 +36,10 @@ export function handleKingCastle(
         gameState={board}
         newContract={contract}
         onBuy={(amount, tier) => {
-          clearScreen();
           buyUnits(board, amount, updateGameState, tier);
+        }}
+        onSell={(tier, amount) => {
+          sellUnits(board, amount, updateGameState, tier);
         }}
         onSkip={() => {
           clearScreen();

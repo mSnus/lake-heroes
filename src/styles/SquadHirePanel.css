@@ -1,0 +1,32 @@
+.squad-hire-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.squad-hire-panel-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.hire-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.hire-row-label {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.hire-row-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}

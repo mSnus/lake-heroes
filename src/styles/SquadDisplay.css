@@ -1,0 +1,29 @@
+.squad-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.squad-chunk {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.squad-sell-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.75em;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.squad-sell-button:hover {
+  opacity: 1;
+}

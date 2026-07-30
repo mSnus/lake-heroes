@@ -5,7 +5,7 @@ import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
-import { slotChunks } from '../game/army';
+import { SquadDisplay } from './SquadDisplay';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -136,15 +136,12 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           >
             ⚔️
           </div>
-          <div className="player-stats-army-slots">
-            {slotChunks(activePlayer.militia).map((c, i) => (
-              <span key={`m${i}`}>{c}🧍</span>
-            ))}
-            {slotChunks(activePlayer.riders).map((c, i) => (
-              <span key={`r${i}`}>{c}🐎</span>
-            ))}
-            {activePlayer.militia <= 0 && activePlayer.riders <= 0 && <span>0🧍</span>}
-          </div>
+          <SquadDisplay
+            militia={activePlayer.militia}
+            riders={activePlayer.riders}
+            totalSlots={activePlayer.armySlots}
+            className="player-stats-army-slots"
+          />
         </div>
 
         {/* player's artifacts — the whole cell is skipped when there are none */}
