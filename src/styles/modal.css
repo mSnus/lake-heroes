@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1001;
+  z-index: 6001;
 }
 
 .game-modal-wrapper {
@@ -18,7 +18,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 6000;
 }
 
 .game-modal-border {
@@ -42,6 +42,10 @@
   border-radius: 10px;
   text-align: center;
   min-width: 350px;
+  max-height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 .value {
