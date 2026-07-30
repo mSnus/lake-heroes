@@ -20,6 +20,13 @@ export const MILITIA_POWER_WEIGHT = 1;
 export const RIDER_POWER_WEIGHT = 2.5;
 export const ARMY_SLOT_CAPACITY = 10; // max units of one tier per slot
 export const MAX_ARMY_SLOTS = 5;
-export const ARMY_SLOT_FAME_STEP = 3; // +1 slot per this many fame, up to MAX_ARMY_SLOTS
+// Fame thresholds for army slots: 0-2 fame -> 2 slots, 3-5 -> 3, 6-9 -> 4, 10+ -> 5.
+// Uneven bracket widths, so this is a lookup table, not a uniform step size.
+export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
+  { minFame: 10, slots: MAX_ARMY_SLOTS },
+  { minFame: 6, slots: 4 },
+  { minFame: 3, slots: 3 },
+  { minFame: 0, slots: 2 },
+];
 
 export const SPRITE_SIZE = 96;

@@ -30,7 +30,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
 
       <div className="player-stats">
         <div className="player-stats-hint" style={{ backgroundColor: player.color }}>
-          ⚜️
+          👛
         </div>
 
         {showGold && (

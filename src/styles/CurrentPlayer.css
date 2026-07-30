@@ -75,12 +75,17 @@
 }
 
 .player-stats-gold {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
   white-space: nowrap;
   width: calc(100% - 64px);
-  justify-content: space-around;
+}
+
+.player-stats-army-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .player-stats-hint {

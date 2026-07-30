@@ -1,7 +1,6 @@
 import {
   ARMY_SLOT_CAPACITY,
-  ARMY_SLOT_FAME_STEP,
-  MAX_ARMY_SLOTS,
+  ARMY_SLOT_FAME_THRESHOLDS,
   MILITIA_POWER_WEIGHT,
   RIDER_POWER_WEIGHT,
 } from './constants';
@@ -15,9 +14,10 @@ export function computeArmyPower(militia: number, riders: number): number {
   return militia * MILITIA_POWER_WEIGHT + riders * RIDER_POWER_WEIGHT;
 }
 
-/** How many army slots a given fame grants (1 at low fame, up to MAX_ARMY_SLOTS). */
+/** How many army slots a given fame grants — see ARMY_SLOT_FAME_THRESHOLDS. */
 export function slotCountForFame(fame: number): number {
-  return Math.min(MAX_ARMY_SLOTS, 1 + Math.floor(fame / ARMY_SLOT_FAME_STEP));
+  const bracket = ARMY_SLOT_FAME_THRESHOLDS.find((t) => fame >= t.minFame);
+  return bracket?.slots ?? ARMY_SLOT_FAME_THRESHOLDS[ARMY_SLOT_FAME_THRESHOLDS.length - 1].slots;
 }
 
 /** Slots consumed by a militia/riders pair — each tier rounds up independently
@@ -41,6 +41,25 @@ export function remainingCapacity(
   const otherSlots = Math.ceil(otherCount / ARMY_SLOT_CAPACITY);
   const availableSlots = Math.max(0, slotCount - otherSlots);
   return Math.max(0, availableSlots * ARMY_SLOT_CAPACITY - thisCount);
+}
+
+/**
+ * Break a tier's raw count into its individual slot-sized chunks (up to
+ * ARMY_SLOT_CAPACITY each) for display — e.g. 14 -> [10, 4]. The data model
+ * only stores the running total, not which slot a unit was actually added
+ * to, so this is a simple greedy fill for display purposes, not a real
+ * record of army history.
+ */
+export function slotChunks(count: number): number[] {
+  if (count <= 0) return [];
+  const chunks: number[] = [];
+  let remaining = count;
+  while (remaining > 0) {
+    const chunk = Math.min(ARMY_SLOT_CAPACITY, remaining);
+    chunks.push(chunk);
+    remaining -= chunk;
+  }
+  return chunks;
 }
 
 /**

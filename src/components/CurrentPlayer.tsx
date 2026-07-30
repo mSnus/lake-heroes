@@ -5,6 +5,7 @@ import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
+import { slotChunks } from '../game/army';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -69,20 +70,16 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <div
           className="player-stats-data"
           id="statsOwnedResources"
-          onClick={() => say('Current money and units you own', 'info')}
+          onClick={() => say('Current gold you own', 'info')}
         >
           <div
             className="player-stats-hint"
             style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
           >
-            ⚜️
+            👛
           </div>
-          <div></div>
           <div>
             <strong>{activePlayer.gold ?? 0}🟡</strong>
-          </div>
-          <div>
-            <strong>{activePlayer.units ?? 0}🧍</strong>
           </div>
         </div>
 
@@ -110,63 +107,71 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             );
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              🏰
-            </div>
+          <div
+            className="player-stats-hint"
+            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+          >
+            🏰
+          </div>
+          <div>
+            {totalGold > 0 && <strong>+{totalGold}🟡</strong>}
+            {totalUnits > 0 && <strong>+{totalUnits} 👬</strong>}
+          </div>
+        </div>
 
-            {totalGold > 0 ? (
-              <div>
-                <strong>+{totalGold}🟡</strong>
-              </div>
-            ) : (
-              <div />
-            )}
-            {totalUnits > 0 ? (
-              <div>
-                {' '}
-                <strong>+{totalUnits} 👬</strong>
-              </div>
-            ) : (
-              <div />
-            )}
+        {/* army, broken down slot by slot */}
+        <div
+          className="player-stats-data"
+          id="statsArmy"
+          onClick={() =>
+            say(
+              `Your army: ${activePlayer.slotsUsed}/${activePlayer.armySlots} slots used, each holding up to 10 of one kind`,
+              'info'
+            )
+          }
+        >
+          <div
+            className="player-stats-hint"
+            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+          >
+            ⚔️
+          </div>
+          <div className="player-stats-army-slots">
+            {slotChunks(activePlayer.militia).map((c, i) => (
+              <span key={`m${i}`}>{c}🧍</span>
+            ))}
+            {slotChunks(activePlayer.riders).map((c, i) => (
+              <span key={`r${i}`}>{c}🐎</span>
+            ))}
+            {activePlayer.militia <= 0 && activePlayer.riders <= 0 && <span>0🧍</span>}
           </div>
         </div>
 
         {/* player's artifacts */}
-        {activePlayer.artifacts.length > 0 && (
-            <div
-              className="player-stats-data"
-              id="statsArtifacts"
-            >
-              <div
-                className="player-stats-hint"
-                style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-              >
-                📯
-              </div>
-              <div></div>
-              <div className="player-stats-artifacts">
-                {activePlayer.artifacts.map((id) => {
-                  const artifact = getArtifact(id);
-                  if (!artifact) return null;
-                  return (
-                    <span
-                      key={id}
-                      className="player-artifact-badge"
-                      onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {artifact.emoji}
-                    </span>
-                  );
-                })}
-              </div>
+        <div className="player-stats-data" id="statsArtifacts">
+          <div
+            className="player-stats-hint"
+            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+          >
+            📯
           </div>
-        )}
+          <div className="player-stats-artifacts">
+            {activePlayer.artifacts.map((id) => {
+              const artifact = getArtifact(id);
+              if (!artifact) return null;
+              return (
+                <span
+                  key={id}
+                  className="player-artifact-badge"
+                  onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {artifact.emoji}
+                </span>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
