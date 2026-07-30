@@ -1,5 +1,6 @@
 import { GameState } from '../game/GameState';
 import { playerWealth, richestPlayer } from '../game/wealth';
+import { t } from '../i18n';
 
 /**
  * Ransom a prisoner of war as they're about to leave prison: the King grants
@@ -20,5 +21,5 @@ export function releasePrisonerOfWar(board: GameState): void {
   player.gold += goldGift;
   player.units += unitsGift;
 
-  board.gameMessage = `The King in his Grace sends you ${unitsGift}🧍 and ${goldGift}🟡`;
+  board.gameMessage = t('releasePrisonerOfWar.message', { units: unitsGift, gold: goldGift });
 }

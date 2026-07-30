@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { t } from '../i18n';
 
 export function handleTavern(
   board: GameState | null,
@@ -19,13 +20,14 @@ export function handleTavern(
 
   updateGameState(board);
 
+  const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
   const joinedMsg =
     gained > 0
-      ? `${gained}🧍 joined the mighty army<br />of <span style="color:${player.color}">${player.name}</span>`
-      : `No one joined — <span style="color:${player.color}">${player.name}</span>'s army has no room left`;
+      ? t('tavern.joined', { units: gained, playerSpan })
+      : t('tavern.noneJoined', { playerSpan });
   const fullNote =
     turnedAway > 0
-      ? `<br /><span style="font-size:0.8em">(🏯 ${player.slotsUsed}/${player.armySlots} army slots full — ${turnedAway}🧍 turned away)</span>`
+      ? t('tavern.fullNote', { used: player.slotsUsed, total: player.armySlots, turnedAway })
       : '';
 
   showScreen({
@@ -34,7 +36,7 @@ export function handleTavern(
     htmlMessage: `${joinedMsg}${fullNote}`,
     buttons: [
       {
-        label: 'New folks are always welcome!',
+        label: t('tavern.newFolksWelcome'),
         action: 'end-turn',
         onClick: () => {
           clearScreen();

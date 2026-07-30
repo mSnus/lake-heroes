@@ -3,6 +3,7 @@ import { TILE_COUNT } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
 import { revealTile } from './revealTile';
+import { t } from '../i18n';
 
 export function handlePortal(
   board: GameState,
@@ -34,11 +35,11 @@ export function handlePortal(
   showScreen({
     screenType: 'portal',
     background: 'assets/screens/portal.jpg',
-    title: 'Whirlpool of lights',
-    message: `${player.name} feels desoriented and lost 🌀`,
+    title: t('portal.title'),
+    message: t('portal.message', { playerName: player.name }),
     buttons: [
       {
-        label: 'Where are you?',
+        label: t('portal.whereAreYou'),
         onClick: () => {
           clearScreen();
           onContinue();

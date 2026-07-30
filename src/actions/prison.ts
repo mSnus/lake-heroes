@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { showPrisonScreen } from '../utils/screenStore';
 import { hasArtifact, getArtifact } from '../game/artifacts';
+import { t } from '../i18n';
 
 export function handlePrison(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -13,7 +14,7 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
   let message = board.gameMessage;
   if (hasArtifact(player, 'medal-of-honor')) {
     const artifact = getArtifact('medal-of-honor');
-    message = `${player.name} is sent to Prison, but the ${artifact!.name} ${artifact!.emoji} keeps them free — no turn skipped!`;
+    message = t('prison.savedByArtifact', { playerName: player.name, artifactName: artifact!.name, emoji: artifact!.emoji });
     board.gameMessage = message;
   } else {
     player.turnsToSkip = 1;

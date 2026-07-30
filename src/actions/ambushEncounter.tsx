@@ -2,6 +2,7 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
+import { t } from '../i18n';
 
 export function checkAmbushEncounter(
   board: GameState,
@@ -40,11 +41,14 @@ export function checkAmbushEncounter(
   showScreen({
     screenType: 'ambush',
     background: 'assets/screens/caravan.jpg',
-    title: 'Ambush',
+    title: t('ambushEncounter.title'),
     fade: true,
     spriteImage: 'assets/figures/npc-saracen.png',
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> is ambushed!<br />A squad of ${attackerUnits}🥷 suddenly attacks. Fight for your lifes!`,
-    buttons: [{ label: 'Defend', onClick: startBattle }],
+    htmlMessage: t('ambushEncounter.message', {
+      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      units: attackerUnits,
+    }),
+    buttons: [{ label: t('ambushEncounter.defend'), onClick: startBattle }],
   });
 
   return true;

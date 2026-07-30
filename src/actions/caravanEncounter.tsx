@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
+import { t } from '../i18n';
 
 export function checkCaravanEncounter(
   board: GameState,
@@ -62,8 +63,8 @@ export function checkCaravanEncounter(
   };
 
   const caravanDesc = isSlaves
-    ? `bringing ${prize}🧍 in chains`
-    : `of goods worth ${prize}🟡`;
+    ? t('caravanEncounter.bringingChains', { prize })
+    : t('caravanEncounter.ofGoodsWorth', { prize });
 
   showScreen({
     screenType: 'caravan',
@@ -72,17 +73,22 @@ export function checkCaravanEncounter(
     caravanDefence: defendingUnits,
     caravanPrize: prize,
     fade: true,
-    htmlMessage: `<span style="color:${player.color}">${player.name}</span> <br />${player.gold}🟡 ${player.units}🧍<br /> encounters a caravan<br /> guarded by ${defendingUnits}🥷
-    <br /> ${caravanDesc}<br /> Would you attack?`,
+    htmlMessage: t('caravanEncounter.message', {
+      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      gold: player.gold,
+      units: player.units,
+      defendingUnits,
+      caravanDesc,
+    }),
     buttons: [
       {
-        label: '✖ Let \'em pass..',
+        label: t('caravanEncounter.letThemPass'),
         onClick: () => {
           clearScreen();
           onContinue();
         },
       },
-      { label: '⚔️ Attack!', onClick: startBattle },
+      { label: t('caravanEncounter.attack'), onClick: startBattle },
     ],
   });
 

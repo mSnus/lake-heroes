@@ -721,5 +721,37 @@
   "visitOwnTile": {
     "provides": "{tileName} provides {playerName} with {rewards}{syndicateTag}",
     "yourTileProvides": "Your {tileName} provides {rewards}{syndicateTag}"
+  },
+  "ambushEncounter": {
+    "title": "Ambush",
+    "message": "{playerSpan} is ambushed!<br />A squad of {units}🥷 suddenly attacks. Fight for your lifes!",
+    "defend": "Defend"
+  },
+  "caravanEncounter": {
+    "bringingChains": "bringing {prize}🧍 in chains",
+    "ofGoodsWorth": "of goods worth {prize}🟡",
+    "message": "{playerSpan} <br />{gold}🟡 {units}🧍<br /> encounters a caravan<br /> guarded by {defendingUnits}🥷\n    <br /> {caravanDesc}<br /> Would you attack?",
+    "letThemPass": "✖ Let 'em pass..",
+    "attack": "⚔️ Attack!"
+  },
+  "gameStart": {
+    "message": "New game started! Good luck to all players."
+  },
+  "releasePrisonerOfWar": {
+    "message": "The King in his Grace sends you {units}🧍 and {gold}🟡"
+  },
+  "prison": {
+    "savedByArtifact": "{playerName} is sent to Prison, but the {artifactName} {emoji} keeps them free — no turn skipped!"
+  },
+  "tavern": {
+    "joined": "{units}🧍 joined the mighty army<br />of {playerSpan}",
+    "noneJoined": "No one joined — {playerSpan}'s army has no room left",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} army slots full — {turnedAway}🧍 turned away)</span>",
+    "newFolksWelcome": "New folks are always welcome!"
+  },
+  "portal": {
+    "title": "Whirlpool of lights",
+    "message": "{playerName} feels desoriented and lost 🌀",
+    "whereAreYou": "Where are you?"
   }
 }
