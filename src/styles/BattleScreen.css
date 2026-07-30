@@ -128,11 +128,10 @@
   flex-shrink: 0;
 }
 
-/* The current duel's pair — the two units about to (or just did) roll off. */
-.battle-unit-selected {
-  border-radius: 50%;
-  border: 1px solid red;
-  box-shadow: 0 0 4px red;
+/* Non-brawl (automatic) duels: 70% the size of brawl's — width/height are
+   em-based, so scaling font-size scales the whole box proportionally. */
+.battle-unit-small {
+  font-size: 1.12rem;
 }
 
 /* ── Center column: roll display ── */

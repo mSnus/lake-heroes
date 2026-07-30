@@ -134,7 +134,7 @@ export function showTileEncounterScreen(
       encounter,
       buttons: [
         {
-          label: "Defenceless means it's mine",
+          label: "Defenceless? it's mine",
           action: 'claim-undefended',
           onClick: () => claimUndefendedTile(board, updateGameState),
         },

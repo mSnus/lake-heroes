@@ -682,7 +682,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         <div className="battle-field">
           <div className="battle-units bc-attacker">
             {attackerGrid.map((u, i) => (
-              <span key={i} className={'battle-unit' + (u.selected ? ' battle-unit-selected' : '')}>
+              <span key={i} className={'battle-unit' + (!isBrawl ? ' battle-unit-small' : '') + (u.selected ? ' battle-unit-selected' : '')}>
                 {u.emoji}
               </span>
             ))}
@@ -700,7 +700,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           <div className="battle-units bc-defender">
             {defenderGrid.map((u, i) => (
-              <span key={i} className={'battle-unit' + (u.selected ? ' battle-unit-selected' : '')}>
+              <span key={i} className={'battle-unit' + (!isBrawl ? ' battle-unit-small' : '') + (u.selected ? ' battle-unit-selected' : '')}>
                 {u.emoji}
               </span>
             ))}
