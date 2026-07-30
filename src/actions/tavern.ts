@@ -1,6 +1,10 @@
+import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { buyUnits } from './buyUnits';
+import { sellUnits } from './sellUnits';
+import TavernModal from '../components/TavernModal';
 import { t } from '../i18n';
 
 export function handleTavern(
@@ -12,6 +16,12 @@ export function handleTavern(
   console.log('Action: tavern');
 
   const player = board.activePlayer;
+
+  // Entering the tavern resets this visit's hiring allowance, same as
+  // King's Castle — otherwise a leftover cap from an earlier visit could
+  // block (or extend) recruiting here for no visible reason.
+  player.unitsHiredThisTurn = 0;
+
   const circles = player.circles ?? 0;
   const circleMultiplier = circles >= 12 ? 2 : circles >= 6 ? 1.5 : 1;
   const unitsReward = Math.round(roll * circleMultiplier);
@@ -32,17 +42,19 @@ export function handleTavern(
 
   showScreen({
     screenType: 'tavern-result',
-    background: 'assets/screens/tavern.jpg',
-    htmlMessage: `${joinedMsg}${fullNote}`,
-    buttons: [
-      {
-        label: t('tavern.newFolksWelcome'),
-        action: 'end-turn',
-        onClick: () => {
-          clearScreen();
-          setEndTurn();
-        },
+    content: React.createElement(TavernModal, {
+      gameState: board,
+      joinedHtml: `${joinedMsg}${fullNote}`,
+      onBuy: (amount, tier) => {
+        buyUnits(board, amount, updateGameState, tier);
       },
-    ],
+      onSell: (tier, amount) => {
+        sellUnits(board, amount, updateGameState, tier);
+      },
+      onSkip: () => {
+        clearScreen();
+        setEndTurn();
+      },
+    }),
   });
 }

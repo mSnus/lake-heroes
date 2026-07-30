@@ -22,19 +22,20 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   const config = useScreen();
   if (!config) return null;
 
-  // King's Castle and the guards/fee encounter are pure bookkeeping for a
-  // bot — it drives them headlessly (KingsCastleModal's self-driving effect
-  // / BotController), so hide just these two rather than flashing them at a
-  // human who has nothing to do this turn. Other screens stay visible.
-  const isKingsCastle = config.screenType === 'kings-castle';
+  // King's Castle, the Tavern's recruiting screen, and the guards/fee
+  // encounter are pure bookkeeping for a bot — it drives them headlessly
+  // (KingsCastleModal/TavernModal's self-driving effect / BotController), so
+  // hide just these rather than flashing them at a human who has nothing to
+  // do this turn. Other screens stay visible.
+  const isSelfDrivingModal = config.screenType === 'kings-castle' || config.screenType === 'tavern-result';
   const isGuardsFee = !!config.encounter && config.encounter.canFight !== undefined;
-  const hideForBot = gameState.activePlayer.isComputer && (isKingsCastle || isGuardsFee);
+  const hideForBot = gameState.activePlayer.isComputer && (isSelfDrivingModal || isGuardsFee);
   const hiddenStyle: React.CSSProperties | undefined = hideForBot
     ? { opacity: 0, pointerEvents: 'none' }
     : undefined;
 
   if (config.content) {
-    return isKingsCastle ? <div style={hiddenStyle}>{config.content}</div> : <>{config.content}</>;
+    return isSelfDrivingModal ? <div style={hiddenStyle}>{config.content}</div> : <>{config.content}</>;
   }
 
   const sellAndRecheck = (gs: GameState) => {

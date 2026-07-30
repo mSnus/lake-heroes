@@ -1,0 +1,89 @@
+import React, { useEffect } from 'react';
+import { GameState } from '../game/GameState';
+import '../styles/modal.css';
+import GameModal from './GameModal';
+import { UnitTier } from '../game/army';
+import { UNIT_PRICE } from '../game/constants';
+import { DecoratedButton } from './DecoratedButton';
+import { SquadDisplay } from './SquadDisplay';
+import { SquadHirePanel } from './SquadHirePanel';
+import { pickKingsCastleHireAmount } from '../ai/decisions';
+import { useT } from '../i18n';
+
+interface TavernModalProps {
+  gameState: GameState;
+  /** Pre-rendered HTML for the dice-roll result (joined/full-note message). */
+  joinedHtml: string;
+  onBuy: (amount: number, tier: UnitTier) => void;
+  onSell: (tier: UnitTier, amount: number) => void;
+  onSkip: () => void;
+}
+
+/** Tavern's post-roll screen: shows the free militia the roll won, then lets
+ * the player recruit more with gold — same mechanics as King's Castle, but
+ * militia only (the tavern doesn't train knights, so `showRiders` is always
+ * false regardless of the player's rank). */
+const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy, onSell, onSkip }) => {
+  const t = useT();
+  const player = gameState.activePlayer;
+
+  const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
+  const militiaMax = Math.min(
+    Math.floor(player.gold / UNIT_PRICE),
+    maxForFame,
+    player.remainingCapacity('militia')
+  );
+  const atMax = militiaMax <= 0;
+
+  useEffect(() => {
+    if (!player.isComputer) return;
+    const botMaxAmount = Math.min(
+      Math.floor(player.gold / UNIT_PRICE),
+      Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn),
+      player.remainingCapacity('militia')
+    );
+    const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, UNIT_PRICE);
+    const timer = setTimeout(() => {
+      if (hireAmount > 0) onBuy(hireAmount, 'militia');
+      onSkip();
+    }, 600);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <GameModal
+      className="game-modal"
+      backgroundImage="assets/screens/tavern.jpg"
+      noBorder={true}
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+    >
+      <div className="modal-content" style={{ color: 'white', fontFamily: 'Texturina' }}>
+        <h2 className="game-title">{t('tavern.title')}</h2>
+        <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
+
+        <SquadDisplay
+          militia={player.militia}
+          riders={player.riders}
+          totalSlots={player.armySlots}
+          onSellSquad={(tier, count) => onSell(tier, count)}
+        />
+
+        {atMax ? (
+          <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
+        ) : (
+          <SquadHirePanel player={player} showRiders={false} onBuy={onBuy} />
+        )}
+
+        <div
+          className="button-group"
+          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
+        >
+          <DecoratedButton onClick={onSkip}>{t('tavern.newFolksWelcome')}</DecoratedButton>
+        </div>
+      </div>
+    </GameModal>
+  );
+};
+
+export default TavernModal;

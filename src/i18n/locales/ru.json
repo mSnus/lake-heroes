@@ -747,7 +747,9 @@
     "joined": "{units}🧍 присоединились к могучей армии<br />игрока {playerSpan}",
     "noneJoined": "Никто не присоединился — в армии {playerSpan} не осталось места",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} слотов армии заполнено — {turnedAway}🧍 отправлены прочь)</span>",
-    "newFolksWelcome": "Новым лицам здесь всегда рады!"
+    "newFolksWelcome": "Новым лицам здесь всегда рады!",
+    "title": "Таверна",
+    "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов"
   },
   "portal": {
     "title": "Вихрь огней",
