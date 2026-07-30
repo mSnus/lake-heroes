@@ -31,6 +31,9 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
   const event: JokerEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
   let message = '';
+  // HTML-only detail (e.g. Hurricane's per-player tile list) — shown on the
+  // Joker screen, but kept out of the plain-text banner/log message.
+  let screenExtra = '';
 
   switch (event) {
     case 'Taxes':
@@ -59,6 +62,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
     case 'Hurricane': {
       const lostMsgs: string[] = [];
+      const lostListItems: string[] = [];
       const savedMsgs: string[] = [];
       for (const p of board.players) {
         if (!p.ownedTiles.length) continue;
@@ -86,11 +90,13 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
           changeFame(p, -1);
           lostMsgs.push(`${p.name} loses ${t.name}`);
+          lostListItems.push(`${p.name}: ${t.name} 🔥`);
         }
       }
 
       if (lostMsgs.length) say(`Hurricane sweeps away: ${lostMsgs.join(', ')}`, 'debug');
       message = 'Every player loses their most expensive tile.';
+      if (lostListItems.length) screenExtra = `<br/>${lostListItems.join('<br/>')}`;
       if (savedMsgs.length) message += ` ${savedMsgs.join('; ')}`;
       break;
     }
@@ -200,5 +206,5 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   board.gameMessage = `${event}: ${message}`;
   updateGameState(board);
   setEndTurn();
-  showJokerScreen(message, `${EVENT_EMOJI[event]} ${event}`);
+  showJokerScreen(`${message}${screenExtra}`, `${EVENT_EMOJI[event]} ${event}`);
 }

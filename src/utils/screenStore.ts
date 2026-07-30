@@ -135,7 +135,7 @@ export function showJokerScreen(message: string, title?: string): void {
     screenType: 'joker',
     background: 'assets/screens/joker.jpg',
     title,
-    message,
+    htmlMessage: message,
     buttons: [{ label: 'Accept your destiny', action: 'end-turn', onClick: clearScreen }],
   });
 }
