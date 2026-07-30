@@ -23,7 +23,7 @@ export interface KingsGraceReward {
 export function computeKingsGraceReward(board: GameState, player: Player): KingsGraceReward {
   const fame = player.fame || 1;
   const kingsGold = MONEY_PASS_START + MONEY_PASS_START_FAME * fame;
-  const kingsUnits = fame;
+  const kingsUnits = 2 * fame;
 
   let tileGold = 0;
   let tileUnits = 0;
