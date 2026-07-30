@@ -126,13 +126,13 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
                 )}
                 <div className="tc-td" style={{paddingTop: '2rem', fontSize: '1rem'}}>
                     👛 <span className="value">{tile.prices[2]?.gold ?? 0}</span>🟡 →{' '}
-                    +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year and{' '}
-                    <span className="value">2</span>🏯
+                    <span className="value">2</span>🏯 and{' '}
+                    +<span className="value">{tile.bonuses[2] ?? 0}</span>{bonusTypeIcon} per year
                 </div>
                 <div className="tc-td" style={{fontSize: '1rem'}}>
                     👛 <span className="value">{tile.prices[3]?.gold ?? 0}</span>🟡 →{' '}
-                    +<span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon} per year and{' '}
-                    <span className="value">3</span>🏯
+                    <span className="value">3</span>🏯 and{' '}
+                    +<span className="value">{tile.bonuses[3] ?? 0}</span>{bonusTypeIcon} per year
                 </div>
         </div>
       </div>
