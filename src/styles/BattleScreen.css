@@ -102,7 +102,7 @@
   padding: 10px 8px;
   text-shadow: 1px 1px 4px #000;
   min-height: 48px;
-  max-height: 45vh;
+  max-height: 50vh;
   overflow-y: auto;
   align-content: flex-start;
 }

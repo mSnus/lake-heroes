@@ -15,7 +15,7 @@ export const KNIGHT_FAME = 4; // fame at or above this makes a player a knight (
 export const BRAWL_THRESHOLD = 6; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
-export const RIDER_UNIT_PRICE = 300; // gold per rider
+export const RIDER_UNIT_PRICE = 500; // gold per rider
 export const MILITIA_POWER_WEIGHT = 1;
 export const RIDER_POWER_WEIGHT = 2.5;
 export const ARMY_SLOT_CAPACITY = 10; // max units of one tier per slot

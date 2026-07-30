@@ -9,7 +9,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { DiceWidget, DiceWidgetDouble } from './DiceWidget';
-import { rollDice } from '../game/Dice';
+import { rollDiceWide } from '../game/Dice';
 import { PlayerCard } from './PlayerCard';
 import { DecoratedButton } from './DecoratedButton';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
@@ -33,6 +33,10 @@ type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
 // applies to both the automatic (random-pair) loop and the brawl's manual
 // round-to-round transition.
 const DUEL_PAIR_DELAY_MS = 200;
+
+// Riders (knights) hit harder than Militia in an automatic (non-brawl) duel —
+// their hidden roll counts for 130% of a Militia roll.
+const RIDER_DUEL_MULTIPLIER = 1.3;
 
 export type BattleScreenProps =
   | {
@@ -192,10 +196,32 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const doubleDice = initialDefence > 12 || attackerUnits > 12;
 
+  // Tier split (Militia vs Riders) for each side's unit grid — computed here
+  // (rather than down by the grid JSX) because the automatic non-brawl duel
+  // loop also needs it, to know whether a given duel index is a Rider for
+  // the RIDER_DUEL_MULTIPLIER bonus. Riders sit on the outer edge of their
+  // column (survive longer) and Militia on the center-facing edge (dies
+  // first) — matching Player/Tile's actual militia-first loss ordering, and
+  // (in a brawl) the rightmost/leftmost duel-selection order.
+  const attackerTierCounts =
+    isDragon || isAmbush ? { militia: attackerUnits, riders: 0 } : { militia: attacker.militia, riders: attacker.riders };
+  const defenderTierCounts = isTile && defender
+    ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
+    : isPlayerBattle
+      ? { militia: defender!.militia, riders: defender!.riders }
+      : { militia: initialDefence, riders: 0 };
+  const attackerSplit = proportionalTierSplit(attackerUnits, attackerTierCounts.militia, attackerTierCounts.riders);
+  const defenderSplit = proportionalTierSplit(initialDefence, defenderTierCounts.militia, defenderTierCounts.riders);
+
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
   const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
-  const attackerRollBonus = attackerArtifactBonus;
-  const defenderRollBonus = defenderArtifactBonus;
+  // Ambush is visually/mechanically reversed: the `attacker` prop holds the
+  // real player, but they occupy the DEFENDER role in the duel (the NPC
+  // ambushers auto-roll as the attacker role) — so the real player's
+  // artifact bonus has to land on the defender-role roll, not the
+  // attacker-role one, or it silently boosts the NPC instead.
+  const attackerRollBonus = isAmbush ? 0 : attackerArtifactBonus;
+  const defenderRollBonus = isAmbush ? attackerArtifactBonus : defenderArtifactBonus;
 
   type BonusEntry = { key: string; label: string; emoji?: string; bonus: number };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
@@ -369,8 +395,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const defIdx = leftmostAliveIndex(defAliveRef.current);
       if (atkIdx === -1 || defIdx === -1) return;
 
-      const rollA = (doubleDice ? rollDice() + rollDice() : rollDice()) + attackerRollBonus;
-      const rollD = (doubleDice ? rollDice() + rollDice() : rollDice()) + defenderRollBonus;
+      const atkIsRider = atkIdx < attackerSplit.ridersCount;
+      const defIsRider = defIdx >= defenderSplit.militiaCount;
+
+      const rollA = rollDiceWide() * (atkIsRider ? RIDER_DUEL_MULTIPLIER : 1) + attackerRollBonus;
+      const rollD = rollDiceWide() * (defIsRider ? RIDER_DUEL_MULTIPLIER : 1) + defenderRollBonus;
 
       if (rollA > rollD) {
         defAliveRef.current[defIdx] = false;
@@ -526,16 +555,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // column (survive longer) and Militia on the center-facing edge (dies
   // first) — matching Player/Tile's actual militia-first loss ordering, and
   // (in a brawl) the rightmost/leftmost duel-selection order.
-  const attackerTierCounts =
-    isDragon || isAmbush ? { militia: attackerUnits, riders: 0 } : { militia: attacker.militia, riders: attacker.riders };
-  const defenderTierCounts = isTile && defender
-    ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
-    : isPlayerBattle
-      ? { militia: defender!.militia, riders: defender!.riders }
-      : { militia: initialDefence, riders: 0 };
-  const attackerSplit = proportionalTierSplit(attackerUnits, attackerTierCounts.militia, attackerTierCounts.riders);
-  const defenderSplit = proportionalTierSplit(initialDefence, defenderTierCounts.militia, defenderTierCounts.riders);
-
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) => {
     const emoji = !atkAlive[i] ? '💥' : isAmbush ? '👹' : i < attackerSplit.ridersCount ? '🐎' : '🧍';
     return { emoji, selected: i === selectedAtkIdx };
