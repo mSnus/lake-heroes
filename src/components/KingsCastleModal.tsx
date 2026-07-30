@@ -5,6 +5,7 @@ import GameModal from './GameModal';
 import { KNIGHT_FAME, RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
 import { UnitTier } from '../game/army';
 import { PlayerLabel } from './PlayerLabel';
+import { DecoratedButton } from './DecoratedButton';
 import { pickKingsCastleHireAmount, pickKingsCastleHireTier } from '../ai/decisions';
 import { KingsContract } from '../game/kingsContracts';
 
@@ -31,18 +32,18 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
   const slotCap = player.remainingCapacity(tier);
   const maxAmount = Math.min(goldCap, maxForFame, slotCap);
 
-  // Which constraint is actually holding maxAmount back, for a clear reason
-  // shown next to the Recruit input — otherwise a low/zero max looks like a
-  // bug. Checked in priority order (slots first — the least obvious cap);
-  // only reported when it's uniquely binding, not just tied for the minimum.
-  const limitReason =
-    maxAmount === 0 || maxAmount < Math.max(goldCap, maxForFame, slotCap)
-      ? slotCap === maxAmount
-        ? `🏯 army slots full (${player.slotsUsed}/${player.armySlots} used)`
-        : maxForFame === maxAmount
-          ? "today's hiring limit reached"
-          : 'not enough gold'
-      : null;
+  // Neither tier has any room left — gold, fame, or slots block both militia
+  // and riders. Shown as a single "can't recruit" message instead of the
+  // full recruiting UI.
+  const militiaMax = Math.min(
+    Math.floor(player.gold / UNIT_PRICE),
+    maxForFame,
+    player.remainingCapacity('militia')
+  );
+  const ridersMax = canRecruitRiders
+    ? Math.min(Math.floor(player.gold / RIDER_UNIT_PRICE), maxForFame, player.remainingCapacity('riders'))
+    : 0;
+  const atMax = militiaMax <= 0 && ridersMax <= 0;
 
   const [amount, setAmount] = useState(maxAmount);
   useEffect(() => setAmount(maxAmount), [maxAmount]);
@@ -87,104 +88,118 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
           <h3 className='king-contract'>📜 New contract: be the first to claim<br/> {contractTile.name} for a reward of <span className="value">{contract.award}</span>🟡!</h3>
         )}
 
-        <h3>
-          Your money <span className="value">{player.gold}🟡</span> and fame <span className="value">{player.fame}</span>🏆  are enough<br />
-          to grow your army from <span className="value">{player.militia}🧍/{player.riders}🐎</span> up to{' '}
-          <span className="value">
-            {tier === 'militia' ? player.militia + maxAmount : player.militia}🧍/
-            {tier === 'riders' ? player.riders + maxAmount : player.riders}🐎
-          </span>
-          <br />
-          🏯 Army slots: <span className="value">{player.slotsUsed}/{player.armySlots}</span> used
-          {' '}(each holds up to 10 of one kind)
-        </h3>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
-            <button
-              className={'game-menu-button' + (tier === 'militia' ? ' silver' : '')}
-              onClick={() => setTier('militia')}
+        {atMax ? (
+          <>
+            <h3>
+              Your money <span className="value">{player.gold}🟡</span> and fame <span className="value">{player.fame}</span>🏆<br />
+              do not allow you to recruit more units
+            </h3>
+            <div
+              className="button-group"
+              style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
             >
-              🧍 Militia ({UNIT_PRICE}🟡)
-            </button>
-            <button
-              className={'game-menu-button' + (tier === 'riders' ? ' silver' : '')}
-              onClick={() => canRecruitRiders && setTier('riders')}
-              disabled={!canRecruitRiders}
-              title={canRecruitRiders ? '' : `Reach fame ${KNIGHT_FAME} to recruit Riders`}
-            >
-              🐎 Riders ({RIDER_UNIT_PRICE}🟡){canRecruitRiders ? '' : ' 🔒'}
-            </button>
-          </div>
-          <div className='units-input-row'>
-            Recruit
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(parseInt(e.target.value, 10))}
-              min="0"
-              max={maxAmount}
-              id="unitsInput"
-              style={{ width: '2rem' }}
-              className='units-input'
-            />
-            {amount > 0 && amount <= maxAmount && (<>so you'll have <span className="value">{(tier === 'militia' ? player.militia : player.riders) + amount}{tier === 'militia' ? '🧍' : '🐎'}</span> and <span className="value">{player.gold - amount * unitPrice}🟡</span></>)}
-            {limitReason && <span style={{ color: '#ff8080' }}>max {maxAmount} — {limitReason}</span>}
+              <DecoratedButton onClick={onSkip}>⚜️ Keep calm and carry on</DecoratedButton>
+            </div>
+          </>
+        ) : (
+          <>
+            <h3>
+              Your money <span className="value">{player.gold}🟡</span> and fame <span className="value">{player.fame}</span>🏆<br />
+              are enough to grow your army<br />
+              from <span className="value">{player.militia}🧍/{player.riders}🐎</span> up to{' '}
+              <span className="value">
+                {tier === 'militia' ? player.militia + maxAmount : player.militia}🧍/
+                {tier === 'riders' ? player.riders + maxAmount : player.riders}🐎
+              </span>
+            </h3>
 
-        </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div className="game-menu-small-buttons">
-              <button className="game-menu-button small silver" onClick={handleInc} disabled={amount >= maxAmount}>
-                +
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+              }}
+            >
+              <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  className={'game-menu-button' + (tier === 'militia' ? ' silver' : '')}
+                  onClick={() => setTier('militia')}
+                >
+                  🧍 Militia ({UNIT_PRICE}🟡)
+                </button>
+                <button
+                  className={'game-menu-button' + (tier === 'riders' ? ' silver' : '')}
+                  onClick={() => canRecruitRiders && setTier('riders')}
+                  disabled={!canRecruitRiders}
+                  title={canRecruitRiders ? '' : `Reach fame ${KNIGHT_FAME} to recruit Riders`}
+                >
+                  🐎 Riders ({RIDER_UNIT_PRICE}🟡)
+                </button>
+              </div>
+              <div className='units-input-row'>
+                Recruit
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(parseInt(e.target.value, 10))}
+                  min="0"
+                  max={maxAmount}
+                  id="unitsInput"
+                  style={{ width: '2rem' }}
+                  className='units-input'
+                />
+                {amount > 0 && amount <= maxAmount && (<>so you'll have <span className="value">{(tier === 'militia' ? player.militia : player.riders) + amount}{tier === 'militia' ? '🧍' : '🐎'}</span> and <span className="value">{player.gold - amount * unitPrice}🟡</span></>)}
+
+            </div>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '1rem',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <div className="game-menu-small-buttons">
+                  <button className="game-menu-button small silver" onClick={handleInc} disabled={amount >= maxAmount}>
+                    +
+                  </button>
+                  <button className="game-menu-button small silver" onClick={handleDec}>
+                    −
+                  </button>
+                </div>
+                <div className="game-menu-amounts">
+                  <button className="game-menu-button silver" onClick={handleHalf}>
+                    {Math.floor(maxAmount/2)}🧍
+                  </button>
+                  <button className="game-menu-button silver" onClick={handleThreeQuarters}>
+                    {Math.floor(maxAmount*3/4)}🧍
+                  </button>
+                  <button className="game-menu-button silver" onClick={handleMax}>
+                    {maxAmount}🧍
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              className="button-group"
+              style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
+            >
+              <button className="game-menu-button" onClick={onSkip}>
+                ✖ I don't need 'em
               </button>
-              <button className="game-menu-button small silver" onClick={handleDec}>
-                −
+
+              <button
+                className="game-menu-button"
+                onClick={handleBuy}
+                disabled={!amount || amount <= 0 || amount > maxAmount}
+              >
+                Hire {amount > 0 ? amount : ''}🧍
               </button>
             </div>
-            <div className="game-menu-amounts">
-              <button className="game-menu-button silver" onClick={handleHalf}>
-                {Math.floor(maxAmount/2)}🧍
-              </button>
-              <button className="game-menu-button silver" onClick={handleThreeQuarters}>
-                {Math.floor(maxAmount*3/4)}🧍
-              </button>
-              <button className="game-menu-button silver" onClick={handleMax}>
-                {maxAmount}🧍
-              </button>
-            </div>
-          </div>
-        </div>
-        <div
-          className="button-group"
-          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
-        >
-          <button className="game-menu-button" onClick={onSkip}>
-            ✖ I don't need 'em 
-          </button>
-
-          <button
-            className="game-menu-button"
-            onClick={handleBuy}
-            disabled={!amount || amount <= 0 || amount > maxAmount}
-          >
-            Hire {amount > 0 ? amount : ''}🧍
-          </button>
-        </div>
+          </>
+        )}
       </div>
     </GameModal>
   );
