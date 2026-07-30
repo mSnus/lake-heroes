@@ -57,8 +57,9 @@ const HelpScreen: React.FC = () => {
           <ul>
             <li>It's your reputation. It depends on each battle won or lost and tiles owned. </li>
             <li>
-              Fame more than ${KNIGHT_FAME} promotes you to a rider, but makes more visible for a
-              dragon - beware, it could attack!
+              Fame ${KNIGHT_FAME} or more makes you eligible for promotion — the King knights you
+              (unlocking Rider recruiting) next time you cross his Castle. It also makes you more
+              visible for a dragon - beware, it could attack!
             </li>
             <li>
               More fame allows to recruit more units at the King's Castle, increases your stable

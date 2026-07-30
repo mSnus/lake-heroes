@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
-import { KNIGHT_FAME, RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
 import { UnitTier } from '../game/army';
 import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
@@ -24,7 +24,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
   const contractTile = contract ? gameState.tiles[contract.tilePosition] : null;
 
   const [tier, setTier] = useState<UnitTier>('militia');
-  const canRecruitRiders = player.fame >= KNIGHT_FAME;
+  const canRecruitRiders = player.isKnight;
   const unitPrice = tier === 'riders' ? RIDER_UNIT_PRICE : UNIT_PRICE;
 
   const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
@@ -106,10 +106,14 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
             <h3>
               Your money <span className="value">{player.gold}🟡</span> and fame <span className="value">{player.fame}</span>🏆<br />
               are enough to grow your army<br />
-              from <span className="value">{player.militia}🧍/{player.riders}🐎</span> up to{' '}
+              from{' '}
               <span className="value">
-                {tier === 'militia' ? player.militia + maxAmount : player.militia}🧍/
-                {tier === 'riders' ? player.riders + maxAmount : player.riders}🐎
+                {player.militia}🧍{canRecruitRiders && <>/{player.riders}🐎</>}
+              </span>{' '}
+              up to{' '}
+              <span className="value">
+                {tier === 'militia' ? player.militia + maxAmount : player.militia}🧍
+                {canRecruitRiders && <>/{tier === 'riders' ? player.riders + maxAmount : player.riders}🐎</>}
               </span>
             </h3>
 
@@ -129,14 +133,14 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
                 >
                   🧍 Militia ({UNIT_PRICE}🟡)
                 </button>
-                <button
-                  className={'game-menu-button' + (tier === 'riders' ? ' silver' : '')}
-                  onClick={() => canRecruitRiders && setTier('riders')}
-                  disabled={!canRecruitRiders}
-                  title={canRecruitRiders ? '' : `Reach fame ${KNIGHT_FAME} to recruit Riders`}
-                >
-                  🐎 Riders ({RIDER_UNIT_PRICE}🟡)
-                </button>
+                {canRecruitRiders && (
+                  <button
+                    className={'game-menu-button' + (tier === 'riders' ? ' silver' : '')}
+                    onClick={() => setTier('riders')}
+                  >
+                    🐎 Riders ({RIDER_UNIT_PRICE}🟡)
+                  </button>
+                )}
               </div>
               <div className='units-input-row'>
                 Recruit

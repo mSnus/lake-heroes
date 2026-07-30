@@ -7,7 +7,7 @@ import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { gameEvent } from '../utils/events';
-import { SPRITE_SIZE, KNIGHT_FAME } from '../game/constants';
+import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
 import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
@@ -219,7 +219,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     if (Number.isNaN(targetMilitia) || targetMilitia < 0) return;
 
     let targetRiders = tile.garrisonRiders;
-    if (activePlayer.fame >= KNIGHT_FAME) {
+    if (activePlayer.isKnight) {
       const ridersInput = window.prompt(
         `Riders to garrison at ${tile.name}? (${activePlayer.riders}🐎 traveling, ${tile.garrisonRiders}🐎 already here)`,
         String(tile.garrisonRiders)

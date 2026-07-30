@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { CHARACTERS, CharacterConfig } from './characters';
 import { FeeOptions } from '../actions/feeOptions';
-import { KNIGHT_FAME, UNIT_PRICE } from '../game/constants';
+import { UNIT_PRICE } from '../game/constants';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { UnitTier, remainingCapacity } from '../game/army';
@@ -183,7 +183,7 @@ export function pickGarrisonAction(
  * unlocked, explorer stays cheap and mobile on militia. */
 export function pickKingsCastleHireTier(player: Player): UnitTier {
   const cfg = getCharacterConfig(player);
-  if (!cfg || player.fame < KNIGHT_FAME || cfg.id === 'explorer') return 'militia';
+  if (!cfg || !player.isKnight || cfg.id === 'explorer') return 'militia';
   return 'riders';
 }
 

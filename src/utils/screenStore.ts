@@ -214,6 +214,29 @@ export function showDragonChallengeScreen(
   });
 }
 
+export function showKnightPromotionScreen(
+  playerName: string,
+  playerColor: string,
+  onContinue: () => void
+): void {
+  showScreen({
+    screenType: 'promotion',
+    background: 'assets/screens/promotion.jpg',
+    fade: true,
+    title: 'Promotion',
+    htmlMessage: `For your valor and fame, the King promotes <span style="color:${playerColor}">${playerName}</span> to a Knight!<br />Now you could also recruit riders 🐎`,
+    buttons: [
+      {
+        label: '⚜️ Keep calm and carry on',
+        onClick: () => {
+          clearScreen();
+          onContinue();
+        },
+      },
+    ],
+  });
+}
+
 export function useScreen(): ScreenConfig | null {
   return useSyncExternalStore(
     (cb) => {

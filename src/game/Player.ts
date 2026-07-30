@@ -40,6 +40,9 @@ export class Player {
   hasClaimedThisTurn: boolean;
   hasConsideredClaimThisTurn: boolean;
   hasBeenOfferedDragonChallenge: boolean;
+  /** Set once the King's Promotion screen has fired — only then can Riders
+   * actually be recruited, even if fame already meets KNIGHT_FAME. */
+  isKnight: boolean;
   upgradesThisTurn: number;
   isComputer: boolean;
   character?: CharacterId;
@@ -68,6 +71,7 @@ export class Player {
     this.hasClaimedThisTurn = false;
     this.hasConsideredClaimThisTurn = false;
     this.hasBeenOfferedDragonChallenge = false;
+    this.isKnight = false;
     this.upgradesThisTurn = 0;
     this.isComputer = params.isComputer ?? false;
     this.character = params.character;

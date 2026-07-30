@@ -18,6 +18,7 @@ import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
 import { checkAmbushEncounter } from './ambushEncounter';
+import { checkKnightPromotion } from './knightPromotion';
 import { tickWildGarrisons } from '../game/wildGarrison';
 
 export async function rollAndMove(
@@ -31,6 +32,7 @@ export async function rollAndMove(
   const roll = preRolledValue !== undefined ? preRolledValue : rollDice();
   const player = board.activePlayer;
 
+  const willCrossStart = player.position + roll >= TILE_COUNT;
   const nextTileIdx = (player.position + roll) % TILE_COUNT;
   const nextTile = board.tiles[nextTileIdx];
 
@@ -142,6 +144,7 @@ export async function rollAndMove(
   // Phase resets to before-move so encounter screens don't show rolling UI.
   gameEvent('setPhase', 'before-move');
   const continueFn = () => { proceedWithMove().catch(console.error); };
+  if (checkKnightPromotion(board, updateGameState, continueFn, willCrossStart)) return;
   if (checkDragonEncounter(board, updateGameState, continueFn)) return;
   if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
   if (checkAmbushEncounter(board, updateGameState, continueFn)) return;
