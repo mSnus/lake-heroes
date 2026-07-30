@@ -27,11 +27,22 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
   const unitPrice = tier === 'riders' ? RIDER_UNIT_PRICE : UNIT_PRICE;
 
   const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
-  const maxAmount = Math.min(
-    Math.floor(player.gold / unitPrice),
-    maxForFame,
-    player.remainingCapacity(tier)
-  );
+  const goldCap = Math.floor(player.gold / unitPrice);
+  const slotCap = player.remainingCapacity(tier);
+  const maxAmount = Math.min(goldCap, maxForFame, slotCap);
+
+  // Which constraint is actually holding maxAmount back, for a clear reason
+  // shown next to the Recruit input — otherwise a low/zero max looks like a
+  // bug. Checked in priority order (slots first — the least obvious cap);
+  // only reported when it's uniquely binding, not just tied for the minimum.
+  const limitReason =
+    maxAmount === 0 || maxAmount < Math.max(goldCap, maxForFame, slotCap)
+      ? slotCap === maxAmount
+        ? `🏯 army slots full (${player.slotsUsed}/${player.armySlots} used)`
+        : maxForFame === maxAmount
+          ? "today's hiring limit reached"
+          : 'not enough gold'
+      : null;
 
   const [amount, setAmount] = useState(maxAmount);
   useEffect(() => setAmount(maxAmount), [maxAmount]);
@@ -84,7 +95,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
             {tier === 'riders' ? player.riders + maxAmount : player.riders}🐎
           </span>
           <br />
-          ({player.slotsUsed}/{player.armySlots} army slots used)
+          🏯 Army slots: <span className="value">{player.slotsUsed}/{player.armySlots}</span> used
+          {' '}(each holds up to 10 of one kind)
         </h3>
 
         <div
@@ -125,6 +137,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
               className='units-input'
             />
             {amount > 0 && amount <= maxAmount && (<>so you'll have <span className="value">{(tier === 'militia' ? player.militia : player.riders) + amount}{tier === 'militia' ? '🧍' : '🐎'}</span> and <span className="value">{player.gold - amount * unitPrice}🟡</span></>)}
+            {limitReason && <span style={{ color: '#ff8080' }}>max {maxAmount} — {limitReason}</span>}
 
         </div>
           <div
