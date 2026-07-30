@@ -178,10 +178,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
-  // For any other (non-brawl) attack the player commits their FULL army, so the
-  // attacker's force is attacker.units — e.g. 20 vs a defence of 6. Brawls stay
-  // symmetric single roll-offs (both sides mirror the defence), and ambush keeps
-  // the NPC ambusher force here since the player is the defender there.
+  // For any other attack — brawl or not — the player commits their FULL army,
+  // so the attacker's force is attacker.units — e.g. 6 vs a defence of 5.
+  // Ambush is the one exception: the player is the DEFENDER there, so the
+  // "attacker" side is the NPC ambusher force, which the defence variable
+  // already holds by definition for that mode.
   // Snapshotted once on mount: the dragon (sum of all armies) and full-army
   // branches read live Player.units, and resolving the battle mutates those in
   // place. Recomputing from the live value would shrink the grid and the
@@ -189,7 +190,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const attackerUnitsRef = useRef(
     isDragon
       ? gameState.players.reduce((sum, p) => sum + p.units, 0)
-      : isAmbush || isBrawl
+      : isAmbush
         ? initialDefence
         : attacker.units
   );

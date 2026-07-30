@@ -147,31 +147,33 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        {/* player's artifacts */}
-        <div className="player-stats-data" id="statsArtifacts">
-          <div
-            className="player-stats-hint"
-            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-          >
-            📯
+        {/* player's artifacts — the whole cell is skipped when there are none */}
+        {activePlayer.artifacts.length > 0 && (
+          <div className="player-stats-data" id="statsArtifacts">
+            <div
+              className="player-stats-hint"
+              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            >
+              💎
+            </div>
+            <div className="player-stats-artifacts">
+              {activePlayer.artifacts.map((id) => {
+                const artifact = getArtifact(id);
+                if (!artifact) return null;
+                return (
+                  <span
+                    key={id}
+                    className="player-artifact-badge"
+                    onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {artifact.emoji}
+                  </span>
+                );
+              })}
+            </div>
           </div>
-          <div className="player-stats-artifacts">
-            {activePlayer.artifacts.map((id) => {
-              const artifact = getArtifact(id);
-              if (!artifact) return null;
-              return (
-                <span
-                  key={id}
-                  className="player-artifact-badge"
-                  onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {artifact.emoji}
-                </span>
-              );
-            })}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

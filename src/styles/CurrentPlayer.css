@@ -38,14 +38,11 @@
 }
 
 .player-stats-data {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 26px 1fr;
   align-items: center;
+  gap: 6px;
   cursor: pointer;
-}
-
-.player-stats-data div:first-child {
-  margin-right: 8px;
 }
 
 .player-stats-artifacts {
