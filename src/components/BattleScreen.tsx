@@ -211,7 +211,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
     : isPlayerBattle
       ? { militia: defender!.militia, riders: defender!.riders }
-      : { militia: initialDefence, riders: 0 };
+      : isDragon
+        // The Dragon 🐉 fights like a Rider 🐎 — full RIDER_DUEL_MULTIPLIER.
+        ? { militia: 0, riders: initialDefence }
+        : { militia: initialDefence, riders: 0 };
   const attackerSplit = proportionalTierSplit(attackerUnits, attackerTierCounts.militia, attackerTierCounts.riders);
   const defenderSplit = proportionalTierSplit(initialDefence, defenderTierCounts.militia, defenderTierCounts.riders);
 

@@ -57,6 +57,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.goldUnits.item3')} />
             <HtmlLi html={t('helpScreen.goldUnits.item4', { knightFame: KNIGHT_FAME })} />
             <HtmlLi html={t('helpScreen.goldUnits.item5')} />
+            <HtmlLi html={t('helpScreen.goldUnits.item6')} />
           </ul>
 
           <h3>{t('helpScreen.fame.title')}</h3>
