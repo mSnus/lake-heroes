@@ -318,11 +318,18 @@ export const TileCard: React.FC<TileCardProps> = ({
                     <div
                       className="big-icon-hint"
                       onClick={(e) => {
-                        if (tile.owner !== activePlayer?.id) return;
                         e.stopPropagation();
+                        if (tile.owner !== activePlayer?.id) {
+                          say(`Defence: ${tile.defence}`, 'info');
+                          return;
+                        }
+                        if (gameState?.activeTile !== tile) {
+                          say('You could only set garrison while visiting your tile', 'warning');
+                          return;
+                        }
                         handleGarrison();
                       }}
-                      style={tile.owner === activePlayer?.id ? { cursor: 'pointer' } : undefined}
+                      style={{ cursor: 'pointer' }}
                     >
                       <div>
                         {tile.garrisonSlots}🏯 {tile.garrison}🛡️

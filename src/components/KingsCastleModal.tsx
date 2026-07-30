@@ -126,22 +126,22 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({ gameState, newContract
                 flexDirection: 'column',
               }}
             >
-              <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  className={'game-menu-button' + (tier === 'militia' ? ' silver' : '')}
-                  onClick={() => setTier('militia')}
-                >
-                  🧍 Militia ({UNIT_PRICE}🟡)
-                </button>
-                {canRecruitRiders && (
+              {canRecruitRiders && (
+                <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    className={'game-menu-button' + (tier === 'militia' ? ' silver' : '')}
+                    onClick={() => setTier('militia')}
+                  >
+                    🧍 Militia ({UNIT_PRICE}🟡)
+                  </button>
                   <button
                     className={'game-menu-button' + (tier === 'riders' ? ' silver' : '')}
                     onClick={() => setTier('riders')}
                   >
                     🐎 Riders ({RIDER_UNIT_PRICE}🟡)
                   </button>
-                )}
-              </div>
+                </div>
+              )}
               <div className='units-input-row'>
                 Recruit
                 <input
