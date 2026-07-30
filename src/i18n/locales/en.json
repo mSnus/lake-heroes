@@ -717,5 +717,9 @@
     "green": "Green",
     "violet": "Violet",
     "black": "Black"
+  },
+  "visitOwnTile": {
+    "provides": "{tileName} provides {playerName} with {rewards}{syndicateTag}",
+    "yourTileProvides": "Your {tileName} provides {rewards}{syndicateTag}"
   }
 }

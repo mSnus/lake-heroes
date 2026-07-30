@@ -717,5 +717,9 @@
     "green": "Зелёный",
     "violet": "Фиолетовый",
     "black": "Чёрный"
+  },
+  "visitOwnTile": {
+    "provides": "«{tileName}» приносит {playerName} {rewards}{syndicateTag}",
+    "yourTileProvides": "Ваша «{tileName}» приносит {rewards}{syndicateTag}"
   }
 }
