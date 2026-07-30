@@ -211,30 +211,31 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             >
               {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
             </button>
-            {openColorIndex === index && (
-              <select
-                autoFocus
-                value={player.color}
-                onChange={(e) => handleColorChange(index, e.target.value)}
-                onBlur={() => setOpenColorIndex(null)}
-                style={{ fontSize: '0.8rem' }}
-              >
-                {playerOptions.map((opt) => (
-                  <option key={opt.color} value={opt.color}>
-                    {t(`playerOptions.${opt.image}`)}
-                  </option>
-                ))}
-              </select>
-            )}
-            {getSelectedOption(player) && (
-              <img
-                src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
-                alt={getSelectedOption(player) ? t(`playerOptions.${getSelectedOption(player)?.image}`) : undefined}
-                onClick={() => setOpenColorIndex(openColorIndex === index ? null : index)}
-                style={{ width: '60px', height: '60px', cursor: 'pointer' }}
-                className="player-image"
-              />
-            )}
+            <div className="color-picker-wrapper">
+              {getSelectedOption(player) && (
+                <img
+                  src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
+                  alt={getSelectedOption(player) ? t(`playerOptions.${getSelectedOption(player)?.image}`) : undefined}
+                  onClick={() => setOpenColorIndex(openColorIndex === index ? null : index)}
+                  style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+                  className="player-image"
+                />
+              )}
+              {openColorIndex === index && (
+                <div className="color-swatch-list">
+                  {playerOptions.map((opt) => (
+                    <button
+                      key={opt.color}
+                      type="button"
+                      className={`color-swatch${opt.color === player.color ? ' selected' : ''}`}
+                      style={{ backgroundColor: opt.color }}
+                      title={t(`playerOptions.${opt.image}`)}
+                      onClick={() => handleColorChange(index, opt.color)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ))}
         <div className="button-group">
