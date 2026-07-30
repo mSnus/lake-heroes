@@ -32,7 +32,7 @@ type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
 // Pause between one duel resolving and the next pair being selected/rolled —
 // applies to both the automatic (random-pair) loop and the brawl's manual
 // round-to-round transition.
-const DUEL_PAIR_DELAY_MS = 200;
+const DUEL_PAIR_DELAY_MS = 300;
 
 // Riders (knights) hit harder than Militia in an automatic (non-brawl) duel —
 // their hidden roll counts for 130% of a Militia roll.
