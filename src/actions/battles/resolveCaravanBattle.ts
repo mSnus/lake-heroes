@@ -25,9 +25,11 @@ export function resolveCaravanBattle(
     attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
   }
 
-  const unitLossMsg = attackerUnitsKilled > 0 && outcome !== 'tie'
-    ? ` while ${attackerUnitsKilled}🧍 were lost fighting for it`
-    : '';
+  const lostUnits = attackerUnitsKilled > 0 && outcome !== 'tie';
+  // The screen message keeps the full "fighting for it" phrasing; the game
+  // log (board.gameMessage) drops it for a terser one-line log entry.
+  const unitLossMsgGame = lostUnits ? ` while ${attackerUnitsKilled}🧍 were lost` : '';
+  const unitLossMsgScreen = lostUnits ? ` while ${attackerUnitsKilled}🧍 were lost fighting for it` : '';
 
   let message = '';
   let victoryBg = false;
@@ -63,8 +65,8 @@ export function resolveCaravanBattle(
     message = `The caravan got away!`;
   }
 
-  board.gameMessage += unitLossMsg;
-  message += unitLossMsg;
+  board.gameMessage += unitLossMsgGame;
+  message += unitLossMsgScreen;
 
   logBattleSummary(attacker, 'Caravan Guards', outcome, null, unitsBefore, goldBefore);
 
