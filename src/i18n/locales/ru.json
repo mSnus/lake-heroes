@@ -153,7 +153,7 @@
     "upgradedMessage": "{playerName} улучшил «{tileName}» до уровня {level}",
     "confirmSell": "Продать «{tileName}» за {price}, точно?",
     "soldMessage": "{playerName} продал «{tileName}» и получил {gold}🟡 и {units}🧍",
-    "garrisonMilitiaPrompt": "Сколько ополчения оставить в «{tileName}»? ({traveling}🧍 в пути, {here}🧍 уже там, {slots} {slotWord} по 10 здесь)",
+    "garrisonMilitiaPrompt": "Сколько оставить охранять «{tileName}»?",
     "garrisonRidersPrompt": "Сколько всадников оставить в «{tileName}»? ({traveling}🐎 в пути, {here}🐎 уже там)",
     "fee": "плата",
     "perYear": "в год",

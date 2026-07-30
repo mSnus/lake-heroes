@@ -213,13 +213,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     if (!gameState || !updateGameState || !activePlayer) return;
 
     const militiaInput = window.prompt(
-      t('tileCard.garrisonMilitiaPrompt', {
-        tileName: tile.name,
-        traveling: activePlayer.militia,
-        here: tile.garrisonMilitia,
-        slots: tile.garrisonSlots,
-        slotWord: tile.garrisonSlots === 1 ? t('common.slot') : t('common.slots'),
-      }),
+      t('tileCard.garrisonMilitiaPrompt', { tileName: tile.name }),
       String(tile.garrisonMilitia)
     );
     if (militiaInput === null) return;

@@ -153,7 +153,7 @@
     "upgradedMessage": "{playerName} upgraded {tileName} to level {level}",
     "confirmSell": "Sell {tileName} for {price}, seriously?",
     "soldMessage": "{playerName} sold {tileName} and received {gold}🟡 and {units}🧍",
-    "garrisonMilitiaPrompt": "Militia to garrison at {tileName}? ({traveling}🧍 traveling, {here}🧍 already here, {slots} {slotWord} of 10 here)",
+    "garrisonMilitiaPrompt": "How much to leave guarding {tileName}?",
     "garrisonRidersPrompt": "Riders to garrison at {tileName}? ({traveling}🐎 traveling, {here}🐎 already here)",
     "fee": "fee",
     "perYear": "per year",
