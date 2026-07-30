@@ -22,10 +22,22 @@ export function useAppVersion(): string {
   return version;
 }
 
+const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+
+/** A random 12-letter query-string salt, so the browser (or an intermediate
+ * cache/CDN) can't serve a stale version.txt from a previous deploy. */
+function randomSalt(): string {
+  let salt = '';
+  for (let i = 0; i < 12; i++) {
+    salt += LETTERS[Math.floor(Math.random() * LETTERS.length)];
+  }
+  return salt;
+}
+
 /** Non-hook variant for one-off lookups outside a component, e.g. a toast fired from a mount effect. */
 export async function resolveAppVersion(): Promise<string> {
   try {
-    const r = await fetch('version.txt');
+    const r = await fetch(`version.txt?${randomSalt()}`);
     const text = r.ok ? await r.text() : null;
     return text?.trim() ? text.trim() : pkg.version;
   } catch {
