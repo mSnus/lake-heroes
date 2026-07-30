@@ -118,6 +118,17 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoomLevel, board.activePlayer.position, offsetX, offsetY, resizeTick, mapReady]);
 
+  // Manual zoom-out: double-clicking the map itself (not a tile or the
+  // dragon island, which have their own click handlers) resets to 1x even
+  // mid-turn. The auto zoom-in-on-turn-change effect only re-fires on an
+  // activePlayerId change, so this stays put until the next turn.
+  const handleBoardDoubleClick = (e: React.MouseEvent) => {
+    if (zoomLevel !== 2) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('.tile, .dragon-center-icon')) return;
+    setZoomLevel(1);
+  };
+
   // groups lookup
   const groupsByName: Record<string, { name: string; icon: string; color: string }> =
     React.useMemo(() => {
@@ -278,6 +289,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       style={{ width: CANVAS_WIDTH, height: WRAPPER_HEIGHT }}
       id="layerWrapper"
       ref={wrapperRef}
+      onDoubleClick={handleBoardDoubleClick}
     >
       <div
         className="bg-layer"
