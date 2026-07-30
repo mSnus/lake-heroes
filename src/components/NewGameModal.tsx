@@ -33,6 +33,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
   const t = useT();
   const version = useAppVersion();
   const [numPlayers, setNumPlayers] = useState(2);
+  const [openColorIndex, setOpenColorIndex] = useState<number | null>(null);
   const [players, setPlayers] = useState<PlayerSetup[]>(() => {
     const initialPlayers: PlayerSetup[] = [];
     for (let i = 0; i < numPlayers; i++) {
@@ -81,18 +82,42 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
 
   const handlePlayerChange = (index: number, field: keyof PlayerSetup, value: string) => {
     const newPlayers = [...players];
-    if (field === 'color') {
-      const selectedOption = playerOptions.find((opt) => opt.color === value);
-      if (selectedOption) {
-        newPlayers[index].color = selectedOption.color;
-        newPlayers[index].lightColor = selectedOption.lightColor;
-        newPlayers[index].image = selectedOption.image;
+    (newPlayers[index] as any)[field] = value;
+    setPlayers(newPlayers);
+  };
+
+  // Picking a color already worn by another player bumps that player to the
+  // first color nobody else is using, rather than blocking the pick.
+  const handleColorChange = (index: number, newColor: string) => {
+    const selectedOption = playerOptions.find((opt) => opt.color === newColor);
+    if (!selectedOption) return;
+
+    const newPlayers = [...players];
+    newPlayers[index] = {
+      ...newPlayers[index],
+      color: selectedOption.color,
+      lightColor: selectedOption.lightColor,
+      image: selectedOption.image,
+    };
+
+    const conflictIdx = newPlayers.findIndex((p, i) => i !== index && p.color === newColor);
+    if (conflictIdx !== -1) {
+      const usedColors = newPlayers
+        .filter((_, i) => i !== conflictIdx)
+        .map((p) => p.color);
+      const nextAvailable = playerOptions.find((opt) => !usedColors.includes(opt.color));
+      if (nextAvailable) {
+        newPlayers[conflictIdx] = {
+          ...newPlayers[conflictIdx],
+          color: nextAvailable.color,
+          lightColor: nextAvailable.lightColor,
+          image: nextAvailable.image,
+        };
       }
-    } else {
-      (newPlayers[index] as any)[field] = value;
     }
 
     setPlayers(newPlayers);
+    setOpenColorIndex(null);
   };
 
   const getSelectedOption = (player: PlayerSetup) => {
@@ -186,28 +211,27 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
             >
               {MODE_EMOJI[player.isComputer ? player.character ?? 'explorer' : 'human']}
             </button>
-            <select
-              value={player.color}
-              onChange={(e) => handlePlayerChange(index, 'color', e.target.value)}
-              style={{ fontSize: '0.8rem' }}
-            >
-              {playerOptions
-                .filter(
-                  (opt) =>
-                    opt.color === player.color ||
-                    !players.some((p, i) => i !== index && p.color === opt.color)
-                )
-                .map((opt) => (
+            {openColorIndex === index && (
+              <select
+                autoFocus
+                value={player.color}
+                onChange={(e) => handleColorChange(index, e.target.value)}
+                onBlur={() => setOpenColorIndex(null)}
+                style={{ fontSize: '0.8rem' }}
+              >
+                {playerOptions.map((opt) => (
                   <option key={opt.color} value={opt.color}>
                     {t(`playerOptions.${opt.image}`)}
                   </option>
                 ))}
-            </select>
+              </select>
+            )}
             {getSelectedOption(player) && (
               <img
                 src={`assets/figures/rider-${getSelectedOption(player)?.image}.png`}
                 alt={getSelectedOption(player) ? t(`playerOptions.${getSelectedOption(player)?.image}`) : undefined}
-                style={{ width: '60px', height: '60px' }}
+                onClick={() => setOpenColorIndex(openColorIndex === index ? null : index)}
+                style={{ width: '60px', height: '60px', cursor: 'pointer' }}
                 className="player-image"
               />
             )}
