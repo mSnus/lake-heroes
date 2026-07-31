@@ -165,9 +165,10 @@
     "toOwn": "чтобы владеть:",
     "base": "база",
     "sell": "продать",
-    "stillSmoldering": "ещё дымится — можно занять со следующего круга",
+    "stillSmoldering": "ещё дымится",
     "banzai": "Банзай!",
-    "claimIt": "Занять!"
+    "claimIt": "Занять!",
+    "razed": "разрушено"
   },
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",

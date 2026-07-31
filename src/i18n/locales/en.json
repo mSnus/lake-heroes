@@ -165,9 +165,10 @@
     "toOwn": "to own:",
     "base": "base",
     "sell": "sell",
-    "stillSmoldering": "still smoldering — claimable next round",
+    "stillSmoldering": "still smoldering",
     "banzai": "Banzai!",
-    "claimIt": "Claim it!"
+    "claimIt": "Claim it!",
+    "razed": "razed"
   },
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",

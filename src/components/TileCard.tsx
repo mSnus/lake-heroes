@@ -342,54 +342,61 @@ export const TileCard: React.FC<TileCardProps> = ({
                   </div>
 
                   <div className="tile-card-base-row">
-                    <div>
-                      <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                        {cantAfford ? t('tileCard.cantAfford') : t('tileCard.toOwn')}
-                      </div>
+                    {isOnFire ? (
                       <div>
+                        <div>🔥 {t('tileCard.razed')}</div>
+                        <div>{t('tileCard.stillSmoldering')}</div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={cantAfford ? { color: '#ff4444' } : undefined}>
+                          {cantAfford ? t('tileCard.cantAfford') : t('tileCard.toOwn')}
+                        </div>
                         <div>
-                          {tile.requiredFame > 0 && (
-                            <>
-                              <span
-                                style={
-                                  activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
-                                    ? { color: '#ff4444', marginRight: '8px' }
-                                    : { marginRight: '8px' }
-                                }
-                              >
-                                {activePlayer &&
-                                  (activePlayer.fame ?? 1) < tile.requiredFame &&
-                                  '🔻'}
-                                🏆{tile.requiredFame}
-                              </span>
-                              {'  '}
-                            </>
-                          )}
+                          <div>
+                            {tile.requiredFame > 0 && (
+                              <>
+                                <span
+                                  style={
+                                    activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
+                                      ? { color: '#ff4444', marginRight: '8px' }
+                                      : { marginRight: '8px' }
+                                  }
+                                >
+                                  {activePlayer &&
+                                    (activePlayer.fame ?? 1) < tile.requiredFame &&
+                                    '🔻'}
+                                  🏆{tile.requiredFame}
+                                </span>
+                                {'  '}
+                              </>
+                            )}
 
-                          <span
-                            style={
-                              activePlayer &&
+                            <span
+                              style={
+                                activePlayer &&
+                                (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
+                                  ? { color: '#ff4444' }
+                                  : {}
+                              }
+                            >
+                              {activePlayer &&
                               (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                                ? { color: '#ff4444' }
-                                : {}
-                            }
-                          >
-                            {activePlayer &&
-                            (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                              ? '🔻'
-                              : '👛 '}
-                            {tile.currentPrice.gold ?? 0}🟡
-                          </span>
-                          {'  '}
+                                ? '🔻'
+                                : '👛 '}
+                              {tile.currentPrice.gold ?? 0}🟡
+                            </span>
+                            {'  '}
 
-                          <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
-                            {unitsInsufficient && '🔻'}
-                            {defence(1)}
-                            🛡️
-                          </span>
+                            <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
+                              {unitsInsufficient && '🔻'}
+                              {defence(1)}
+                              🛡️
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -487,11 +494,6 @@ export const TileCard: React.FC<TileCardProps> = ({
 
       {!tile.owner && (
         <div>
-          {couldBuy && isOnFire && (
-            <div className="tile-card-onfire" style={{ textAlign: 'center', padding: '8px' }}>
-              🔥 {t('tileCard.stillSmoldering')}
-            </div>
-          )}
           {couldBuy &&
             tile.isAffordable(
               activePlayer?.gold ?? 0,
