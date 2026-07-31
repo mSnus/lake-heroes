@@ -317,4 +317,5 @@
   border: 1px outset #ffde2c7a;
   padding: 4px;
   border-radius: 5px;
+  white-space: nowrap;
 }
