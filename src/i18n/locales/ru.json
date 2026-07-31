@@ -142,7 +142,8 @@
   "squadHirePanel": {
     "hireTitle": "Нанять:",
     "militia": "Ополчение",
-    "knights": "Рыцари"
+    "knights": "Рыцари",
+    "priceEachMax": "({price}🟡 за штуку, макс. {max})"
   },
   "squadDisplay": {
     "sellSquad": "Продать этот отряд"

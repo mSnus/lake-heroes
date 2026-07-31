@@ -42,7 +42,7 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
     <div className="hire-row">
       <div className="hire-row-top">
         <div className="hire-row-label">
-          {emoji} {label} ({unitPrice}🟡)
+          {emoji} {label} {t('squadHirePanel.priceEachMax', { price: unitPrice, max: maxAmount })}
         </div>
         <input
           type="number"

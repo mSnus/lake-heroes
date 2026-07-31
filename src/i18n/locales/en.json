@@ -142,7 +142,8 @@
   "squadHirePanel": {
     "hireTitle": "Hire:",
     "militia": "Militia",
-    "knights": "Knights"
+    "knights": "Knights",
+    "priceEachMax": "({price}🟡 each, max {max})"
   },
   "squadDisplay": {
     "sellSquad": "Sell this squad"
