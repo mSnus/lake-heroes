@@ -410,13 +410,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const rollA = Math.round(rawRollA);
       const rollD = Math.round(rawRollD);
 
+      // If it's the last unit standing on both sides, a tied roll is a
+      // mutual kill (a genuine battle tie) rather than "neither dies, fight
+      // again" — otherwise two full armies down to their last duelist could
+      // tie-and-retry forever.
+      const isFinalPair =
+        atkAliveRef.current.filter(Boolean).length === 1 &&
+        defAliveRef.current.filter(Boolean).length === 1;
+
       if (rollA > rollD) {
         defAliveRef.current[defIdx] = false;
         totalDefKilledRef.current += 1;
       } else if (rollD > rollA) {
         atkAliveRef.current[atkIdx] = false;
         totalAtkKilledRef.current += 1;
-      } // tie: neither dies
+      } else if (isFinalPair) {
+        atkAliveRef.current[atkIdx] = false;
+        defAliveRef.current[defIdx] = false;
+        totalAtkKilledRef.current += 1;
+        totalDefKilledRef.current += 1;
+      } // non-final tie: neither dies, same pair duels again
 
       setSelectedAtkIdx(atkIdx);
       setSelectedDefIdx(defIdx);
@@ -427,7 +440,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const defLeft = defAliveRef.current.filter(Boolean).length;
 
       if (atkLeft === 0 || defLeft === 0) {
-        finishBattle(defLeft === 0 ? 'attacker' : 'defender');
+        finishBattle(atkLeft === 0 && defLeft === 0 ? 'tie' : defLeft === 0 ? 'attacker' : 'defender');
         return;
       }
 
@@ -500,13 +513,25 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     const aRoll = pendingAtkRollRef.current;
     const { atkIdx, defIdx } = currentDuelRef.current;
 
+    // Last unit standing on both sides: a tied roll is a mutual kill (a
+    // genuine battle tie), not "neither dies, fight again" -- otherwise the
+    // last pair could tie-and-retry forever.
+    const isFinalPair =
+      atkAliveRef.current.filter(Boolean).length === 1 &&
+      defAliveRef.current.filter(Boolean).length === 1;
+
     if (aRoll > roll) {
       defAliveRef.current[defIdx] = false;
       totalDefKilledRef.current += 1;
     } else if (roll > aRoll) {
       atkAliveRef.current[atkIdx] = false;
       totalAtkKilledRef.current += 1;
-    } // tie: neither dies, same pair duels again
+    } else if (isFinalPair) {
+      atkAliveRef.current[atkIdx] = false;
+      defAliveRef.current[defIdx] = false;
+      totalAtkKilledRef.current += 1;
+      totalDefKilledRef.current += 1;
+    } // non-final tie: neither dies, same pair duels again
 
     setTimeout(() => {
       setAtkAlive([...atkAliveRef.current]);
@@ -516,7 +541,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const defLeft = defAliveRef.current.filter(Boolean).length;
 
       if (atkLeft === 0 || defLeft === 0) {
-        finishBattle(defLeft === 0 ? 'attacker' : 'defender');
+        finishBattle(atkLeft === 0 && defLeft === 0 ? 'tie' : defLeft === 0 ? 'attacker' : 'defender');
       } else {
         setPendingAtkRoll(null);
         setLastDefRoll(null);
