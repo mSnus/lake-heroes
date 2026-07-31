@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import { ARMY_SLOT_CAPACITY, RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
@@ -34,6 +34,14 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
   // by hand. Only the mount-time default reacts to maxAmount — a later
   // change to it (e.g. selling on the other row) doesn't reset the input.
   const [amount, setAmount] = useState(maxAmount);
+
+  // maxAmount can shrink after this row's own render — hiring on the OTHER
+  // row spends the same shared gold, or a sale/purchase elsewhere changes
+  // slot capacity. Keep the input from sitting above whatever's actually
+  // still buyable.
+  useEffect(() => {
+    setAmount((a) => Math.min(a, maxAmount));
+  }, [maxAmount]);
 
   const handleBuy = () => {
     onBuy(amount, tier);
