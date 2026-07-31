@@ -144,7 +144,7 @@
     "militia": "Militia",
     "knights": "Knights",
     "priceEachMax": "({price}🟡 each, max {max})",
-    "hireButtonTitle": "👛 hire"
+    "hireButtonTitle": "👛 Hire"
   },
   "squadDisplay": {
     "sellSquad": "Sell this squad"

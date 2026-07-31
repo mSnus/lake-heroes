@@ -81,9 +81,8 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
           className="game-menu-button hire-submit"
           onClick={handleBuy}
           disabled={!amount || amount <= 0 || amount > maxAmount}
-          title={t('squadHirePanel.hireButtonTitle')}
         >
-          {t('common.hire')} {amount > 0 ? amount : ''}{emoji}
+          {t('squadHirePanel.hireButtonTitle')}
         </button>
       </div>
     </div>
