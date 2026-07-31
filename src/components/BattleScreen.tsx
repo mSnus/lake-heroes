@@ -347,7 +347,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           lostBg: ambushOutcome !== 'win',
         };
       }
-      return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome);
+      return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome, initialDefence);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
