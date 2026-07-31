@@ -150,7 +150,8 @@
     "hireButtonTitle": "👛 Hire"
   },
   "squadDisplay": {
-    "sellSquad": "Sell this squad"
+    "sellSquad": "Sell this squad",
+    "youHaveSquads": "You have {squads} squads:"
   },
   "tileCard": {
     "confirmUpgrade": "Really upgrade {tileName} for {gold}🟡?",

@@ -150,7 +150,8 @@
     "hireButtonTitle": "👛 Нанять"
   },
   "squadDisplay": {
-    "sellSquad": "Продать этот отряд"
+    "sellSquad": "Продать этот отряд",
+    "youHaveSquads": "У вас {squads} отрядов:"
   },
   "tileCard": {
     "confirmUpgrade": "Действительно улучшить «{tileName}» за {gold}🟡?",

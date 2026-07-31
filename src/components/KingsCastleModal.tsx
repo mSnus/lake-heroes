@@ -108,6 +108,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           </h3>
         )}
 
+        <h3>{t('squadDisplay.youHaveSquads', { squads: player.slotsUsed })}</h3>
+
         <SquadDisplay
           militia={player.militia}
           riders={player.riders}
