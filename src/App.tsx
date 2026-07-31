@@ -207,7 +207,7 @@ function App() {
           if (savedScreen) {
             switch (savedScreen.type) {
               case 'prison':
-                showPrisonScreen(savedScreen.message ?? '', '');
+                showPrisonScreen(savedScreen.message ?? '');
                 break;
               case 'joker':
                 showJokerScreen(savedScreen.message ?? '');

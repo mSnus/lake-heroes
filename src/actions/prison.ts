@@ -22,5 +22,5 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
 
   updateGameState(board);
 
-  showPrisonScreen(message, board.activeTile.name);
+  showPrisonScreen(message);
 }

@@ -78,12 +78,12 @@ export function clearScreen(): void {
   emit();
 }
 
-export function showPrisonScreen(message: string, title?: string): void {
+export function showPrisonScreen(message: string): void {
   showScreen({
     screenType: 'prison',
     background: 'assets/screens/prison.jpg',
-    title: title || t('tiles.prison.name'),
-    message,
+    title: t('prison.title'),
+    htmlMessage: `${t('prison.flavorText')}<br /><br />${message}`,
     buttons: [
       {
         label: t('common.continue'),

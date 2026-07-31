@@ -754,6 +754,8 @@
     "message": "The King in his Grace sends you {units}🧍 and {gold}🟡"
   },
   "prison": {
+    "title": "The prison is cold and dark",
+    "flavorText": "Flies of green and buzzing 🪰 fill this dungeon of despair",
     "savedByArtifact": "{playerName} is sent to Prison, but the {artifactName} {emoji} keeps them free — no turn skipped!"
   },
   "tavern": {
