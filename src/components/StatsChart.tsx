@@ -13,11 +13,22 @@ export const EVENT_EMOJI: Record<StatEventType, string> = {
   dragon: '🐉',
 };
 
+export interface ChartMetric {
+  key: 'wealth' | 'units' | 'fame';
+  label: string;
+  /** SVG stroke-dasharray; omit for a solid line. */
+  dash?: string;
+}
+
 interface StatsChartProps {
   players: Player[];
   turnStats: PlayerTurnStat[];
   statEvents: PlayerStatEvent[];
-  metric: 'wealth' | 'units' | 'fame';
+  /** One or more metrics drawn on the same shared turn axis. Each metric
+   * gets its own independent value scale (so e.g. wealth in the thousands
+   * and unit headcounts in the tens don't flatten each other), distinguished
+   * by line style rather than position. */
+  metrics: ChartMetric[];
   title: string;
 }
 
@@ -31,41 +42,59 @@ const AXIS_WIDTH = 34;
 // nudged apart by this much so they don't fully overlap.
 const EVENT_OFFSET = 14;
 
-/** One metric's graph: every player's line shares the same value axis (X,
- * logarithmic so wide value swings still fit the plot width) and turn axis
- * (Y, linear, increasing downward), overlaid on one plot so it's easy to
- * compare who was ahead at any given turn. Players are identified by a
- * colored circle in the legend row above the plot. */
-export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, statEvents, metric, title }) => {
-  const t = useT();
-
-  const maxTurn = turnStats.reduce((m, s) => Math.max(m, s.turn), 0);
-  const values = turnStats.map((s) => s[metric]);
-  const valueMin = values.length ? Math.min(...values) : 0;
-  const valueMax = values.length ? Math.max(...values) : 1;
-
-  // Log scale so a wide value range (e.g. wealth from a few hundred to tens
-  // of thousands) still fits the plot width instead of squashing most turns
-  // into a sliver near one edge. log1p handles a value of 0 safely (all
-  // three metrics here are always >= 0).
-  const logMin = Math.log1p(valueMin);
-  const logMax = Math.log1p(valueMax);
+/** Builds a log1p-based value->x mapper for one metric, independent of any
+ * other metric sharing the chart. log scale so a wide value range (e.g.
+ * wealth from a few hundred to tens of thousands) still fits the plot width
+ * instead of squashing most turns into a sliver near one edge. log1p handles
+ * a value of 0 safely (wealth/units/fame are always >= 0). */
+function buildScale(turnStats: PlayerTurnStat[], key: ChartMetric['key']) {
+  const values = turnStats.map((s) => s[key]);
+  const min = values.length ? Math.min(...values) : 0;
+  const max = values.length ? Math.max(...values) : 1;
+  const logMin = Math.log1p(min);
+  const logMax = Math.log1p(max);
   const logRange = logMax - logMin || 1;
-
-  const width = AXIS_WIDTH + PLOT_WIDTH;
-  const height = TOP_PADDING + Math.max(1, maxTurn) * ROW_HEIGHT + BOTTOM_PADDING;
-
-  const xForValue = (value: number) => {
+  return (value: number) => {
     const norm = (Math.log1p(value) - logMin) / logRange;
     return AXIS_WIDTH + PLOT_MARGIN + norm * (PLOT_WIDTH - PLOT_MARGIN * 2);
   };
-  const yForTurn = (turn: number) => TOP_PADDING + turn * ROW_HEIGHT;
+}
 
+/** One chart: every player's line(s) share the same turn axis (Y, linear,
+ * increasing downward), overlaid on one plot so it's easy to compare who was
+ * ahead at any given turn. Players are identified by a colored circle in the
+ * legend row; when multiple metrics are combined on one chart, line style
+ * (solid/dashed) distinguishes them instead. */
+export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, statEvents, metrics, title }) => {
+  const t = useT();
+
+  const maxTurn = turnStats.reduce((m, s) => Math.max(m, s.turn), 0);
+  const width = AXIS_WIDTH + PLOT_WIDTH;
+  const height = TOP_PADDING + Math.max(1, maxTurn) * ROW_HEIGHT + BOTTOM_PADDING;
+  const yForTurn = (turn: number) => TOP_PADDING + turn * ROW_HEIGHT;
   const turnNumbers = Array.from({ length: Math.max(1, maxTurn) }, (_, i) => i + 1);
+
+  const scales = metrics.map((m) => ({ ...m, xForValue: buildScale(turnStats, m.key) }));
+  // Event markers only need one anchor position -- use the chart's primary
+  // (first) metric so a combined chart doesn't draw the same marker twice.
+  const primaryScale = scales[0];
 
   return (
     <div className="stats-chart">
       <h3 className="stats-chart-title">{title}</h3>
+
+      {metrics.length > 1 && (
+        <div className="stats-chart-legend">
+          {scales.map((m) => (
+            <span key={m.key} className="stats-chart-legend-item">
+              <svg width="22" height="10" className="stats-chart-legend-line">
+                <line x1="0" y1="5" x2="22" y2="5" stroke="#ccc" strokeWidth="2" strokeDasharray={m.dash} />
+              </svg>
+              {m.label}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="stats-chart-legend">
         {players.map((player) => (
@@ -91,20 +120,34 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
             const series = turnStats
               .filter((s) => s.playerId === player.id)
               .sort((a, b) => a.turn - b.turn);
-            const points = series.map((s) => `${xForValue(s[metric])},${yForTurn(s.turn)}`).join(' ');
             const events = statEvents.filter((e) => e.playerId === player.id);
             const eventDx = playerIdx % 2 === 0 ? EVENT_OFFSET : -EVENT_OFFSET;
 
             return (
               <g key={player.id}>
-                {series.length > 0 && <polyline points={points} fill="none" stroke={player.color} strokeWidth={2.5} />}
-                {series.map((s) => (
-                  <circle key={s.turn} cx={xForValue(s[metric])} cy={yForTurn(s.turn)} r={3} fill={player.color} />
-                ))}
+                {scales.map((m) => {
+                  const points = series.map((s) => `${m.xForValue(s[m.key])},${yForTurn(s.turn)}`).join(' ');
+                  return (
+                    <g key={m.key}>
+                      {series.length > 0 && (
+                        <polyline
+                          points={points}
+                          fill="none"
+                          stroke={player.color}
+                          strokeWidth={2.5}
+                          strokeDasharray={m.dash}
+                        />
+                      )}
+                      {series.map((s) => (
+                        <circle key={s.turn} cx={m.xForValue(s[m.key])} cy={yForTurn(s.turn)} r={3} fill={player.color} />
+                      ))}
+                    </g>
+                  );
+                })}
 
                 {events.map((ev, idx) => {
                   const stat = series.find((s) => s.turn === ev.turn);
-                  const x = stat ? xForValue(stat[metric]) : AXIS_WIDTH + PLOT_MARGIN;
+                  const x = stat ? primaryScale.xForValue(stat[primaryScale.key]) : AXIS_WIDTH + PLOT_MARGIN;
                   const y = yForTurn(ev.turn);
                   const label =
                     ev.type === 'battle-won' || ev.type === 'battle-lost'

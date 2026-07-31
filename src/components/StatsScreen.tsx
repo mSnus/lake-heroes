@@ -51,21 +51,17 @@ const StatsScreen: React.FC<StatsScreenProps> = ({ gameState }) => {
               players={players}
               turnStats={turnStats}
               statEvents={statEvents}
-              metric="wealth"
-              title={`🟡 ${t('statsScreen.wealth')}`}
+              metrics={[
+                { key: 'wealth', label: `🟡 ${t('statsScreen.wealth')}` },
+                { key: 'units', label: `🧍 ${t('statsScreen.units')}`, dash: '5 4' },
+              ]}
+              title={`🟡 ${t('statsScreen.wealth')} / 🧍 ${t('statsScreen.units')}`}
             />
             <StatsChart
               players={players}
               turnStats={turnStats}
               statEvents={statEvents}
-              metric="units"
-              title={`🧍 ${t('statsScreen.units')}`}
-            />
-            <StatsChart
-              players={players}
-              turnStats={turnStats}
-              statEvents={statEvents}
-              metric="fame"
+              metrics={[{ key: 'fame', label: `🏆 ${t('statsScreen.fame')}` }]}
               title={`🏆 ${t('statsScreen.fame')}`}
             />
           </>
