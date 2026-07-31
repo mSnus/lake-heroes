@@ -158,10 +158,11 @@ export const TileCard: React.FC<TileCardProps> = ({
   const nextPrice = prices[nextLevel];
 
   // A yielded tile already cashed in half its price up front (see
-  // yieldTile.ts) -- selling it on top of that only refunds half of what a
-  // normal sale would (mirrored exactly in sellTile.ts).
+  // yieldTile.ts) -- selling it on top of that only refunds 40% of the
+  // current price, a real penalty vs a straight sale (mirrored exactly in
+  // sellTile.ts).
   const sellPrice = tile.isYielded
-    ? { gold: Math.floor(tile.currentPrice.gold / 2), units: Math.floor(tile.currentPrice.units / 2) }
+    ? { gold: Math.floor(tile.currentPrice.gold * 0.4), units: Math.floor(tile.currentPrice.units * 0.4) }
     : tile.currentPrice;
 
   const handleUpgrade = () => {

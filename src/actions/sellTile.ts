@@ -15,9 +15,11 @@ export function sellTile(
 
   // Refund = the tile's currentPrice (base level's units mirrors its
   // defence, same as isAffordable(); upgrade levels refund their price).
-  // A yielded tile already cashed in half its price up front, so selling it
-  // on top of that only refunds half of what a normal sale would.
-  const refundMultiplier = tile.isYielded ? 0.5 : 1;
+  // A yielded tile already cashed in half its price up front (yieldTile.ts);
+  // selling it on top of that refunds only 40% (not another 50%), so
+  // yielding then selling nets 90% total instead of the 100% a straight
+  // sale would give — a real 10% penalty for having yielded first.
+  const refundMultiplier = tile.isYielded ? 0.4 : 1;
   const totalGold = Math.floor(tile.currentPrice.gold * refundMultiplier);
   const totalUnits = Math.floor(tile.currentPrice.units * refundMultiplier);
 
