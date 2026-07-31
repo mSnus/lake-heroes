@@ -43,8 +43,6 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
   const handleMax = () => setAmount(maxAmount);
   const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
   const handleDec = () => setAmount((a) => Math.max(0, a - 1));
-  const handleIncBig = () => setAmount((a) => Math.min(maxAmount, a + 10));
-  const handleDecBig = () => setAmount((a) => Math.max(0, a - 10));
 
   return (
     <div className="hire-row">
@@ -65,14 +63,6 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
         />
       </div>
       <div className="hire-row-controls">
-        <div className="hire-stack">
-          <button className="game-menu-button small silver" onClick={handleDecBig}>
-            -10
-          </button>
-          <button className="game-menu-button small silver" onClick={handleIncBig} disabled={amount >= maxAmount}>
-            +10
-          </button>
-        </div>
         <div className="hire-stack">
           <button className="game-menu-button small silver" onClick={handleDec}>
             -1
