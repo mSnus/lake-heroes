@@ -92,6 +92,13 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
         <h2 className="game-title">{t('kingsCastle.title')}</h2>
         <h3>{gameState.kingRewardMessage}, <PlayerLabel player={player} /></h3>
 
+        <h3>
+          {tJsx('kingsCastle.moneyAndFame', {
+            gold: <span className="value">{player.gold}🟡</span>,
+            fame: <span className="value">{player.fame}🏆</span>,
+          })}
+        </h3>
+
         {contract && contractTile && (
           <h3 className='king-contract' style={{ whiteSpace: 'pre-line' }}>
             {tJsx('kingsCastle.newContract', {
