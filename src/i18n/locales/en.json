@@ -769,6 +769,7 @@
   "portal": {
     "title": "Whirlpool of lights",
     "message": "{playerName} feels desoriented and lost 🌀",
+    "surprised": "...and surprised by finding himself at",
     "whereAreYou": "Where are you?"
   },
   "rogueAttack": {
