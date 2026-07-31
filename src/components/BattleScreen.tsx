@@ -186,12 +186,22 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenceRef = useRef(defence);
   const initialDefence = defenceRef.current;
 
+  // Same snapshot problem as `defence` above, but for the attacker: resolving
+  // a tile battle also deducts the attacker's own combat losses from
+  // attacker.units (see resolveTileBattle), which runs before this component
+  // unmounts. Reading attacker.armyPower live here would let a large army
+  // that just took heavy losses drop below BRAWL_THRESHOLD *after* the fight
+  // was already decided, flipping on the "Brawl!" tag retroactively on the
+  // result screen for what was actually a normal automatic battle throughout.
+  const attackerArmyPowerRef = useRef(attacker.armyPower);
+  const initialAttackerArmyPower = attackerArmyPowerRef.current;
+
   // Brawl (manual, duel-by-duel) requires a small defence. For tile
   // claims/attacks and caravan raids, it additionally requires the attacker's
   // own army to be small — a big army attacking a weakly-defended tile or
   // caravan fights a normal automatic battle instead of a manual brawl.
   // Other modes (dragon/player/ambush) don't gate on the attacker's army here.
-  const isBrawl = isBrawlMatchup(initialDefence, isTile || isCaravan ? attacker.armyPower : 0);
+  const isBrawl = isBrawlMatchup(initialDefence, isTile || isCaravan ? initialAttackerArmyPower : 0);
 
   // The whole kingdom rallies against the dragon, so the attacker's army is the
   // combined units of every player rather than mirroring the dragon's 50.
