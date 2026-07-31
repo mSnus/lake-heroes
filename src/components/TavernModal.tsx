@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
@@ -26,6 +26,20 @@ interface TavernModalProps {
 const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy, onSell, onSkip }) => {
   const t = useT();
   const player = gameState.activePlayer;
+
+  // onBuy/onSell mutate `player` in place but this modal is a static
+  // `content:` element handed to screenStore once at mount, so nothing else
+  // re-invokes it — force a re-render so the squad row and gold/fame-derived
+  // text update immediately (mirrors KingsCastleModal).
+  const [, forceRerender] = useState(0);
+  const handleBuy = (amount: number, tier: UnitTier) => {
+    onBuy(amount, tier);
+    forceRerender((v) => v + 1);
+  };
+  const handleSell = (tier: UnitTier, count: number) => {
+    onSell(tier, count);
+    forceRerender((v) => v + 1);
+  };
 
   const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
   const militiaMax = Math.min(
@@ -66,13 +80,14 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
           militia={player.militia}
           riders={player.riders}
           totalSlots={player.armySlots}
-          onSellSquad={(tier, count) => onSell(tier, count)}
+          onSellSquad={handleSell}
+          className="squad-display-large"
         />
 
         {atMax ? (
           <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
         ) : (
-          <SquadHirePanel player={player} showRiders={false} onBuy={onBuy} />
+          <SquadHirePanel player={player} showRiders={false} onBuy={handleBuy} />
         )}
 
         <div

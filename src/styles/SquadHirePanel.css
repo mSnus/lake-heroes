@@ -14,19 +14,42 @@
 .hire-row {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+}
+
+.hire-row-top {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   width: 100%;
 }
 
 .hire-row-label {
   font-size: 1rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.hire-row-buttons {
+.hire-row-controls {
+  display: grid;
+  grid-template-columns: auto auto auto auto 1fr;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.hire-stack {
   display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hire-fraction {
+  white-space: nowrap;
+}
+
+.hire-submit {
+  white-space: nowrap;
 }

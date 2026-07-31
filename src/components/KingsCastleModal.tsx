@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
@@ -31,6 +31,22 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 }) => {
   const t = useT();
   const player = gameState.activePlayer;
+
+  // onBuy/onSell mutate `player` in place and re-render the app's own
+  // gameState tree, but this modal is a static `content:` element handed
+  // to screenStore once at mount — nothing re-invokes it on its own. Bump
+  // this to force a re-render so the squad display and gold/fame-derived
+  // text below reflect the change immediately instead of on the next
+  // unrelated re-render.
+  const [, forceRerender] = useState(0);
+  const handleBuy = (amount: number, tier: UnitTier) => {
+    onBuy(amount, tier);
+    forceRerender((v) => v + 1);
+  };
+  const handleSell = (tier: UnitTier, count: number) => {
+    onSell(tier, count);
+    forceRerender((v) => v + 1);
+  };
 
   const contract = newContract ?? null;
   const contractTile = contract ? gameState.tiles[contract.tilePosition] : null;
@@ -103,7 +119,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           militia={player.militia}
           riders={player.riders}
           totalSlots={player.armySlots}
-          onSellSquad={(tier, count) => onSell(tier, count)}
+          onSellSquad={handleSell}
+          className="squad-display-large"
         />
 
         {atMax ? (
@@ -114,7 +131,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
             })}
           </h3>
         ) : (
-          <SquadHirePanel player={player} showRiders={canRecruitRiders} onBuy={onBuy} />
+          <SquadHirePanel player={player} showRiders={canRecruitRiders} onBuy={handleBuy} />
         )}
 
         <div

@@ -13,6 +13,12 @@
   white-space: nowrap;
 }
 
+/* Recruiting dialogues (King's Castle, Tavern) show squads larger than the
+ * compact top-bar display. */
+.squad-display-large {
+  font-size: 1.8em;
+}
+
 .squad-sell-button {
   border: none;
   background: none;

@@ -31,8 +31,8 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
     onBuy(amount, tier);
     setAmount(0);
   };
+  const handleThird = () => setAmount(Math.floor(maxAmount / 3));
   const handleHalf = () => setAmount(Math.floor(maxAmount / 2));
-  const handleMax = () => setAmount(maxAmount);
   const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
   const handleDec = () => setAmount((a) => Math.max(0, a - 1));
   const handleIncBig = () => setAmount((a) => Math.min(maxAmount, a + 10));
@@ -40,10 +40,10 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
 
   return (
     <div className="hire-row">
-      <div className="hire-row-label">
-        {emoji} {label} ({unitPrice}🟡)
-      </div>
-      <div className="units-input-row">
+      <div className="hire-row-top">
+        <div className="hire-row-label">
+          {emoji} {label} ({unitPrice}🟡)
+        </div>
         <input
           type="number"
           value={amount}
@@ -53,33 +53,34 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
           }}
           min="0"
           max={maxAmount}
-          style={{ width: '2rem' }}
           className="units-input"
         />
       </div>
-      <div className="hire-row-buttons">
-        <button className="game-menu-button small silver" onClick={handleDecBig}>
-          -10
+      <div className="hire-row-controls">
+        <div className="hire-stack">
+          <button className="game-menu-button small silver" onClick={handleDecBig}>
+            -10
+          </button>
+          <button className="game-menu-button small silver" onClick={handleIncBig} disabled={amount >= maxAmount}>
+            +10
+          </button>
+        </div>
+        <div className="hire-stack">
+          <button className="game-menu-button small silver" onClick={handleDec}>
+            -1
+          </button>
+          <button className="game-menu-button small silver" onClick={handleInc} disabled={amount >= maxAmount}>
+            +1
+          </button>
+        </div>
+        <button className="game-menu-button silver hire-fraction" onClick={handleThird}>
+          1/3
         </button>
-        <button className="game-menu-button small silver" onClick={handleDec}>
-          −
-        </button>
-        <button className="game-menu-button small silver" onClick={handleInc} disabled={amount >= maxAmount}>
-          +
-        </button>
-        <button className="game-menu-button small silver" onClick={handleIncBig} disabled={amount >= maxAmount}>
-          +10
-        </button>
-      </div>
-      <div className="hire-row-buttons">
-        <button className="game-menu-button silver" onClick={handleHalf}>
-          {Math.floor(maxAmount / 2)}{emoji}
-        </button>
-        <button className="game-menu-button silver" onClick={handleMax}>
-          {maxAmount}{emoji}
+        <button className="game-menu-button silver hire-fraction" onClick={handleHalf}>
+          1/2
         </button>
         <button
-          className="game-menu-button"
+          className="game-menu-button hire-submit"
           onClick={handleBuy}
           disabled={!amount || amount <= 0 || amount > maxAmount}
         >
