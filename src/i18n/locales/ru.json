@@ -429,7 +429,7 @@
     "dragonGuardsGold": "Ужасающий дракон охраняет груду золота и драгоценностей",
     "prisonGoldFine": "{playerSpan} платит {fine}🟡, чтобы выйти из темницы",
     "prisonGoldFineToast": "{playerName} платит {fine}🟡, чтобы выйти из темницы",
-    "prisonFameFine": "{playerSpan} не может заплатить и теряет 1 славу, чтобы выйти из темницы",
+    "prisonFameFine": "{playerSpan} с позором покидает темницу, теряя 1🏆",
     "prisonFameFineToast": "{playerName} не может заплатить и теряет 1 славу, чтобы выйти из темницы",
     "prisonFineWaived": "{artifactName} {emoji} игрока {playerSpan} освобождает от штрафа за выход из темницы",
     "prisonFineWaivedToast": "Медаль Чести игрока {playerName} освобождает от штрафа за выход из темницы"
