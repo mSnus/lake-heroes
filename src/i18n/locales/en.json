@@ -173,7 +173,7 @@
     "banzai": "Banzai!",
     "claimIt": "Claim it!",
     "razed": "razed",
-    "yieldToKing": "yield to king",
+    "yieldToKing": "yield",
     "takeBack": "take back",
     "confirmYield": "Yield {tileName} to the King for {gold}🟡?",
     "confirmTakeBack": "Take {tileName} back for {gold}🟡?",
