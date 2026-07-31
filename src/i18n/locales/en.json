@@ -426,7 +426,13 @@
     "prisonIsWetAndCold": "The prison is wet and cold, {playerName}",
     "dwellsInPrison": "{playerName} dwells in prison and skips the turn",
     "enoughToChallengeDragon": "{playerName} has {units}🧍 — enough to challenge the Dragon!",
-    "dragonGuardsGold": "Terrifying dragon guards a pile of gold and jewels"
+    "dragonGuardsGold": "Terrifying dragon guards a pile of gold and jewels",
+    "prisonGoldFine": "{playerSpan} pays {fine}🟡 to quit the prison",
+    "prisonGoldFineToast": "{playerName} pays {fine}🟡 to quit the prison",
+    "prisonFameFine": "{playerSpan} has no gold to pay and loses 1 fame to quit the prison",
+    "prisonFameFineToast": "{playerName} has no gold to pay and loses 1 fame to quit the prison",
+    "prisonFineWaived": "{playerSpan}'s {artifactName} {emoji} waives the fine to quit the prison",
+    "prisonFineWaivedToast": "{playerName}'s Medal of Honor waives the fine to quit the prison"
   },
   "buyUnits": {
     "bought": "{playerName} bought {amount} {tier} for {gold}🟡.",

@@ -426,7 +426,13 @@
     "prisonIsWetAndCold": "В темнице сыро и холодно, {playerName}",
     "dwellsInPrison": "{playerName} томится в темнице и пропускает ход",
     "enoughToChallengeDragon": "У {playerName} {units}🧍 — достаточно, чтобы бросить вызов Дракону!",
-    "dragonGuardsGold": "Ужасающий дракон охраняет груду золота и драгоценностей"
+    "dragonGuardsGold": "Ужасающий дракон охраняет груду золота и драгоценностей",
+    "prisonGoldFine": "{playerSpan} платит {fine}🟡, чтобы выйти из темницы",
+    "prisonGoldFineToast": "{playerName} платит {fine}🟡, чтобы выйти из темницы",
+    "prisonFameFine": "{playerSpan} не может заплатить и теряет 1 славу, чтобы выйти из темницы",
+    "prisonFameFineToast": "{playerName} не может заплатить и теряет 1 славу, чтобы выйти из темницы",
+    "prisonFineWaived": "{artifactName} {emoji} игрока {playerSpan} освобождает от штрафа за выход из темницы",
+    "prisonFineWaivedToast": "Медаль Чести игрока {playerName} освобождает от штрафа за выход из темницы"
   },
   "buyUnits": {
     "bought": "{playerName} купил {amount} ({tier}) за {gold}🟡.",
