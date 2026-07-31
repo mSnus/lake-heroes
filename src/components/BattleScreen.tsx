@@ -14,6 +14,7 @@ import { PlayerCard } from './PlayerCard';
 import { DecoratedButton } from './DecoratedButton';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
+import { resolveRogueAttack } from '../actions/battles/resolveRogueAttack';
 import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
@@ -96,6 +97,25 @@ export type BattleScreenProps =
       caravanPrize?: never;
       caravanSlaves?: never;
       battlefieldUnits?: never;
+    }
+  | {
+      // `attacker` is a synthetic NPC "horde" Player (see
+      // rogueAttackEncounter.ts) — none of its own gold/units/fame ever
+      // matter, it just needs to always auto-roll. `defender` is the real
+      // tile owner, whose garrison (not personal army) is what's actually
+      // defending.
+      attacker: Player;
+      gameState: GameState;
+      updateGameState: (gs: GameState) => void;
+      mode: 'rogue';
+      defender: Player;
+      tile: Tile;
+      onClose: () => void;
+      caravanDefence?: never;
+      caravanPrize?: never;
+      caravanSlaves?: never;
+      battlefieldUnits?: never;
+      ambushAttackerUnits?: never;
     };
 
 // Duel pair selection: leftmost survivor of each side, in both brawl and
@@ -116,7 +136,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const isDragon = props.mode === 'dragon';
   const isPlayerBattle = props.mode === 'player';
   const isAmbush = props.mode === 'ambush';
-  const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush;
+  const isRogue = props.mode === 'rogue';
+  const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush && !isRogue;
   const isClaim = isTile && !props.defender;
   // Ambush is narratively reversed: the `attacker` prop holds the real
   // player (the one who must click "Defend"), while the NPC ambushers
@@ -198,7 +219,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const attackerTierCounts = isAmbush
     ? { militia: attackerUnits, riders: 0 }
     : { militia: attacker.militia, riders: attacker.riders };
-  const defenderTierCounts = isTile && defender
+  const defenderTierCounts = (isTile || isRogue) && defender
     ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
     : isPlayerBattle
       ? { militia: defender!.militia, riders: defender!.riders }
@@ -213,14 +234,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // defender's roll (proportional to that roll), not a multiplier baked
   // into the garrison's static power/headcount — applies in both brawl and
   // automatic duels alike.
-  const garrisonRollBonusPct = isTile && tile ? tile.getGarrisonBonusPct(tile.level) : 0;
+  const garrisonRollBonusPct = (isTile || isRogue) && tile ? tile.getGarrisonBonusPct(tile.level) : 0;
 
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
-  // In a tile battle, the defending side is the tile's stationed garrison,
-  // not the owner's hero in person — artifacts like Broken Blade only work
-  // when the player's own hero is actually taking part in the fight.
+  // In a tile battle (or a rogue attack), the defending side is the tile's
+  // stationed garrison, not the owner's hero in person — artifacts like
+  // Broken Blade only work when the player's own hero is actually taking
+  // part in the fight.
   const defenderArtifactBonus =
-    defender && !isTile ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
+    defender && !isTile && !isRogue ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
   // Ambush is visually/mechanically reversed: the `attacker` prop holds the
   // real player, but they occupy the DEFENDER role in the duel (the NPC
   // ambushers auto-roll as the attacker role) — so the real player's
@@ -240,7 +262,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         }))
       : [];
   const attackerBonusEntries = buildBonusEntries(attacker);
-  const defenderBonusEntries = buildBonusEntries(isTile ? undefined : defender);
+  const defenderBonusEntries = buildBonusEntries(isTile || isRogue ? undefined : defender);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');
@@ -349,6 +371,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           lostBg: ambushOutcome !== 'win',
         };
       }
+      if (isRogue) return resolveRogueAttack(gameState, defender!, tile!, defKilled, battleOutcome, initialDefence);
       return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome, initialDefence);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -553,7 +576,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const handleClose = () => {
     clearScreen();
-    if (isCaravan || isPlayerBattle || isAmbush) {
+    if (isCaravan || isPlayerBattle || isAmbush || isRogue) {
       (props as { onClose: () => void }).onClose();
     } else if (isDragon) {
       if (outcome !== 'attacker') setEndTurn();
@@ -601,7 +624,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // leftmost-first duel-selection order used in both brawl and automatic
   // battles.
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) => {
-    const emoji = !atkAlive[i] ? '💥' : isAmbush ? '👹' : i < attackerSplit.ridersCount ? '🐎' : '🧍';
+    const emoji = !atkAlive[i] ? '💥' : isAmbush || isRogue ? '👹' : i < attackerSplit.ridersCount ? '🐎' : '🧍';
     return { emoji, selected: i === selectedAtkIdx };
   });
   const defenderGrid = Array.from({ length: initialDefence }, (_, i) => {
@@ -629,12 +652,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         ? t('battleScreen.heroHour')
         : isAmbush
           ? t('battleScreen.ambush')
-          : isTile
+          : isTile || isRogue
             ? t('battleScreen.battleFor', { tileName: tile!.name })
             : t('battleScreen.battle');
 
   return (
-    <ScreenBackground image={isAmbush ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
+    <ScreenBackground image={isAmbush || isRogue ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
       <div
         style={{
           position: 'absolute',
@@ -683,6 +706,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               // ambushers, whose bonus is defenderRollBonus (attackerRollBonus
               // is the real player's, shown in the bc-defender slot below).
               <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} showArtifacts={false} />
+            ) : isRogue ? (
+              // `attacker` is the synthetic horde Player here — show a
+              // generic NPC card instead (its .image isn't a real figure key).
+              <PlayerCard imageSrc="assets/figures/npc-saracen.png" name={attacker.name} color={attacker.color} showArtifacts={false} />
             ) : (
               <PlayerCard player={attacker} showArtifacts={false} />
             )}

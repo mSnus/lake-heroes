@@ -776,6 +776,7 @@
     "razed": "Ваша «{tileName}» была разрушена 🔥бродячей ордой!",
     "razedToast": "«{tileName}» игрока {playerName} разрушена бродячей ордой",
     "tie": "Гарнизон «{tileName}» едва держится, потеряв {units}🧍 в бою с бродячей ордой",
-    "tieToast": "Гарнизон {playerName} в «{tileName}» теряет {units}🧍 в бою с бродячей ордой"
+    "tieToast": "Гарнизон {playerName} в «{tileName}» теряет {units}🧍 в бою с бродячей ордой",
+    "horde": "Бродячая орда"
   }
 }
