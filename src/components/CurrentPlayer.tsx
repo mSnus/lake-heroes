@@ -6,6 +6,7 @@ import { PlayerLabel } from './PlayerLabel';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
+import { ARMY_SLOT_CAPACITY } from '../game/constants';
 import { useT } from '../i18n';
 
 interface CurrentPlayerProps {
@@ -127,7 +128,11 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           id="statsArmy"
           onClick={() =>
             say(
-              t('currentPlayer.armyTooltip', { used: activePlayer.slotsUsed, total: activePlayer.armySlots }),
+              t('currentPlayer.armyTooltip', {
+                fame: activePlayer.fame,
+                slots: activePlayer.armySlots,
+                perSlot: ARMY_SLOT_CAPACITY,
+              }),
               'info'
             )
           }

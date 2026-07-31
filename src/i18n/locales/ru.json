@@ -246,7 +246,7 @@
     "asKingsGrace": "в качестве королевской милости",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Ваше жалование за проход через Замок короля{detail}",
-    "armyTooltip": "Ваша армия: занято {used}/{total} слотов, в каждом до 10 воинов одного вида",
+    "armyTooltip": "Ваша слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot} юнитов каждый",
     "artifactTooltip": "{name}: {description}"
   },
   "botController": {

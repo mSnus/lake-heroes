@@ -246,7 +246,7 @@
     "asKingsGrace": "as the King's grace",
     "fromPristineDiamond": "from the Pristine Diamond 💎",
     "wagesMessage": "Your wages after passing the King's Castle{detail}",
-    "armyTooltip": "Your army: {used}/{total} slots used, each holding up to 10 of one kind",
+    "armyTooltip": "Your fame {fame}🏆 allows to have {slots} squads of {perSlot} units each",
     "artifactTooltip": "{name}: {description}"
   },
   "botController": {
