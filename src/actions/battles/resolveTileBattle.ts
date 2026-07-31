@@ -12,9 +12,10 @@ import { t } from '../../i18n';
  *   level-1 gold price (units are already spent in the fight), and gains
  *   ownership. New owner's garrison starts empty — they must station troops.
  * - Win on an owned tile = RAZE: attacker loses killed units, ownership
- *   cleared, level reset, garrison wiped to 0 and starts regrowing wild
- *   (see wildGarrison.ts) — and the tile goes "on fire" (unbuyable) for the
- *   rest of this round.
+ *   cleared, level reset, garrison restored to the tile's authored baseline
+ *   (see wildGarrison.ts, which keeps growing it further the longer it sits
+ *   unclaimed) — and the tile goes "on fire" (unbuyable) for the rest of
+ *   this round.
  * - Defeat: attacker loses killed units. On an owned tile, the owner's real
  *   garrison takes real losses too (defenderUnitsKilled); on an unowned
  *   (wild-guarded) tile, the guard count is untouched -- they aren't a real
@@ -67,7 +68,7 @@ export function resolveTileBattle(
       });
       tile.owner = null;
       tile._level = 1;
-      tile.garrison = 0;
+      tile.garrison = tile.baseGarrison;
       tile.unclaimedSinceTurn = board.turns;
       tile.razedInRound = board.round;
 
