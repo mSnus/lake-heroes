@@ -120,7 +120,6 @@ export const TileClaimScreen: React.FC<TileClaimScreenProps> = ({
                         min="0"
                         max={maxGarrison}
                         id="garrisonInput"
-                        style={{ width: '2rem', fontSize: '150%' }}
                         className="units-input"
                       />
                       {t('tileClaimScreen.stayInArmy', { count: player.militia - garrisonAmount })}
