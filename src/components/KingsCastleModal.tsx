@@ -107,14 +107,6 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           </h3>
         )}
 
-        <h3 style={{ whiteSpace: 'pre-line' }}>
-          {tJsx('kingsCastle.squadsMessage', {
-            gold: <span className="value">{player.gold}🟡</span>,
-            fame: <span className="value">{player.fame}</span>,
-            squads: <span className="value">{player.armySlots}</span>,
-          })}
-        </h3>
-
         <SquadDisplay
           militia={player.militia}
           riders={player.riders}

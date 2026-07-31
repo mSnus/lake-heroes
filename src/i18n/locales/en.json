@@ -136,7 +136,6 @@
   "kingsCastle": {
     "title": "The King's Castle",
     "newContract": "📜 New contract: claim\n{tileName} for a reward of {award}🟡!",
-    "squadsMessage": "With {gold} and {fame} fame\nyou may have {squads} squads",
     "cannotRecruit": "Your money {gold} and fame {fame}\ndo not allow you to recruit more units",
     "iAmTheGreatest": "⚜️ I am the greatest!"
   },
