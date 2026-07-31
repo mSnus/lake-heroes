@@ -135,7 +135,7 @@
   },
   "kingsCastle": {
     "title": "Замок короля",
-    "newContract": "📜 Новый контракт: будьте первым, кто захватит\n{tileName} за награду {award}🟡!",
+    "newContract": "📜 Новый контракт: захватите\n{tileName} за награду {award}🟡!",
     "squadsMessage": "Имея {gold} и {fame} славы,\nвы можете содержать {squads} отрядов",
     "cannotRecruit": "Ваших денег {gold} и славы {fame}\nне хватает, чтобы нанять больше воинов",
     "iAmTheGreatest": "⚜️ Я величайший!"
