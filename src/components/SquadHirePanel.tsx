@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
-import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { ARMY_SLOT_CAPACITY, RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
 import { useT } from '../i18n';
 import '../styles/SquadHirePanel.css';
 
@@ -19,8 +19,15 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
   const goldCap = Math.floor(player.gold / unitPrice);
   const slotCap = player.remainingCapacity(tier);
   const maxAmount = Math.min(goldCap, slotCap);
-  const thirdAmount = Math.floor(maxAmount / 3);
-  const halfAmount = Math.floor(maxAmount / 2);
+
+  // Tops off the currently-open slot (the tier's count isn't a multiple of
+  // ARMY_SLOT_CAPACITY) rather than starting a new one; falls back to the
+  // full max when there's no partial slot to fill (an exact multiple, incl.
+  // zero).
+  const tierCount = tier === 'riders' ? player.riders : player.militia;
+  const unitsInOpenSlot = tierCount % ARMY_SLOT_CAPACITY;
+  const fillSlotAmount =
+    unitsInOpenSlot > 0 ? Math.min(ARMY_SLOT_CAPACITY - unitsInOpenSlot, maxAmount) : maxAmount;
 
   // Starts prefilled at the max; after a hire it resets to 0 instead of
   // re-filling to the (now lower) max, so repeat hires don't need re-zeroing
@@ -32,8 +39,8 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
     onBuy(amount, tier);
     setAmount(0);
   };
-  const handleThird = () => setAmount(thirdAmount);
-  const handleHalf = () => setAmount(halfAmount);
+  const handleFillSlot = () => setAmount(fillSlotAmount);
+  const handleMax = () => setAmount(maxAmount);
   const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
   const handleDec = () => setAmount((a) => Math.max(0, a - 1));
   const handleIncBig = () => setAmount((a) => Math.min(maxAmount, a + 10));
@@ -74,11 +81,11 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
             +1
           </button>
         </div>
-        <button className="game-menu-button silver hire-fraction" onClick={handleThird}>
-          {thirdAmount}{emoji}
+        <button className="game-menu-button silver hire-fraction" onClick={handleFillSlot}>
+          {fillSlotAmount}{emoji}
         </button>
-        <button className="game-menu-button silver hire-fraction" onClick={handleHalf}>
-          {halfAmount}{emoji}
+        <button className="game-menu-button silver hire-fraction" onClick={handleMax}>
+          {maxAmount}{emoji}
         </button>
         <button
           className="game-menu-button hire-submit"
