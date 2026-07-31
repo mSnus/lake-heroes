@@ -496,11 +496,11 @@ export const TileCard: React.FC<TileCardProps> = ({
             )}
 
             {expanded && (mode === 'owned' || demoMode) && (
-              <div className="tile-card-sell" style={{ marginTop: '1rem', display: 'flex', gap: '8px' }}>
-                <div onClick={() => handleYieldToggle()} className={'tile-card-button'}>
+              <div className="tile-card-sell" style={{ marginTop: '1rem' }}>
+                <div onClick={() => handleYieldToggle()} className={'tile-card-button tile-card-sell-item'}>
                   🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
                 </div>
-                <div onClick={() => handleSell()} className={'tile-card-button'}>
+                <div onClick={() => handleSell()} className={'tile-card-button tile-card-sell-item'}>
                   🪙 {t('tileCard.sell')}
                 </div>
               </div>

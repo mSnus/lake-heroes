@@ -306,10 +306,15 @@
 }
 
 .tile-card-sell {
+  display: flex;
+  gap: 1rem;
+  width: fit-content;
+  margin-left: auto;
+}
+
+.tile-card-sell-item {
   background: #fff3d8;
   border: 1px outset #ffde2c7a;
-  width: fit-content;
   padding: 4px;
   border-radius: 5px;
-  margin-left: auto;
 }
