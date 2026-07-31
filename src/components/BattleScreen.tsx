@@ -184,17 +184,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Ambush is the one exception: the player is the DEFENDER there, so the
   // "attacker" side is the NPC ambusher force, which the defence variable
   // already holds by definition for that mode.
-  // Snapshotted once on mount: the dragon (sum of all armies) and full-army
-  // branches read live Player.units, and resolving the battle mutates those in
-  // place. Recomputing from the live value would shrink the grid and the
-  // "X vs Y" readout after the fight is already decided.
-  const attackerUnitsRef = useRef(
-    isDragon
-      ? gameState.players.reduce((sum, p) => sum + p.units, 0)
-      : isAmbush
-        ? initialDefence
-        : attacker.units
-  );
+  // Snapshotted once on mount: this and the full-army branches read live
+  // Player.units, and resolving the battle mutates those in place.
+  // Recomputing from the live value would shrink the grid and the "X vs Y"
+  // readout after the fight is already decided.
+  const attackerUnitsRef = useRef(isAmbush ? initialDefence : attacker.units);
   const attackerUnits = attackerUnitsRef.current;
 
   const doubleDice = initialDefence > 12 || attackerUnits > 12;
@@ -206,8 +200,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // column (survive longer) and Militia on the center-facing edge (dies
   // first) — matching Player/Tile's actual militia-first loss ordering, and
   // (in a brawl) the rightmost/leftmost duel-selection order.
-  const attackerTierCounts =
-    isDragon || isAmbush ? { militia: attackerUnits, riders: 0 } : { militia: attacker.militia, riders: attacker.riders };
+  const attackerTierCounts = isAmbush
+    ? { militia: attackerUnits, riders: 0 }
+    : { militia: attacker.militia, riders: attacker.riders };
   const defenderTierCounts = isTile && defender
     ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
     : isPlayerBattle
