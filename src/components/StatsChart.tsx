@@ -18,6 +18,8 @@ export interface ChartMetric {
   label: string;
   /** SVG stroke-dasharray; omit for a solid line. */
   dash?: string;
+  /** Line/dot opacity, 0-1; omit for fully opaque. */
+  opacity?: number;
 }
 
 interface StatsChartProps {
@@ -88,7 +90,7 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
           {scales.map((m) => (
             <span key={m.key} className="stats-chart-legend-item">
               <svg width="22" height="10" className="stats-chart-legend-line">
-                <line x1="0" y1="5" x2="22" y2="5" stroke="#ccc" strokeWidth="2" strokeDasharray={m.dash} />
+                <line x1="0" y1="5" x2="22" y2="5" stroke="#ccc" strokeWidth="2" strokeDasharray={m.dash} opacity={m.opacity} />
               </svg>
               {m.label}
             </span>
@@ -106,7 +108,7 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
       </div>
 
       <div className="stats-chart-scroll">
-        <svg width={width} height={height} className="stats-chart-svg">
+        <svg viewBox={`0 0 ${width} ${height}`} className="stats-chart-svg">
           {turnNumbers.map((turn) => (
             <g key={`grid-${turn}`}>
               <line x1={AXIS_WIDTH} y1={yForTurn(turn)} x2={width} y2={yForTurn(turn)} className="stats-chart-gridline" />
@@ -136,10 +138,18 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
                           stroke={player.color}
                           strokeWidth={2.5}
                           strokeDasharray={m.dash}
+                          opacity={m.opacity}
                         />
                       )}
                       {series.map((s) => (
-                        <circle key={s.turn} cx={m.xForValue(s[m.key])} cy={yForTurn(s.turn)} r={3} fill={player.color} />
+                        <circle
+                          key={s.turn}
+                          cx={m.xForValue(s[m.key])}
+                          cy={yForTurn(s.turn)}
+                          r={3}
+                          fill={player.color}
+                          opacity={m.opacity}
+                        />
                       ))}
                     </g>
                   );

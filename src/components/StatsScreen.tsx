@@ -46,25 +46,17 @@ const StatsScreen: React.FC<StatsScreenProps> = ({ gameState }) => {
         {turnStats.length === 0 ? (
           <p className="stats-screen-empty">{t('statsScreen.noData')}</p>
         ) : (
-          <>
-            <StatsChart
-              players={players}
-              turnStats={turnStats}
-              statEvents={statEvents}
-              metrics={[
-                { key: 'wealth', label: `🟡 ${t('statsScreen.wealth')}` },
-                { key: 'units', label: `🧍 ${t('statsScreen.units')}`, dash: '5 4' },
-              ]}
-              title={`🟡 ${t('statsScreen.wealth')} / 🧍 ${t('statsScreen.units')}`}
-            />
-            <StatsChart
-              players={players}
-              turnStats={turnStats}
-              statEvents={statEvents}
-              metrics={[{ key: 'fame', label: `🏆 ${t('statsScreen.fame')}` }]}
-              title={`🏆 ${t('statsScreen.fame')}`}
-            />
-          </>
+          <StatsChart
+            players={players}
+            turnStats={turnStats}
+            statEvents={statEvents}
+            metrics={[
+              { key: 'wealth', label: `🟡 ${t('statsScreen.wealth')}` },
+              { key: 'units', label: `🧍 ${t('statsScreen.units')}`, dash: '5 4' },
+              { key: 'fame', label: `🏆 ${t('statsScreen.fame')}`, dash: '14 6', opacity: 0.7 },
+            ]}
+            title={`🟡 ${t('statsScreen.wealth')} / 🧍 ${t('statsScreen.units')} / 🏆 ${t('statsScreen.fame')}`}
+          />
         )}
       </div>
     </div>

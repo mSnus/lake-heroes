@@ -82,6 +82,8 @@
 
 .stats-chart-svg {
   display: block;
+  width: 100%;
+  height: auto;
 }
 
 .stats-chart-gridline {
