@@ -10,7 +10,7 @@
     "garrison": 4,
     "prices": {
       "1": {
-        "gold": 300,
+        "gold": 1200,
         "units": 2
       },
       "2": {
@@ -44,7 +44,7 @@
     "garrison": 6,
     "prices": {
       "1": {
-        "gold": 350,
+        "gold": 1400,
         "units": 3
       },
       "2": {
@@ -78,7 +78,7 @@
     "garrison": 12,
     "prices": {
       "1": {
-        "gold": 400,
+        "gold": 1600,
         "units": 6
       },
       "2": {
@@ -112,7 +112,7 @@
     "garrison": 4,
     "prices": {
       "1": {
-        "gold": 200,
+        "gold": 800,
         "units": 2
       },
       "2": {
@@ -146,7 +146,7 @@
     "garrison": 6,
     "prices": {
       "1": {
-        "gold": 300,
+        "gold": 1200,
         "units": 3
       },
       "2": {
@@ -180,7 +180,7 @@
     "garrison": 8,
     "prices": {
       "1": {
-        "gold": 400,
+        "gold": 1600,
         "units": 4
       },
       "2": {
@@ -214,7 +214,7 @@
     "garrison": 4,
     "prices": {
       "1": {
-        "gold": 150,
+        "gold": 600,
         "units": 2
       },
       "2": {
@@ -248,7 +248,7 @@
     "garrison": 6,
     "prices": {
       "1": {
-        "gold": 250,
+        "gold": 1000,
         "units": 3
       },
       "2": {
@@ -282,7 +282,7 @@
     "garrison": 8,
     "prices": {
       "1": {
-        "gold": 350,
+        "gold": 1400,
         "units": 4
       },
       "2": {
@@ -316,7 +316,7 @@
     "garrison": 6,
     "prices": {
       "1": {
-        "gold": 250,
+        "gold": 1000,
         "units": 3
       },
       "2": {
@@ -350,7 +350,7 @@
     "garrison": 8,
     "prices": {
       "1": {
-        "gold": 350,
+        "gold": 1400,
         "units": 4
       },
       "2": {
@@ -384,7 +384,7 @@
     "garrison": 8,
     "prices": {
       "1": {
-        "gold": 450,
+        "gold": 1800,
         "units": 4
       },
       "2": {
@@ -418,7 +418,7 @@
     "garrison": 10,
     "prices": {
       "1": {
-        "gold": 400,
+        "gold": 1600,
         "units": 5
       },
       "2": {
@@ -452,7 +452,7 @@
     "garrison": 4,
     "prices": {
       "1": {
-        "gold": 600,
+        "gold": 2400,
         "units": 2
       },
       "2": {
@@ -486,7 +486,7 @@
     "garrison": 10,
     "prices": {
       "1": {
-        "gold": 600,
+        "gold": 2400,
         "units": 5
       },
       "2": {
@@ -520,7 +520,7 @@
     "garrison": 10,
     "prices": {
       "1": {
-        "gold": 800,
+        "gold": 3200,
         "units": 5
       },
       "2": {
@@ -554,7 +554,7 @@
     "garrison": 10,
     "prices": {
       "1": {
-        "gold": 1000,
+        "gold": 4000,
         "units": 5
       },
       "2": {
