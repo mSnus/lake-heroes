@@ -3,6 +3,7 @@ export type TurnPhase = 'before-move' | 'rolling' | 'moving' | 'after-move';
 import { Player } from './Player';
 import { Tile } from './Tile';
 import { KingsContract } from './kingsContracts';
+import type { PlayerTurnStat, PlayerStatEvent } from './statistics';
 
 export class GameState {
   tiles: Tile[];
@@ -21,6 +22,9 @@ export class GameState {
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.
   skippingTurn: boolean = false;
+  // Per-player-per-turn history for the Statistics screen.
+  turnStats: PlayerTurnStat[] = [];
+  statEvents: PlayerStatEvent[] = [];
 
   constructor(tiles: Tile[], players: Player[]) {
     this.tiles = tiles;

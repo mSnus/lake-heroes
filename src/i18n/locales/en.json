@@ -132,7 +132,8 @@
     "rollDice": "Roll Dice",
     "endTurn": "End Turn",
     "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost.",
-    "cheat": "Cheat"
+    "cheat": "Cheat",
+    "statistics": "Statistics"
   },
   "kingsCastle": {
     "title": "The King's Castle",
@@ -793,5 +794,24 @@
     "setUnits": "Set units",
     "setFame": "Set fame",
     "set": "Set"
+  },
+  "statsScreen": {
+    "title": "Statistics",
+    "wealth": "Wealth",
+    "units": "Units",
+    "fame": "Fame",
+    "turnAxis": "Turn",
+    "noData": "No data yet — check back after a full round.",
+    "legend": "Legend",
+    "vsOpponent": "vs {opponent}",
+    "event": {
+      "sphynx": "Sphynx",
+      "joker": "Joker",
+      "battle-won": "Battle won",
+      "battle-lost": "Battle lost",
+      "treasure": "Treasure",
+      "promotion": "Promotion to Knight",
+      "dragon": "Dragon battle"
+    }
   }
 }

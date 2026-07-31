@@ -3,6 +3,7 @@ import { say } from '../utils/say';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { hasArtifact } from '../game/artifacts';
+import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
 
 /**
@@ -68,6 +69,7 @@ export function handleSphynx(
   player.fame += 1;
   message += ' ' + t('sphynx.fameSuffix');
 
+  recordStatEvent(gameState, player, 'sphynx');
   updateGameState(gameState);
 
   say(message, roll === 6 ? 'success' : roll === 5 || pipeSaved ? 'info' : 'warning');

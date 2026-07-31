@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { KNIGHT_FAME } from '../game/constants';
 import { showKnightPromotionScreen } from '../utils/screenStore';
+import { recordStatEvent } from '../game/statistics';
 
 /**
  * Fame alone no longer makes a player a Knight — that only happens the next
@@ -20,6 +21,7 @@ export function checkKnightPromotion(
   if (player.isKnight || player.fame < KNIGHT_FAME) return false;
 
   player.isKnight = true;
+  recordStatEvent(board, player, 'promotion');
   updateGameState(board);
 
   showKnightPromotionScreen(player.name, player.color, onContinue);

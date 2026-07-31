@@ -4,6 +4,7 @@ import { Tile } from '../../game/Tile';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
+import { recordStatEvent } from '../../game/statistics';
 import { t } from '../../i18n';
 
 /**
@@ -127,15 +128,13 @@ export function resolveTileBattle(
     }
   }
 
-  logBattleSummary(
-    attacker,
-    defender ? defender.name : t('resolveTileBattle.theGuards'),
-    outcome,
-    outcome === 'attacker' ? tile.name : null,
-    unitsBefore,
-    goldBefore,
-    claiming
-  );
+  const opponentName = defender ? defender.name : t('resolveTileBattle.theGuards');
+
+  if (outcome === 'attacker' || outcome === 'defender') {
+    recordStatEvent(board, attacker, outcome === 'attacker' ? 'battle-won' : 'battle-lost', opponentName);
+  }
+
+  logBattleSummary(attacker, opponentName, outcome, outcome === 'attacker' ? tile.name : null, unitsBefore, goldBefore, claiming);
 
   return { outcome, message, victoryBg, lostBg };
 }

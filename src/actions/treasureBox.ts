@@ -4,6 +4,7 @@ import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { pickRandomUnownedArtifact } from '../game/artifacts';
+import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
 
 type TreasureSize = 'small' | 'medium' | 'large';
@@ -35,6 +36,8 @@ export function handleTreasureBox(
   const player = board.activePlayer;
   const size = rollTreasureSize();
   const sizeLabel = t(`treasureBox.size.${size}`);
+
+  recordStatEvent(board, player, 'treasure');
 
   const foundArtifact =
     Math.random() < ARTIFACT_CHANCE ? pickRandomUnownedArtifact(board) : null;

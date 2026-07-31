@@ -2,6 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { DRAGON_UNITS } from '../../game/constants';
 import { BattleResolution, BattleOutcome, logBattleSummary, lossStr } from './common';
+import { recordStatEvent } from '../../game/statistics';
 import { t } from '../../i18n';
 
 /**
@@ -18,6 +19,8 @@ export function resolveDragonBattle(
 ): BattleResolution {
   const unitsBefore = attacker.units;
   const goldBefore = attacker.gold;
+
+  recordStatEvent(board, attacker, 'dragon');
 
   let message = '';
   let victoryBg = false;

@@ -8,6 +8,7 @@ import { showScreen } from '../utils/screenStore';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
 import CheatScreen from './CheatScreen';
+import StatsScreen from './StatsScreen';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 
 interface ShieldColumnProps {
@@ -126,6 +127,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   👻
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.statistics')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <StatsScreen gameState={gameState} /> });
+                  }}
+                  className="shield-button"
+                >
+                  📈
                 </button>
               </div>
             </div>

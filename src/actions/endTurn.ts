@@ -6,12 +6,23 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { hasArtifact, getArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
+import { recordTurnStat } from '../game/statistics';
 import { t } from '../i18n';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   console.log('Action: end turn for', board.activePlayer.name);
+
+  // Snapshot the outgoing player's stats -- but only if they actually took a
+  // real turn. board.skippingTurn still reflects the PREVIOUS call's outcome
+  // here (it's only cleared once a player falls through without skipping,
+  // below), so it correctly identifies a player whose "turn" was just a
+  // prison/skip tick with no real move -- recording that would duplicate the
+  // turn number of whoever played before them.
+  if (!board.skippingTurn) {
+    recordTurnStat(board, board.activePlayer);
+  }
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.gameMessage = '';
