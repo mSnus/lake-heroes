@@ -74,6 +74,11 @@ export function afterMoveLogic(
   }
 
   if (tile.isOwned() && tile.owner !== player.id) {
+    if (tile.isYielded) {
+      say(t('afterMoveLogic.enjoysYieldedVisit', { playerName: player.name, tileName: tile.name }), 'info');
+      setEndTurn();
+      return;
+    }
     showTileEncounterScreen(board, updateGameState);
     return;
   }

@@ -15,11 +15,16 @@ export function sellTile(
 
   // Refund = the tile's currentPrice (base level's units mirrors its
   // defence, same as isAffordable(); upgrade levels refund their price).
-  const { gold: totalGold, units: totalUnits } = tile.currentPrice;
+  // A yielded tile already cashed in half its price up front, so selling it
+  // on top of that only refunds half of what a normal sale would.
+  const refundMultiplier = tile.isYielded ? 0.5 : 1;
+  const totalGold = Math.floor(tile.currentPrice.gold * refundMultiplier);
+  const totalUnits = Math.floor(tile.currentPrice.units * refundMultiplier);
 
   // Mutate tile and player
   tile.owner = null;
   tile._level = 1;
+  tile.isYielded = false;
 
   player.gold = (player.gold || 0) + totalGold;
   player.units = (player.units || 0) + totalUnits;

@@ -163,6 +163,7 @@
     "defence": "defence",
     "defenceInfo": "Defence: {value}",
     "garrisonWarning": "You could only set garrison while visiting your tile",
+    "garrisonYieldedWarning": "Can't change the garrison of a yielded tile",
     "cantAfford": "can't afford",
     "toOwn": "to own:",
     "base": "base",
@@ -170,7 +171,12 @@
     "stillSmoldering": "still smoldering",
     "banzai": "Banzai!",
     "claimIt": "Claim it!",
-    "razed": "razed"
+    "razed": "razed",
+    "yieldToKing": "yield to king",
+    "takeBack": "take back",
+    "confirmYield": "Yield {tileName} to the King for {gold}🟡?",
+    "confirmTakeBack": "Take {tileName} back for {gold}🟡?",
+    "yielded": "yielded"
   },
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
@@ -476,7 +482,8 @@
     "acceptLoss": "Accept loss 😢",
     "sellHeader": "Sell tiles to pay the {fee}🟡 fee, raise an army, or yield to {ownerName}",
     "theOwner": "the owner",
-    "sellTiles": "Sell tiles 💰"
+    "sellTiles": "Sell tiles 💰",
+    "enjoysYieldedVisit": "{playerName} enjoys visiting {tileName} while it's yielded"
   },
   "fightDragon": {
     "willDareChallenge": "A terrifying dragon guards a pile of gold and jewels. Will {playerSpan} dare to challenge it?",
@@ -485,6 +492,11 @@
   },
   "sellTile": {
     "sold": "{playerName} sold {tileName} for {gold} gold and {units} units"
+  },
+  "yieldTile": {
+    "yielded": "{playerName} yields {tileName} to the King, receiving {gold}🟡",
+    "takenBack": "{playerName} takes {tileName} back from the King for {gold}🟡",
+    "cannotAfford": "Need {gold}🟡 to take {tileName} back"
   },
   "claimUndefendedTile": {
     "findsDefenceless": "{attackerName} finds {tileName} defenceless and takes it!",
@@ -734,7 +746,8 @@
   },
   "visitOwnTile": {
     "provides": "{tileName} provides {playerName} with {rewards}{syndicateTag}",
-    "yourTileProvides": "Your {tileName} provides {rewards}{syndicateTag}"
+    "yourTileProvides": "Your {tileName} provides {rewards}{syndicateTag}",
+    "yourTileYielded": "Your {tileName} is yielded to the King — no bonus while yielded"
   },
   "ambushEncounter": {
     "title": "Ambush",

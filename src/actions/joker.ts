@@ -101,6 +101,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           const tile = board.tiles[targetIdx];
           tile.owner = null;
           tile._level = 1;
+          tile.isYielded = false;
           p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
           changeFame(p, -1);
           lostMsgs.push(t('joker.playerLosesTile', { playerName: p.name, tileName: tile.name }));
@@ -161,6 +162,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
             const tile = board.tiles[targetIdx];
             tile.owner = null;
             tile._level = 1;
+            tile.isYielded = false;
             p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
             changeFame(p, -1);
             lostMsgs.push(t('joker.playerLosesTile', { playerName: p.name, tileName: tile.name }));
@@ -189,6 +191,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           const tile = board.tiles[targetIdx];
           tile.owner = null;
           tile._level = 1;
+          tile.isYielded = false;
           richest.ownedTiles = richest.ownedTiles.filter((i) => i !== targetIdx);
           changeFame(richest, -1);
           message = t('joker.meteorDestroys', { tileName: tile.name });

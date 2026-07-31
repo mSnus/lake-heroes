@@ -47,7 +47,7 @@ export function setTileGarrison(
   targetMilitia: number,
   targetRiders: number = tile.garrisonRiders
 ): void {
-  if (tile.owner !== player.id) return;
+  if (tile.owner !== player.id || tile.isYielded) return;
 
   moveTier(player, tile, 'militia', Math.max(0, Math.floor(targetMilitia)) - tile.garrisonMilitia);
   moveTier(player, tile, 'riders', Math.max(0, Math.floor(targetRiders)) - tile.garrisonRiders);

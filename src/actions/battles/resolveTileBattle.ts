@@ -86,6 +86,7 @@ export function resolveTileBattle(
       });
       tile.owner = null;
       tile._level = 1;
+      tile.isYielded = false;
       tile.garrison = tile.baseGarrison;
       tile.unclaimedSinceTurn = board.turns;
       tile.razedInRound = board.round;

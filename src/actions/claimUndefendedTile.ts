@@ -33,6 +33,7 @@ export function claimUndefendedTile(
 
   tile.owner = attacker.id;
   tile._level = 1;
+  tile.isYielded = false;
   tile.garrisonMilitia = 0;
   tile.garrisonRiders = 0;
   attacker.ownedTiles.push(attacker.position);

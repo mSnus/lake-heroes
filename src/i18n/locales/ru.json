@@ -163,6 +163,7 @@
     "defence": "защита",
     "defenceInfo": "Защита: {value}",
     "garrisonWarning": "Настроить гарнизон можно только находясь на своей клетке",
+    "garrisonYieldedWarning": "Нельзя менять гарнизон переданной королю клетки",
     "cantAfford": "не по карману",
     "toOwn": "чтобы владеть:",
     "base": "база",
@@ -170,7 +171,12 @@
     "stillSmoldering": "ещё дымится",
     "banzai": "Банзай!",
     "claimIt": "Занять!",
-    "razed": "разрушено"
+    "razed": "разрушено",
+    "yieldToKing": "передать королю",
+    "takeBack": "забрать обратно",
+    "confirmYield": "Передать «{tileName}» королю за {gold}🟡?",
+    "confirmTakeBack": "Забрать «{tileName}» обратно за {gold}🟡?",
+    "yielded": "передано королю"
   },
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
@@ -476,7 +482,8 @@
     "acceptLoss": "Смириться с потерей 😢",
     "sellHeader": "Продайте постройки, чтобы заплатить пошлину {fee}🟡, собрать войско или уступить {ownerName}",
     "theOwner": "владельцу",
-    "sellTiles": "Продать постройки 💰"
+    "sellTiles": "Продать постройки 💰",
+    "enjoysYieldedVisit": "{playerName} с удовольствием посещает «{tileName}», пока та передана королю"
   },
   "fightDragon": {
     "willDareChallenge": "Ужасающий дракон охраняет груду золота и драгоценностей. Осмелится ли {playerSpan} бросить ему вызов?",
@@ -485,6 +492,11 @@
   },
   "sellTile": {
     "sold": "{playerName} продал «{tileName}» за {gold} золота и {units} юнитов"
+  },
+  "yieldTile": {
+    "yielded": "{playerName} передаёт «{tileName}» королю и получает {gold}🟡",
+    "takenBack": "{playerName} забирает «{tileName}» обратно у короля за {gold}🟡",
+    "cannotAfford": "Нужно {gold}🟡, чтобы забрать «{tileName}» обратно"
   },
   "claimUndefendedTile": {
     "findsDefenceless": "{attackerName} находит «{tileName}» беззащитной и захватывает её!",
@@ -734,7 +746,8 @@
   },
   "visitOwnTile": {
     "provides": "«{tileName}» приносит {playerName} {rewards}{syndicateTag}",
-    "yourTileProvides": "Ваша «{tileName}» приносит {rewards}{syndicateTag}"
+    "yourTileProvides": "Ваша «{tileName}» приносит {rewards}{syndicateTag}",
+    "yourTileYielded": "Ваша «{tileName}» передана королю — бонуса нет, пока она передана"
   },
   "ambushEncounter": {
     "title": "Засада",

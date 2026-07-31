@@ -15,6 +15,13 @@ export function handleVisitOwnTile(
 
   console.log('Action: visit own tile', player, tile);
 
+  if (tile.isYielded) {
+    board.gameMessage = t('visitOwnTile.yourTileYielded', { tileName: tile.name });
+    updateGameState(board);
+    setEndTurn();
+    return;
+  }
+
   const mult = syndicateMultiplier(board, player, tile.group);
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
 

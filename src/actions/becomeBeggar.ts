@@ -14,6 +14,7 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
     if (tile.owner === player.id) {
       tile.owner = null;
       tile._level = 1;
+      tile.isYielded = false;
       lostTilesCount++;
     }
   });

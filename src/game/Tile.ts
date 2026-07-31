@@ -42,6 +42,10 @@ export interface TileJSON {
   /** GameState.round the tile was last razed in — gates re-claiming until
    * the round advances ("on fire"). */
   razedInRound?: number;
+  /** Owner has yielded the tile to the King: still owned, but produces no
+   * yearly/visit bonus, can't be attacked by a Rogue Attack, and its
+   * garrison can't be adjusted, until taken back. */
+  isYielded?: boolean;
 }
 
 export class Tile implements TileJSON {
@@ -68,6 +72,7 @@ export class Tile implements TileJSON {
   baseGarrison: number;
   unclaimedSinceTurn?: number;
   razedInRound?: number;
+  isYielded: boolean;
 
   constructor(data: Partial<TileJSON> = {}) {
     this.id = data.id || '';
@@ -95,6 +100,7 @@ export class Tile implements TileJSON {
     }
     this.unclaimedSinceTurn = data.unclaimedSinceTurn;
     this.razedInRound = data.razedInRound;
+    this.isYielded = data.isYielded ?? false;
   }
 
   /** Translated display name, looked up live by `id` — never store this,
@@ -289,6 +295,7 @@ export class Tile implements TileJSON {
       baseGarrison: this.baseGarrison,
       unclaimedSinceTurn: this.unclaimedSinceTurn,
       razedInRound: this.razedInRound,
+      isYielded: this.isYielded,
     };
   }
 }

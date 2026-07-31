@@ -31,7 +31,7 @@ export function computeKingsGraceReward(board: GameState, player: Player): Kings
   // Derive ownership from tile.owner (authoritative) rather than
   // player.ownedTiles, which can be stale after a reload.
   for (const tile of board.tiles) {
-    if (!tile || tile.owner !== player.id) continue;
+    if (!tile || tile.owner !== player.id || tile.isYielded) continue;
 
     const bonus = (tile.bonuses[tile.level] || 0) * syndicateMultiplier(board, player, tile.group);
     if ((tile.bonusType || 'gold') === 'units') {

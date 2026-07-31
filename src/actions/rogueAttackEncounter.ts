@@ -30,10 +30,12 @@ export function checkRogueAttackEncounter(
 
   if (player.fame < 3) return false;
   if (player.armyPower < 5) return false;
-  if (player.ownedTiles.length < 1) return false;
+  // Yielded tiles are under the King's protection -- not a valid target.
+  const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
+  if (eligibleTiles.length < 1) return false;
   if (Math.random() >= ENCOUNTER_CHANCE) return false;
 
-  const tileIdx = player.ownedTiles[Math.floor(Math.random() * player.ownedTiles.length)];
+  const tileIdx = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];
   const tile = board.tiles[tileIdx];
   if (!tile) return false;
 
@@ -48,6 +50,7 @@ export function checkRogueAttackEncounter(
     });
     tile.owner = null;
     tile._level = 1;
+    tile.isYielded = false;
     tile.garrison = tile.baseGarrison;
     tile.unclaimedSinceTurn = board.turns;
     tile.razedInRound = board.round;

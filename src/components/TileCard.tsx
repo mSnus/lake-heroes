@@ -6,6 +6,7 @@ import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
 import { setTileGarrison } from '../actions/garrisonTile';
+import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
@@ -156,7 +157,12 @@ export const TileCard: React.FC<TileCardProps> = ({
   const prices = tile.prices || {};
   const nextPrice = prices[nextLevel];
 
-  const sellPrice = tile.currentPrice;
+  // A yielded tile already cashed in half its price up front (see
+  // yieldTile.ts) -- selling it on top of that only refunds half of what a
+  // normal sale would (mirrored exactly in sellTile.ts).
+  const sellPrice = tile.isYielded
+    ? { gold: Math.floor(tile.currentPrice.gold / 2), units: Math.floor(tile.currentPrice.units / 2) }
+    : tile.currentPrice;
 
   const handleUpgrade = () => {
     if (demoMode) return;
@@ -208,6 +214,27 @@ export const TileCard: React.FC<TileCardProps> = ({
     setExpanded(!expanded);
   };
 
+  const handleYieldToggle = () => {
+    if (demoMode) return;
+    if (!gameState || !updateGameState || !activePlayer) return;
+
+    if (tile.isYielded) {
+      const cost = takeBackCost(tile);
+      if (activePlayer.gold < cost) {
+        say(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
+        return;
+      }
+      if (!window.confirm(t('tileCard.confirmTakeBack', { tileName: tile.name, gold: cost }))) return;
+      takeTileBack(gameState, activePlayer, tile);
+    } else {
+      const refund = Math.floor(tile.currentPrice.gold / 2);
+      if (!window.confirm(t('tileCard.confirmYield', { tileName: tile.name, gold: refund }))) return;
+      yieldTile(gameState, activePlayer, tile);
+    }
+
+    updateGameState(gameState);
+  };
+
   const handleGarrison = () => {
     if (demoMode) return;
     if (!gameState || !updateGameState || !activePlayer) return;
@@ -239,7 +266,13 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   return (
-    <div className={'tile-card' + (mode === 'owned' && isSyndicate ? ' syndicate' : '')}>
+    <div
+      className={
+        'tile-card' +
+        (mode === 'owned' && isSyndicate ? ' syndicate' : '') +
+        (tile.isYielded ? ' yielded' : '')
+      }
+    >
       <div
         className="tile-card-header"
         style={{
@@ -275,7 +308,7 @@ export const TileCard: React.FC<TileCardProps> = ({
       </div>
 
       {tile.isOwnable && (
-        <div>
+        <div className="tile-card-ownable">
           <div className="tile-card-body">
             <div
               className="tile-card-base-level"
@@ -296,12 +329,19 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                     {tile.owner === activePlayer?.id && (
                       <div>
-                        <div className="big-icon-hint">
-                          <div>
-                            +{bonus(tile.level)} {bonusTypeIcon}
+                        {tile.isYielded ? (
+                          <div className="big-icon-hint">
+                            <div>🏦</div>
+                            <div>{t('tileCard.yielded')}</div>
                           </div>
-                          <div>{t('tileCard.perYear')}</div>
-                        </div>
+                        ) : (
+                          <div className="big-icon-hint">
+                            <div>
+                              +{bonus(tile.level)} {bonusTypeIcon}
+                            </div>
+                            <div>{t('tileCard.perYear')}</div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -313,6 +353,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                         e.stopPropagation();
                         if (tile.owner !== activePlayer?.id) {
                           say(t('tileCard.defenceInfo', { value: tile.defence }), 'info');
+                          return;
+                        }
+                        if (tile.isYielded) {
+                          say(t('tileCard.garrisonYieldedWarning'), 'warning');
                           return;
                         }
                         if (gameState?.activeTile !== tile) {
@@ -452,6 +496,9 @@ export const TileCard: React.FC<TileCardProps> = ({
 
             {expanded && (mode === 'owned' || demoMode) && (
               <div className="tile-card-sell" style={{ marginTop: '1rem', display: 'flex', gap: '8px' }}>
+                <div onClick={() => handleYieldToggle()} className={'tile-card-button'}>
+                  🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
+                </div>
                 <div onClick={() => handleSell()} className={'tile-card-button'}>
                   🪙 {t('tileCard.sell')}
                 </div>
