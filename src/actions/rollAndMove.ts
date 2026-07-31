@@ -18,6 +18,7 @@ import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
 import { checkAmbushEncounter } from './ambushEncounter';
+import { checkRogueAttackEncounter } from './rogueAttackEncounter';
 import { checkKnightPromotion } from './knightPromotion';
 import { tickWildGarrisons } from '../game/wildGarrison';
 import { t } from '../i18n';
@@ -149,6 +150,7 @@ export async function rollAndMove(
   if (checkDragonEncounter(board, updateGameState, continueFn)) return;
   if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
   if (checkAmbushEncounter(board, updateGameState, continueFn)) return;
+  if (checkRogueAttackEncounter(board, updateGameState, continueFn)) return;
 
   await proceedWithMove();
 }

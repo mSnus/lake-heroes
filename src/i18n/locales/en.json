@@ -767,5 +767,15 @@
     "title": "Whirlpool of lights",
     "message": "{playerName} feels desoriented and lost 🌀",
     "whereAreYou": "Where are you?"
+  },
+  "rogueAttack": {
+    "title": "Rogue Attack",
+    "wonGrows": "Battle for {tileName} won, {units}🧍 impressed by your might join your garrison",
+    "wonFull": "Battle for {tileName} won, and your garrison is full again",
+    "wonToast": "{playerName}'s garrison at {tileName} repels a roaming horde",
+    "razed": "Your {tileName} was razed 🔥by the roaming horde!",
+    "razedToast": "{playerName}'s {tileName} is razed by a roaming horde",
+    "tie": "Your {tileName}'s garrison barely holds, losing {units}🧍 to the roaming horde",
+    "tieToast": "{playerName}'s garrison at {tileName} loses {units}🧍 to a roaming horde"
   }
 }
