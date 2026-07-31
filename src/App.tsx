@@ -56,6 +56,7 @@ import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
 import { ScreenRenderer } from './components/ScreenRenderer';
 import { DecoratedButton } from './components/DecoratedButton';
+import StatsScreen from './components/StatsScreen';
 
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -530,16 +531,23 @@ function App() {
                 <br />
                 Congratulations! Time for a new challenge!
               </div>
-              <DecoratedButton
-                onClick={() => {
-                  localStorage.removeItem('game-state');
-                  localStorage.removeItem('game-screen');
-                  setGameState(null);
-                  showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
-                }}
-              >
-                New Game
-              </DecoratedButton>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <DecoratedButton
+                  onClick={() => showScreen({ content: <StatsScreen gameState={gameState} /> })}
+                >
+                  Player Stats 📈
+                </DecoratedButton>
+                <DecoratedButton
+                  onClick={() => {
+                    localStorage.removeItem('game-state');
+                    localStorage.removeItem('game-screen');
+                    setGameState(null);
+                    showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
+                  }}
+                >
+                  New Game
+                </DecoratedButton>
+              </div>
             </div>
           );
         })()}
