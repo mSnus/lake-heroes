@@ -38,7 +38,7 @@ const DUEL_PAIR_DELAY_MS = 300;
 
 // Riders (knights) hit harder than Militia in an automatic (non-brawl) duel —
 // their hidden roll counts for 130% of a Militia roll.
-const RIDER_DUEL_MULTIPLIER = 1.3;
+const RIDER_DUEL_MULTIPLIER = 1.5;
 
 export type BattleScreenProps =
   | {
