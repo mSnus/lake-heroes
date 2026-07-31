@@ -1,0 +1,13 @@
+.cheat-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.cheat-row label {
+  min-width: 110px;
+  text-align: right;
+}

@@ -7,6 +7,7 @@ import { useEndTurnReady } from '../utils/endTurnStore';
 import { showScreen } from '../utils/screenStore';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
+import CheatScreen from './CheatScreen';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 
 interface ShieldColumnProps {
@@ -71,48 +72,64 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               🐲
             </button>
           </div>
-          {menuOpen && (
-            <div className="shield-button-container" title={t('common.language')}>
-              <button onClick={cycleLanguage} className="shield-button">
-                {currentFlag}
-              </button>
-            </div>
-          )}
         </div>
         {menuOpen && (
-          <>
-            <div className="shield-button-container" title={t('shieldColumn.newGame')}>
-              <button onClick={handleNewGame} className="shield-button">
-                🏆
-              </button>
+          <div style={{ display: 'flex', flexDirection: 'row-reverse', gap: 8 }}>
+            {/* Right column: primary actions, under the 🐲 toggle */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="shield-button-container" title={t('shieldColumn.newGame')}>
+                <button onClick={handleNewGame} className="shield-button">
+                  🏆
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.help')}>
+                <button
+                  onClick={() => { setMenuOpen(false); showScreen({ content: <HelpScreen /> }); }}
+                  className="shield-button"
+                >
+                  ?
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.gameLog')}>
+                <button onClick={() => { setMenuOpen(false); onOpenLog(); }} className="shield-button">
+                  📜
+                </button>
+              </div>
             </div>
-            <div className="shield-button-container" title={t('shieldColumn.help')}>
-              <button
-                onClick={() => { setMenuOpen(false); showScreen({ content: <HelpScreen /> }); }}
-                className="shield-button"
-              >
-                ?
-              </button>
+
+            {/* Left column: language, reload, cheat */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="shield-button-container" title={t('common.language')}>
+                <button onClick={cycleLanguage} className="shield-button">
+                  {currentFlag}
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.reload')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigator.serviceWorker?.getRegistrations().then((regs) =>
+                      Promise.all(regs.map((r) => r.update()))
+                    ).finally(() => window.location.reload());
+                  }}
+                  className="shield-button"
+                >
+                  ♻️
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.cheat')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <CheatScreen gameState={gameState} updateGameState={updateGameState} /> });
+                  }}
+                  className="shield-button"
+                >
+                  👻
+                </button>
+              </div>
             </div>
-            <div className="shield-button-container" title={t('shieldColumn.gameLog')}>
-              <button onClick={() => { setMenuOpen(false); onOpenLog(); }} className="shield-button">
-                📜
-              </button>
-            </div>
-            <div className="shield-button-container" title={t('shieldColumn.reload')}>
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigator.serviceWorker?.getRegistrations().then((regs) =>
-                    Promise.all(regs.map((r) => r.update()))
-                  ).finally(() => window.location.reload());
-                }}
-                className="shield-button"
-              >
-                ♻️
-              </button>
-            </div>
-          </>
+          </div>
         )}
       </div>
 

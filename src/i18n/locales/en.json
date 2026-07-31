@@ -131,7 +131,8 @@
     "aiTurn": "AI is taking its turn",
     "rollDice": "Roll Dice",
     "endTurn": "End Turn",
-    "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost."
+    "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost.",
+    "cheat": "Cheat"
   },
   "kingsCastle": {
     "title": "The King's Castle",
@@ -778,5 +779,16 @@
     "tie": "Your {tileName}'s garrison barely holds, losing {units}🧍 to the roaming horde",
     "tieToast": "{playerName}'s garrison at {tileName} loses {units}🧍 to a roaming horde",
     "horde": "Roaming Horde"
+  },
+  "cheatScreen": {
+    "title": "Cheat Menu",
+    "moveTo": "Move to",
+    "move": "Move",
+    "ownTile": "Own a tile",
+    "own": "Own",
+    "setMoney": "Set money",
+    "setUnits": "Set units",
+    "setFame": "Set fame",
+    "set": "Set"
   }
 }
