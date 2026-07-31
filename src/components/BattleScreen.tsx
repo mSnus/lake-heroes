@@ -484,7 +484,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   }, [isBrawl, phase, isAutoDefender]);
 
   const onAttackerRollDone = (rawRoll: number) => {
-    const roll = rawRoll + attackerRollBonus;
+    const isRider = currentDuelRef.current.atkIdx < attackerSplit.ridersCount;
+    const baseRoll = rawRoll * (isRider ? RIDER_DUEL_MULTIPLIER : 1);
+    const roll = Math.round(baseRoll + attackerRollBonus);
     pendingAtkRollRef.current = roll;
     setRollingAttacker(false);
     setPendingAtkRoll(roll);
@@ -492,7 +494,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
 
   const onDefenderRollDone = (rawRoll: number) => {
-    const roll = Math.round(rawRoll + rawRoll * garrisonRollBonusPct + defenderRollBonus);
+    const isRider = currentDuelRef.current.defIdx >= defenderSplit.militiaCount;
+    const baseRoll = rawRoll * (isRider ? RIDER_DUEL_MULTIPLIER : 1);
+    const roll = Math.round(baseRoll + baseRoll * garrisonRollBonusPct + defenderRollBonus);
     setRollingDefender(false);
     setLastDefRoll(roll);
     setPhase('animating');
