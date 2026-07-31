@@ -98,14 +98,10 @@ export type BattleScreenProps =
       battlefieldUnits?: never;
     };
 
-// Duel pair selection: brawl picks the frontmost survivor of each side
-// (rightmost attacker, leftmost defender — the same edge the tier split
-// places Militia on, so Militia keeps dying first); a normal battle works
-// left to right on both sides, one pair at a time.
-function rightmostAliveIndex(alive: boolean[]): number {
-  for (let i = alive.length - 1; i >= 0; i--) if (alive[i]) return i;
-  return -1;
-}
+// Duel pair selection: leftmost survivor of each side, in both brawl and
+// automatic battles — the tier split places Riders at the low-index end for
+// both attacker and defender, so Riders in a mixed army fight (and die)
+// first, Militia only once the Riders are gone.
 function leftmostAliveIndex(alive: boolean[]): number {
   for (let i = 0; i < alive.length; i++) if (alive[i]) return i;
   return -1;
@@ -378,9 +374,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     []
   );
 
-  // ── Brawl: pick the next duel pair (rightmost attacker, leftmost defender) ──
+  // ── Brawl: pick the next duel pair (leftmost survivor of each side) ──
   const selectBrawlDuel = useCallback(() => {
-    const atkIdx = rightmostAliveIndex(atkAliveRef.current);
+    const atkIdx = leftmostAliveIndex(atkAliveRef.current);
     const defIdx = leftmostAliveIndex(defAliveRef.current);
     currentDuelRef.current = { atkIdx, defIdx };
     setSelectedAtkIdx(atkIdx);
@@ -406,7 +402,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       if (atkIdx === -1 || defIdx === -1) return;
 
       const atkIsRider = atkIdx < attackerSplit.ridersCount;
-      const defIsRider = defIdx >= defenderSplit.militiaCount;
+      const defIsRider = defIdx < defenderSplit.ridersCount;
 
       const rawRollA = rollDiceWide() * (atkIsRider ? RIDER_DUEL_MULTIPLIER : 1) + attackerRollBonus;
       const baseRollD = rollDiceWide() * (defIsRider ? RIDER_DUEL_MULTIPLIER : 1);
@@ -494,7 +490,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
 
   const onDefenderRollDone = (rawRoll: number) => {
-    const isRider = currentDuelRef.current.defIdx >= defenderSplit.militiaCount;
+    const isRider = currentDuelRef.current.defIdx < defenderSplit.ridersCount;
     const baseRoll = rawRoll * (isRider ? RIDER_DUEL_MULTIPLIER : 1);
     const roll = Math.round(baseRoll + baseRoll * garrisonRollBonusPct + defenderRollBonus);
     setRollingDefender(false);
@@ -574,10 +570,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // breakdown to show — the dragon's combined kingdom army, and NPC caravan/
   // ambush/wild-guard defenders, render as plain Militia. Tile defence is
   // sized by weighted garrison *power*, not garrison headcount, so its split
-  // is proportional rather than exact. Riders sit on the outer edge of their
-  // column (survive longer) and Militia on the center-facing edge (dies
-  // first) — matching Player/Tile's actual militia-first loss ordering, and
-  // (in a brawl) the rightmost/leftmost duel-selection order.
+  // is proportional rather than exact. Riders sit at the low-index end of
+  // both columns (fight and die first in a mixed army) and Militia at the
+  // high-index end (survive until the Riders are gone) — matching the
+  // leftmost-first duel-selection order used in both brawl and automatic
+  // battles.
   const attackerGrid = Array.from({ length: attackerUnits }, (_, i) => {
     const emoji = !atkAlive[i] ? '💥' : isAmbush ? '👹' : i < attackerSplit.ridersCount ? '🐎' : '🧍';
     return { emoji, selected: i === selectedAtkIdx };
@@ -589,9 +586,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         ? '🐉'
         : isCaravan
           ? '👹'
-          : i < defenderSplit.militiaCount
-            ? '🧍'
-            : '🐎';
+          : i < defenderSplit.ridersCount
+            ? '🐎'
+            : '🧍';
     return { emoji, selected: i === selectedDefIdx };
   });
 
