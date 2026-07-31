@@ -8,7 +8,7 @@ export const TILE_COUNT = 25;
 export const MAX_PLAYERS = 6;
 export const REVEAL_GOLD_PER_CIRCLE = 100; // discovery bonus scales with the player's laps around the board
 
-export const UNIT_PRICE = 100; // gold per militia unit (King's Castle recruit price)
+export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
 export const KNIGHT_FAME = 4; // fame at or above this switches the rider sprite and makes a player eligible for knighthood (Player.isKnight, granted on next King's Castle crossing) which unlocks Rider recruiting
