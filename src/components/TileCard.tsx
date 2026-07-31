@@ -240,8 +240,9 @@ export const TileCard: React.FC<TileCardProps> = ({
     if (demoMode) return;
     if (!gameState || !updateGameState || !activePlayer) return;
 
+    const ridersNote = activePlayer.riders > 0 ? t('tileCard.garrisonRidersNote') : '';
     const militiaInput = window.prompt(
-      t('tileCard.garrisonMilitiaPrompt', { tileName: tile.name }),
+      t('tileCard.garrisonMilitiaPrompt', { tileName: tile.name, militia: activePlayer.militia, ridersNote }),
       String(tile.garrisonMilitia)
     );
     if (militiaInput === null) return;
