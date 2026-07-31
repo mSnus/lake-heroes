@@ -11,7 +11,7 @@ export const REVEAL_GOLD_PER_CIRCLE = 100; // discovery bonus scales with the pl
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
-export const KNIGHT_FAME = 4; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
+export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
 export const BRAWL_THRESHOLD = 6; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
