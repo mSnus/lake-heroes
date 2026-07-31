@@ -40,7 +40,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   showArtifacts = true,
   className,
 }) => {
-  const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.fame) : undefined);
+  const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.isKnight) : undefined);
   const altName = player?.name ?? name ?? '';
   const visibleArtifacts =
     player && showArtifacts

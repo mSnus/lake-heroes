@@ -320,7 +320,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isCaravan || isAmbush
       ? 'assets/figures/npc-saracen.png'
       : defender
-        ? getPlayerImageSrc(defender.image, defender.fame)
+        ? getPlayerImageSrc(defender.image, defender.isKnight)
         : 'assets/figures/npc-saracen.png';
 
   // ── Initial log ──

@@ -238,7 +238,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const tileNumber = player.position % TILE_COUNT;
     const pos = getTilePosition(tileNumber);
 
-    const src = getPlayerImageSrc(player.image, player.fame);
+    const src = getPlayerImageSrc(player.image, player.isKnight);
 
     let onSameTileCount = 0;
     board.players.forEach((p, idx) => {

@@ -40,7 +40,7 @@ export const PlayerLabel: React.FC<PlayerLabelProps> = ({
       {showImage && player && (
         <img
           className="player-label-img"
-          src={getPlayerImageSrc(player.image, player.fame)}
+          src={getPlayerImageSrc(player.image, player.isKnight)}
           alt={displayName}
         />
       )}

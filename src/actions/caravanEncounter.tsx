@@ -69,7 +69,7 @@ export function checkCaravanEncounter(
   showScreen({
     screenType: 'caravan',
     background: 'assets/screens/caravan.jpg',
-    spriteImage: getPlayerImageSrc(player.image, player.fame),
+    spriteImage: getPlayerImageSrc(player.image, player.isKnight),
     caravanDefence: defendingUnits,
     caravanPrize: prize,
     fade: true,

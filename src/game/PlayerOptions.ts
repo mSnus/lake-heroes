@@ -1,4 +1,3 @@
-import { KNIGHT_FAME } from './constants';
 import { tRaw } from '../i18n';
 
 export interface PlayerOption {
@@ -19,10 +18,10 @@ export const playerOptions: PlayerOption[] = [
 ];
 
 // Blue has no footman sprite — always uses rider
-export function getPlayerImageSrc(colorKey: string, fame: number): string {
+export function getPlayerImageSrc(colorKey: string, isKnight: boolean): string {
   // Normalize legacy saved values (e.g. 'rider-blue.png') down to the bare color key.
   const color = colorKey.replace(/\.png$/, '').replace(/^(rider|footman)-/, '');
-  const type = fame >= KNIGHT_FAME ? 'rider' : 'footman';
+  const type = isKnight || color === 'blue' ? 'rider' : 'footman';
   return `assets/figures/${type}-${color}.png`;
 }
 
