@@ -8,7 +8,7 @@ export const EVENT_EMOJI: Record<StatEventType, string> = {
   joker: '🃏',
   'battle-won': '⚔️',
   'battle-lost': '💀',
-  treasure: '📦',
+  treasure: '🪎',
   promotion: '🎖️',
   dragon: '🐉',
 };
