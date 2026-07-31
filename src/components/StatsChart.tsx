@@ -31,9 +31,10 @@ const AXIS_WIDTH = 34;
 // nudged apart by this much so they don't fully overlap.
 const EVENT_OFFSET = 14;
 
-/** One metric's graph: every player's line shares the same value axis (X)
- * and turn axis (Y, increasing downward), overlaid on one plot so it's easy
- * to compare who was ahead at any given turn. Players are identified by a
+/** One metric's graph: every player's line shares the same value axis (X,
+ * logarithmic so wide value swings still fit the plot width) and turn axis
+ * (Y, linear, increasing downward), overlaid on one plot so it's easy to
+ * compare who was ahead at any given turn. Players are identified by a
  * colored circle in the legend row above the plot. */
 export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, statEvents, metric, title }) => {
   const t = useT();
@@ -42,13 +43,20 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
   const values = turnStats.map((s) => s[metric]);
   const valueMin = values.length ? Math.min(...values) : 0;
   const valueMax = values.length ? Math.max(...values) : 1;
-  const range = valueMax - valueMin || 1;
+
+  // Log scale so a wide value range (e.g. wealth from a few hundred to tens
+  // of thousands) still fits the plot width instead of squashing most turns
+  // into a sliver near one edge. log1p handles a value of 0 safely (all
+  // three metrics here are always >= 0).
+  const logMin = Math.log1p(valueMin);
+  const logMax = Math.log1p(valueMax);
+  const logRange = logMax - logMin || 1;
 
   const width = AXIS_WIDTH + PLOT_WIDTH;
   const height = TOP_PADDING + Math.max(1, maxTurn) * ROW_HEIGHT + BOTTOM_PADDING;
 
   const xForValue = (value: number) => {
-    const norm = (value - valueMin) / range;
+    const norm = (Math.log1p(value) - logMin) / logRange;
     return AXIS_WIDTH + PLOT_MARGIN + norm * (PLOT_WIDTH - PLOT_MARGIN * 2);
   };
   const yForTurn = (turn: number) => TOP_PADDING + turn * ROW_HEIGHT;
