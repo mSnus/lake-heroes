@@ -485,7 +485,7 @@
     "receivingGold": ", получив {reward}🟡",
     "unitsLostSuffix": ", потеряно {units}🧍",
     "repelsGameMessage": "{playerName} отражает засаду{rewardStr}{lossStr}",
-    "repelledWithReward": "Засада отражена! Ваша награда — {reward}🟡{lossStr}",
+    "repelledWithReward": "Ваша награда — {reward}🟡{lossStr}",
     "repelled": "Засада отражена!{lossStr}",
     "barelySurvivesGameMessage": "{playerName} едва переживает засаду{lossStr}",
     "bloodyStalemate": "Кровавая ничья{lossStr}",

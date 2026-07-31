@@ -485,7 +485,7 @@
     "receivingGold": ", receiving {reward}🟡",
     "unitsLostSuffix": ", {units}🧍 lost",
     "repelsGameMessage": "{playerName} repels the ambush{rewardStr}{lossStr}",
-    "repelledWithReward": "Ambush repelled! Your reward is {reward}🟡{lossStr}",
+    "repelledWithReward": "Your reward is {reward}🟡{lossStr}",
     "repelled": "Ambush repelled!{lossStr}",
     "barelySurvivesGameMessage": "{playerName} barely survives the ambush{lossStr}",
     "bloodyStalemate": "A bloody stalemate{lossStr}",
