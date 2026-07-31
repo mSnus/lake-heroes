@@ -17,11 +17,10 @@ export const playerOptions: PlayerOption[] = [
   { colorName: 'Black', color: '#5a5a5a', lightColor: '#adadad', image: 'black' },
 ];
 
-// Blue has no footman sprite — always uses rider
 export function getPlayerImageSrc(colorKey: string, isKnight: boolean): string {
   // Normalize legacy saved values (e.g. 'rider-blue.png') down to the bare color key.
   const color = colorKey.replace(/\.png$/, '').replace(/^(rider|footman)-/, '');
-  const type = isKnight || color === 'blue' ? 'rider' : 'footman';
+  const type = isKnight ? 'rider' : 'footman';
   return `assets/figures/${type}-${color}.png`;
 }
 
