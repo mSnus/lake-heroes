@@ -7,6 +7,7 @@ import { computeKingsGraceReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
 import { ARMY_SLOT_CAPACITY } from '../game/constants';
+import { gameEvent } from '../utils/events';
 import { useT } from '../i18n';
 
 interface CurrentPlayerProps {
@@ -40,7 +41,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         </div>
 
         <span>{t('currentPlayer.isAt')}</span>
-        <span style={{ color: gameState.activeTile.groupTextColor }}>
+        <span
+          style={{ color: gameState.activeTile.groupTextColor, cursor: 'pointer' }}
+          onClick={() => gameEvent('displayTile', gameState.activeTile)}
+        >
           {gameState.activeTile.name}{' '}
         </span>
       </div>
