@@ -220,7 +220,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderSplit = proportionalTierSplit(initialDefence, defenderTierCounts.militia, defenderTierCounts.riders);
 
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
-  const defenderArtifactBonus = defender ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
+  // In a tile battle, the defending side is the tile's stationed garrison,
+  // not the owner's hero in person — artifacts like Broken Blade only work
+  // when the player's own hero is actually taking part in the fight.
+  const defenderArtifactBonus =
+    defender && !isTile ? getArtifactRollBonus(defender, { isDragon, isBrawl }) : 0;
   // Ambush is visually/mechanically reversed: the `attacker` prop holds the
   // real player, but they occupy the DEFENDER role in the duel (the NPC
   // ambushers auto-roll as the attacker role) — so the real player's
@@ -240,7 +244,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         }))
       : [];
   const attackerBonusEntries = buildBonusEntries(attacker);
-  const defenderBonusEntries = buildBonusEntries(defender);
+  const defenderBonusEntries = buildBonusEntries(isTile ? undefined : defender);
 
   // ── State ──
   const [phase, setPhase] = useState<BattlePhase>('attacker-roll');

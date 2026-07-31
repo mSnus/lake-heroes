@@ -17,23 +17,41 @@ export function playerWealth(board: GameState, player: Player): { gold: number; 
 }
 
 /**
- * The wealthiest player ranked by total wealth expressed in gold — the
- * player's own army valued by tier (militia at UNIT_PRICE, riders at the
- * pricier RIDER_UNIT_PRICE), cumulative tile unit-costs at the generic
- * UNIT_PRICE. Returns null only when there are no players.
+ * A player's total wealth expressed in gold — their own army valued by tier
+ * (militia at UNIT_PRICE, riders at the pricier RIDER_UNIT_PRICE), plus
+ * cumulative tile unit-costs at the generic UNIT_PRICE, plus gold on hand.
  */
+export function totalWealth(board: GameState, player: Player): number {
+  const w = playerWealth(board, player);
+  const armyValue = player.militia * UNIT_PRICE + player.riders * RIDER_UNIT_PRICE;
+  const tileUnitsValue = (w.units - player.units) * UNIT_PRICE;
+  return w.gold + armyValue + tileUnitsValue;
+}
+
+/** The wealthiest player by totalWealth. Returns null only when there are no players. */
 export function richestPlayer(board: GameState): Player | null {
   let best: Player | null = null;
   let bestTotal = -1;
   for (const p of board.players) {
-    const w = playerWealth(board, p);
-    const armyValue = p.militia * UNIT_PRICE + p.riders * RIDER_UNIT_PRICE;
-    const tileUnitsValue = (w.units - p.units) * UNIT_PRICE;
-    const total = w.gold + armyValue + tileUnitsValue;
+    const total = totalWealth(board, p);
     if (total > bestTotal) {
       bestTotal = total;
       best = p;
     }
   }
   return best;
+}
+
+/** The poorest player by totalWealth. Returns null only when there are no players. */
+export function poorestPlayer(board: GameState): Player | null {
+  let worst: Player | null = null;
+  let worstTotal = Infinity;
+  for (const p of board.players) {
+    const total = totalWealth(board, p);
+    if (total < worstTotal) {
+      worstTotal = total;
+      worst = p;
+    }
+  }
+  return worst;
 }

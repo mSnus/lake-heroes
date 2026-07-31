@@ -3,7 +3,7 @@ import { say } from '../utils/say';
 import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
-import { richestPlayer } from '../game/wealth';
+import { richestPlayer, poorestPlayer } from '../game/wealth';
 import { checkArtifactProtection } from '../game/artifacts';
 import { t } from '../i18n';
 
@@ -125,7 +125,9 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     case 'Earthquake': {
       const lostMsgs: string[] = [];
       const savedMsgs: string[] = [];
+      const poorest = poorestPlayer(board);
       for (const p of board.players) {
+        if (p === poorest) continue;
         if (!p.ownedTiles.length) continue;
 
         const protection = checkArtifactProtection(p, 'earthquake');
@@ -172,9 +174,12 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     }
 
     case 'Meteor': {
-      // A meteor strikes one of the richest player's tiles, razing it.
+      // A meteor strikes one of the richest player's tiles, razing it --
+      // never the poorest player's, even if wealth is tied and they'd
+      // otherwise also rank as "richest".
       const richest = richestPlayer(board);
-      if (richest && richest.ownedTiles.length > 0) {
+      const poorest = poorestPlayer(board);
+      if (richest && richest !== poorest && richest.ownedTiles.length > 0) {
         const protection = checkArtifactProtection(richest, 'meteor');
         if (protection.saved) {
           message = t('joker.meteorSaved', { playerName: richest.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji });
