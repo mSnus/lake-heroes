@@ -50,11 +50,16 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
       const legacyId = legacyIdByName.get(t.name);
       if (legacyId) t = { ...t, id: legacyId };
     }
-    if (t.garrison === undefined) {
-      const fresh = tileTemplatesById.get(t.id);
-      if (fresh?.garrison !== undefined) {
-        t = { ...t, garrison: fresh.garrison, baseGarrison: fresh.garrison };
-      }
+    const fresh = tileTemplatesById.get(t.id);
+    if (t.garrison === undefined && fresh?.garrison !== undefined) {
+      t = { ...t, garrison: fresh.garrison, baseGarrison: fresh.garrison };
+    }
+    // Balance data (prices/bonuses/defences) is authored in tiles.json, not
+    // player progress — always pull the current values instead of trusting
+    // whatever was baked into the save when the tile was first serialized,
+    // or a rebalance never reaches a game that's already in progress.
+    if (fresh) {
+      t = { ...t, prices: fresh.prices, bonuses: fresh.bonuses, defences: fresh.defences };
     }
     return new Tile(t) as Tile;
   });
