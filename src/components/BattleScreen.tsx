@@ -19,7 +19,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
-import { DRAGON_UNITS } from '../game/constants';
+import { DRAGON_UNITS, RIDER_DUEL_MULTIPLIER } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { proportionalTierSplit } from '../game/army';
@@ -38,7 +38,6 @@ const DUEL_PAIR_DELAY_MS = 300;
 
 // Riders (knights) hit harder than Militia in an automatic (non-brawl) duel —
 // their hidden roll counts for 130% of a Militia roll.
-const RIDER_DUEL_MULTIPLIER = 1.5;
 
 export type BattleScreenProps =
   | {

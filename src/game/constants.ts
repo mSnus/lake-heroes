@@ -17,7 +17,10 @@ export const BRAWL_THRESHOLD = 6; // defence at or below this triggers brawl mod
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
 export const RIDER_UNIT_PRICE = 500; // gold per rider
 export const MILITIA_POWER_WEIGHT = 1;
-export const RIDER_POWER_WEIGHT = 2.5;
+// Single source of truth for "how much a Rider is worth vs a Militia" --
+// used both for army-power strength ratings (computeArmyPower) and as the
+// roll multiplier a Rider gets in an actual battle duel.
+export const RIDER_DUEL_MULTIPLIER = 1.5;
 export const ARMY_SLOT_CAPACITY = 10; // max units of one tier per slot
 export const MAX_ARMY_SLOTS = 5;
 // Fame thresholds for army slots: 0-2 fame -> 2 slots, 3-5 -> 3, 6-9 -> 4, 10+ -> 5.

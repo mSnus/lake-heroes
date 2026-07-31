@@ -2,7 +2,7 @@ import {
   ARMY_SLOT_CAPACITY,
   ARMY_SLOT_FAME_THRESHOLDS,
   MILITIA_POWER_WEIGHT,
-  RIDER_POWER_WEIGHT,
+  RIDER_DUEL_MULTIPLIER,
 } from './constants';
 
 export type UnitTier = 'militia' | 'riders';
@@ -11,7 +11,7 @@ export type UnitTier = 'militia' | 'riders';
  * thresholds (dragon, tile defence, Hero's Hour, caravan/ambush) compare
  * against, instead of raw headcount. */
 export function computeArmyPower(militia: number, riders: number): number {
-  return militia * MILITIA_POWER_WEIGHT + riders * RIDER_POWER_WEIGHT;
+  return militia * MILITIA_POWER_WEIGHT + riders * RIDER_DUEL_MULTIPLIER;
 }
 
 /** How many army slots a given fame grants — see ARMY_SLOT_FAME_THRESHOLDS. */
