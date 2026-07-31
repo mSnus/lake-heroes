@@ -136,7 +136,7 @@
   "kingsCastle": {
     "title": "Замок короля",
     "newContract": "📜 Новый контракт: захватите\n{tileName} за награду {award}🟡!",
-    "cannotRecruit": "Ваших денег {gold} и славы {fame}\nне хватает, чтобы нанять больше воинов",
+    "cannotRecruit": "Ваше золото {gold}\nи заполненные слоты армии\nне позволяют нанять больше юнитов",
     "iAmTheGreatest": "⚜️ Я величайший!"
   },
   "squadHirePanel": {

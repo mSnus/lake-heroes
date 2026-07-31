@@ -41,19 +41,13 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
     forceRerender((v) => v + 1);
   };
 
-  const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
-  const militiaMax = Math.min(
-    Math.floor(player.gold / UNIT_PRICE),
-    maxForFame,
-    player.remainingCapacity('militia')
-  );
+  const militiaMax = Math.min(Math.floor(player.gold / UNIT_PRICE), player.remainingCapacity('militia'));
   const atMax = militiaMax <= 0;
 
   useEffect(() => {
     if (!player.isComputer) return;
     const botMaxAmount = Math.min(
       Math.floor(player.gold / UNIT_PRICE),
-      Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn),
       player.remainingCapacity('militia')
     );
     const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, UNIT_PRICE);

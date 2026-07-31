@@ -17,11 +17,6 @@ export function handleTavern(
 
   const player = board.activePlayer;
 
-  // Entering the tavern resets this visit's hiring allowance, same as
-  // King's Castle — otherwise a leftover cap from an earlier visit could
-  // block (or extend) recruiting here for no visible reason.
-  player.unitsHiredThisTurn = 0;
-
   const circles = player.circles ?? 0;
   const circleMultiplier = circles >= 12 ? 2 : circles >= 6 ? 1.5 : 1;
   const unitsReward = Math.round(roll * circleMultiplier);

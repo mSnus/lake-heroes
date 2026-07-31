@@ -11,15 +11,16 @@ interface HireRowProps {
   label: string;
   emoji: string;
   unitPrice: number;
-  maxForFame: number;
   onBuy: (amount: number, tier: UnitTier) => void;
 }
 
-const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice, maxForFame, onBuy }) => {
+const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice, onBuy }) => {
   const t = useT();
   const goldCap = Math.floor(player.gold / unitPrice);
   const slotCap = player.remainingCapacity(tier);
-  const maxAmount = Math.min(goldCap, maxForFame, slotCap);
+  const maxAmount = Math.min(goldCap, slotCap);
+  const thirdAmount = Math.floor(maxAmount / 3);
+  const halfAmount = Math.floor(maxAmount / 2);
 
   // Starts prefilled at the max; after a hire it resets to 0 instead of
   // re-filling to the (now lower) max, so repeat hires don't need re-zeroing
@@ -31,8 +32,8 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
     onBuy(amount, tier);
     setAmount(0);
   };
-  const handleThird = () => setAmount(Math.floor(maxAmount / 3));
-  const handleHalf = () => setAmount(Math.floor(maxAmount / 2));
+  const handleThird = () => setAmount(thirdAmount);
+  const handleHalf = () => setAmount(halfAmount);
   const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
   const handleDec = () => setAmount((a) => Math.max(0, a - 1));
   const handleIncBig = () => setAmount((a) => Math.min(maxAmount, a + 10));
@@ -74,10 +75,10 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
           </button>
         </div>
         <button className="game-menu-button silver hire-fraction" onClick={handleThird}>
-          1/3
+          {thirdAmount}{emoji}
         </button>
         <button className="game-menu-button silver hire-fraction" onClick={handleHalf}>
-          1/2
+          {halfAmount}{emoji}
         </button>
         <button
           className="game-menu-button hire-submit"
@@ -103,7 +104,6 @@ interface SquadHirePanelProps {
  * can recruit both tiers without closing in between. */
 export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRiders, onBuy }) => {
   const t = useT();
-  const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
 
   return (
     <div className="squad-hire-panel">
@@ -114,7 +114,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
         label={t('squadHirePanel.militia')}
         emoji="🧍"
         unitPrice={UNIT_PRICE}
-        maxForFame={maxForFame}
         onBuy={onBuy}
       />
       {showRiders && (
@@ -124,7 +123,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
           label={t('squadHirePanel.knights')}
           emoji="🐎"
           unitPrice={RIDER_UNIT_PRICE}
-          maxForFame={maxForFame}
           onBuy={onBuy}
         />
       )}

@@ -24,9 +24,6 @@ export function sellUnits(
     player.militia -= sold;
   }
   player.gold += sold * unitPrice;
-  // Selling gives back this visit's hiring allowance for the units sold, so
-  // hitting the fame-based cap doesn't strand you once you've sold some back.
-  player.unitsHiredThisTurn = Math.max(0, player.unitsHiredThisTurn - sold);
 
   const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
   say(t('sellUnits.sold', { playerName: player.name, amount, tier: tierLabel, gold: amount * unitPrice }), 'info');

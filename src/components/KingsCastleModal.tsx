@@ -53,19 +53,14 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
   const canRecruitRiders = player.isKnight;
 
-  const maxForFame = Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn);
-
-  // Neither tier has any room left — gold, fame, or slots block both militia
-  // and riders. Shown as a single "can't recruit" message instead of the
-  // full recruiting panel (the squad display and sell buttons stay usable
-  // either way, since selling can free up room to recruit again).
-  const militiaMax = Math.min(
-    Math.floor(player.gold / UNIT_PRICE),
-    maxForFame,
-    player.remainingCapacity('militia')
-  );
+  // Neither tier has any room left — gold or slots block both militia and
+  // riders (slot count already scales with fame, so that's the real fame
+  // cap — no separate per-visit throttle). Shown as a single "can't recruit"
+  // message instead of the full recruiting panel (the squad display and
+  // sell buttons stay usable either way, since selling frees room).
+  const militiaMax = Math.min(Math.floor(player.gold / UNIT_PRICE), player.remainingCapacity('militia'));
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / RIDER_UNIT_PRICE), maxForFame, player.remainingCapacity('riders'))
+    ? Math.min(Math.floor(player.gold / RIDER_UNIT_PRICE), player.remainingCapacity('riders'))
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
@@ -75,7 +70,6 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
     const botUnitPrice = botTier === 'riders' ? RIDER_UNIT_PRICE : UNIT_PRICE;
     const botMaxAmount = Math.min(
       Math.floor(player.gold / botUnitPrice),
-      Math.max(0, 2 * player.fame + 3 - player.unitsHiredThisTurn),
       player.remainingCapacity(botTier)
     );
     const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, botUnitPrice);
@@ -119,7 +113,6 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           <h3 style={{ whiteSpace: 'pre-line' }}>
             {tJsx('kingsCastle.cannotRecruit', {
               gold: <span className="value">{player.gold}🟡</span>,
-              fame: <span className="value">{player.fame}</span>,
             })}
           </h3>
         ) : (

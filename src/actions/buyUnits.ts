@@ -20,7 +20,6 @@ export function buyUnits(
   if (player.gold >= cost) {
     const gained = tier === 'riders' ? player.gainRiders(amount) : player.gainMilitia(amount);
     player.gold -= gained * unitPrice;
-    player.unitsHiredThisTurn += gained;
     const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
     say(t('buyUnits.bought', { playerName: player.name, amount: gained, tier: tierLabel, gold: gained * unitPrice }), 'success');
     updateGameState(board);

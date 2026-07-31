@@ -18,11 +18,6 @@ export function handleKingCastle(
 
   console.log('Action: king castle for', board.activePlayer);
 
-  // Entering the castle resets this turn's hiring allowance. Tracking it on the
-  // player (rather than in the modal) keeps the fame cap enforced even if the
-  // screen is closed and reopened during the same visit.
-  board.activePlayer.unitsHiredThisTurn = 0;
-
   const contract = issueKingsContract(board, board.activePlayer);
   if (contract) {
     const tileName = board.tiles[contract.tilePosition]?.name ?? t('king.aTile');
