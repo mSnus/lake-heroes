@@ -174,7 +174,7 @@ export function showTileEncounterScreen(
       label: t('afterMoveLogic.battle', { defence }),
       action: 'fight-tile',
       onClick: () => fightTile(board, updateGameState),
-      disabled: player.armyPower < defence,
+      disabled: !canFight,
     },
   ];
 

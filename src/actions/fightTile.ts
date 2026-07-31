@@ -9,9 +9,9 @@ export function fightTile(board: GameState | null, updateGameState: (board: Game
 
   const attacker = board.activePlayer;
   const tile = board.activeTile;
-  const defence = tile.defence;
 
-  if (attacker.armyPower < defence) return;
+  // A banzai attack is always on the table with any nonzero army.
+  if (attacker.armyPower <= 0) return;
 
   const defender = board.players.find((p: Player) => p.id === tile.owner);
   if (!defender) return;

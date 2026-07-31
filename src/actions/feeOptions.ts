@@ -37,7 +37,9 @@ export function computeFeeOptions(board: GameState, player: Player, tile: Tile):
   );
 
   const canPay = player.gold >= fee;
-  const canFight = player.armyPower >= defence;
+  // A banzai attack is always on the table as long as there's an army to
+  // send in, regardless of how it stacks up against the defence.
+  const canFight = player.armyPower > 0;
   const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
   const canSellForFight = !canFight && player.armyPower + sellable.units >= defence;
   // Even if selling everything wouldn't fully cover the fee, offer the option

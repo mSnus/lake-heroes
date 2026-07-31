@@ -26,6 +26,7 @@ import { proportionalTierSplit } from '../game/army';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import { vibrateDiceRoll } from '../utils/vibrateDiceRoll';
 import { TileClaimScreen } from './TileClaimScreen';
+import { showTileEncounterScreen } from '../actions/afterMoveLogic';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'attacker-roll' | 'defender-roll' | 'animating' | 'result';
@@ -524,6 +525,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       (props as { onClose: () => void }).onClose();
     } else if (isDragon) {
       if (outcome !== 'attacker') setEndTurn();
+    } else if (isTile && defender && outcome === 'defender') {
+      // Losing a banzai attack on an owned tile returns to the guards
+      // encounter instead of ending the turn — any army size can now attempt
+      // the battle, so a loss shouldn't be a dead end: the attacker can
+      // still pay, sell, accept the loss, or try again with what's left.
+      showTileEncounterScreen(gameState, updateGameState);
     } else {
       setEndTurn();
       // Winning a fight for a previously unowned tile claims it — show the claim screen.
