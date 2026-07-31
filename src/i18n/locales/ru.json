@@ -19,34 +19,34 @@
       "name": "Ветряная мельница"
     },
     "brick-factory": {
-      "name": "Кирпичный завод"
+      "name": "Кирпич"
     },
     "pigs-farm": {
-      "name": "Свиноферма"
+      "name": "Свиньи"
     },
     "cows-farm": {
-      "name": "Коровья ферма"
+      "name": "Коровы"
     },
     "sheep-farm": {
-      "name": "Овечья ферма"
+      "name": "Овцы"
     },
     "wheat-field": {
-      "name": "Пшеничное поле"
+      "name": "Пшеница"
     },
     "cabbage-field": {
-      "name": "Капустное поле"
+      "name": "Капуста"
     },
     "fruit-garden": {
-      "name": "Фруктовый сад"
+      "name": "Фрукты"
     },
     "grapes": {
-      "name": "Виноградник"
+      "name": "Виноград"
     },
     "fish": {
-      "name": "Рыбный промысел"
+      "name": "Рыба"
     },
     "fur": {
-      "name": "Пушной промысел"
+      "name": "Пушнина"
     },
     "bows": {
       "name": "Луки"
@@ -64,7 +64,7 @@
       "name": "Пушечная башня"
     },
     "treasure-chest": {
-      "name": "Сундук с сокровищами",
+      "name": "Сундук",
       "description": "Шанс получить 🟡"
     },
     "tavern": {
@@ -72,7 +72,7 @@
       "description": "Шанс нанять 🧍"
     },
     "king-castle": {
-      "name": "Замок короля",
+      "name": "Замок",
       "description": "Нанять 🧍"
     },
     "prison": {
