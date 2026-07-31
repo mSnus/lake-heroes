@@ -248,17 +248,22 @@ export class Tile implements TileJSON {
     return this.bonuses ? this.bonuses[level] || 0 : 0;
   }
 
-  /** % bonus a garrison gets from being stationed on a tile of this level. */
+  /** % bonus a garrison's rolls get from being stationed on a tile of this
+   * level, applied additively to the roll itself during an actual battle
+   * (see BattleScreen) — it no longer inflates the static defence/power
+   * number below, so a fortified tile fights tougher without pretending to
+   * have more defenders than it really does. */
   getGarrisonBonusPct(level: number): number {
     return level >= 3 ? 0.5 : level === 2 ? 0.25 : 0.1;
   }
 
-  getDefence(level: number = 1): number {
+  getDefence(_level: number = 1): number {
     // Defence = the garrison's weighted power (Riders count for more than
-    // Militia — see game/army.ts), boosted by the tile's level. Wild/unowned
-    // guards have no tier, so their power is just their headcount.
-    const power = this.owner ? this.garrisonPower : this._garrison;
-    return Math.ceil(power * (1 + this.getGarrisonBonusPct(level)));
+    // Militia — see game/army.ts). Wild/unowned guards have no tier, so
+    // their power is just their headcount. The level's fortification bonus
+    // is a roll-time bonus now (getGarrisonBonusPct), not baked in here, so
+    // this no longer varies by level.
+    return this.owner ? this.garrisonPower : this._garrison;
   }
 
   toJSON(): TileJSON {

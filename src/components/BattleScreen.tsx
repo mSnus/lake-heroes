@@ -213,6 +213,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const attackerSplit = proportionalTierSplit(attackerUnits, attackerTierCounts.militia, attackerTierCounts.riders);
   const defenderSplit = proportionalTierSplit(initialDefence, defenderTierCounts.militia, defenderTierCounts.riders);
 
+  // A fortified tile's level bonus is now a straight addition to the
+  // defender's roll (proportional to that roll), not a multiplier baked
+  // into the garrison's static power/headcount — applies in both brawl and
+  // automatic duels alike.
+  const garrisonRollBonusPct = isTile && tile ? tile.getGarrisonBonusPct(tile.level) : 0;
+
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl });
   // In a tile battle, the defending side is the tile's stationed garrison,
   // not the owner's hero in person — artifacts like Broken Blade only work
@@ -402,8 +408,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const atkIsRider = atkIdx < attackerSplit.ridersCount;
       const defIsRider = defIdx >= defenderSplit.militiaCount;
 
-      const rollA = rollDiceWide() * (atkIsRider ? RIDER_DUEL_MULTIPLIER : 1) + attackerRollBonus;
-      const rollD = rollDiceWide() * (defIsRider ? RIDER_DUEL_MULTIPLIER : 1) + defenderRollBonus;
+      const rawRollA = rollDiceWide() * (atkIsRider ? RIDER_DUEL_MULTIPLIER : 1) + attackerRollBonus;
+      const baseRollD = rollDiceWide() * (defIsRider ? RIDER_DUEL_MULTIPLIER : 1);
+      const rawRollD = baseRollD + baseRollD * garrisonRollBonusPct + defenderRollBonus;
+      const rollA = Math.round(rawRollA);
+      const rollD = Math.round(rawRollD);
 
       if (rollA > rollD) {
         defAliveRef.current[defIdx] = false;
@@ -483,7 +492,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
 
   const onDefenderRollDone = (rawRoll: number) => {
-    const roll = rawRoll + defenderRollBonus;
+    const roll = Math.round(rawRoll + rawRoll * garrisonRollBonusPct + defenderRollBonus);
     setRollingDefender(false);
     setLastDefRoll(roll);
     setPhase('animating');
