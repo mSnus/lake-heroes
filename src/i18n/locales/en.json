@@ -295,7 +295,7 @@
       "title": "Gold 🟡 and units 🧍",
       "item1": "Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final battle",
       "item2": "Yearly income: more tiles you own, more you get each year",
-      "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎).",
+      "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
       "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
       "item6": "Units like 🧟👹🥷 are equal or <i>almost</i> equal to 🧍. Dragon 🐉 is equal to 🐎."
