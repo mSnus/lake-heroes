@@ -4,7 +4,7 @@ import { Tile } from '../game/Tile';
 import { say } from '../utils/say';
 import { t } from '../i18n';
 
-const TAKE_BACK_MULTIPLIER = 1.2;
+const TAKE_BACK_MULTIPLIER = 0.6;
 
 /**
  * Yield a tile to the King: ownership stays with the player, but the tile
@@ -27,7 +27,7 @@ export function takeBackCost(tile: Tile): number {
   return Math.ceil(tile.currentPrice.gold * TAKE_BACK_MULTIPLIER);
 }
 
-/** Reverts a yield, at 120% of the tile's current price. Returns false (and
+/** Reverts a yield, at 60% of the tile's current price. Returns false (and
  * shows the error toast itself) if the player can't afford it. */
 export function takeTileBack(gameState: GameState, player: Player, tile: Tile): boolean {
   const cost = takeBackCost(tile);
