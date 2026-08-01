@@ -1,4 +1,4 @@
-export const MONEY_START = 150;
+export const MONEY_START = 1500;
 export const UNITS_START = 20;
 export const MONEY_PASS_START = 500;
 export const MONEY_PASS_START_FAME = 200;
