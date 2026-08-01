@@ -566,7 +566,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div>{isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}</div>
                   <div>{Math.round(attackerPower)}</div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
-                    <div>{attackEmoji}</div>
+                    <div style={{ fontSize: '0.6em' }}>{attackEmoji}</div>
                     <div style={{ fontSize: '0.55rem' }}>{t('common.vs')}</div>
                   </div>
                   <div>{defence(1)}</div>
