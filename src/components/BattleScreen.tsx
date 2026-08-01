@@ -707,7 +707,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
       <div className="battle-screen">
         <div className="battle-header">{headerText}</div>
-        {isBrawl && <div className="battle-brawl-tag">{t('battleScreen.brawl')} ✊</div>}
+        {isBrawl && <div className="battle-brawl-tag">{t('battleScreen.brawl')} 👊</div>}
 
         <div className="battle-names-row">
           <div className="bc-attacker">

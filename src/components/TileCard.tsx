@@ -129,7 +129,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     !!activePlayer &&
     attackerPower > BRAWL_THRESHOLD &&
     attackerPower < lvl1Defence;
-  const attackEmoji = isBrawlTile ? '✊' : isBanzai ? '🩸' : '⚔️';
+  const attackEmoji = isBrawlTile ? '👊' : isBanzai ? '🩸' : '⚔️';
   const unitsInsufficient = !isBanzai && !!activePlayer && attackerPower < lvl1Defence;
 
   const cantAfford =
@@ -562,10 +562,15 @@ export const TileCard: React.FC<TileCardProps> = ({
                   filter: 'drop-shadow(2px 2px 3px #00000050)',
                 }}
               >
-                {isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}{' '}
-                {attackEmoji}
-                {Math.round(attackerPower)} <span style={{ fontSize: '0.9rem' }}>{t('common.vs')}</span>{' '}
-                {defence(1)}
+                <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center', gap: '0.1rem' }}>
+                  <div>{isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}</div>
+                  <div>{Math.round(attackerPower)}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
+                    <div>{attackEmoji}</div>
+                    <div style={{ fontSize: '0.55rem' }}>{t('common.vs')}</div>
+                  </div>
+                  <div>{defence(1)}</div>
+                </div>
               </DecoratedButton>
             )}
         </div>
