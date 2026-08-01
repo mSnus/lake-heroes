@@ -520,9 +520,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   onClick={() => (canUpgrade ? handleUpgrade() : handleInfoClick())}
                   className={'tile-card-button' + (canUpgrade || demoMode ? '' : ' disabled')}
                 >
-                  <div className="big-icon-hint">
-                    <div>{priceCell(nextLevel)}</div>
-                  </div>
+                  <div>{priceCell(nextLevel)}</div>
 
                   <div>→</div>
 
