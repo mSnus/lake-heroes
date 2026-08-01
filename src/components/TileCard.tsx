@@ -147,6 +147,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const canUpgrade =
     activePlayer &&
+    !tile.isYielded &&
     currentLevel < maxLevel &&
     tile.prices &&
     tile.prices[currentLevel + 1] &&
@@ -167,6 +168,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const handleUpgrade = () => {
     if (demoMode) return;
+    if (tile.isYielded) return;
 
     if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: nextPrice.gold }))) return;
 
