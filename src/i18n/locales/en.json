@@ -311,12 +311,17 @@
       "discoverTitle": "Discover",
       "discoverBody": "new tiles and get rewarded for that",
       "own": "<strong>👛 Own tiles</strong> by spending gold 🟡 and 🧍 units. Visiting own tiles brings you bonus from it",
-      "upgrade": "<strong>⬆️ Upgrade tiles</strong> by spending gold 🟡 and 🧍 units to increase tile's income and defence. Click the bottom of the card to upgrade",
       "landingOnOpponent": "<strong>Landing on opponent's tile</strong> — pay a fee 💰 or battle ⚔️ to raze it. Razed 🔥 tile loses all upgrades and becomes unowned, but cannot be claimed by that player after the battle. If you don't have enough gold or units, sell some of your tiles. Battle costs units to the attacker. If you can neither battle, nor pay, you become a prisoner of war: spend 2 turns in a prison, after that receive some starting bonus to continue playing.",
       "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: income bonus and fee is <strong>doubled</strong>",
       "sellAnytime": "<strong>Sell</strong> — tiles can be sold at any time for the full price of the tile and its upgrades. Click the tile's heading to reveal the Sell/Yield buttons.",
       "yieldToKing": "<strong>Yield to the King</strong> — yield a tile ('half-sold'): receive half its price immediately, but it produces no income and can't be fought over. Take it back for 60% of the tile's price. Selling a yielded tile refunds 10% less than its remaining value.",
       "clickToView": "<strong>Click on the tile's title or data</strong> to view its bonuses and defences on each level"
+    },
+    "tileUpgrades": {
+      "title": "Tile upgrades ⬆️",
+      "item1": "<strong>Upgrade tiles</strong> paying 🟡 to increase tile's income and defence. Click the ⬆️ button to upgrade, click the title to display possible upgrades.",
+      "item2": "Each upgrade brings one more garrison tower 🏯 to the tile. Each tower can hold up to 10 defending units and adds a bonus to their defence rolls.",
+      "item3": "Upgrades can't be sold separately or dismantled, but their price is added to the tile's price value."
     },
     "specialTiles": {
       "title": "Special tiles 🃏",

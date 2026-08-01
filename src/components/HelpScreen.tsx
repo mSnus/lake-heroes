@@ -76,12 +76,18 @@ const HelpScreen: React.FC = () => {
               </div>
             </li>
             <HtmlLi html={t('helpScreen.tiles.own')} />
-            <HtmlLi html={t('helpScreen.tiles.upgrade')} />
             <HtmlLi html={t('helpScreen.tiles.landingOnOpponent')} />
             <HtmlLi html={t('helpScreen.tiles.syndicates')} />
             <HtmlLi html={t('helpScreen.tiles.sellAnytime')} />
             <HtmlLi html={t('helpScreen.tiles.yieldToKing')} />
             <HtmlLi html={t('helpScreen.tiles.clickToView')} />
+          </ul>
+
+          <h3>{t('helpScreen.tileUpgrades.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.tileUpgrades.item1')} />
+            <HtmlLi html={t('helpScreen.tileUpgrades.item2')} />
+            <HtmlLi html={t('helpScreen.tileUpgrades.item3')} />
           </ul>
 
           {waterMillTile && (
