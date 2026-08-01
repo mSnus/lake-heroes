@@ -25,15 +25,19 @@ export function handleVisitOwnTile(
   const mult = syndicateMultiplier(board, player, tile.group);
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
 
+  // Visiting your own tile only earns half its current bonus -- the full
+  // amount is reserved for passing King's Castle (passStart.ts).
+  const VISIT_BONUS_SHARE = 0.5;
+
   const rewards = [];
   if (tile.bonusType === 'gold') {
-    const goldReward = (tile.bonuses[tile.level] || 0) * mult;
+    const goldReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_BONUS_SHARE);
     rewards.push(`${goldReward}🟡`);
     player.gold += goldReward;
   }
 
   if (tile.bonusType === 'units') {
-    const unitsReward = (tile.bonuses[tile.level] || 0) * mult;
+    const unitsReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_BONUS_SHARE);
     rewards.push(`${unitsReward}🧍`);
     player.units += unitsReward;
   }
