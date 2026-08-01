@@ -521,8 +521,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                   className={'tile-card-button' + (canUpgrade || demoMode ? '' : ' disabled')}
                 >
                   <div className="big-icon-hint">
-                    <div>⬆️</div>
+                    <div>{priceCell(nextLevel)}</div>
                   </div>
+
+                  <div>→</div>
 
                   <div>
                     +{nextLevelBonus}
