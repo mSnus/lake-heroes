@@ -16,8 +16,10 @@ export const EVENT_EMOJI: Record<StatEventType, string> = {
 export interface ChartMetric {
   key: 'wealth' | 'units' | 'fame';
   label: string;
-  /** SVG stroke-dasharray; omit for a solid line. */
+  /** SVG stroke-dasharray; omit for a solid line. Ignored if `dotted`. */
   dash?: string;
+  /** Renders a dotted line (round-capped short dashes) instead of `dash`. */
+  dotted?: boolean;
   /** Line/dot opacity, 0-1; omit for fully opaque. */
   opacity?: number;
 }
@@ -26,10 +28,9 @@ interface StatsChartProps {
   players: Player[];
   turnStats: PlayerTurnStat[];
   statEvents: PlayerStatEvent[];
-  /** One or more metrics drawn on the same shared turn axis. Each metric
-   * gets its own independent value scale (so e.g. wealth in the thousands
-   * and unit headcounts in the tens don't flatten each other), distinguished
-   * by line style rather than position. */
+  /** One or more metrics drawn on the same shared turn axis AND the same
+   * shared value axis (see the scaling comment below), distinguished by
+   * line style rather than position. */
   metrics: ChartMetric[];
   title: string;
 }
@@ -44,29 +45,21 @@ const AXIS_WIDTH = 34;
 // nudged apart by this much so they don't fully overlap.
 const EVENT_OFFSET = 14;
 
-/** Builds a log1p-based value->x mapper for one metric, independent of any
- * other metric sharing the chart. log scale so a wide value range (e.g.
- * wealth from a few hundred to tens of thousands) still fits the plot width
- * instead of squashing most turns into a sliver near one edge. log1p handles
- * a value of 0 safely (wealth/units/fame are always >= 0). */
-function buildScale(turnStats: PlayerTurnStat[], key: ChartMetric['key']) {
+const rawMax = (turnStats: PlayerTurnStat[], key: ChartMetric['key']): number => {
   const values = turnStats.map((s) => s[key]);
-  const min = values.length ? Math.min(...values) : 0;
-  const max = values.length ? Math.max(...values) : 1;
-  const logMin = Math.log1p(min);
-  const logMax = Math.log1p(max);
-  const logRange = logMax - logMin || 1;
-  return (value: number) => {
-    const norm = (Math.log1p(value) - logMin) / logRange;
-    return AXIS_WIDTH + PLOT_MARGIN + norm * (PLOT_WIDTH - PLOT_MARGIN * 2);
-  };
-}
+  return values.length ? Math.max(...values) : 0;
+};
 
 /** One chart: every player's line(s) share the same turn axis (Y, linear,
- * increasing downward), overlaid on one plot so it's easy to compare who was
- * ahead at any given turn. Players are identified by a colored circle in the
- * legend row; when multiple metrics are combined on one chart, line style
- * (solid/dashed) distinguishes them instead. */
+ * increasing downward) AND the same value axis (X, log-scaled). Metrics with
+ * very different natural ranges (wealth in the thousands vs. fame in the
+ * tens) are equalized first: every non-anchor metric is multiplied by
+ * anchorMax/thisMetricMax so its own highest-reached value lines up with the
+ * anchor metric's highest-reached value, before all of them share one log
+ * scale -- otherwise a small-range metric plotted on a shared scale built
+ * from a much larger one would barely move. 'wealth' is the anchor when
+ * present (falls back to the first listed metric otherwise). Players are
+ * identified by a colored circle in the legend row. */
 export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, statEvents, metrics, title }) => {
   const t = useT();
 
@@ -76,7 +69,26 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
   const yForTurn = (turn: number) => TOP_PADDING + turn * ROW_HEIGHT;
   const turnNumbers = Array.from({ length: Math.max(1, maxTurn) }, (_, i) => i + 1);
 
-  const scales = metrics.map((m) => ({ ...m, xForValue: buildScale(turnStats, m.key) }));
+  const anchorKey = metrics.some((m) => m.key === 'wealth') ? 'wealth' : metrics[0].key;
+  const anchorMax = rawMax(turnStats, anchorKey) || 1;
+  const metricsWithCoef = metrics.map((m) => {
+    if (m.key === anchorKey) return { ...m, coef: 1 };
+    const thisMax = rawMax(turnStats, m.key);
+    return { ...m, coef: thisMax > 0 ? anchorMax / thisMax : 1 };
+  });
+
+  const adjustedValues = metricsWithCoef.flatMap((m) => turnStats.map((s) => s[m.key] * m.coef));
+  const scaleMin = adjustedValues.length ? Math.min(...adjustedValues) : 0;
+  const scaleMax = adjustedValues.length ? Math.max(...adjustedValues) : 1;
+  const logMin = Math.log1p(scaleMin);
+  const logMax = Math.log1p(scaleMax);
+  const logRange = logMax - logMin || 1;
+  const xForAdjusted = (adjustedValue: number) => {
+    const norm = (Math.log1p(adjustedValue) - logMin) / logRange;
+    return AXIS_WIDTH + PLOT_MARGIN + norm * (PLOT_WIDTH - PLOT_MARGIN * 2);
+  };
+
+  const scales = metricsWithCoef.map((m) => ({ ...m, xForValue: (value: number) => xForAdjusted(value * m.coef) }));
   // Event markers only need one anchor position -- use the chart's primary
   // (first) metric so a combined chart doesn't draw the same marker twice.
   const primaryScale = scales[0];
@@ -90,7 +102,17 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
           {scales.map((m) => (
             <span key={m.key} className="stats-chart-legend-item">
               <svg width="22" height="10" className="stats-chart-legend-line">
-                <line x1="0" y1="5" x2="22" y2="5" stroke="#ccc" strokeWidth="2" strokeDasharray={m.dash} opacity={m.opacity} />
+                <line
+                  x1="0"
+                  y1="5"
+                  x2="22"
+                  y2="5"
+                  stroke="#ccc"
+                  strokeWidth="2"
+                  strokeDasharray={m.dotted ? '0.1 7' : m.dash}
+                  strokeLinecap={m.dotted ? 'round' : undefined}
+                  opacity={m.opacity}
+                />
               </svg>
               {m.label}
             </span>
@@ -137,7 +159,8 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
                           fill="none"
                           stroke={player.color}
                           strokeWidth={2.5}
-                          strokeDasharray={m.dash}
+                          strokeDasharray={m.dotted ? '0.1 7' : m.dash}
+                          strokeLinecap={m.dotted ? 'round' : undefined}
                           opacity={m.opacity}
                         />
                       )}
