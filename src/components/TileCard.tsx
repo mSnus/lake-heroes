@@ -563,7 +563,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                 }}
               >
                 <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center', gap: '0.1rem' }}>
-                  <div>{isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}</div>
+                  {/* Container gap is 0.1rem; add 1.1rem more so this specific
+                      pair ends up 1.2rem apart, without widening the other gaps. */}
+                  <div style={{ marginRight: '1.1rem' }}>{isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}</div>
                   <div>{Math.round(attackerPower)}</div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
                     <div style={{ fontSize: '0.6em' }}>{attackEmoji}</div>
