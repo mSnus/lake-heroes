@@ -17,7 +17,8 @@ export type StatEventType =
   | 'battle-lost'
   | 'treasure'
   | 'promotion'
-  | 'dragon';
+  | 'dragon'
+  | 'kings-castle';
 
 export interface PlayerStatEvent {
   playerId: number;

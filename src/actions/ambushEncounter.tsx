@@ -2,6 +2,7 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
+import { KNIGHT_FAME } from '../game/constants';
 import { t } from '../i18n';
 
 export function checkAmbushEncounter(
@@ -15,9 +16,15 @@ export function checkAmbushEncounter(
   // No ambushes during the first lap around the board
   if ((player.circles ?? 0) < 1) return false;
 
-  if (player.fame < 3) return false;
-  if (player.armyPower < 5) return false;
+  if (player.fame <= KNIGHT_FAME) return false;
+  if (player.armyPower <= 15) return false;
+
+  // Max 1 per year
+  if ((player.ambushEncounters ?? 0) >= 1) return false;
   if (Math.random() >= ENCOUNTER_CHANCE) return false;
+
+  player.ambushEncounters = (player.ambushEncounters ?? 0) + 1;
+  updateGameState(board);
 
   // The ambushers field 50–70% of the player's units.
   const attackerUnits = Math.max(1, Math.round((0.5 + Math.random() * 0.2) * player.units));

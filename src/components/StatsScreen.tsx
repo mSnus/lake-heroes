@@ -18,6 +18,7 @@ const EVENT_TYPES: StatEventType[] = [
   'treasure',
   'promotion',
   'dragon',
+  'kings-castle',
 ];
 
 const StatsScreen: React.FC<StatsScreenProps> = ({ gameState }) => {

@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { computeKingsGraceReward } from '../game/kingsGrace';
+import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
 
 export function passStart(board: GameState | null, updateGameState: (board: GameState) => void): string {
@@ -12,6 +13,8 @@ export function passStart(board: GameState | null, updateGameState: (board: Game
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
   player.caravanEncounters = 0;
+  player.ambushEncounters = 0;
+  recordStatEvent(board, player, 'kings-castle');
   console.log('Action: pass start for', player.name);
 
   say(t('passStart.spentYearsWandering', { playerName: player.name, circles: player.circles }), 'debug');

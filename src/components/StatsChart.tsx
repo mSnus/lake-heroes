@@ -11,6 +11,7 @@ export const EVENT_EMOJI: Record<StatEventType, string> = {
   treasure: '🪎',
   promotion: '🎖️',
   dragon: '🐉',
+  'kings-castle': '🏰',
 };
 
 export interface ChartMetric {

@@ -35,6 +35,7 @@ export class Player {
   dragonEncounteredLastTurn: boolean;
   caravanEncounters: number;
   caravanEncounteredLastTurn: boolean;
+  ambushEncounters: number;
   isPrisonerOfWar: boolean;
   hasClaimedThisTurn: boolean;
   hasConsideredClaimThisTurn: boolean;
@@ -65,6 +66,7 @@ export class Player {
     this.dragonEncounteredLastTurn = false;
     this.caravanEncounters = 0;
     this.caravanEncounteredLastTurn = false;
+    this.ambushEncounters = 0;
     this.isPrisonerOfWar = false;
     this.hasClaimedThisTurn = false;
     this.hasConsideredClaimThisTurn = false;
