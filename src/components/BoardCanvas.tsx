@@ -23,22 +23,36 @@ interface BoardCanvasProps {
 const ZOOM_SCALE = 1.33;
 const ZOOM_TRANSITION_MS = 600;
 const ZOOM_OUT_PAUSE_MS = 400;
-// .layer-players sits `top: 46px` inside .bg-layer (see Board.css) — baked
-// into the centering math so the camera targets the player marker itself,
-// not the tile's own (slightly higher) anchor point.
-const PLAYER_LAYER_TOP_OFFSET_PX = 46;
+
+// A player marker is anchored this far (in % of the board) toward the
+// tile's upper-right from the tile's own x/y, so even a single occupant
+// never centers directly on top of the tile art. Multiple players sharing
+// a tile then fan out from that anchor in a small non-overlapping grid
+// (see clusterOffset) instead of converging on one spot.
+const PLAYER_ANCHOR_OFFSET_X_PCT = 3;
+const PLAYER_ANCHOR_OFFSET_Y_PCT = -3;
+// Cluster spacing between co-located players' markers, as % of the board.
+const PLAYER_CLUSTER_STEP_PCT = 3.2;
+const PLAYER_CLUSTER_COLUMNS = 2;
+
+/** Small non-overlapping grid offset (in % of the board) for the `index`-th
+ * of `count` players sharing a tile, centered on the anchor point rather
+ * than trailing off to one side. */
+function clusterOffset(index: number, count: number): { dx: number; dy: number } {
+  if (count <= 1) return { dx: 0, dy: 0 };
+  const columns = Math.min(PLAYER_CLUSTER_COLUMNS, count);
+  const col = index % columns;
+  const row = Math.floor(index / columns);
+  const rows = Math.ceil(count / columns);
+  const dx = (col - (columns - 1) / 2) * PLAYER_CLUSTER_STEP_PCT;
+  const dy = (row - (rows - 1) / 2) * PLAYER_CLUSTER_STEP_PCT;
+  return { dx, dy };
+}
 
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState }) => {
   const t = useT();
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
-
-  const offsetX = isMobile ? 10 : 0;
-  const offsetY = isMobile ? 8 : 0;
-
-  const CANVAS_WIDTH = isMobileLayout() ? '100vw' : '100vw';
-  const CANVAS_HEIGHT = isMobileLayout() ? '100vw' : '100vh';
-  const WRAPPER_HEIGHT = isMobileLayout() ? '100vw' : '100vh';
 
   const [mapReady, setMapReady] = React.useState(false);
   const mapUrl = 'assets/map12.jpg';
@@ -102,8 +116,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     const activeTileNumber = board.activePlayer.position % TILE_COUNT;
     const activePos = getTilePosition(activeTileNumber);
-    const localX = ((activePos.x - offsetX) / 100) * layerW;
-    const localY = PLAYER_LAYER_TOP_OFFSET_PX + ((activePos.y - offsetY) / 100) * layerH;
+    const localX = (activePos.x / 100) * layerW;
+    const localY = (activePos.y / 100) * layerH;
 
     let dx = wrapperW / 2 - localX * ZOOM_SCALE;
     let dy = wrapperH / 2 - localY * ZOOM_SCALE;
@@ -118,7 +132,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     return `translate(${dx}px, ${dy}px) scale(${ZOOM_SCALE})`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zoomLevel, board.activePlayer.position, offsetX, offsetY, resizeTick, mapReady]);
+  }, [zoomLevel, board.activePlayer.position, resizeTick, mapReady]);
 
   // Manual zoom-out: double-clicking the map itself (not a tile or the
   // dragon island, which have their own click handlers) resets to 1x even
@@ -180,8 +194,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         key={`tile-${i}`}
         className={tileClass}
         style={{
-          top: pos.y - offsetY + '%',
-          left: pos.x - offsetX + '%',
+          top: pos.y + '%',
+          left: pos.x + '%',
           ...(isMapEditSelected
             ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
             : {}),
@@ -240,22 +254,19 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     const src = getPlayerImageSrc(player.image, player.isKnight);
 
-    let onSameTileCount = 0;
-    board.players.forEach((p, idx) => {
-      if (idx < i && p.position % TILE_COUNT === tileNumber) {
-        onSameTileCount++;
-      }
-    });
-
-    const shiftOffset = onSameTileCount > 0 ? Math.ceil(7 / onSameTileCount) : 0;
+    const sameTilePlayers = board.players
+      .map((p, idx) => ({ p, idx }))
+      .filter(({ p }) => p.position % TILE_COUNT === tileNumber);
+    const indexInCluster = sameTilePlayers.findIndex(({ idx }) => idx === i);
+    const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length);
 
     return (
       <div
         key={`player-${i}`}
         className="player-wrapper"
         style={{
-          top: pos.y - offsetY + '%',
-          left: pos.x - offsetX + shiftOffset + '%',
+          top: pos.y + PLAYER_ANCHOR_OFFSET_Y_PCT + dy + '%',
+          left: pos.x + PLAYER_ANCHOR_OFFSET_X_PCT + dx + '%',
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -278,17 +289,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   // Render nothing until map loaded so BG is first layer and tiles render after it
   if (!mapReady) {
     return (
-      <div
-        style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT, background: '#0000' }}
-        id="layerCanvasPlaceholder"
-      />
+      <div style={{ width: '100%', height: '100%', background: '#0000' }} id="layerCanvasPlaceholder" />
     );
   }
 
   return (
     <div
       className="board-wrapper"
-      style={{ width: CANVAS_WIDTH, height: WRAPPER_HEIGHT }}
       id="layerWrapper"
       ref={wrapperRef}
       onDoubleClick={handleBoardDoubleClick}

@@ -13,7 +13,6 @@
   --toastify-text-color-light: #abab93;
   --body-font-size: 0.85rem;
   --body-font-family: 'Inter, sans-serif';
-  --sprite-size: 96px;
   --sprite-scale: 48%;
   --shield-width: 60px;
 }
@@ -21,7 +20,6 @@
 @media screen and (max-width: 768px) {
   :root {
     --body-font: '11px Inter, sans-serif';
-    --sprite-size: 19vw;
   }
 }
 
@@ -122,6 +120,14 @@ body {
   position: relative;
 }
 
+@media screen and (max-width: 768px) {
+  .board-section {
+    width: 100vw;
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
+}
+
 .side-pane {
   width: 100%;
 }
@@ -136,8 +142,9 @@ body {
   }
 
   .board-section {
-    width: 82vh;
-    height: 100vh;
+    width: min(82vw, 100vh);
+    aspect-ratio: 1 / 1;
+    height: auto;
     flex-shrink: 0;
     position: relative;
     overflow: hidden;

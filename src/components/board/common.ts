@@ -12,7 +12,9 @@ export function isMobileLayout(): boolean {
   return window.matchMedia('(max-width: 768px)').matches;
 }
 
-// Load precomputed tile maps (percent coords relative to board width)
+// Load precomputed tile maps (percent coords relative to the board's square
+// container -- both axes are equivalent since .board-section/.board-wrapper
+// are aspect-ratio-locked to 1:1, see App.css/Board.css)
 import mapSetup from '../../settings/map.json';
 
 type MapSlotPct = {
@@ -23,7 +25,8 @@ type MapSlotPct = {
 
 export const slots: MapSlotPct[] = mapSetup as any;
 
-// Calculate tile position using precomputed percent coords (both axes are percentages of board width)
+// Calculate tile position using precomputed percent coords (both axes are
+// percentages of the board's square container -- no per-axis correction needed)
 export function getTilePosition(tileIndex: number): {
   x: number;
   y: number;

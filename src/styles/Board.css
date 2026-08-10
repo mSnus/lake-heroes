@@ -3,7 +3,25 @@
   display: block;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
   background-color: #2a3c2a;
+  /* Lets descendants (.tile, .tile-sprite via --sprite-size) size themselves
+     with cqi units against this box's own square size, not the viewport --
+     .board-wrapper is always square since it's 100% of the aspect-ratio-
+     locked .board-section (see App.css). */
+  container-type: inline-size;
+  container-name: board;
+  /* was 96px fixed (desktop) / 19vw (mobile, single breakpoint) -- one
+     continuous formula now, relative to this box's own real size, not the
+     viewport. 96/1080 (source tile size / source board image size) ≈ 8.8%. */
+  --sprite-size: 8.8vmin;
+}
+
+@supports (container-type: inline-size) {
+  .board-wrapper {
+    --sprite-size: 8.8cqi;
+  }
 }
 
 .board-bg {
@@ -15,8 +33,9 @@
 
 .bg-layer {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
@@ -41,7 +60,7 @@
 
 .layer-players {
   position: absolute;
-  top: 46px;
+  top: 0;
   left: 0;
   height: 100%;
   width: 100%;
@@ -73,9 +92,16 @@
   overflow: visible;
   pointer-events: auto;
   cursor: pointer;
-  width: 80px;
-  height: 80px;
+  width: 7.4vmin;
+  height: 7.4vmin;
   z-index: 5000;
+}
+
+@supports (container-type: inline-size) {
+  .tile {
+    width: 7.4cqi;
+    height: 7.4cqi;
+  }
 }
 
 .tile-left {
@@ -267,14 +293,14 @@
   border-radius: 4px;
 }
 
-/* Background image */
+/* Background image -- always exactly 100% of the square .bg-layer (itself
+   100% of the aspect-ratio-locked .board-section, see App.css), so it never
+   needs an independent vw/vh formula or a positioning offset. */
 .bg-image {
-  width: 100vw;
-  min-height: 100vw;
   display: block;
-  height: 36.5625vw;
-  position: relative;
-  top: -40px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   filter: brightness(0.9);
 }
 
@@ -310,37 +336,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .tile {
-    width: 40px;
-    height: 40px;
-  }
-
-  .bg-image {
-    height: 100vw;
-    top: 0;
-  }
-
   .tile-title {
     height: 10px;
-  }
-}
-
-@media screen and (min-width: 769px) {
-  .bg-image {
-    width: 100vh;
-    height: 100vh;
-    min-height: 100vh;
-    top: 0;
-    object-fit: cover;
-  }
-
-  .layer-tiles {
-    top: -3.1rem;
-    left: -3.3rem;
-  }
-
-  .layer-players {
-    top: 0;
-    left: -2.5rem;
   }
 }
