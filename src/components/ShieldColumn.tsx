@@ -9,6 +9,7 @@ import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
 import CheatScreen from './CheatScreen';
 import StatsScreen from './StatsScreen';
+import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 
 interface ShieldColumnProps {
@@ -29,6 +30,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const currentLanguage = useLanguage();
   const currentFlag = LANGUAGES.find((l) => l.code === currentLanguage)?.flag ?? '🏳️';
+  const mapEdit = useMapEditStore();
 
   // Covers movement rolls and the Tavern/Sphynx/Treasure dice prompts, since
   // they all funnel through the same diceStore (active && !rolling). Disabled
@@ -96,15 +98,15 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   📜
                 </button>
               </div>
-            </div>
-
-            {/* Left column: language, reload, cheat */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div className="shield-button-container" title={t('common.language')}>
                 <button onClick={cycleLanguage} className="shield-button">
                   {currentFlag}
                 </button>
               </div>
+            </div>
+
+            {/* Left column: reload, cheat, statistics, map edit */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div className="shield-button-container" title={t('shieldColumn.reload')}>
                 <button
                   onClick={() => {
@@ -138,6 +140,22 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   📈
+                </button>
+              </div>
+              <div
+                className="shield-button-container"
+                title={mapEdit.active ? t('shieldColumn.mapEditOn') : t('shieldColumn.mapEditOff')}
+              >
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    if (mapEdit.active) disableMapEditMode();
+                    else enableMapEditMode();
+                  }}
+                  className="shield-button"
+                  style={mapEdit.active ? { filter: 'drop-shadow(0 0 6px #ffe066)' } : undefined}
+                >
+                  🗺️
                 </button>
               </div>
             </div>

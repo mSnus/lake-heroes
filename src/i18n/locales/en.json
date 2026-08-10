@@ -133,7 +133,9 @@
     "endTurn": "End Turn",
     "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost.",
     "cheat": "Cheat",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "mapEditOn": "Map edit: ON (click a tile or player icon to adjust)",
+    "mapEditOff": "Map edit: OFF"
   },
   "kingsCastle": {
     "title": "The King's Castle",

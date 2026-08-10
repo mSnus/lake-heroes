@@ -4,7 +4,7 @@ import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
-import { useMapEditStore, mapEditSelectTile } from '../utils/mapEditStore';
+import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, playerIconOffset } from '../utils/mapEditStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
@@ -32,25 +32,26 @@ const ZOOM_OUT_PAUSE_MS = 400;
 // marker's own CSS transform (.player-wrapper, Board.css) already lifts it
 // up above its anchor point pin-style, so an additional JS-side vertical
 // offset would just push it further off the tile than intended.
-const PLAYER_ANCHOR_OFFSET_X_PCT = 4;
-const PLAYER_ANCHOR_OFFSET_Y_PCT = 0;
-// Cluster spacing between co-located players' markers, as % of the board --
-// scaled with the 150%-bigger player markers (Board.css .player-image) so
-// clustered markers still don't overlap.
-const PLAYER_CLUSTER_STEP_PCT = 12;
+//
+// These are read LIVE from mapEditStore's `playerIconOffset` (not local
+// constants) so the in-browser map-edit tool (enableMapEditMode(), click a
+// player icon) can nudge them and see the result immediately -- the values
+// below are just the fallback/initial numbers, kept in sync with
+// mapEditStore.ts's `playerIconOffset` defaults. Once happy with a value,
+// copy it from the console log back into that file's defaults.
 const PLAYER_CLUSTER_COLUMNS = 2;
 
 /** Small non-overlapping grid offset (in % of the board) for the `index`-th
  * of `count` players sharing a tile, centered on the anchor point rather
  * than trailing off to one side. */
-function clusterOffset(index: number, count: number): { dx: number; dy: number } {
+function clusterOffset(index: number, count: number, stepPct: number): { dx: number; dy: number } {
   if (count <= 1) return { dx: 0, dy: 0 };
   const columns = Math.min(PLAYER_CLUSTER_COLUMNS, count);
   const col = index % columns;
   const row = Math.floor(index / columns);
   const rows = Math.ceil(count / columns);
-  const dx = (col - (columns - 1) / 2) * PLAYER_CLUSTER_STEP_PCT;
-  const dy = (row - (rows - 1) / 2) * PLAYER_CLUSTER_STEP_PCT;
+  const dx = (col - (columns - 1) / 2) * stepPct;
+  const dy = (row - (rows - 1) / 2) * stepPct;
   return { dx, dy };
 }
 
@@ -185,7 +186,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       gameEvent('displayTile', tile.fogged() ? {} : tile);
     };
 
-    const isMapEditSelected = mapEdit.active && mapEdit.selectedIndex === i;
+    const isMapEditSelected =
+      mapEdit.active && mapEdit.target?.kind === 'tile' && mapEdit.target.index === i;
 
     const isFogged = tile.fogged();
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
@@ -263,18 +265,27 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       .map((p, idx) => ({ p, idx }))
       .filter(({ p }) => p.position % TILE_COUNT === tileNumber);
     const indexInCluster = sameTilePlayers.findIndex(({ idx }) => idx === i);
-    const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length);
+    const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length, playerIconOffset.clusterStepPct);
+
+    const isPlayerIconEditSelected = mapEdit.active && mapEdit.target?.kind === 'player-icon';
 
     return (
       <div
         key={`player-${i}`}
         className="player-wrapper"
         style={{
-          top: pos.y + PLAYER_ANCHOR_OFFSET_Y_PCT + dy + '%',
-          left: pos.x + PLAYER_ANCHOR_OFFSET_X_PCT + dx + '%',
+          top: pos.y + playerIconOffset.anchorYPct + dy + '%',
+          left: pos.x + playerIconOffset.anchorXPct + dx + '%',
+          ...(isPlayerIconEditSelected
+            ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
+            : {}),
         }}
         onClick={(e) => {
           e.stopPropagation();
+          if (mapEdit.active) {
+            mapEditSelectPlayerIcon();
+            return;
+          }
           gameEvent('displayPlayer', player);
         }}
       >
