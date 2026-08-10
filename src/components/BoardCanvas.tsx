@@ -25,14 +25,19 @@ const ZOOM_TRANSITION_MS = 600;
 const ZOOM_OUT_PAUSE_MS = 400;
 
 // A player marker is anchored this far (in % of the board) toward the
-// tile's upper-right from the tile's own x/y, so even a single occupant
-// never centers directly on top of the tile art. Multiple players sharing
-// a tile then fan out from that anchor in a small non-overlapping grid
-// (see clusterOffset) instead of converging on one spot.
-const PLAYER_ANCHOR_OFFSET_X_PCT = 3;
-const PLAYER_ANCHOR_OFFSET_Y_PCT = -3;
-// Cluster spacing between co-located players' markers, as % of the board.
-const PLAYER_CLUSTER_STEP_PCT = 3.2;
+// tile's right from the tile's own x/y, so even a single occupant never
+// centers directly on top of the tile art. Multiple players sharing a tile
+// then fan out from that anchor in a small non-overlapping grid (see
+// clusterOffset) instead of converging on one spot. Y stays 0 -- the
+// marker's own CSS transform (.player-wrapper, Board.css) already lifts it
+// up above its anchor point pin-style, so an additional JS-side vertical
+// offset would just push it further off the tile than intended.
+const PLAYER_ANCHOR_OFFSET_X_PCT = 4;
+const PLAYER_ANCHOR_OFFSET_Y_PCT = 0;
+// Cluster spacing between co-located players' markers, as % of the board --
+// scaled with the 150%-bigger player markers (Board.css .player-image) so
+// clustered markers still don't overlap.
+const PLAYER_CLUSTER_STEP_PCT = 12;
 const PLAYER_CLUSTER_COLUMNS = 2;
 
 /** Small non-overlapping grid offset (in % of the board) for the `index`-th

@@ -14,6 +14,20 @@
   z-index: 999;
 }
 
+@media (min-width: 769px) {
+  .player-pane {
+    padding-top: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .action-bar .current-player {
+    background-color: white;
+    background: none !important;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+  }
+}
+
 .current-player {
   display: flex;
   font-weight: 600;

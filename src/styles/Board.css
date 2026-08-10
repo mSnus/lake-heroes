@@ -241,10 +241,22 @@
   /* width/height and background color are set inline (DIAMOND_SIZE, owner color) */
 }
 
+/* Player marker sizing, cqi-scaled like .tile/--sprite-size (see
+   .board-wrapper) so it grows/shrinks with the board instead of staying a
+   fixed pixel size while everything else responds. Sized 150% bigger than
+   the original fixed-px baseline (47.6px image / 33px marker circle).
+   Positioning offsets use percentages of the ELEMENT'S OWN box (CSS
+   `transform: translate()` percentages are always self-relative, not
+   container-relative) instead of a hand-converted px/cqi constant, so the
+   "pin" hotspot correction stays correct automatically at any marker size
+   without needing to be recalibrated by hand. */
 .player-wrapper {
   position: absolute;
   z-index: 3;
-  transform: translate(-2px, -46px);
+  /* Anchors the marker's bottom-center to its top/left point, like a map
+     pin -- the pin's tip touches the tile, the body extends up-left from
+     it, regardless of how big the marker itself renders. */
+  transform: translate(-50%, -100%);
   display: flex;
   gap: 6px;
   pointer-events: auto;
@@ -259,23 +271,39 @@
 }
 
 .player-marker {
-  width: 33px;
-  height: 33px;
+  width: 7.6vmin;
+  height: 7.6vmin;
   border-radius: 100%;
   border: 0.125rem solid #fff;
   position: absolute;
-  transform: translate(6px, 14px);
+  /* Same ratio as the old fixed 6px/33px, 14px/33px offsets, but
+     self-relative so it scales with the marker automatically. */
+  transform: translate(18%, 42%);
   z-index: 490;
   /* filter: drop-shadow(0px 0px 6px #fff); */
   /* opacity: 0.8; */
   /* background color is dynamic and set inline */
 }
 
+@supports (container-type: inline-size) {
+  .player-marker {
+    width: 7.6cqi;
+    height: 7.6cqi;
+  }
+}
+
 .player-image {
-  width: 47.6px;
-  min-height: 47.6px;
+  width: 11vmin;
+  min-height: 11vmin;
   z-index: 500;
   filter: drop-shadow(0px 0px 6px #000);
+}
+
+@supports (container-type: inline-size) {
+  .player-image {
+    width: 11cqi;
+    min-height: 11cqi;
+  }
 }
 
 .player-image.current-player {
