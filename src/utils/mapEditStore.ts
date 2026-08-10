@@ -12,8 +12,8 @@ interface MapEditState {
 // place here, then a store emit() forces a re-render that picks up the new
 // values (same live-mutation pattern as `slots` below for tile positions).
 export const playerIconOffset = {
-  anchorXPct: 4,
-  anchorYPct: 0,
+  anchorXPct: 3.5,
+  anchorYPct: 10,
   clusterStepPct: 12,
 };
 
@@ -40,7 +40,7 @@ function logPlayerIconOffset() {
     `🧑 Player icon offset: anchorX=${playerIconOffset.anchorXPct}%, anchorY=${playerIconOffset.anchorYPct}%, clusterStep=${playerIconOffset.clusterStepPct}%`
   );
   console.log(
-    'Copy into BoardCanvas.tsx: PLAYER_ANCHOR_OFFSET_X_PCT / PLAYER_ANCHOR_OFFSET_Y_PCT / PLAYER_CLUSTER_STEP_PCT'
+    "Copy into mapEditStore.ts's `playerIconOffset` defaults (anchorXPct / anchorYPct / clusterStepPct) to make it stick."
   );
 }
 
