@@ -30,11 +30,6 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
-function logPosition(index: number) {
-  const slot = slots[index];
-  console.log(`Tile ${index}: xPct=${slot.xPct.toFixed(4)}, yPct=${slot.yPct.toFixed(4)}`);
-}
-
 function logFullMap() {
   console.log('📋 Full map (copy into map.json):');
   console.log(JSON.stringify(slots, null, 2));
@@ -49,10 +44,12 @@ function logPlayerIconOffset() {
   );
 }
 
-// Holding an arrow key fires keydown far faster than a render/log is useful
-// for. Every keydown still mutates the value immediately (so the final
-// position is always exactly right once you stop pressing), but the visual
-// re-render + console log are coalesced to once per animation frame.
+// Holding an arrow key fires keydown far faster than a render is useful for.
+// Every keydown still mutates the value immediately (so the final position
+// is always exactly right once you stop pressing), but the visual re-render
+// is coalesced to once per animation frame. Console output is intentionally
+// NOT emitted here -- only on Enter/disable, so the console isn't spammed
+// on every nudge.
 let rafScheduled = false;
 function scheduleAnnounce() {
   if (rafScheduled) return;
@@ -60,8 +57,6 @@ function scheduleAnnounce() {
   requestAnimationFrame(() => {
     rafScheduled = false;
     if (!state.target) return;
-    if (state.target.kind === 'tile') logPosition(state.target.index);
-    else logPlayerIconOffset();
     emit();
   });
 }
@@ -144,7 +139,7 @@ export function enableMapEditMode() {
   window.addEventListener('keydown', handleKeyDown);
   emit();
   console.log(
-    '🗺️ Map edit mode ON — click a tile to select it (arrow keys to move, Enter to print+deselect), or click a player icon to adjust the shared offset (arrow keys for X/Y, +/- for cluster spacing, Enter to print+deselect).'
+    '🗺️ Map edit mode ON — click a tile to select it (arrow keys to move, Enter to print+deselect), or click a player icon to adjust the shared offset (arrow keys for X/Y, +/- for cluster spacing, Enter to print+deselect). Nothing is printed to the console until Enter is pressed.'
   );
 }
 
@@ -152,8 +147,6 @@ export function disableMapEditMode() {
   state = { active: false, target: null };
   window.removeEventListener('keydown', handleKeyDown);
   emit();
-  logFullMap();
-  logPlayerIconOffset();
   console.log('🗺️ Map edit mode OFF.');
 }
 
@@ -161,14 +154,12 @@ export function mapEditSelectTile(index: number) {
   if (!state.active) return;
   state = { ...state, target: { kind: 'tile', index } };
   emit();
-  logPosition(index);
 }
 
 export function mapEditSelectPlayerIcon() {
   if (!state.active) return;
   state = { ...state, target: { kind: 'player-icon' } };
   emit();
-  logPlayerIconOffset();
 }
 
 export function isMapEditActive(): boolean {

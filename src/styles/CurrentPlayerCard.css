@@ -41,3 +41,9 @@
 .current-player-card .player-card-name{
   text-shadow: none;
 }
+
+.cpc-is-at {
+  margin-top: -10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}

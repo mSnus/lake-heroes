@@ -5,6 +5,9 @@ import { playerIncome } from '../game/income';
 import { useModal } from '../utils/diceStore';
 import { PlayerCard } from './PlayerCard';
 import { PlayerStats } from './PlayerStats';
+import { TILE_COUNT } from '../game/constants';
+import { gameEvent } from '../utils/events';
+import { useT } from '../i18n';
 import '../styles/CurrentPlayerCard.css';
 
 interface CurrentPlayerCardProps {
@@ -16,6 +19,7 @@ interface CurrentPlayerCardProps {
  * CurrentTile). Listens for the `displayPlayer` event; click the card to close.
  */
 export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState }) => {
+  const t = useT();
   const [player, setPlayer] = useState<Player | null>(null);
   const { active: diceActive } = useModal();
 
@@ -48,10 +52,26 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
     .map((idx) => gameState.tiles[idx])
     .filter(Boolean);
 
+  const currentTile = gameState.tiles[player.position % TILE_COUNT];
+
   return (
     <div className="current-player-card-wrapper game-modal-border" onClick={() => setPlayer(null)}>
       <div className="current-player-card">
         <PlayerCard player={player} />
+        {currentTile && (
+          <div className="cpc-is-at">
+            {t('currentPlayer.isAt')}{' '}
+            <span
+              style={{ color: currentTile.groupTextColor, cursor: 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                gameEvent('displayTile', currentTile);
+              }}
+            >
+              {currentTile.name}
+            </span>
+          </div>
+        )}
         <PlayerStats player={player} income={playerIncome(gameState, player)} />
         {ownedTiles.length > 0 && (
           <div className="cpc-owned-tiles">
