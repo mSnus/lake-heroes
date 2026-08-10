@@ -14,13 +14,14 @@
   container-name: board;
   /* was 96px fixed (desktop) / 19vw (mobile, single breakpoint) -- one
      continuous formula now, relative to this box's own real size, not the
-     viewport. 96/1080 (source tile size / source board image size) ≈ 8.8%. */
-  --sprite-size: 8.8vmin;
+     viewport. 96/1080 (source tile size / source board image size) ≈ 8.8%,
+     doubled per request so tiles/sprites read larger on the map. */
+  --sprite-size: 17.6vmin;
 }
 
 @supports (container-type: inline-size) {
   .board-wrapper {
-    --sprite-size: 8.8cqi;
+    --sprite-size: 17.6cqi;
   }
 }
 
@@ -92,15 +93,15 @@
   overflow: visible;
   pointer-events: auto;
   cursor: pointer;
-  width: 7.4vmin;
-  height: 7.4vmin;
+  width: 14.8vmin;
+  height: 14.8vmin;
   z-index: 5000;
 }
 
 @supports (container-type: inline-size) {
   .tile {
-    width: 7.4cqi;
-    height: 7.4cqi;
+    width: 14.8cqi;
+    height: 14.8cqi;
   }
 }
 
