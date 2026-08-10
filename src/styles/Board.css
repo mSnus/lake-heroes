@@ -125,16 +125,35 @@
   gap: 12px;
 }
 
-.tile-left .tile-content {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
+/* Edge tiles (textPos left/right) show the label beside the sprite instead
+   of below it. The label is taken out of flow (position: absolute) here
+   instead of sitting in the same flex row as the sprite -- in a shared row,
+   the pair is centered on the tile's anchor as a unit, so a longer/shorter
+   label name shifts the sprite itself off-anchor by a different amount per
+   tile. Keeping only the sprite in flow means it always renders dead-center
+   on the tile's actual xPct/yPct, regardless of label text length. */
+.tile-left .tile-content,
+.tile-right .tile-content {
+  position: relative;
 }
 
-.tile-right .tile-content {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 16px;
+.tile-left .tile-title,
+.tile-right .tile-title {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  margin: 0;
+}
+
+.tile-left .tile-title {
+  right: 100%;
+  margin-right: 8px;
+}
+
+.tile-right .tile-title {
+  left: 100%;
+  margin-left: 8px;
 }
 
 .tile-sprite {
@@ -214,18 +233,6 @@
   margin-top: 4px;
   margin-bottom: -16px;
   opacity: 0.8;
-}
-
-.tile-left .tile-title {
-  margin-right: -23px;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.tile-right .tile-title {
-  margin-left: -23px;
-  margin-top: 0;
-  margin-bottom: 0;
 }
 
 /* Diamonds (ownership markers) */
