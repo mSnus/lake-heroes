@@ -204,7 +204,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderFormation: FormationSpec | undefined = isCaravan
     ? { kind: 'columns' } // caravan guards: columns of maximum height
     : isDragon
-      ? undefined // no formation spec given for the dragon — default square block
+      ? { kind: 'dragon' } // the dragon's fixed 50-unit coiled-dragon silhouette
       : isPlayerBattle
         ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
         : isAmbush

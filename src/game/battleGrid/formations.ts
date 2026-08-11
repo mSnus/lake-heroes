@@ -9,7 +9,7 @@ interface PlacedCell extends LocalCell {
   kind: UnitKind;
 }
 
-export type FormationKind = 'square' | 'triangle' | 'columns' | 'grouped';
+export type FormationKind = 'square' | 'triangle' | 'columns' | 'grouped' | 'dragon';
 
 export interface FormationSpec {
   kind: FormationKind;
@@ -97,6 +97,65 @@ const SHAPES: Record<number, LocalCell[]> = {
     { col: 2, row: 2 },
   ],
 };
+
+/** The dragon's fixed 50-unit (DRAGON_UNITS) silhouette — a coiled dragon
+ * shape, hand-derived from a reference pixel-art dragon by downsampling to
+ * fit the battlefield and landing on exactly 50 filled cells, then
+ * hand-symmetrized left-right. Only ever used for the dragon fight, whose
+ * defender count never varies, so unlike every other formation this one is
+ * a single fixed shape rather than a size-driven lookup/split. */
+const DRAGON_SHAPE: LocalCell[] = [
+  { col: 3, row: 0 },
+  { col: 5, row: 0 },
+  { col: 2, row: 1 },
+  { col: 3, row: 1 },
+  { col: 4, row: 1 },
+  { col: 5, row: 1 },
+  { col: 6, row: 1 },
+  { col: 2, row: 2 },
+  { col: 3, row: 2 },
+  { col: 4, row: 2 },
+  { col: 5, row: 2 },
+  { col: 6, row: 2 },
+  { col: 2, row: 3 },
+  { col: 3, row: 3 },
+  { col: 4, row: 3 },
+  { col: 5, row: 3 },
+  { col: 6, row: 3 },
+  { col: 1, row: 4 },
+  { col: 2, row: 4 },
+  { col: 3, row: 4 },
+  { col: 4, row: 4 },
+  { col: 5, row: 4 },
+  { col: 6, row: 4 },
+  { col: 7, row: 4 },
+  { col: 2, row: 5 },
+  { col: 3, row: 5 },
+  { col: 4, row: 5 },
+  { col: 5, row: 5 },
+  { col: 6, row: 5 },
+  { col: 2, row: 6 },
+  { col: 3, row: 6 },
+  { col: 4, row: 6 },
+  { col: 5, row: 6 },
+  { col: 6, row: 6 },
+  { col: 1, row: 7 },
+  { col: 2, row: 7 },
+  { col: 3, row: 7 },
+  { col: 4, row: 7 },
+  { col: 5, row: 7 },
+  { col: 6, row: 7 },
+  { col: 7, row: 7 },
+  { col: 1, row: 8 },
+  { col: 2, row: 8 },
+  { col: 3, row: 8 },
+  { col: 4, row: 8 },
+  { col: 5, row: 8 },
+  { col: 6, row: 8 },
+  { col: 7, row: 8 },
+  { col: 4, row: 9 },
+  { col: 4, row: 10 },
+];
 
 /** Gap (empty rows/cols) left between adjacent sub-formations, whether
  * stacking >10-count chunks or separating tower/squad clusters. */
@@ -348,6 +407,12 @@ export function placeFormation(
       break;
     case 'grouped':
       placed = layoutGroup({ militia, riders }, formation.groupCount);
+      break;
+    case 'dragon':
+      // DRAGON_UNITS (50) never varies, so this is a single fixed shape,
+      // not a size-driven layout — every cell is a rider, matching the
+      // dragon's all-rider composition.
+      placed = DRAGON_SHAPE.map((c) => ({ ...c, kind: 'rider' as UnitKind }));
       break;
     default:
       return; // 'square' stays placement.ts's job
