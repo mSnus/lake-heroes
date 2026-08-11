@@ -105,16 +105,6 @@
   }
 }
 
-.tile-left {
-  margin-left: -40px;
-  margin-top: 6px;
-}
-
-.tile-right {
-  margin-left: 40px;
-  margin-top: 6px;
-}
-
 .tile-content {
   padding: 4px;
   display: flex;
@@ -131,10 +121,24 @@
    the pair is centered on the tile's anchor as a unit, so a longer/shorter
    label name shifts the sprite itself off-anchor by a different amount per
    tile. Keeping only the sprite in flow means it always renders dead-center
-   on the tile's actual xPct/yPct, regardless of label text length. */
+   on the tile's actual xPct/yPct, regardless of label text length.
+   The small cosmetic nudge (room for the label, staggered rows) lives here
+   too -- on `.tile-content`, not `.tile` itself. `.tile` is the element
+   positioned at the tile's real xPct/yPct (the same coordinates player
+   icons render from), so it must stay exactly on-anchor; only the visual
+   content inside it shifts. */
 .tile-left .tile-content,
 .tile-right .tile-content {
   position: relative;
+  margin-top: 6px;
+}
+
+.tile-left .tile-content {
+  margin-left: -40px;
+}
+
+.tile-right .tile-content {
+  margin-left: 40px;
 }
 
 .tile-left .tile-title,

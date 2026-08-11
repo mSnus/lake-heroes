@@ -14,7 +14,7 @@ interface MapEditState {
 export const playerIconOffset = {
   anchorXPct: 3.5,
   anchorYPct: 10,
-  clusterStepPct: 12,
+  clusterStepPct: 8,
 };
 
 let state: MapEditState = { active: false, target: null };
