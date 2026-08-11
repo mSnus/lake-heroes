@@ -16,6 +16,7 @@ const TREASURE_SIZE_MULTIPLIERS: Record<TreasureSize, number> = {
 };
 
 const ARTIFACT_CHANCE = 0.25; // 25% chance to find an artifact
+const MAX_ROLL = 6; // rollDice()'s upper bound — the best possible die result
 
 // 0-60 small, 60-85 medium, 85-100 large
 function rollTreasureSize(): TreasureSize {
@@ -34,13 +35,19 @@ export function handleTreasureBox(
   console.log('Action: treasure box');
 
   const player = board.activePlayer;
-  const size = rollTreasureSize();
-  const sizeLabel = t(`treasureBox.size.${size}`);
-
   recordStatEvent(board, player, 'treasure');
 
-  const foundArtifact =
-    Math.random() < ARTIFACT_CHANCE ? pickRandomUnownedArtifact(board) : null;
+  const wantsArtifact = Math.random() < ARTIFACT_CHANCE;
+  const foundArtifact = wantsArtifact ? pickRandomUnownedArtifact(board, player) : null;
+
+  // Every artifact this player could actually receive is already spoken
+  // for (globally exhausted, or the Blade/Axe exclusivity rule blocks the
+  // only one left) — compensate with the best possible chest instead of
+  // falling back to a normal roll.
+  const exhausted = wantsArtifact && !foundArtifact;
+  const size: TreasureSize = exhausted ? 'large' : rollTreasureSize();
+  const effectiveRoll = exhausted ? MAX_ROLL : roll;
+  const sizeLabel = t(`treasureBox.size.${size}`);
 
   if (foundArtifact) {
     player.artifacts.push(foundArtifact.id);
@@ -87,13 +94,13 @@ export function handleTreasureBox(
         : MULTIPLIER_CIRCLES_START;
 
   const sizeMultiplier = TREASURE_SIZE_MULTIPLIERS[size];
-  const goldReward = Math.round(roll * TREASURE_BOX_MULTIPLIER * circleMultiplier * sizeMultiplier);
+  const goldReward = Math.round(effectiveRoll * TREASURE_BOX_MULTIPLIER * circleMultiplier * sizeMultiplier);
 
   player.gold += goldReward;
 
   updateGameState(board);
   say(
-    t('treasureBox.foundGold', { playerName: player.name, size: sizeLabel, roll, gold: goldReward }),
+    t('treasureBox.foundGold', { playerName: player.name, size: sizeLabel, roll: effectiveRoll, gold: goldReward }),
     'success'
   );
 

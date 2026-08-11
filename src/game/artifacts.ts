@@ -45,10 +45,18 @@ export function hasArtifact(player: Player, id: string): boolean {
   return player.artifacts.includes(id);
 }
 
-/** Picks a random artifact no player currently owns, or null if none remain. */
-export function pickRandomUnownedArtifact(board: GameState): Artifact | null {
+/** Broken Blade and Dwemer Axe both grant a battle roll bonus and are
+ * balanced against owning just one — a player who already has either one
+ * must never also receive the other (see pickRandomUnownedArtifact). */
+const EXCLUSIVE_PAIR = ['broken-blade', 'dwemer-axe'];
+
+/** Picks a random artifact no player currently owns and that `receiver`
+ * is actually eligible for, or null if none remain. */
+export function pickRandomUnownedArtifact(board: GameState, receiver: Player): Artifact | null {
   const ownedIds = new Set(board.players.flatMap((p) => p.artifacts));
-  const available = RAW_ARTIFACTS.filter((a) => !ownedIds.has(a.id));
+  let available = RAW_ARTIFACTS.filter((a) => !ownedIds.has(a.id));
+  const ownsExclusive = EXCLUSIVE_PAIR.some((id) => hasArtifact(receiver, id));
+  if (ownsExclusive) available = available.filter((a) => !EXCLUSIVE_PAIR.includes(a.id));
   if (available.length === 0) return null;
   return translate(available[Math.floor(Math.random() * available.length)]);
 }
@@ -56,7 +64,7 @@ export function pickRandomUnownedArtifact(board: GameState): Artifact | null {
 /**
  * Battle dice bonus from owned artifacts.
  * Broken Blade: +2 vs the Dragon, +1 in every non-brawl battle (additive with the +2). No bonus in brawl mode.
- * Dwemer Axe: +1 vs the Dragon, +1 in brawl-mode battles.
+ * Dwemer Axe: +2 vs the Dragon, +1 in every battle (additive with the +2).
  */
 export function getArtifactRollBonus(
   player: Player,
@@ -68,8 +76,8 @@ export function getArtifactRollBonus(
     if (opts.isDragon) bonus += 2;
   }
   if (hasArtifact(player, 'dwemer-axe')) {
-    if (opts.isDragon) bonus += 1;
-    if (opts.isBrawl) bonus += 1;
+    bonus += 1;
+    if (opts.isDragon) bonus += 2;
   }
   return bonus;
 }
@@ -93,9 +101,9 @@ export function getArtifactRollBonusBreakdown(
     if (artifact) breakdown.push({ artifact, bonus });
   }
   if (hasArtifact(player, 'dwemer-axe')) {
-    const bonus = (opts.isDragon ? 1 : 0) + (opts.isBrawl ? 1 : 0);
+    const bonus = 1 + (opts.isDragon ? 2 : 0);
     const artifact = getArtifact('dwemer-axe');
-    if (artifact && bonus > 0) breakdown.push({ artifact, bonus });
+    if (artifact) breakdown.push({ artifact, bonus });
   }
   return breakdown;
 }
