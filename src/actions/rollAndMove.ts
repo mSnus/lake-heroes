@@ -139,6 +139,12 @@ export async function rollAndMove(
       afterMoveLogic(board, updateGameState);
     };
 
+    // Knighthood is granted once the move has actually finished (token has
+    // landed) but before the tile's own screen — most importantly the King's
+    // Castle screen itself, on a turn that lands exactly there — so the
+    // promotion always reads as "you arrived, and by the way you're a
+    // Knight now" rather than interrupting the move mid-animation.
+    if (checkKnightPromotion(board, updateGameState, continueTileLogic, willCrossStart)) return;
     continueTileLogic();
   };
 
@@ -146,7 +152,6 @@ export async function rollAndMove(
   // Phase resets to before-move so encounter screens don't show rolling UI.
   gameEvent('setPhase', 'before-move');
   const continueFn = () => { proceedWithMove().catch(console.error); };
-  if (checkKnightPromotion(board, updateGameState, continueFn, willCrossStart)) return;
   if (checkDragonEncounter(board, updateGameState, continueFn)) return;
   if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
   if (checkAmbushEncounter(board, updateGameState, continueFn)) return;
