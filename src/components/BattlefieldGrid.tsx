@@ -27,6 +27,7 @@ const UNIT_EMOJI: Record<string, string> = {
   'attacker-militia': '🧍',
   'defender-rider': '🐎',
   'defender-militia': '🧍',
+  'defender-dragon': '🐉',
 };
 
 export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({

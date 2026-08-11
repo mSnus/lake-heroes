@@ -8,6 +8,9 @@ import {
   RIDER_HP,
   RIDER_DMG_MIN,
   RIDER_DMG_MAX,
+  DRAGON_HP,
+  DRAGON_DMG_MIN,
+  DRAGON_DMG_MAX,
 } from '../constants';
 import { placeArmy } from './placement';
 import { FormationSpec, placeFormation } from './formations';
@@ -68,11 +71,17 @@ function neighborOffsetsFor(row: number): Cell[] {
 }
 
 function hpFor(kind: UnitKind): number {
+  if (kind === 'dragon') return DRAGON_HP;
   return kind === 'rider' ? RIDER_HP : MILITIA_HP;
 }
 
 function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: () => number): number {
-  const [min, max] = kind === 'rider' ? [RIDER_DMG_MIN, RIDER_DMG_MAX] : [MILITIA_DMG_MIN, MILITIA_DMG_MAX];
+  const [min, max] =
+    kind === 'dragon'
+      ? [DRAGON_DMG_MIN, DRAGON_DMG_MAX]
+      : kind === 'rider'
+        ? [RIDER_DMG_MIN, RIDER_DMG_MAX]
+        : [MILITIA_DMG_MIN, MILITIA_DMG_MAX];
   const base = rollInRange(min, max, rng);
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
 }
@@ -97,6 +106,10 @@ export function createBattle(
   // riders end up in the front rows — closest to the enemy.
   const buildSide = (side: BattleSide, comp: { militia: number; riders: number; formation?: FormationSpec }) => {
     const sideUnits: GridUnit[] = [];
+    // The dragon fight's defender is its own unit kind (own HP/damage), not
+    // a rider — its full DRAGON_UNITS headcount arrives via `riders` (see
+    // BattleScreen.tsx's composition for isDragon), militia always 0.
+    const isDragonSide = comp.formation?.kind === 'dragon';
     for (let i = 0; i < comp.militia; i++) {
       sideUnits.push({
         id: `${side}-${stableIndex}`,
@@ -110,12 +123,13 @@ export function createBattle(
       });
     }
     for (let i = 0; i < comp.riders; i++) {
+      const kind: UnitKind = isDragonSide ? 'dragon' : 'rider';
       sideUnits.push({
         id: `${side}-${stableIndex}`,
         side,
-        kind: 'rider',
-        hp: hpFor('rider'),
-        maxHp: hpFor('rider'),
+        kind,
+        hp: hpFor(kind),
+        maxHp: hpFor(kind),
         col: 0,
         row: 0,
         stableIndex: stableIndex++,

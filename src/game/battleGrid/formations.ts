@@ -225,18 +225,13 @@ function boundingBox(cells: LocalCell[]): { width: number; height: number } {
   return { width: maxCol + 1, height: maxRow + 1 };
 }
 
-/** Cells of a single ≤10-unit shape, closest to the shape's own centroid
- * first — used to seat riders in the "elite" central cells and militia in
- * the outer ones, since these compact formations have no obvious
- * front/back the way a marching column does. */
-function orderByCentrality(cells: LocalCell[]): LocalCell[] {
-  const cx = cells.reduce((s, c) => s + c.col, 0) / cells.length;
-  const cy = cells.reduce((s, c) => s + c.row, 0) / cells.length;
-  return [...cells].sort((a, b) => {
-    const da = (a.col - cx) ** 2 + (a.row - cy) ** 2;
-    const db = (b.col - cx) ** 2 + (b.row - cy) ** 2;
-    return da - db;
-  });
+/** Cells of a single shape, front edge first — every shape here is
+ * authored with local col 0 as its forward edge (see placeFormation's
+ * per-side mirroring), so sorting by ascending col puts the cells closest
+ * to the enemy first. Used to seat riders on that front edge (they attack
+ * first) and militia behind them. */
+function orderByFrontness(cells: LocalCell[]): LocalCell[] {
+  return [...cells].sort((a, b) => a.col - b.col || a.row - b.row);
 }
 
 /**
@@ -312,7 +307,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
   if (total <= 0) return [];
 
   if (!forcedGroupCount && total <= 10) {
-    const ordered = orderByCentrality(SHAPES[total]);
+    const ordered = orderByFrontness(SHAPES[total]);
     return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
   }
 
@@ -352,7 +347,7 @@ function triangleLayout(comp: { militia: number; riders: number }): PlacedCell[]
     col++;
     width += 2;
   }
-  const ordered = orderByCentrality(cells);
+  const ordered = orderByFrontness(cells);
   return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
 }
 
@@ -410,9 +405,10 @@ export function placeFormation(
       break;
     case 'dragon':
       // DRAGON_UNITS (50) never varies, so this is a single fixed shape,
-      // not a size-driven layout — every cell is a rider, matching the
-      // dragon's all-rider composition.
-      placed = DRAGON_SHAPE.map((c) => ({ ...c, kind: 'rider' as UnitKind }));
+      // not a size-driven layout — every cell is the dragon's own kind
+      // (createBattle builds these units as 'dragon', not 'rider', for
+      // this formation — see engine.ts).
+      placed = DRAGON_SHAPE.map((c) => ({ ...c, kind: 'dragon' as UnitKind }));
       break;
     default:
       return; // 'square' stays placement.ts's job
@@ -433,19 +429,18 @@ export function placeFormation(
   // its front points the right way) extend inward from there.
   const startCol = side === 'attacker' ? 0 : Math.max(0, cols - box.width);
 
-  const riderCells = placed.filter((c) => c.kind === 'rider');
-  const militiaCells = placed.filter((c) => c.kind === 'militia');
-  const riderUnits = units.filter((u) => u.kind === 'rider');
-  const militiaUnits = units.filter((u) => u.kind === 'militia');
-
-  riderUnits.forEach((unit, i) => {
-    const c = riderCells[i];
-    unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col));
-    unit.row = Math.max(0, Math.min(rows - 1, startRow + c.row));
-  });
-  militiaUnits.forEach((unit, i) => {
-    const c = militiaCells[i];
-    unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col));
-    unit.row = Math.max(0, Math.min(rows - 1, startRow + c.row));
-  });
+  // Zip cells to units per kind (not just militia/rider — the dragon
+  // formation's cells are all kind 'dragon'), matching whatever kinds are
+  // actually present.
+  const kinds = Array.from(new Set<UnitKind>([...placed.map((c) => c.kind), ...units.map((u) => u.kind)]));
+  for (const kind of kinds) {
+    const cellsOfKind = placed.filter((c) => c.kind === kind);
+    const unitsOfKind = units.filter((u) => u.kind === kind);
+    unitsOfKind.forEach((unit, i) => {
+      const c = cellsOfKind[i];
+      if (!c) return;
+      unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col));
+      unit.row = Math.max(0, Math.min(rows - 1, startRow + c.row));
+    });
+  }
 }
