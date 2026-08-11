@@ -110,17 +110,35 @@ function nearestEnemyDistance(u: GridUnit, living: GridUnit[]): number {
   return best;
 }
 
+// Hard cap on how many cells a single unit's pathfind explores. Without one,
+// a unit whose target is fully surrounded (every adjacent cell already
+// occupied — a common state once a small defending force is swarmed by a
+// much larger attacker) would have BFS search arbitrarily far to find *some*
+// unclaimed cell adjacent to that exact target, which can mean circling
+// almost all the way around the enemy cluster to approach from the empty
+// far side — and the first step of that route can point sharply away from
+// the enemy, reading as the unit "running away". Capping the search makes
+// a saturated target behave the way it should: the unit queues up as close
+// as it can get and waits its turn, instead of trekking around the world.
+const PATHFIND_NODE_BUDGET = 96;
+
 /**
- * Real shortest-path first step from `start` toward any cell adjacent to
- * `target`, via breadth-first search over the 8-directional grid — not a
- * greedy single-step heuristic. A unit boxed in behind a wide obstacle (a
- * wall of friendly/enemy units several cells thick, say) needs to route
- * *around* it; picking whichever single neighbor cell looks closest to the
- * target by raw distance can walk straight into a dead end and get stuck
- * oscillating against the obstacle forever, since it has no visibility past
- * one step. BFS finds the actual shortest walkable route and this returns
- * only its first step — the rest is recomputed fresh next turn anyway,
- * since the board keeps changing.
+ * Real shortest-path first step from `start` toward `target`, via
+ * breadth-first search over the 8-directional grid — not a greedy
+ * single-step heuristic. A unit boxed in behind a wide obstacle (a wall of
+ * friendly/enemy units several cells thick, say) needs to route *around*
+ * it; picking whichever single neighbor cell looks closest to the target by
+ * raw distance can walk straight into a dead end and get stuck oscillating
+ * against the obstacle forever, since it has no visibility past one step.
+ *
+ * The ideal goal is a cell adjacent to `target`, reached exactly (returned
+ * immediately, no budget cap applies). But if that's unreachable within the
+ * search budget — most commonly because every cell around the target is
+ * already occupied/claimed — this instead returns a step toward whichever
+ * reachable cell got closest to the target, so the unit still advances
+ * sensibly (queuing up near a crowded fight) rather than standing still or
+ * taking a wild detour. Only the first step is ever used — the rest is
+ * recomputed fresh next turn anyway, since the board keeps changing.
  */
 function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, blocked: Set<string>): Cell | undefined {
   const targetKey = `${target.col},${target.row}`;
@@ -128,6 +146,20 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
   // Each queue entry remembers which first step from `start` led to it, so
   // the moment BFS reaches adjacency we know which immediate move to make.
   const queue: { cell: Cell; firstStep: Cell }[] = [];
+
+  let bestFirstStep: Cell | undefined;
+  let bestDist = chebyshev(start, target);
+
+  const consider = (c: Cell, firstStep: Cell): Cell | undefined => {
+    const d = chebyshev(c, target);
+    if (d === 1) return firstStep;
+    if (d < bestDist) {
+      bestDist = d;
+      bestFirstStep = firstStep;
+    }
+    queue.push({ cell: c, firstStep });
+    return undefined;
+  };
 
   for (const off of NEIGHBOR_OFFSETS) {
     const c = { col: start.col + off.col, row: start.row + off.row };
@@ -141,12 +173,12 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
     // next to the enemy would get returned as a "valid" destination and
     // two units could end up sharing it.
     if (blocked.has(key)) continue;
-    if (chebyshev(c, target) === 1) return c;
-    queue.push({ cell: c, firstStep: c });
+    const hit = consider(c, c);
+    if (hit) return hit;
   }
 
   let qi = 0;
-  while (qi < queue.length) {
+  while (qi < queue.length && visited.size < PATHFIND_NODE_BUDGET) {
     const { cell, firstStep } = queue[qi++];
     for (const off of NEIGHBOR_OFFSETS) {
       const c = { col: cell.col + off.col, row: cell.row + off.row };
@@ -155,12 +187,12 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
       if (visited.has(key)) continue;
       visited.add(key);
       if (blocked.has(key)) continue;
-      if (chebyshev(c, target) === 1) return firstStep;
-      queue.push({ cell: c, firstStep });
+      const hit = consider(c, firstStep);
+      if (hit) return hit;
     }
   }
 
-  return undefined; // no walkable route to the target's vicinity at all
+  return bestFirstStep; // best progress found within budget, if any
 }
 
 /**
