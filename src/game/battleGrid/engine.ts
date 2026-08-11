@@ -131,9 +131,11 @@ function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefin
 /**
  * Resolve one turn: an all-at-once combat batch against turn-start positions
  * (threat-score target selection needs a stable snapshot), followed by a
- * single sequential movement pass for non-engaged units only (interleaved
- * plan+execute, so a unit that loses a cell-occupancy race re-evaluates
- * against the next mover's already-updated positions).
+ * movement phase for non-engaged units only. Movement is planned against a
+ * shadow map before any unit actually moves — a mover's current cell is
+ * never an obstacle for another mover planning its own step, since it's
+ * assumed to vacate this turn regardless of priority order — then all
+ * planned moves are applied together (see the movement section below).
  */
 export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): TurnResult {
   const rng = opts.rng ?? Math.random;
@@ -229,11 +231,30 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
   let alive = living.filter((u) => u.hp > 0);
 
-  // ── Steps 4/5: movement, non-engaged units only, single interleaved pass ──
-  const occupancy = new Map<string, string>(); // "col,row" -> unitId
-  for (const u of alive) occupancy.set(`${u.col},${u.row}`, u.id);
-
+  // ── Steps 4/5: movement, non-engaged units only, planned against a
+  // "shadow map" rather than executed sequentially. A cell is only ever a
+  // real obstacle if an engaged unit (guaranteed to stay put) occupies it —
+  // a mover's own current cell is never treated as blocking, since it's
+  // itself vacating this turn, regardless of where in priority order it
+  // sits relative to whoever wants to step into it. Destinations are still
+  // claimed in priority order (closest-to-enemy first) so two movers can't
+  // both plan into the same free cell, but a lower-priority unit is no
+  // longer blocked by a higher-priority unit simply not having moved yet.
+  // (Known simplification: if a mover that another unit planned around ends
+  // up unable to move itself — fully boxed in — both units can end up
+  // sharing a cell. Accepted as a rare edge case of planning against
+  // intent rather than sequential execution.)
   const movers = priorityOrder.filter((u) => attackerCount(u) === 0 && alive.some((a) => a.id === u.id));
+  const moverIds = new Set(movers.map((m) => m.id));
+
+  const staticOccupancy = new Map<string, string>(); // cells held by units that never move this turn
+  for (const u of alive) {
+    if (!moverIds.has(u.id)) staticOccupancy.set(`${u.col},${u.row}`, u.id);
+  }
+
+  const claimedDest = new Map<string, string>(); // "col,row" -> claiming unitId
+  const plannedMove = new Map<string, Cell>(); // unitId -> destination
+
   for (const mover of movers) {
     const unit = alive.find((u) => u.id === mover.id)!;
     const target = nearestLivingEnemy(unit, alive);
@@ -252,23 +273,33 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
         return aPrimary - bPrimary;
       });
 
-    const dest = candidates.find((c) => !occupancy.has(`${c.col},${c.row}`));
+    const dest = candidates.find((c) => {
+      const key = `${c.col},${c.row}`;
+      return !staticOccupancy.has(key) && !claimedDest.has(key);
+    });
+
     if (dest) {
-      occupancy.delete(`${unit.col},${unit.row}`);
-      occupancy.set(`${dest.col},${dest.row}`, unit.id);
-      events.push({
-        type: 'move',
-        unitId: unit.id,
-        side: unit.side,
-        kind: unit.kind,
-        from: { col: unit.col, row: unit.row },
-        to: { col: dest.col, row: dest.row },
-      });
-      unit.col = dest.col;
-      unit.row = dest.row;
+      claimedDest.set(`${dest.col},${dest.row}`, unit.id);
+      plannedMove.set(unit.id, dest);
     } else {
       events.push({ type: 'skip', unitId: unit.id, side: unit.side, kind: unit.kind });
     }
+  }
+
+  for (const mover of movers) {
+    const dest = plannedMove.get(mover.id);
+    if (!dest) continue;
+    const unit = alive.find((u) => u.id === mover.id)!;
+    events.push({
+      type: 'move',
+      unitId: unit.id,
+      side: unit.side,
+      kind: unit.kind,
+      from: { col: unit.col, row: unit.row },
+      to: { col: dest.col, row: dest.row },
+    });
+    unit.col = dest.col;
+    unit.row = dest.row;
   }
 
   alive = alive.map((u) => u);
