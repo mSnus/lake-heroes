@@ -10,6 +10,7 @@ import {
   RIDER_DMG_MAX,
 } from '../constants';
 import { placeArmy } from './placement';
+import { FormationSpec, placeFormation } from './formations';
 import { BattleSide, GridBattleState, GridUnit, StepTurnOptions, TurnEvent, TurnResult, UnitKind } from './types';
 
 interface Cell {
@@ -76,11 +77,15 @@ function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: ()
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
 }
 
-/** Build a fresh battle, both armies placed on opposite long edges, riders
- * filling the front rows (closest to the enemy) and militia the back. */
+/** Build a fresh battle, both armies placed on opposite long edges. With no
+ * formation specified, riders fill the front rows (closest to the enemy)
+ * and militia the back, in a square-ish block (see placement.ts). A side
+ * with a `formation` uses one of the shaped layouts instead — triangle
+ * (ambushers), columns (caravan guards), or grouped (towers/squads) — see
+ * formations.ts. */
 export function createBattle(
-  attacker: { militia: number; riders: number },
-  defender: { militia: number; riders: number },
+  attacker: { militia: number; riders: number; formation?: FormationSpec },
+  defender: { militia: number; riders: number; formation?: FormationSpec },
   cols: number = BATTLEFIELD_COLS,
   rows: number = BATTLEFIELD_ROWS
 ): GridBattleState {
@@ -90,7 +95,7 @@ export function createBattle(
   // Militia fill first (placeArmy fills columns outward from the edge, so
   // earlier-pushed units land in the back rows) and riders fill last, so
   // riders end up in the front rows — closest to the enemy.
-  const buildSide = (side: BattleSide, comp: { militia: number; riders: number }) => {
+  const buildSide = (side: BattleSide, comp: { militia: number; riders: number; formation?: FormationSpec }) => {
     const sideUnits: GridUnit[] = [];
     for (let i = 0; i < comp.militia; i++) {
       sideUnits.push({
@@ -116,7 +121,11 @@ export function createBattle(
         stableIndex: stableIndex++,
       });
     }
-    placeArmy(sideUnits, side, cols, rows);
+    if (comp.formation && comp.formation.kind !== 'square') {
+      placeFormation(sideUnits, side, cols, rows, comp.formation, comp.militia, comp.riders);
+    } else {
+      placeArmy(sideUnits, side, cols, rows);
+    }
     units.push(...sideUnits);
   };
 

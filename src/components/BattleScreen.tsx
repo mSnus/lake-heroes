@@ -25,6 +25,8 @@ import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/art
 import { createBattle, stepTurn, isBattleOver } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
 import { GridBattleState, TurnEvent } from '../game/battleGrid/types';
+import { FormationSpec } from '../game/battleGrid/formations';
+import { buildSquadChunks } from '../game/army';
 import { TileClaimScreen } from './TileClaimScreen';
 import { showTileEncounterScreen } from '../actions/afterMoveLogic';
 import '../styles/BattleScreen.css';
@@ -188,6 +190,29 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const attackerGridTotal = attackerSized.militiaCount + attackerSized.ridersCount;
   const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
 
+  // ── Initial formation per side/mode — every attacker looks different
+  // depending on who they are. A real player's own army always forms up
+  // as its filled army-slot squads (buildSquadChunks); NPC/garrison sides
+  // get a role-appropriate shape instead. ──
+  const squadCountFor = (player: Player): number =>
+    Math.max(1, buildSquadChunks(player.militia, player.riders, player.armySlots).filter((c) => c.count > 0).length);
+
+  const attackerFormation: FormationSpec = isAmbush
+    ? { kind: 'triangle' } // NPC ambushers: wedge pointed at the player
+    : { kind: 'grouped', groupCount: squadCountFor(attacker) };
+
+  const defenderFormation: FormationSpec | undefined = isCaravan
+    ? { kind: 'columns' } // caravan guards: columns of maximum height
+    : isDragon
+      ? undefined // no formation spec given for the dragon — default square block
+      : isPlayerBattle
+        ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
+        : isAmbush
+          ? { kind: 'grouped', groupCount: squadCountFor(attacker) } // real player occupies the defender role here
+          : (isTile || isRogue) && tile
+            ? { kind: 'grouped', groupCount: Math.max(1, tile.level) } // tile guards: one cluster per tower (tile level)
+            : undefined;
+
   // A fortified tile's level bonus is now a straight % addition to every
   // roll the defending garrison's units make each turn (applies in both
   // tile and rogue-attack modes alike).
@@ -223,8 +248,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // ── State ──
   const [battle, setBattle] = useState<GridBattleState>(() =>
     createBattle(
-      { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount },
-      { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount },
+      { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount, formation: attackerFormation },
+      { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount, formation: defenderFormation },
       BATTLEFIELD_COLS,
       BATTLEFIELD_ROWS
     )

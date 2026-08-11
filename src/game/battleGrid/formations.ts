@@ -1,0 +1,386 @@
+import { GridUnit, UnitKind } from './types';
+
+interface LocalCell {
+  col: number;
+  row: number;
+}
+
+interface PlacedCell extends LocalCell {
+  kind: UnitKind;
+}
+
+export type FormationKind = 'square' | 'triangle' | 'columns' | 'grouped';
+
+export interface FormationSpec {
+  kind: FormationKind;
+  /** Only used by 'grouped' (towers/squads) — how many separate clusters
+   * to split the army into, each its own sub-formation, laid out with a
+   * gap between them. Omitted for other kinds. */
+  groupCount?: number;
+}
+
+// ── Hand-authored "circle" formations for headcounts 2-10 ──
+// Local (col,row) offsets, tip/front-neutral orientation; oriented per side
+// by placeFormation below. 1 unit is a trivial single cell (no spec given).
+const SHAPES: Record<number, LocalCell[]> = {
+  1: [{ col: 0, row: 0 }],
+  2: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+  ],
+  3: [
+    { col: 0, row: 0 },
+    { col: 0, row: 1 },
+    { col: 0, row: 2 },
+  ],
+  4: [
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 1, row: 2 },
+  ],
+  5: [
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 1, row: 2 },
+  ],
+  6: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+  ],
+  7: [
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+  8: [
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+  9: [
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 4, row: 1 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+  10: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+};
+
+/** Gap (empty rows/cols) left between adjacent sub-formations, whether
+ * stacking >10-count chunks or separating tower/squad clusters. */
+const GROUP_GAP = 1;
+
+/** Cap on a single sub-formation's headcount — matches the largest shape
+ * in SHAPES, since anything past this needs to be split further anyway. */
+const MAX_GROUP_SIZE = 10;
+
+/**
+ * Split `total` into `count` shares that are as equal as possible, with
+ * any remainder favoring the most "central" share rather than spreading
+ * across the outer ones — e.g. 22 into 3 -> [7, 8, 7], not [8, 7, 7]. For
+ * 2 shares (no true center), the extra goes to the first. This
+ * intentionally matches centerIndex() below so the heaviest share always
+ * lands on the group that arrangeGroups() places in the middle.
+ *
+ * The remainder is capped per share at MAX_GROUP_SIZE and spills outward
+ * (next-most-central share, then the next, ...) once the center is full —
+ * otherwise a large-enough remainder could push a single share's headcount
+ * past what SHAPES has an entry for (e.g. 47 into 5 shares is base 9,
+ * remainder 2 — dumping all of it on the center alone would reach 11).
+ */
+function splitEvenlyCenterHeavy(total: number, count: number): number[] {
+  if (count <= 1) return total > 0 || count === 1 ? [total] : [];
+  const base = Math.floor(total / count);
+  let remainder = total - base * count;
+  const sizes = new Array(count).fill(base);
+
+  // Fill the center slot with as much of the remainder as it can hold (up
+  // to the cap) before spilling any of it to the next-most-central slot —
+  // not one unit per slot per pass, which would spread even a small
+  // remainder across several slots instead of concentrating it centrally.
+  const order = centerOutwardOrder(count);
+  for (const idx of order) {
+    if (remainder <= 0) break;
+    const room = MAX_GROUP_SIZE - sizes[idx];
+    const take = Math.min(room, remainder);
+    sizes[idx] += take;
+    remainder -= take;
+  }
+  return sizes;
+}
+
+function centerIndex(count: number): number {
+  if (count <= 2) return 0; // no true middle for 1-2 groups — front-load
+  return Math.floor(count / 2);
+}
+
+/** Slot indices ordered by distance from the center index, closest first —
+ * how remainder overflow spills outward once the center slot is full. */
+function centerOutwardOrder(count: number): number[] {
+  const center = centerIndex(count);
+  return Array.from({ length: count }, (_, i) => i).sort(
+    (a, b) => Math.abs(a - center) - Math.abs(b - center) || a - b
+  );
+}
+
+function boundingBox(cells: LocalCell[]): { width: number; height: number } {
+  if (cells.length === 0) return { width: 0, height: 0 };
+  let maxCol = 0;
+  let maxRow = 0;
+  for (const c of cells) {
+    if (c.col > maxCol) maxCol = c.col;
+    if (c.row > maxRow) maxRow = c.row;
+  }
+  return { width: maxCol + 1, height: maxRow + 1 };
+}
+
+/** Cells of a single ≤10-unit shape, closest to the shape's own centroid
+ * first — used to seat riders in the "elite" central cells and militia in
+ * the outer ones, since these compact formations have no obvious
+ * front/back the way a marching column does. */
+function orderByCentrality(cells: LocalCell[]): LocalCell[] {
+  const cx = cells.reduce((s, c) => s + c.col, 0) / cells.length;
+  const cy = cells.reduce((s, c) => s + c.row, 0) / cells.length;
+  return [...cells].sort((a, b) => {
+    const da = (a.col - cx) ** 2 + (a.row - cy) ** 2;
+    const db = (b.col - cx) ** 2 + (b.row - cy) ** 2;
+    return da - db;
+  });
+}
+
+/**
+ * Arrange several already-built sub-formations into one combined layout,
+ * separated by GROUP_GAP empty rows/cols:
+ * - 1-3 groups: a single vertical column, each centered horizontally.
+ * - 4+ groups where count is exactly one more than a perfect square (e.g.
+ *   5 = 2x2 + 1): the square block of full-size groups plus the heaviest
+ *   (center-split) group placed in the middle among them — the only
+ *   multi-group layout with a concrete example to go on.
+ * - any other 4+ count: a generic packed row-major grid, since no example
+ *   covers those counts specifically.
+ */
+function arrangeGroups(groups: PlacedCell[][]): PlacedCell[] {
+  const g = groups.length;
+  if (g === 0) return [];
+  if (g === 1) return groups[0];
+
+  const boxes = groups.map(boundingBox);
+  const out: PlacedCell[] = [];
+
+  if (g <= 3) {
+    const maxWidth = Math.max(...boxes.map((b) => b.width));
+    let rowCursor = 0;
+    groups.forEach((group, i) => {
+      const box = boxes[i];
+      const dCol = Math.floor((maxWidth - box.width) / 2);
+      for (const c of group) out.push({ col: c.col + dCol, row: c.row + rowCursor, kind: c.kind });
+      rowCursor += box.height + GROUP_GAP;
+    });
+    return out;
+  }
+
+  const cellW = Math.max(...boxes.map((b) => b.width)) + GROUP_GAP;
+  const cellH = Math.max(...boxes.map((b) => b.height)) + GROUP_GAP;
+  const side = Math.round(Math.sqrt(g - 1));
+  const isOneMoreThanSquare = side >= 2 && side * side === g - 1;
+
+  const positions: { gx: number; gy: number }[] = new Array(g);
+  if (isOneMoreThanSquare) {
+    const corners: { gx: number; gy: number }[] = [];
+    for (let y = 0; y < side; y++) for (let x = 0; x < side; x++) corners.push({ gx: x, gy: y });
+    const mid = centerIndex(g);
+    let cursor = 0;
+    for (let i = 0; i < g; i++) {
+      positions[i] = i === mid ? { gx: (side - 1) / 2, gy: (side - 1) / 2 } : corners[cursor++];
+    }
+  } else {
+    const gridCols = Math.ceil(Math.sqrt(g));
+    for (let i = 0; i < g; i++) positions[i] = { gx: i % gridCols, gy: Math.floor(i / gridCols) };
+  }
+
+  groups.forEach((group, i) => {
+    const box = boxes[i];
+    const { gx, gy } = positions[i];
+    const dCol = Math.round(gx * cellW + (cellW - box.width) / 2);
+    const dRow = Math.round(gy * cellH + (cellH - box.height) / 2);
+    for (const c of group) out.push({ col: c.col + dCol, row: c.row + dRow, kind: c.kind });
+  });
+  return out;
+}
+
+/**
+ * Build a "circle" formation for a militia/riders composition, splitting
+ * into multiple sub-formations (arranged via arrangeGroups) whenever the
+ * total exceeds 10 or a specific groupCount is forced (towers/squads).
+ * Militia and riders are split across sub-groups independently (each via
+ * splitEvenlyCenterHeavy), so riders end up spread proportionally across
+ * every cluster rather than concentrated in one.
+ */
+function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount?: number): PlacedCell[] {
+  const total = comp.militia + comp.riders;
+  if (total <= 0) return [];
+
+  if (!forcedGroupCount && total <= 10) {
+    const ordered = orderByCentrality(SHAPES[total]);
+    return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
+  }
+
+  const groupCount = forcedGroupCount ?? Math.ceil(total / 10);
+  if (groupCount <= 1) {
+    // A forced single group whose total still exceeds 10 (e.g. one tower
+    // with a large garrison) — recurse without forcing a count, so it
+    // naturally chunks into ceil(total/10) sub-groups instead.
+    return layoutGroup(comp);
+  }
+
+  // Each share is capped at MAX_GROUP_SIZE by splitEvenlyCenterHeavy, but a
+  // *forced* groupCount (towers/squads) can still divide out to a base
+  // share above that cap (e.g. 3 towers, 35 units -> base 11) — the
+  // recursive layoutGroup call per share (with no forced count of its own)
+  // handles that by chunking that specific share further on its own.
+  const militiaSizes = splitEvenlyCenterHeavy(comp.militia, groupCount);
+  const riderSizes = splitEvenlyCenterHeavy(comp.riders, groupCount);
+  const subGroups = militiaSizes.map((m, i) => layoutGroup({ militia: m, riders: riderSizes[i] }));
+  return arrangeGroups(subGroups);
+}
+
+/** Ambushers: a wedge/arrowhead with its single-cell tip pointed at the
+ * enemy — column 0 (tip) has 1 unit, column 1 has 3, column 2 has 5, and
+ * so on, each column centered vertically on the previous. */
+function triangleLayout(comp: { militia: number; riders: number }): PlacedCell[] {
+  const total = comp.militia + comp.riders;
+  const cells: LocalCell[] = [];
+  let remaining = total;
+  let col = 0;
+  let width = 1;
+  while (remaining > 0) {
+    const count = Math.min(width, remaining);
+    const startRow = -Math.floor(count / 2);
+    for (let i = 0; i < count; i++) cells.push({ col, row: startRow + i });
+    remaining -= count;
+    col++;
+    width += 2;
+  }
+  const ordered = orderByCentrality(cells);
+  return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
+}
+
+/** Caravan guards: as few columns as possible, each filled to the grid's
+ * full height before starting the next — "columns of maximum height". */
+function columnsLayout(comp: { militia: number; riders: number }, maxRows: number): PlacedCell[] {
+  const total = comp.militia + comp.riders;
+  const cells: LocalCell[] = [];
+  let remaining = total;
+  let col = 0;
+  while (remaining > 0) {
+    const count = Math.min(maxRows, remaining);
+    for (let r = 0; r < count; r++) cells.push({ col, row: r });
+    remaining -= count;
+    col++;
+  }
+  // Riders fill from local col 0 onward -- the front-most column(s), by
+  // the same "col 0 = the edge closest to the enemy" convention every
+  // formation here shares (see placeFormation's per-side mirroring).
+  return cells.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
+}
+
+function mirrorHorizontal(cells: PlacedCell[]): PlacedCell[] {
+  const { width } = boundingBox(cells);
+  return cells.map((c) => ({ ...c, col: width - 1 - c.col }));
+}
+
+/**
+ * Place a whole side's army into one of the non-square formations
+ * (everything but the default square block, which placement.ts's
+ * placeArmy still handles) — triangle (ambushers), columns (caravan
+ * guards), or grouped (towers/squads: tile guards, player squads).
+ * Units must already be in militia-then-riders order and sized to match
+ * `militia + riders` exactly (see engine.ts's createBattle).
+ */
+export function placeFormation(
+  units: GridUnit[],
+  side: 'attacker' | 'defender',
+  cols: number,
+  rows: number,
+  formation: FormationSpec,
+  militia: number,
+  riders: number
+): void {
+  let placed: PlacedCell[];
+  switch (formation.kind) {
+    case 'triangle':
+      placed = triangleLayout({ militia, riders });
+      break;
+    case 'columns':
+      placed = columnsLayout({ militia, riders }, rows);
+      break;
+    case 'grouped':
+      placed = layoutGroup({ militia, riders }, formation.groupCount);
+      break;
+    default:
+      return; // 'square' stays placement.ts's job
+  }
+
+  // Every shape above is authored with its "front" (the tip of a triangle,
+  // the forward edge of a cluster) at the LOW end of its local columns —
+  // which already suits the defender (whose forward direction, toward the
+  // attacker, is decreasing col). The attacker's forward direction is
+  // increasing col, so its shape needs a horizontal flip to point the same
+  // logical "front" the opposite way.
+  if (side === 'attacker') placed = mirrorHorizontal(placed);
+
+  const box = boundingBox(placed);
+  const startRow = Math.floor((rows - box.height) / 2);
+  // Anchor at each side's own home edge -- attacker at col 0, defender
+  // flush against the far edge -- and let the shape (already oriented so
+  // its front points the right way) extend inward from there.
+  const startCol = side === 'attacker' ? 0 : Math.max(0, cols - box.width);
+
+  const riderCells = placed.filter((c) => c.kind === 'rider');
+  const militiaCells = placed.filter((c) => c.kind === 'militia');
+  const riderUnits = units.filter((u) => u.kind === 'rider');
+  const militiaUnits = units.filter((u) => u.kind === 'militia');
+
+  riderUnits.forEach((unit, i) => {
+    const c = riderCells[i];
+    unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col));
+    unit.row = Math.max(0, Math.min(rows - 1, startRow + c.row));
+  });
+  militiaUnits.forEach((unit, i) => {
+    const c = militiaCells[i];
+    unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col));
+    unit.row = Math.max(0, Math.min(rows - 1, startRow + c.row));
+  });
+}
