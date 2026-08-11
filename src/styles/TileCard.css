@@ -319,3 +319,34 @@
   border-radius: 5px;
   white-space: nowrap;
 }
+
+/* The "👛 N🟡" price tag inside the upgrade-info lines on the Tile
+   Upgrades screen — doubles as the actual upgrade-purchase button. */
+.upgrade-price-badge {
+  display: inline-block;
+  border: 1px solid #ffde2c;
+  border-radius: 4px;
+  padding: 0 6px;
+}
+
+.upgrade-price-badge.clickable {
+  cursor: pointer;
+}
+
+/* Matches King's Castle's input look (see modal.css's
+   .modal-content input[type='number']) for the garrison input, which isn't
+   nested under .modal-content here. */
+.tile-card-table-wrap input.units-input {
+  height: 32px;
+  width: 4rem;
+  max-width: 4rem;
+  border: none;
+  background: none;
+  text-align: center;
+  border-bottom: solid 1px wheat;
+  padding: 3px 6px 10px 6px;
+  font-size: 20px;
+  border-radius: 0;
+  color: wheat;
+  font-family: 'Texturina';
+}

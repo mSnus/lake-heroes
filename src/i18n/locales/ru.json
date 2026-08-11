@@ -184,12 +184,14 @@
   },
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
-    "currentIncome": "Текущий доход: {value}{icon}",
-    "upgradeLine": "👛 {gold}🟡 → {slots}🏯 и +{bonus}{icon} в год",
-    "howManyToGuard": "Сколько оставить в гарнизоне?",
-    "stayInArmy": "({count}🧍 останется в армии)",
-    "leaveUnguarded": "Оставить без охраны",
-    "setToGuard": "Оставить {amount} в гарнизоне 🛡️"
+    "belongsTo": "принадлежит игроку {player}",
+    "currentIncome": "Доход: {value}{icon}",
+    "upgradeLine": "{priceTag} → {slots}🏯 и +{bonus}{icon} в год",
+    "onGuard": "В гарнизоне:",
+    "onGuardLine": "{slots}🏯 с {input}🧍",
+    "stayInArmy": "(так {count}🧍 останется в армии)",
+    "leaveUnguarded": "Оставить без защиты 🩸",
+    "setToGuard": "Охранять с {amount} 🧍"
   },
   "battleScreen": {
     "theDragon": "Дракон",

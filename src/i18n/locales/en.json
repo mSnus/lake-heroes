@@ -184,12 +184,14 @@
   },
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
-    "currentIncome": "Current income: {value}{icon}",
-    "upgradeLine": "👛 {gold}🟡 → {slots}🏯 and +{bonus}{icon} per year",
-    "howManyToGuard": "How many to leave on guard?",
-    "stayInArmy": "({count}🧍 stay in army)",
-    "leaveUnguarded": "Leave unguarded",
-    "setToGuard": "Set {amount} to guard 🛡️"
+    "belongsTo": "belongs to {player}",
+    "currentIncome": "Income: {value}{icon}",
+    "upgradeLine": "{priceTag} → {slots}🏯 and +{bonus}{icon} per year",
+    "onGuard": "On guard:",
+    "onGuardLine": "{slots}🏯 with {input}🧍",
+    "stayInArmy": "(so {count}🧍 stay in army)",
+    "leaveUnguarded": "Leave unprotected 🩸",
+    "setToGuard": "Guard with {amount} 🧍"
   },
   "battleScreen": {
     "theDragon": "The Dragon",

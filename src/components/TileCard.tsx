@@ -5,7 +5,6 @@ import { say } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
-import { setTileGarrison } from '../actions/garrisonTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
@@ -13,9 +12,11 @@ import { syndicateMultiplier } from '../game/syndicate';
 import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
+import { TileUpgradesScreen } from './TileUpgradesScreen';
+import { showScreen } from '../utils/screenStore';
 import { useT } from '../i18n';
 
-const fmtPrice = (gold: number, units: number, join: string = ''): string => {
+export const fmtPrice = (gold: number, units: number, join: string = ''): string => {
   const hasGold = gold > 0;
   const hasUnits = units > 0;
   join = join ? ` ${join} ` : '';
@@ -84,13 +85,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     if (gold <= 0) return <>0</>;
 
-    let icon = 'ᅠ';
-
-    if (lacksGold) {
-      icon = '❌ ';
-    } else if (isUpgradeTarget) {
-      icon = '⬆️ ';
-    }
+    const icon = lacksGold ? '❌ ' : 'ᅠ';
 
     return (
       <>
@@ -155,9 +150,6 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const upgradeUnreachable = !canUpgrade || currentLevel === 1;
 
-  const prices = tile.prices || {};
-  const nextPrice = prices[nextLevel];
-
   // A yielded tile already cashed in half its price up front (see
   // yieldTile.ts) -- selling it on top of that only refunds 40% of the
   // current price, a real penalty vs a straight sale (mirrored exactly in
@@ -165,25 +157,6 @@ export const TileCard: React.FC<TileCardProps> = ({
   const sellPrice = tile.isYielded
     ? { gold: Math.floor(tile.currentPrice.gold * 0.4), units: Math.floor(tile.currentPrice.units * 0.4) }
     : tile.currentPrice;
-
-  const handleUpgrade = () => {
-    if (demoMode) return;
-    if (tile.isYielded) return;
-
-    if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: nextPrice.gold }))) return;
-
-    if (!nextPrice || !activePlayer || !gameState) return;
-
-    if ((activePlayer.gold || 0) < (nextPrice.gold || 0)) {
-      return;
-    }
-
-    gameState.players[gameState.playerOrder[gameState.activePlayerIndex]].gold =
-      (activePlayer.gold || 0) - (nextPrice.gold || 0);
-    tile._level = nextLevel;
-    say(t('tileCard.upgradedMessage', { playerName: activePlayer.name, tileName: tile.name, level: nextLevel }), 'info');
-    updateGameState && updateGameState(gameState);
-  };
 
   const handleClose = () => {
     if (demoMode) return;
@@ -238,28 +211,26 @@ export const TileCard: React.FC<TileCardProps> = ({
     updateGameState(gameState);
   };
 
-  const handleGarrison = () => {
+  // Garrison management, upgrading, and sell/yield all live on the Tile
+  // Upgrades screen now — TileCard's job is just to open it.
+  const openUpgradesScreen = () => {
     if (demoMode) return;
     if (!gameState || !updateGameState || !activePlayer) return;
+    if (tile.owner !== activePlayer.id) return;
 
-    const ridersNote = activePlayer.riders > 0 ? t('tileCard.garrisonRidersNote') : '';
-    const militiaInput = window.prompt(
-      t('tileCard.garrisonMilitiaPrompt', { tileName: tile.name, militia: activePlayer.militia, ridersNote }),
-      String(tile.garrisonMilitia)
-    );
-    if (militiaInput === null) return;
-    const targetMilitia = parseInt(militiaInput, 10);
-    if (Number.isNaN(targetMilitia) || targetMilitia < 0) return;
-
-    // Riders never garrison a tile — they only travel with the player's
-    // hero — so targetRiders is left unset and stays whatever it already is.
-    setTileGarrison(gameState, activePlayer, tile, targetMilitia);
-    updateGameState(gameState);
+    showScreen({
+      content: React.createElement(TileUpgradesScreen, {
+        tile,
+        player: activePlayer,
+        gameState,
+        updateGameState,
+      }),
+    });
   };
 
   const upgradeRowProps = (level: number) =>
-    mode === 'owned' && canUpgrade && level === nextLevel
-      ? { onClick: handleUpgrade, style: { cursor: 'pointer' as const } }
+    mode === 'owned' && tile.owner === activePlayer?.id && level === nextLevel
+      ? { onClick: openUpgradesScreen, style: { cursor: 'pointer' as const } }
       : {};
 
   const handleBuyClick = (e: React.MouseEvent) => {
@@ -296,7 +267,11 @@ export const TileCard: React.FC<TileCardProps> = ({
           />
         )}
 
-        <div className="tile-card-title" onClick={handleInfoClick} style={{ cursor: 'pointer' }}>
+        <div
+          className="tile-card-title"
+          onClick={tile.owner === activePlayer?.id ? openUpgradesScreen : handleInfoClick}
+          style={{ cursor: 'pointer' }}
+        >
           {tile.name}
         </div>
 
@@ -351,26 +326,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                     <div></div>
 
-                    <div
-                      className="big-icon-hint"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (tile.owner !== activePlayer?.id) {
-                          say(t('tileCard.defenceInfo', { value: tile.defence }), 'info');
-                          return;
-                        }
-                        if (tile.isYielded) {
-                          say(t('tileCard.garrisonYieldedWarning'), 'warning');
-                          return;
-                        }
-                        if (gameState?.activeTile !== tile) {
-                          say(t('tileCard.garrisonWarning'), 'warning');
-                          return;
-                        }
-                        handleGarrison();
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
+                    <div className="big-icon-hint">
                       <div>
                         {tile.garrisonSlots}🏯 {tile.garrison}🛡️
                       </div>
@@ -517,7 +473,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 style={{ backgroundColor: tile.groupColor + '4f' }}
               >
                 <div
-                  onClick={() => (canUpgrade ? handleUpgrade() : handleInfoClick())}
+                  onClick={openUpgradesScreen}
                   className={'tile-card-button' + (canUpgrade || demoMode ? '' : ' disabled')}
                 >
                   <div>{priceCell(nextLevel)}</div>
