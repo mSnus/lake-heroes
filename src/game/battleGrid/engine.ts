@@ -135,8 +135,13 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
     const key = `${c.col},${c.row}`;
     if (visited.has(key)) continue;
     visited.add(key);
-    if (chebyshev(c, target) === 1) return c;
+    // A blocked cell can't be entered — not even as the final step, even
+    // if it happens to already be adjacent to the target. Checking this
+    // before the adjacency test matters: otherwise an occupied cell right
+    // next to the enemy would get returned as a "valid" destination and
+    // two units could end up sharing it.
     if (blocked.has(key)) continue;
+    if (chebyshev(c, target) === 1) return c;
     queue.push({ cell: c, firstStep: c });
   }
 
@@ -149,8 +154,8 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
       const key = `${c.col},${c.row}`;
       if (visited.has(key)) continue;
       visited.add(key);
-      if (chebyshev(c, target) === 1) return firstStep;
       if (blocked.has(key)) continue;
+      if (chebyshev(c, target) === 1) return firstStep;
       queue.push({ cell: c, firstStep });
     }
   }
@@ -158,14 +163,32 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
   return undefined; // no walkable route to the target's vicinity at all
 }
 
+/**
+ * Nearest enemy by Chebyshev distance, with a Euclidean tiebreak. The
+ * Chebyshev-only version ties constantly — while two blocks are still far
+ * apart, distance is almost entirely dominated by the horizontal gap, so
+ * dozens of enemy units at very different rows can share the exact same
+ * Chebyshev distance from a given unit. Without a tiebreak, every unit on a
+ * side resolves that tie identically (whichever enemy happens to be first
+ * in iteration order) and the *entire army* funnels toward that one single
+ * enemy unit instead of each unit heading for whichever enemy is actually
+ * closest to it. Euclidean distance breaks that tie sensibly, so units
+ * naturally advance on a broad front toward whoever's really nearest.
+ */
 function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefined {
   let best: GridUnit | undefined;
-  let bestDist = Infinity;
+  let bestCheb = Infinity;
+  let bestEuclidSq = Infinity;
   for (const v of living) {
     if (v.side === u.side) continue;
-    const d = chebyshev(u, v);
-    if (d < bestDist) {
-      bestDist = d;
+    const cheb = chebyshev(u, v);
+    if (cheb > bestCheb) continue;
+    const dc = v.col - u.col;
+    const dr = v.row - u.row;
+    const euclidSq = dc * dc + dr * dr;
+    if (cheb < bestCheb || euclidSq < bestEuclidSq) {
+      bestCheb = cheb;
+      bestEuclidSq = euclidSq;
       best = v;
     }
   }
