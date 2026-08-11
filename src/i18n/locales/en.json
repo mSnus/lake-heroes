@@ -166,7 +166,7 @@
     "perYear": "per year",
     "defence": "defence",
     "defenceInfo": "Defence: {value}",
-    "garrisonWarning": "You could only set garrison while visiting your tile",
+    "garrisonWarning": "You could take units from garrison back to army only while visiting your tile",
     "garrisonYieldedWarning": "Can't change the garrison of a yielded tile",
     "cantAfford": "can't afford",
     "toOwn": "to own:",
@@ -185,7 +185,7 @@
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
     "belongsTo": "belongs to {player}",
-    "currentIncome": "Income: {value}{icon}",
+    "currentLevelLine": "{slots}🏯 +{bonus}{icon} per year",
     "upgradeLine": "{priceTag} → {slots}🏯 and +{bonus}{icon} per year",
     "onGuard": "On guard:",
     "onGuardLine": "{slots}🏯 with {input}🧍",

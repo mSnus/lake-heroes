@@ -76,7 +76,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // Price cell for the level breakdown table. Upgrades only cost gold. On the
   // upgrade-target row of an owned tile that the player can't afford, it's
   // shown bold red with a 🔻 prefix (same treatment as the "can't own" case).
-  const priceCell = (level: number) => {
+  const priceCell = (level: number, useWalletIcon = false) => {
     const gold = tile.prices[level]?.gold ?? 0;
     const isOwnedByActive = mode === 'owned' && tile.owner === activePlayer?.id;
     const isUpgradeTarget = isOwnedByActive && level === nextLevel && !maxLevelReached;
@@ -85,12 +85,12 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     if (gold <= 0) return <>0</>;
 
-    const icon = lacksGold ? '❌ ' : 'ᅠ';
+    const icon = lacksGold ? '❌ ' : useWalletIcon ? '👛 ' : 'ᅠ';
 
     return (
       <>
         <span>{icon}</span>
-        {level > currentLevel ? '+' : ' '}
+        {!useWalletIcon && (level > currentLevel ? '+' : ' ')}
         <span style={lacksGold ? redBold : undefined}>
           {lacksGold && '🔻'}
           {gold}🟡
@@ -250,10 +250,12 @@ export const TileCard: React.FC<TileCardProps> = ({
     >
       <div
         className="tile-card-header"
+        onClick={tile.owner === activePlayer?.id ? openUpgradesScreen : handleInfoClick}
         style={{
           background: groupColor + 'e0',
           overflow: 'clip',
           maxHeight: `${SPRITE_SIZE / 2}px`,
+          cursor: 'pointer',
         }}
       >
         {tile.spriteImage && (
@@ -267,17 +269,14 @@ export const TileCard: React.FC<TileCardProps> = ({
           />
         )}
 
-        <div
-          className="tile-card-title"
-          onClick={tile.owner === activePlayer?.id ? openUpgradesScreen : handleInfoClick}
-          style={{ cursor: 'pointer' }}
-        >
-          {tile.name}
-        </div>
+        <div className="tile-card-title">{tile.name}</div>
 
         {mode === 'display' && !demoMode && (
           <button
-            onClick={() => handleClose()}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
             className="tile-card-close"
             style={{ fontSize: '12px', filter: 'grayscale(100%)', opacity: 0.5 }}
           >
@@ -476,7 +475,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   onClick={openUpgradesScreen}
                   className={'tile-card-button' + (canUpgrade || demoMode ? '' : ' disabled')}
                 >
-                  <div>{priceCell(nextLevel)}</div>
+                  <div>{priceCell(nextLevel, true)}</div>
 
                   <div>→</div>
 

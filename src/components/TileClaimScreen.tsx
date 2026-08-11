@@ -41,18 +41,20 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const t = useT();
   const bonusTypeIcon = tile.bonusType === 'units' ? '👬' : '🟡';
 
-  // Capped by both the tile's slot capacity and whatever Militia the player
-  // actually has left (post-battle casualties already applied by the time
-  // this screen shows).
+  // garrisonAmount is an ABSOLUTE target headcount, not a delta — so the
+  // pool it's bounded by is everything this player controls, whether
+  // already garrisoned here or still traveling with them, not just
+  // player.militia (which already excludes whatever's currently garrisoned).
+  const totalMilitiaPool = player.militia + tile.garrisonMilitia;
   const maxGarrison = Math.min(
-    remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia'),
-    player.militia
+    tile.garrisonMilitia + remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia'),
+    totalMilitiaPool
   );
   // Decreasing an existing garrison is only allowed while physically
   // standing on the tile — increasing it is always allowed.
   const canDecreaseGarrison = gameState.activeTile === tile;
   const [garrisonAmount, setGarrisonAmount] = useState(() =>
-    Math.min(maxGarrison, Math.max(canDecreaseGarrison ? 0 : tile.garrisonMilitia, Math.floor(player.militia / 2)))
+    Math.min(maxGarrison, Math.max(canDecreaseGarrison ? 0 : tile.garrisonMilitia, Math.floor(totalMilitiaPool / 2)))
   );
 
   const applyGarrison = (newValue: number) => {
@@ -67,7 +69,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   useEffect(() => {
     if (variant !== 'claimed' || !player.isComputer) return;
     const fraction = getCharacterConfig(player)?.claimGarrisonFraction ?? 0;
-    const amount = Math.min(maxGarrison, Math.floor(fraction * player.militia));
+    const amount = Math.min(maxGarrison, Math.floor(fraction * totalMilitiaPool));
     const timer = setTimeout(() => {
       if (amount > 0) {
         setTileGarrison(gameState, player, tile, amount);
@@ -183,25 +185,36 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
                 <div className="tc-td" style={{textAlign:'center'}}>
-                  {tJsx('tileClaimScreen.currentIncome', { value: <span className="value">{tile.bonuses[1] ?? 0}</span>, icon: bonusTypeIcon })}
+                  {tJsx('tileClaimScreen.currentLevelLine', {
+                    slots: <span className="value">{currentLevel}</span>,
+                    bonus: <span className="value">{tile.bonuses[currentLevel] ?? 0}</span>,
+                    icon: bonusTypeIcon,
+                  })}
                 </div>
-                <div className="tc-td" style={{paddingTop: '0.5rem', fontSize: '1rem'}}>
-                    {tJsx('tileClaimScreen.upgradeLine', {
-                      priceTag: priceTag(2),
-                      slots: <span className="value">2</span>,
-                      bonus: <span className="value">{tile.bonuses[2] ?? 0}</span>,
-                      icon: bonusTypeIcon,
-                    })}
-                </div>
-                <div className="tc-td" style={{fontSize: '1rem'}}>
-                    {tJsx('tileClaimScreen.upgradeLine', {
-                      priceTag: priceTag(3),
-                      slots: <span className="value">3</span>,
-                      bonus: <span className="value">{tile.bonuses[3] ?? 0}</span>,
-                      icon: bonusTypeIcon,
-                    })}
-                </div>
-                {player.militia > 0 && !tile.isYielded && (
+                {currentLevel < 2 && (
+                  <div className="tc-td" style={{paddingTop: '0.5rem', fontSize: '1rem'}}>
+                      {tJsx('tileClaimScreen.upgradeLine', {
+                        priceTag: priceTag(2),
+                        slots: <span className="value">2</span>,
+                        bonus: <span className="value">{tile.bonuses[2] ?? 0}</span>,
+                        icon: bonusTypeIcon,
+                      })}
+                  </div>
+                )}
+                {currentLevel < 3 && (
+                  <div
+                    className={'tc-td' + (nextLevel !== 3 ? ' upgrade-unreachable' : '')}
+                    style={{fontSize: '1rem'}}
+                  >
+                      {tJsx('tileClaimScreen.upgradeLine', {
+                        priceTag: priceTag(3),
+                        slots: <span className="value">3</span>,
+                        bonus: <span className="value">{tile.bonuses[3] ?? 0}</span>,
+                        icon: bonusTypeIcon,
+                      })}
+                  </div>
+                )}
+                {totalMilitiaPool > 0 && !tile.isYielded && (
                   <div className="tc-td" style={{paddingTop: '1.5rem', textAlign: 'center'}}>
                     {t('tileClaimScreen.onGuard')}
                     <div className="units-input-row" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -231,9 +244,9 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                         </button>
                         <button
                           className="game-menu-button silver"
-                          onClick={() => applyGarrison(Math.min(maxGarrison, Math.floor(player.militia / 2)))}
+                          onClick={() => applyGarrison(Math.min(maxGarrison, Math.floor(totalMilitiaPool / 2)))}
                         >
-                          {Math.min(maxGarrison, Math.floor(player.militia / 2))}🧍
+                          {Math.min(maxGarrison, Math.floor(totalMilitiaPool / 2))}🧍
                         </button>
                         <button
                           className="game-menu-button silver"
@@ -243,14 +256,17 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                         </button>
                       </div>
                     </div>
-                    <div>{t('tileClaimScreen.stayInArmy', { count: player.militia - garrisonAmount })}</div>
+                    <div>{t('tileClaimScreen.stayInArmy', { count: totalMilitiaPool - garrisonAmount })}</div>
                   </div>
                 )}
         </div>
       </div>
 
       {variant === 'upgrades' && (
-        <div className="tile-card-sell" style={{ marginTop: '1.5rem' }}>
+        <div
+          className="tile-card-sell"
+          style={{ marginTop: '1.5rem', marginLeft: 'auto', marginRight: 'auto', position: 'relative', zIndex: 6002 }}
+        >
           <div onClick={handleYieldToggle} className="tile-card-button tile-card-sell-item">
             🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
           </div>

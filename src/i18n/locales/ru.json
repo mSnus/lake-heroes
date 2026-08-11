@@ -166,7 +166,7 @@
     "perYear": "в год",
     "defence": "защита",
     "defenceInfo": "Защита: {value}",
-    "garrisonWarning": "Настроить гарнизон можно только находясь на своей клетке",
+    "garrisonWarning": "Забрать бойцов из гарнизона обратно в армию можно только находясь на своей клетке",
     "garrisonYieldedWarning": "Нельзя менять гарнизон переданной королю клетки",
     "cantAfford": "не по карману",
     "toOwn": "чтобы владеть:",
@@ -185,7 +185,7 @@
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
     "belongsTo": "принадлежит игроку {player}",
-    "currentIncome": "Доход: {value}{icon}",
+    "currentLevelLine": "{slots}🏯 +{bonus}{icon} в год",
     "upgradeLine": "{priceTag} → {slots}🏯 и +{bonus}{icon} в год",
     "onGuard": "В гарнизоне:",
     "onGuardLine": "{slots}🏯 с {input}🧍",
