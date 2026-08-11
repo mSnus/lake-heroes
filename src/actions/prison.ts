@@ -11,7 +11,10 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
 
   console.log('Action: prison for', player.name);
 
-  let message = board.gameMessage;
+  // Not board.gameMessage — that may still hold an unrelated earlier event's
+  // text from the same turn (e.g. an ambush resolved during this move), which
+  // would otherwise show up glued below the standard prison flavor text.
+  let message = '';
   if (hasArtifact(player, 'medal-of-honor')) {
     const artifact = getArtifact('medal-of-honor');
     message = t('prison.savedByArtifact', { playerName: player.name, artifactName: artifact!.name, emoji: artifact!.emoji });

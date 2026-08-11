@@ -54,7 +54,10 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
 
   return (
     <div style={hiddenStyle}>
-      <ScreenBackground image={config.background!}>
+      <ScreenBackground
+        image={config.background!}
+        style={config.screenType === 'ambush' ? { paddingTop: '6rem' } : undefined}
+      >
         {config.fade && <Fade />}
         {config.title && <div className="text-title">{config.title.trim()}</div>}
         {config.spriteImage && <SpriteCircleIcon src={config.spriteImage} />}
