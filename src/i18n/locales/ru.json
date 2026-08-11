@@ -781,7 +781,9 @@
   },
   "tavern": {
     "joined": "{units}🧍 присоединились к могучей армии<br />игрока {playerSpan}",
-    "noneJoined": "Никто не присоединился — в армии {playerSpan} не осталось места",
+    "ranksFull": "{units}🧍 хотели присоединиться, но в ваших рядах не осталось места",
+    "horsesJoined": "{units}🧍 щедрого {playerSpan} получили коней 🐴<br />и стали всадниками!",
+    "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...а {units}🧍 остались пьянствовать в таверне)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} слотов армии заполнено — {turnedAway}🧍 отправлены прочь)</span>",
     "newFolksWelcome": "Новым лицам здесь всегда рады!",
     "title": "Таверна",

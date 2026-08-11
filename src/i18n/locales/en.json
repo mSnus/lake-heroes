@@ -781,7 +781,9 @@
   },
   "tavern": {
     "joined": "{units}🧍 joined the mighty army<br />of {playerSpan}",
-    "noneJoined": "No one joined — {playerSpan}'s army has no room left",
+    "ranksFull": "{units}🧍 were about to join you, but your ranks are full",
+    "horsesJoined": "{units}🧍 of generous {playerSpan} were given free horses 🐴<br />and become riders!",
+    "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...and {units}🧍 were left drunk at the tavern)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} army slots full — {turnedAway}🧍 turned away)</span>",
     "newFolksWelcome": "New folks are always welcome!",
     "title": "The Tavern",
