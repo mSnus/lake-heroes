@@ -38,7 +38,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   showGridLines = true,
 }) => {
   const { cols, rows, units } = battle;
-  const actedIds = new Set(lastEvents.filter((e) => e.type !== 'skip').map((e) => e.unitId));
+  // Combat participants only (not plain movement) — most units are moving
+  // most turns, so including 'move' here meant nearly the whole army stayed
+  // permanently gold-tinted for the rest of the fight instead of this
+  // actually flagging anything meaningful.
+  const actedIds = new Set(
+    lastEvents.filter((e) => e.type === 'attack' || e.type === 'defend').map((e) => e.unitId)
+  );
 
   // Per-unit transient emoji override for the current animation beat —
   // attack/defend icons on whoever's acting, a hit flash on whoever's being
