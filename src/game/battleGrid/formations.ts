@@ -49,8 +49,8 @@ const SHAPES: Record<number, LocalCell[]> = {
   6: [
     { col: 0, row: 0 },
     { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
     { col: 0, row: 2 },
     { col: 1, row: 2 },
   ],
@@ -254,12 +254,15 @@ function arrangeGroups(groups: PlacedCell[][]): PlacedCell[] {
   const out: PlacedCell[] = [];
 
   if (g <= 3) {
-    const maxWidth = Math.max(...boxes.map((b) => b.width));
+    // Front-flush, not centered: every shape is already authored with its
+    // front edge at local col 0, so leaving dCol at 0 for every group lines
+    // up their fronts along the same column regardless of how wide each
+    // group's own back end is — centering would instead misalign the
+    // fronts whenever the groups have different widths.
     let rowCursor = 0;
     groups.forEach((group, i) => {
       const box = boxes[i];
-      const dCol = Math.floor((maxWidth - box.width) / 2);
-      for (const c of group) out.push({ col: c.col + dCol, row: c.row + rowCursor, kind: c.kind });
+      for (const c of group) out.push({ col: c.col, row: c.row + rowCursor, kind: c.kind });
       rowCursor += box.height + GROUP_GAP;
     });
     return out;
@@ -330,23 +333,32 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
   return arrangeGroups(subGroups);
 }
 
-/** Ambushers: a wedge/arrowhead with its single-cell tip pointed at the
- * enemy — column 0 (tip) has 1 unit, column 1 has 3, column 2 has 5, and
- * so on, each column centered vertically on the previous. */
+/** Ambushers: a diamond-shaped wedge with its single-cell tip pointed at
+ * the enemy — column 0 (tip) has 1 unit, each column out from it grows by
+ * 1 unit, up to a peak column that absorbs whatever's left over, then
+ * mirrors back down to 1 unit at the rear. Symmetric front-to-back, unlike
+ * a wedge that keeps widening and gets abruptly truncated wherever the
+ * army runs out. */
 function triangleLayout(comp: { militia: number; riders: number }): PlacedCell[] {
   const total = comp.militia + comp.riders;
+  if (total <= 0) return [];
   const cells: LocalCell[] = [];
-  let remaining = total;
-  let col = 0;
-  let width = 1;
-  while (remaining > 0) {
-    const count = Math.min(width, remaining);
+
+  let k = 0;
+  while ((k + 2) * (k + 2) <= total) k++;
+  const flankSum = k * (k + 1);
+  const peak = total - flankSum;
+
+  const widths: number[] = [];
+  for (let i = 1; i <= k; i++) widths.push(i);
+  widths.push(peak);
+  for (let i = k; i >= 1; i--) widths.push(i);
+
+  widths.forEach((count, col) => {
     const startRow = -Math.floor(count / 2);
     for (let i = 0; i < count; i++) cells.push({ col, row: startRow + i });
-    remaining -= count;
-    col++;
-    width += 2;
-  }
+  });
+
   const ordered = orderByFrontness(cells);
   return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
 }
