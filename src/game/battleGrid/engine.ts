@@ -32,10 +32,6 @@ const NEIGHBOR_OFFSETS: Cell[] = [
   { col: 1, row: 1 },
 ];
 
-function sign(n: number): number {
-  return n > 0 ? 1 : n < 0 ? -1 : 0;
-}
-
 function hpFor(kind: UnitKind): number {
   return kind === 'rider' ? RIDER_HP : MILITIA_HP;
 }
@@ -112,6 +108,54 @@ function nearestEnemyDistance(u: GridUnit, living: GridUnit[]): number {
     if (d < best) best = d;
   }
   return best;
+}
+
+/**
+ * Real shortest-path first step from `start` toward any cell adjacent to
+ * `target`, via breadth-first search over the 8-directional grid — not a
+ * greedy single-step heuristic. A unit boxed in behind a wide obstacle (a
+ * wall of friendly/enemy units several cells thick, say) needs to route
+ * *around* it; picking whichever single neighbor cell looks closest to the
+ * target by raw distance can walk straight into a dead end and get stuck
+ * oscillating against the obstacle forever, since it has no visibility past
+ * one step. BFS finds the actual shortest walkable route and this returns
+ * only its first step — the rest is recomputed fresh next turn anyway,
+ * since the board keeps changing.
+ */
+function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, blocked: Set<string>): Cell | undefined {
+  const targetKey = `${target.col},${target.row}`;
+  const visited = new Set<string>([`${start.col},${start.row}`, targetKey]);
+  // Each queue entry remembers which first step from `start` led to it, so
+  // the moment BFS reaches adjacency we know which immediate move to make.
+  const queue: { cell: Cell; firstStep: Cell }[] = [];
+
+  for (const off of NEIGHBOR_OFFSETS) {
+    const c = { col: start.col + off.col, row: start.row + off.row };
+    if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
+    const key = `${c.col},${c.row}`;
+    if (visited.has(key)) continue;
+    visited.add(key);
+    if (chebyshev(c, target) === 1) return c;
+    if (blocked.has(key)) continue;
+    queue.push({ cell: c, firstStep: c });
+  }
+
+  let qi = 0;
+  while (qi < queue.length) {
+    const { cell, firstStep } = queue[qi++];
+    for (const off of NEIGHBOR_OFFSETS) {
+      const c = { col: cell.col + off.col, row: cell.row + off.row };
+      if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
+      const key = `${c.col},${c.row}`;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      if (chebyshev(c, target) === 1) return firstStep;
+      if (blocked.has(key)) continue;
+      queue.push({ cell: c, firstStep });
+    }
+  }
+
+  return undefined; // no walkable route to the target's vicinity at all
 }
 
 function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefined {
@@ -272,34 +316,23 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     if (!moverIds.has(u.id)) staticOccupancy.set(`${u.col},${u.row}`, u.id);
   }
 
-  const claimedDest = new Map<string, string>(); // "col,row" -> claiming unitId
   const plannedMove = new Map<string, Cell>(); // unitId -> destination
+
+  // BFS obstacle set: engaged units (never move) plus whatever earlier,
+  // higher-priority movers have already claimed as *their* first step this
+  // turn — grows as the loop proceeds, so later movers path around cells
+  // that are genuinely spoken for, not just occupied-for-now.
+  const blocked = new Set<string>(staticOccupancy.keys());
 
   for (const mover of movers) {
     const unit = alive.find((u) => u.id === mover.id)!;
     const target = nearestLivingEnemy(unit, alive);
     if (!target) continue;
 
-    const primaryDc = sign(target.col - unit.col);
-    const primaryDr = sign(target.row - unit.row);
-    const candidates = NEIGHBOR_OFFSETS.map((off) => ({ col: unit.col + off.col, row: unit.row + off.row, off }))
-      .filter((c) => c.col >= 0 && c.col < state.cols && c.row >= 0 && c.row < state.rows)
-      .sort((a, b) => {
-        const distA = chebyshev(a, target);
-        const distB = chebyshev(b, target);
-        if (distA !== distB) return distA - distB;
-        const aPrimary = a.off.col === primaryDc && a.off.row === primaryDr ? 0 : 1;
-        const bPrimary = b.off.col === primaryDc && b.off.row === primaryDr ? 0 : 1;
-        return aPrimary - bPrimary;
-      });
-
-    const dest = candidates.find((c) => {
-      const key = `${c.col},${c.row}`;
-      return !staticOccupancy.has(key) && !claimedDest.has(key);
-    });
+    const dest = firstStepToward(unit, target, state.cols, state.rows, blocked);
 
     if (dest) {
-      claimedDest.set(`${dest.col},${dest.row}`, unit.id);
+      blocked.add(`${dest.col},${dest.row}`);
       plannedMove.set(unit.id, dest);
     } else {
       events.push({ type: 'skip', unitId: unit.id, side: unit.side, kind: unit.kind });
