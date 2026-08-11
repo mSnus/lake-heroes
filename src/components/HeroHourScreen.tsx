@@ -37,6 +37,9 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
   const handleFight = (opponent: Player) => {
     const battlefieldUnits = Math.min(activePlayer.units, opponent.units);
     showScreen({
+      screenType: 'player-battle',
+      defenderId: opponent.id,
+      battlefieldUnits,
       content: React.createElement(BattleScreen, {
         mode: 'player' as const,
         attacker: activePlayer,

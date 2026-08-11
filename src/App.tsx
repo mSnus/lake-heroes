@@ -47,6 +47,7 @@ import { handleSphynx } from './actions/sphynx';
 import { handleTavern } from './actions/tavern';
 import { handleTreasureBox } from './actions/treasureBox';
 import { fightDragon } from './actions/fightDragon';
+import { t } from './i18n';
 import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
@@ -318,6 +319,98 @@ function App() {
                   ),
                 });
                 break;
+              case 'tile-battle': {
+                // No extra identifiers needed -- the tile being fought over
+                // is always whichever one the active player is standing on,
+                // already implied by their (persisted) position.
+                const tile = restored.activeTile;
+                const defender = tile.owner
+                  ? restored.players.find((p) => p.id === tile.owner)
+                  : undefined;
+                showScreen({
+                  screenType: 'tile-battle',
+                  content: (
+                    <BattleScreen
+                      attacker={restored.activePlayer}
+                      defender={defender}
+                      tile={tile}
+                      gameState={restored}
+                      updateGameState={updateGameState}
+                    />
+                  ),
+                });
+                break;
+              }
+              case 'player-battle': {
+                const opponent = restored.players.find((p) => p.id === savedScreen.defenderId);
+                if (opponent) {
+                  showScreen({
+                    screenType: 'player-battle',
+                    defenderId: opponent.id,
+                    battlefieldUnits: savedScreen.battlefieldUnits,
+                    content: (
+                      <BattleScreen
+                        mode="player"
+                        attacker={restored.activePlayer}
+                        defender={opponent}
+                        battlefieldUnits={savedScreen.battlefieldUnits ?? 0}
+                        gameState={restored}
+                        updateGameState={updateGameState}
+                        onClose={() => gameEvent('showDice', null)}
+                      />
+                    ),
+                  });
+                }
+                break;
+              }
+              case 'ambush-battle':
+                showScreen({
+                  screenType: 'ambush-battle',
+                  ambushAttackerUnits: savedScreen.ambushAttackerUnits,
+                  content: (
+                    <BattleScreen
+                      mode="ambush"
+                      attacker={restored.activePlayer}
+                      ambushAttackerUnits={savedScreen.ambushAttackerUnits ?? 1}
+                      gameState={restored}
+                      updateGameState={updateGameState}
+                      onClose={() => gameEvent('showDice', null)}
+                    />
+                  ),
+                });
+                break;
+              case 'rogue-attack': {
+                const tile = restored.tiles[savedScreen.tileIndex ?? -1];
+                const defender = tile ? restored.players.find((p) => p.id === tile.owner) : undefined;
+                if (tile && defender) {
+                  const horde = new Player({
+                    name: t('rogueAttack.horde'),
+                    color: '#8b5a2b',
+                    gold: 0,
+                    units: savedScreen.hordeUnits ?? 1,
+                    position: -1,
+                    image: 'black',
+                    isComputer: true,
+                  });
+                  showScreen({
+                    screenType: 'rogue-attack',
+                    tileIndex: savedScreen.tileIndex,
+                    hordeUnits: savedScreen.hordeUnits,
+                    content: (
+                      <BattleScreen
+                        mode="rogue"
+                        attacker={horde}
+                        defender={defender}
+                        tile={tile}
+                        gameState={restored}
+                        updateGameState={updateGameState}
+                        onClose={() => gameEvent('showDice', null)}
+                      />
+                    ),
+                  });
+                }
+                break;
+              }
               case 'sphynx':
                 showSphynxScreen((roll) => handleSphynx(restored, updateGameState, roll));
                 break;
@@ -432,6 +525,11 @@ function App() {
         title: screen.title,
         caravanDefence: screen.caravanDefence,
         caravanPrize: screen.caravanPrize,
+        tileIndex: screen.tileIndex,
+        defenderId: screen.defenderId,
+        battlefieldUnits: screen.battlefieldUnits,
+        ambushAttackerUnits: screen.ambushAttackerUnits,
+        hordeUnits: screen.hordeUnits,
       });
     } else {
       localStorage.removeItem('game-screen');

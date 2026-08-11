@@ -32,6 +32,7 @@ export function checkAmbushEncounter(
   const startBattle = () => {
     showScreen({
       screenType: 'ambush-battle',
+      ambushAttackerUnits: attackerUnits,
       content: (
         <BattleScreen
           mode="ambush"

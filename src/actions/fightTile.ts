@@ -17,6 +17,7 @@ export function fightTile(board: GameState | null, updateGameState: (board: Game
   if (!defender) return;
 
   showScreen({
+    screenType: 'tile-battle',
     content: React.createElement(BattleScreen, {
       attacker,
       defender,

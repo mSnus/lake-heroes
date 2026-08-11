@@ -93,6 +93,8 @@ export function checkRogueAttackEncounter(
 
   showScreen({
     screenType: 'rogue-attack',
+    tileIndex: tileIdx,
+    hordeUnits,
     content: React.createElement(BattleScreen, {
       mode: 'rogue',
       attacker: horde,

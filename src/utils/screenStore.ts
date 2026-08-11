@@ -19,6 +19,14 @@ export interface SavedScreen {
   title?: string;
   caravanDefence?: number;
   caravanPrize?: number;
+  // Battle-resume identifiers only — enough to reconstruct who's fighting
+  // whom and over what, not the fight's in-progress state. A restored
+  // battle always restarts fresh from turn 0.
+  tileIndex?: number;
+  defenderId?: number;
+  battlefieldUnits?: number;
+  ambushAttackerUnits?: number;
+  hordeUnits?: number;
 }
 
 export interface ScreenConfig {
@@ -49,6 +57,14 @@ export interface ScreenConfig {
   sellHeader?: string;
   content?: React.ReactNode;
   doNotPersist?: boolean;
+  // Mirrors the same fields on SavedScreen — set alongside `content` for a
+  // battle screen so a reload can reconstruct it (see App.tsx's save
+  // effect and restore switch).
+  tileIndex?: number;
+  defenderId?: number;
+  battlefieldUnits?: number;
+  ambushAttackerUnits?: number;
+  hordeUnits?: number;
 }
 
 let state: ScreenConfig | null = null;

@@ -16,6 +16,7 @@ export function claimTile(board: GameState | null, updateGameState: (board: Game
   attacker.hasClaimedThisTurn = true;
 
   showScreen({
+    screenType: 'tile-battle',
     content: React.createElement(BattleScreen, {
       attacker,
       tile,
