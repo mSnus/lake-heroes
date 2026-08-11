@@ -65,19 +65,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     }
   }
 
-  const joints: React.ReactNode[] = [];
-  for (let r = 0; r < rows - 1; r++) {
-    for (let c = 0; c < cols - 1; c++) {
-      joints.push(
-        <div
-          key={`j-${c}-${r}`}
-          className="bfg-joint"
-          style={{ left: `calc((${c} + 1) * var(--bfg-cell))`, top: `calc((${r} + 1) * var(--bfg-cell))` }}
-        />
-      );
-    }
-  }
-
   return (
     <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '')}>
       <div className="bfg-grid" style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-cell))` }}>
@@ -85,7 +72,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
           <div key={i} className="bfg-cell" />
         ))}
       </div>
-      <div className="bfg-joints">{joints}</div>
       <div className="bfg-units">
         {units.map((u) => {
           const key = `${u.side}-${u.kind}`;
