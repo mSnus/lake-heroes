@@ -13,26 +13,22 @@ import { t } from '../../i18n';
  * - Win (outcome 'attacker', horde wins): tile is razed, same as losing a
  *   real tile battle.
  * - Loss (outcome 'defender', garrison wins): garrison takes real losses
- *   from the fight (rescaled from grid kills, same as a normal tile
- *   battle), then grows 25% on top of what survived, capped by capacity.
- * - Tie (mutual wipe): garrison takes real losses equal to the (rescaled)
- *   attack, but the tile itself isn't lost.
+ *   from the fight, then grows 25% on top of what survived, capped by
+ *   capacity.
+ * - Tie (mutual wipe): garrison takes real losses equal to the attack, but
+ *   the tile itself isn't lost.
+ *
+ * `defenderUnitsKilled` is already a real militia/riders headcount by the
+ * time it reaches here — see the equivalent note in resolveTileBattle.ts.
  */
 export function resolveRogueAttack(
   board: GameState,
   player: Player,
   tile: Tile,
   defenderUnitsKilled: number,
-  outcome: BattleOutcome,
-  defenceGridSize: number
+  outcome: BattleOutcome
 ): BattleResolution {
   const tileName = tile.name;
-
-  const realGarrisonLoss = (gridKills: number): number => {
-    if (gridKills <= 0 || defenceGridSize <= 0) return 0;
-    const realGarrison = tile.garrisonMilitia + tile.garrisonRiders;
-    return Math.min(realGarrison, Math.round((gridKills / defenceGridSize) * realGarrison));
-  };
 
   let message = '';
   let victoryBg = false;
@@ -54,7 +50,7 @@ export function resolveRogueAttack(
     message = t('rogueAttack.razed', { tileName });
     lostBg = true;
   } else if (outcome === 'defender') {
-    tile.garrison = Math.max(0, tile.garrison - realGarrisonLoss(defenderUnitsKilled));
+    tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const before = tile.garrison;
     tile.garrison = before + Math.round(before * 0.25);
     const gained = tile.garrison - before;
@@ -62,7 +58,7 @@ export function resolveRogueAttack(
     message = gained > 0 ? t('rogueAttack.wonGrows', { tileName, units: gained }) : t('rogueAttack.wonFull', { tileName });
     victoryBg = true;
   } else {
-    const loss = realGarrisonLoss(defenderUnitsKilled);
+    const loss = defenderUnitsKilled;
     tile.garrison = Math.max(0, tile.garrison - loss);
     message = t('rogueAttack.tie', { tileName, units: loss });
   }

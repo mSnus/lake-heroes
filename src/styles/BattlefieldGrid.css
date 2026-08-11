@@ -1,0 +1,117 @@
+/* Octagon-tessellation battlefield (truncated-square tiling): a 16x20 grid
+   of octagon cells with small diamond "joint" tiles filling the corner gaps
+   between them. Purely decorative -- adjacency/movement logic in
+   game/battleGrid/engine.ts only ever operates on the 16x20 (col,row) grid
+   with 8-directional Chebyshev adjacency; the diamonds add no real graph
+   nodes, they just visually fill what would otherwise be dead corner space
+   in a plain square grid. */
+
+.bfg-battlefield {
+  container-type: inline-size;
+  container-name: battlefield;
+  position: relative;
+  width: 100%;
+  max-height: 46vh;
+  overflow: auto;
+  --bfg-cell: 6.2vmin;
+}
+
+@supports (container-type: inline-size) {
+  .bfg-battlefield {
+    --bfg-cell: 6.2cqi;
+  }
+}
+
+.bfg-grid {
+  display: grid;
+  position: relative;
+}
+
+.bfg-cell {
+  width: var(--bfg-cell);
+  height: var(--bfg-cell);
+  background: #2a3c2ac0;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+/* TEMPORARY: visible grid overlay, meant to be removed later -- one class to
+   drop (or the `showGridLines` prop it's driven by) once it's no longer
+   needed for playtesting. */
+.bfg-grid-visible .bfg-cell {
+  outline: 1px solid #ffffff2a;
+}
+
+.bfg-joints {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bfg-joint {
+  position: absolute;
+  width: calc(var(--bfg-cell) * 0.42);
+  height: calc(var(--bfg-cell) * 0.42);
+  transform: translate(-50%, -50%);
+  background: #2a3c2ac0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.bfg-units {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bfg-unit {
+  position: absolute;
+  width: var(--bfg-cell);
+  height: var(--bfg-cell);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.25s ease, top 0.25s ease;
+}
+
+.bfg-unit-emoji {
+  font-size: calc(var(--bfg-cell) * 0.55);
+  line-height: 1;
+  text-shadow: 1px 1px 3px #000;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+.bfg-unit-attacker .bfg-unit-emoji {
+  color: #6fd1ff;
+}
+
+.bfg-unit-defender .bfg-unit-emoji {
+  color: #ff8a6f;
+}
+
+.bfg-unit-acted {
+  filter: drop-shadow(0 0 6px #ffca28);
+}
+
+.bfg-unit-hp {
+  display: block;
+  width: 70%;
+  height: 3px;
+  background: #00000080;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.bfg-unit-hp-fill {
+  display: block;
+  height: 100%;
+  background: #6fe86f;
+}
+
+.bfg-unit-attacker .bfg-unit-hp-fill {
+  background: #6fd1ff;
+}
+
+.bfg-unit-defender .bfg-unit-hp-fill {
+  background: #ff8a6f;
+}

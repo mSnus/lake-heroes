@@ -7,3 +7,10 @@ export function rollDice(): number {
 export function rollDiceWide(): number {
   return Math.floor(Math.random() * 12) + 1;
 }
+
+/** Uniform integer roll in [min, max] — used by the grid battle engine for
+ * per-unit attack/defence rolls (militia/rider ranges differ, so the fixed
+ * rollDice/rollDiceWide ranges don't apply). */
+export function rollInRange(min: number, max: number, rng: () => number = Math.random): number {
+  return Math.floor(rng() * (max - min + 1)) + min;
+}

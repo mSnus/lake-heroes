@@ -10,6 +10,9 @@
   margin-top: -8rem;
 }
 
+/* Still used by HeroHourScreen.tsx's own pre-battle title (a separate
+   "which player to challenge" screen shown before BattleScreen itself
+   mounts) — BattleScreen no longer renders a title of its own. */
 .battle-header {
   font-family: 'StyleScript', serif;
   color: #fff;
@@ -19,19 +22,6 @@
     2px 2px 8px #000,
     0 0 20px #000;
   text-align: center;
-}
-
-/* ── Brawl tag ── */
-
-.battle-brawl-tag {
-  font-family: 'Texturina', serif;
-  color: #ffca28;
-  font-size: 1.1rem;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-shadow: 1px 1px 4px #000;
-  margin-top: 0;
 }
 
 /* ── Names row ── */
@@ -66,101 +56,30 @@
   white-space: nowrap;
 }
 
-.battle-vs-units {
-  font-size: 0.9rem;
-  font-weight: 300;
-  color: #9d9d9d;
-  text-shadow: 1px 1px 4px #000;
-  white-space: nowrap;
-  text-align: center;
-  flex: 0 0 auto;
-  width: fit-content;
-}
+/* ── "{X} vs {Y}" heading — title text removed, this is now the primary
+   headline; the mode icon (tile/dragon/caravan/etc) renders directly below
+   it via SpriteCircleIcon. ── */
 
-.battle-vs-units .vs-icon {
-  font-size: 2rem;
-}
-
-.battle-vs-units .vs {
-  font-size: 0.9rem;
-}
-
-/* ── Battlefield: two unit columns with center roll display ── */
-
-.battle-field {
-  display: flex;
-  gap: 2rem;
-  width: 100%;
-  margin-top: 0.75rem;
-  position: relative;
-}
-
-.battle-units {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  padding: 10px 8px;
-  text-shadow: 1px 1px 4px #000;
-  min-height: 48px;
-  max-height: 40vh;
-  overflow-y: auto;
-  align-content: flex-start;
-}
-
-.battle-units.bc-attacker {
-  justify-content: flex-end;
-}
-
-.battle-units.bc-defender {
-  justify-content: flex-start;
-}
-
-.battle-unit {
-  font-size: 1.2rem;
-  line-height: 1.2;
-  width: 1.6em;
-  height: 1.6em;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-/* Non-brawl (automatic) duels — width/height are em-based, so scaling
-   font-size scales the whole box proportionally. */
-.battle-unit-small {
-  font-size: 1.12rem;
-}
-
-/* ── Center column: roll display ── */
-
-.battle-field-vs {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 4px 2px;
-}
-
-.bf-roll {
-  font-size: 1rem;
+.battle-vs-heading {
+  font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
-  text-shadow: 1px 1px 3px #000;
+  text-shadow:
+    2px 2px 8px #000,
+    0 0 20px #000;
   white-space: nowrap;
   text-align: center;
+  margin-top: -8px;
 }
 
-.bf-sep {
-  font-size: 1.3rem;
-  opacity: 0.4;
+.battle-vs-heading .vs-icon {
+  font-size: 2.4rem;
+  display: block;
+}
+
+.battle-vs-heading .vs {
+  font-size: 1rem;
+  color: #9d9d9d;
 }
 
 /* ── Inline result ── */

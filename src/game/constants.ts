@@ -33,3 +33,17 @@ export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
 ];
 
 export const SPRITE_SIZE = 96;
+
+// ── Grid battle (BattlefieldGrid) ──
+export const BATTLEFIELD_COLS = 16;
+export const BATTLEFIELD_ROWS = 20;
+export const MILITIA_HP = 12;
+export const MILITIA_DMG_MIN = 1;
+export const MILITIA_DMG_MAX = 6;
+export const RIDER_HP = 24;
+export const RIDER_DMG_MIN = 4;
+export const RIDER_DMG_MAX = 10;
+// Per-side cap on how many real militia/riders get their own grid unit —
+// above this, army composition is proportionally downscaled to fit the
+// 16x20=320-cell battlefield (see game/battleGrid/scale.ts).
+export const MAX_GRID_ARMY_SIZE = 150;

@@ -24,6 +24,11 @@ import { t } from '../../i18n';
  * - Tie: no fee; tile drops a level (if above 1); an owned tile's garrison
  *   still takes the losses it suffered defending (wild guards, again,
  *   don't).
+ *
+ * `defenderUnitsKilled` is already a real militia/riders headcount by the
+ * time it reaches here — the grid battle's raw cell losses are rescaled
+ * back to real units in BattleScreen (see game/battleGrid/scale.ts) before
+ * this resolver is called, so no further rescaling happens here.
  */
 export function resolveTileBattle(
   board: GameState,
@@ -32,28 +37,11 @@ export function resolveTileBattle(
   tile: Tile,
   attackerUnitsKilled: number,
   defenderUnitsKilled: number,
-  outcome: BattleOutcome,
-  // Size of the defender's duel grid the fight actually played out on
-  // (tile.defence at the moment the battle started) — this is the garrison's
-  // *weighted, level-boosted* power, which can be bigger than its real
-  // headcount. defenderUnitsKilled counts grid squares, not real units, so on
-  // anything short of a full wipe it must be rescaled back down to the real
-  // militia/riders count below, or a partial loss could over-subtract the
-  // real garrison to 0.
-  defenceGridSize: number
+  outcome: BattleOutcome
 ): BattleResolution {
   const unitsBefore = attacker.units;
   const goldBefore = attacker.gold;
   const claiming = !tile.isOwned();
-
-  // Rescales a grid-square kill count back to how many *real* garrison
-  // units that represents, proportional to how much of the (possibly
-  // power-inflated) grid actually died.
-  const realGarrisonLoss = (gridKills: number): number => {
-    if (gridKills <= 0 || defenceGridSize <= 0) return 0;
-    const realGarrison = tile.garrisonMilitia + tile.garrisonRiders;
-    return Math.min(realGarrison, Math.round((gridKills / defenceGridSize) * realGarrison));
-  };
 
   let message = '';
   let victoryBg = false;
@@ -103,7 +91,7 @@ export function resolveTileBattle(
     // Wild guards on an unowned tile aren't a real player's army — a failed
     // claim leaves their numbers untouched. Only a real owner's garrison
     // takes real losses.
-    if (!claiming) tile.garrison = Math.max(0, tile.garrison - realGarrisonLoss(defenderUnitsKilled));
+    if (!claiming) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const lossStr = attackerUnitsKilled > 0 ? t('resolveTileBattle.losingSuffix', { units: attackerUnitsKilled }) : '';
 
     board.gameMessage = t('resolveTileBattle.lostBattleGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr });
@@ -112,7 +100,7 @@ export function resolveTileBattle(
   } else {
     const unitLoss = Math.floor(tile.defence / 4);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-    if (!claiming) tile.garrison = Math.max(0, tile.garrison - realGarrisonLoss(defenderUnitsKilled));
+    if (!claiming) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
     const lossStr = unitLoss > 0 ? t('resolveTileBattle.losingSuffix', { units: unitLoss }) : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;
