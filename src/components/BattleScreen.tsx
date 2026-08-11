@@ -418,14 +418,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     }
   };
 
-  // Bots need no click to advance — auto-play turns until the battle ends.
+  // No manual "Next Turn" click — every battle auto-plays turn by turn
+  // until it ends.
   const bothSidesAutomated = attacker.isComputer && (!defender || defender.isComputer);
   useEffect(() => {
-    if (!bothSidesAutomated || phase !== 'ongoing') return;
+    if (phase !== 'ongoing') return;
     const timer = setTimeout(() => handleNextTurn(), AUTO_TURN_DELAY_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bothSidesAutomated, phase, battle.turn]);
+  }, [phase, battle.turn]);
 
   // Give the player a beat to see the final positions on the battlefield
   // itself, then clear it away — the result panel only appears once the
@@ -530,12 +531,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         </div>
 
         {showBattlefield && <BattlefieldGrid battle={battle} lastEvents={lastEvents} animPhase={animPhase} />}
-
-        {phase === 'ongoing' && !bothSidesAutomated && (
-          <DecoratedButton onClick={handleNextTurn}>
-            ⏭️ {t('battleScreen.nextTurn')}
-          </DecoratedButton>
-        )}
 
         {phase === 'result' && !showBattlefield && (
           <div className="battle-result-inline">

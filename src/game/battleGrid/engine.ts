@@ -47,7 +47,7 @@ function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: ()
 }
 
 /** Build a fresh battle, both armies placed on opposite long edges, riders
- * filled first (vanguard) then militia, matching the old tier ordering. */
+ * filling the front rows (closest to the enemy) and militia the back. */
 export function createBattle(
   attacker: { militia: number; riders: number },
   defender: { militia: number; riders: number },
@@ -57,20 +57,11 @@ export function createBattle(
   let stableIndex = 0;
   const units: GridUnit[] = [];
 
+  // Militia fill first (placeArmy fills columns outward from the edge, so
+  // earlier-pushed units land in the back rows) and riders fill last, so
+  // riders end up in the front rows — closest to the enemy.
   const buildSide = (side: BattleSide, comp: { militia: number; riders: number }) => {
     const sideUnits: GridUnit[] = [];
-    for (let i = 0; i < comp.riders; i++) {
-      sideUnits.push({
-        id: `${side}-${stableIndex}`,
-        side,
-        kind: 'rider',
-        hp: hpFor('rider'),
-        maxHp: hpFor('rider'),
-        col: 0,
-        row: 0,
-        stableIndex: stableIndex++,
-      });
-    }
     for (let i = 0; i < comp.militia; i++) {
       sideUnits.push({
         id: `${side}-${stableIndex}`,
@@ -78,6 +69,18 @@ export function createBattle(
         kind: 'militia',
         hp: hpFor('militia'),
         maxHp: hpFor('militia'),
+        col: 0,
+        row: 0,
+        stableIndex: stableIndex++,
+      });
+    }
+    for (let i = 0; i < comp.riders; i++) {
+      sideUnits.push({
+        id: `${side}-${stableIndex}`,
+        side,
+        kind: 'rider',
+        hp: hpFor('rider'),
+        maxHp: hpFor('rider'),
         col: 0,
         row: 0,
         stableIndex: stableIndex++,

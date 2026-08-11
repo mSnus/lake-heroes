@@ -5,9 +5,11 @@ import { GridUnit } from './types';
  * a perfect square, a rectangle with an uneven last column) hugging the
  * grid's long-edge side nearest that army (col 0 for the attacker, the last
  * col for the defender), vertically centered rather than pinned to the top
- * row. Mutates `col`/`row` on each unit in place. Units must already be in
- * fill order (riders first, then militia — the vanguard convention carried
- * over from the old duel system's tier ordering).
+ * row. Column offset grows *away* from that edge (toward the enemy), so
+ * units earlier in the array land in the back rows and later ones in the
+ * front — callers should order militia first, then riders, so riders end up
+ * in front, closest to the enemy (see engine.ts's createBattle). Mutates
+ * `col`/`row` on each unit in place.
  */
 export function placeArmy(units: GridUnit[], side: 'attacker' | 'defender', cols: number, rows: number): void {
   const n = units.length;
