@@ -35,6 +35,10 @@ type BattlePhase = 'ongoing' | 'result';
 // visible turn-by-turn playback rather than an instant jump to the result.
 const AUTO_TURN_DELAY_MS = 250;
 
+// Duration of each beat of the per-turn attack/defend -> hit -> death
+// emoji animation (see handleNextTurn).
+const COMBAT_ANIM_BEAT_MS = 125;
+
 export type BattleScreenProps =
   | {
       attacker: Player;
@@ -372,9 +376,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           setAnimPhase('idle');
           animatingRef.current = false;
           setBattle(state);
-        }, 200);
-      }, 200);
-    }, 200);
+        }, COMBAT_ANIM_BEAT_MS);
+      }, COMBAT_ANIM_BEAT_MS);
+    }, COMBAT_ANIM_BEAT_MS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, battle, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus]);
 
