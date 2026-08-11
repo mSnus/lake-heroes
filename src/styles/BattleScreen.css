@@ -30,7 +30,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  justify-items: center;
   position: relative;
   gap: 12px;
   text-align: center;
@@ -38,6 +37,8 @@
 
 .battle-names-row .bc-attacker,
 .battle-names-row .bc-defender {
+  flex: 1 1 0;
+  min-width: 0;
   text-align: center;
   filter: drop-shadow(0px 2px 12px #333333) drop-shadow(0px 2px 12px #333333);
 }
@@ -56,11 +57,16 @@
   white-space: nowrap;
 }
 
-/* ── "{X} vs {Y}" heading — title text removed, this is now the primary
-   headline; the mode icon (tile/dragon/caravan/etc) renders directly below
-   it via SpriteCircleIcon. ── */
+/* ── "{X} vs {Y}" heading — title text removed, this is now the center
+   column of the names row, flanked by the attacker/defender player cards;
+   the mode icon (tile/dragon/caravan/etc) renders directly below it via
+   SpriteCircleIcon. ── */
 
 .battle-vs-heading {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
@@ -69,12 +75,15 @@
     0 0 20px #000;
   white-space: nowrap;
   text-align: center;
-  margin-top: -8px;
 }
 
 .battle-vs-heading .vs-icon {
   font-size: 2.4rem;
-  display: block;
+  line-height: 1;
+}
+
+.battle-vs-heading .vs-count {
+  margin-top: 2px;
 }
 
 .battle-vs-heading .vs {

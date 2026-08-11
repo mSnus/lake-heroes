@@ -451,14 +451,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       <Fade />
 
       <div className="battle-screen">
-        <div className="battle-vs-heading">
-          <div className="vs-icon">⚔️</div>
-          {isAmbush ? defenderLiveCount : attackerLiveCount}
-          <span className="vs"> {t('common.vs')} </span>
-          {isAmbush ? attackerLiveCount : defenderLiveCount}
-        </div>
-        {modeIconSrc && <SpriteCircleIcon src={modeIconSrc} size="6rem" />}
-
         <div className="battle-names-row">
           <div className="bc-attacker">
             {isAmbush ? (
@@ -479,6 +471,17 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             </div>
           )}
           </div>
+
+          <div className="battle-vs-heading">
+            <div className="vs-icon">⚔️</div>
+            <div className="vs-count">
+              {isAmbush ? defenderLiveCount : attackerLiveCount}
+              <span className="vs"> {t('common.vs')} </span>
+              {isAmbush ? attackerLiveCount : defenderLiveCount}
+            </div>
+            {modeIconSrc && <SpriteCircleIcon src={modeIconSrc} size="4.5rem" />}
+          </div>
+
           <div className="bc-defender">
             {isAmbush ? (
               <PlayerCard player={attacker} showArtifacts={false} />
