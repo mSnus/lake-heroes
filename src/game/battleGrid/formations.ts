@@ -200,6 +200,22 @@ function splitEvenlyCenterHeavy(total: number, count: number): number[] {
   return sizes;
 }
 
+/**
+ * Split `total` into `count` shares, packing as many shares as possible to
+ * full strength (MAX_GROUP_SIZE) first and putting only the leftover into
+ * the remaining shares (via splitEvenlyCenterHeavy, so that remainder is
+ * itself center-weighted). Used for forced-groupCount (tower/squad) armies
+ * big enough to field full-strength sub-formations — e.g. 45 into 6 shares
+ * -> [10, 10, 10, 10, 3, 2], not 6 similarly-sized ~7-8 shares.
+ */
+function splitFrontLoaded(total: number, count: number): number[] {
+  if (count <= 0) return [];
+  const fullCount = Math.min(count, Math.floor(total / MAX_GROUP_SIZE));
+  const remaining = total - fullCount * MAX_GROUP_SIZE;
+  const partialSizes = splitEvenlyCenterHeavy(remaining, count - fullCount);
+  return new Array(fullCount).fill(MAX_GROUP_SIZE).concat(partialSizes);
+}
+
 function centerIndex(count: number): number {
   if (count <= 2) return 0; // no true middle for 1-2 groups — front-load
   return Math.floor(count / 2);
@@ -234,24 +250,36 @@ function orderByFrontness(cells: LocalCell[]): LocalCell[] {
   return [...cells].sort((a, b) => a.col - b.col || a.row - b.row);
 }
 
+/** Stack sub-formations into a single front-flush column (front edge of
+ * every shape stays at local col 0), one below the next separated by
+ * GROUP_GAP. Returns the stack's own bounding size alongside its cells so
+ * callers can center a shorter stack against a taller one. */
+function stackColumnLocal(groups: PlacedCell[][]): { cells: PlacedCell[]; height: number; width: number } {
+  let rowCursor = 0;
+  let maxWidth = 0;
+  const cells: PlacedCell[] = [];
+  for (const group of groups) {
+    const box = boundingBox(group);
+    for (const c of group) cells.push({ col: c.col, row: c.row + rowCursor, kind: c.kind });
+    rowCursor += box.height + GROUP_GAP;
+    maxWidth = Math.max(maxWidth, box.width);
+  }
+  return { cells, height: Math.max(0, rowCursor - GROUP_GAP), width: maxWidth };
+}
+
 /**
- * Arrange several already-built sub-formations into one combined layout,
- * separated by GROUP_GAP empty rows/cols:
- * - 1-3 groups: a single vertical column, each centered horizontally.
- * - 4+ groups where count is exactly one more than a perfect square (e.g.
- *   5 = 2x2 + 1): the square block of full-size groups plus the heaviest
- *   (center-split) group placed in the middle among them — the only
- *   multi-group layout with a concrete example to go on.
- * - any other 4+ count: a generic packed row-major grid, since no example
- *   covers those counts specifically.
+ * Arrange several already-built sub-formations into one combined layout:
+ * - 1-3 groups: a single front-flush vertical column.
+ * - 4+ groups: a front column packing every full-strength (10-unit) group,
+ *   and a column behind it holding whatever understrength groups are left
+ *   over — the shorter of the two columns is centered against the taller
+ *   one, so the "spare" groups sit symmetrically behind the packed front
+ *   rather than watering every group down to stay equal-ish.
  */
 function arrangeGroups(groups: PlacedCell[][]): PlacedCell[] {
   const g = groups.length;
   if (g === 0) return [];
   if (g === 1) return groups[0];
-
-  const boxes = groups.map(boundingBox);
-  const out: PlacedCell[] = [];
 
   if (g <= 3) {
     // Front-flush, not centered: every shape is already authored with its
@@ -259,41 +287,23 @@ function arrangeGroups(groups: PlacedCell[][]): PlacedCell[] {
     // up their fronts along the same column regardless of how wide each
     // group's own back end is — centering would instead misalign the
     // fronts whenever the groups have different widths.
-    let rowCursor = 0;
-    groups.forEach((group, i) => {
-      const box = boxes[i];
-      for (const c of group) out.push({ col: c.col, row: c.row + rowCursor, kind: c.kind });
-      rowCursor += box.height + GROUP_GAP;
-    });
-    return out;
+    const { cells } = stackColumnLocal(groups);
+    return cells;
   }
 
-  const cellW = Math.max(...boxes.map((b) => b.width)) + GROUP_GAP;
-  const cellH = Math.max(...boxes.map((b) => b.height)) + GROUP_GAP;
-  const side = Math.round(Math.sqrt(g - 1));
-  const isOneMoreThanSquare = side >= 2 && side * side === g - 1;
+  const fullGroups = groups.filter((group) => group.length >= MAX_GROUP_SIZE);
+  const partialGroups = groups.filter((group) => group.length < MAX_GROUP_SIZE);
 
-  const positions: { gx: number; gy: number }[] = new Array(g);
-  if (isOneMoreThanSquare) {
-    const corners: { gx: number; gy: number }[] = [];
-    for (let y = 0; y < side; y++) for (let x = 0; x < side; x++) corners.push({ gx: x, gy: y });
-    const mid = centerIndex(g);
-    let cursor = 0;
-    for (let i = 0; i < g; i++) {
-      positions[i] = i === mid ? { gx: (side - 1) / 2, gy: (side - 1) / 2 } : corners[cursor++];
-    }
-  } else {
-    const gridCols = Math.ceil(Math.sqrt(g));
-    for (let i = 0; i < g; i++) positions[i] = { gx: i % gridCols, gy: Math.floor(i / gridCols) };
-  }
+  const front = stackColumnLocal(fullGroups);
+  const back = stackColumnLocal(partialGroups);
+  const maxHeight = Math.max(front.height, back.height);
+  const frontRowOffset = Math.floor((maxHeight - front.height) / 2);
+  const backRowOffset = Math.floor((maxHeight - back.height) / 2);
+  const backColStart = fullGroups.length > 0 ? front.width + GROUP_GAP : 0;
 
-  groups.forEach((group, i) => {
-    const box = boxes[i];
-    const { gx, gy } = positions[i];
-    const dCol = Math.round(gx * cellW + (cellW - box.width) / 2);
-    const dRow = Math.round(gy * cellH + (cellH - box.height) / 2);
-    for (const c of group) out.push({ col: c.col + dCol, row: c.row + dRow, kind: c.kind });
-  });
+  const out: PlacedCell[] = [];
+  for (const c of front.cells) out.push({ col: c.col, row: c.row + frontRowOffset, kind: c.kind });
+  for (const c of back.cells) out.push({ col: c.col + backColStart, row: c.row + backRowOffset, kind: c.kind });
   return out;
 }
 
@@ -322,13 +332,32 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
     return layoutGroup(comp);
   }
 
-  // Each share is capped at MAX_GROUP_SIZE by splitEvenlyCenterHeavy, but a
-  // *forced* groupCount (towers/squads) can still divide out to a base
-  // share above that cap (e.g. 3 towers, 35 units -> base 11) — the
-  // recursive layoutGroup call per share (with no forced count of its own)
-  // handles that by chunking that specific share further on its own.
-  const militiaSizes = splitEvenlyCenterHeavy(comp.militia, groupCount);
-  const riderSizes = splitEvenlyCenterHeavy(comp.riders, groupCount);
+  let militiaSizes: number[];
+  let riderSizes: number[];
+  if (forcedGroupCount) {
+    // Forced groupCount (towers/squads): pack shares to full strength
+    // front-to-back rather than spreading everyone thin (see
+    // splitFrontLoaded) — riders lead, filling each packed share before
+    // spilling into the next, so the full front shares are cavalry-led.
+    const sizes = splitFrontLoaded(total, groupCount);
+    militiaSizes = [];
+    riderSizes = [];
+    let remainingRiders = comp.riders;
+    for (const size of sizes) {
+      const r = Math.min(remainingRiders, size);
+      riderSizes.push(r);
+      militiaSizes.push(size - r);
+      remainingRiders -= r;
+    }
+  } else {
+    // Each share is capped at MAX_GROUP_SIZE by splitEvenlyCenterHeavy, but
+    // a *forced* groupCount (towers/squads) can still divide out to a base
+    // share above that cap (e.g. 3 towers, 35 units -> base 11) — the
+    // recursive layoutGroup call per share (with no forced count of its
+    // own) handles that by chunking that specific share further on its own.
+    militiaSizes = splitEvenlyCenterHeavy(comp.militia, groupCount);
+    riderSizes = splitEvenlyCenterHeavy(comp.riders, groupCount);
+  }
   const subGroups = militiaSizes.map((m, i) => layoutGroup({ militia: m, riders: riderSizes[i] }));
   return arrangeGroups(subGroups);
 }
