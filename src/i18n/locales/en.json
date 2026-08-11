@@ -189,7 +189,8 @@
     "upgradeLine": "{priceTag} → {slots}🏯 and +{bonus}{icon} per year",
     "onGuard": "On guard:",
     "onGuardLine": "{slots}🏯 with {input}🧍",
-    "stayInArmy": "(so {count}🧍 stay in army)",
+    "stayInArmy": "so only {count}🧍 would stay in army",
+    "stayInArmyLocked": "so only {count}🧍 would stay in army and you can't take 🧍 back until you visit this tile again",
     "leaveUnguarded": "Leave unprotected 🩸",
     "setToGuard": "Guard with {amount} 🧍"
   },

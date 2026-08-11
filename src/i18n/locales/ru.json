@@ -189,7 +189,8 @@
     "upgradeLine": "{priceTag} → {slots}🏯 и +{bonus}{icon} в год",
     "onGuard": "В гарнизоне:",
     "onGuardLine": "{slots}🏯 с {input}🧍",
-    "stayInArmy": "(так {count}🧍 останется в армии)",
+    "stayInArmy": "так в армии останется только {count}🧍",
+    "stayInArmyLocked": "так в армии останется только {count}🧍, и вы не сможете забрать 🧍 обратно, пока снова не посетите эту клетку",
     "leaveUnguarded": "Оставить без защиты 🩸",
     "setToGuard": "Охранять с {amount} 🧍"
   },
