@@ -231,6 +231,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const [resultMsg, setResultMsg] = useState('');
   const [showLostBg, setShowLostBg] = useState(false);
   const [showVictoryBg, setShowVictoryBg] = useState(false);
+  const [showBattlefield, setShowBattlefield] = useState(true);
 
   // ── Labels ──
   const defenderLabel = isDragon
@@ -407,6 +408,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bothSidesAutomated, phase, battle.turn]);
 
+  // Give the player a beat to see the final positions/outcome on the
+  // battlefield itself, then clear it away so the result panel is what's
+  // actually in focus.
+  useEffect(() => {
+    if (phase !== 'result') return;
+    const timer = setTimeout(() => setShowBattlefield(false), 1500);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
   // Auto-close the result screen when every real participant is a bot
   // (a human-vs-NPC battle still has a real human to click "Continue").
   // Longer delay than the auto-turn pacing, so there's time to read the outcome.
@@ -501,7 +511,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
         </div>
 
-        <BattlefieldGrid battle={battle} lastEvents={lastEvents} />
+        {showBattlefield && <BattlefieldGrid battle={battle} lastEvents={lastEvents} />}
 
         {phase === 'ongoing' && !bothSidesAutomated && (
           <DecoratedButton onClick={handleNextTurn}>
