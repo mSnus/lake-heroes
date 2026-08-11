@@ -431,9 +431,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')
     : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
 
-  const attackerLiveCount = battle.units.filter((u) => u.side === 'attacker').length;
-  const defenderLiveCount = battle.units.filter((u) => u.side === 'defender').length;
-
   return (
     <ScreenBackground image={isAmbush || isRogue ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
       <div
@@ -485,9 +482,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           <div className="battle-vs-heading">
             <div className="vs-icon">⚔️</div>
             <div className="vs-count">
-              {isAmbush ? defenderLiveCount : attackerLiveCount}
+              {isAmbush ? defenderGridTotal : attackerGridTotal}
               <span className="vs"> {t('common.vs')} </span>
-              {isAmbush ? attackerLiveCount : defenderLiveCount}
+              {isAmbush ? attackerGridTotal : defenderGridTotal}
             </div>
             {modeIconSrc && <SpriteCircleIcon src={modeIconSrc} size="4.5rem" />}
           </div>
