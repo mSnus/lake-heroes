@@ -337,21 +337,40 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     []
   );
 
+  // Each turn plays out as a 3-stage micro-animation before the computed
+  // result is actually committed to `battle` state: attack/defend icons,
+  // then a hit flash on whoever's being attacked, then a death flash on
+  // whoever's dying — all against the *pre-turn* snapshot, since combat
+  // itself never moves anyone (see engine.ts). Only non-engaged units
+  // moving is "invisible" here, same as before — they just animate to
+  // their new cell (via CSS transition) once the turn commits.
+  const animatingRef = useRef(false);
+  const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'hit' | 'death'>('idle');
+
   const handleNextTurn = useCallback(() => {
-    if (phase !== 'ongoing') return;
-    setBattle((prev) => {
-      if (isBattleOver(prev)) return prev;
-      const { state, events } = stepTurn(prev, {
-        rng: Math.random,
-        attackerFlatBonus: attackerRollBonus,
-        defenderPctBonus: garrisonRollBonusPct,
-        defenderFlatBonus: defenderRollBonus,
-      });
-      setLastEvents(events);
-      return state;
+    if (phase !== 'ongoing' || animatingRef.current || isBattleOver(battle)) return;
+    const { state, events } = stepTurn(battle, {
+      rng: Math.random,
+      attackerFlatBonus: attackerRollBonus,
+      defenderPctBonus: garrisonRollBonusPct,
+      defenderFlatBonus: defenderRollBonus,
     });
+    animatingRef.current = true;
+    setLastEvents(events);
+    setAnimPhase('attack-defend');
+    setTimeout(() => {
+      setAnimPhase('hit');
+      setTimeout(() => {
+        setAnimPhase('death');
+        setTimeout(() => {
+          setAnimPhase('idle');
+          animatingRef.current = false;
+          setBattle(state);
+        }, 200);
+      }, 200);
+    }, 200);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus]);
+  }, [phase, battle, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus]);
 
   // Trigger resolution exactly once, the moment the grid battle ends —
   // watching `battle` rather than resolving inline inside the setBattle
@@ -408,24 +427,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bothSidesAutomated, phase, battle.turn]);
 
-  // Give the player a beat to see the final positions/outcome on the
-  // battlefield itself, then clear it away so the result panel is what's
-  // actually in focus.
+  // Give the player a beat to see the final positions on the battlefield
+  // itself, then clear it away — the result panel only appears once the
+  // battlefield is gone (see the result-panel render below), not
+  // side-by-side with it.
   useEffect(() => {
     if (phase !== 'result') return;
-    const timer = setTimeout(() => setShowBattlefield(false), 1500);
+    const timer = setTimeout(() => setShowBattlefield(false), 2000);
     return () => clearTimeout(timer);
   }, [phase]);
 
   // Auto-close the result screen when every real participant is a bot
   // (a human-vs-NPC battle still has a real human to click "Continue").
-  // Longer delay than the auto-turn pacing, so there's time to read the outcome.
+  // Waits for the battlefield to actually be gone (the result panel isn't
+  // shown before then), so there's still time to read the outcome.
   useEffect(() => {
-    if (phase !== 'result' || !bothSidesAutomated) return;
+    if (phase !== 'result' || showBattlefield || !bothSidesAutomated) return;
     const t = setTimeout(() => handleClose(), 800);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, bothSidesAutomated]);
+  }, [phase, showBattlefield, bothSidesAutomated]);
 
   const battleResultEmoji = isAmbush
     ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')
@@ -508,7 +529,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
         </div>
 
-        {showBattlefield && <BattlefieldGrid battle={battle} lastEvents={lastEvents} />}
+        {showBattlefield && <BattlefieldGrid battle={battle} lastEvents={lastEvents} animPhase={animPhase} />}
 
         {phase === 'ongoing' && !bothSidesAutomated && (
           <DecoratedButton onClick={handleNextTurn}>
@@ -516,7 +537,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </DecoratedButton>
         )}
 
-        {phase === 'result' && (
+        {phase === 'result' && !showBattlefield && (
           <div className="battle-result-inline">
             <div className="battle-result-sequence">
               {battleResultEmoji}

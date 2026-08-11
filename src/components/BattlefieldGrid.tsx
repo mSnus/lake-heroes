@@ -2,9 +2,15 @@ import React from 'react';
 import { GridBattleState, TurnEvent } from '../game/battleGrid/types';
 import '../styles/BattlefieldGrid.css';
 
+type AnimPhase = 'idle' | 'attack-defend' | 'hit' | 'death';
+
 interface BattlefieldGridProps {
   battle: GridBattleState;
   lastEvents: TurnEvent[];
+  /** Which stage of this turn's 3-beat micro-animation is currently
+   * showing (attack/defend icons -> hit flash -> death flash), driving a
+   * temporary emoji override per unit — see the per-unit lookup below. */
+  animPhase?: AnimPhase;
   /** Toggle for the octagon grid outline — a temporary debug aid, kept behind
    * a single prop so it's a one-line change to drop later. */
   showGridLines?: boolean;
@@ -17,9 +23,33 @@ const UNIT_EMOJI: Record<string, string> = {
   'defender-militia': '🧍',
 };
 
-export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({ battle, lastEvents, showGridLines = true }) => {
+export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
+  battle,
+  lastEvents,
+  animPhase = 'idle',
+  showGridLines = true,
+}) => {
   const { cols, rows, units } = battle;
   const actedIds = new Set(lastEvents.filter((e) => e.type !== 'skip').map((e) => e.unitId));
+
+  // Per-unit transient emoji override for the current animation beat —
+  // attack/defend icons on whoever's acting, a hit flash on whoever's being
+  // attacked, a death flash on whoever's dying this turn.
+  const overrideEmoji = new Map<string, string>();
+  if (animPhase === 'attack-defend') {
+    for (const e of lastEvents) {
+      if (e.type === 'attack') overrideEmoji.set(e.unitId, '🗡️');
+      else if (e.type === 'defend') overrideEmoji.set(e.unitId, '🛡️');
+    }
+  } else if (animPhase === 'hit') {
+    for (const e of lastEvents) {
+      if (e.type === 'attack' && e.targetId) overrideEmoji.set(e.targetId, '💥');
+    }
+  } else if (animPhase === 'death') {
+    for (const e of lastEvents) {
+      if (e.type === 'death') overrideEmoji.set(e.unitId, '☠️');
+    }
+  }
 
   const joints: React.ReactNode[] = [];
   for (let r = 0; r < rows - 1; r++) {
@@ -53,7 +83,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({ battle, lastEv
               style={{ left: `calc(${u.col} * var(--bfg-cell))`, top: `calc(${u.row} * var(--bfg-cell))` }}
               title={`${u.kind} ${u.hp}/${u.maxHp} hp`}
             >
-              <span className="bfg-unit-emoji">{UNIT_EMOJI[key]}</span>
+              <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? UNIT_EMOJI[key]}</span>
               <span className="bfg-unit-hp">
                 <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
               </span>

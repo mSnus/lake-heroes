@@ -7,7 +7,10 @@
   max-width: 480px;
   padding: 16px;
   z-index: 6000;
-  margin-top: -8rem;
+  /* .screen-common (the fixed full-screen wrapper) has padding-top: 12rem;
+     this negative margin cancels that back down so the names row sits
+     ~1rem from the top edge instead. */
+  margin-top: -12rem;
 }
 
 /* Still used by HeroHourScreen.tsx's own pre-battle title (a separate
