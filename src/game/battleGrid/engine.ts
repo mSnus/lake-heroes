@@ -132,67 +132,91 @@ const PATHFIND_NODE_BUDGET = 96;
  * against the obstacle forever, since it has no visibility past one step.
  *
  * The ideal goal is a cell adjacent to `target`, reached exactly (returned
- * immediately, no budget cap applies). But if that's unreachable within the
- * search budget — most commonly because every cell around the target is
- * already occupied/claimed — this instead returns a step toward whichever
- * reachable cell got closest to the target, so the unit still advances
- * sensibly (queuing up near a crowded fight) rather than standing still or
- * taking a wild detour. Only the first step is ever used — the rest is
- * recomputed fresh next turn anyway, since the board keeps changing.
+ * immediately as soon as found, no budget cap applies). Short of that, this
+ * searches one full ring (BFS level) at a time and returns as soon as *any*
+ * cell in the ring just finished reduces the distance to target — it does
+ * NOT keep spending budget hunting for an even-lower absolute distance in
+ * later, deeper rings. That matters: with several branches fanning out
+ * simultaneously and sharing one budget, a branch that initially heads the
+ * "wrong" way can, given enough leftover budget, wander far enough to
+ * numerically land closer to the target than a correct-direction branch
+ * that was simply explored less deeply — which would make an early
+ * backward step look like the "best" answer purely by chance, not because
+ * it's actually a sensible route. Stopping at the shallowest improving
+ * ring keeps the answer tied to genuinely nearby progress. Only the first
+ * step is ever used — the rest is recomputed fresh next turn anyway, since
+ * the board keeps changing.
  */
 function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, blocked: Set<string>): Cell | undefined {
   const targetKey = `${target.col},${target.row}`;
   const visited = new Set<string>([`${start.col},${start.row}`, targetKey]);
-  // Each queue entry remembers which first step from `start` led to it, so
-  // the moment BFS reaches adjacency we know which immediate move to make.
-  const queue: { cell: Cell; firstStep: Cell }[] = [];
 
   let bestFirstStep: Cell | undefined;
   let bestDist = chebyshev(start, target);
+  let bestEuclidSq = Infinity;
 
+  // Chebyshev distance alone ties constantly — while two blocks are still
+  // far apart, dc dominates and a whole row's worth of candidates (straight
+  // ahead, one row up, one row down) reduce distance by exactly the same
+  // amount. Without a secondary tiebreak, whichever tied cell happens to be
+  // unclaimed and first in enumeration order wins — and since many
+  // different units in adjacent rows are independently racing for that same
+  // small tied set, whoever gets processed later keeps getting bumped onto
+  // an essentially arbitrary diagonal leftover instead of its own natural
+  // straight-ahead cell, scattering what should be a clean advancing line.
+  // Preferring the lowest Euclidean distance among Chebyshev-tied
+  // candidates makes each unit default to its own straight/row-aligned step.
   const consider = (c: Cell, firstStep: Cell): Cell | undefined => {
     const d = chebyshev(c, target);
     if (d === 1) return firstStep;
-    if (d < bestDist) {
+    const dc = c.col - target.col;
+    const dr = c.row - target.row;
+    const euclidSq = dc * dc + dr * dr;
+    // The `bestFirstStep !== undefined` guard matters on the very first
+    // candidate: a tie against the *starting* distance isn't progress, so
+    // it shouldn't be accepted just because nothing better has been seen yet.
+    const better = d < bestDist || (d === bestDist && bestFirstStep !== undefined && euclidSq < bestEuclidSq);
+    if (better) {
       bestDist = d;
+      bestEuclidSq = euclidSq;
       bestFirstStep = firstStep;
     }
-    queue.push({ cell: c, firstStep });
     return undefined;
   };
 
-  for (const off of NEIGHBOR_OFFSETS) {
-    const c = { col: start.col + off.col, row: start.row + off.row };
-    if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
-    const key = `${c.col},${c.row}`;
-    if (visited.has(key)) continue;
-    visited.add(key);
-    // A blocked cell can't be entered — not even as the final step, even
-    // if it happens to already be adjacent to the target. Checking this
-    // before the adjacency test matters: otherwise an occupied cell right
-    // next to the enemy would get returned as a "valid" destination and
-    // two units could end up sharing it.
-    if (blocked.has(key)) continue;
-    const hit = consider(c, c);
-    if (hit) return hit;
-  }
+  // Level 0 -> level 1: every candidate's firstStep is itself.
+  let level: { cell: Cell; firstStep: Cell }[] = [{ cell: start, firstStep: start }];
 
-  let qi = 0;
-  while (qi < queue.length && visited.size < PATHFIND_NODE_BUDGET) {
-    const { cell, firstStep } = queue[qi++];
-    for (const off of NEIGHBOR_OFFSETS) {
-      const c = { col: cell.col + off.col, row: cell.row + off.row };
-      if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
-      const key = `${c.col},${c.row}`;
-      if (visited.has(key)) continue;
-      visited.add(key);
-      if (blocked.has(key)) continue;
-      const hit = consider(c, firstStep);
-      if (hit) return hit;
+  while (level.length > 0 && visited.size < PATHFIND_NODE_BUDGET) {
+    const nextLevel: { cell: Cell; firstStep: Cell }[] = [];
+    for (const { cell, firstStep } of level) {
+      for (const off of NEIGHBOR_OFFSETS) {
+        const c = { col: cell.col + off.col, row: cell.row + off.row };
+        if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
+        const key = `${c.col},${c.row}`;
+        if (visited.has(key)) continue;
+        visited.add(key);
+        // A blocked cell can't be entered — not even as the final step,
+        // even if it happens to already be adjacent to the target.
+        // Checking this before the adjacency test matters: otherwise an
+        // occupied cell right next to the enemy would get returned as a
+        // "valid" destination and two units could end up sharing it.
+        if (blocked.has(key)) continue;
+        // cell === start only on the very first ring — every other ring's
+        // step already carries its own firstStep forward from its parent.
+        const actualFirstStep = cell === start ? c : firstStep;
+        const hit = consider(c, actualFirstStep);
+        if (hit) return hit;
+        nextLevel.push({ cell: c, firstStep: actualFirstStep });
+      }
     }
+    // Stop at the shallowest ring that found any real improvement — see
+    // the function comment for why continuing deeper would be wrong here.
+    if (bestFirstStep !== undefined) return bestFirstStep;
+    level = nextLevel;
   }
 
-  return bestFirstStep; // best progress found within budget, if any
+  return bestFirstStep; // undefined only if truly nothing is reachable at all
 }
 
 /**
