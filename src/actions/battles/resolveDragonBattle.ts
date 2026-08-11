@@ -9,7 +9,7 @@ import { t } from '../../i18n';
  * Resolve the dragon challenge.
  * - Win: game is won.
  * - Tie: attacker loses 1/4 of their units.
- * - Defeat: attacker loses 1/2 units and 1/2 gold.
+ * - Defeat: attacker loses their entire army, but keeps their gold.
  */
 export function resolveDragonBattle(
   board: GameState,
@@ -38,11 +38,9 @@ export function resolveDragonBattle(
     message = t('resolveDragonBattle.woundedMessage', { units: unitLoss });
     lostBg = true;
   } else {
-    const unitLoss = Math.ceil(attacker.units / 2);
-    const goldLoss = Math.floor(attacker.gold / 2 / 100) * 100;
-    attacker.units = Math.max(0, attacker.units - unitLoss);
-    attacker.gold = Math.max(0, attacker.gold - goldLoss);
-    const loss = lossStr(goldLoss, unitLoss);
+    const unitLoss = attacker.units;
+    attacker.units = 0;
+    const loss = lossStr(0, unitLoss);
     board.gameMessage = t('resolveDragonBattle.defeatedGameMessage', {
       attackerName: attacker.name,
       lossStr: loss ? t('resolveDragonBattle.lostSuffix', { loss }) : '',
