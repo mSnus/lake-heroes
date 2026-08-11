@@ -33,7 +33,7 @@
 }
 
 .game-menu-button.silver {
-  background: linear-gradient(145deg,  #e7f2f7, #adb897);
+  background: linear-gradient(145deg, #e7f2f7, #adb897);
   text-shadow: #afc4c7af 0 0 6px;
   color: #424748da;
 }
@@ -116,4 +116,11 @@
 .units-input {
   font-family: 'Texturina';
   max-width: 3rem;
+}
+
+@media (min-width: 769px) {
+  .game-menu > div {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

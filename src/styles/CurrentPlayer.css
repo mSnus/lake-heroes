@@ -14,20 +14,6 @@
   z-index: 999;
 }
 
-@media (min-width: 769px) {
-  .player-pane {
-    padding-top: 1rem;
-    font-size: 1.2rem;
-  }
-
-  .action-bar .current-player {
-    background-color: white;
-    background: none !important;
-    margin-bottom: 1rem;
-    margin-top: 0.5rem;
-  }
-}
-
 .current-player {
   display: flex;
   font-weight: 600;
@@ -115,4 +101,28 @@
   color: goldenrod;
   white-space: nowrap;
   letter-spacing: -2px;
+}
+
+
+@media (min-width: 769px) {
+  .player-pane {
+    padding-top: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .action-bar .current-player {
+    background-color: white;
+    background: none !important;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .player-stats-army-slots,
+  .player-stats-artifacts {
+    justify-content: flex-start;
+  }
+
+  .player-stats-gold {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 }

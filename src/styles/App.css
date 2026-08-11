@@ -141,13 +141,19 @@ body {
     overflow: hidden;
   }
 
+  .screen-common {
+    position: absolute;
+  }
+
   .board-section {
-    width: min(82vw, 100vh);
+    width: 100vh;
     aspect-ratio: 1 / 1;
     height: auto;
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .side-pane {
