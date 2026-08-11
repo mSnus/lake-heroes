@@ -261,7 +261,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
   // Dragon and caravan guards occupy the defender role.
   const attackerFieldIcon = isAmbush || isRogue ? '👹' : undefined;
-  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? '👹' : undefined;
+  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? '🥷' : undefined;
 
   // ── Initial log ──
   const loggedRef = useRef(false);

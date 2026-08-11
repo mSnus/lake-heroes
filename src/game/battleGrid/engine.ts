@@ -164,20 +164,42 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   const attackerCount = (u: GridUnit) => adjacency.get(u.id)!.length;
   const engaged = living.filter((u) => attackerCount(u) >= 1);
 
-  const chosenVictim = new Map<string, GridUnit | undefined>();
+  // Every engaged unit picks the single adjacent enemy it values most —
+  // whichever one has the most attackers converging on it (ties broken by
+  // stableIndex) — so several attackers can independently converge fire on
+  // the same juiciest target.
+  const chosenTarget = new Map<string, GridUnit | undefined>();
   for (const u of engaged) {
     const opts2 = [...adjacency.get(u.id)!].sort(
       (a, b) => attackerCount(b) - attackerCount(a) || a.stableIndex - b.stableIndex
     );
-    chosenVictim.set(u.id, opts2[0]);
+    chosenTarget.set(u.id, opts2[0]);
   }
 
-  const isMutual = (u: GridUnit): boolean => {
-    const victim = chosenVictim.get(u.id);
-    if (!victim) return false;
-    const back = chosenVictim.get(victim.id);
-    return back?.id === u.id;
+  // Who's actually gunning for each unit this turn (the inverse of
+  // chosenTarget) — a unit under attack from 3 enemies has 3 entries here.
+  const attackersOf = new Map<string, GridUnit[]>();
+  for (const u of engaged) attackersOf.set(u.id, []);
+  for (const u of engaged) {
+    const target = chosenTarget.get(u.id);
+    if (target) attackersOf.get(target.id)!.push(u);
+  }
+
+  // A unit under attack fights back (rather than defending) only if it's
+  // itself targeting one of the units currently attacking it. Otherwise —
+  // including a unit with no attackers at all, which simply attacks its own
+  // chosen target unopposed — it rolls to attack normally.
+  const isDefending = (u: GridUnit): boolean => {
+    const attackers = attackersOf.get(u.id) ?? [];
+    if (attackers.length === 0) return false;
+    const target = chosenTarget.get(u.id);
+    return !target || !attackers.some((a) => a.id === target.id);
   };
+
+  const rollFor = (u: GridUnit): number =>
+    u.side === 'attacker'
+      ? rollDamage(u.kind, attackerPctBonus, attackerFlatBonus, rng)
+      : rollDamage(u.kind, defenderPctBonus, defenderFlatBonus, rng);
 
   const damage = new Map<string, number>(); // unitId -> accumulated damage this turn
   const applyDamage = (unitId: string, amount: number) => {
@@ -185,41 +207,39 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     damage.set(unitId, (damage.get(unitId) ?? 0) + amount);
   };
 
-  const resolvedMutual = new Set<string>();
+  // One roll per engaged unit, total — an attacking unit's roll is added to
+  // its target's incoming damage; a defending unit's roll is saved to
+  // mitigate the sum of everything converging on it below.
+  const incoming = new Map<string, number>(); // targetId -> summed attacker rolls
+  const defenceRoll = new Map<string, number>();
+
   for (const u of engaged) {
-    if (!isMutual(u) || resolvedMutual.has(u.id)) continue;
-    const v = chosenVictim.get(u.id)!;
-    resolvedMutual.add(u.id);
-    resolvedMutual.add(v.id);
-
-    const rollU =
-      u.side === 'attacker'
-        ? rollDamage(u.kind, attackerPctBonus, attackerFlatBonus, rng)
-        : rollDamage(u.kind, defenderPctBonus, defenderFlatBonus, rng);
-    const rollV =
-      v.side === 'attacker'
-        ? rollDamage(v.kind, attackerPctBonus, attackerFlatBonus, rng)
-        : rollDamage(v.kind, defenderPctBonus, defenderFlatBonus, rng);
-    applyDamage(v.id, rollU);
-    applyDamage(u.id, rollV);
-
-    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: v.id, roll: rollU, damage: rollU });
-    events.push({ type: 'attack', unitId: v.id, side: v.side, kind: v.kind, targetId: u.id, roll: rollV, damage: rollV });
+    if (isDefending(u)) {
+      defenceRoll.set(u.id, rollFor(u));
+      continue;
+    }
+    const target = chosenTarget.get(u.id);
+    if (!target) continue;
+    const roll = rollFor(u);
+    incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
+    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
   }
 
   for (const u of engaged) {
-    if (resolvedMutual.has(u.id)) continue;
-    // Non-mutual engaged unit: rolls its own defence value (same range as
-    // attack) instead of dealing damage. Under strict mutual-pair targeting
-    // a defender is, by construction, never the target of a mutual attacker
-    // (see engine design notes) — so this roll never mitigates incoming
-    // damage today; it's logged purely so a swarmed/outnumbered unit still
-    // visibly "does something" each turn rather than standing idle.
-    const roll =
-      u.side === 'attacker'
-        ? rollDamage(u.kind, attackerPctBonus, attackerFlatBonus, rng)
-        : rollDamage(u.kind, defenderPctBonus, defenderFlatBonus, rng);
+    const roll = defenceRoll.get(u.id);
+    if (roll === undefined) continue;
     events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll });
+  }
+
+  // Apply summed incoming damage — a defending unit's own roll mitigates
+  // it (e.g. 3 attackers' rolls summed, minus its one defence roll); an
+  // attacking unit takes the full sum, since it chose to trade blows
+  // instead of guarding.
+  for (const u of engaged) {
+    const inc = incoming.get(u.id);
+    if (!inc) continue;
+    const net = defenceRoll.has(u.id) ? Math.max(0, inc - defenceRoll.get(u.id)!) : inc;
+    applyDamage(u.id, net);
   }
 
   // ── Apply combat damage, remove the dead ──
