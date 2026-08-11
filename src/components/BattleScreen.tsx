@@ -253,6 +253,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         : 'assets/figures/npc-saracen.png';
   const modeIconSrc = (isTile || isRogue) && tile?.spriteImage ? tile.spriteImage : defenderImg;
 
+  // Mode-specific battlefield icons, matching the old duel screen's grid
+  // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
+  // Dragon and caravan guards occupy the defender role.
+  const attackerFieldIcon = isAmbush || isRogue ? '👹' : undefined;
+  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? '👹' : undefined;
+
   // ── Initial log ──
   const loggedRef = useRef(false);
   useEffect(() => {
@@ -530,7 +536,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
         </div>
 
-        {showBattlefield && <BattlefieldGrid battle={battle} lastEvents={lastEvents} animPhase={animPhase} />}
+        {showBattlefield && (
+          <BattlefieldGrid
+            battle={battle}
+            lastEvents={lastEvents}
+            animPhase={animPhase}
+            attackerIcon={attackerFieldIcon}
+            defenderIcon={defenderFieldIcon}
+          />
+        )}
 
         {phase === 'result' && !showBattlefield && (
           <div className="battle-result-inline">

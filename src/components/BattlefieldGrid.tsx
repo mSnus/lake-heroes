@@ -11,6 +11,12 @@ interface BattlefieldGridProps {
    * showing (attack/defend icons -> hit flash -> death flash), driving a
    * temporary emoji override per unit — see the per-unit lookup below. */
   animPhase?: AnimPhase;
+  /** Mode-specific icon override for a whole side (🐉 dragon, 👹 ambushers/
+   * rogue horde, etc) in place of the normal rider/militia emoji — mirrors
+   * the old duel screen's per-mode grid icons (BattleScreen decides which
+   * mode maps to which side; this component just renders it). */
+  attackerIcon?: string;
+  defenderIcon?: string;
   /** Toggle for the octagon grid outline — a temporary debug aid, kept behind
    * a single prop so it's a one-line change to drop later. */
   showGridLines?: boolean;
@@ -27,6 +33,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   battle,
   lastEvents,
   animPhase = 'idle',
+  attackerIcon,
+  defenderIcon,
   showGridLines = true,
 }) => {
   const { cols, rows, units } = battle;
@@ -75,6 +83,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       <div className="bfg-units">
         {units.map((u) => {
           const key = `${u.side}-${u.kind}`;
+          const baseEmoji = (u.side === 'attacker' ? attackerIcon : defenderIcon) ?? UNIT_EMOJI[key];
           const hpPct = Math.max(0, Math.round((u.hp / u.maxHp) * 100));
           return (
             <div
@@ -83,7 +92,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
               style={{ left: `calc(${u.col} * var(--bfg-cell))`, top: `calc(${u.row} * var(--bfg-cell))` }}
               title={`${u.kind} ${u.hp}/${u.maxHp} hp`}
             >
-              <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? UNIT_EMOJI[key]}</span>
+              <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? baseEmoji}</span>
               <span className="bfg-unit-hp">
                 <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
               </span>
