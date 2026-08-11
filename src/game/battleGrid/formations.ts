@@ -165,6 +165,10 @@ const GROUP_GAP = 1;
  * in SHAPES, since anything past this needs to be split further anyway. */
 const MAX_GROUP_SIZE = 10;
 
+/** Cap on how many full-strength squads stack in the front line before the
+ * rest spill into a second line behind it (see arrangeGroups). */
+const LINE1_MAX = 3;
+
 /**
  * Split `total` into `count` shares that are as equal as possible, with
  * any remainder favoring the most "central" share rather than spreading
@@ -294,12 +298,18 @@ function arrangeGroups(groups: PlacedCell[][]): PlacedCell[] {
   const fullGroups = groups.filter((group) => group.length >= MAX_GROUP_SIZE);
   const partialGroups = groups.filter((group) => group.length < MAX_GROUP_SIZE);
 
-  const front = stackColumnLocal(fullGroups);
-  const back = stackColumnLocal(partialGroups);
+  // The front line holds at most LINE1_MAX full-strength squads — any more
+  // of them, plus every understrength squad, spill into a second line
+  // behind it rather than growing the front line indefinitely tall.
+  const lineOneGroups = fullGroups.slice(0, LINE1_MAX);
+  const lineTwoGroups = [...fullGroups.slice(LINE1_MAX), ...partialGroups];
+
+  const front = stackColumnLocal(lineOneGroups);
+  const back = stackColumnLocal(lineTwoGroups);
   const maxHeight = Math.max(front.height, back.height);
   const frontRowOffset = Math.floor((maxHeight - front.height) / 2);
   const backRowOffset = Math.floor((maxHeight - back.height) / 2);
-  const backColStart = fullGroups.length > 0 ? front.width + GROUP_GAP : 0;
+  const backColStart = lineOneGroups.length > 0 ? front.width + GROUP_GAP : 0;
 
   const out: PlacedCell[] = [];
   for (const c of front.cells) out.push({ col: c.col, row: c.row + frontRowOffset, kind: c.kind });

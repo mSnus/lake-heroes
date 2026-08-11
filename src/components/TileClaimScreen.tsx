@@ -180,7 +180,19 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
           : tJsx('tileClaimScreen.belongsTo', { player: <PlayerLabel player={player} bold /> })}
       </div>
 
-
+      {variant === 'upgrades' && (
+        <div
+          className="tile-card-sell"
+          style={{ marginTop: '1rem', marginLeft: 'auto', marginRight: 'auto', position: 'relative', zIndex: 6002 }}
+        >
+          <div onClick={handleYieldToggle} className="tile-card-button tile-card-sell-item">
+            🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
+          </div>
+          <div onClick={handleSell} className="tile-card-button tile-card-sell-item">
+            🪙 {t('tileCard.sell')}
+          </div>
+        </div>
+      )}
 
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
@@ -261,20 +273,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 )}
         </div>
       </div>
-
-      {variant === 'upgrades' && (
-        <div
-          className="tile-card-sell"
-          style={{ marginTop: '1.5rem', marginLeft: 'auto', marginRight: 'auto', position: 'relative', zIndex: 6002 }}
-        >
-          <div onClick={handleYieldToggle} className="tile-card-button tile-card-sell-item">
-            🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
-          </div>
-          <div onClick={handleSell} className="tile-card-button tile-card-sell-item">
-            🪙 {t('tileCard.sell')}
-          </div>
-        </div>
-      )}
 
       {!tile.isYielded && (
         <div className="game-menu" style={{ top: '40px' }}>
