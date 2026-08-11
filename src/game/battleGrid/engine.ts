@@ -17,20 +17,54 @@ interface Cell {
   row: number;
 }
 
-function chebyshev(a: Cell, b: Cell): number {
-  return Math.max(Math.abs(a.col - b.col), Math.abs(a.row - b.row));
+// The battlefield's even rows are rendered pushed half a cell to the right
+// (see BattlefieldGrid.css) — a real "even-r" offset grid, not just a
+// cosmetic shift: each cell has 6 neighbors, not 8, and distance is
+// measured in hex steps, not Chebyshev steps. Converting to axial
+// coordinates (q, r) — the standard way to reason about an offset hex
+// grid — makes both distance and neighbor-finding straightforward instead
+// of needing fiddly parity-based special cases everywhere they're used.
+function toAxial(cell: Cell): { q: number; r: number } {
+  return { q: cell.col - Math.floor((cell.row + 1) / 2), r: cell.row };
 }
 
-const NEIGHBOR_OFFSETS: Cell[] = [
-  { col: -1, row: -1 },
+function hexDistance(a: Cell, b: Cell): number {
+  const aa = toAxial(a);
+  const ab = toAxial(b);
+  const dq = aa.q - ab.q;
+  const dr = aa.r - ab.r;
+  return (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
+}
+
+// Real on-screen position (even rows shifted +0.5) — used only as a
+// tie-break metric ("which of several equally-hex-close options is
+// visually nearest"), since hex distance alone ties constantly.
+function visualPos(cell: Cell): { x: number; y: number } {
+  return { x: cell.col + (cell.row % 2 === 0 ? 0.5 : 0), y: cell.row };
+}
+
+// Each cell's 6 neighbors depend on row parity, since even rows sit half a
+// cell to the right of odd rows — the two "diagonal" neighbors above and
+// below are different cells depending on which side of the row you're on.
+const NEIGHBOR_OFFSETS_EVEN_ROW: Cell[] = [
   { col: -1, row: 0 },
-  { col: -1, row: 1 },
-  { col: 0, row: -1 },
-  { col: 0, row: 1 },
-  { col: 1, row: -1 },
   { col: 1, row: 0 },
+  { col: 0, row: -1 },
+  { col: 1, row: -1 },
+  { col: 0, row: 1 },
   { col: 1, row: 1 },
 ];
+const NEIGHBOR_OFFSETS_ODD_ROW: Cell[] = [
+  { col: -1, row: 0 },
+  { col: 1, row: 0 },
+  { col: -1, row: -1 },
+  { col: 0, row: -1 },
+  { col: -1, row: 1 },
+  { col: 0, row: 1 },
+];
+function neighborOffsetsFor(row: number): Cell[] {
+  return row % 2 === 0 ? NEIGHBOR_OFFSETS_EVEN_ROW : NEIGHBOR_OFFSETS_ODD_ROW;
+}
 
 function hpFor(kind: UnitKind): number {
   return kind === 'rider' ? RIDER_HP : MILITIA_HP;
@@ -97,14 +131,14 @@ export function isBattleOver(state: GridBattleState): boolean {
 }
 
 function livingAdjacentEnemies(u: GridUnit, living: GridUnit[]): GridUnit[] {
-  return living.filter((v) => v.side !== u.side && chebyshev(u, v) === 1);
+  return living.filter((v) => v.side !== u.side && hexDistance(u, v) === 1);
 }
 
 function nearestEnemyDistance(u: GridUnit, living: GridUnit[]): number {
   let best = Infinity;
   for (const v of living) {
     if (v.side === u.side) continue;
-    const d = chebyshev(u, v);
+    const d = hexDistance(u, v);
     if (d < best) best = d;
   }
   return best;
@@ -124,7 +158,7 @@ const PATHFIND_NODE_BUDGET = 96;
 
 /**
  * Real shortest-path first step from `start` toward `target`, via
- * breadth-first search over the 8-directional grid — not a greedy
+ * breadth-first search over the 6-neighbor offset grid — not a greedy
  * single-step heuristic. A unit boxed in behind a wide obstacle (a wall of
  * friendly/enemy units several cells thick, say) needs to route *around*
  * it; picking whichever single neighbor cell looks closest to the target by
@@ -152,26 +186,27 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
   const visited = new Set<string>([`${start.col},${start.row}`, targetKey]);
 
   let bestFirstStep: Cell | undefined;
-  let bestDist = chebyshev(start, target);
+  let bestDist = hexDistance(start, target);
   let bestEuclidSq = Infinity;
+  const targetPos = visualPos(target);
 
-  // Chebyshev distance alone ties constantly — while two blocks are still
-  // far apart, dc dominates and a whole row's worth of candidates (straight
-  // ahead, one row up, one row down) reduce distance by exactly the same
-  // amount. Without a secondary tiebreak, whichever tied cell happens to be
-  // unclaimed and first in enumeration order wins — and since many
-  // different units in adjacent rows are independently racing for that same
-  // small tied set, whoever gets processed later keeps getting bumped onto
-  // an essentially arbitrary diagonal leftover instead of its own natural
-  // straight-ahead cell, scattering what should be a clean advancing line.
-  // Preferring the lowest Euclidean distance among Chebyshev-tied
-  // candidates makes each unit default to its own straight/row-aligned step.
+  // Hex distance alone ties often — several of a cell's neighbors can share
+  // the same distance to a far-off target. Without a secondary tiebreak,
+  // whichever tied cell happens to be unclaimed and first in enumeration
+  // order wins — and since many different units in adjacent rows are
+  // independently racing for that same small tied set, whoever gets
+  // processed later keeps getting bumped onto an essentially arbitrary
+  // leftover instead of its own natural straight-ahead cell, scattering
+  // what should be a clean advancing line. Preferring the lowest on-screen
+  // (visual, offset-aware) distance among hex-tied candidates makes each
+  // unit default to its own straight/row-aligned step.
   const consider = (c: Cell, firstStep: Cell): Cell | undefined => {
-    const d = chebyshev(c, target);
+    const d = hexDistance(c, target);
     if (d === 1) return firstStep;
-    const dc = c.col - target.col;
-    const dr = c.row - target.row;
-    const euclidSq = dc * dc + dr * dr;
+    const cPos = visualPos(c);
+    const dx = cPos.x - targetPos.x;
+    const dy = cPos.y - targetPos.y;
+    const euclidSq = dx * dx + dy * dy;
     // The `bestFirstStep !== undefined` guard matters on the very first
     // candidate: a tie against the *starting* distance isn't progress, so
     // it shouldn't be accepted just because nothing better has been seen yet.
@@ -190,7 +225,7 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
   while (level.length > 0 && visited.size < PATHFIND_NODE_BUDGET) {
     const nextLevel: { cell: Cell; firstStep: Cell }[] = [];
     for (const { cell, firstStep } of level) {
-      for (const off of NEIGHBOR_OFFSETS) {
+      for (const off of neighborOffsetsFor(cell.row)) {
         const c = { col: cell.col + off.col, row: cell.row + off.row };
         if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
         const key = `${c.col},${c.row}`;
@@ -220,30 +255,33 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
 }
 
 /**
- * Nearest enemy by Chebyshev distance, with a Euclidean tiebreak. The
- * Chebyshev-only version ties constantly — while two blocks are still far
- * apart, distance is almost entirely dominated by the horizontal gap, so
- * dozens of enemy units at very different rows can share the exact same
- * Chebyshev distance from a given unit. Without a tiebreak, every unit on a
- * side resolves that tie identically (whichever enemy happens to be first
- * in iteration order) and the *entire army* funnels toward that one single
- * enemy unit instead of each unit heading for whichever enemy is actually
- * closest to it. Euclidean distance breaks that tie sensibly, so units
- * naturally advance on a broad front toward whoever's really nearest.
+ * Nearest enemy by hex distance, with a visual (on-screen, offset-aware)
+ * Euclidean tiebreak. The distance-only version ties constantly — while
+ * two blocks are still far apart, distance is almost entirely dominated by
+ * the horizontal gap, so dozens of enemy units at very different rows can
+ * share the exact same hex distance from a given unit. Without a tiebreak,
+ * every unit on a side resolves that tie identically (whichever enemy
+ * happens to be first in iteration order) and the *entire army* funnels
+ * toward that one single enemy unit instead of each unit heading for
+ * whichever enemy is actually closest to it. The visual tiebreak breaks
+ * that sensibly, so units naturally advance on a broad front toward
+ * whoever's really nearest on screen.
  */
 function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefined {
   let best: GridUnit | undefined;
-  let bestCheb = Infinity;
+  let bestHex = Infinity;
   let bestEuclidSq = Infinity;
+  const uPos = visualPos(u);
   for (const v of living) {
     if (v.side === u.side) continue;
-    const cheb = chebyshev(u, v);
-    if (cheb > bestCheb) continue;
-    const dc = v.col - u.col;
-    const dr = v.row - u.row;
-    const euclidSq = dc * dc + dr * dr;
-    if (cheb < bestCheb || euclidSq < bestEuclidSq) {
-      bestCheb = cheb;
+    const hex = hexDistance(u, v);
+    if (hex > bestHex) continue;
+    const vPos = visualPos(v);
+    const dx = vPos.x - uPos.x;
+    const dy = vPos.y - uPos.y;
+    const euclidSq = dx * dx + dy * dy;
+    if (hex < bestHex || euclidSq < bestEuclidSq) {
+      bestHex = hex;
       bestEuclidSq = euclidSq;
       best = v;
     }

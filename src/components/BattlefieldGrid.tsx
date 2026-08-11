@@ -68,20 +68,22 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   return (
     <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '')}>
       <div className="bfg-grid" style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-cell))` }}>
-        {Array.from({ length: cols * rows }, (_, i) => (
-          <div key={i} className="bfg-cell" />
-        ))}
+        {Array.from({ length: cols * rows }, (_, i) => {
+          const row = Math.floor(i / cols);
+          return <div key={i} className={'bfg-cell' + (row % 2 === 0 ? ' bfg-cell-shifted' : '')} />;
+        })}
       </div>
       <div className="bfg-units">
         {units.map((u) => {
           const key = `${u.side}-${u.kind}`;
           const baseEmoji = (u.side === 'attacker' ? attackerIcon : defenderIcon) ?? UNIT_EMOJI[key];
           const hpPct = Math.max(0, Math.round((u.hp / u.maxHp) * 100));
+          const colShift = u.row % 2 === 0 ? 0.5 : 0;
           return (
             <div
               key={u.id}
               className={'bfg-unit bfg-unit-' + u.side + (actedIds.has(u.id) ? ' bfg-unit-acted' : '')}
-              style={{ left: `calc(${u.col} * var(--bfg-cell))`, top: `calc(${u.row} * var(--bfg-cell))` }}
+              style={{ left: `calc((${u.col} + ${colShift}) * var(--bfg-cell))`, top: `calc(${u.row} * var(--bfg-cell))` }}
               title={`${u.kind} ${u.hp}/${u.maxHp} hp`}
             >
               <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? baseEmoji}</span>

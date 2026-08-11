@@ -1,7 +1,8 @@
 /* Octagon-tessellation battlefield: a 16x20 grid of outlined (not filled)
-   octagon cells. Purely decorative -- adjacency/movement logic in
-   game/battleGrid/engine.ts only ever operates on the 16x20 (col,row) grid
-   with 8-directional Chebyshev adjacency. */
+   octagon cells. Even rows are pushed half a cell to the right, turning
+   this into a real offset/hex-like grid -- game/battleGrid/engine.ts's
+   adjacency, distance, and pathfinding all match this same offset (see its
+   toAxial/hexDistance/neighborOffsetsFor), not a plain square grid. */
 
 .bfg-battlefield {
   container-type: inline-size;
@@ -11,6 +12,8 @@
   max-height: 46vh;
   overflow: auto;
   --bfg-cell: 6.2vmin;
+  /* Room for even rows' cells/units to shift right without clipping. */
+  padding-right: calc(var(--bfg-cell) / 2);
 }
 
 @supports (container-type: inline-size) {
@@ -31,6 +34,12 @@
   border: 1px solid transparent;
   box-sizing: border-box;
   clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+/* Even rows sit half a cell to the right of odd rows -- a shift, not a
+   relayout, so it doesn't disturb the CSS Grid's own column tracking. */
+.bfg-cell-shifted {
+  transform: translateX(50%);
 }
 
 /* TEMPORARY: visible grid outline, meant to be removed later -- one class
