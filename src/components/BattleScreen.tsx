@@ -305,17 +305,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     loggedRef.current = true;
     if (isAmbush) {
       say(t('battleScreen.ambushedMessage', { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
-      return;
     }
-    const goal = isCaravan
-      ? (caravanSlaves ? t('battleScreen.goalChains', { amount: caravanPrize! }) : t('battleScreen.goalLoot', { amount: caravanPrize! }))
-      : isDragon
-        ? t('battleScreen.goalKingdom')
-        : isPlayerBattle
-          ? t('battleScreen.goalGlory')
-          : tile!.name;
-    const defEmoji = isDragon ? '🐉' : isCaravan ? '🥷' : '🧍';
-    say(t('battleScreen.attacksMessage', { attacker: attacker.name, defender: defenderLabel, defence: initialDefence, emoji: defEmoji, goal }), 'info');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
