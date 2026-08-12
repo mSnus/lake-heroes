@@ -194,6 +194,7 @@
     "stayInArmyBoth": "so only {count}🧍 and {riders}🐎 would stay in army",
     "garrisonVisitCaveat": "(move them back to army while visiting this tile)",
     "leaveUnguarded": "Leave unprotected 🩸",
+    "kingSeesTheWay": "👑 King sees the way",
     "setToGuard": "Guard with {amount} 🧍"
   },
   "battleScreen": {

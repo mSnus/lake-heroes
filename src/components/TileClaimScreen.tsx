@@ -302,15 +302,19 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       </div>
 
-      {!tile.isYielded && (
-        <div className="game-menu" style={{ top: '1rem' }}>
-          <div>
+      <div className="game-menu" style={{ top: '1rem' }}>
+        <div>
+          {tile.isYielded ? (
+            <DecoratedButton onClick={() => clearScreen()}>
+              {t('tileClaimScreen.kingSeesTheWay')}
+            </DecoratedButton>
+          ) : (
             <DecoratedButton onClick={handleSetGarrison}>
               {garrisonAmount === 0 ? t('tileClaimScreen.leaveUnguarded') : t('tileClaimScreen.setToGuard', { amount: garrisonAmount })}
             </DecoratedButton>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </ScreenBackground>
   );
 };

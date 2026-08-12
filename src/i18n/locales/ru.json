@@ -194,6 +194,7 @@
     "stayInArmyBoth": "так в армии останется только {count}🧍 и {riders}🐎",
     "garrisonVisitCaveat": "(вернуть их в армию можно, только находясь на этой клетке)",
     "leaveUnguarded": "Оставить без защиты 🩸",
+    "kingSeesTheWay": "👑 Король укажет путь",
     "setToGuard": "Охранять с {amount} 🧍"
   },
   "battleScreen": {
