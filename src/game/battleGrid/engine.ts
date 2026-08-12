@@ -340,12 +340,20 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
 
   const living = state.units.map((u) => ({ ...u }));
 
-  // ── Step 1: turn order — adjacent-to-enemy units rank first as a natural
-  // consequence of sorting by nearest-enemy distance (dist 1 sorts lowest). ──
+  // ── Step 1: turn order — closest-to-enemy units decide first (both for
+  // combat targeting below and for movement planning further down), so
+  // that by the time a farther-back unit plans its move, every unit
+  // between it and the front has already committed to moving or staying.
+  // Ties (equal distance) are broken by a random draw assigned once per
+  // unit this turn, not creation order — a fixed tiebreak doesn't matter
+  // for combat, but for movement it can bias two spatially-equivalent
+  // units into a bad relative order it can't shuffle out of.
+  const tiebreak = new Map<string, number>();
+  for (const u of living) tiebreak.set(u.id, rng());
   const priorityOrder = [...living].sort((a, b) => {
     const da = nearestEnemyDistance(a, living);
     const db = nearestEnemyDistance(b, living);
-    return da - db || a.stableIndex - b.stableIndex;
+    return da - db || tiebreak.get(a.id)! - tiebreak.get(b.id)!;
   });
 
   // ── Step 3: combat plan, computed once against the turn-start snapshot ──
