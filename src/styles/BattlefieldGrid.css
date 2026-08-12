@@ -27,6 +27,15 @@
   }
 }
 
+/* Shared positioned box for .bfg-grid and .bfg-units — .bfg-units is
+   position:absolute; inset:0, which needs to match the grid's own
+   rendered box exactly (not .bfg-battlefield's, which is wider) for units
+   to land on the same cells the grid centers itself on. */
+.bfg-arena {
+  position: relative;
+  width: fit-content;
+}
+
 .bfg-grid {
   display: grid;
   position: relative;

@@ -548,7 +548,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           </div>
 
           <div className="battle-vs-heading">
-            <div className="vs-icon">⚔️</div>
+            <div
+              className={'vs-icon' + (phase === 'ongoing' && !bothSidesAutomated ? ' vs-icon-clickable' : '')}
+              onClick={phase === 'ongoing' && !bothSidesAutomated ? handleNextTurn : undefined}
+            >
+              ⚔️
+            </div>
             <div className="vs-count">
               {isAmbush ? defenderGridTotal : attackerGridTotal}
               <span className="vs"> {t('common.vs')} </span>
@@ -584,12 +589,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             attackerIcon={attackerFieldIcon}
             defenderIcon={defenderFieldIcon}
           />
-        )}
-
-        {phase === 'ongoing' && !bothSidesAutomated && (
-          <DecoratedButton onClick={handleNextTurn}>
-            ⏭️ {t('battleScreen.nextTurn')}
-          </DecoratedButton>
         )}
 
         {phase === 'result' && !showBattlefield && (

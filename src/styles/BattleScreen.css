@@ -85,6 +85,15 @@
   line-height: 1;
 }
 
+.battle-vs-heading .vs-icon-clickable {
+  cursor: pointer;
+  filter: drop-shadow(0 0 6px #ffcf5c);
+}
+
+.battle-vs-heading .vs-icon-clickable:active {
+  transform: scale(0.92);
+}
+
 .battle-vs-heading .vs-count {
   margin-top: 2px;
 }

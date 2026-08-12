@@ -68,6 +68,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   return (
     <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '')}>
+      <div className="bfg-arena">
       <div className="bfg-grid" style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-cell))` }}>
         {Array.from({ length: cols * rows }, (_, i) => {
           const row = Math.floor(i / cols);
@@ -94,6 +95,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
