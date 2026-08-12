@@ -71,8 +71,11 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
             {config.encounter?.gold !== undefined && (
               <>
                 <strong>{config.encounter.gold}🟡</strong>
-                &nbsp;
-                <strong>{config.encounter.units}🧍</strong>
+                <br />
+                <strong>🧍{config.encounter.militia ?? 0}</strong>
+                {(config.encounter.riders ?? 0) > 0 && (
+                  <strong>&nbsp;🐎{config.encounter.riders}</strong>
+                )}
               </>
             )}
             <br />

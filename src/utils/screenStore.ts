@@ -46,7 +46,8 @@ export interface ScreenConfig {
     outcomeText?: string;
     subMessage?: string;
     gold?: number;
-    units?: number;
+    militia?: number;
+    riders?: number;
   };
   message?: string;
   htmlMessage?: string;
