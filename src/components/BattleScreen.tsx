@@ -463,17 +463,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     }
   };
 
-  // Every battle auto-plays turns until it ends, human participants
-  // included — no click required. handleNextTurn and the ⚔️ click handler
-  // (see the render below) stay wired up for later use, just not required
-  // for the battle to progress.
+  // Every battle auto-plays turns until it ends — no click required —
+  // unless the ⚔️ icon is clicked, which switches to step-by-step mode:
+  // that first click both cancels the pending auto-advance (manualMode
+  // becoming true re-runs this effect, which cleans up the old timer) and
+  // performs its own manual step, and every click after it just advances
+  // one turn the same way.
   const bothSidesAutomated = attacker.isComputer && (!defender || defender.isComputer);
+  const [manualMode, setManualMode] = useState(false);
   useEffect(() => {
-    if (phase !== 'ongoing') return;
+    if (phase !== 'ongoing' || manualMode) return;
     const timer = setTimeout(() => handleNextTurn(), AUTO_TURN_DELAY_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, battle.turn]);
+  }, [phase, battle.turn, manualMode]);
+
+  const handleVsIconClick = () => {
+    if (phase !== 'ongoing') return;
+    setManualMode(true);
+    handleNextTurn();
+  };
 
   // Give the player a beat to see the final positions on the battlefield
   // itself, then clear it away — the result panel only appears once the
@@ -550,8 +559,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           <div className="battle-vs-heading">
             <div
-              className={'vs-icon' + (phase === 'ongoing' && !bothSidesAutomated ? ' vs-icon-clickable' : '')}
-              onClick={phase === 'ongoing' && !bothSidesAutomated ? handleNextTurn : undefined}
+              className={'vs-icon' + (phase === 'ongoing' ? ' vs-icon-clickable' : '')}
+              onClick={phase === 'ongoing' ? handleVsIconClick : undefined}
             >
               ⚔️
             </div>
