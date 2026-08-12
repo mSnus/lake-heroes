@@ -192,10 +192,23 @@ function splitEvenlyCenterHeavy(total: number, count: number): number[] {
   const order = centerOutwardOrder(count);
   for (const idx of order) {
     if (remainder <= 0) break;
-    const room = MAX_GROUP_SIZE - sizes[idx];
+    // Clamped at 0: if `base` itself already exceeds the cap (total so far
+    // outstrips what count*MAX_GROUP_SIZE can hold — e.g. an all-riders
+    // army split across too few forced squads), "room" would otherwise go
+    // negative and get picked as the smallest `take`, which *subtracts*
+    // from that share and *grows* the remainder instead of shrinking it.
+    const room = Math.max(0, MAX_GROUP_SIZE - sizes[idx]);
     const take = Math.min(room, remainder);
     sizes[idx] += take;
     remainder -= take;
+  }
+  // Every share may already be at/over the cap with remainder still left
+  // (same scenario as above) — there's no "room" left to target, but the
+  // remainder must still land somewhere so the total stays exact. Spread
+  // it one unit at a time, center-outward again.
+  for (let i = 0; remainder > 0; i++) {
+    sizes[order[i % order.length]] += 1;
+    remainder--;
   }
   return sizes;
 }
@@ -212,7 +225,21 @@ function splitFrontLoaded(total: number, count: number): number[] {
   if (count <= 0) return [];
   const fullCount = Math.min(count, Math.floor(total / MAX_GROUP_SIZE));
   const remaining = total - fullCount * MAX_GROUP_SIZE;
-  const partialSizes = splitEvenlyCenterHeavy(remaining, count - fullCount);
+  const partialCount = count - fullCount;
+
+  if (partialCount <= 0) {
+    // Every requested share is already full-strength (e.g. a tower whose
+    // level/groupCount is smaller than its garrison actually needs) and
+    // there's still leftover — pile it onto the last share rather than
+    // spawning an extra one the caller didn't ask for. That share now
+    // exceeds MAX_GROUP_SIZE, but layoutGroup's recursive per-share call
+    // (with no forced count of its own) chunks it further automatically.
+    const sizes = new Array(count).fill(MAX_GROUP_SIZE);
+    sizes[count - 1] += remaining;
+    return sizes;
+  }
+
+  const partialSizes = splitEvenlyCenterHeavy(remaining, partialCount);
   return new Array(fullCount).fill(MAX_GROUP_SIZE).concat(partialSizes);
 }
 
@@ -482,9 +509,16 @@ export function placeFormation(
   // (so the two fronts start 2 cells apart, with the center column itself
   // empty) and let the shape (already oriented so its front points the
   // right way) extend backward from there, toward that side's own edge.
+  // The attacker gets an extra column of margin here: the hex-offset
+  // compensation below can nudge its front-most cell 1 column further
+  // right *after* this anchor is picked, so without the margin that nudge
+  // would eat into the gap instead of staying inside the attacker's own
+  // reserved space.
   const centerCol = Math.floor(cols / 2);
   const startCol =
-    side === 'attacker' ? Math.max(0, centerCol - box.width) : Math.min(cols - box.width, centerCol + 1);
+    side === 'attacker'
+      ? Math.max(0, centerCol - box.width - 1)
+      : Math.min(cols - box.width, centerCol + 1);
 
   // Zip cells to units per kind (not just militia/rider — the dragon
   // formation's cells are all kind 'dragon'), matching whatever kinds are
