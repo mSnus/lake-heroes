@@ -297,6 +297,56 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
  * that sensibly, so units naturally advance on a broad front toward
  * whoever's really nearest on screen.
  */
+function livingAdjacentFriends(u: GridUnit, living: GridUnit[]): GridUnit[] {
+  return living.filter((v) => v.id !== u.id && v.side === u.side && hexDistance(u, v) === 1);
+}
+
+// Whether `u` has at least one in-bounds neighbor cell not already occupied
+// by another living unit — a cheap, static (pre-movement-planning) check for
+// "is retreat even physically possible", using turn-start positions. The
+// real destination (and whether it's actually still free once other movers
+// have claimed cells) is worked out later, same as any other mover; this
+// only gates whether a surrounded unit should attempt to flee at all instead
+// of fighting.
+function hasOpenAdjacentCell(u: GridUnit, living: GridUnit[], cols: number, rows: number): boolean {
+  const occupied = new Set(living.filter((v) => v.id !== u.id).map((v) => `${v.col},${v.row}`));
+  for (const off of neighborOffsetsFor(u.row)) {
+    const c = { col: u.col + off.col, row: u.row + off.row };
+    if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
+    if (!occupied.has(`${c.col},${c.row}`)) return true;
+  }
+  return false;
+}
+
+// Single-step "step aside" for a retreating unit with no living friend to
+// flee toward: just the one in-bounds, unblocked neighbor that puts the most
+// hex distance between the unit and whoever it's fleeing — no BFS, since
+// retreat is a one-hex sidestep, not a route to a far-off destination.
+function firstStepAwayFrom(start: Cell, awayFrom: Cell, cols: number, rows: number, blocked: Set<string>): Cell | undefined {
+  let best: Cell | undefined;
+  let bestDist = hexDistance(start, awayFrom);
+  let bestEuclidSq = -Infinity;
+  const awayPos = visualPos(awayFrom);
+  for (const off of neighborOffsetsFor(start.row)) {
+    const c = { col: start.col + off.col, row: start.row + off.row };
+    if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
+    const key = `${c.col},${c.row}`;
+    if (blocked.has(key)) continue;
+    const d = hexDistance(c, awayFrom);
+    const cPos = visualPos(c);
+    const dx = cPos.x - awayPos.x;
+    const dy = cPos.y - awayPos.y;
+    const euclidSq = dx * dx + dy * dy;
+    const better = d > bestDist || (d === bestDist && euclidSq > bestEuclidSq);
+    if (better) {
+      bestDist = d;
+      bestEuclidSq = euclidSq;
+      best = c;
+    }
+  }
+  return best;
+}
+
 function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefined {
   let best: GridUnit | undefined;
   let bestHex = Infinity;
@@ -319,14 +369,40 @@ function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefin
   return best;
 }
 
+// Same nearest-with-visual-tiebreak pattern as nearestLivingEnemy, flipped to
+// find the closest living ally instead — used to steer a retreating unit
+// toward safety rather than away from nothing in particular.
+function nearestLivingFriend(u: GridUnit, living: GridUnit[]): GridUnit | undefined {
+  let best: GridUnit | undefined;
+  let bestHex = Infinity;
+  let bestEuclidSq = Infinity;
+  const uPos = visualPos(u);
+  for (const v of living) {
+    if (v.id === u.id || v.side !== u.side) continue;
+    const hex = hexDistance(u, v);
+    if (hex > bestHex) continue;
+    const vPos = visualPos(v);
+    const dx = vPos.x - uPos.x;
+    const dy = vPos.y - uPos.y;
+    const euclidSq = dx * dx + dy * dy;
+    if (hex < bestHex || euclidSq < bestEuclidSq) {
+      bestHex = hex;
+      bestEuclidSq = euclidSq;
+      best = v;
+    }
+  }
+  return best;
+}
+
 /**
  * Resolve one turn: an all-at-once combat batch against turn-start positions
  * (threat-score target selection needs a stable snapshot), followed by a
- * movement phase for non-engaged units only. Movement is planned against a
- * shadow map before any unit actually moves — a mover's current cell is
- * never an obstacle for another mover planning its own step, since it's
- * assumed to vacate this turn regardless of priority order — then all
- * planned moves are applied together (see the movement section below).
+ * movement phase for non-engaged units (plus any retreating unit — see
+ * below) only. Movement is planned against a shadow map before any unit
+ * actually moves — a mover's current cell is never an obstacle for another
+ * mover planning its own step, since it's assumed to vacate this turn
+ * regardless of priority order — then all planned moves are applied
+ * together (see the movement section below).
  */
 export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): TurnResult {
   const rng = opts.rng ?? Math.random;
@@ -356,12 +432,29 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     return da - db || tiebreak.get(a.id)! - tiebreak.get(b.id)!;
   });
 
-  // ── Step 3: combat plan, computed once against the turn-start snapshot ──
-  const adjacency = new Map<string, GridUnit[]>();
-  for (const u of living) adjacency.set(u.id, livingAdjacentEnemies(u, living));
+  // ── Step 2: retreat — a unit swarmed by 3+ adjacent enemies with no
+  // adjacent friend to lean on, and with somewhere to go, breaks off instead
+  // of fighting this turn. It's pulled out of the combat pool entirely below
+  // (can't attack, can't be attacked, no defence roll — it's focused on
+  // getting out) and handled as a mover in the movement phase instead,
+  // heading toward its nearest living friend if it has one, or just away
+  // from whoever it's fleeing if it doesn't.
+  const retreating = new Set<string>();
+  for (const u of living) {
+    if (livingAdjacentEnemies(u, living).length < 3) continue;
+    if (livingAdjacentFriends(u, living).length > 0) continue;
+    if (!hasOpenAdjacentCell(u, living, state.cols, state.rows)) continue;
+    retreating.add(u.id);
+  }
 
-  const attackerCount = (u: GridUnit) => adjacency.get(u.id)!.length;
-  const engaged = living.filter((u) => attackerCount(u) >= 1);
+  // ── Step 3: combat plan, computed once against the turn-start snapshot,
+  // over every unit except this turn's retreaters (who sit combat out) ──
+  const combatPool = living.filter((u) => !retreating.has(u.id));
+  const adjacency = new Map<string, GridUnit[]>();
+  for (const u of combatPool) adjacency.set(u.id, livingAdjacentEnemies(u, combatPool));
+
+  const attackerCount = (u: GridUnit) => adjacency.get(u.id)?.length ?? 0;
+  const engaged = combatPool.filter((u) => attackerCount(u) >= 1);
 
   // Every engaged unit picks the single adjacent enemy it values most —
   // whichever one has the most attackers converging on it (ties broken by
@@ -452,17 +545,17 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
   let alive = living.filter((u) => u.hp > 0);
 
-  // ── Steps 4/5: movement, non-engaged units only, planned against a
-  // "shadow map" rather than executed sequentially. A cell is only ever a
-  // real obstacle if an engaged unit (guaranteed to stay put) occupies it —
-  // a mover's own current cell is never treated as blocking *up front*,
-  // since it's assumed to vacate this turn, regardless of where in
-  // priority order it sits relative to whoever wants to step into it.
-  // Destinations are claimed in priority order (closest-to-enemy first) so
-  // two movers can't both plan into the same free cell, and if a mover
-  // turns out unable to move after all (fully boxed in), its own cell gets
-  // added to `blocked` at that point too — so any lower-priority mover
-  // still to be planned this loop correctly treats it as occupied instead
+  // ── Steps 4/5: movement, non-engaged units plus this turn's retreaters,
+  // planned against a "shadow map" rather than executed sequentially. A
+  // cell is only ever a real obstacle if a unit guaranteed to stay put
+  // occupies it — a mover's own current cell is never treated as blocking
+  // *up front*, since it's assumed to vacate this turn, regardless of where
+  // in priority order it sits relative to whoever wants to step into it.
+  // Destinations are claimed in priority order (closest-to-enemy first, see
+  // Step 1) so two movers can't both plan into the same free cell, and if a
+  // mover turns out unable to move after all (fully boxed in), its own cell
+  // gets added to `blocked` at that point too — so any lower-priority mover
+  // still to be planned this round correctly treats it as occupied instead
   // of planning a step into a cell that, in the end, was never vacated.
   const movers = priorityOrder.filter((u) => attackerCount(u) === 0 && alive.some((a) => a.id === u.id));
   const moverIds = new Set(movers.map((m) => m.id));
@@ -475,7 +568,10 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // Plan every mover's first step against a given obstacle set, in
   // priority order — a mover with no destination is "stuck" (its cell
   // wasn't vacated after all); its own cell is blocked immediately so
-  // later movers in *this same pass* don't plan into it.
+  // later movers in *this same round* don't plan into it. A retreating
+  // unit heads toward its nearest living friend rather than its nearest
+  // enemy; with no friend anywhere on the field it just sidesteps once,
+  // away from whoever it's fleeing.
   const planMoves = (
     initialBlocked: Set<string>
   ): { plannedMove: Map<string, Cell>; stuck: Set<string> } => {
@@ -484,10 +580,22 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     const stuck = new Set<string>();
     for (const mover of movers) {
       const unit = alive.find((u) => u.id === mover.id)!;
-      const target = nearestLivingEnemy(unit, alive);
-      if (!target) continue;
 
-      const dest = firstStepToward(unit, target, state.cols, state.rows, blocked);
+      let dest: Cell | undefined;
+      if (retreating.has(unit.id)) {
+        const friend = nearestLivingFriend(unit, alive);
+        const enemy = nearestLivingEnemy(unit, alive);
+        dest = friend
+          ? firstStepToward(unit, friend, state.cols, state.rows, blocked)
+          : enemy
+            ? firstStepAwayFrom(unit, enemy, state.cols, state.rows, blocked)
+            : undefined;
+      } else {
+        const target = nearestLivingEnemy(unit, alive);
+        if (!target) continue;
+        dest = firstStepToward(unit, target, state.cols, state.rows, blocked);
+      }
+
       if (dest) {
         blocked.add(`${dest.col},${dest.row}`);
         plannedMove.set(unit.id, dest);
@@ -499,18 +607,34 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     return { plannedMove, stuck };
   };
 
-  // A first pass finds who ends up stuck. A higher-priority mover decided
-  // earlier in that pass has no way to know a *lower*-priority mover will
-  // turn out stuck (and so never vacate its cell) — so a second pass
-  // re-plans everyone from scratch with every stuck unit's cell blocked
-  // from the very start, this time closing that gap too.
-  const pass1 = planMoves(staticOccupancy.size ? new Set(staticOccupancy.keys()) : new Set<string>());
-  const stuckBlocked = new Set<string>(staticOccupancy.keys());
-  for (const id of Array.from(pass1.stuck)) {
-    const u = alive.find((a) => a.id === id)!;
-    stuckBlocked.add(`${u.col},${u.row}`);
+  // Fixed-point re-planning: each round re-plans everyone from scratch with
+  // every stuck unit found *so far* — this round or any earlier one, unioned
+  // in, never replaced — blocked from the very start. A full re-plan can
+  // make an *individual* unit's destination change between rounds (an
+  // earlier-priority mover can lose its previous cell to newly-added
+  // blocking and pick a different one), so comparing this round's raw stuck
+  // set to last round's isn't a valid fixed-point check on its own — two
+  // different units could swap being stuck without the set size changing.
+  // Accumulating (union) instead of replacing is what makes the blocked
+  // input strictly grow round over round, which *is* monotonic and bounded
+  // by `movers.length` distinct units — the real fixed point is the round
+  // where every stuck unit found is already among the ones already blocked,
+  // i.e. re-planning against the accumulated set reproduces no new stuck
+  // unit at all.
+  let stuckIds = new Set<string>();
+  let plannedMove = new Map<string, Cell>();
+  for (let round = 0; round <= movers.length; round++) {
+    const roundBlocked = new Set(staticOccupancy.keys());
+    for (const id of Array.from(stuckIds)) {
+      const u = alive.find((a) => a.id === id)!;
+      roundBlocked.add(`${u.col},${u.row}`);
+    }
+    const result = planMoves(roundBlocked);
+    plannedMove = result.plannedMove;
+    const newlyStuck = Array.from(result.stuck).filter((id) => !stuckIds.has(id));
+    if (newlyStuck.length === 0) break;
+    for (const id of Array.from(result.stuck)) stuckIds.add(id);
   }
-  const { plannedMove } = planMoves(stuckBlocked);
 
   for (const mover of movers) {
     if (!plannedMove.has(mover.id)) {
