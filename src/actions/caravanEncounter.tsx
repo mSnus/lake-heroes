@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
+import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
 
 export function checkCaravanEncounter(
@@ -76,7 +77,7 @@ export function checkCaravanEncounter(
     htmlMessage: t('caravanEncounter.message', {
       playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
       gold: player.gold,
-      units: player.units,
+      army: formatArmy(player.militia, player.riders),
       defendingUnits,
       caravanDesc,
     }),

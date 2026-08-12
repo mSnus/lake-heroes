@@ -9,6 +9,7 @@ import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { gameEvent } from '../utils/events';
+import { formatArmy } from '../utils/formatArmy';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
 
@@ -72,10 +73,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               <>
                 <strong>{config.encounter.gold}🟡</strong>
                 <br />
-                <strong>🧍{config.encounter.militia ?? 0}</strong>
-                {(config.encounter.riders ?? 0) > 0 && (
-                  <strong>&nbsp;🐎{config.encounter.riders}</strong>
-                )}
+                <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
               </>
             )}
             <br />

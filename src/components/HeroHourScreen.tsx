@@ -9,6 +9,7 @@ import { BattleScreen } from './BattleScreen';
 import { PlayerLabel } from './PlayerLabel';
 import { pickHeroHourTarget } from '../ai/decisions';
 import { say } from '../utils/say';
+import { formatArmy } from '../utils/formatArmy';
 import { useT } from '../i18n';
 import '../styles/BattleScreen.css';
 
@@ -75,24 +76,17 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
     ? t('heroHourScreen.goToGuards', { tileName: tile.name })
     : t('heroHourScreen.greetAndPass');
 
-  const armyLabel = (player: Player) => (
-    <>
-      🧍{player.militia}
-      {player.riders > 0 && <> 🐎{player.riders}</>}
-    </>
-  );
-
   return (
     <ScreenBackground image="assets/screens/battle.jpg">
       <Fade />
       <div className="battle-screen">
         <div className="battle-header">{t('battleScreen.heroHour')}</div>
         <p className="hero-hour-message">
-          <PlayerLabel player={activePlayer} /> {armyLabel(activePlayer)} {t('heroHourScreen.encounters')}{' '}
+          <PlayerLabel player={activePlayer} /> {formatArmy(activePlayer.militia, activePlayer.riders)} {t('heroHourScreen.encounters')}{' '}
           {opponents.map((opponent, i) => (
             <React.Fragment key={opponent.id}>
               {i > 0 && ', '}
-              <PlayerLabel player={opponent} /> {armyLabel(opponent)}
+              <PlayerLabel player={opponent} /> {formatArmy(opponent.militia, opponent.riders)}
             </React.Fragment>
           ))}
           .
