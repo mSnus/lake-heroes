@@ -52,6 +52,13 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   );
   // Decreasing an existing garrison is only allowed while physically
   // standing on the tile — increasing it is always allowed.
+  // onBuy/onSell-style mutations below act directly on `tile`/`player` in
+  // place, but this screen is a static `content:` element handed to
+  // screenStore once at mount — nothing else re-invokes it, so force a
+  // re-render after any mutation that doesn't already close the screen
+  // (mirrors TavernModal/KingsCastleModal).
+  const [, forceRerender] = useState(0);
+
   const canDecreaseGarrison = gameState.activeTile === tile;
   // Default to whatever's already garrisoned, if anything — only fall back
   // to proposing half the pool for a tile that isn't guarded yet.
@@ -111,6 +118,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     tile._level = level;
     say(t('tileCard.upgradedMessage', { playerName: player.name, tileName: tile.name, level }), 'info');
     updateGameState(gameState);
+    forceRerender((v) => v + 1);
   };
 
   const priceTag = (level: number) => (
@@ -158,6 +166,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       yieldTile(gameState, player, tile);
     }
     updateGameState(gameState);
+    forceRerender((v) => v + 1);
   };
 
   return (
