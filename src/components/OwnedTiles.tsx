@@ -22,9 +22,11 @@ interface Props {
    * pay-or-fight/sell-to-pay screen, so a tile click can't navigate away
    * from it (see TileCard's disableUpgradesScreen prop). */
   disableUpgradesScreen?: boolean;
+  /** Forwarded to TileCard — render each card expanded from the start. */
+  defaultExpanded?: boolean;
 }
 
-export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disableUpgradesScreen = false }) => {
+export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disableUpgradesScreen = false, defaultExpanded = false }) => {
   const t = useT();
   if (!gameState) return <div></div>;
 
@@ -81,6 +83,7 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disabl
                   gameState={gameState}
                   updateGameState={updateGameState}
                   disableUpgradesScreen={disableUpgradesScreen}
+                  defaultExpanded={defaultExpanded}
                 />
               </div>
             ))}
