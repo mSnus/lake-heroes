@@ -53,8 +53,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // Decreasing an existing garrison is only allowed while physically
   // standing on the tile — increasing it is always allowed.
   const canDecreaseGarrison = gameState.activeTile === tile;
+  // Default to whatever's already garrisoned, if anything — only fall back
+  // to proposing half the pool for a tile that isn't guarded yet.
   const [garrisonAmount, setGarrisonAmount] = useState(() =>
-    Math.min(maxGarrison, Math.max(canDecreaseGarrison ? 0 : tile.garrisonMilitia, Math.floor(totalMilitiaPool / 2)))
+    tile.garrisonMilitia > 0
+      ? Math.min(maxGarrison, tile.garrisonMilitia)
+      : Math.min(maxGarrison, Math.floor(totalMilitiaPool / 2))
   );
 
   const applyGarrison = (newValue: number) => {
