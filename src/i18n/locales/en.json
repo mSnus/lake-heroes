@@ -483,8 +483,7 @@
     "payFee": "Pay fee {fee}🟡",
     "battle": "Battle ⚔️ ({defence}🧍)",
     "acceptLoss": "Accept loss 😢",
-    "sellHeader": "Sell tiles to pay the {fee}🟡 fee, raise an army, or yield to {ownerName}",
-    "theOwner": "the owner",
+    "sellHeader": "Sell tiles to pay the {fee}🟡 fee, raise an army, or temporary yield to King for half a price",
     "sellTiles": "Sell tiles 💰",
     "enjoysYieldedVisit": "{playerName} enjoys visiting {tileName} while it's yielded"
   },

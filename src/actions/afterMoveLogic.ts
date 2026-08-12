@@ -200,10 +200,7 @@ export function showTileEncounterScreen(
     const sellModeConfig = {
       ...baseConfig,
       sellMode: true,
-      sellHeader: t('afterMoveLogic.sellHeader', {
-        fee,
-        ownerName: owner?.name ?? t('afterMoveLogic.theOwner'),
-      }),
+      sellHeader: t('afterMoveLogic.sellHeader', { fee }),
       buttons: baseButtons,
     };
     extraButtons.push({
