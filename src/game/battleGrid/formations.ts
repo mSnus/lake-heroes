@@ -167,7 +167,7 @@ const MAX_GROUP_SIZE = 10;
 
 /** Cap on how many full-strength squads stack in the front line before the
  * rest spill into a second line behind it (see arrangeGroups). */
-const LINE1_MAX = 3;
+const LINE1_MAX = 4;
 
 /**
  * Split `total` into `count` shares that are as equal as possible, with
@@ -490,8 +490,19 @@ export function placeFormation(
     unitsOfKind.forEach((unit, i) => {
       const c = cellsOfKind[i];
       if (!c) return;
-      unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col));
-      unit.row = Math.max(0, Math.min(rows - 1, startRow + c.row));
+      const row = startRow + c.row;
+      // The hex grid visually shifts even rows +0.5 cell right
+      // (BattlefieldGrid's colShift) — for the defender that happens to
+      // tighten the gap between a shape's ragged edge and its neighboring
+      // rows (looks right), but mirroring for the attacker flips which
+      // side that raggedness is on without flipping which rows get the
+      // shift, so the same nudge widens the gap instead. Odd rows get no
+      // automatic shift, so nudging the attacker's odd-row cells one
+      // column over restores the same visual spacing the defender already
+      // has for free.
+      const hexCompensation = side === 'attacker' && row % 2 !== 0 ? 1 : 0;
+      unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col + hexCompensation));
+      unit.row = Math.max(0, Math.min(rows - 1, row));
     });
   }
 }
