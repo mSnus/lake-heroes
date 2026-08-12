@@ -190,6 +190,7 @@
     "onGuard": "On guard:",
     "onGuardLine": "{slots}🏯 with {input}🧍",
     "stayInArmy": "so only {count}🧍 would stay in army",
+    "stayInArmyWithRiders": "so only {count}🧍 {riders}🐎 would stay in army",
     "garrisonVisitCaveat": "(you can take units back from guard only when visiting the tile)",
     "leaveUnguarded": "Leave unprotected 🩸",
     "setToGuard": "Guard with {amount} 🧍"

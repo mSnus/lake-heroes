@@ -282,7 +282,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                       </div>
                     </div>
                     <div>
-                      {t('tileClaimScreen.stayInArmy', { count: totalMilitiaPool - garrisonAmount })}
+                      {player.riders > 0
+                        ? t('tileClaimScreen.stayInArmyWithRiders', {
+                            count: totalMilitiaPool - garrisonAmount,
+                            riders: player.riders,
+                          })
+                        : t('tileClaimScreen.stayInArmy', { count: totalMilitiaPool - garrisonAmount })}
                     </div>
                     <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
                       {t('tileClaimScreen.garrisonVisitCaveat')}
