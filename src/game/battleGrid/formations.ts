@@ -165,10 +165,6 @@ const GROUP_GAP = 1;
  * in SHAPES, since anything past this needs to be split further anyway. */
 const MAX_GROUP_SIZE = 10;
 
-/** Cap on how many full-strength squads stack in the front line before the
- * rest spill into a second line behind it (see arrangeGroups). */
-const LINE1_MAX = 4;
-
 /**
  * Split `total` into `count` shares that are as equal as possible, with
  * any remainder favoring the most "central" share rather than spreading
@@ -234,6 +230,24 @@ function centerOutwardOrder(count: number): number[] {
   );
 }
 
+/** Stack positions in outside-in pairing order: (0, count-1), (1, count-2),
+ * ... down to the lone middle slot for an odd count. Feeding sizes sorted
+ * biggest-first into positions in this order puts the biggest squads at
+ * the two ends and the smallest ones toward the middle, symmetric
+ * top-to-bottom — e.g. 3 squads -> [big, small, big]. */
+function outsideInOrder(count: number): number[] {
+  const order: number[] = [];
+  let lo = 0;
+  let hi = count - 1;
+  while (lo < hi) {
+    order.push(lo, hi);
+    lo++;
+    hi--;
+  }
+  if (lo === hi) order.push(lo);
+  return order;
+}
+
 function boundingBox(cells: LocalCell[]): { width: number; height: number } {
   if (cells.length === 0) return { width: 0, height: 0 };
   let maxCol = 0;
@@ -272,49 +286,29 @@ function stackColumnLocal(groups: PlacedCell[][]): { cells: PlacedCell[]; height
 }
 
 /**
- * Arrange several already-built sub-formations into one combined layout:
- * - 1-3 groups: a single front-flush vertical column.
- * - 4+ groups: a front column packing every full-strength (10-unit) group,
- *   and a column behind it holding whatever understrength groups are left
- *   over — the shorter of the two columns is centered against the taller
- *   one, so the "spare" groups sit symmetrically behind the packed front
- *   rather than watering every group down to stay equal-ish.
+ * Arrange several already-built sub-formations into a single front-flush
+ * vertical column, ordered symmetrically by size — the biggest squads at
+ * the two ends, the smallest tucked toward the middle (see
+ * outsideInOrder) — rather than in whatever order they were built.
  */
 function arrangeGroups(groups: PlacedCell[][]): PlacedCell[] {
   const g = groups.length;
   if (g === 0) return [];
   if (g === 1) return groups[0];
 
-  if (g <= 3) {
-    // Front-flush, not centered: every shape is already authored with its
-    // front edge at local col 0, so leaving dCol at 0 for every group lines
-    // up their fronts along the same column regardless of how wide each
-    // group's own back end is — centering would instead misalign the
-    // fronts whenever the groups have different widths.
-    const { cells } = stackColumnLocal(groups);
-    return cells;
-  }
+  const bySizeDesc = [...groups].sort((a, b) => b.length - a.length);
+  const positions = outsideInOrder(g);
+  const ordered: PlacedCell[][] = new Array(g);
+  bySizeDesc.forEach((group, i) => {
+    ordered[positions[i]] = group;
+  });
 
-  const fullGroups = groups.filter((group) => group.length >= MAX_GROUP_SIZE);
-  const partialGroups = groups.filter((group) => group.length < MAX_GROUP_SIZE);
-
-  // The front line holds at most LINE1_MAX full-strength squads — any more
-  // of them, plus every understrength squad, spill into a second line
-  // behind it rather than growing the front line indefinitely tall.
-  const lineOneGroups = fullGroups.slice(0, LINE1_MAX);
-  const lineTwoGroups = [...fullGroups.slice(LINE1_MAX), ...partialGroups];
-
-  const front = stackColumnLocal(lineOneGroups);
-  const back = stackColumnLocal(lineTwoGroups);
-  const maxHeight = Math.max(front.height, back.height);
-  const frontRowOffset = Math.floor((maxHeight - front.height) / 2);
-  const backRowOffset = Math.floor((maxHeight - back.height) / 2);
-  const backColStart = lineOneGroups.length > 0 ? front.width + GROUP_GAP : 0;
-
-  const out: PlacedCell[] = [];
-  for (const c of front.cells) out.push({ col: c.col, row: c.row + frontRowOffset, kind: c.kind });
-  for (const c of back.cells) out.push({ col: c.col + backColStart, row: c.row + backRowOffset, kind: c.kind });
-  return out;
+  // Front-flush, not centered: every shape is already authored with its
+  // front edge at local col 0, so leaving dCol at 0 for every group lines
+  // up their fronts along the same column regardless of how wide each
+  // group's own back end is — centering would instead misalign the fronts
+  // whenever the groups have different widths.
+  return stackColumnLocal(ordered).cells;
 }
 
 /**
@@ -347,18 +341,27 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
   if (forcedGroupCount) {
     // Forced groupCount (towers/squads): pack shares to full strength
     // front-to-back rather than spreading everyone thin (see
-    // splitFrontLoaded) — riders lead, filling each packed share before
-    // spilling into the next, so the full front shares are cavalry-led.
+    // splitFrontLoaded). Riders are split as evenly as possible across
+    // every share regardless of its size, capped at what each share can
+    // actually hold — any overflow from an undersized share spills into
+    // whichever other shares still have room, center-outward.
     const sizes = splitFrontLoaded(total, groupCount);
-    militiaSizes = [];
-    riderSizes = [];
-    let remainingRiders = comp.riders;
-    for (const size of sizes) {
-      const r = Math.min(remainingRiders, size);
-      riderSizes.push(r);
-      militiaSizes.push(size - r);
-      remainingRiders -= r;
+    const riderShares = splitEvenlyCenterHeavy(comp.riders, groupCount);
+    let overflow = 0;
+    for (let i = 0; i < groupCount; i++) {
+      const capped = Math.min(riderShares[i], sizes[i]);
+      overflow += riderShares[i] - capped;
+      riderShares[i] = capped;
     }
+    for (const idx of centerOutwardOrder(groupCount)) {
+      if (overflow <= 0) break;
+      const room = sizes[idx] - riderShares[idx];
+      const take = Math.min(room, overflow);
+      riderShares[idx] += take;
+      overflow -= take;
+    }
+    riderSizes = riderShares;
+    militiaSizes = sizes.map((s, i) => s - riderShares[i]);
   } else {
     // Each share is capped at MAX_GROUP_SIZE by splitEvenlyCenterHeavy, but
     // a *forced* groupCount (towers/squads) can still divide out to a base

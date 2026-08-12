@@ -35,7 +35,7 @@ export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
 export const SPRITE_SIZE = 96;
 
 // ── Grid battle (BattlefieldGrid) ──
-export const BATTLEFIELD_COLS = 16;
+export const BATTLEFIELD_COLS = 14;
 export const BATTLEFIELD_ROWS = 16;
 export const MILITIA_HP = 12;
 export const MILITIA_DMG_MIN = 1;
