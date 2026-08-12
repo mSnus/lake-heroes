@@ -70,6 +70,13 @@ function neighborOffsetsFor(row: number): Cell[] {
   return row % 2 === 0 ? NEIGHBOR_OFFSETS_EVEN_ROW : NEIGHBOR_OFFSETS_ODD_ROW;
 }
 
+// A unit that's actively defending (mitigating incoming damage rather than
+// dealing it) rolls with this bonus on top of whatever side bonuses
+// (artifacts, garrison) already apply — otherwise defending is strictly
+// worse than attacking (same roll, but only reduces damage instead of
+// dealing it), which doesn't make tactical sense.
+const DEFENSE_ROLL_BONUS = 0.5;
+
 function hpFor(kind: UnitKind): number {
   if (kind === 'dragon') return DRAGON_HP;
   return kind === 'rider' ? RIDER_HP : MILITIA_HP;
@@ -380,10 +387,12 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     return !target || !attackers.some((a) => a.id === target.id);
   };
 
-  const rollFor = (u: GridUnit): number =>
-    u.side === 'attacker'
-      ? rollDamage(u.kind, attackerPctBonus, attackerFlatBonus, rng)
-      : rollDamage(u.kind, defenderPctBonus, defenderFlatBonus, rng);
+  const rollFor = (u: GridUnit, defending: boolean): number => {
+    const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
+    const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
+    const pct = defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct;
+    return rollDamage(u.kind, pct, sideFlat, rng);
+  };
 
   const damage = new Map<string, number>(); // unitId -> accumulated damage this turn
   const applyDamage = (unitId: string, amount: number) => {
@@ -399,12 +408,12 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
 
   for (const u of engaged) {
     if (isDefending(u)) {
-      defenceRoll.set(u.id, rollFor(u));
+      defenceRoll.set(u.id, rollFor(u, true));
       continue;
     }
     const target = chosenTarget.get(u.id);
     if (!target) continue;
-    const roll = rollFor(u);
+    const roll = rollFor(u, false);
     incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
     events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
   }
