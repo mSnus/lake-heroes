@@ -127,6 +127,7 @@ export function createBattle(
         col: 0,
         row: 0,
         stableIndex: stableIndex++,
+        retreatStreak: 0,
       });
     }
     for (let i = 0; i < comp.riders; i++) {
@@ -140,6 +141,7 @@ export function createBattle(
         col: 0,
         row: 0,
         stableIndex: stableIndex++,
+        retreatStreak: 0,
       });
     }
     if (comp.formation && comp.formation.kind !== 'square') {
@@ -438,11 +440,15 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // (can't attack, can't be attacked, no defence roll — it's focused on
   // getting out) and handled as a mover in the movement phase instead,
   // heading toward its nearest living friend if it has one, or just away
-  // from whoever it's fleeing if it doesn't.
+  // from whoever it's fleeing if it doesn't. Capped at 2 retreats in a row
+  // (retreatStreak) — a unit that's already ducked out twice is forced to
+  // fight on its third otherwise-qualifying turn, rather than kiting
+  // indefinitely.
   const retreating = new Set<string>();
   for (const u of living) {
     if (livingAdjacentEnemies(u, living).length < 3) continue;
     if (livingAdjacentFriends(u, living).length > 0) continue;
+    if (u.retreatStreak >= 2) continue;
     if (!hasOpenAdjacentCell(u, living, state.cols, state.rows)) continue;
     retreating.add(u.id);
   }
@@ -656,6 +662,14 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     });
     unit.col = dest.col;
     unit.row = dest.row;
+  }
+
+  // A unit's streak only continues if it actually retreated this turn (was
+  // marked as retreating *and* found somewhere to go) — anything else
+  // (fighting, moving normally, or being stuck with nowhere to flee) resets
+  // it, so only genuinely consecutive retreats count toward the cap.
+  for (const u of alive) {
+    u.retreatStreak = retreating.has(u.id) && plannedMove.has(u.id) ? u.retreatStreak + 1 : 0;
   }
 
   alive = alive.map((u) => u);

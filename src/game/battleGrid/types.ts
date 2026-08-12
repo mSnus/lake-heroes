@@ -13,6 +13,10 @@ export interface GridUnit {
    * (turn order, target selection, movement candidates), so a battle replays
    * identically given the same RNG sequence. */
   stableIndex: number;
+  /** How many turns in a row this unit has just retreated (0 if its most
+   * recent turn was anything else — fighting, moving normally, or standing
+   * still). Capped at 2 in a row before it's forced to fight instead. */
+  retreatStreak: number;
 }
 
 export interface GridBattleState {
