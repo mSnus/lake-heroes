@@ -157,7 +157,8 @@ export function showTileEncounterScreen(
     fee,
     outcomeText: undefined,
     gold: player.gold,
-    units: player.units,
+    militia: player.militia,
+    riders: player.riders,
   };
 
   const baseConfig = {
