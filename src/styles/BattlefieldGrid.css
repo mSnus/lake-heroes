@@ -9,8 +9,6 @@
   container-name: battlefield;
   position: relative;
   width: 100%;
-  max-height: 46vh;
-  overflow: auto;
   --bfg-cell: 6.2vmin;
   /* Room for even rows' cells/units to shift right without clipping. */
   padding-right: calc(var(--bfg-cell) / 2);
