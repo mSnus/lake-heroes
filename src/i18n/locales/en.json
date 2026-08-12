@@ -192,7 +192,7 @@
     "stayInArmy": "so only {count}🧍 would stay in army",
     "stayInArmyRidersOnly": "so only {riders}🐎 would stay in army",
     "stayInArmyBoth": "so only {count}🧍 and {riders}🐎 would stay in army",
-    "garrisonVisitCaveat": "(you can take units back from guard only when visiting the tile)",
+    "garrisonVisitCaveat": "(move them back to army while visiting this tile)",
     "leaveUnguarded": "Leave unprotected 🩸",
     "setToGuard": "Guard with {amount} 🧍"
   },

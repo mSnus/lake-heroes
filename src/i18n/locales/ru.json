@@ -192,7 +192,7 @@
     "stayInArmy": "так в армии останется только {count}🧍",
     "stayInArmyRidersOnly": "так в армии останется только {riders}🐎",
     "stayInArmyBoth": "так в армии останется только {count}🧍 и {riders}🐎",
-    "garrisonVisitCaveat": "(забрать бойцов из гарнизона обратно можно только находясь на этой клетке)",
+    "garrisonVisitCaveat": "(вернуть их в армию можно, только находясь на этой клетке)",
     "leaveUnguarded": "Оставить без защиты 🩸",
     "setToGuard": "Охранять с {amount} 🧍"
   },
