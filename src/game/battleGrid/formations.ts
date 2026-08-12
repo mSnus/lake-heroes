@@ -49,8 +49,8 @@ const SHAPES: Record<number, LocalCell[]> = {
   6: [
     { col: 0, row: 0 },
     { col: 1, row: 0 },
+    { col: 1, row: 1 },
     { col: 2, row: 1 },
-    { col: 3, row: 1 },
     { col: 0, row: 2 },
     { col: 1, row: 2 },
   ],
