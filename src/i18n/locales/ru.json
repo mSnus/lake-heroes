@@ -190,7 +190,8 @@
     "onGuard": "В гарнизоне:",
     "onGuardLine": "{slots}🏯 с {input}🧍",
     "stayInArmy": "так в армии останется только {count}🧍",
-    "stayInArmyWithRiders": "так в армии останется только {count}🧍 {riders}🐎",
+    "stayInArmyRidersOnly": "так в армии останется только {riders}🐎",
+    "stayInArmyBoth": "так в армии останется только {count}🧍 и {riders}🐎",
     "garrisonVisitCaveat": "(забрать бойцов из гарнизона обратно можно только находясь на этой клетке)",
     "leaveUnguarded": "Оставить без защиты 🩸",
     "setToGuard": "Охранять с {amount} 🧍"

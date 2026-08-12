@@ -282,12 +282,17 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                       </div>
                     </div>
                     <div>
-                      {player.riders > 0
-                        ? t('tileClaimScreen.stayInArmyWithRiders', {
-                            count: totalMilitiaPool - garrisonAmount,
-                            riders: player.riders,
-                          })
-                        : t('tileClaimScreen.stayInArmy', { count: totalMilitiaPool - garrisonAmount })}
+                      {(() => {
+                        const stayingMilitia = totalMilitiaPool - garrisonAmount;
+                        const stayingRiders = player.riders;
+                        if (stayingMilitia > 0 && stayingRiders > 0) {
+                          return t('tileClaimScreen.stayInArmyBoth', { count: stayingMilitia, riders: stayingRiders });
+                        }
+                        if (stayingRiders > 0) {
+                          return t('tileClaimScreen.stayInArmyRidersOnly', { riders: stayingRiders });
+                        }
+                        return t('tileClaimScreen.stayInArmy', { count: stayingMilitia });
+                      })()}
                     </div>
                     <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
                       {t('tileClaimScreen.garrisonVisitCaveat')}
