@@ -478,10 +478,13 @@ export function placeFormation(
 
   const box = boundingBox(placed);
   const startRow = Math.floor((rows - box.height) / 2);
-  // Anchor at each side's own home edge -- attacker at col 0, defender
-  // flush against the far edge -- and let the shape (already oriented so
-  // its front points the right way) extend inward from there.
-  const startCol = side === 'attacker' ? 0 : Math.max(0, cols - box.width);
+  // Anchor each side's front edge 1 cell off the grid's vertical center
+  // (so the two fronts start 2 cells apart, with the center column itself
+  // empty) and let the shape (already oriented so its front points the
+  // right way) extend backward from there, toward that side's own edge.
+  const centerCol = Math.floor(cols / 2);
+  const startCol =
+    side === 'attacker' ? Math.max(0, centerCol - box.width) : Math.min(cols - box.width, centerCol + 1);
 
   // Zip cells to units per kind (not just militia/rider — the dragon
   // formation's cells are all kind 'dragon'), matching whatever kinds are
