@@ -798,7 +798,7 @@
   },
   "rogueAttack": {
     "title": "Rogue Attack",
-    "wonGrows": "Battle for {tileName} won, {units}🧍 impressed by your power join your garrison",
+    "wonGrows": "Battle for {tileName} won, {units}🧍 impressed by your power, join your garrison",
     "wonFull": "Battle for {tileName} won, and your garrison is full again",
     "wonToast": "{playerName}'s garrison at {tileName} repels a roaming horde",
     "razed": "Your {tileName} was razed 🔥by the roaming horde!",
