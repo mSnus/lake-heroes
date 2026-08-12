@@ -447,16 +447,15 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // ── Steps 4/5: movement, non-engaged units only, planned against a
   // "shadow map" rather than executed sequentially. A cell is only ever a
   // real obstacle if an engaged unit (guaranteed to stay put) occupies it —
-  // a mover's own current cell is never treated as blocking, since it's
-  // itself vacating this turn, regardless of where in priority order it
-  // sits relative to whoever wants to step into it. Destinations are still
-  // claimed in priority order (closest-to-enemy first) so two movers can't
-  // both plan into the same free cell, but a lower-priority unit is no
-  // longer blocked by a higher-priority unit simply not having moved yet.
-  // (Known simplification: if a mover that another unit planned around ends
-  // up unable to move itself — fully boxed in — both units can end up
-  // sharing a cell. Accepted as a rare edge case of planning against
-  // intent rather than sequential execution.)
+  // a mover's own current cell is never treated as blocking *up front*,
+  // since it's assumed to vacate this turn, regardless of where in
+  // priority order it sits relative to whoever wants to step into it.
+  // Destinations are claimed in priority order (closest-to-enemy first) so
+  // two movers can't both plan into the same free cell, and if a mover
+  // turns out unable to move after all (fully boxed in), its own cell gets
+  // added to `blocked` at that point too — so any lower-priority mover
+  // still to be planned this loop correctly treats it as occupied instead
+  // of planning a step into a cell that, in the end, was never vacated.
   const movers = priorityOrder.filter((u) => attackerCount(u) === 0 && alive.some((a) => a.id === u.id));
   const moverIds = new Set(movers.map((m) => m.id));
 
@@ -465,26 +464,49 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     if (!moverIds.has(u.id)) staticOccupancy.set(`${u.col},${u.row}`, u.id);
   }
 
-  const plannedMove = new Map<string, Cell>(); // unitId -> destination
+  // Plan every mover's first step against a given obstacle set, in
+  // priority order — a mover with no destination is "stuck" (its cell
+  // wasn't vacated after all); its own cell is blocked immediately so
+  // later movers in *this same pass* don't plan into it.
+  const planMoves = (
+    initialBlocked: Set<string>
+  ): { plannedMove: Map<string, Cell>; stuck: Set<string> } => {
+    const blocked = new Set(initialBlocked);
+    const plannedMove = new Map<string, Cell>();
+    const stuck = new Set<string>();
+    for (const mover of movers) {
+      const unit = alive.find((u) => u.id === mover.id)!;
+      const target = nearestLivingEnemy(unit, alive);
+      if (!target) continue;
 
-  // BFS obstacle set: engaged units (never move) plus whatever earlier,
-  // higher-priority movers have already claimed as *their* first step this
-  // turn — grows as the loop proceeds, so later movers path around cells
-  // that are genuinely spoken for, not just occupied-for-now.
-  const blocked = new Set<string>(staticOccupancy.keys());
+      const dest = firstStepToward(unit, target, state.cols, state.rows, blocked);
+      if (dest) {
+        blocked.add(`${dest.col},${dest.row}`);
+        plannedMove.set(unit.id, dest);
+      } else {
+        blocked.add(`${unit.col},${unit.row}`);
+        stuck.add(unit.id);
+      }
+    }
+    return { plannedMove, stuck };
+  };
+
+  // A first pass finds who ends up stuck. A higher-priority mover decided
+  // earlier in that pass has no way to know a *lower*-priority mover will
+  // turn out stuck (and so never vacate its cell) — so a second pass
+  // re-plans everyone from scratch with every stuck unit's cell blocked
+  // from the very start, this time closing that gap too.
+  const pass1 = planMoves(staticOccupancy.size ? new Set(staticOccupancy.keys()) : new Set<string>());
+  const stuckBlocked = new Set<string>(staticOccupancy.keys());
+  for (const id of Array.from(pass1.stuck)) {
+    const u = alive.find((a) => a.id === id)!;
+    stuckBlocked.add(`${u.col},${u.row}`);
+  }
+  const { plannedMove } = planMoves(stuckBlocked);
 
   for (const mover of movers) {
-    const unit = alive.find((u) => u.id === mover.id)!;
-    const target = nearestLivingEnemy(unit, alive);
-    if (!target) continue;
-
-    const dest = firstStepToward(unit, target, state.cols, state.rows, blocked);
-
-    if (dest) {
-      blocked.add(`${dest.col},${dest.row}`);
-      plannedMove.set(unit.id, dest);
-    } else {
-      events.push({ type: 'skip', unitId: unit.id, side: unit.side, kind: unit.kind });
+    if (!plannedMove.has(mover.id)) {
+      events.push({ type: 'skip', unitId: mover.id, side: mover.side, kind: mover.kind });
     }
   }
 
