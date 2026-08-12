@@ -75,17 +75,24 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
     ? t('heroHourScreen.goToGuards', { tileName: tile.name })
     : t('heroHourScreen.greetAndPass');
 
+  const armyLabel = (player: Player) => (
+    <>
+      🧍{player.militia}
+      {player.riders > 0 && <> 🐎{player.riders}</>}
+    </>
+  );
+
   return (
     <ScreenBackground image="assets/screens/battle.jpg">
       <Fade />
       <div className="battle-screen">
         <div className="battle-header">{t('battleScreen.heroHour')}</div>
         <p className="hero-hour-message">
-          <PlayerLabel player={activePlayer} /> 🧍{activePlayer.units} {t('heroHourScreen.encounters')}{' '}
+          <PlayerLabel player={activePlayer} /> {armyLabel(activePlayer)} {t('heroHourScreen.encounters')}{' '}
           {opponents.map((opponent, i) => (
             <React.Fragment key={opponent.id}>
               {i > 0 && ', '}
-              <PlayerLabel player={opponent} /> 🧍{opponent.units}
+              <PlayerLabel player={opponent} /> {armyLabel(opponent)}
             </React.Fragment>
           ))}
           .
