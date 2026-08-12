@@ -191,7 +191,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               </button>
             ))}
           </div>
-          <OwnedTiles gameState={gameState} updateGameState={sellAndRecheck} />
+          <OwnedTiles gameState={gameState} updateGameState={sellAndRecheck} disableUpgradesScreen />
         </div>
       )}
     </div>

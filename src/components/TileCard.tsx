@@ -46,6 +46,12 @@ export type TileCardProps = {
   couldBuy?: boolean;
   defaultExpanded?: boolean;
   demoMode?: boolean;
+  /** True when this card is rendered inside a forced pay-or-fight/sell-to-
+   * pay screen — opening the full-screen Tile Upgrades screen from there
+   * would silently replace (and lose) that screen instead of stacking on
+   * top of it, so title/upgrade-zone clicks fall back to just expanding
+   * the card instead of navigating away. */
+  disableUpgradesScreen?: boolean;
 };
 
 export const TileCard: React.FC<TileCardProps> = ({
@@ -56,6 +62,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   couldBuy = false,
   defaultExpanded = false,
   demoMode = false,
+  disableUpgradesScreen = false,
 }) => {
   const t = useT();
   const [expanded, setExpanded] = React.useState(defaultExpanded);
@@ -214,7 +221,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // Garrison management, upgrading, and sell/yield all live on the Tile
   // Upgrades screen now — TileCard's job is just to open it.
   const openUpgradesScreen = () => {
-    if (demoMode) return;
+    if (demoMode || disableUpgradesScreen) return;
     if (!gameState || !updateGameState || !activePlayer) return;
     if (tile.owner !== activePlayer.id) return;
 
@@ -229,7 +236,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const upgradeRowProps = (level: number) =>
-    mode === 'owned' && tile.owner === activePlayer?.id && level === nextLevel
+    mode === 'owned' && tile.owner === activePlayer?.id && !disableUpgradesScreen && level === nextLevel
       ? { onClick: openUpgradesScreen, style: { cursor: 'pointer' as const } }
       : {};
 
@@ -250,7 +257,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     >
       <div
         className="tile-card-header"
-        onClick={tile.owner === activePlayer?.id ? openUpgradesScreen : handleInfoClick}
+        onClick={tile.owner === activePlayer?.id && !disableUpgradesScreen ? openUpgradesScreen : handleInfoClick}
         style={{
           background: groupColor + 'e0',
           overflow: 'clip',

@@ -18,9 +18,13 @@ const basePrice = (tile: Tile): number => tile.prices?.['1']?.gold ?? 0;
 interface Props {
   gameState: GameState;
   updateGameState: (gameState: GameState) => void;
+  /** Forwarded to TileCard — set while this list is shown inside a forced
+   * pay-or-fight/sell-to-pay screen, so a tile click can't navigate away
+   * from it (see TileCard's disableUpgradesScreen prop). */
+  disableUpgradesScreen?: boolean;
 }
 
-export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState }) => {
+export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disableUpgradesScreen = false }) => {
   const t = useT();
   if (!gameState) return <div></div>;
 
@@ -76,6 +80,7 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState }) => {
                   mode="owned"
                   gameState={gameState}
                   updateGameState={updateGameState}
+                  disableUpgradesScreen={disableUpgradesScreen}
                 />
               </div>
             ))}
