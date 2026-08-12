@@ -14,6 +14,11 @@
   --bfg-cell: 6.2vmin;
   /* Room for even rows' cells/units to shift right without clipping. */
   padding-right: calc(var(--bfg-cell) / 2);
+  /* .bfg-grid is only as wide as its column count needs, not the full
+     container -- center it instead of leaving it flush left. */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 @supports (container-type: inline-size) {

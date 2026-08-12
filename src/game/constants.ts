@@ -36,7 +36,7 @@ export const SPRITE_SIZE = 96;
 
 // ── Grid battle (BattlefieldGrid) ──
 export const BATTLEFIELD_COLS = 12;
-export const BATTLEFIELD_ROWS = 24;
+export const BATTLEFIELD_ROWS = 20;
 export const MILITIA_HP = 12;
 export const MILITIA_DMG_MIN = 1;
 export const MILITIA_DMG_MAX = 6;
