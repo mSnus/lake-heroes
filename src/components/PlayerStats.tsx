@@ -1,5 +1,6 @@
 import React from 'react';
 import { Player } from '../game/Player';
+import { formatArmy } from '../utils/formatArmy';
 import { useT } from '../i18n';
 import '../styles/PlayerStats.css';
 
@@ -42,9 +43,7 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
         )}
         {showUnits && (
           <span className="player-stat">
-            <strong>
-              {player.units ?? 0}🧍{player.riders > 0 ? ` (${player.riders}🐎)` : ''}
-            </strong>
+            <strong>{formatArmy(player.militia ?? 0, player.riders ?? 0)}</strong>
           </span>
         )}
       </div>

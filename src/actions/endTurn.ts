@@ -7,6 +7,7 @@ import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { hasArtifact, getArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { recordTurnStat } from '../game/statistics';
+import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -91,7 +92,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     say(
       t('endTurn.enoughToChallengeDragon', {
         playerName: board.activePlayer.name,
-        units: board.activePlayer.units,
+        army: formatArmy(board.activePlayer.militia, board.activePlayer.riders),
       }),
       'info'
     );

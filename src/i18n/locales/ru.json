@@ -441,7 +441,7 @@
   "endTurn": {
     "prisonIsWetAndCold": "В темнице сыро и холодно, {playerName}",
     "dwellsInPrison": "{playerName} томится в темнице и пропускает ход",
-    "enoughToChallengeDragon": "У {playerName} {units}🧍 — достаточно, чтобы бросить вызов Дракону!",
+    "enoughToChallengeDragon": "У {playerName} {army} — достаточно, чтобы бросить вызов Дракону!",
     "dragonGuardsGold": "Ужасающий дракон охраняет груду золота и драгоценностей",
     "prisonGoldFine": "{playerSpan} подкупает стражу {fine}🟡, чтобы сбежать из темницы",
     "prisonGoldFineToast": "{playerName} подкупает стражу {fine}🟡, чтобы сбежать из темницы",
