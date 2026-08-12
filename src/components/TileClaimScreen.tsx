@@ -303,7 +303,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       </div>
 
       {!tile.isYielded && (
-        <div className="game-menu" style={{ top: '40px' }}>
+        <div className="game-menu" style={{ top: '2rem' }}>
           <div>
             <DecoratedButton onClick={handleSetGarrison}>
               {garrisonAmount === 0 ? t('tileClaimScreen.leaveUnguarded') : t('tileClaimScreen.setToGuard', { amount: garrisonAmount })}
