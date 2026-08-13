@@ -49,11 +49,12 @@ export const SPRITE_SIZE = 96;
 // ── Grid battle (BattlefieldGrid) ──
 export const BATTLEFIELD_COLS = 12;
 export const BATTLEFIELD_ROWS = 20;
-// Brawl (small skirmish): a compact board with larger cells, used for the
-// turn-based / manually-controlled brawl fights instead of the full-size
-// battlefield above.
+// battlefield above. Triggered when both sides field at most
+// BRAWL_BATTLE_UNIT_MAX grid units — a dedicated knob, separate from
+// BRAWL_THRESHOLD's banzai/eligibility use.
 export const BRAWL_COLS = 9;
 export const BRAWL_ROWS = 12;
+export const BRAWL_BATTLE_UNIT_MAX = 12;
 export const MILITIA_HP = 6;
 export const MILITIA_DMG_MIN = 1;
 export const MILITIA_DMG_MAX = 4;
