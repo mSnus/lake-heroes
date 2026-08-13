@@ -99,10 +99,6 @@ export function handleTreasureBox(
   player.gold += goldReward;
 
   updateGameState(board);
-  say(
-    t('treasureBox.foundGold', { playerName: player.name, size: sizeLabel, roll: effectiveRoll, gold: goldReward }),
-    'success'
-  );
 
   showScreen({
     screenType: 'treasure-result',
