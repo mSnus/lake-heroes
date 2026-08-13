@@ -1,12 +1,14 @@
 export const MONEY_START = 1500;
-export const UNITS_START = 20;
+export const UNITS_START = 16;
 export const MONEY_PASS_START = 500;
+export const UNITS_PASS_START = 6;
 export const MONEY_PASS_START_FAME = 200;
+export const FAME_STEP = 3;
 export const FEE_MULTIPLIER = 50;
 export const TREASURE_BOX_MULTIPLIER = 200;
 export const TILE_COUNT = 25;
 export const MAX_PLAYERS = 6;
-export const REVEAL_GOLD_PER_CIRCLE = 100; // discovery bonus scales with the player's laps around the board
+export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the player's laps around the board
 
 // ── Tile economy scale ──
 // tiles.json authors prices and income as small coefficients of these bases,
@@ -22,7 +24,7 @@ export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit p
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
-export const BRAWL_THRESHOLD = 6; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
+export const BRAWL_THRESHOLD = 12; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
 export const RIDER_UNIT_PRICE = 500; // gold per rider
@@ -47,9 +49,9 @@ export const SPRITE_SIZE = 96;
 // ── Grid battle (BattlefieldGrid) ──
 export const BATTLEFIELD_COLS = 12;
 export const BATTLEFIELD_ROWS = 20;
-export const MILITIA_HP = 12;
+export const MILITIA_HP = 6;
 export const MILITIA_DMG_MIN = 1;
-export const MILITIA_DMG_MAX = 6;
+export const MILITIA_DMG_MAX = 4;
 export const RIDER_HP = 20;
 export const RIDER_DMG_MIN = 4;
 export const RIDER_DMG_MAX = 8;
