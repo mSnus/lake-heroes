@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
-import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { useT } from '../i18n';
 import '../styles/SquadHirePanel.css';
 
@@ -89,6 +89,7 @@ interface SquadHirePanelProps {
  * can recruit both tiers without closing in between. */
 export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRiders, onBuy }) => {
   const t = useT();
+  const ov = getOverrides();
 
   return (
     <div className="squad-hire-panel">
@@ -98,7 +99,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
         tier="militia"
         label={t('squadHirePanel.militia')}
         emoji="🧍"
-        unitPrice={UNIT_PRICE}
+        unitPrice={ov.militiaPrice}
         onBuy={onBuy}
       />
       {showRiders && (
@@ -107,7 +108,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
           tier="riders"
           label={t('squadHirePanel.knights')}
           emoji="🐎"
-          unitPrice={RIDER_UNIT_PRICE}
+          unitPrice={ov.riderPrice}
           onBuy={onBuy}
         />
       )}

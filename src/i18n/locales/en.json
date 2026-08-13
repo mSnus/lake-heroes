@@ -133,6 +133,7 @@
     "endTurn": "End Turn",
     "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost.",
     "cheat": "Cheat",
+    "overrides": "Overrides",
     "statistics": "Statistics",
     "mapEditOn": "Map edit: ON (click a tile or player icon to adjust)",
     "mapEditOff": "Map edit: OFF"
@@ -814,6 +815,21 @@
     "setUnits": "Set units",
     "setFame": "Set fame",
     "set": "Set"
+  },
+  "overridesScreen": {
+    "title": "Overrides",
+    "militia": "Militia",
+    "rider": "Rider",
+    "hp": "HP",
+    "dmg": "dmg",
+    "garrisonCapacity": "Garrison tower capacity",
+    "tileBasePrice": "Tile base price",
+    "tileUpgradeMult": "Upgrade multiplier",
+    "tileIncomeMult": "Income multiplier",
+    "stepByStep": "Step-by-step combat",
+    "muteToasts": "Mute toast messages",
+    "set": "Set",
+    "apply": "Apply"
   },
   "statsScreen": {
     "title": "Statistics",

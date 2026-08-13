@@ -6,7 +6,7 @@ import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import TavernModal from '../components/TavernModal';
 import { computeSlotsUsed } from '../game/army';
-import { ARMY_SLOT_CAPACITY } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { t } from '../i18n';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
@@ -49,7 +49,7 @@ export function handleTavern(
       // worth instead (even 10🧍 become 1🐎 if that's all that was rolled)
       // and replace it with the rolled amount of riders; whatever's left
       // over from that slot is lost.
-      const sacrificed = Math.min(ARMY_SLOT_CAPACITY, player.militia);
+      const sacrificed = Math.min(getOverrides().garrisonCapacity, player.militia);
       player.militia -= sacrificed;
       const ridersAdded = player.gainRiders(unitsReward);
       const leftDrunk = sacrificed - ridersAdded;

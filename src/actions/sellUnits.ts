@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { UnitTier } from '../game/army';
 import { t } from '../i18n';
 
@@ -15,7 +15,8 @@ export function sellUnits(
   if (!board || amount <= 0) return;
 
   const player = board.activePlayer;
-  const unitPrice = tier === 'riders' ? RIDER_UNIT_PRICE : UNIT_PRICE;
+  const ov = getOverrides();
+  const unitPrice = tier === 'riders' ? ov.riderPrice : ov.militiaPrice;
   const sold = Math.min(amount, tier === 'riders' ? player.riders : player.militia);
 
   if (tier === 'riders') {

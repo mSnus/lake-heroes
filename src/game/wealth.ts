@@ -1,6 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { RIDER_UNIT_PRICE, UNIT_PRICE } from './constants';
+import { getOverrides } from '../utils/overridesStore';
 
 // A player's wealth is what they hold (gold/units) plus the full price paid for
 // every owned tile and its upgrades.
@@ -23,8 +23,9 @@ export function playerWealth(board: GameState, player: Player): { gold: number; 
  */
 export function totalWealth(board: GameState, player: Player): number {
   const w = playerWealth(board, player);
-  const armyValue = player.militia * UNIT_PRICE + player.riders * RIDER_UNIT_PRICE;
-  const tileUnitsValue = (w.units - player.units) * UNIT_PRICE;
+  const ov = getOverrides();
+  const armyValue = player.militia * ov.militiaPrice + player.riders * ov.riderPrice;
+  const tileUnitsValue = (w.units - player.units) * ov.militiaPrice;
   return w.gold + armyValue + tileUnitsValue;
 }
 

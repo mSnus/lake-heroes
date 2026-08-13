@@ -1,28 +1,31 @@
 import { toast, ToastContent } from 'react-toastify';
 import { gameEvent } from './events';
+import { getOverrides } from './overridesStore';
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
 /**
  * say: unified user notification helper.
- * - Shows a react-toastify toast
+ * - Shows a react-toastify toast (unless toasts are muted via the ⚖️ overrides)
  * - Logs the same message to the console with an appropriate severity
  * - Dispatches a 'logMessage' event for history tracking
  */
 export function say(message: ToastContent, level: SayLevel = 'info'): void {
-  // Show toast by level
+  // Show toast by level. The mute override suppresses only the pop-up — the
+  // console mirror and game-log event below still fire, so nothing is lost.
+  const muted = getOverrides().muteToasts;
   switch (level) {
     case 'success':
-      toast.success(message);
+      if (!muted) toast.success(message);
       break;
     case 'warning':
-      toast.warning(message);
+      if (!muted) toast.warning(message);
       break;
     case 'error':
-      toast.error(message);
+      if (!muted) toast.error(message);
       break;
     case 'info':
-      toast.info(message);
+      if (!muted) toast.info(message);
       console.info(message);
       break;
     case 'debug':
@@ -30,7 +33,7 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
       break;
     case 'default':
     default:
-      toast(message);
+      if (!muted) toast(message);
       break;
   }
 

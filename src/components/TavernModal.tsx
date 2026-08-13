@@ -3,7 +3,7 @@ import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
 import { UnitTier } from '../game/army';
-import { UNIT_PRICE } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { DecoratedButton } from './DecoratedButton';
 import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
@@ -41,16 +41,16 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
     forceRerender((v) => v + 1);
   };
 
-  const militiaMax = Math.min(Math.floor(player.gold / UNIT_PRICE), player.remainingCapacity('militia'));
+  const militiaMax = Math.min(Math.floor(player.gold / getOverrides().militiaPrice), player.remainingCapacity('militia'));
   const atMax = militiaMax <= 0;
 
   useEffect(() => {
     if (!player.isComputer) return;
     const botMaxAmount = Math.min(
-      Math.floor(player.gold / UNIT_PRICE),
+      Math.floor(player.gold / getOverrides().militiaPrice),
       player.remainingCapacity('militia')
     );
-    const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, UNIT_PRICE);
+    const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, getOverrides().militiaPrice);
     const timer = setTimeout(() => {
       if (hireAmount > 0) onBuy(hireAmount, 'militia');
       onSkip();

@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
-import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { UnitTier } from '../game/army';
 import { t } from '../i18n';
 
@@ -14,7 +14,8 @@ export function buyUnits(
   if (!board) return;
 
   const player = board.activePlayer;
-  const unitPrice = tier === 'riders' ? RIDER_UNIT_PRICE : UNIT_PRICE;
+  const ov = getOverrides();
+  const unitPrice = tier === 'riders' ? ov.riderPrice : ov.militiaPrice;
   const cost = amount * unitPrice;
 
   if (player.gold >= cost) {

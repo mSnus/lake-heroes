@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
-import { RIDER_UNIT_PRICE, UNIT_PRICE } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { UnitTier } from '../game/army';
 import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
@@ -58,9 +58,9 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   // cap — no separate per-visit throttle). Shown as a single "can't recruit"
   // message instead of the full recruiting panel (the squad display and
   // sell buttons stay usable either way, since selling frees room).
-  const militiaMax = Math.min(Math.floor(player.gold / UNIT_PRICE), player.remainingCapacity('militia'));
+  const militiaMax = Math.min(Math.floor(player.gold / getOverrides().militiaPrice), player.remainingCapacity('militia'));
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / RIDER_UNIT_PRICE), player.remainingCapacity('riders'))
+    ? Math.min(Math.floor(player.gold / getOverrides().riderPrice), player.remainingCapacity('riders'))
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
   // Recruiting can also be blocked purely by empty pockets — only mention
@@ -70,7 +70,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   useEffect(() => {
     if (!player.isComputer) return;
     const botTier = pickKingsCastleHireTier(player);
-    const botUnitPrice = botTier === 'riders' ? RIDER_UNIT_PRICE : UNIT_PRICE;
+    const botUnitPrice = botTier === 'riders' ? getOverrides().riderPrice : getOverrides().militiaPrice;
     const botMaxAmount = Math.min(
       Math.floor(player.gold / botUnitPrice),
       player.remainingCapacity(botTier)

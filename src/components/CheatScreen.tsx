@@ -3,7 +3,7 @@ import { GameState } from '../game/GameState';
 import { clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
 import { DecoratedButton } from './DecoratedButton';
-import { ARMY_SLOT_CAPACITY } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { useT } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
@@ -51,7 +51,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   };
 
   const tileOptions = buildTileOptions(gameState);
-  const unitCap = ARMY_SLOT_CAPACITY * player.armySlots;
+  const unitCap = getOverrides().garrisonCapacity * player.armySlots;
 
   const [moveIdx, setMoveIdx] = useState(tileOptions[0]?.index ?? 0);
   const [ownIdx, setOwnIdx] = useState(tileOptions[0]?.index ?? 0);

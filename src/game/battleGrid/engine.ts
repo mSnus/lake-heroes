@@ -2,16 +2,11 @@ import { rollInRange } from '../Dice';
 import {
   BATTLEFIELD_COLS,
   BATTLEFIELD_ROWS,
-  MILITIA_HP,
-  MILITIA_DMG_MIN,
-  MILITIA_DMG_MAX,
-  RIDER_HP,
-  RIDER_DMG_MIN,
-  RIDER_DMG_MAX,
   DRAGON_HP,
   DRAGON_DMG_MIN,
   DRAGON_DMG_MAX,
 } from '../constants';
+import { getOverrides } from '../../utils/overridesStore';
 import { placeArmy } from './placement';
 import { FormationSpec, placeFormation } from './formations';
 import { BattleSide, GridBattleState, GridUnit, StepTurnOptions, TurnEvent, TurnResult, UnitKind } from './types';
@@ -78,17 +73,19 @@ function neighborOffsetsFor(row: number): Cell[] {
 const DEFENSE_ROLL_BONUS = 0.5;
 
 function hpFor(kind: UnitKind): number {
+  const ov = getOverrides();
   if (kind === 'dragon') return DRAGON_HP;
-  return kind === 'rider' ? RIDER_HP : MILITIA_HP;
+  return kind === 'rider' ? ov.riderHp : ov.militiaHp;
 }
 
 function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: () => number): number {
+  const ov = getOverrides();
   const [min, max] =
     kind === 'dragon'
       ? [DRAGON_DMG_MIN, DRAGON_DMG_MAX]
       : kind === 'rider'
-        ? [RIDER_DMG_MIN, RIDER_DMG_MAX]
-        : [MILITIA_DMG_MIN, MILITIA_DMG_MAX];
+        ? [ov.riderDmgMin, ov.riderDmgMax]
+        : [ov.militiaDmgMin, ov.militiaDmgMax];
   const base = rollInRange(min, max, rng);
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
 }

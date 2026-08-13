@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { CHARACTERS, CharacterConfig } from './characters';
 import { FeeOptions } from '../actions/feeOptions';
-import { UNIT_PRICE } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { UnitTier, remainingCapacity } from '../game/army';
@@ -188,7 +188,7 @@ export function pickKingsCastleHireTier(player: Player): UnitTier {
 }
 
 /** King's Castle: how many units to hire out of the actually-allowed maxAmount. */
-export function pickKingsCastleHireAmount(player: Player, maxAmount: number, unitPrice: number = UNIT_PRICE): number {
+export function pickKingsCastleHireAmount(player: Player, maxAmount: number, unitPrice: number = getOverrides().militiaPrice): number {
   const cfg = getCharacterConfig(player);
   if (!cfg) return 0;
 

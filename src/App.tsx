@@ -51,7 +51,8 @@ import { t } from './i18n';
 import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
-import { UNIT_PRICE, RIDER_UNIT_PRICE, DRAGON_GOLD } from './game/constants';
+import { DRAGON_GOLD } from './game/constants';
+import { getOverrides } from './utils/overridesStore';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
@@ -583,7 +584,8 @@ function App() {
             const t = gameState.tiles[idx];
             return t && t.owner === winner.id ? sum + t.currentPrice.gold : sum;
           }, 0);
-          const armyGold = winner.militia * UNIT_PRICE + winner.riders * RIDER_UNIT_PRICE;
+          const ov = getOverrides();
+          const armyGold = winner.militia * ov.militiaPrice + winner.riders * ov.riderPrice;
           const totalGold = winner.gold + tilesGold + armyGold + DRAGON_GOLD;
           const years = winner.circles;
 

@@ -1,10 +1,5 @@
-import {
-  FEE_MULTIPLIER,
-  BRAWL_THRESHOLD,
-  TILE_BASE_PRICE,
-  TILE_BASE_UPGRADE,
-  TILE_BASE_INCOME,
-} from './constants';
+import { FEE_MULTIPLIER, BRAWL_THRESHOLD } from './constants';
+import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity } from './army';
 import { t, tOptional } from '../i18n';
@@ -59,8 +54,12 @@ export class Tile implements TileJSON {
   group: string;
   isOwnable: boolean;
   bonusType: 'gold' | 'units';
-  prices: { [level: number]: { gold: number; units: number } };
-  bonuses: { [level: number]: number };
+  /** Authored price/income coefficients (from tiles.json). The real gold
+   * numbers are computed on read by the `prices` / `bonuses` getters using the
+   * live TILE_BASE_* overrides, so an economy tweak (⚖️ screen) reprices every
+   * tile immediately. */
+  private _priceCoeffs: { [level: number]: { gold: number; units: number } };
+  private _bonusCoeffs: { [level: number]: number };
   defences: { [level: number]: number };
   owner?: number | null;
   _level?: number;
@@ -86,26 +85,20 @@ export class Tile implements TileJSON {
     this.isOwnable = !!data.isOwnable;
     this.bonusType = data.bonusType || 'gold';
     // Prices and income are authored in tiles.json as coefficients of the
-    // TILE_BASE_* constants, so the whole economy can be rescaled from one
-    // place. The real gold numbers are materialised here, once, at
-    // construction: level-1 gold is the purchase price (× TILE_BASE_PRICE),
-    // higher levels are upgrade costs (× TILE_BASE_UPGRADE), and `units` are
-    // raw headcounts, never scaled. Each level is deep-copied so we never
-    // mutate the shared template objects behind data.prices.
-    this.prices = {};
+    // TILE_BASE_* values. Store the raw coefficients (deep-copied so we never
+    // mutate the shared template objects) and materialise real gold lazily in
+    // the `prices` / `bonuses` getters, so a live TILE_BASE_* override reprices
+    // every tile without rebuilding it.
+    this._priceCoeffs = {};
     for (const key of Object.keys(data.prices || {})) {
       const lvl = Number(key);
       const p = data.prices![lvl];
-      const goldBase = lvl <= 1 ? TILE_BASE_PRICE : TILE_BASE_UPGRADE;
-      this.prices[lvl] = { gold: (p?.gold || 0) * goldBase, units: p?.units || 0 };
+      this._priceCoeffs[lvl] = { gold: p?.gold || 0, units: p?.units || 0 };
     }
-    // Income (bonuses): gold-type tiles pay out gold (× TILE_BASE_INCOME);
-    // unit-type tiles (Camps/Towers) pay out a raw unit headcount, unscaled.
-    const incomeBase = this.bonusType === 'gold' ? TILE_BASE_INCOME : 1;
-    this.bonuses = {};
+    this._bonusCoeffs = {};
     for (const key of Object.keys(data.bonuses || {})) {
       const lvl = Number(key);
-      this.bonuses[lvl] = (data.bonuses![lvl] || 0) * incomeBase;
+      this._bonusCoeffs[lvl] = data.bonuses![lvl] || 0;
     }
     this.defences = Object.assign({}, data.defences || {});
     this.owner = data.owner ?? null;
@@ -133,6 +126,37 @@ export class Tile implements TileJSON {
    * so it always reflects whatever language is currently active. */
   get name(): string {
     return t(`tiles.${this.id}.name`);
+  }
+
+  /** Purchase/upgrade prices in real gold, computed from the authored
+   * coefficients and the live TILE_BASE_PRICE / upgrade-multiplier overrides.
+   * Level-1 gold is the purchase price; higher levels are upgrade costs;
+   * `units` are raw headcounts, never scaled. */
+  get prices(): { [level: number]: { gold: number; units: number } } {
+    const ov = getOverrides();
+    const upgradeBase = ov.tileBasePrice * ov.tileUpgradeMult;
+    const out: { [level: number]: { gold: number; units: number } } = {};
+    for (const key of Object.keys(this._priceCoeffs)) {
+      const lvl = Number(key);
+      const p = this._priceCoeffs[lvl];
+      const goldBase = lvl <= 1 ? ov.tileBasePrice : upgradeBase;
+      out[lvl] = { gold: p.gold * goldBase, units: p.units };
+    }
+    return out;
+  }
+
+  /** Per-level income, computed from coefficients and the live income
+   * multiplier. Gold-type tiles pay gold (× base × mult); unit-type tiles
+   * (Camps/Towers) pay a raw unit headcount, unscaled. */
+  get bonuses(): { [level: number]: number } {
+    const ov = getOverrides();
+    const incomeBase = this.bonusType === 'gold' ? ov.tileBasePrice * ov.tileIncomeMult : 1;
+    const out: { [level: number]: number } = {};
+    for (const key of Object.keys(this._bonusCoeffs)) {
+      const lvl = Number(key);
+      out[lvl] = this._bonusCoeffs[lvl] * incomeBase;
+    }
+    return out;
   }
 
   /** Only some tiles (the non-ownable "special" ones) have flavor text —

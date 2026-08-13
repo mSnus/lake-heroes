@@ -8,7 +8,9 @@ import { showScreen } from '../utils/screenStore';
 import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
 import CheatScreen from './CheatScreen';
+import OverridesScreen from './OverridesScreen';
 import StatsScreen from './StatsScreen';
+import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 
@@ -42,6 +44,8 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
     if (window.confirm(t('shieldColumn.confirmNewGame'))) {
       try {
         localStorage.removeItem('game-state');
+        // Cheated parameters shouldn't leak into a fresh game.
+        resetOverrides();
       } catch {
         // ignore
       } finally {
@@ -129,6 +133,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   👻
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.overrides')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <OverridesScreen gameState={gameState} updateGameState={updateGameState} /> });
+                  }}
+                  className="shield-button"
+                >
+                  ⚖️
                 </button>
               </div>
               <div className="shield-button-container" title={t('shieldColumn.statistics')}>

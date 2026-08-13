@@ -6,7 +6,7 @@ import { PlayerLabel } from './PlayerLabel';
 import { computeKingsGraceReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
-import { ARMY_SLOT_CAPACITY } from '../game/constants';
+import { getOverrides } from '../utils/overridesStore';
 import { gameEvent } from '../utils/events';
 import { useT } from '../i18n';
 
@@ -135,7 +135,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
               t('currentPlayer.armyTooltip', {
                 fame: activePlayer.fame,
                 slots: activePlayer.armySlots,
-                perSlot: ARMY_SLOT_CAPACITY,
+                perSlot: getOverrides().garrisonCapacity,
               }),
               'info'
             )

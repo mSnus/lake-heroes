@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved, showScreen } from '../utils/screenStore';
+import { getOverrides } from '../utils/overridesStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
@@ -460,7 +461,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // performs its own manual step, and every click after it just advances
   // one turn the same way.
   const bothSidesAutomated = attacker.isComputer && (!defender || defender.isComputer);
-  const [manualMode, setManualMode] = useState(false);
+  // The ⚖️ override makes battles start paused in step-by-step mode (advance
+  // one turn per ⚔️ click) instead of auto-playing to the end.
+  const [manualMode, setManualMode] = useState(getOverrides().stepByStepCombat);
   useEffect(() => {
     if (phase !== 'ongoing' || manualMode) return;
     const timer = setTimeout(() => handleNextTurn(), AUTO_TURN_DELAY_MS);
