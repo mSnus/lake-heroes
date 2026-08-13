@@ -21,7 +21,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
-import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS } from '../game/constants';
+import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_THRESHOLD } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
@@ -190,6 +190,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderSized = defenderSizedRef.current;
   const attackerGridTotal = attackerSized.militiaCount + attackerSized.ridersCount;
   const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
+  // Brawl: a small skirmish (both sides at or below BRAWL_THRESHOLD units).
+  // These fight on a compact, larger-celled board (see BRAWL_COLS/ROWS) and
+  // are the ones that get turn-based / manual control.
+  const isBrawl =
+    (isTile || isRogue || isPlayerBattle) &&
+    attackerGridTotal <= BRAWL_THRESHOLD &&
+    defenderGridTotal <= BRAWL_THRESHOLD;
+  const gridCols = isBrawl ? BRAWL_COLS : BATTLEFIELD_COLS;
+  const gridRows = isBrawl ? BRAWL_ROWS : BATTLEFIELD_ROWS;
 
   // ── Initial formation per side/mode — every attacker looks different
   // depending on who they are. A real player's own army always forms up
@@ -251,8 +260,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     createBattle(
       { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount, formation: attackerFormation },
       { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount, formation: defenderFormation },
-      BATTLEFIELD_COLS,
-      BATTLEFIELD_ROWS
+      gridCols,
+      gridRows
     )
   );
   const [lastEvents, setLastEvents] = useState<TurnEvent[]>([]);
@@ -593,6 +602,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             animPhase={animPhase}
             attackerIcon={attackerFieldIcon}
             defenderIcon={defenderFieldIcon}
+            brawl={isBrawl}
           />
         )}
 

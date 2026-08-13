@@ -25,6 +25,17 @@
   }
 }
 
+/* Brawl board: fewer, bigger cells — 180% of the normal cell height. The
+   compact 9-wide grid keeps this within the container width. */
+.bfg-battlefield.bfg-brawl {
+  --bfg-cell: 11.16vmin;
+}
+@supports (container-type: inline-size) {
+  .bfg-battlefield.bfg-brawl {
+    --bfg-cell: 11.16cqi;
+  }
+}
+
 /* Shared positioned box for .bfg-grid and .bfg-units — .bfg-units is
    position:absolute; inset:0, which needs to match the grid's own
    rendered box exactly (not .bfg-battlefield's, which is wider) for units

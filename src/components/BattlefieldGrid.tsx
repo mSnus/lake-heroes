@@ -20,6 +20,9 @@ interface BattlefieldGridProps {
   /** Toggle for the octagon grid outline — a temporary debug aid, kept behind
    * a single prop so it's a one-line change to drop later. */
   showGridLines?: boolean;
+  /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells
+   * and units at 180% of the normal height. */
+  brawl?: boolean;
 }
 
 const UNIT_EMOJI: Record<string, string> = {
@@ -37,6 +40,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   attackerIcon,
   defenderIcon,
   showGridLines = true,
+  brawl = false,
 }) => {
   const { cols, rows, units } = battle;
   // Combat participants only (not plain movement) — most units are moving
@@ -67,7 +71,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   }
 
   return (
-    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '')}>
+    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : '')}>
       <div className="bfg-arena">
       <div className="bfg-grid" style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-cell))` }}>
         {Array.from({ length: cols * rows }, (_, i) => {
