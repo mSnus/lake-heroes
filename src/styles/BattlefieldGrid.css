@@ -25,14 +25,14 @@
   }
 }
 
-/* Brawl board: fewer, bigger cells — 180% of the normal cell height. The
-   compact 9-wide grid keeps this within the container width. */
+/* Brawl board: fewer, bigger cells. Sized so the 10-wide grid fills the
+   container width (10 columns + the even-row half-cell shift). */
 .bfg-battlefield.bfg-brawl {
-  --bfg-cell: 11.16vmin;
+  --bfg-cell: 9.5vmin;
 }
 @supports (container-type: inline-size) {
   .bfg-battlefield.bfg-brawl {
-    --bfg-cell: 11.16cqi;
+    --bfg-cell: 9.5cqi;
   }
 }
 

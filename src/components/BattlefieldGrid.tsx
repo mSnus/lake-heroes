@@ -101,45 +101,64 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     return { rect, cell: rect.width / cols };
   };
 
-  const pointerToCell = (clientX: number, clientY: number) => {
+  // The unit's final cell this turn — its placement if set, else where it
+  // stands. Enemies don't move during this side's turn.
+  const finalCellOf = (u: GridUnit): { col: number; row: number } => {
+    if (manualSide && u.side === manualSide) {
+      const pl = placements[u.id];
+      if (pl) return { col: pl.col, row: pl.row };
+    }
+    return { col: u.col, row: u.row };
+  };
+
+  // On drop, snap to the nearest *valid* target — the unit's own cell (stay),
+  // an adjacent empty cell (move), or an adjacent enemy (attack) — by true
+  // cell-centre distance, so a diagonal drag lands on the diagonal hex rather
+  // than the nearest straight-up/down cell.
+  const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): Placement | null => {
     const cr = cellAndRect();
     if (!cr) return null;
     const { rect, cell } = cr;
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    let row = Math.round(y / cell - 0.5);
-    row = Math.max(0, Math.min(rows - 1, row));
-    let col = Math.round(x / cell - 0.5 - colShiftFor(row));
-    col = Math.max(0, Math.min(cols - 1, col));
-    return { col, row };
-  };
-
-  const commitPlacement = (unit: GridUnit, target: { col: number; row: number }) => {
+    const px = clientX - rect.left;
+    const py = clientY - rect.top;
     const origin = { col: unit.col, row: unit.row };
-    const isOrigin = target.col === origin.col && target.row === origin.row;
-    const isAdjacent = adjacentCells(origin.col, origin.row, cols, rows).some(
-      (c) => c.col === target.col && c.row === target.row
-    );
-    if (!isAdjacent && !isOrigin) return; // dropped too far — leave unplaced
 
-    const enemyAt = enemies.find((u) => u.col === target.col && u.row === target.row);
-    if (enemyAt && isAdjacent) {
-      // Attack an adjacent enemy: the unit stays put and marks its target.
-      setPlacements((p) => ({ ...p, [unit.id]: { col: origin.col, row: origin.row, attackTargetId: enemyAt.id } }));
-      return;
+    const candidates: Placement[] = [{ col: origin.col, row: origin.row, attackTargetId: null }]; // stay
+    for (const n of adjacentCells(origin.col, origin.row, cols, rows)) {
+      const enemyAt = enemies.find((u) => u.col === n.col && u.row === n.row);
+      if (enemyAt) {
+        // attacking keeps the unit on its own cell, but it's reached via the enemy's cell
+        candidates.push({ col: origin.col, row: origin.row, attackTargetId: enemyAt.id });
+        continue;
+      }
+      const blocked = units.some(
+        (u) => u.hp > 0 && u.id !== unit.id && finalCellOf(u).col === n.col && finalCellOf(u).row === n.row
+      );
+      if (!blocked) candidates.push({ col: n.col, row: n.row, attackTargetId: null });
     }
-    if (isOrigin) {
-      setPlacements((p) => ({ ...p, [unit.id]: { col: origin.col, row: origin.row, attackTargetId: null } }));
-      return;
+
+    // Measure to the cell the drag is actually reaching for (the enemy's cell
+    // for an attack, otherwise the destination itself).
+    const reachCell = (c: Placement) => {
+      if (c.attackTargetId) {
+        const e = enemies.find((en) => en.id === c.attackTargetId);
+        if (e) return { col: e.col, row: e.row };
+      }
+      return { col: c.col, row: c.row };
+    };
+    let best: Placement | null = null;
+    let bestD = Infinity;
+    for (const c of candidates) {
+      const tc = reachCell(c);
+      const cx = (tc.col + colShiftFor(tc.row) + 0.5) * cell;
+      const cy = (tc.row + 0.5) * cell;
+      const d = (cx - px) ** 2 + (cy - py) ** 2;
+      if (d < bestD) {
+        bestD = d;
+        best = c;
+      }
     }
-    // Move into an adjacent empty cell — not onto an enemy, not onto a cell
-    // another twin already claimed this turn.
-    const occupiedByEnemy = enemies.some((u) => u.col === target.col && u.row === target.row);
-    const claimed = Object.entries(placements).some(
-      ([id, pl]) => id !== unit.id && pl.col === target.col && pl.row === target.row
-    );
-    if (occupiedByEnemy || claimed) return;
-    setPlacements((p) => ({ ...p, [unit.id]: { col: target.col, row: target.row, attackTargetId: null } }));
+    return best;
   };
 
   // ── Combat playback overrides (unchanged) ──
@@ -271,8 +290,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   }}
                   onPointerUp={(e) => {
                     if (drag?.unitId !== u.id) return;
-                    const target = pointerToCell(e.clientX, e.clientY);
-                    if (target) commitPlacement(u, target);
+                    const pl = resolveDrop(e.clientX, e.clientY, u);
+                    if (pl) setPlacements((prev) => ({ ...prev, [u.id]: pl }));
                     setDrag(null);
                   }}
                 >
