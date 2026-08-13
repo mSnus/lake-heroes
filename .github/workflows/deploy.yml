@@ -35,12 +35,17 @@ jobs:
           echo "tag=0.$N" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        # --no-audit/--no-fund trim work on a memory-tight self-hosted runner;
+        # the timeout fails fast instead of thrashing for 20+ min if the box
+        # runs out of memory mid-install (was OOM-killed with exit 137).
+        run: npm ci --legacy-peer-deps --no-audit --no-fund
         working-directory: ${{ github.workspace }}
+        timeout-minutes: 6
 
       - name: Build
         run: npm run build
         working-directory: ${{ github.workspace }}
+        timeout-minutes: 6
 
       - name: Write version file
         run: echo "${{ steps.version.outputs.tag }}" > ${{ github.workspace }}/dist/version.txt
@@ -53,3 +58,12 @@ jobs:
           cp -r ${{ github.workspace }}/dist/. "$TARGET/"
           ln -sfn "$TARGET" ${{ env.DEPLOY_ROOT }}/current
           echo "Published $VERSION → ${{ env.DEPLOY_ROOT }}/current"
+
+      - name: Prune old builds
+        # Keep the newest 15 versioned builds (the just-published one included)
+        # so the deploy dir doesn't fill the disk over time. The `current`
+        # symlink always points at the newest, so it's never pruned.
+        run: |
+          cd ${{ env.DEPLOY_ROOT }}
+          ls -d 0.* | sort -t. -k2 -n | head -n -15 | xargs -r rm -rf
+          echo "Kept $(ls -d 0.* | wc -l) builds; current → $(readlink current)"
