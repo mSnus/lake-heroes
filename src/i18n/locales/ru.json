@@ -207,6 +207,7 @@
     "ambushedMessage": "{name} попадает в засаду {units}🥷!",
     "heroHour": "Час героя",
     "ambushRepelled": "Засада отражена!",
+    "attackRepelled": "Атака отражена!",
     "defeat": "Поражение!",
     "bloodyStalemate": "Кровавая ничья!",
     "gloriousVictory": "Славная победа!",
@@ -796,7 +797,8 @@
   },
   "rogueAttack": {
     "title": "Нападение разбойников",
-    "wonGrows": "Битва за «{tileName}» выиграна, {units}🧍, впечатлённые вашей мощью, присоединяются к гарнизону",
+    "garrisonLost": "Гарнизон «{tileName}» потерял {units}🧍, отражая набег",
+    "attackersJoin": "{units}🧍 из нападавших, впечатлённые мощью {playerName}, влились в его гарнизон",
     "wonFull": "Битва за «{tileName}» выиграна, и ваш гарнизон снова полон",
     "wonToast": "Гарнизон {playerName} в «{tileName}» отражает набег бродячей орды",
     "razed": "Ваша «{tileName}» была разрушена 🔥бродячей ордой!",

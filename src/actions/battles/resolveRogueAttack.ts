@@ -55,7 +55,14 @@ export function resolveRogueAttack(
     tile.garrison = before + Math.round(before * 0.25);
     const gained = tile.garrison - before;
 
-    message = gained > 0 ? t('rogueAttack.wonGrows', { tileName, units: gained }) : t('rogueAttack.wonFull', { tileName });
+    // The attack is repelled: report the garrison's own losses, then the
+    // routed attackers who were impressed into joining the defender's garrison.
+    const lossMsg = defenderUnitsKilled > 0 ? t('rogueAttack.garrisonLost', { tileName, units: defenderUnitsKilled }) : '';
+    const joinMsg =
+      gained > 0
+        ? t('rogueAttack.attackersJoin', { units: gained, playerName: player.name })
+        : t('rogueAttack.wonFull', { tileName });
+    message = [lossMsg, joinMsg].filter(Boolean).join('\n');
     victoryBg = true;
   } else {
     const loss = defenderUnitsKilled;

@@ -207,6 +207,7 @@
     "ambushedMessage": "{name} is ambushed by {units}🥷!",
     "heroHour": "Hero's Hour",
     "ambushRepelled": "The ambush is repelled!",
+    "attackRepelled": "Attack repelled!",
     "defeat": "Defeat!",
     "bloodyStalemate": "A bloody stalemate!",
     "gloriousVictory": "Glorious victory!",
@@ -796,7 +797,8 @@
   },
   "rogueAttack": {
     "title": "Rogue Attack",
-    "wonGrows": "Battle for {tileName} won, {units}🧍 impressed by your power, join your garrison",
+    "garrisonLost": "Your {tileName}'s garrison lost {units}🧍 repelling them",
+    "attackersJoin": "{units}🧍 of attackers impressed by the might of {playerName} joined his garrison",
     "wonFull": "Battle for {tileName} won, and your garrison is full again",
     "wonToast": "{playerName}'s garrison at {tileName} repels a roaming horde",
     "razed": "Your {tileName} was razed 🔥by the roaming horde!",

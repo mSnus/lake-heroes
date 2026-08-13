@@ -498,9 +498,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, showBattlefield, bothSidesAutomated]);
 
-  const battleResultEmoji = isAmbush
-    ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')
-    : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
+  const battleResultEmoji = isRogue
+    ? '' // a repelled/failed roaming-horde raid shows no emoji before the verdict
+    : isAmbush
+      ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')
+      : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
 
   return (
     <ScreenBackground image={isAmbush || isRogue ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
@@ -597,8 +599,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         {phase === 'result' && !showBattlefield && (
           <div className="battle-result-inline">
             <div className="battle-result-sequence">
-              {battleResultEmoji}
-              <br />
+              {battleResultEmoji && (
+                <>
+                  {battleResultEmoji}
+                  <br />
+                </>
+              )}
               <span className="battle-result-verdict">
                 {isAmbush
                   ? (outcome === 'defender'
@@ -606,14 +612,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                       : outcome === 'attacker'
                         ? t('battleScreen.defeat')
                         : t('battleScreen.bloodyStalemate'))
-                  : (outcome === 'attacker'
-                      ? t('battleScreen.gloriousVictory')
-                      : outcome === 'defender'
-                        ? t('battleScreen.defeat')
-                        : t('battleScreen.aTie'))}
+                  : isRogue
+                    ? (outcome === 'defender'
+                        ? t('battleScreen.attackRepelled')
+                        : outcome === 'attacker'
+                          ? t('battleScreen.defeat')
+                          : t('battleScreen.bloodyStalemate'))
+                    : (outcome === 'attacker'
+                        ? t('battleScreen.gloriousVictory')
+                        : outcome === 'defender'
+                          ? t('battleScreen.defeat')
+                          : t('battleScreen.aTie'))}
               </span>
             </div>
-            <p className="battle-result-message">{resultMsg}</p>
+            <p className="battle-result-message" style={{ whiteSpace: 'pre-line' }}>{resultMsg}</p>
             <DecoratedButton onClick={handleClose}>
               {isAmbush ? t('battleScreen.keepCalmCarryOn') : t('battleScreen.wasItWorthIt')}
             </DecoratedButton>
