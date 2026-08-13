@@ -29,6 +29,10 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   // do this turn. Other screens stay visible.
   const isSelfDrivingModal = config.screenType === 'kings-castle' || config.screenType === 'tavern-result';
   const isGuardsFee = !!config.encounter && config.encounter.canFight !== undefined;
+  const isCaravan = config.screenType === 'caravan';
+  // Screens whose action buttons should be big decorated buttons stacked
+  // vertically rather than plain buttons side by side.
+  const stackButtons = isGuardsFee || isCaravan;
   const hideForBot = gameState.activePlayer.isComputer && (isSelfDrivingModal || isGuardsFee);
   const hiddenStyle: React.CSSProperties | undefined = hideForBot
     ? { opacity: 0, pointerEvents: 'none' }
@@ -135,13 +139,14 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         )}
       </ScreenBackground>
       {!config.sellMode && (
-        <div className="game-menu" style={{ top: isGuardsFee ? '66vh' : '80vh' }}>
-          <div className={isGuardsFee ? 'game-menu-stack' : undefined}>
+        <div className="game-menu" style={{ top: stackButtons ? '66vh' : '80vh' }}>
+          <div className={stackButtons ? 'game-menu-stack' : undefined}>
             {buttons.map((btn, i) =>
-              // Only the primary pay/fight actions get the big decorated
-              // treatment — secondary options (sell tiles, accept loss) stay
-              // as plain menu buttons so the screen isn't a wall of them.
+              // The caravan screen decorates both buttons; the guards/fee
+              // screen decorates only the primary pay/fight actions (secondary
+              // sell/accept-loss stay plain so it's not a wall of big buttons).
               buttons.length === 1 ||
+              isCaravan ||
               (isGuardsFee && (btn.action === 'pay-fee' || btn.action === 'fight-tile')) ? (
                 <DecoratedButton
                   key={i}
