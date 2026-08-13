@@ -23,9 +23,9 @@ import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
 import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_THRESHOLD } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
-import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat } from '../game/battleGrid/engine';
+import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
-import { GridBattleState, TurnEvent } from '../game/battleGrid/types';
+import { GridBattleState, TurnEvent, BattleSide } from '../game/battleGrid/types';
 import { FormationSpec } from '../game/battleGrid/formations';
 import { buildSquadChunks } from '../game/army';
 import { TileClaimScreen } from './TileClaimScreen';
@@ -202,6 +202,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defenderGridTotal <= BRAWL_THRESHOLD;
   const gridCols = isBrawl ? BRAWL_COLS : BATTLEFIELD_COLS;
   const gridRows = isBrawl ? BRAWL_ROWS : BATTLEFIELD_ROWS;
+  // A side is manually controlled when its player is the human at the
+  // controls (the active player) — the attacker in a tile/player fight, the
+  // defender when a rogue horde raids a human's tile. The other side (a bot,
+  // or a player who isn't taking this turn) is auto-planned.
+  const activePlayer = gameState.activePlayer;
+  const attackerManual = isBrawl && attacker.id === activePlayer.id && !attacker.isComputer;
+  const defenderManual = isBrawl && !!defender && defender.id === activePlayer.id && !defender.isComputer;
 
   // ── Initial formation per side/mode — every attacker looks different
   // depending on who they are. A real player's own army always forms up
@@ -395,6 +402,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const animatingRef = useRef(false);
   const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'hit' | 'death'>('idle');
 
+  // Manual brawl control: which side (if any) the human is currently placing.
+  const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
+  const manualBaseRef = useRef<GridBattleState | null>(null); // state a manual phase edits
+  const roundActiveRef = useRef(false); // a brawl round is in progress
+
   // The 3-beat combat playback (attack/defend icons -> hit flash -> death
   // flash), then commit the resolved state. Shared by the full-battle and
   // brawl turn handlers.
@@ -415,31 +427,84 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     }, COMBAT_ANIM_BEAT_MS);
   }, []);
 
+  const brawlOpts = () => ({
+    rng: Math.random,
+    attackerFlatBonus: attackerRollBonus,
+    defenderPctBonus: garrisonRollBonusPct,
+    defenderFlatBonus: defenderRollBonus,
+  });
+
+  // Slide the units to a moved state (CSS transitions the positions), then run
+  // the next phase.
+  const animateBrawlMove = (to: GridBattleState, next: () => void) => {
+    animatingRef.current = true;
+    setLastEvents([]);
+    setBattle(to);
+    setTimeout(() => {
+      animatingRef.current = false;
+      next();
+    }, BRAWL_MOVE_ANIM_MS);
+  };
+
+  // A brawl round: defender moves all its units, then the attacker (planning
+  // against the defender's new positions), then one combat resolution. Each
+  // side's move is either auto-planned (bot) or hand-placed by the human via
+  // the shadow overlay (manual). Held in refs so the auto-advance effect and
+  // the ⚔️ click always invoke the current version.
+  const brawlResolve = (s: GridBattleState) => {
+    roundActiveRef.current = false;
+    const { state, events } = resolveBrawlCombat(s, brawlOpts());
+    animateCombat(state, events);
+  };
+  const brawlAttackerPhase = (s: GridBattleState) => {
+    if (attackerManual) {
+      manualBaseRef.current = s;
+      setBrawlManualSide('attacker');
+      return;
+    }
+    const moved = applyBrawlMoves(s, planBrawlSide(s, 'attacker', Math.random));
+    animateBrawlMove(moved, () => brawlResolve(moved));
+  };
+  const brawlDefenderPhase = (s: GridBattleState) => {
+    if (defenderManual) {
+      manualBaseRef.current = s;
+      setBrawlManualSide('defender');
+      return;
+    }
+    const moved = applyBrawlMoves(s, planBrawlSide(s, 'defender', Math.random));
+    animateBrawlMove(moved, () => brawlAttackerPhase(moved));
+  };
+  const startBrawlRound = () => {
+    if (phase !== 'ongoing' || roundActiveRef.current || animatingRef.current || isBattleOver(battle)) return;
+    roundActiveRef.current = true;
+    brawlDefenderPhase(battle);
+  };
+  const handleManualComplete = (plan: BrawlPlan) => {
+    const side = brawlManualSide;
+    const base = manualBaseRef.current;
+    if (!side || !base) return;
+    setBrawlManualSide(null);
+    const moved = applyBrawlMoves(base, plan);
+    if (side === 'defender') animateBrawlMove(moved, () => brawlAttackerPhase(moved));
+    else animateBrawlMove(moved, () => brawlResolve(moved));
+  };
+  const startBrawlRoundRef = useRef(startBrawlRound);
+  startBrawlRoundRef.current = startBrawlRound;
+  const handleManualCompleteRef = useRef(handleManualComplete);
+  handleManualCompleteRef.current = handleManualComplete;
+
   const handleNextTurn = useCallback(() => {
     if (phase !== 'ongoing' || animatingRef.current || isBattleOver(battle)) return;
-    const opts = {
+    if (isBrawl) {
+      startBrawlRoundRef.current();
+      return;
+    }
+    const { state, events } = stepTurn(battle, {
       rng: Math.random,
       attackerFlatBonus: attackerRollBonus,
       defenderPctBonus: garrisonRollBonusPct,
       defenderFlatBonus: defenderRollBonus,
-    };
-    if (isBrawl) {
-      // Brawl round: the defender moves all its units, then the attacker moves
-      // all of its (planning against the defender's new positions), then one
-      // combat resolution — the auto version of the turn-based flow. The moves
-      // animate first (CSS transitions the positions), then combat plays out.
-      const afterDef = applyBrawlMoves(battle, planBrawlSide(battle, 'defender', Math.random));
-      const afterAtk = applyBrawlMoves(afterDef, planBrawlSide(afterDef, 'attacker', Math.random));
-      animatingRef.current = true;
-      setLastEvents([]);
-      setBattle(afterAtk);
-      setTimeout(() => {
-        const { state, events } = resolveBrawlCombat(afterAtk, opts);
-        animateCombat(state, events);
-      }, BRAWL_MOVE_ANIM_MS);
-      return;
-    }
-    const { state, events } = stepTurn(battle, opts);
+    });
     animateCombat(state, events);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, battle, isBrawl, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus, animateCombat]);
@@ -630,6 +695,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             attackerIcon={attackerFieldIcon}
             defenderIcon={defenderFieldIcon}
             brawl={isBrawl}
+            manualSide={brawlManualSide ?? undefined}
+            onManualComplete={(plan) => handleManualCompleteRef.current(plan)}
           />
         )}
 

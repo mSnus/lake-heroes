@@ -132,3 +132,59 @@
 .bfg-unit-defender .bfg-unit-hp-fill {
   background: #ff8a6f;
 }
+
+/* ── Manual (drag) control overlay ── */
+.bfg-shadow {
+  position: absolute;
+  inset: 0;
+  /* The layer itself is transparent to clicks; only the twins catch them. */
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* A draggable "twin" of a unit to be moved this turn — same footprint as a
+   real unit, but interactive. */
+.bfg-twin {
+  position: absolute;
+  width: var(--bfg-cell);
+  height: var(--bfg-cell);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none; /* let pointer-drag work on touch without scrolling */
+}
+
+.bfg-twin .bfg-unit-emoji {
+  font-size: calc(var(--bfg-cell) * 0.55);
+  line-height: 1;
+  text-shadow: 1px 1px 3px #000;
+}
+
+.bfg-twin-attacker .bfg-unit-emoji { color: #6fd1ff; }
+.bfg-twin-defender .bfg-unit-emoji { color: #ff8a6f; }
+
+/* Un-moved this turn: pulsing yellow glow, inviting a drag. */
+.bfg-twin-active .bfg-unit-emoji {
+  filter: drop-shadow(0 0 5px #ffca28) drop-shadow(0 0 9px #ffca28);
+}
+
+.bfg-twin-dragging {
+  cursor: grabbing;
+  z-index: 20;
+}
+
+/* 50%-transparent crossed-swords over an enemy a staying unit chose to fight. */
+.bfg-attack-mark {
+  position: absolute;
+  width: var(--bfg-cell);
+  height: var(--bfg-cell);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--bfg-cell) * 0.6);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 10;
+}

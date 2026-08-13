@@ -65,6 +65,19 @@ function neighborOffsetsFor(row: number): Cell[] {
   return row % 2 === 0 ? NEIGHBOR_OFFSETS_EVEN_ROW : NEIGHBOR_OFFSETS_ODD_ROW;
 }
 
+/** In-bounds hex neighbours of a cell on the offset grid — the exact same
+ * adjacency the engine uses, exported so the manual brawl overlay agrees on
+ * which cells a unit may step to. */
+export function adjacentCells(col: number, row: number, cols: number, rows: number): { col: number; row: number }[] {
+  const out: { col: number; row: number }[] = [];
+  for (const off of neighborOffsetsFor(row)) {
+    const c = col + off.col;
+    const r = row + off.row;
+    if (c >= 0 && c < cols && r >= 0 && r < rows) out.push({ col: c, row: r });
+  }
+  return out;
+}
+
 // A unit that's actively defending (mitigating incoming damage rather than
 // dealing it) rolls with this bonus on top of whatever side bonuses
 // (artifacts, garrison) already apply — otherwise defending is strictly
