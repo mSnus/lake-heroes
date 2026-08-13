@@ -225,7 +225,7 @@
   "screenRenderer": {
     "encounters": "encounters",
     "belongsTo": "that belongs to",
-    "riskOrPay": "Fight 🔥 to raze it or pay and go 🕊️ ?",
+    "riskOrPay": "Fight to raze it or pay and go?",
     "razedSmokeCaveat": "Razed tiles belong to no one until the smoke is gone"
   },
   "newGameModal": {

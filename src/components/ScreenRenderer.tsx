@@ -56,7 +56,13 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
     <div style={hiddenStyle}>
       <ScreenBackground
         image={config.background!}
-        style={config.screenType === 'ambush' ? { paddingTop: '6rem' } : undefined}
+        style={
+          config.screenType === 'ambush'
+            ? { paddingTop: '6rem' }
+            : isGuardsFee
+            ? { paddingTop: '2rem' }
+            : undefined
+        }
       >
         {config.fade && <Fade />}
         {config.title && <div className="text-title">{config.title.trim()}</div>}

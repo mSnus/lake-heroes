@@ -225,7 +225,7 @@
   "screenRenderer": {
     "encounters": "встречает",
     "belongsTo": "принадлежащую",
-    "riskOrPay": "Сжечь 🔥 дотла или заплатить и уйти 🕊️ ?",
+    "riskOrPay": "Сжечь дотла или заплатить и уйти?",
     "razedSmokeCaveat": "Сожжённые земли ничьи, пока не рассеется дым"
   },
   "newGameModal": {
