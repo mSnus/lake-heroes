@@ -7,8 +7,6 @@
   max-width: 480px;
   padding: 16px;
   z-index: 6000;
-  /* cancel .screen-common padding */
-  margin-top: -12rem;
 }
 
 /* Still used by HeroHourScreen.tsx's own pre-battle title (a separate
@@ -173,10 +171,4 @@
   object-fit: contain;
   filter: drop-shadow(0 2px 4px #000);
   flex-shrink: 0;
-}
-
-.battle-screen button.decorated {
-  font-size: 1.6rem;
-  padding-left: 20px;
-  padding-right: 38px;
 }

@@ -520,7 +520,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                   width: '100%',
                   marginBottom: '0',
                   height: '80px',
-                  paddingBottom: '8px',
                   filter: 'drop-shadow(2px 2px 3px #00000050)',
                 }}
               >

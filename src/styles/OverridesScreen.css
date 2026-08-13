@@ -1,8 +1,4 @@
-/* Reuses .cheat-screen / .cheat-row (see CheatScreen.css) for the shared
-   modal look and 60%-scale text; only the toggle rows need extra rules. */
-.overrides-screen .cheat-row label {
-  min-width: 130px;
-}
+
 
 .overrides-toggle {
   gap: 12px;

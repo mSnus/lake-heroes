@@ -106,7 +106,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
 
   return (
     <GameModal className="game-modal" backgroundImage="assets/screens/dragon.jpg" noBorder>
-      <div className="modal-content cheat-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content cheat-screen">
         <h2 className="game-title">👻 {t('cheatScreen.title')}</h2>
 
         <div className="cheat-row">

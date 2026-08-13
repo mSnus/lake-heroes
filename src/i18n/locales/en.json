@@ -389,7 +389,7 @@
       "large": "large"
     },
     "treasureFound": "Treasure found!",
-    "letTreasuresGrow": "Let the treasures grow!",
+    "letTreasuresGrow": "🪎 My preciousss!",
     "foundArtifact": "{playerName} found a {size} treasure chest and discovered {artifactName}!",
     "foundArtifactHtml": "{playerSpan} found a {size} chest containing {emoji} {artifactName}",
     "foundGold": "{playerName} found a {size} treasure chest! Rolled {roll}, received {gold}🟡!",

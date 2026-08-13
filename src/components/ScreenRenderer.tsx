@@ -133,9 +133,9 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         {config.htmlMessage && (
           <div className="text-message" dangerouslySetInnerHTML={{ __html: config.htmlMessage }} />
         )}
-      </ScreenBackground>
-      {!config.sellMode && (
-        <div className="game-menu" style={{ top: '80vh' }}>
+
+        {!config.sellMode && (
+        <div className="game-menu">
             {buttons.map((btn, i) =>
               // The caravan screen decorates both buttons; the guards/fee
               // screen decorates only the primary pay/fight actions (secondary
@@ -163,6 +163,8 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
             )}
         </div>
       )}
+      </ScreenBackground>
+      
       {config.sellMode && (
         <div
           style={{

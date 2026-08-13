@@ -14,7 +14,7 @@ interface OverridesScreenProps {
   updateGameState: (gs: GameState) => void;
 }
 
-const numInput = (value: number, onChange: (n: number) => void, width = '3.5rem') => (
+const numInput = (value: number, onChange: (n: number) => void, width = '1.6rem') => (
   <input
     type="number"
     value={Number.isFinite(value) ? value : 0}
@@ -49,7 +49,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
 
   return (
     <GameModal className="game-modal" backgroundImage="assets/screens/dragon.jpg" noBorder>
-      <div className="modal-content cheat-screen overrides-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content cheat-screen overrides-screen">
         <h2 className="game-title">⚖️ {t('overridesScreen.title')}</h2>
 
         <div className="cheat-row">
@@ -57,7 +57,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.militiaHp, (n) => set({ militiaHp: n }))} {t('overridesScreen.hp')}
           {numInput(form.militiaDmgMin, (n) => set({ militiaDmgMin: n }))}–
           {numInput(form.militiaDmgMax, (n) => set({ militiaDmgMax: n }))} {t('overridesScreen.dmg')}
-          {numInput(form.militiaPrice, (n) => set({ militiaPrice: n }), '4.5rem')}🟡
+          {numInput(form.militiaPrice, (n) => set({ militiaPrice: n }), '3rem')}🟡
           <button
             className="game-menu-button"
             onClick={() => commit({ militiaHp: form.militiaHp, militiaDmgMin: form.militiaDmgMin, militiaDmgMax: form.militiaDmgMax, militiaPrice: form.militiaPrice })}
@@ -71,7 +71,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.riderHp, (n) => set({ riderHp: n }))} {t('overridesScreen.hp')}
           {numInput(form.riderDmgMin, (n) => set({ riderDmgMin: n }))}–
           {numInput(form.riderDmgMax, (n) => set({ riderDmgMax: n }))} {t('overridesScreen.dmg')}
-          {numInput(form.riderPrice, (n) => set({ riderPrice: n }), '4.5rem')}🟡
+          {numInput(form.riderPrice, (n) => set({ riderPrice: n }), '3rem')}🟡
           <button
             className="game-menu-button"
             onClick={() => commit({ riderHp: form.riderHp, riderDmgMin: form.riderDmgMin, riderDmgMax: form.riderDmgMax, riderPrice: form.riderPrice })}
@@ -90,7 +90,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
 
         <div className="cheat-row">
           <label>{t('overridesScreen.tileBasePrice')}</label>
-          {numInput(form.tileBasePrice, (n) => set({ tileBasePrice: n }), '4.5rem')}
+          {numInput(form.tileBasePrice, (n) => set({ tileBasePrice: n }), '3rem')}
           <button className="game-menu-button" onClick={() => commit({ tileBasePrice: form.tileBasePrice })}>
             {t('overridesScreen.set')}
           </button>

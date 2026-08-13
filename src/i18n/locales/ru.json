@@ -389,7 +389,7 @@
       "large": "большой"
     },
     "treasureFound": "Найдено сокровище!",
-    "letTreasuresGrow": "Пусть сокровища растут!",
+    "letTreasuresGrow": "🪎 Моя прелессть!",
     "foundArtifact": "{playerName} нашёл {size} сундук с сокровищами и обнаружил {artifactName}!",
     "foundArtifactHtml": "{playerSpan} нашёл {size} сундук, в котором лежит {emoji} {artifactName}",
     "foundGold": "{playerName} нашёл {size} сундук с сокровищами! Выпало {roll}, получено {gold}🟡!",
