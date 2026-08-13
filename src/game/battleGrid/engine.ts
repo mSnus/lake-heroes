@@ -394,6 +394,194 @@ function nearestLivingFriend(u: GridUnit, living: GridUnit[]): GridUnit | undefi
 }
 
 /**
+ * One all-at-once combat batch over `combatPool` (a subset of `living` — the
+ * full battle excludes this turn's retreaters; a brawl passes everyone).
+ * Rolls attack/defend, applies summed damage to the matching units in
+ * `living` in place, and pushes attack/defend events. Returns the set of
+ * engaged unit ids (adjacent to ≥1 enemy) so the caller can tell movers from
+ * fighters. Shared by stepTurn (full battle) and resolveBrawlCombat so the
+ * two never drift apart.
+ */
+function resolveCombat(
+  living: GridUnit[],
+  combatPool: GridUnit[],
+  opts: StepTurnOptions,
+  rng: () => number,
+  events: TurnEvent[]
+): { engagedIds: Set<string> } {
+  const attackerPctBonus = opts.attackerPctBonus ?? 0;
+  const attackerFlatBonus = opts.attackerFlatBonus ?? 0;
+  const defenderPctBonus = opts.defenderPctBonus ?? 0;
+  const defenderFlatBonus = opts.defenderFlatBonus ?? 0;
+
+  const adjacency = new Map<string, GridUnit[]>();
+  for (const u of combatPool) adjacency.set(u.id, livingAdjacentEnemies(u, combatPool));
+
+  const attackerCount = (u: GridUnit) => adjacency.get(u.id)?.length ?? 0;
+  const engaged = combatPool.filter((u) => attackerCount(u) >= 1);
+
+  const chosenTarget = new Map<string, GridUnit | undefined>();
+  for (const u of engaged) {
+    const opts2 = [...adjacency.get(u.id)!].sort(
+      (a, b) => attackerCount(b) - attackerCount(a) || a.stableIndex - b.stableIndex
+    );
+    chosenTarget.set(u.id, opts2[0]);
+  }
+
+  const attackersOf = new Map<string, GridUnit[]>();
+  for (const u of engaged) attackersOf.set(u.id, []);
+  for (const u of engaged) {
+    const target = chosenTarget.get(u.id);
+    if (target) attackersOf.get(target.id)!.push(u);
+  }
+
+  const isDefending = (u: GridUnit): boolean => {
+    const attackers = attackersOf.get(u.id) ?? [];
+    if (attackers.length === 0) return false;
+    const target = chosenTarget.get(u.id);
+    return !target || !attackers.some((a) => a.id === target.id);
+  };
+
+  const rollFor = (u: GridUnit, defending: boolean): number => {
+    const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
+    const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
+    const pct = defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct;
+    return rollDamage(u.kind, pct, sideFlat, rng);
+  };
+
+  const damage = new Map<string, number>();
+  const applyDamage = (unitId: string, amount: number) => {
+    if (amount <= 0) return;
+    damage.set(unitId, (damage.get(unitId) ?? 0) + amount);
+  };
+
+  const incoming = new Map<string, number>();
+  const defenceRoll = new Map<string, number>();
+
+  for (const u of engaged) {
+    if (isDefending(u)) {
+      defenceRoll.set(u.id, rollFor(u, true));
+      continue;
+    }
+    const target = chosenTarget.get(u.id);
+    if (!target) continue;
+    const roll = rollFor(u, false);
+    incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
+    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
+  }
+
+  for (const u of engaged) {
+    const roll = defenceRoll.get(u.id);
+    if (roll === undefined) continue;
+    events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll });
+  }
+
+  for (const u of engaged) {
+    const inc = incoming.get(u.id);
+    if (!inc) continue;
+    const net = defenceRoll.has(u.id) ? Math.max(0, inc - defenceRoll.get(u.id)!) : inc;
+    applyDamage(u.id, net);
+  }
+
+  for (const [unitId, amount] of Array.from(damage)) {
+    const unit = living.find((u) => u.id === unitId);
+    if (unit) unit.hp -= amount;
+  }
+
+  return { engagedIds: new Set(engaged.map((u) => u.id)) };
+}
+
+/** One side's planned brawl move: a destination cell per living unit of that
+ * side. A destination equal to the unit's current cell means "stay and fight"
+ * (it's adjacent to an enemy, or boxed in). */
+export interface BrawlPlan {
+  [unitId: string]: { col: number; row: number };
+}
+
+/**
+ * Auto-plan one side's brawl move turn with the same primitives as the full
+ * battle: a unit already adjacent to an enemy stays put to fight; every other
+ * unit steps one cell toward its nearest enemy. Destinations are claimed in
+ * closest-to-enemy-first order and every unit's current cell starts blocked,
+ * so no two units ever plan onto the same cell (collision-free by
+ * construction — important on the small brawl board).
+ */
+export function planBrawlSide(
+  state: GridBattleState,
+  side: BattleSide,
+  rng: () => number = Math.random
+): BrawlPlan {
+  const living = state.units.filter((u) => u.hp > 0);
+  const sideUnits = living.filter((u) => u.side === side);
+
+  const tiebreak = new Map<string, number>();
+  for (const u of sideUnits) tiebreak.set(u.id, rng());
+  const order = [...sideUnits].sort(
+    (a, b) => nearestEnemyDistance(a, living) - nearestEnemyDistance(b, living) || tiebreak.get(a.id)! - tiebreak.get(b.id)!
+  );
+
+  // Every occupied cell is blocked up front (both sides), so movers only ever
+  // step into a cell that was empty at the start of this side's turn.
+  const blocked = new Set<string>();
+  for (const u of living) blocked.add(`${u.col},${u.row}`);
+
+  const plan: BrawlPlan = {};
+  for (const u of order) {
+    if (livingAdjacentEnemies(u, living).length >= 1) {
+      plan[u.id] = { col: u.col, row: u.row }; // adjacent: stay and fight
+      continue;
+    }
+    const target = nearestLivingEnemy(u, living);
+    const dest = target ? firstStepToward(u, target, state.cols, state.rows, blocked) : undefined;
+    if (dest) {
+      // free the origin, claim the destination
+      blocked.delete(`${u.col},${u.row}`);
+      blocked.add(`${dest.col},${dest.row}`);
+      plan[u.id] = dest;
+    } else {
+      plan[u.id] = { col: u.col, row: u.row }; // boxed in: stay
+    }
+  }
+  return plan;
+}
+
+/** Apply a side's planned brawl moves to positions (pure — no combat, no turn
+ * bump). Units not in the plan keep their cell. */
+export function applyBrawlMoves(state: GridBattleState, plan: BrawlPlan): GridBattleState {
+  const units = state.units.map((u) => {
+    const dest = plan[u.id];
+    return dest ? { ...u, col: dest.col, row: dest.row } : { ...u };
+  });
+  return { ...state, units };
+}
+
+/**
+ * Resolve a brawl round's combat: one all-at-once batch over everyone at their
+ * current (post-move) positions — same math as the full battle — then remove
+ * the dead and bump the turn. This is the "damage calculation phase" after
+ * both sides have moved.
+ */
+export function resolveBrawlCombat(state: GridBattleState, opts: StepTurnOptions = {}): TurnResult {
+  const rng = opts.rng ?? Math.random;
+  const events: TurnEvent[] = [];
+  if (isBattleOver(state)) return { state, events };
+
+  const living = state.units.map((u) => ({ ...u }));
+  resolveCombat(living, living, opts, rng, events);
+
+  const dead = living.filter((u) => u.hp <= 0);
+  for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
+  const alive = living.filter((u) => u.hp > 0);
+
+  const attackerAlive = alive.some((u) => u.side === 'attacker');
+  const defenderAlive = alive.some((u) => u.side === 'defender');
+  const status: GridBattleState['status'] =
+    !attackerAlive && !defenderAlive ? 'tie' : !defenderAlive ? 'attacker-win' : !attackerAlive ? 'defender-win' : 'ongoing';
+
+  return { state: { ...state, units: alive, turn: state.turn + 1, status }, events };
+}
+
+/**
  * Resolve one turn: an all-at-once combat batch against turn-start positions
  * (threat-score target selection needs a stable snapshot), followed by a
  * movement phase for non-engaged units (plus any retreating unit — see
@@ -405,10 +593,6 @@ function nearestLivingFriend(u: GridUnit, living: GridUnit[]): GridUnit | undefi
  */
 export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): TurnResult {
   const rng = opts.rng ?? Math.random;
-  const attackerPctBonus = opts.attackerPctBonus ?? 0;
-  const attackerFlatBonus = opts.attackerFlatBonus ?? 0;
-  const defenderPctBonus = opts.defenderPctBonus ?? 0;
-  const defenderFlatBonus = opts.defenderFlatBonus ?? 0;
   const events: TurnEvent[] = [];
 
   if (isBattleOver(state)) return { state, events };
@@ -450,100 +634,14 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     retreating.add(u.id);
   }
 
-  // ── Step 3: combat plan, computed once against the turn-start snapshot,
-  // over every unit except this turn's retreaters (who sit combat out) ──
+  // ── Step 3: combat, over every unit except this turn's retreaters (who sit
+  // combat out) — shared with the brawl resolver, see resolveCombat above.
+  // engagedIds (units adjacent to ≥1 enemy) is what tells fighters from movers
+  // in the movement phase below. ──
   const combatPool = living.filter((u) => !retreating.has(u.id));
-  const adjacency = new Map<string, GridUnit[]>();
-  for (const u of combatPool) adjacency.set(u.id, livingAdjacentEnemies(u, combatPool));
+  const { engagedIds } = resolveCombat(living, combatPool, opts, rng, events);
 
-  const attackerCount = (u: GridUnit) => adjacency.get(u.id)?.length ?? 0;
-  const engaged = combatPool.filter((u) => attackerCount(u) >= 1);
-
-  // Every engaged unit picks the single adjacent enemy it values most —
-  // whichever one has the most attackers converging on it (ties broken by
-  // stableIndex) — so several attackers can independently converge fire on
-  // the same juiciest target.
-  const chosenTarget = new Map<string, GridUnit | undefined>();
-  for (const u of engaged) {
-    const opts2 = [...adjacency.get(u.id)!].sort(
-      (a, b) => attackerCount(b) - attackerCount(a) || a.stableIndex - b.stableIndex
-    );
-    chosenTarget.set(u.id, opts2[0]);
-  }
-
-  // Who's actually gunning for each unit this turn (the inverse of
-  // chosenTarget) — a unit under attack from 3 enemies has 3 entries here.
-  const attackersOf = new Map<string, GridUnit[]>();
-  for (const u of engaged) attackersOf.set(u.id, []);
-  for (const u of engaged) {
-    const target = chosenTarget.get(u.id);
-    if (target) attackersOf.get(target.id)!.push(u);
-  }
-
-  // A unit under attack fights back (rather than defending) only if it's
-  // itself targeting one of the units currently attacking it. Otherwise —
-  // including a unit with no attackers at all, which simply attacks its own
-  // chosen target unopposed — it rolls to attack normally.
-  const isDefending = (u: GridUnit): boolean => {
-    const attackers = attackersOf.get(u.id) ?? [];
-    if (attackers.length === 0) return false;
-    const target = chosenTarget.get(u.id);
-    return !target || !attackers.some((a) => a.id === target.id);
-  };
-
-  const rollFor = (u: GridUnit, defending: boolean): number => {
-    const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
-    const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
-    const pct = defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct;
-    return rollDamage(u.kind, pct, sideFlat, rng);
-  };
-
-  const damage = new Map<string, number>(); // unitId -> accumulated damage this turn
-  const applyDamage = (unitId: string, amount: number) => {
-    if (amount <= 0) return;
-    damage.set(unitId, (damage.get(unitId) ?? 0) + amount);
-  };
-
-  // One roll per engaged unit, total — an attacking unit's roll is added to
-  // its target's incoming damage; a defending unit's roll is saved to
-  // mitigate the sum of everything converging on it below.
-  const incoming = new Map<string, number>(); // targetId -> summed attacker rolls
-  const defenceRoll = new Map<string, number>();
-
-  for (const u of engaged) {
-    if (isDefending(u)) {
-      defenceRoll.set(u.id, rollFor(u, true));
-      continue;
-    }
-    const target = chosenTarget.get(u.id);
-    if (!target) continue;
-    const roll = rollFor(u, false);
-    incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
-    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
-  }
-
-  for (const u of engaged) {
-    const roll = defenceRoll.get(u.id);
-    if (roll === undefined) continue;
-    events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll });
-  }
-
-  // Apply summed incoming damage — a defending unit's own roll mitigates
-  // it (e.g. 3 attackers' rolls summed, minus its one defence roll); an
-  // attacking unit takes the full sum, since it chose to trade blows
-  // instead of guarding.
-  for (const u of engaged) {
-    const inc = incoming.get(u.id);
-    if (!inc) continue;
-    const net = defenceRoll.has(u.id) ? Math.max(0, inc - defenceRoll.get(u.id)!) : inc;
-    applyDamage(u.id, net);
-  }
-
-  // ── Apply combat damage, remove the dead ──
-  for (const [unitId, amount] of Array.from(damage)) {
-    const unit = living.find((u) => u.id === unitId);
-    if (unit) unit.hp -= amount;
-  }
+  // ── Apply combat damage, remove the dead ── (resolveCombat mutated hp)
   const dead = living.filter((u) => u.hp <= 0);
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
   let alive = living.filter((u) => u.hp > 0);
@@ -560,7 +658,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // gets added to `blocked` at that point too — so any lower-priority mover
   // still to be planned this round correctly treats it as occupied instead
   // of planning a step into a cell that, in the end, was never vacated.
-  const movers = priorityOrder.filter((u) => attackerCount(u) === 0 && alive.some((a) => a.id === u.id));
+  const movers = priorityOrder.filter((u) => !engagedIds.has(u.id) && alive.some((a) => a.id === u.id));
   const moverIds = new Set(movers.map((m) => m.id));
 
   const staticOccupancy = new Map<string, string>(); // cells held by units that never move this turn

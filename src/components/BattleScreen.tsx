@@ -23,7 +23,7 @@ import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
 import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_BATTLE_UNIT_MAX } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
-import { createBattle, stepTurn, isBattleOver } from '../game/battleGrid/engine';
+import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
 import { GridBattleState, TurnEvent } from '../game/battleGrid/types';
 import { FormationSpec } from '../game/battleGrid/formations';
@@ -41,6 +41,9 @@ const AUTO_TURN_DELAY_MS = 250;
 // Duration of each beat of the per-turn attack/defend -> hit -> death
 // emoji animation (see handleNextTurn).
 const COMBAT_ANIM_BEAT_MS = 125;
+// How long the brawl move phase animates (units slide to their new cells,
+// CSS transition ~0.25s) before the combat resolution plays out.
+const BRAWL_MOVE_ANIM_MS = 320;
 
 export type BattleScreenProps =
   | {
@@ -392,14 +395,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const animatingRef = useRef(false);
   const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'hit' | 'death'>('idle');
 
-  const handleNextTurn = useCallback(() => {
-    if (phase !== 'ongoing' || animatingRef.current || isBattleOver(battle)) return;
-    const { state, events } = stepTurn(battle, {
-      rng: Math.random,
-      attackerFlatBonus: attackerRollBonus,
-      defenderPctBonus: garrisonRollBonusPct,
-      defenderFlatBonus: defenderRollBonus,
-    });
+  // The 3-beat combat playback (attack/defend icons -> hit flash -> death
+  // flash), then commit the resolved state. Shared by the full-battle and
+  // brawl turn handlers.
+  const animateCombat = useCallback((finalState: GridBattleState, events: TurnEvent[]) => {
     animatingRef.current = true;
     setLastEvents(events);
     setAnimPhase('attack-defend');
@@ -410,12 +409,40 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         setTimeout(() => {
           setAnimPhase('idle');
           animatingRef.current = false;
-          setBattle(state);
+          setBattle(finalState);
         }, COMBAT_ANIM_BEAT_MS);
       }, COMBAT_ANIM_BEAT_MS);
     }, COMBAT_ANIM_BEAT_MS);
+  }, []);
+
+  const handleNextTurn = useCallback(() => {
+    if (phase !== 'ongoing' || animatingRef.current || isBattleOver(battle)) return;
+    const opts = {
+      rng: Math.random,
+      attackerFlatBonus: attackerRollBonus,
+      defenderPctBonus: garrisonRollBonusPct,
+      defenderFlatBonus: defenderRollBonus,
+    };
+    if (isBrawl) {
+      // Brawl round: the defender moves all its units, then the attacker moves
+      // all of its (planning against the defender's new positions), then one
+      // combat resolution — the auto version of the turn-based flow. The moves
+      // animate first (CSS transitions the positions), then combat plays out.
+      const afterDef = applyBrawlMoves(battle, planBrawlSide(battle, 'defender', Math.random));
+      const afterAtk = applyBrawlMoves(afterDef, planBrawlSide(afterDef, 'attacker', Math.random));
+      animatingRef.current = true;
+      setLastEvents([]);
+      setBattle(afterAtk);
+      setTimeout(() => {
+        const { state, events } = resolveBrawlCombat(afterAtk, opts);
+        animateCombat(state, events);
+      }, BRAWL_MOVE_ANIM_MS);
+      return;
+    }
+    const { state, events } = stepTurn(battle, opts);
+    animateCombat(state, events);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, battle, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus]);
+  }, [phase, battle, isBrawl, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus, animateCombat]);
 
   // Trigger resolution exactly once, the moment the grid battle ends —
   // watching `battle` rather than resolving inline inside the setBattle
