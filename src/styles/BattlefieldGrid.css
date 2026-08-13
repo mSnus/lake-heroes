@@ -175,6 +175,14 @@
   z-index: 20;
 }
 
+/* Undo / Go shield buttons under the battlefield during a manual turn. */
+.bfg-manual-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
 /* 50%-transparent crossed-swords over an enemy a staying unit chose to fight. */
 .bfg-attack-mark {
   position: absolute;

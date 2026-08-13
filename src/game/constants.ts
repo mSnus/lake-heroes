@@ -54,7 +54,7 @@ export const BATTLEFIELD_ROWS = 20;
 // battlefield above. A battle is a brawl when both sides field at most
 // BRAWL_THRESHOLD grid units.
 export const BRAWL_COLS = 10;
-export const BRAWL_ROWS = 10;
+export const BRAWL_ROWS = 9;
 export const MILITIA_HP = 6;
 export const MILITIA_DMG_MIN = 1;
 export const MILITIA_DMG_MAX = 4;

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { GridBattleState, TurnEvent, BattleSide, GridUnit } from '../game/battleGrid/types';
 import { BrawlPlan, adjacentCells } from '../game/battleGrid/engine';
+import { useT } from '../i18n';
 import '../styles/BattlefieldGrid.css';
 
 type AnimPhase = 'idle' | 'attack-defend' | 'hit' | 'death';
@@ -61,18 +62,23 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   manualSide,
   onManualComplete,
 }) => {
+  const t = useT();
   const { cols, rows, units } = battle;
   const arenaRef = useRef<HTMLDivElement>(null);
 
   // ── Manual (drag) state ──
   const [placements, setPlacements] = useState<Record<string, Placement>>({});
   const [drag, setDrag] = useState<{ unitId: string; x: number; y: number } | null>(null);
+  // One entry per placement, so Undo can step back to the previous state of
+  // just the last-moved unit.
+  const [undoStack, setUndoStack] = useState<{ unitId: string; prev: Placement | undefined }[]>([]);
   const completedRef = useRef(false);
 
   // A fresh manual turn (new side, or a new round) clears any prior placements.
   useEffect(() => {
     setPlacements({});
     setDrag(null);
+    setUndoStack([]);
     completedRef.current = false;
   }, [manualSide, battle.turn]);
 
@@ -161,6 +167,40 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     return best;
   };
 
+  const place = (unit: GridUnit, pl: Placement) => {
+    setUndoStack((s) => [...s, { unitId: unit.id, prev: placements[unit.id] }]);
+    setPlacements((prev) => ({ ...prev, [unit.id]: pl }));
+    completedRef.current = false;
+  };
+
+  // Undo only the most recent placement — restore that one unit to whatever it
+  // was before (its earlier placement, or un-placed).
+  const undo = () => {
+    if (undoStack.length === 0) return;
+    const last = undoStack[undoStack.length - 1];
+    setPlacements((prev) => {
+      const next = { ...prev };
+      if (last.prev) next[last.unitId] = last.prev;
+      else delete next[last.unitId];
+      return next;
+    });
+    setUndoStack((s) => s.slice(0, -1));
+    completedRef.current = false;
+  };
+
+  // Finish the turn now: placed units keep their placement, un-placed ones stay
+  // put.
+  const finishTurn = () => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    const plan: BrawlPlan = {};
+    for (const u of sideUnits) {
+      const pl = placements[u.id];
+      plan[u.id] = pl ? { col: pl.col, row: pl.row } : { col: u.col, row: u.row };
+    }
+    onManualComplete?.(plan);
+  };
+
   // ── Combat playback overrides (unchanged) ──
   const actedIds = new Set(
     lastEvents.filter((e) => e.type === 'attack' || e.type === 'defend').map((e) => e.unitId)
@@ -202,6 +242,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   const enemiesById = new Map(enemies.map((e) => [e.id, e]));
 
   return (
+    <>
     <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : '')}>
       <div className="bfg-arena" ref={arenaRef}>
         <div
@@ -291,7 +332,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   onPointerUp={(e) => {
                     if (drag?.unitId !== u.id) return;
                     const pl = resolveDrop(e.clientX, e.clientY, u);
-                    if (pl) setPlacements((prev) => ({ ...prev, [u.id]: pl }));
+                    if (pl) place(u, pl);
                     setDrag(null);
                   }}
                 >
@@ -303,5 +344,24 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         )}
       </div>
     </div>
+
+    {manualSide && (
+      <div className="bfg-manual-controls">
+        <div
+          className={'shield-button-container' + (undoStack.length === 0 ? ' shield-button-container--disabled' : '')}
+          title={t('battleScreen.brawlUndo')}
+        >
+          <button className="shield-button" onClick={undo} disabled={undoStack.length === 0}>
+            ⬅️
+          </button>
+        </div>
+        <div className="shield-button-container" title={t('battleScreen.brawlGo')}>
+          <button className="shield-button" onClick={finishTurn}>
+            🚩
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 };

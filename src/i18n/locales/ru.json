@@ -213,7 +213,9 @@
     "gloriousVictory": "Славная победа!",
     "aTie": "Ничья!",
     "keepCalmCarryOn": "🍀 Не унывать и жить дальше",
-    "wasItWorthIt": "🩸 Стоило ли оно того?"
+    "wasItWorthIt": "🩸 Стоило ли оно того?",
+    "brawlUndo": "Отменить последний ход",
+    "brawlGo": "Закончить ход"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} решил атаковать {targetName}",

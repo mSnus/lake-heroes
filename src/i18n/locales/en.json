@@ -213,7 +213,9 @@
     "gloriousVictory": "Glorious victory!",
     "aTie": "A tie!",
     "keepCalmCarryOn": "🍀 Keep calm & carry on",
-    "wasItWorthIt": "🩸 Was it worth it?"
+    "wasItWorthIt": "🩸 Was it worth it?",
+    "brawlUndo": "Undo last move",
+    "brawlGo": "Finish turn"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decided to attack {targetName}",
