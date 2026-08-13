@@ -63,7 +63,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         style={
           config.screenType === 'ambush'
             ? { paddingTop: '6rem' }
-            : isGuardsFee
+            : isGuardsFee || isCaravan
             ? { paddingTop: '2rem' }
             : undefined
         }
