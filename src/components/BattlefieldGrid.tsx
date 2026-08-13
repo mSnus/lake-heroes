@@ -334,9 +334,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   className={cls}
                   style={style}
                   onPointerDown={(e) => {
+                    // Once a unit has been placed this turn it's locked in — no
+                    // re-dragging until the next turn (use Undo to free it).
+                    if (pl) return;
                     e.preventDefault();
                     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
-                    completedRef.current = false;
                     setDrag({ unitId: u.id, x: e.clientX, y: e.clientY });
                   }}
                   onPointerMove={(e) => {

@@ -185,6 +185,11 @@
   z-index: 20;
 }
 
+/* A unit already placed this turn is locked until next turn — no grab cursor. */
+.bfg-twin-placed {
+  cursor: default;
+}
+
 /* Undo / Go shield buttons under the battlefield during a manual turn. */
 .bfg-manual-controls {
   display: flex;

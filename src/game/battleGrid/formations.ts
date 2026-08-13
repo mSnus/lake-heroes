@@ -19,84 +19,33 @@ export interface FormationSpec {
   groupCount?: number;
 }
 
-// ── Hand-authored "circle" formations for headcounts 2-10 ──
-// Local (col,row) offsets, tip/front-neutral orientation; oriented per side
-// by placeFormation below. 1 unit is a trivial single cell (no spec given).
-const SHAPES: Record<number, LocalCell[]> = {
-  1: [{ col: 0, row: 0 }],
-  2: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-  ],
-  3: [
-    { col: 0, row: 0 },
-    { col: 0, row: 1 },
-    { col: 0, row: 2 },
-  ],
-  4: [
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 1, row: 2 },
-  ],
-  5: [
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 1, row: 2 },
-  ],
-  6: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-  ],
-  7: [
-    { col: 1, row: 0 },
-    { col: 2, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 1, row: 2 },
-    { col: 2, row: 2 },
-  ],
-  8: [
-    { col: 1, row: 0 },
-    { col: 2, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 3, row: 1 },
-    { col: 1, row: 2 },
-    { col: 2, row: 2 },
-  ],
-  9: [
-    { col: 1, row: 0 },
-    { col: 2, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 3, row: 1 },
-    { col: 4, row: 1 },
-    { col: 1, row: 2 },
-    { col: 2, row: 2 },
-  ],
-  10: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 2, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 3, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-    { col: 2, row: 2 },
-  ],
-};
+/**
+ * A symmetric diamond/arrowhead of `total` cells with its single-cell tip at
+ * local col 0 (the enemy-facing front — see placeFormation's per-side
+ * mirroring). Columns grow 1, 2, … up to a peak column that absorbs the
+ * remainder, then mirror back down to 1 at the rear, so the figure is
+ * symmetric both front-to-back and top-to-bottom — an arrowhead pointed at the
+ * enemy. Rows are normalised to start at 0.
+ */
+function diamondShape(total: number): LocalCell[] {
+  if (total <= 0) return [];
+  let k = 0;
+  while ((k + 2) * (k + 2) <= total) k++;
+  const flankSum = k * (k + 1); // 2 * (1 + 2 + … + k)
+  const peak = total - flankSum;
+  const widths: number[] = [];
+  for (let i = 1; i <= k; i++) widths.push(i);
+  widths.push(peak);
+  for (let i = k; i >= 1; i--) widths.push(i);
+
+  const cells: LocalCell[] = [];
+  widths.forEach((count, col) => {
+    const startRow = -Math.floor(count / 2);
+    for (let i = 0; i < count; i++) cells.push({ col, row: startRow + i });
+  });
+  const minRow = Math.min(...cells.map((c) => c.row));
+  return cells.map((c) => ({ col: c.col, row: c.row - minRow }));
+}
 
 /** The dragon's fixed 50-unit (DRAGON_UNITS) silhouette — a coiled dragon
  * shape, hand-derived from a reference pixel-art dragon by downsampling to
@@ -351,7 +300,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
   if (total <= 0) return [];
 
   if (!forcedGroupCount && total <= 10) {
-    const ordered = orderByFrontness(SHAPES[total]);
+    const ordered = orderByFrontness(diamondShape(total));
     return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
   }
 
@@ -409,26 +358,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
  * a wedge that keeps widening and gets abruptly truncated wherever the
  * army runs out. */
 function triangleLayout(comp: { militia: number; riders: number }): PlacedCell[] {
-  const total = comp.militia + comp.riders;
-  if (total <= 0) return [];
-  const cells: LocalCell[] = [];
-
-  let k = 0;
-  while ((k + 2) * (k + 2) <= total) k++;
-  const flankSum = k * (k + 1);
-  const peak = total - flankSum;
-
-  const widths: number[] = [];
-  for (let i = 1; i <= k; i++) widths.push(i);
-  widths.push(peak);
-  for (let i = k; i >= 1; i--) widths.push(i);
-
-  widths.forEach((count, col) => {
-    const startRow = -Math.floor(count / 2);
-    for (let i = 0; i < count; i++) cells.push({ col, row: startRow + i });
-  });
-
-  const ordered = orderByFrontness(cells);
+  const ordered = orderByFrontness(diamondShape(comp.militia + comp.riders));
   return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
 }
 
