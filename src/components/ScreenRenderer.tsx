@@ -135,8 +135,8 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         )}
       </ScreenBackground>
       {!config.sellMode && (
-        <div className="game-menu" style={{ top: '80vh' }}>
-          <div>
+        <div className="game-menu" style={{ top: isGuardsFee ? '66vh' : '80vh' }}>
+          <div className={isGuardsFee ? 'game-menu-stack' : undefined}>
             {buttons.map((btn, i) =>
               // Only the primary pay/fight actions get the big decorated
               // treatment — secondary options (sell tiles, accept loss) stay
