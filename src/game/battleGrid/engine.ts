@@ -466,9 +466,13 @@ function resolveCombat(
   opts: StepTurnOptions,
   rng: () => number,
   events: TurnEvent[],
-  // Units that moved this turn — everyone NOT in here fought from a held
-  // position and gets the defence-mode bonus (see HELD_POSITION_BONUS).
-  movedIds: Set<string> = new Set()
+  // Units that moved this turn — used with attackIntent for the held bonus.
+  movedIds: Set<string> = new Set(),
+  // Per-unit attack order: an enemy id to attack exactly that unit, 'none' to
+  // hold/defend without attacking, or 'auto' (the default for any unit not
+  // listed) to pick a target automatically. Manual brawl units are given an
+  // explicit id or 'none'; everything else is 'auto'.
+  attackIntent?: Map<string, string>
 ): { engagedIds: Set<string> } {
   const attackerPctBonus = opts.attackerPctBonus ?? 0;
   const attackerFlatBonus = opts.attackerFlatBonus ?? 0;
@@ -485,19 +489,27 @@ function resolveCombat(
   const rand = new Map<string, number>();
   for (const u of combatPool) rand.set(u.id, rng());
 
-  // Each engaged unit picks which adjacent enemy to attack, in priority:
-  //   1) the weakest (least HP left),
-  //   2) the one the most friendly units are adjacent to (converging fire),
-  //   3) a random one.
-  const chosenTarget = new Map<string, GridUnit | undefined>();
-  for (const u of engaged) {
-    const opts2 = [...adjacency.get(u.id)!].sort(
+  const intentOf = (u: GridUnit): string => attackIntent?.get(u.id) ?? 'auto';
+
+  // Each engaged unit's chosen target. 'auto' picks the best adjacent enemy —
+  //   1) the weakest (least HP), 2) the one the most friendly units are
+  //   adjacent to (converging fire), 3) a random one. An explicit id attacks
+  //   exactly that enemy if it's still adjacent; 'none' (or a stale id) means
+  //   the unit doesn't attack and will defend if it's under fire.
+  const bestAdjacent = (u: GridUnit): GridUnit | undefined =>
+    [...adjacency.get(u.id)!].sort(
       (a, b) =>
         a.hp - b.hp ||
         attackerCount(b) - attackerCount(a) ||
         (rand.get(a.id) ?? 0) - (rand.get(b.id) ?? 0)
-    );
-    chosenTarget.set(u.id, opts2[0]);
+    )[0];
+
+  const chosenTarget = new Map<string, GridUnit | undefined>();
+  for (const u of engaged) {
+    const it = intentOf(u);
+    if (it === 'none') chosenTarget.set(u.id, undefined);
+    else if (it === 'auto') chosenTarget.set(u.id, bestAdjacent(u));
+    else chosenTarget.set(u.id, adjacency.get(u.id)!.find((e) => e.id === it));
   }
 
   const attackersOf = new Map<string, GridUnit[]>();
@@ -507,17 +519,26 @@ function resolveCombat(
     if (target) attackersOf.get(target.id)!.push(u);
   }
 
-  const isDefending = (u: GridUnit): boolean => {
+  // Auto units defend instead of attacking when they're under fire and not
+  // already trading blows with one of their own attackers; manual units simply
+  // attack if they have a valid target, else defend.
+  const isDefendingAuto = (u: GridUnit): boolean => {
     const attackers = attackersOf.get(u.id) ?? [];
     if (attackers.length === 0) return false;
     const target = chosenTarget.get(u.id);
     return !target || !attackers.some((a) => a.id === target.id);
   };
+  const willAttack = (u: GridUnit): boolean => {
+    if (!chosenTarget.get(u.id)) return false;
+    return intentOf(u) === 'auto' ? !isDefendingAuto(u) : true;
+  };
 
   const rollFor = (u: GridUnit, defending: boolean): number => {
     const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
     const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
-    const held = movedIds.has(u.id) ? 0 : HELD_POSITION_BONUS; // defence-mode bonus
+    // Held-position (defence-mode) bonus: only for a unit that neither moved
+    // nor attacked this turn — it's defending from a spot it held.
+    const held = defending && !movedIds.has(u.id) ? HELD_POSITION_BONUS : 0;
     const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) + held;
     return rollDamage(u.kind, pct, sideFlat, rng);
   };
@@ -532,15 +553,14 @@ function resolveCombat(
   const defenceRoll = new Map<string, number>();
 
   for (const u of engaged) {
-    if (isDefending(u)) {
+    if (willAttack(u)) {
+      const target = chosenTarget.get(u.id)!;
+      const roll = rollFor(u, false);
+      incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
+      events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
+    } else {
       defenceRoll.set(u.id, rollFor(u, true));
-      continue;
     }
-    const target = chosenTarget.get(u.id);
-    if (!target) continue;
-    const roll = rollFor(u, false);
-    incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
-    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
   }
 
   for (const u of engaged) {
@@ -660,14 +680,15 @@ export function applyBrawlMoves(state: GridBattleState, plan: BrawlPlan): GridBa
 export function resolveBrawlCombat(
   state: GridBattleState,
   opts: StepTurnOptions = {},
-  movedIds: Set<string> = new Set()
+  movedIds: Set<string> = new Set(),
+  attackIntent?: Map<string, string>
 ): TurnResult {
   const rng = opts.rng ?? Math.random;
   const events: TurnEvent[] = [];
   if (isBattleOver(state)) return { state, events };
 
   const living = state.units.map((u) => ({ ...u }));
-  resolveCombat(living, living, opts, rng, events, movedIds);
+  resolveCombat(living, living, opts, rng, events, movedIds, attackIntent);
 
   const dead = living.filter((u) => u.hp <= 0);
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });

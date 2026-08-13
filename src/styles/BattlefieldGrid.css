@@ -183,6 +183,13 @@
   margin-top: 10px;
 }
 
+/* Reserve the space but hide the buttons while it isn't the human's turn, so
+   the battlefield above doesn't jump when they toggle. */
+.bfg-manual-controls--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* 50%-transparent crossed-swords over an enemy a staying unit chose to fight. */
 .bfg-attack-mark {
   position: absolute;

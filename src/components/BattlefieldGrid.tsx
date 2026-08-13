@@ -30,7 +30,10 @@ interface BattlefieldGridProps {
    * handed the chosen destinations via onManualComplete once every unit is
    * placed. */
   manualSide?: BattleSide;
-  onManualComplete?: (plan: BrawlPlan) => void;
+  /** Called when the human finishes placing: `plan` is the destination per
+   * unit, `attacks` maps a unit to the specific enemy it was pointed at (units
+   * not listed don't attack — they hold/defend). */
+  onManualComplete?: (plan: BrawlPlan, attacks: Record<string, string>) => void;
 }
 
 const UNIT_EMOJI: Record<string, string> = {
@@ -92,11 +95,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     if (!sideUnits.every((u) => placements[u.id])) return;
     completedRef.current = true;
     const plan: BrawlPlan = {};
+    const attacks: Record<string, string> = {};
     for (const u of sideUnits) {
       const pl = placements[u.id];
       plan[u.id] = { col: pl.col, row: pl.row };
+      if (pl.attackTargetId) attacks[u.id] = pl.attackTargetId;
     }
-    onManualComplete?.(plan);
+    onManualComplete?.(plan, attacks);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, manualSide]);
 
@@ -194,11 +199,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     if (completedRef.current) return;
     completedRef.current = true;
     const plan: BrawlPlan = {};
+    const attacks: Record<string, string> = {};
     for (const u of sideUnits) {
       const pl = placements[u.id];
       plan[u.id] = pl ? { col: pl.col, row: pl.row } : { col: u.col, row: u.row };
+      if (pl?.attackTargetId) attacks[u.id] = pl.attackTargetId;
     }
-    onManualComplete?.(plan);
+    onManualComplete?.(plan, attacks);
   };
 
   // ── Combat playback overrides (unchanged) ──
@@ -345,18 +352,21 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       </div>
     </div>
 
-    {manualSide && (
-      <div className="bfg-manual-controls">
+    {/* Kept in the DOM through the whole brawl (not just the manual turn) so
+        the battlefield doesn't shift when they appear/disappear — hidden and
+        disabled while it isn't the human's turn to place. */}
+    {brawl && (
+      <div className={'bfg-manual-controls' + (manualSide ? '' : ' bfg-manual-controls--hidden')} aria-hidden={!manualSide}>
         <div
-          className={'shield-button-container' + (undoStack.length === 0 ? ' shield-button-container--disabled' : '')}
+          className={'shield-button-container' + (!manualSide || undoStack.length === 0 ? ' shield-button-container--disabled' : '')}
           title={t('battleScreen.brawlUndo')}
         >
-          <button className="shield-button" onClick={undo} disabled={undoStack.length === 0}>
+          <button className="shield-button" onClick={undo} disabled={!manualSide || undoStack.length === 0}>
             ⬅️
           </button>
         </div>
         <div className="shield-button-container" title={t('battleScreen.brawlGo')}>
-          <button className="shield-button" onClick={finishTurn}>
+          <button className="shield-button" onClick={finishTurn} disabled={!manualSide}>
             🚩
           </button>
         </div>
