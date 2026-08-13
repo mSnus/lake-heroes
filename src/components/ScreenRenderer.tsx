@@ -132,7 +132,11 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         <div className="game-menu" style={{ top: '80vh' }}>
           <div>
             {buttons.map((btn, i) =>
-              buttons.length === 1 || isGuardsFee ? (
+              // Only the primary pay/fight actions get the big decorated
+              // treatment — secondary options (sell tiles, accept loss) stay
+              // as plain menu buttons so the screen isn't a wall of them.
+              buttons.length === 1 ||
+              (isGuardsFee && (btn.action === 'pay-fee' || btn.action === 'fight-tile')) ? (
                 <DecoratedButton
                   key={i}
                   disabled={btn.disabled}
