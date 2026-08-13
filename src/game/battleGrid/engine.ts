@@ -85,6 +85,11 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
 // dealing it), which doesn't make tactical sense.
 const DEFENSE_ROLL_BONUS = 0.5;
 
+// A unit that held its ground this turn (didn't move) fights in "defence
+// mode" — this bonus is added to its combat roll on top of any side bonuses,
+// rewarding standing firm over charging into contact.
+const HELD_POSITION_BONUS = 0.5;
+
 // Lifetime cap on wounded-pullback moves per unit — after this many total
 // break-offs to safety, a wounded unit commits to fighting instead, which
 // guarantees the battle can't stall in an endless pull-back/re-advance dance.
@@ -460,7 +465,10 @@ function resolveCombat(
   combatPool: GridUnit[],
   opts: StepTurnOptions,
   rng: () => number,
-  events: TurnEvent[]
+  events: TurnEvent[],
+  // Units that moved this turn — everyone NOT in here fought from a held
+  // position and gets the defence-mode bonus (see HELD_POSITION_BONUS).
+  movedIds: Set<string> = new Set()
 ): { engagedIds: Set<string> } {
   const attackerPctBonus = opts.attackerPctBonus ?? 0;
   const attackerFlatBonus = opts.attackerFlatBonus ?? 0;
@@ -509,7 +517,8 @@ function resolveCombat(
   const rollFor = (u: GridUnit, defending: boolean): number => {
     const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
     const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
-    const pct = defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct;
+    const held = movedIds.has(u.id) ? 0 : HELD_POSITION_BONUS; // defence-mode bonus
+    const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) + held;
     return rollDamage(u.kind, pct, sideFlat, rng);
   };
 
@@ -648,13 +657,17 @@ export function applyBrawlMoves(state: GridBattleState, plan: BrawlPlan): GridBa
  * the dead and bump the turn. This is the "damage calculation phase" after
  * both sides have moved.
  */
-export function resolveBrawlCombat(state: GridBattleState, opts: StepTurnOptions = {}): TurnResult {
+export function resolveBrawlCombat(
+  state: GridBattleState,
+  opts: StepTurnOptions = {},
+  movedIds: Set<string> = new Set()
+): TurnResult {
   const rng = opts.rng ?? Math.random;
   const events: TurnEvent[] = [];
   if (isBattleOver(state)) return { state, events };
 
   const living = state.units.map((u) => ({ ...u }));
-  resolveCombat(living, living, opts, rng, events);
+  resolveCombat(living, living, opts, rng, events, movedIds);
 
   const dead = living.filter((u) => u.hp <= 0);
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });

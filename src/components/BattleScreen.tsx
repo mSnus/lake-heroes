@@ -406,6 +406,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
   const manualBaseRef = useRef<GridBattleState | null>(null); // state a manual phase edits
   const roundActiveRef = useRef(false); // a brawl round is in progress
+  const roundStartPosRef = useRef<Map<string, { col: number; row: number }>>(new Map()); // positions at round start, to tell who moved
 
   // The 3-beat combat playback (attack/defend icons -> hit flash -> death
   // flash), then commit the resolved state. Shared by the full-battle and
@@ -453,7 +454,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // the ⚔️ click always invoke the current version.
   const brawlResolve = (s: GridBattleState) => {
     roundActiveRef.current = false;
-    const { state, events } = resolveBrawlCombat(s, brawlOpts());
+    // Units whose cell changed since the round started fought "on the move"
+    // and miss the held-position defence bonus.
+    const start = roundStartPosRef.current;
+    const movedIds = new Set<string>();
+    for (const u of s.units) {
+      const p = start.get(u.id);
+      if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
+    }
+    const { state, events } = resolveBrawlCombat(s, brawlOpts(), movedIds);
     animateCombat(state, events);
   };
   const brawlAttackerPhase = (s: GridBattleState) => {
@@ -477,6 +486,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const startBrawlRound = () => {
     if (phase !== 'ongoing' || roundActiveRef.current || animatingRef.current || isBattleOver(battle)) return;
     roundActiveRef.current = true;
+    roundStartPosRef.current = new Map(battle.units.map((u) => [u.id, { col: u.col, row: u.row }]));
     brawlDefenderPhase(battle);
   };
   const handleManualComplete = (plan: BrawlPlan) => {
