@@ -21,7 +21,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
-import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_BATTLE_UNIT_MAX } from '../game/constants';
+import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_THRESHOLD } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
@@ -198,8 +198,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // are the ones that get turn-based / manual control.
   const isBrawl =
     (isTile || isRogue || isPlayerBattle) &&
-    attackerGridTotal <= BRAWL_BATTLE_UNIT_MAX &&
-    defenderGridTotal <= BRAWL_BATTLE_UNIT_MAX;
+    attackerGridTotal <= BRAWL_THRESHOLD &&
+    defenderGridTotal <= BRAWL_THRESHOLD;
   const gridCols = isBrawl ? BRAWL_COLS : BATTLEFIELD_COLS;
   const gridRows = isBrawl ? BRAWL_ROWS : BATTLEFIELD_ROWS;
 
