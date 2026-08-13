@@ -17,6 +17,10 @@ export interface GridUnit {
    * recent turn was anything else — fighting, moving normally, or standing
    * still). Capped at 2 in a row before it's forced to fight instead. */
   retreatStreak: number;
+  /** Total times this unit has broken contact to a safe cell (wounded
+   * pullback) — a lifetime cap (not consecutive) that guarantees a wounded
+   * unit eventually commits to fighting instead of kiting forever. */
+  safetyMoves: number;
 }
 
 export interface GridBattleState {

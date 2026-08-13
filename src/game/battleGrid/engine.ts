@@ -85,6 +85,11 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
 // dealing it), which doesn't make tactical sense.
 const DEFENSE_ROLL_BONUS = 0.5;
 
+// Lifetime cap on wounded-pullback moves per unit — after this many total
+// break-offs to safety, a wounded unit commits to fighting instead, which
+// guarantees the battle can't stall in an endless pull-back/re-advance dance.
+const SAFETY_MOVE_CAP = 3;
+
 function hpFor(kind: UnitKind): number {
   const ov = getOverrides();
   if (kind === 'dragon') return DRAGON_HP;
@@ -138,6 +143,7 @@ export function createBattle(
         row: 0,
         stableIndex: stableIndex++,
         retreatStreak: 0,
+        safetyMoves: 0,
       });
     }
     for (let i = 0; i < comp.riders; i++) {
@@ -152,6 +158,7 @@ export function createBattle(
         row: 0,
         stableIndex: stableIndex++,
         retreatStreak: 0,
+        safetyMoves: 0,
       });
     }
     if (comp.formation && comp.formation.kind !== 'square') {
@@ -330,6 +337,39 @@ function hasOpenAdjacentCell(u: GridUnit, living: GridUnit[], cols: number, rows
   return false;
 }
 
+// An adjacent, in-bounds, unoccupied/unblocked cell that is "not under attack"
+// — no living enemy of `u` sits next to it — preferring the safe cell farthest
+// from the nearest enemy. Used by the wounded-pullback rule: a hurt unit with
+// a friend beside it steps back here to let its friends screen for it.
+function safeAdjacentCell(
+  u: GridUnit,
+  living: GridUnit[],
+  cols: number,
+  rows: number,
+  blocked: Set<string>
+): Cell | undefined {
+  const enemy = nearestLivingEnemy(u, living);
+  let best: Cell | undefined;
+  let bestScore = -Infinity;
+  for (const off of neighborOffsetsFor(u.row)) {
+    const c = { col: u.col + off.col, row: u.row + off.row };
+    if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
+    if (blocked.has(`${c.col},${c.row}`)) continue;
+    if (living.some((v) => v.hp > 0 && v.id !== u.id && v.col === c.col && v.row === c.row)) continue;
+    // "not under attack": no living enemy adjacent to c
+    const underAttack = neighborOffsetsFor(c.row).some((o2) =>
+      living.some((v) => v.hp > 0 && v.side !== u.side && v.col === c.col + o2.col && v.row === c.row + o2.row)
+    );
+    if (underAttack) continue;
+    const score = enemy ? hexDistance(c, enemy) : 0;
+    if (score > bestScore) {
+      bestScore = score;
+      best = c;
+    }
+  }
+  return best;
+}
+
 // Single-step "step aside" for a retreating unit with no living friend to
 // flee toward: just the one in-bounds, unblocked neighbor that puts the most
 // hex distance between the unit and whoever it's fleeing — no BFS, since
@@ -433,10 +473,21 @@ function resolveCombat(
   const attackerCount = (u: GridUnit) => adjacency.get(u.id)?.length ?? 0;
   const engaged = combatPool.filter((u) => attackerCount(u) >= 1);
 
+  // Per-unit random key for the final target tiebreak, stable within this batch.
+  const rand = new Map<string, number>();
+  for (const u of combatPool) rand.set(u.id, rng());
+
+  // Each engaged unit picks which adjacent enemy to attack, in priority:
+  //   1) the weakest (least HP left),
+  //   2) the one the most friendly units are adjacent to (converging fire),
+  //   3) a random one.
   const chosenTarget = new Map<string, GridUnit | undefined>();
   for (const u of engaged) {
     const opts2 = [...adjacency.get(u.id)!].sort(
-      (a, b) => attackerCount(b) - attackerCount(a) || a.stableIndex - b.stableIndex
+      (a, b) =>
+        a.hp - b.hp ||
+        attackerCount(b) - attackerCount(a) ||
+        (rand.get(a.id) ?? 0) - (rand.get(b.id) ?? 0)
     );
     chosenTarget.set(u.id, opts2[0]);
   }
@@ -541,6 +592,22 @@ export function planBrawlSide(
   const plan: BrawlPlan = {};
   for (const u of order) {
     if (livingAdjacentEnemies(u, living).length >= 1) {
+      // Wounded pullback: a hurt unit in contact, with a friend beside it and a
+      // safe cell to step into, pulls back instead of fighting (capped 2 in a
+      // row via retreatStreak, so it can't kite forever).
+      if (
+        u.hp < u.maxHp &&
+        u.safetyMoves < SAFETY_MOVE_CAP &&
+        livingAdjacentFriends(u, living).length >= 1
+      ) {
+        const safe = safeAdjacentCell(u, living, state.cols, state.rows, blocked);
+        if (safe) {
+          blocked.delete(`${u.col},${u.row}`);
+          blocked.add(`${safe.col},${safe.row}`);
+          plan[u.id] = safe;
+          continue;
+        }
+      }
       plan[u.id] = { col: u.col, row: u.row }; // adjacent: stay and fight
       continue;
     }
@@ -559,11 +626,18 @@ export function planBrawlSide(
 }
 
 /** Apply a side's planned brawl moves to positions (pure — no combat, no turn
- * bump). Units not in the plan keep their cell. */
+ * bump). Units not in the plan keep their cell. A unit that broke contact to a
+ * safe cell has its retreatStreak bumped (else reset) so the wounded-pullback
+ * rule can cap consecutive retreats. */
 export function applyBrawlMoves(state: GridBattleState, plan: BrawlPlan): GridBattleState {
+  const adjEnemy = (col: number, row: number, side: BattleSide) =>
+    state.units.some((v) => v.hp > 0 && v.side !== side && hexDistance({ col, row }, v) === 1);
   const units = state.units.map((u) => {
     const dest = plan[u.id];
-    return dest ? { ...u, col: dest.col, row: dest.row } : { ...u };
+    if (!dest) return { ...u };
+    const movedAway = dest.col !== u.col || dest.row !== u.row;
+    const pulledBack = movedAway && adjEnemy(u.col, u.row, u.side) && !adjEnemy(dest.col, dest.row, u.side);
+    return { ...u, col: dest.col, row: dest.row, safetyMoves: pulledBack ? u.safetyMoves + 1 : u.safetyMoves };
   });
   return { ...state, units };
 }
@@ -647,11 +721,27 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     retreating.add(u.id);
   }
 
-  // ── Step 3: combat, over every unit except this turn's retreaters (who sit
-  // combat out) — shared with the brawl resolver, see resolveCombat above.
-  // engagedIds (units adjacent to ≥1 enemy) is what tells fighters from movers
-  // in the movement phase below. ──
-  const combatPool = living.filter((u) => !retreating.has(u.id));
+  // ── Step 2b: wounded pullback — a hurt unit in contact with the enemy, with
+  // a friend beside it and a safe cell (out of enemy reach) to step into,
+  // pulls back to that cell so its friends can screen for it. Same 2-in-a-row
+  // cap as retreat, and it sits combat out this turn (it's moving, not
+  // fighting). ──
+  const seekingSafety = new Set<string>();
+  for (const u of living) {
+    if (retreating.has(u.id)) continue;
+    if (u.hp >= u.maxHp) continue; // not wounded
+    if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
+    if (livingAdjacentFriends(u, living).length < 1) continue; // no friend beside it
+    if (u.safetyMoves >= SAFETY_MOVE_CAP) continue; // used up its pullbacks
+    if (!safeAdjacentCell(u, living, state.cols, state.rows, new Set())) continue; // nowhere safe
+    seekingSafety.add(u.id);
+  }
+
+  // ── Step 3: combat, over every unit except this turn's retreaters / pullback
+  // units (who sit combat out) — shared with the brawl resolver, see
+  // resolveCombat above. engagedIds (units adjacent to ≥1 enemy) is what tells
+  // fighters from movers in the movement phase below. ──
+  const combatPool = living.filter((u) => !retreating.has(u.id) && !seekingSafety.has(u.id));
   const { engagedIds } = resolveCombat(living, combatPool, opts, rng, events);
 
   // ── Apply combat damage, remove the dead ── (resolveCombat mutated hp)
@@ -696,7 +786,9 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
       const unit = alive.find((u) => u.id === mover.id)!;
 
       let dest: Cell | undefined;
-      if (retreating.has(unit.id)) {
+      if (seekingSafety.has(unit.id)) {
+        dest = safeAdjacentCell(unit, alive, state.cols, state.rows, blocked);
+      } else if (retreating.has(unit.id)) {
         const friend = nearestLivingFriend(unit, alive);
         const enemy = nearestLivingEnemy(unit, alive);
         dest = friend
@@ -778,6 +870,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // it, so only genuinely consecutive retreats count toward the cap.
   for (const u of alive) {
     u.retreatStreak = retreating.has(u.id) && plannedMove.has(u.id) ? u.retreatStreak + 1 : 0;
+    if (seekingSafety.has(u.id) && plannedMove.has(u.id)) u.safetyMoves += 1;
   }
 
   alive = alive.map((u) => u);
