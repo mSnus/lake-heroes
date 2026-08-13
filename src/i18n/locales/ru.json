@@ -141,11 +141,12 @@
     "title": "Замок короля",
     "newContract": "📜 Новый контракт: захватите\n{tileName} за награду {award}🟡!",
     "cannotRecruit": "Ваше золото {gold}\nи заполненные слоты армии\nне позволяют нанять больше юнитов",
+    "cannotRecruitNoMoney": "Ваше золото {gold}\nне позволяет нанять больше юнитов",
     "iAmTheGreatest": "⚜️ Я величайший!",
-    "moneyAndFame": "{gold}   {fame}"
+    "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Нанять:",
+    "hireTitle": "Нанять ещё:",
     "militia": "Ополчение",
     "knights": "Рыцари",
     "priceEachMax": "({price}🟡 за штуку, макс. {max})",
@@ -153,7 +154,8 @@
   },
   "squadDisplay": {
     "sellSquad": "Продать этот отряд",
-    "youHaveSquads": "У вас {squads} отрядов:"
+    "sell": "продать",
+    "youHaveSquads": "{squads} отрядов:"
   },
   "tileCard": {
     "confirmUpgrade": "Действительно улучшить «{tileName}» за {gold}🟡?",

@@ -70,7 +70,7 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
         <h2 className="game-title">{t('tavern.title')}</h2>
         <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
 
-        <h3>{t('squadDisplay.youHaveSquads', { squads: player.slotsUsed })}</h3>
+        <h3>{t('squadDisplay.youHaveSquads', { squads: player.armySlots })}</h3>
 
         <SquadDisplay
           militia={player.militia}

@@ -63,6 +63,9 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
     ? Math.min(Math.floor(player.gold / RIDER_UNIT_PRICE), player.remainingCapacity('riders'))
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
+  // Recruiting can also be blocked purely by empty pockets — only mention
+  // "full army slots" when the army genuinely has no free slot left.
+  const slotsFull = player.slotsUsed >= player.armySlots;
 
   useEffect(() => {
     if (!player.isComputer) return;
@@ -96,6 +99,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           {tJsx('kingsCastle.moneyAndFame', {
             gold: <span className="value">{player.gold}🟡</span>,
             fame: <span className="value">{player.fame}🏆</span>,
+            squads: <span className="value">{t('squadDisplay.youHaveSquads', { squads: player.armySlots })}</span>,
           })}
         </h3>
 
@@ -108,8 +112,6 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           </h3>
         )}
 
-        <h3>{t('squadDisplay.youHaveSquads', { squads: player.slotsUsed })}</h3>
-
         <SquadDisplay
           militia={player.militia}
           riders={player.riders}
@@ -120,7 +122,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
         {atMax ? (
           <h3 style={{ whiteSpace: 'pre-line' }}>
-            {tJsx('kingsCastle.cannotRecruit', {
+            {tJsx(slotsFull ? 'kingsCastle.cannotRecruit' : 'kingsCastle.cannotRecruitNoMoney', {
               gold: <span className="value">{player.gold}🟡</span>,
             })}
           </h3>

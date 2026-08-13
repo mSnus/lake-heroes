@@ -13,40 +13,30 @@
 
 .hire-row {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-  width: 100%;
-}
-
-.hire-row-top {
-  display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
   width: 100%;
 }
 
+/* Unit name on top, the "(200🟡 each, max N)" note under it. */
 .hire-row-label {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.hire-row-name {
   font-size: 1rem;
   font-weight: 600;
   white-space: nowrap;
 }
 
-.hire-row-controls {
-  display: grid;
-  grid-template-columns: auto auto auto 1fr;
-  gap: 6px;
-  align-items: stretch;
-}
-
-.hire-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.hire-fraction {
+.hire-row-price {
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.85;
   white-space: nowrap;
 }
 

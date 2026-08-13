@@ -28,15 +28,18 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
     <div className={['squad-display', className].filter(Boolean).join(' ')}>
       {chunks.map((chunk, i) => (
         <span key={i} className="squad-chunk">
-          {chunk.count}
-          {chunk.tier === 'riders' ? '🐎' : '🧍'}
+          <span className="squad-badge">
+            {chunk.count}
+            {chunk.tier === 'riders' ? '🐎' : '🧍'}
+          </span>
           {onSellSquad && chunk.count > 0 && (
             <button
               className="squad-sell-button"
               title={t('squadDisplay.sellSquad')}
               onClick={() => onSellSquad(chunk.tier, chunk.count)}
             >
-              ✖️
+              <span className="squad-sell-x">✖️</span>
+              <span className="squad-sell-label">{t('squadDisplay.sell')}</span>
             </button>
           )}
         </span>
