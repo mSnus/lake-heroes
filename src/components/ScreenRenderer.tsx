@@ -30,9 +30,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   const isSelfDrivingModal = config.screenType === 'kings-castle' || config.screenType === 'tavern-result';
   const isGuardsFee = !!config.encounter && config.encounter.canFight !== undefined;
   const isCaravan = config.screenType === 'caravan';
-  // Screens whose action buttons should be big decorated buttons stacked
-  // vertically rather than plain buttons side by side.
-  const stackButtons = isGuardsFee || isCaravan;
+
   const hideForBot = gameState.activePlayer.isComputer && (isSelfDrivingModal || isGuardsFee);
   const hiddenStyle: React.CSSProperties | undefined = hideForBot
     ? { opacity: 0, pointerEvents: 'none' }
@@ -62,9 +60,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         image={config.background!}
         style={
           config.screenType === 'ambush'
-            ? { paddingTop: '6rem' }
-            : isGuardsFee || isCaravan
-            ? { paddingTop: '2rem' }
+            ? { paddingTop: '2rem' }            
             : undefined
         }
       >
@@ -139,8 +135,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         )}
       </ScreenBackground>
       {!config.sellMode && (
-        <div className="game-menu" style={{ top: stackButtons ? '66vh' : '80vh' }}>
-          <div className={stackButtons ? 'game-menu-stack' : undefined}>
+        <div className="game-menu" style={{ top: '80vh' }}>
             {buttons.map((btn, i) =>
               // The caravan screen decorates both buttons; the guards/fee
               // screen decorates only the primary pay/fight actions (secondary
@@ -166,7 +161,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 </button>
               )
             )}
-          </div>
         </div>
       )}
       {config.sellMode && (

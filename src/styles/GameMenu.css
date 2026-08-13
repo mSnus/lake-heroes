@@ -17,11 +17,8 @@
   gap: 12px;
 }
 
-/* Tile-encounter screen: the two big decorated pay/fight buttons are 300px
-   each and overflow a phone side by side, so stack them vertically. */
-.game-menu>div.game-menu-stack {
-  flex-direction: column;
-  gap: 4px;
+.game-menu button.decorated {
+  scale: 0.7;
 }
 
 .game-menu-button {

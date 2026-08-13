@@ -55,10 +55,14 @@
 
 .player-artifact-badge {
   white-space: nowrap;
+  padding: 8px;
+  font-weight: bold;
+  color: #0d0a00;
 }
 
 .player-stats-contracts {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
@@ -66,8 +70,18 @@
   color: #5b4636;
 }
 
+.player-stats-contracts .icon {
+  font-size: 1rem;
+}
+
+
 .player-contract-badge {
   white-space: nowrap;
+  border: dotted 1px #c8b9a1;
+  padding: 7px;
+  background-color: #faf4eb;
+  font-weight: bold;
+  border-radius: 4px;
 }
 
 .player-stats-gold {

@@ -66,7 +66,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                   }
                   style={{ cursor: 'pointer' }}
                 >
-                  📜 {tile.name}
+                  <span className="icon">📜</span> {tile.name}
                 </span>
               );
             })}
@@ -80,7 +80,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                 onClick={() => say(t('currentPlayer.artifactTooltip', { name: artifact.name, description: artifact.description }), 'info')}
                 style={{ cursor: 'pointer' }}
               >
-                {artifact.emoji}
+                <span className="icon">{artifact.emoji}</span> {artifact.name}
               </span>
             );
           })}

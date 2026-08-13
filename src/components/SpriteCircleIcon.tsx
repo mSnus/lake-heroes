@@ -1,4 +1,5 @@
 import React from 'react';
+import { isMobileLayout } from './board/common';
 
 interface SpriteCircleIconProps {
   src: string;
@@ -9,7 +10,7 @@ interface SpriteCircleIconProps {
  * A sprite image cropped into a circle, used as the icon under a screen
  * title (encounter screens, tile claim, etc).
  */
-export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({ src, size = '30vw' }) => (
+export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({ src, size = isMobileLayout() ? '30vw' : '6rem' }) => (  
   <div
     style={{
       width: size,

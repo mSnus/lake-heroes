@@ -231,7 +231,7 @@ function App() {
                   message: savedScreen.message,
                   buttons: [
                     {
-                      label: 'Attack!',
+                      label: '⚔️ Attack!',
                       onClick: () =>
                         showScreen({
                           screenType: 'caravan-battle',
@@ -251,7 +251,7 @@ function App() {
                         }),
                     },
                     {
-                      label: 'Let it pass..',
+                      label: '🕊️ Let it pass',
                       onClick: () => {
                         clearScreen();
                         gameEvent('showDice', null);
@@ -382,7 +382,9 @@ function App() {
                 break;
               case 'rogue-attack': {
                 const tile = restored.tiles[savedScreen.tileIndex ?? -1];
-                const defender = tile ? restored.players.find((p) => p.id === tile.owner) : undefined;
+                const defender = tile
+                  ? restored.players.find((p) => p.id === tile.owner)
+                  : undefined;
                 if (tile && defender) {
                   const horde = new Player({
                     name: t('rogueAttack.horde'),
@@ -468,7 +470,7 @@ function App() {
                   fade: true,
                   buttons: [
                     {
-                      label: 'Let the treasures grow!',
+                      label: '🪎 My precious!',
                       action: 'end-turn',
                       onClick: () => {
                         clearScreen();
@@ -631,7 +633,9 @@ function App() {
                 <br />
                 Congratulations! Time for a new challenge!
               </div>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div
+                style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}
+              >
                 <DecoratedButton
                   onClick={() => showScreen({ content: <StatsScreen gameState={gameState} /> })}
                 >

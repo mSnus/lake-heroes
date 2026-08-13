@@ -7,9 +7,7 @@
   max-width: 480px;
   padding: 16px;
   z-index: 6000;
-  /* .screen-common (the fixed full-screen wrapper) has padding-top: 12rem;
-     this negative margin cancels that back down so the names row sits
-     ~1rem from the top edge instead. */
+  /* cancel .screen-common padding */
   margin-top: -12rem;
 }
 

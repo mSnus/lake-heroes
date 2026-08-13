@@ -134,11 +134,11 @@
 }
 
 .tile-left .tile-content {
-  margin-left: -40px;
+  margin-left: -2rem;
 }
 
 .tile-right .tile-content {
-  margin-left: 40px;
+  margin-left: 2rem;
 }
 
 .tile-left .tile-title,
@@ -152,12 +152,10 @@
 
 .tile-left .tile-title {
   right: 100%;
-  margin-right: 8px;
 }
 
 .tile-right .tile-title {
   left: 100%;
-  margin-left: 8px;
 }
 
 .tile-sprite {
@@ -230,7 +228,7 @@
   justify-content: center;
   border-radius: 4px;
   padding: 6px 6px;
-  background-color: #00000055;
+  text-shadow: 1px 1px 0px #00000080;
   font-size: calc(var(--body-font-size) * 0.8);
   height: 20px;
   z-index: 100;

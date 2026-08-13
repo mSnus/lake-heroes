@@ -227,7 +227,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                         color: grp?.color || '#FFF',
                       }}
                     >
-                      {textPart1} {isMobileLayout() ? '' : textPart2}
+                      {textPart1}
                     </div>
                   )}
                   {(tile.spriteImage || isFogged) && (

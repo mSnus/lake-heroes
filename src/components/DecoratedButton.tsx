@@ -21,7 +21,7 @@ export const DecoratedButton: React.FC<DecoratedButtonProps> = ({
     className={['decorated', className].filter(Boolean).join(' ')}
     style={{ backgroundImage: `url(${image})`, ...style }}
   >
-    {children}
+    <div className="decorated-button-content">{children}</div>
   </button>
 );
 

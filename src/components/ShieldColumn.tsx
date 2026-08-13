@@ -73,7 +73,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   return (
     <>
       <div style={{ ...colStyle, top: 8 }}>
-        <div style={{ display: 'flex', flexDirection: 'row-reverse', gap: 8, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: 8, justifyContent: 'flex-end' }}>
           <div className="shield-button-container" title={t('shieldColumn.menu')}>
             <button onClick={() => setMenuOpen((o) => !o)} className="shield-button">
               🐲
@@ -81,7 +81,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
           </div>
         </div>
         {menuOpen && (
-          <div style={{ display: 'flex', flexDirection: 'row-reverse', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
             {/* Right column: primary actions, under the 🐲 toggle */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div className="shield-button-container" title={t('shieldColumn.newGame')}>
@@ -91,14 +91,23 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               </div>
               <div className="shield-button-container" title={t('shieldColumn.help')}>
                 <button
-                  onClick={() => { setMenuOpen(false); showScreen({ content: <HelpScreen /> }); }}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <HelpScreen /> });
+                  }}
                   className="shield-button"
                 >
                   ?
                 </button>
               </div>
               <div className="shield-button-container" title={t('shieldColumn.gameLog')}>
-                <button onClick={() => { setMenuOpen(false); onOpenLog(); }} className="shield-button">
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onOpenLog();
+                  }}
+                  className="shield-button"
+                >
                   📜
                 </button>
               </div>
@@ -115,9 +124,10 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 <button
                   onClick={() => {
                     setMenuOpen(false);
-                    navigator.serviceWorker?.getRegistrations().then((regs) =>
-                      Promise.all(regs.map((r) => r.update()))
-                    ).finally(() => window.location.reload());
+                    navigator.serviceWorker
+                      ?.getRegistrations()
+                      .then((regs) => Promise.all(regs.map((r) => r.update())))
+                      .finally(() => window.location.reload());
                   }}
                   className="shield-button"
                 >
@@ -128,7 +138,11 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 <button
                   onClick={() => {
                     setMenuOpen(false);
-                    showScreen({ content: <CheatScreen gameState={gameState} updateGameState={updateGameState} /> });
+                    showScreen({
+                      content: (
+                        <CheatScreen gameState={gameState} updateGameState={updateGameState} />
+                      ),
+                    });
                   }}
                   className="shield-button"
                 >
@@ -139,7 +153,11 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 <button
                   onClick={() => {
                     setMenuOpen(false);
-                    showScreen({ content: <OverridesScreen gameState={gameState} updateGameState={updateGameState} /> });
+                    showScreen({
+                      content: (
+                        <OverridesScreen gameState={gameState} updateGameState={updateGameState} />
+                      ),
+                    });
                   }}
                   className="shield-button"
                 >
@@ -199,14 +217,20 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         (diceActive || canEndTurn) && (
           <div style={{ ...colStyle, bottom: '60px' }}>
             {diceActive && (
-              <div className="shield-button-container main-button" title={t('shieldColumn.rollDice')}>
+              <div
+                className="shield-button-container main-button"
+                title={t('shieldColumn.rollDice')}
+              >
                 <button onClick={startDiceRoll} className="shield-button">
                   🎲
                 </button>
               </div>
             )}
             {canEndTurn && (
-              <div className="shield-button-container main-button" title={t('shieldColumn.endTurn')}>
+              <div
+                className="shield-button-container main-button"
+                title={t('shieldColumn.endTurn')}
+              >
                 <button onClick={handleEndTurn} className="shield-button">
                   ⏳
                 </button>

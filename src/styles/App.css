@@ -142,7 +142,7 @@ body {
   }
 
   .screen-common {
-    position: absolute;
+    position: absolute !important;
   }
 
   .board-section {
