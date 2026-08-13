@@ -121,14 +121,27 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     forceRerender((v) => v + 1);
   };
 
-  const priceTag = (level: number) => (
-    <span
-      className={'upgrade-price-badge' + (canUpgradeToLevel(level) ? ' clickable' : '')}
-      onClick={() => handleUpgradeToLevel(level)}
-    >
-      👛 {tile.prices[level]?.gold ?? 0}🟡
-    </span>
-  );
+  const priceTag = (level: number) => {
+    const gold = tile.prices[level]?.gold ?? 0;
+    const clickable = canUpgradeToLevel(level);
+    // The upgrade-target level the player can't afford gets the same "can't
+    // pay" treatment as TileCard's upgrade table: ❌ instead of 👛, a 🔻
+    // prefix, and bold red price text (see TileCard.priceCell).
+    const isUpgradeTarget = !tile.isYielded && level === nextLevel && currentLevel < maxLevel;
+    const lacksGold = isUpgradeTarget && (player.gold ?? 0) < gold;
+    return (
+      <span
+        className={'upgrade-price-badge' + (clickable ? ' clickable' : '')}
+        onClick={clickable ? () => handleUpgradeToLevel(level) : undefined}
+      >
+        {lacksGold ? '❌' : '👛'}{' '}
+        <span style={lacksGold ? { color: '#ff4444', fontWeight: 'bold' } : undefined}>
+          {lacksGold && '🔻'}
+          {gold}🟡
+        </span>
+      </span>
+    );
+  };
 
   const sellPrice = tile.isYielded
     ? { gold: Math.floor(tile.currentPrice.gold * 0.4), units: Math.floor(tile.currentPrice.units * 0.4) }
@@ -266,12 +279,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                           onClick={() => applyGarrison(garrisonAmount - 1)}
                         >
                           −
-                        </button>
-                        <button
-                          className="game-menu-button silver"
-                          onClick={() => applyGarrison(Math.min(maxGarrison, Math.floor(totalMilitiaPool / 2)))}
-                        >
-                          {Math.min(maxGarrison, Math.floor(totalMilitiaPool / 2))}🧍
                         </button>
                         <button
                           className="game-menu-button silver"
