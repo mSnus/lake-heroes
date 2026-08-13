@@ -98,11 +98,12 @@ button.decorated {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80px;
+  height: auto;
+  aspect-ratio: 5 / 2;
 }
 
 .decorated-button-content {
-  margin-top: -0.25rem;
+  margin-top: -1.3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;

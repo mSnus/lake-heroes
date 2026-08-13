@@ -658,17 +658,19 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
+          <ShieldColumn
+            gameState={gameState}
+            updateGameState={updateGameState}
+            onOpenLog={handleOpenLog}
+          />
+
+          <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
+          
           <div className="board-section">
             {!screen && <GameMessage message={gameState.gameMessage} />}
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <CurrentPlayerCard gameState={gameState} />
-            <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
-            <ShieldColumn
-              gameState={gameState}
-              updateGameState={updateGameState}
-              onOpenLog={handleOpenLog}
-            />
           </div>
 
           <div className="side-pane">

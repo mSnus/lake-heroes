@@ -102,7 +102,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                     <br />
                     {t('screenRenderer.riskOrPay')}
                     <br />
-                    <span style={{ fontSize: '1rem', opacity: 0.85 }}>
+                    <span style={{ fontSize: '1rem', lineHeight: '1', color: 'wheat' ,opacity: 0.85 }}>
                       {t('screenRenderer.razedSmokeCaveat')}
                     </span>
                   </>
