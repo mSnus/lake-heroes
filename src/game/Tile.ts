@@ -1,4 +1,10 @@
-import { FEE_MULTIPLIER, BRAWL_THRESHOLD } from './constants';
+import {
+  FEE_MULTIPLIER,
+  BRAWL_THRESHOLD,
+  TILE_BASE_PRICE,
+  TILE_BASE_UPGRADE,
+  TILE_BASE_INCOME,
+} from './constants';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity } from './army';
 import { t, tOptional } from '../i18n';
@@ -79,8 +85,28 @@ export class Tile implements TileJSON {
     this.group = data.group || '';
     this.isOwnable = !!data.isOwnable;
     this.bonusType = data.bonusType || 'gold';
-    this.prices = Object.assign({}, data.prices || {});
-    this.bonuses = Object.assign({}, data.bonuses || {});
+    // Prices and income are authored in tiles.json as coefficients of the
+    // TILE_BASE_* constants, so the whole economy can be rescaled from one
+    // place. The real gold numbers are materialised here, once, at
+    // construction: level-1 gold is the purchase price (× TILE_BASE_PRICE),
+    // higher levels are upgrade costs (× TILE_BASE_UPGRADE), and `units` are
+    // raw headcounts, never scaled. Each level is deep-copied so we never
+    // mutate the shared template objects behind data.prices.
+    this.prices = {};
+    for (const key of Object.keys(data.prices || {})) {
+      const lvl = Number(key);
+      const p = data.prices![lvl];
+      const goldBase = lvl <= 1 ? TILE_BASE_PRICE : TILE_BASE_UPGRADE;
+      this.prices[lvl] = { gold: (p?.gold || 0) * goldBase, units: p?.units || 0 };
+    }
+    // Income (bonuses): gold-type tiles pay out gold (× TILE_BASE_INCOME);
+    // unit-type tiles (Camps/Towers) pay out a raw unit headcount, unscaled.
+    const incomeBase = this.bonusType === 'gold' ? TILE_BASE_INCOME : 1;
+    this.bonuses = {};
+    for (const key of Object.keys(data.bonuses || {})) {
+      const lvl = Number(key);
+      this.bonuses[lvl] = (data.bonuses![lvl] || 0) * incomeBase;
+    }
     this.defences = Object.assign({}, data.defences || {});
     this.owner = data.owner ?? null;
     this._level = typeof data.level === 'number' ? data.level : 1;

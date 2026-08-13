@@ -8,6 +8,16 @@ export const TILE_COUNT = 25;
 export const MAX_PLAYERS = 6;
 export const REVEAL_GOLD_PER_CIRCLE = 100; // discovery bonus scales with the player's laps around the board
 
+// ── Tile economy scale ──
+// tiles.json authors prices and income as small coefficients of these bases,
+// materialised into real gold in the Tile constructor. Change one number here
+// to rescale the whole economy. TILE_BASE_PRICE scales a tile's purchase price
+// (level-1 gold), TILE_BASE_UPGRADE its upgrade costs (level-2/3 gold), and
+// TILE_BASE_INCOME its yearly/visit gold income (bonuses on gold-type tiles).
+export const TILE_BASE_PRICE = 200;
+export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 1;
+export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
+
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
