@@ -1,8 +1,13 @@
-/* Octagon-tessellation battlefield: a 16x20 grid of outlined (not filled)
-   octagon cells. Even rows are pushed half a cell to the right, turning
-   this into a real offset/hex-like grid -- game/battleGrid/engine.ts's
-   adjacency, distance, and pathfinding all match this same offset (see its
-   toAxial/hexDistance/neighborOffsetsFor), not a plain square grid. */
+/* Pointy-top hex battlefield: outlined (not filled) hexagons on an even-r
+   offset grid -- even rows pushed half a cell to the right. This matches
+   game/battleGrid/engine.ts's adjacency/distance/pathfinding exactly (see
+   its toAxial/hexDistance/neighborOffsetsFor). --bfg-cell is the horizontal
+   cell pitch (hex flat-to-flat width); the hex box is taller than that and
+   rows overlap vertically so the hexes tessellate:
+     hex box height  = --bfg-cell * 2/sqrt(3)  (--bfg-cell-h)
+     row vertical step = 3/4 of that = --bfg-cell * sqrt(3)/2  (--bfg-row)
+   Keep these two factors in sync with BattlefieldGrid.tsx's HEX_H_FACTOR /
+   HEX_ROW_FACTOR, which the drag hit-testing uses. */
 
 .bfg-battlefield {
   container-type: inline-size;
@@ -10,6 +15,8 @@
   position: relative;
   width: 100%;
   --bfg-cell: 6.2vmin;
+  --bfg-cell-h: calc(var(--bfg-cell) * 1.1547);
+  --bfg-row: calc(var(--bfg-cell) * 0.8660);
   /* Room for even rows' cells/units to shift right without clipping. */
   padding-right: calc(var(--bfg-cell) / 2);
   /* .bfg-grid is only as wide as its column count needs, not the full
@@ -52,11 +59,14 @@
 
 .bfg-cell {
   width: var(--bfg-cell);
-  height: var(--bfg-cell);
+  /* Taller than the row pitch (--bfg-row), so consecutive rows overlap and the
+     hexes tessellate. */
+  height: var(--bfg-cell-h);
   background: transparent;
   border: 1px solid transparent;
   box-sizing: border-box;
-  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  /* Pointy-top hexagon. */
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
 /* Even rows sit half a cell to the right of odd rows -- a shift, not a
@@ -68,7 +78,7 @@
 /* TEMPORARY: visible grid outline, meant to be removed later -- one class
    to drop (or the `showGridLines` prop it's driven by) once it's no longer
    needed for playtesting. The border is clipped along with the rest of the
-   element, so it traces the octagon's silhouette rather than a plain box. */
+   element, so it traces the hexagon's silhouette rather than a plain box. */
 .bfg-grid-visible .bfg-cell {
   border-color: #ffffff2a;
 }
@@ -82,7 +92,7 @@
 .bfg-unit {
   position: absolute;
   width: var(--bfg-cell);
-  height: var(--bfg-cell);
+  height: var(--bfg-cell-h);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -147,7 +157,7 @@
 .bfg-twin {
   position: absolute;
   width: var(--bfg-cell);
-  height: var(--bfg-cell);
+  height: var(--bfg-cell-h);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -194,7 +204,7 @@
 .bfg-attack-mark {
   position: absolute;
   width: var(--bfg-cell);
-  height: var(--bfg-cell);
+  height: var(--bfg-cell-h);
   display: flex;
   align-items: center;
   justify-content: center;

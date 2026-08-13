@@ -54,6 +54,12 @@ interface Placement {
 
 const colShiftFor = (row: number) => (row % 2 === 0 ? 0.5 : 0);
 
+// Pointy-top hex geometry, kept in sync with BattlefieldGrid.css's
+// --bfg-cell-h / --bfg-row: the hex box is taller than the horizontal pitch,
+// and rows step down by 3/4 of that height so hexes tessellate.
+const HEX_H_FACTOR = 1.1547; // hex box height / --bfg-cell (2/√3)
+const HEX_ROW_FACTOR = 0.866; // row vertical pitch / --bfg-cell (√3/2)
+
 export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   battle,
   lastEvents,
@@ -109,7 +115,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const el = arenaRef.current;
     if (!el) return null;
     const rect = el.getBoundingClientRect();
-    return { rect, cell: rect.width / cols };
+    const cell = rect.width / cols; // horizontal pitch (= --bfg-cell)
+    return { rect, cell, rowStep: cell * HEX_ROW_FACTOR, cellH: cell * HEX_H_FACTOR };
   };
 
   // The unit's final cell this turn — its placement if set, else where it
@@ -129,7 +136,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): Placement | null => {
     const cr = cellAndRect();
     if (!cr) return null;
-    const { rect, cell } = cr;
+    const { rect, cell, rowStep, cellH } = cr;
     const px = clientX - rect.left;
     const py = clientY - rect.top;
     const origin = { col: unit.col, row: unit.row };
@@ -162,7 +169,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     for (const c of candidates) {
       const tc = reachCell(c);
       const cx = (tc.col + colShiftFor(tc.row) + 0.5) * cell;
-      const cy = (tc.row + 0.5) * cell;
+      const cy = tc.row * rowStep + cellH / 2;
       const d = (cx - px) ** 2 + (cy - py) ** 2;
       if (d < bestD) {
         bestD = d;
@@ -243,7 +250,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   const cellStyle = (col: number, row: number): React.CSSProperties => ({
     left: `calc((${col} + ${colShiftFor(row)}) * var(--bfg-cell))`,
-    top: `calc(${row} * var(--bfg-cell))`,
+    top: `calc(${row} * var(--bfg-row))`,
   });
 
   const enemiesById = new Map(enemies.map((e) => [e.id, e]));
@@ -254,7 +261,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       <div className="bfg-arena" ref={arenaRef}>
         <div
           className="bfg-grid"
-          style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-cell))` }}
+          style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-row))` }}
         >
           {Array.from({ length: cols * rows }, (_, i) => {
             const row = Math.floor(i / cols);
@@ -307,9 +314,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
               let cls = 'bfg-twin bfg-unit-' + u.side;
               if (isDragging) {
                 const cr = cellAndRect();
-                const cellPx = cr?.cell ?? 0;
-                const left = drag!.x - (cr?.rect.left ?? 0) - cellPx / 2;
-                const top = drag!.y - (cr?.rect.top ?? 0) - cellPx / 2;
+                const left = drag!.x - (cr?.rect.left ?? 0) - (cr?.cell ?? 0) / 2;
+                const top = drag!.y - (cr?.rect.top ?? 0) - (cr?.cellH ?? 0) / 2;
                 style = { left: `${left}px`, top: `${top}px` };
                 cls += ' bfg-twin-dragging';
               } else if (pl?.attackTargetId) {
