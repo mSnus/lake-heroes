@@ -764,7 +764,7 @@
     "bringingChains": "bringing {prize}🧍 in chains",
     "ofGoodsWorth": "of goods worth {prize}🟡",
     "message": "{playerSpan} <br />{gold}🟡 {army}<br /> encounters a caravan<br /> guarded by {defendingUnits}🥷\n    <br /> {caravanDesc}<br /> Would you attack?",
-    "letThemPass": "✖ Let 'em pass..",
+    "letThemPass": "✖️ Let 'em pass..",
     "attack": "⚔️ Attack!"
   },
   "gameStart": {
