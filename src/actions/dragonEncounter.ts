@@ -19,43 +19,50 @@ const CIRCLE_THRESHOLD = 3;
 export function checkDragonEncounter(
   board: GameState,
   updateGameState: (board: GameState) => void,
-  onContinue: () => void
+  onContinue: () => void,
+  // Cheat: force a dragon *attack* — skip the odds/eligibility gates and both
+  // "soars overhead" outcomes, going straight to the attack branch below.
+  force = false
 ): boolean {
   const player = board.activePlayer;
 
   const ATTACK_CHANCE = player.fame > FAME_THRESHOLD_ATTACK ? 1 / 2 : 1 / 3;
 
-  if ((player.circles ?? 0) <= 2) {
-    return false;
-  }
+  if (!force) {
+    if ((player.circles ?? 0) <= 2) {
+      return false;
+    }
 
-  if (player.dragonEncounteredLastTurn) {
-    player.dragonEncounteredLastTurn = false;
-    return false;
-  }
+    if (player.dragonEncounteredLastTurn) {
+      player.dragonEncounteredLastTurn = false;
+      return false;
+    }
 
-  if ((player.dragonEncounters ?? 0) >= MAX_ENCOUNTERS_PER_CIRCLE) {
-    return false;
-  }
+    if ((player.dragonEncounters ?? 0) >= MAX_ENCOUNTERS_PER_CIRCLE) {
+      return false;
+    }
 
-  if (Math.random() >= ENCOUNTER_CHANCE) {
-    return false;
+    if (Math.random() >= ENCOUNTER_CHANCE) {
+      return false;
+    }
   }
 
   // Encounter!
   player.dragonEncounters = (player.dragonEncounters ?? 0) + 1;
   player.dragonEncounteredLastTurn = true;
 
-  if (player.fame < FAME_THRESHOLD_ENCOUNTER || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
-    updateGameState(board);
-    dragonSkyWithSay(board, onContinue);
-    return true;
-  }
+  if (!force) {
+    if (player.fame < FAME_THRESHOLD_ENCOUNTER || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
+      updateGameState(board);
+      dragonSkyWithSay(board, onContinue);
+      return true;
+    }
 
-  if (Math.random() >= ATTACK_CHANCE) {
-    updateGameState(board);
-    dragonSkyWithSay(board, onContinue);
-    return true;
+    if (Math.random() >= ATTACK_CHANCE) {
+      updateGameState(board);
+      dragonSkyWithSay(board, onContinue);
+      return true;
+    }
   }
 
   // Dragon attacks!

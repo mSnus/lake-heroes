@@ -152,6 +152,22 @@ export async function rollAndMove(
   // Phase resets to before-move so encounter screens don't show rolling UI.
   gameEvent('setPhase', 'before-move');
   const continueFn = () => { proceedWithMove().catch(console.error); };
+
+  // Cheat: a forced encounter fires this once, bypassing the usual odds, then
+  // clears the flag. If it can't actually trigger (e.g. a rogue attack with no
+  // owned tile to raid) we fall through to the normal random checks below.
+  const forced = board.forcedEncounter;
+  board.forcedEncounter = undefined;
+  if (forced === 'dragon') {
+    if (checkDragonEncounter(board, updateGameState, continueFn, true)) return;
+  } else if (forced === 'caravan-gold') {
+    if (checkCaravanEncounter(board, updateGameState, continueFn, 'gold')) return;
+  } else if (forced === 'caravan-slaves') {
+    if (checkCaravanEncounter(board, updateGameState, continueFn, 'slaves')) return;
+  } else if (forced === 'rogue') {
+    if (checkRogueAttackEncounter(board, updateGameState, continueFn, true)) return;
+  }
+
   if (checkDragonEncounter(board, updateGameState, continueFn)) return;
   if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
   if (checkAmbushEncounter(board, updateGameState, continueFn)) return;

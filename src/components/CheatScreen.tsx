@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { GameState } from '../game/GameState';
+import { GameState, ForcedEncounter } from '../game/GameState';
 import { clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
+import { say } from '../utils/say';
 import { DecoratedButton } from './DecoratedButton';
 import { getOverrides } from '../utils/overridesStore';
 import { useT } from '../i18n';
@@ -59,6 +60,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   const [militia, setMilitia] = useState(player.militia);
   const [riders, setRiders] = useState(player.riders);
   const [fame, setFame] = useState(player.fame);
+  const [forcedEnc, setForcedEnc] = useState<ForcedEncounter>('caravan-gold');
 
   const handleMove = () => {
     const tile = gameState.tiles[moveIdx];
@@ -94,6 +96,12 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   const handleSetFame = () => {
     player.fame = Math.max(0, Math.min(FAME_CAP, Math.round(fame)));
     refresh();
+  };
+
+  const handleForceEncounter = () => {
+    gameState.forcedEncounter = forcedEnc;
+    refresh();
+    say(t('cheatScreen.forcedEncounterSet'), 'info');
   };
 
   return (
@@ -182,6 +190,19 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
           🏆
           <button className="game-menu-button" onClick={handleSetFame}>
             {t('cheatScreen.set')}
+          </button>
+        </div>
+
+        <div className="cheat-row">
+          <label>{t('cheatScreen.forceEncounter')}</label>
+          <select value={forcedEnc} onChange={(e) => setForcedEnc(e.target.value as ForcedEncounter)}>
+            <option value="caravan-gold">{t('cheatScreen.encCaravanGold')}</option>
+            <option value="caravan-slaves">{t('cheatScreen.encCaravanSlaves')}</option>
+            <option value="rogue">{t('cheatScreen.encRogue')}</option>
+            <option value="dragon">{t('cheatScreen.encDragon')}</option>
+          </select>
+          <button className="game-menu-button" onClick={handleForceEncounter}>
+            {t('cheatScreen.force')}
           </button>
         </div>
 

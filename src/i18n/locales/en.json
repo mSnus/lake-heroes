@@ -814,7 +814,14 @@
     "setMoney": "Set money",
     "setUnits": "Set units",
     "setFame": "Set fame",
-    "set": "Set"
+    "set": "Set",
+    "forceEncounter": "Force encounter",
+    "force": "Force",
+    "encCaravanGold": "Caravan / Money",
+    "encCaravanSlaves": "Caravan / Slaves",
+    "encRogue": "Rogue attack",
+    "encDragon": "Dragon attack",
+    "forcedEncounterSet": "Encounter forced — it will fire on the next roll."
   },
   "overridesScreen": {
     "title": "Overrides",

@@ -1,5 +1,8 @@
 export type TurnPhase = 'before-move' | 'rolling' | 'moving' | 'after-move';
 
+/** Cheat-forced random encounter (see GameState.forcedEncounter). */
+export type ForcedEncounter = 'dragon' | 'caravan-gold' | 'caravan-slaves' | 'rogue';
+
 import { Player } from './Player';
 import { Tile } from './Tile';
 import { KingsContract } from './kingsContracts';
@@ -25,6 +28,9 @@ export class GameState {
   // Per-player-per-turn history for the Statistics screen.
   turnStats: PlayerTurnStat[] = [];
   statEvents: PlayerStatEvent[] = [];
+  // Cheat (👻 screen): forces the named random encounter to fire on the next
+  // roll, bypassing its usual odds/eligibility, then clears itself.
+  forcedEncounter?: ForcedEncounter;
 
   constructor(tiles: Tile[], players: Player[]) {
     this.tiles = tiles;

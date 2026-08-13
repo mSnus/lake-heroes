@@ -21,19 +21,25 @@ const ENCOUNTER_CHANCE = 1 / 14;
 export function checkRogueAttackEncounter(
   board: GameState,
   updateGameState: (board: GameState) => void,
-  onContinue: () => void
+  onContinue: () => void,
+  // Cheat: force a rogue attack — skip the odds/eligibility gates. A target
+  // tile is still structurally required, so this no-ops (falls through) when
+  // the player owns no raidable tile.
+  force = false
 ): boolean {
   const player = board.activePlayer;
 
-  // No rogue attacks during the first lap around the board.
-  if ((player.circles ?? 0) < 1) return false;
+  if (!force) {
+    // No rogue attacks during the first lap around the board.
+    if ((player.circles ?? 0) < 1) return false;
 
-  if (player.fame < 3) return false;
-  if (player.armyPower < 5) return false;
+    if (player.fame < 3) return false;
+    if (player.armyPower < 5) return false;
+  }
   // Yielded tiles are under the King's protection -- not a valid target.
   const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
   if (eligibleTiles.length < 1) return false;
-  if (Math.random() >= ENCOUNTER_CHANCE) return false;
+  if (!force && Math.random() >= ENCOUNTER_CHANCE) return false;
 
   const tileIdx = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];
   const tile = board.tiles[tileIdx];
