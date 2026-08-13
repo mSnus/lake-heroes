@@ -93,7 +93,7 @@ body {
 
 .game-message {
   position: absolute;
-  top: calc(100vw - 48px);
+  top: calc(100vw * 5 / 4 - 48px);
   text-align: center;
   background: linear-gradient(90deg, #3f591e, #6b8e23);
   width: 100vw;
@@ -111,9 +111,10 @@ body {
   color: #fdf599;
   font-size: 15px;
   line-height: 1;
-  padding: 2px 9px 18px;
+  padding: 2px 54px 2px 9px;
   font-weight: 500;
-  padding-right: 54px;
+  display: flex;
+  align-items: center;
 }
 
 .board-section {
