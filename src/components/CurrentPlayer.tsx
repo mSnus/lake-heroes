@@ -49,7 +49,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         </span>
       </div>
 
-      {gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) && (
+      {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
+        activePlayer.artifacts.length > 0) && (
         <div className="player-stats-contracts">
           {gameState.kingsContracts
             .filter((c) => c.playerId === activePlayer.id)
@@ -69,6 +70,20 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                 </span>
               );
             })}
+          {activePlayer.artifacts.map((id) => {
+            const artifact = getArtifact(id);
+            if (!artifact) return null;
+            return (
+              <span
+                key={`artifact-${id}`}
+                className="player-artifact-badge"
+                onClick={() => say(t('currentPlayer.artifactTooltip', { name: artifact.name, description: artifact.description }), 'info')}
+                style={{ cursor: 'pointer' }}
+              >
+                {artifact.emoji}
+              </span>
+            );
+          })}
         </div>
       )}
 
@@ -126,9 +141,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
           </div>
         </div>
 
-        {/* army, broken down slot by slot */}
+        {/* army, broken down slot by slot — spans the whole row */}
         <div
-          className="player-stats-data"
+          className="player-stats-data player-stats-army-cell"
           id="statsArmy"
           onClick={() =>
             say(
@@ -154,34 +169,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             className="player-stats-army-slots"
           />
         </div>
-
-        {/* player's artifacts — the whole cell is skipped when there are none */}
-        {activePlayer.artifacts.length > 0 && (
-          <div className="player-stats-data" id="statsArtifacts">
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              💎
-            </div>
-            <div className="player-stats-artifacts">
-              {activePlayer.artifacts.map((id) => {
-                const artifact = getArtifact(id);
-                if (!artifact) return null;
-                return (
-                  <span
-                    key={id}
-                    className="player-artifact-badge"
-                    onClick={() => say(t('currentPlayer.artifactTooltip', { name: artifact.name, description: artifact.description }), 'info')}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {artifact.emoji}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

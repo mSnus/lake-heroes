@@ -84,6 +84,11 @@
   gap: 4px;
 }
 
+/* Army spans every column of the stats grid (2 cols on mobile, 4 on desktop). */
+.player-stats-army-cell {
+  grid-column: 1 / -1;
+}
+
 .player-stats-hint {
   background: #dedede;
   padding: 5px;
