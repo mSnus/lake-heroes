@@ -11,7 +11,6 @@ import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { gameEvent } from '../utils/events';
 import { formatArmy } from '../utils/formatArmy';
 import { useT } from '../i18n';
-import { tJsx } from '../i18n/tJsx';
 
 interface ScreenRendererProps {
   gameState: GameState;
@@ -95,10 +94,11 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   <>
                     <br />
                     <br />
-                    {tJsx('screenRenderer.riskOrPay', {
-                      defence: config.encounter.tile.defence,
-                      fee: config.encounter.fee ?? config.encounter.tile.fee,
-                    })}
+                    {t('screenRenderer.riskOrPay')}
+                    <br />
+                    <span style={{ fontSize: '1rem', opacity: 0.85 }}>
+                      {t('screenRenderer.razedSmokeCaveat')}
+                    </span>
                   </>
                 )}
               </>
@@ -132,7 +132,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         <div className="game-menu" style={{ top: '80vh' }}>
           <div>
             {buttons.map((btn, i) =>
-              buttons.length === 1 ? (
+              buttons.length === 1 || isGuardsFee ? (
                 <DecoratedButton
                   key={i}
                   disabled={btn.disabled}

@@ -225,7 +225,8 @@
   "screenRenderer": {
     "encounters": "encounters",
     "belongsTo": "that belongs to",
-    "riskOrPay": "Risk {defence}🧍 to raze it or pay {fee}🟡 and go?"
+    "riskOrPay": "Fight 🔥 to raze it or pay and go 🕊️ ?",
+    "razedSmokeCaveat": "Razed tiles belong to no one until the smoke is gone"
   },
   "newGameModal": {
     "heroes": "Heroes:",
@@ -482,8 +483,8 @@
   "afterMoveLogic": {
     "ownerInPrison": "{ownerName} is in prison, so others just send him the flowers 🌹 while visiting his property",
     "defencelessItsMine": "Defenceless? it's mine",
-    "payFee": "Pay fee {fee}🟡",
-    "battle": "Battle ⚔️ ({defence}🧍)",
+    "payFee": "🕊️ Pay {fee}🟡",
+    "battle": "🔥 Fight to raze",
     "acceptLoss": "Accept loss 😢",
     "sellHeader": "Sell tiles to pay the {fee}🟡 fee, raise an army, or temporary yield to King for half a price",
     "sellTiles": "Sell tiles 💰",
