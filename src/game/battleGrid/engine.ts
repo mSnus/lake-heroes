@@ -625,7 +625,7 @@ export function planBrawlSide(
       // safe cell to step into, pulls back instead of fighting (capped 2 in a
       // row via retreatStreak, so it can't kite forever).
       if (
-        u.hp < u.maxHp &&
+        u.hp <= u.maxHp / 2 &&
         u.safetyMoves < SAFETY_MOVE_CAP &&
         livingAdjacentFriends(u, living).length >= 1
       ) {
@@ -763,7 +763,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   const seekingSafety = new Set<string>();
   for (const u of living) {
     if (retreating.has(u.id)) continue;
-    if (u.hp >= u.maxHp) continue; // not wounded
+    if (u.hp > u.maxHp / 2) continue; // only pull back when at half HP or less
     if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
     if (livingAdjacentFriends(u, living).length < 1) continue; // no friend beside it
     if (u.safetyMoves >= SAFETY_MOVE_CAP) continue; // used up its pullbacks

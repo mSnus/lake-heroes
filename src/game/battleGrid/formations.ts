@@ -669,7 +669,11 @@ export function placeFormation(
       // automatic shift, so nudging the attacker's odd-row cells one
       // column over restores the same visual spacing the defender already
       // has for free.
-      const hexCompensation = side === 'attacker' && row % 2 !== 0 ? 1 : 0;
+      // The compact (brawl) shapes are authored for the offset grid already —
+      // the attacker-odd-row nudge (a fix for the wider full-battle shapes)
+      // just collapses them, so skip it there.
+      const hexCompensation =
+        formation.kind !== 'compact' && side === 'attacker' && row % 2 !== 0 ? 1 : 0;
       unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col + hexCompensation));
       unit.row = Math.max(0, Math.min(rows - 1, row));
     });
