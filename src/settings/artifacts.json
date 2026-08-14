@@ -26,5 +26,9 @@
   {
     "id": "medal-of-honor",
     "emoji": "🎖️"
+  },
+  {
+    "id": "medal-of-distinction",
+    "emoji": "🏅"
   }
 ]

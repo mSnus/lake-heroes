@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { showPrisonScreen } from '../utils/screenStore';
-import { hasArtifact, getArtifact } from '../game/artifacts';
+import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { t } from '../i18n';
 
 export function handlePrison(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -15,9 +15,9 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
   // text from the same turn (e.g. an ambush resolved during this move), which
   // would otherwise show up glued below the standard prison flavor text.
   let message = '';
-  if (hasArtifact(player, 'medal-of-honor')) {
-    const artifact = getArtifact('medal-of-honor');
-    message = t('prison.savedByArtifact', { playerName: player.name, artifactName: artifact!.name, emoji: artifact!.emoji });
+  const artifact = getPrisonProtectionArtifact(player);
+  if (artifact) {
+    message = t('prison.savedByArtifact', { playerName: player.name, artifactName: artifact.name, emoji: artifact.emoji });
     board.gameMessage = message;
   } else {
     player.turnsToSkip = 1;

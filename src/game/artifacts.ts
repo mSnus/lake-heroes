@@ -45,18 +45,26 @@ export function hasArtifact(player: Player, id: string): boolean {
   return player.artifacts.includes(id);
 }
 
-/** Broken Blade and Dwemer Axe both grant a battle roll bonus and are
- * balanced against owning just one — a player who already has either one
- * must never also receive the other (see pickRandomUnownedArtifact). */
-const EXCLUSIVE_PAIR = ['broken-blade', 'dwemer-axe'];
+/** Artifacts balanced against owning just one of their group — a player who
+ * already has one must never also receive another from the same group (see
+ * pickRandomUnownedArtifact). Broken Blade/Dwemer Axe both grant a battle
+ * roll bonus; Medal of Honor/Medal of Distinction both grant Fame and
+ * Prison immunity. */
+const EXCLUSIVE_GROUPS: string[][] = [
+  ['broken-blade', 'dwemer-axe'],
+  ['medal-of-honor', 'medal-of-distinction'],
+];
 
 /** Picks a random artifact no player currently owns and that `receiver`
  * is actually eligible for, or null if none remain. */
 export function pickRandomUnownedArtifact(board: GameState, receiver: Player): Artifact | null {
   const ownedIds = new Set(board.players.flatMap((p) => p.artifacts));
   let available = RAW_ARTIFACTS.filter((a) => !ownedIds.has(a.id));
-  const ownsExclusive = EXCLUSIVE_PAIR.some((id) => hasArtifact(receiver, id));
-  if (ownsExclusive) available = available.filter((a) => !EXCLUSIVE_PAIR.includes(a.id));
+  for (const group of EXCLUSIVE_GROUPS) {
+    if (group.some((id) => hasArtifact(receiver, id))) {
+      available = available.filter((a) => !group.includes(a.id));
+    }
+  }
   if (available.length === 0) return null;
   return translate(available[Math.floor(Math.random() * available.length)]);
 }
@@ -116,6 +124,15 @@ export function getArtifactGoldBonus(player: Player): number {
 /** Pipe of Hamelin: halves fees owed to other players' tiles. */
 export function getFeeMultiplier(player: Player): number {
   return hasArtifact(player, 'pipe-of-hamelin') ? 0.5 : 1;
+}
+
+/** Medal of Honor and Medal of Distinction both keep their owner out of
+ * Prison — mutually exclusive with each other (see EXCLUSIVE_GROUPS), so a
+ * player can only ever have one. */
+export function getPrisonProtectionArtifact(player: Player): Artifact | undefined {
+  if (hasArtifact(player, 'medal-of-honor')) return getArtifact('medal-of-honor');
+  if (hasArtifact(player, 'medal-of-distinction')) return getArtifact('medal-of-distinction');
+  return undefined;
 }
 
 export type ProtectableEvent = 'dragon-attack' | 'meteor' | 'earthquake' | 'plague' | 'hurricane';

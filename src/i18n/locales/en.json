@@ -120,6 +120,10 @@
     "medal-of-honor": {
       "name": "Medal of Honor",
       "description": "Grants +5🏆. Keeps the owner from dwelling in Prison."
+    },
+    "medal-of-distinction": {
+      "name": "Medal of Distinction",
+      "description": "Grants +3🏆. Keeps the owner from dwelling in Prison. Cannot be owned together with the Medal of Honor."
     }
   },
   "shieldColumn": {
@@ -451,7 +455,7 @@
     "prisonFameFine": "{playerSpan} quits the prison in shame, losing 1🏆",
     "prisonFameFineToast": "{playerName} has no gold to pay and loses 1 fame to quit the prison",
     "prisonFineWaived": "{playerSpan}'s {artifactName} {emoji} waives the fine to quit the prison",
-    "prisonFineWaivedToast": "{playerName}'s Medal of Honor waives the fine to quit the prison"
+    "prisonFineWaivedToast": "{playerName}'s {artifactName} waives the fine to quit the prison"
   },
   "buyUnits": {
     "bought": "{playerName} bought {amount} {tier} for {gold}🟡.",

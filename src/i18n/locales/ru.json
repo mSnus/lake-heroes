@@ -120,6 +120,10 @@
     "medal-of-honor": {
       "name": "Медаль почёта",
       "description": "Даёт +5🏆. Не позволяет владельцу попасть в Тюрьму."
+    },
+    "medal-of-distinction": {
+      "name": "Медаль отличия",
+      "description": "Даёт +3🏆. Не позволяет владельцу попасть в Тюрьму. Не может принадлежать вместе с Медалью почёта."
     }
   },
   "shieldColumn": {
@@ -451,7 +455,7 @@
     "prisonFameFine": "{playerSpan} с позором покидает темницу, теряя 1🏆",
     "prisonFameFineToast": "{playerName} не может заплатить и теряет 1 славу, чтобы выйти из темницы",
     "prisonFineWaived": "{artifactName} {emoji} игрока {playerSpan} освобождает от штрафа за выход из темницы",
-    "prisonFineWaivedToast": "Медаль Чести игрока {playerName} освобождает от штрафа за выход из темницы"
+    "prisonFineWaivedToast": "{artifactName} игрока {playerName} освобождает от штрафа за выход из темницы"
   },
   "buyUnits": {
     "bought": "{playerName} купил {amount} ({tier}) за {gold}🟡.",

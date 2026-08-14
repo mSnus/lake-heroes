@@ -4,7 +4,7 @@ import { say } from '../utils/say';
 import { DRAGON_UNITS_THRESHOLD, offerDragonChallenge } from './fightDragon';
 import { setEndTurn } from '../utils/endTurnStore';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
-import { hasArtifact, getArtifact } from '../game/artifacts';
+import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { recordTurnStat } from '../game/statistics';
 import { formatArmy } from '../utils/formatArmy';
@@ -47,14 +47,14 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     // after this block.
     if (player.turnsToSkip === 0 && !player.isPrisonerOfWar) {
       const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
-      if (hasArtifact(player, 'medal-of-honor')) {
-        const artifact = getArtifact('medal-of-honor');
+      const prisonArtifact = getPrisonProtectionArtifact(player);
+      if (prisonArtifact) {
         board.gameMessage = t('endTurn.prisonFineWaived', {
           playerSpan,
-          artifactName: artifact!.name,
-          emoji: artifact!.emoji,
+          artifactName: prisonArtifact.name,
+          emoji: prisonArtifact.emoji,
         });
-        say(t('endTurn.prisonFineWaivedToast', { playerName: player.name }), 'info');
+        say(t('endTurn.prisonFineWaivedToast', { playerName: player.name, artifactName: prisonArtifact.name }), 'info');
       } else if (player.gold < 100) {
         changeFame(player, -1, player.isKnight ? KNIGHT_FAME : 1);
         board.gameMessage = t('endTurn.prisonFameFine', { playerSpan });

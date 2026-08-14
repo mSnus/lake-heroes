@@ -52,6 +52,7 @@ export function handleTreasureBox(
   if (foundArtifact) {
     player.artifacts.push(foundArtifact.id);
     if (foundArtifact.id === 'medal-of-honor') player.fame += 5;
+    if (foundArtifact.id === 'medal-of-distinction') player.fame += 3;
 
     updateGameState(board);
     say(t('treasureBox.foundArtifact', { playerName: player.name, size: sizeLabel, artifactName: foundArtifact.name }), 'success');
