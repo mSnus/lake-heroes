@@ -10,8 +10,7 @@ import { useAppVersion } from '../utils/useAppVersion';
 import { getArtifacts } from '../game/artifacts';
 import { useT } from '../i18n';
 
-const waterMillData = (tilesData as TileJSON[]).find((t) => t.id === 'water-mill');
-const waterMillTile = waterMillData ? new Tile(waterMillData) : null;
+const ownableTileData = (tilesData as TileJSON[]).filter((td) => td.isOwnable);
 
 /** A help-screen list item whose text may contain translated HTML markup
  * (<strong>/<em>/<br/> etc, authored into the locale strings themselves --
@@ -23,6 +22,19 @@ const HtmlLi: React.FC<{ html: string }> = ({ html }) => <li dangerouslySetInner
 const HelpScreen: React.FC = () => {
   const t = useT();
   const version = useAppVersion();
+
+  // Re-built (and re-sorted) each render so a mid-session language switch
+  // re-translates and re-alphabetizes the names immediately.
+  const ownableTiles = ownableTileData
+    .map((td) => new Tile(td))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const [demoIdx, setDemoIdx] = React.useState(() => {
+    const i = ownableTiles.findIndex((tl) => tl.id === 'water-mill');
+    return i >= 0 ? i : 0;
+  });
+  const demoTile = ownableTiles[demoIdx] ?? null;
+  const stepDemo = (delta: number) =>
+    setDemoIdx((i) => (i + delta + ownableTiles.length) % ownableTiles.length);
 
   return (
     <div className="help-screen">
@@ -88,12 +100,37 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.tileUpgrades.item1')} />
             <HtmlLi html={t('helpScreen.tileUpgrades.item2')} />
             <HtmlLi html={t('helpScreen.tileUpgrades.item3')} />
+            <HtmlLi html={t('helpScreen.tileUpgrades.item4')} />
           </ul>
 
-          {waterMillTile && (
-            <div className="help-screen-card">
-              <TileCard tile={waterMillTile} mode="display" defaultExpanded demoMode={true} />
-            </div>
+          {demoTile && (
+            <>
+              <div className="help-screen-tile-picker">
+                <button onClick={() => stepDemo(-1)} aria-label="Previous tile">
+                  ◀️
+                </button>
+                <select
+                  value={demoTile.id}
+                  onChange={(e) => {
+                    const i = ownableTiles.findIndex((tl) => tl.id === e.target.value);
+                    if (i >= 0) setDemoIdx(i);
+                  }}
+                  style={{ background: demoTile.groupColor, color: demoTile.groupTextColor }}
+                >
+                  {ownableTiles.map((tl) => (
+                    <option key={tl.id} value={tl.id}>
+                      {tl.name}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={() => stepDemo(1)} aria-label="Next tile">
+                  ▶️
+                </button>
+              </div>
+              <div className="help-screen-card">
+                <TileCard tile={demoTile} mode="display" defaultExpanded demoMode={true} />
+              </div>
+            </>
           )}
 
           <h3>{t('helpScreen.specialTiles.title')}</h3>

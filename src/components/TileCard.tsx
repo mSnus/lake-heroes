@@ -412,13 +412,19 @@ export const TileCard: React.FC<TileCardProps> = ({
                                 : '👛 '}
                               {tile.currentPrice.gold ?? 0}🟡
                             </span>
-                            {'  '}
-
-                            <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
-                              {unitsInsufficient && '🔻'}
-                              {defence(1)}
-                              {tile.abandoned ? '🧟‍♀️' : '🛡️'}
-                            </span>
+                            {/* The help screen's static sample card skips the unit
+                                requirement line — misleading there since a battle now
+                                sends the whole army, not a squad sized to Defence. */}
+                            {!demoMode && (
+                              <>
+                                {'  '}
+                                <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
+                                  {unitsInsufficient && '🔻'}
+                                  {defence(1)}
+                                  {tile.abandoned ? '🧟‍♀️' : '🛡️'}
+                                </span>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>

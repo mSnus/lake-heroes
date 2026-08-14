@@ -66,6 +66,33 @@
   margin: 12px 0;
 }
 
+.help-screen-tile-picker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+.help-screen-tile-picker button {
+  background: none;
+  border: 1px solid #666;
+  color: #ebe5d5;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.help-screen-tile-picker select {
+  font-family: 'Encode';
+  font-size: 1.05rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #0006;
+  cursor: pointer;
+}
+
 .help-screen-continue {
   display: flex;
   justify-content: center;

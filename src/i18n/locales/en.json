@@ -322,7 +322,8 @@
       "title": "Tile upgrades ⬆️",
       "item1": "<strong>Upgrade tiles</strong> paying 🟡 to increase tile's income and defence. Click the ⬆️ button to upgrade, click the title to display possible upgrades.",
       "item2": "Each upgrade brings one more garrison tower 🏯 to the tile. Each tower can hold up to 10 defending units and adds a bonus to their defence rolls.",
-      "item3": "Upgrades can't be sold separately or dismantled, but their price is added to the tile's price value."
+      "item3": "Upgrades can't be sold separately or dismantled, but their price is added to the tile's price value.",
+      "item4": "You can send units to garrison a tile at any time, but can only take them back into your army while visiting that tile."
     },
     "specialTiles": {
       "title": "Special tiles 🃏",
@@ -351,7 +352,7 @@
     },
     "battle": {
       "title": "Battle ⚔️",
-      "squad": "The attacker sends a <strong>squad of units in amount equal to 🛡️ Defence value</strong>, risking their lives for some goal: caravan goods or slaves, razing the tile or fighting the Dragon.",
+      "squad": "The attacker's <strong>whole army</strong> marches into battle, risking their lives for some goal: caravan goods or slaves, razing the tile or fighting the Dragon.",
       "razing": "<strong>Razing</strong> means the tile loses all its upgrades and belongs to no one",
       "twoModes": "There are two modes: brawl and normal battle",
       "brawlMode": "In <strong>Brawl mode:</strong> Simple mode, used when squad is less than 6 units. Attacker and defender roll dice, who rolls more, wins the round.",
