@@ -70,3 +70,8 @@ export const DRAGON_DMG_MAX = 10;
 // above this, army composition is proportionally downscaled to fit the
 // 16x20=320-cell battlefield (see game/battleGrid/scale.ts).
 export const MAX_GRID_ARMY_SIZE = 150;
+
+// Abandoned tiles (razed, never reclaimed) are guarded by Zombies instead of
+// regular militia — same base militia stats, scaled by these multipliers.
+export const ZOMBIE_HP_MULTIPLIER = 2;
+export const ZOMBIE_DMG_MULTIPLIER = 1.5;

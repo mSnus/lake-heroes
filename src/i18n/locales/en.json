@@ -834,6 +834,7 @@
     "hp": "HP",
     "dmg": "dmg",
     "garrisonCapacity": "Garrison tower capacity",
+    "zombie": "Zombie (abandoned tiles)",
     "tileBasePrice": "Tile base price",
     "tileUpgradeMult": "Upgrade multiplier",
     "tileIncomeMult": "Income multiplier",

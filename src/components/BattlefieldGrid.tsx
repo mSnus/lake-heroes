@@ -46,6 +46,7 @@ const UNIT_EMOJI: Record<string, string> = {
   'defender-rider': '🐎',
   'defender-militia': '🧍',
   'defender-dragon': '🐉',
+  'defender-zombie': '🧟‍♀️',
 };
 
 /** Placement chosen this manual turn: the destination cell, plus (for a drop

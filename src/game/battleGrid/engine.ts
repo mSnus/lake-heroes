@@ -98,18 +98,21 @@ const SAFETY_MOVE_CAP = 3;
 function hpFor(kind: UnitKind): number {
   const ov = getOverrides();
   if (kind === 'dragon') return DRAGON_HP;
+  if (kind === 'zombie') return Math.round(ov.militiaHp * ov.zombieHpMult);
   return kind === 'rider' ? ov.riderHp : ov.militiaHp;
 }
 
 function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: () => number): number {
   const ov = getOverrides();
+  // Zombies share militia's roll range, scaled by the zombie damage multiplier.
   const [min, max] =
     kind === 'dragon'
       ? [DRAGON_DMG_MIN, DRAGON_DMG_MAX]
       : kind === 'rider'
         ? [ov.riderDmgMin, ov.riderDmgMax]
         : [ov.militiaDmgMin, ov.militiaDmgMax];
-  const base = rollInRange(min, max, rng);
+  const mult = kind === 'zombie' ? ov.zombieDmgMult : 1;
+  const base = rollInRange(min, max, rng) * mult;
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
 }
 
@@ -120,8 +123,8 @@ function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: ()
  * (ambushers), columns (caravan guards), or grouped (towers/squads) — see
  * formations.ts. */
 export function createBattle(
-  attacker: { militia: number; riders: number; formation?: FormationSpec },
-  defender: { militia: number; riders: number; formation?: FormationSpec },
+  attacker: { militia: number; riders: number; formation?: FormationSpec; zombie?: boolean },
+  defender: { militia: number; riders: number; formation?: FormationSpec; zombie?: boolean },
   cols: number = BATTLEFIELD_COLS,
   rows: number = BATTLEFIELD_ROWS
 ): GridBattleState {
@@ -131,19 +134,22 @@ export function createBattle(
   // Militia fill first (placeArmy fills columns outward from the edge, so
   // earlier-pushed units land in the back rows) and riders fill last, so
   // riders end up in the front rows — closest to the enemy.
-  const buildSide = (side: BattleSide, comp: { militia: number; riders: number; formation?: FormationSpec }) => {
+  const buildSide = (side: BattleSide, comp: { militia: number; riders: number; formation?: FormationSpec; zombie?: boolean }) => {
     const sideUnits: GridUnit[] = [];
     // The dragon fight's defender is its own unit kind (own HP/damage), not
     // a rider — its full DRAGON_UNITS headcount arrives via `riders` (see
     // BattleScreen.tsx's composition for isDragon), militia always 0.
     const isDragonSide = comp.formation?.kind === 'dragon';
+    // An abandoned tile's wild garrison guards as Zombies instead of regular
+    // militia (see BattleScreen.tsx's `zombie: !!tile?.abandoned`).
+    const militiaKind: UnitKind = comp.zombie ? 'zombie' : 'militia';
     for (let i = 0; i < comp.militia; i++) {
       sideUnits.push({
         id: `${side}-${stableIndex}`,
         side,
-        kind: 'militia',
-        hp: hpFor('militia'),
-        maxHp: hpFor('militia'),
+        kind: militiaKind,
+        hp: hpFor(militiaKind),
+        maxHp: hpFor(militiaKind),
         col: 0,
         row: 0,
         stableIndex: stableIndex++,

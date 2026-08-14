@@ -45,6 +45,7 @@ export function resolveRogueAttack(
     tile.garrison = tile.baseGarrison;
     tile.unclaimedSinceTurn = board.turns;
     tile.razedInRound = board.round;
+    tile.abandoned = true;
     changeFame(player, -1);
 
     message = t('rogueAttack.razed', { tileName });

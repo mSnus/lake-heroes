@@ -43,6 +43,11 @@ export interface TileJSON {
   /** GameState.round the tile was last razed in — gates re-claiming until
    * the round advances ("on fire"). */
   razedInRound?: number;
+  /** True from the moment a tile is razed until someone successfully claims
+   * it — unlike `razedInRound` (which only gates the current round), this
+   * persists across rounds and drives the tile's Zombie-guarded wild garrison
+   * (see game/battleGrid/engine.ts's zombie kind). */
+  abandoned?: boolean;
   /** Owner has yielded the tile to the King: still owned, but produces no
    * yearly/visit bonus, can't be attacked by a Rogue Attack, and its
    * garrison can't be adjusted, until taken back. */
@@ -77,6 +82,7 @@ export class Tile implements TileJSON {
   baseGarrison: number;
   unclaimedSinceTurn?: number;
   razedInRound?: number;
+  abandoned: boolean;
   isYielded: boolean;
 
   constructor(data: Partial<TileJSON> = {}) {
@@ -119,6 +125,7 @@ export class Tile implements TileJSON {
     }
     this.unclaimedSinceTurn = data.unclaimedSinceTurn;
     this.razedInRound = data.razedInRound;
+    this.abandoned = data.abandoned ?? false;
     this.isYielded = data.isYielded ?? false;
   }
 
@@ -345,6 +352,7 @@ export class Tile implements TileJSON {
       baseGarrison: this.baseGarrison,
       unclaimedSinceTurn: this.unclaimedSinceTurn,
       razedInRound: this.razedInRound,
+      abandoned: this.abandoned,
       isYielded: this.isYielded,
     };
   }

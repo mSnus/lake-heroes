@@ -1,5 +1,5 @@
 export type BattleSide = 'attacker' | 'defender';
-export type UnitKind = 'militia' | 'rider' | 'dragon';
+export type UnitKind = 'militia' | 'rider' | 'dragon' | 'zombie';
 
 export interface GridUnit {
   id: string;

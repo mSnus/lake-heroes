@@ -56,6 +56,7 @@ export function resolveTileBattle(
       tile.owner = attacker.id;
       tile.garrison = 0;
       tile.unclaimedSinceTurn = undefined;
+      tile.abandoned = false;
       attacker.ownedTiles.push(attacker.position);
       changeFame(attacker, 1);
 
@@ -78,6 +79,7 @@ export function resolveTileBattle(
       tile.garrison = tile.baseGarrison;
       tile.unclaimedSinceTurn = board.turns;
       tile.razedInRound = board.round;
+      tile.abandoned = true;
 
       changeFame(attacker, 1);
       if (defender) changeFame(defender, -1);

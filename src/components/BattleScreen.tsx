@@ -276,7 +276,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const [battle, setBattle] = useState<GridBattleState>(() =>
     createBattle(
       { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount, formation: attackerFormation },
-      { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount, formation: defenderFormation },
+      { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount, formation: defenderFormation, zombie: !!tile?.abandoned },
       gridCols,
       gridRows
     )

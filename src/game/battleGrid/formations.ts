@@ -562,11 +562,15 @@ export function placeFormation(
 
   // Zip cells to units per kind (not just militia/rider — the dragon
   // formation's cells are all kind 'dragon'), matching whatever kinds are
-  // actually present.
-  const kinds = Array.from(new Set<UnitKind>([...placed.map((c) => c.kind), ...units.map((u) => u.kind)]));
+  // actually present. Zombies are laid out exactly like militia (the layout
+  // functions above only ever emit 'militia'/'rider'/'dragon' cells, never
+  // knowing about the zombie reskin), so they're matched to militia-shaped
+  // cells too.
+  const cellKindOf = (k: UnitKind): UnitKind => (k === 'zombie' ? 'militia' : k);
+  const kinds = Array.from(new Set<UnitKind>([...placed.map((c) => c.kind), ...units.map((u) => cellKindOf(u.kind))]));
   for (const kind of kinds) {
     const cellsOfKind = placed.filter((c) => c.kind === kind);
-    const unitsOfKind = units.filter((u) => u.kind === kind);
+    const unitsOfKind = units.filter((u) => cellKindOf(u.kind) === kind);
     unitsOfKind.forEach((unit, i) => {
       const c = cellsOfKind[i];
       if (!c) return;

@@ -12,6 +12,8 @@ import {
   TILE_BASE_PRICE,
   TILE_BASE_UPGRADE,
   TILE_BASE_INCOME,
+  ZOMBIE_HP_MULTIPLIER,
+  ZOMBIE_DMG_MULTIPLIER,
 } from '../game/constants';
 
 /**
@@ -35,6 +37,8 @@ export interface GameOverrides {
   tileBasePrice: number; // TILE_BASE_PRICE
   tileUpgradeMult: number; // TILE_BASE_UPGRADE as a multiple of tileBasePrice
   tileIncomeMult: number; // TILE_BASE_INCOME as a multiple of tileBasePrice
+  zombieHpMult: number; // ZOMBIE_HP_MULTIPLIER (abandoned-tile guards, over a regular militia unit)
+  zombieDmgMult: number; // ZOMBIE_DMG_MULTIPLIER (abandoned-tile guards, over a regular militia unit)
   stepByStepCombat: boolean; // battles start in manual step-by-step mode
   muteToasts: boolean; // suppress toast pop-ups (console + game log still fire)
 }
@@ -54,6 +58,8 @@ export const OVERRIDE_DEFAULTS: GameOverrides = {
   // whatever ratio they currently hold (1 out of the box).
   tileUpgradeMult: TILE_BASE_UPGRADE / TILE_BASE_PRICE,
   tileIncomeMult: TILE_BASE_INCOME / TILE_BASE_PRICE,
+  zombieHpMult: ZOMBIE_HP_MULTIPLIER,
+  zombieDmgMult: ZOMBIE_DMG_MULTIPLIER,
   stepByStepCombat: false,
   muteToasts: false,
 };
@@ -79,6 +85,8 @@ function sanitize(raw: Partial<GameOverrides> | null | undefined): GameOverrides
     tileBasePrice: num(merged.tileBasePrice, OVERRIDE_DEFAULTS.tileBasePrice, 0),
     tileUpgradeMult: num(merged.tileUpgradeMult, OVERRIDE_DEFAULTS.tileUpgradeMult, 0),
     tileIncomeMult: num(merged.tileIncomeMult, OVERRIDE_DEFAULTS.tileIncomeMult, 0),
+    zombieHpMult: num(merged.zombieHpMult, OVERRIDE_DEFAULTS.zombieHpMult, 0),
+    zombieDmgMult: num(merged.zombieDmgMult, OVERRIDE_DEFAULTS.zombieDmgMult, 0),
     stepByStepCombat: !!merged.stepByStepCombat,
     muteToasts: !!merged.muteToasts,
   };
