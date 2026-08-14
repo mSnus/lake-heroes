@@ -95,11 +95,18 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     if (samePosition) {
       setZoomLevel(2);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     setZoomLevel(1);
-    const t = setTimeout(() => setZoomLevel(2), ZOOM_TRANSITION_MS + ZOOM_OUT_PAUSE_MS);
+    const t = setTimeout(() => {
+      setZoomLevel(2);
+      // Zooming in centers the camera on the active player -- scroll the
+      // page up first so that zoomed-in view is actually visible instead of
+      // landing off-screen below wherever the page happened to be scrolled.
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, ZOOM_TRANSITION_MS + ZOOM_OUT_PAUSE_MS);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePlayerId]);
