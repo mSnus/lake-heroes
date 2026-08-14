@@ -58,10 +58,16 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   // label: `Buy for ${currentTile.prices['1']?.gold ?? 0}🟡 ${currentTile.prices['1']?.units ?? 0}🧍`,
   //   onClick: () => buyTile(board, updateGameState),
 
+  // The current-tile card is hidden on turn start (before-move) and while the
+  // token is rolling/moving — it auto-appears only once the player has landed
+  // (after-move), showing just the final tile. Explicitly clicking a board tile
+  // (which sets displayedTile) still shows it in any non-moving phase.
+  const isMoving = gameState.turnPhase === 'rolling' || gameState.turnPhase === 'moving';
   const isVisible =
     !playerShown &&
-    ((shouldDisplay && (displayedTile !== null || gameState.turnPhase !== 'before-move')) ||
-      (gameState.turnPhase === 'before-move' && currentTile.isOwnable && !currentTile.isOwned()));
+    !isMoving &&
+    shouldDisplay &&
+    (displayedTile !== null || gameState.turnPhase === 'after-move');
   // A turn-phase change lets the tile card reclaim the spotlight from a
   // lingering player card.
   React.useEffect(() => {

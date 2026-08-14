@@ -76,7 +76,6 @@ export async function rollAndMove(
         passStart(board, updateGameState);
       }
 
-      gameEvent('displayTile', board.tiles[nextPos].fogged() ? {} : board.tiles[nextPos]);
       await new Promise((res) => setTimeout(res, 300));
     }
 
@@ -87,8 +86,10 @@ export async function rollAndMove(
     board.activeTile.fog = false;
     if (wasFogged) {
       revealTile(board);
-      gameEvent('displayTile', board.activeTile);
     }
+    // Show only the final tile the player landed on (the tiles passed over
+    // during the roll stayed hidden).
+    gameEvent('displayTile', board.activeTile);
 
     updateGameState(board);
 

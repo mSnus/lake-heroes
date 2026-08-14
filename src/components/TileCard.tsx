@@ -237,7 +237,14 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const upgradeRowProps = (level: number) =>
     mode === 'owned' && tile.owner === activePlayer?.id && !disableUpgradesScreen && level === nextLevel
-      ? { onClick: openUpgradesScreen, style: { cursor: 'pointer' as const } }
+      ? {
+          onClick: (e: React.MouseEvent) => {
+            // Don't also bubble to the table's collapse-on-click handler.
+            e.stopPropagation();
+            openUpgradesScreen();
+          },
+          style: { cursor: 'pointer' as const },
+        }
       : {};
 
   const handleBuyClick = (e: React.MouseEvent) => {
@@ -413,7 +420,11 @@ export const TileCard: React.FC<TileCardProps> = ({
             </div>
 
             {expanded && (
-              <div className="tile-card-table-wrap">
+              <div
+                className="tile-card-table-wrap"
+                onClick={handleInfoClick}
+                style={{ cursor: 'pointer' }}
+              >
                 <table className="tile-card-table">
                   <tbody>
                     <tr
