@@ -158,13 +158,13 @@ export const TileCard: React.FC<TileCardProps> = ({
   const upgradeUnreachable = !canUpgrade || currentLevel === 1;
 
   // A yielded tile already cashed in half its price up front (see
-  // yieldTile.ts) -- selling it on top of that only refunds 40% of the
-  // current price, a real penalty vs a straight sale (mirrored exactly in
-  // sellTile.ts).
+  // yieldTile.ts) -- selling it on top of that only refunds 40% of the gold,
+  // a real penalty vs a straight sale (mirrored exactly in sellTile.ts). The
+  // garrison itself always comes back in full, yielded or not.
   const sellPrice = tile.isYielded
     ? {
         gold: Math.floor(tile.currentPrice.gold * 0.4),
-        units: Math.floor(tile.currentPrice.units * 0.4),
+        units: Math.floor(tile.currentPrice.units),
       }
     : tile.currentPrice;
 

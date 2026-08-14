@@ -16,12 +16,14 @@ export function sellTile(
   // Refund = the tile's currentPrice (base level's units mirrors its
   // defence, same as isAffordable(); upgrade levels refund their price).
   // A yielded tile already cashed in half its price up front (yieldTile.ts);
-  // selling it on top of that refunds only 40% (not another 50%), so
-  // yielding then selling nets 90% total instead of the 100% a straight
-  // sale would give — a real 10% penalty for having yielded first.
-  const refundMultiplier = tile.isYielded ? 0.4 : 1;
-  const totalGold = Math.floor(tile.currentPrice.gold * refundMultiplier);
-  const totalUnits = Math.floor(tile.currentPrice.units * refundMultiplier);
+  // selling it on top of that refunds only 40% gold (not another 50%), so
+  // yielding then selling nets 90% total gold instead of the 100% a
+  // straight sale would give — a real 10% penalty for having yielded first.
+  // The garrison itself always comes back in full regardless: those are
+  // real troops still standing on the tile, not part of the gold penalty.
+  const goldRefundMultiplier = tile.isYielded ? 0.4 : 1;
+  const totalGold = Math.floor(tile.currentPrice.gold * goldRefundMultiplier);
+  const totalUnits = Math.floor(tile.currentPrice.units);
 
   // Mutate tile and player
   tile.owner = null;
