@@ -150,10 +150,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       return fc.col === col && fc.row === row;
     });
 
-  // On drop, snap to the nearest *valid* target — the unit's own cell (stay),
-  // an adjacent empty cell (move), or an adjacent enemy (attack) — by true
-  // cell-centre distance, so a diagonal drag lands on the diagonal hex rather
-  // than the nearest straight-up/down cell.
+  // On drop, snap to whichever cell (the unit's own cell or one of its hex
+  // neighbours) is nearest the pointer, then classify it: the unit's own cell
+  // = stay/hold; an adjacent enemy = attack; an adjacent empty cell = move; an
+  // adjacent friendly-occupied cell = invalid (returns null → the unit is left
+  // un-placed, not dropped on top of the other unit).
   const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): Placement | null => {
     const cr = cellAndRect();
     if (!cr) return null;
@@ -162,39 +163,26 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const py = clientY - rect.top;
     const origin = { col: unit.col, row: unit.row };
 
-    const candidates: Placement[] = [{ col: origin.col, row: origin.row, attackTargetId: null }]; // stay
-    for (const n of adjacentCells(origin.col, origin.row, cols, rows)) {
-      const enemyAt = enemies.find((u) => u.col === n.col && u.row === n.row);
-      if (enemyAt) {
-        // attacking keeps the unit on its own cell, but it's reached via the enemy's cell
-        candidates.push({ col: origin.col, row: origin.row, attackTargetId: enemyAt.id });
-        continue;
-      }
-      if (!cellTaken(n.col, n.row, unit.id)) candidates.push({ col: n.col, row: n.row, attackTargetId: null });
-    }
-
-    // Measure to the cell the drag is actually reaching for (the enemy's cell
-    // for an attack, otherwise the destination itself).
-    const reachCell = (c: Placement) => {
-      if (c.attackTargetId) {
-        const e = enemies.find((en) => en.id === c.attackTargetId);
-        if (e) return { col: e.col, row: e.row };
-      }
-      return { col: c.col, row: c.row };
-    };
-    let best: Placement | null = null;
+    const cells = [origin, ...adjacentCells(origin.col, origin.row, cols, rows)];
+    let target = origin;
     let bestD = Infinity;
-    for (const c of candidates) {
-      const tc = reachCell(c);
-      const cx = (tc.col + colShiftFor(tc.row) + 0.5) * cell;
-      const cy = tc.row * rowStep + cellH / 2;
+    for (const c of cells) {
+      const cx = (c.col + colShiftFor(c.row) + 0.5) * cell;
+      const cy = c.row * rowStep + cellH / 2;
       const d = (cx - px) ** 2 + (cy - py) ** 2;
       if (d < bestD) {
         bestD = d;
-        best = c;
+        target = c;
       }
     }
-    return best;
+
+    if (target.col === origin.col && target.row === origin.row) {
+      return { col: origin.col, row: origin.row, attackTargetId: null }; // stay / hold
+    }
+    const enemyAt = enemies.find((e) => e.col === target.col && e.row === target.row);
+    if (enemyAt) return { col: origin.col, row: origin.row, attackTargetId: enemyAt.id }; // attack
+    if (cellTaken(target.col, target.row, unit.id)) return null; // friendly-occupied — don't place
+    return { col: target.col, row: target.row, attackTargetId: null }; // move
   };
 
   const place = (unit: GridUnit, pl: Placement) => {
@@ -329,11 +317,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
             {sideUnits.map((u) => {
               const pl = placements[u.id];
               const isDragging = drag?.unitId === u.id;
+              // Holding (placed, not attacking, not moved) = defence mode.
+              const isHold = !!pl && !pl.attackTargetId && pl.col === u.col && pl.row === u.row;
 
               // Where the twin sits and how it looks: dragging follows the
-              // pointer; placed-by-move sits at its destination (0.7, no glow);
-              // placed-by-attack is invisible (the ⚔️ mark stands in); un-placed
-              // sits on the original with a yellow glow.
+              // pointer; holding shows a 🛡️ in place; placed-by-move sits at its
+              // destination (0.7, no glow); placed-by-attack is invisible (the
+              // ⚔️ mark stands in); un-placed sits on the original with a glow.
               let style: React.CSSProperties;
               let cls = 'bfg-twin bfg-unit-' + u.side;
               if (isDragging) {
@@ -344,6 +334,9 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                 cls += ' bfg-twin-dragging';
               } else if (pl?.attackTargetId) {
                 style = { ...cellStyle(pl.col, pl.row), opacity: 0 };
+              } else if (isHold) {
+                style = cellStyle(u.col, u.row);
+                cls += ' bfg-twin-hold';
               } else if (pl) {
                 style = { ...cellStyle(pl.col, pl.row), opacity: 0.7 };
                 cls += ' bfg-twin-placed';
@@ -375,7 +368,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                     setDrag(null);
                   }}
                 >
-                  <span className="bfg-unit-emoji">{emojiFor(u)}</span>
+                  <span className="bfg-unit-emoji">{isHold ? '🛡️' : emojiFor(u)}</span>
                   {/* Invisible HP bar so the twin's emoji sits exactly where the
                       real unit's does (same column layout) — no vertical jump
                       when the real units snap in and the twins hide. */}

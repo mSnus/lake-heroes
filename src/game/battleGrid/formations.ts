@@ -99,111 +99,22 @@ const SHAPES: Record<number, LocalCell[]> = {
 };
 
 // ── Brawl (compact board) formations for headcounts 1-12 ──
-// Deliberately tall and narrow (few columns) so a brawl needs fewer grid
-// columns and can render bigger cells. Authored front-neutral (local col 0 is
-// the enemy-facing edge, oriented per side by placeFormation), rows top-down.
-const BRAWL_SHAPES: Record<number, LocalCell[]> = {
-  1: [{ col: 0, row: 0 }],
-  2: [
-    { col: 0, row: 0 },
-    { col: 0, row: 1 },
-  ],
-  3: [
-    { col: 0, row: 0 },
-    { col: 1, row: 1 },
-    { col: 0, row: 2 },
-  ],
-  4: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-  ],
-  5: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 1, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-  ],
-  6: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-  ],
-  7: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-  ],
-  8: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-    { col: 1, row: 3 },
-    { col: 2, row: 3 },
-  ],
-  9: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-    { col: 1, row: 3 },
-    { col: 2, row: 3 },
-  ],
-  10: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-    { col: 1, row: 3 },
-    { col: 2, row: 3 },
-    { col: 0, row: 4 },
-    { col: 1, row: 4 },
-  ],
-  11: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-    { col: 1, row: 3 },
-    { col: 2, row: 3 },
-    { col: 0, row: 4 },
-    { col: 1, row: 4 },
-  ],
-  12: [
-    { col: 0, row: 0 },
-    { col: 1, row: 0 },
-    { col: 0, row: 1 },
-    { col: 1, row: 1 },
-    { col: 2, row: 1 },
-    { col: 0, row: 2 },
-    { col: 1, row: 2 },
-    { col: 0, row: 3 },
-    { col: 1, row: 3 },
-    { col: 2, row: 3 },
-    { col: 0, row: 4 },
-    { col: 1, row: 4 },
-  ],
-};
+// Deliberately tall and narrow — a tight two-column block (front column =
+// local col 0, the enemy-facing edge; back column = col 1), filled top-down
+// with the odd unit sticking out the front. Authored front-neutral and
+// oriented per side by placeFormation. Kept to two columns so a brawl needs
+// few grid columns and renders bigger cells without any horizontal zigzag.
+function brawlBlock(n: number): LocalCell[] {
+  const front = Math.ceil(n / 2);
+  const back = Math.floor(n / 2);
+  const cells: LocalCell[] = [];
+  for (let r = 0; r < front; r++) cells.push({ col: 0, row: r });
+  for (let r = 0; r < back; r++) cells.push({ col: 1, row: r });
+  return cells;
+}
+const BRAWL_SHAPES: Record<number, LocalCell[]> = Object.fromEntries(
+  Array.from({ length: 12 }, (_, i) => [i + 1, brawlBlock(i + 1)])
+);
 
 /** The dragon's fixed 50-unit (DRAGON_UNITS) silhouette — a coiled dragon
  * shape, hand-derived from a reference pixel-art dragon by downsampling to
