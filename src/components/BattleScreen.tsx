@@ -44,6 +44,9 @@ const COMBAT_ANIM_BEAT_MS = 125;
 // How long the brawl move phase animates (units slide to their new cells,
 // CSS transition ~0.25s) before the combat resolution plays out.
 const BRAWL_MOVE_ANIM_MS = 320;
+// Brief hold after the player's placed units snap into position (twins hidden)
+// before the fight resolves — long enough to read the new formation.
+const BRAWL_SNAP_HOLD_MS = 260;
 
 export type BattleScreenProps =
   | {
@@ -404,6 +407,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // Manual brawl control: which side (if any) the human is currently placing.
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
+  const [instantMove, setInstantMove] = useState(false); // snap (no slide) the human's just-placed units
   const manualBaseRef = useRef<GridBattleState | null>(null); // state a manual phase edits
   const roundActiveRef = useRef(false); // a brawl round is in progress
   const roundStartPosRef = useRef<Map<string, { col: number; row: number }>>(new Map()); // positions at round start, to tell who moved
@@ -505,10 +509,22 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     const base = manualBaseRef.current;
     if (!side || !base) return;
     manualAttacksRef.current = attacks;
-    setBrawlManualSide(null);
     const moved = applyBrawlMoves(base, plan);
-    if (side === 'defender') animateBrawlMove(moved, () => brawlAttackerPhase(moved));
-    else animateBrawlMove(moved, () => brawlResolve(moved));
+    // The twins already showed where these units go, so don't re-animate the
+    // move: hide the twins and snap the real units into place in the same
+    // render (instant, no slide), then — after a short beat to read the new
+    // formation — move on to the next phase / the fight.
+    animatingRef.current = true;
+    setInstantMove(true);
+    setBrawlManualSide(null);
+    setLastEvents([]);
+    setBattle(moved);
+    setTimeout(() => {
+      setInstantMove(false);
+      animatingRef.current = false;
+      if (side === 'defender') brawlAttackerPhase(moved);
+      else brawlResolve(moved);
+    }, BRAWL_SNAP_HOLD_MS);
   };
   const startBrawlRoundRef = useRef(startBrawlRound);
   startBrawlRoundRef.current = startBrawlRound;
@@ -719,6 +735,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             brawl={isBrawl}
             manualSide={brawlManualSide ?? undefined}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
+            instant={instantMove}
           />
         )}
 

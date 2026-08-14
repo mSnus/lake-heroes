@@ -34,6 +34,10 @@ interface BattlefieldGridProps {
    * unit, `attacks` maps a unit to the specific enemy it was pointed at (units
    * not listed don't attack — they hold/defend). */
   onManualComplete?: (plan: BrawlPlan, attacks: Record<string, string>) => void;
+  /** Suppress the unit slide transition for one commit — used to snap the real
+   * units straight to where the twins already showed them, instead of
+   * re-animating the moves the player just made. */
+  instant?: boolean;
 }
 
 const UNIT_EMOJI: Record<string, string> = {
@@ -70,6 +74,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   brawl = false,
   manualSide,
   onManualComplete,
+  instant = false,
 }) => {
   const t = useT();
   const { cols, rows, units } = battle;
@@ -257,7 +262,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   return (
     <>
-    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : '')}>
+    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : '') + (instant ? ' bfg-instant' : '')}>
       <div className="bfg-arena" ref={arenaRef}>
         <div
           className="bfg-grid"

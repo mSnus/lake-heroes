@@ -20,23 +20,32 @@ export interface FormationSpec {
 }
 
 /**
- * A symmetric diamond/arrowhead of `total` cells with its single-cell tip at
- * local col 0 (the enemy-facing front — see placeFormation's per-side
- * mirroring). Columns grow 1, 2, … up to a peak column that absorbs the
- * remainder, then mirror back down to 1 at the rear, so the figure is
- * symmetric both front-to-back and top-to-bottom — an arrowhead pointed at the
- * enemy. Rows are normalised to start at 0.
+ * A compact, symmetric diamond/hexagon of `total` cells, oriented with its
+ * enemy-facing front at local col 0 (see placeFormation's per-side mirroring).
+ * The column heights taper up 1,2,…,h-1, run flat at the full height h across
+ * a middle band, then taper back down — a hexagonal "lens" that stays compact
+ * (roughly as wide as tall) for small counts and rounds out into a diamond for
+ * larger ones. Each column is vertically centred, so the figure is symmetric
+ * top-to-bottom (and front-to-back to within one column). Rows are normalised
+ * to start at 0.
  */
 function diamondShape(total: number): LocalCell[] {
   if (total <= 0) return [];
-  let k = 0;
-  while ((k + 2) * (k + 2) <= total) k++;
-  const flankSum = k * (k + 1); // 2 * (1 + 2 + … + k)
-  const peak = total - flankSum;
+
+  const h = Math.max(1, Math.floor(Math.sqrt(total))); // full column height
+  const taperSum = h * (h - 1); // both 1..h-1 tapers
+  const middle = total - taperSum; // units in the full-height middle band
+  const m = Math.max(1, Math.floor(middle / h)); // full-height middle columns
+  const rem = middle - m * h; // leftover, bumped onto the centre column(s)
+
+  const mid = new Array(m).fill(h);
+  const bumpOrder = centerOutwardOrder(m);
+  for (let i = 0; i < rem; i++) mid[bumpOrder[i % m]] += 1;
+
   const widths: number[] = [];
-  for (let i = 1; i <= k; i++) widths.push(i);
-  widths.push(peak);
-  for (let i = k; i >= 1; i--) widths.push(i);
+  for (let i = 1; i < h; i++) widths.push(i); // taper up
+  widths.push(...mid); // flat middle band
+  for (let i = h - 1; i >= 1; i--) widths.push(i); // taper down
 
   const cells: LocalCell[] = [];
   widths.forEach((count, col) => {

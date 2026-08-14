@@ -100,6 +100,12 @@
   transition: left 0.25s ease, top 0.25s ease;
 }
 
+/* Snap units to their new cells without the slide (the twins already showed
+   the move) — used right after the player finishes placing. */
+.bfg-instant .bfg-unit {
+  transition: none;
+}
+
 .bfg-unit-emoji {
   font-size: calc(var(--bfg-cell) * 0.55);
   line-height: 1;
