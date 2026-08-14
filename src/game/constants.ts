@@ -24,6 +24,13 @@ export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
 // 100 -- a deliberate income nerf independent of TILE_BASE_PRICE, which
 // stays at its full value for purchase/upgrade costs.
 export const BONUS_GOLD_RATIO = 0.65;
+// Flat per-tile annual bonus each owned tile grants on top of its own
+// gold/units income, in whichever resource its own bonus ISN'T: a gold-bonus
+// tile (Mills/Farms/Fields/Traders) also brings ANNUAL_DEFAULT_UNITS militia,
+// a units-bonus tile (Camps/Towers) also brings ANNUAL_DEFAULT_GOLD gold —
+// see kingsGrace.ts's computeAnnualReward.
+export const ANNUAL_DEFAULT_UNITS = 2;
+export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle

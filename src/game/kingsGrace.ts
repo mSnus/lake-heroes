@@ -1,6 +1,13 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { MONEY_PASS_START, MONEY_PASS_START_FAME, FAME_STEP, UNITS_PASS_START } from './constants';
+import {
+  MONEY_PASS_START,
+  MONEY_PASS_START_FAME,
+  FAME_STEP,
+  UNITS_PASS_START,
+  ANNUAL_DEFAULT_UNITS,
+  ANNUAL_DEFAULT_GOLD,
+} from './constants';
 import { syndicateMultiplier } from './syndicate';
 import { getArtifactGoldBonus } from './artifacts';
 
@@ -37,10 +44,10 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     const bonus = (tile.bonuses[tile.level] || 0) * syndicateMultiplier(board, player, tile.group);
     if ((tile.bonusType || 'gold') === 'units') {
       tileUnits += bonus;
+      tileGold += ANNUAL_DEFAULT_GOLD;
     } else {
       tileGold += bonus;
-      //experimental: let each tile bring 2 units
-      tileUnits += 2;
+      tileUnits += ANNUAL_DEFAULT_UNITS;
     }
   }
 
