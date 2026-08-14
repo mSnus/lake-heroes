@@ -1,4 +1,4 @@
-import { FEE_MULTIPLIER, BRAWL_THRESHOLD } from './constants';
+import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity } from './army';
@@ -153,15 +153,18 @@ export class Tile implements TileJSON {
   }
 
   /** Per-level income, computed from coefficients and the live income
-   * multiplier. Gold-type tiles pay gold (× base × mult); unit-type tiles
+   * multiplier. Gold-type tiles pay gold (× base × mult, then cut by
+   * BONUS_GOLD_RATIO and rounded to the nearest 100); unit-type tiles
    * (Camps/Towers) pay a raw unit headcount, unscaled. */
   get bonuses(): { [level: number]: number } {
     const ov = getOverrides();
-    const incomeBase = this.bonusType === 'gold' ? ov.tileBasePrice * ov.tileIncomeMult : 1;
+    const isGold = this.bonusType === 'gold';
+    const incomeBase = isGold ? ov.tileBasePrice * ov.tileIncomeMult : 1;
     const out: { [level: number]: number } = {};
     for (const key of Object.keys(this._bonusCoeffs)) {
       const lvl = Number(key);
-      out[lvl] = this._bonusCoeffs[lvl] * incomeBase;
+      const raw = this._bonusCoeffs[lvl] * incomeBase;
+      out[lvl] = isGold ? Math.round((raw * BONUS_GOLD_RATIO) / 100) * 100 : raw;
     }
     return out;
   }

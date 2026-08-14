@@ -19,6 +19,11 @@ export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the pl
 export const TILE_BASE_PRICE = 200;
 export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 1;
 export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
+// Gold-type tile bonuses (Mills/Farms/Fields/Traders income) are cut by 35%
+// off their raw TILE_BASE_INCOME-scaled value, then rounded to the nearest
+// 100 -- a deliberate income nerf independent of TILE_BASE_PRICE, which
+// stays at its full value for purchase/upgrade costs.
+export const BONUS_GOLD_RATIO = 0.65;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
