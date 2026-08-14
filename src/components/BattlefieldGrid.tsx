@@ -82,6 +82,14 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   // ── Manual (drag) state ──
   const [placements, setPlacements] = useState<Record<string, Placement>>({});
+  // Synchronously-updated mirror of `placements` — occupancy checks read this
+  // so a unit dropped right after another one still sees that other unit's
+  // just-committed cell (the render-closure `placements` can lag a drop).
+  const placementsRef = useRef<Record<string, Placement>>({});
+  const commitPlacements = (next: Record<string, Placement>) => {
+    placementsRef.current = next;
+    setPlacements(next);
+  };
   const [drag, setDrag] = useState<{ unitId: string; x: number; y: number } | null>(null);
   // One entry per placement, so Undo can step back to the previous state of
   // just the last-moved unit.
@@ -90,7 +98,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   // A fresh manual turn (new side, or a new round) clears any prior placements.
   useEffect(() => {
-    setPlacements({});
+    commitPlacements({});
     setDrag(null);
     setUndoStack([]);
     completedRef.current = false;
@@ -128,11 +136,19 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   // stands. Enemies don't move during this side's turn.
   const finalCellOf = (u: GridUnit): { col: number; row: number } => {
     if (manualSide && u.side === manualSide) {
-      const pl = placements[u.id];
+      const pl = placementsRef.current[u.id];
       if (pl) return { col: pl.col, row: pl.row };
     }
     return { col: u.col, row: u.row };
   };
+
+  // Would this final cell already be occupied by some other living unit?
+  const cellTaken = (col: number, row: number, exceptId: string): boolean =>
+    units.some((u) => {
+      if (u.hp <= 0 || u.id === exceptId) return false;
+      const fc = finalCellOf(u);
+      return fc.col === col && fc.row === row;
+    });
 
   // On drop, snap to the nearest *valid* target — the unit's own cell (stay),
   // an adjacent empty cell (move), or an adjacent enemy (attack) — by true
@@ -154,10 +170,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         candidates.push({ col: origin.col, row: origin.row, attackTargetId: enemyAt.id });
         continue;
       }
-      const blocked = units.some(
-        (u) => u.hp > 0 && u.id !== unit.id && finalCellOf(u).col === n.col && finalCellOf(u).row === n.row
-      );
-      if (!blocked) candidates.push({ col: n.col, row: n.row, attackTargetId: null });
+      if (!cellTaken(n.col, n.row, unit.id)) candidates.push({ col: n.col, row: n.row, attackTargetId: null });
     }
 
     // Measure to the cell the drag is actually reaching for (the enemy's cell
@@ -185,8 +198,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   };
 
   const place = (unit: GridUnit, pl: Placement) => {
-    setUndoStack((s) => [...s, { unitId: unit.id, prev: placements[unit.id] }]);
-    setPlacements((prev) => ({ ...prev, [unit.id]: pl }));
+    // Hard guard: a *move* may never land on a cell another unit will occupy
+    // (an attack/stay keeps the unit on its own cell, so it's always fine).
+    const isMove = !pl.attackTargetId && !(pl.col === unit.col && pl.row === unit.row);
+    if (isMove && cellTaken(pl.col, pl.row, unit.id)) return;
+    setUndoStack((s) => [...s, { unitId: unit.id, prev: placementsRef.current[unit.id] }]);
+    commitPlacements({ ...placementsRef.current, [unit.id]: pl });
     completedRef.current = false;
   };
 
@@ -195,12 +212,10 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   const undo = () => {
     if (undoStack.length === 0) return;
     const last = undoStack[undoStack.length - 1];
-    setPlacements((prev) => {
-      const next = { ...prev };
-      if (last.prev) next[last.unitId] = last.prev;
-      else delete next[last.unitId];
-      return next;
-    });
+    const next = { ...placementsRef.current };
+    if (last.prev) next[last.unitId] = last.prev;
+    else delete next[last.unitId];
+    commitPlacements(next);
     setUndoStack((s) => s.slice(0, -1));
     completedRef.current = false;
   };
@@ -213,7 +228,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const plan: BrawlPlan = {};
     const attacks: Record<string, string> = {};
     for (const u of sideUnits) {
-      const pl = placements[u.id];
+      const pl = placementsRef.current[u.id];
       plan[u.id] = pl ? { col: pl.col, row: pl.row } : { col: u.col, row: u.row };
       if (pl?.attackTargetId) attacks[u.id] = pl.attackTargetId;
     }
