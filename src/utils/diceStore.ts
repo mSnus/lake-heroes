@@ -11,6 +11,22 @@ type ModalState = {
 let state: ModalState = { active: false, key: 0, rolling: false };
 const listeners = new Set<() => void>();
 
+// Cheat-screen "force next roll": makes the next movement die (DiceWidget's
+// single-die roll) return this value instead of a random 1-6, then reverts
+// to normal randomness. Doesn't touch the unrelated double-die battle roll
+// (DiceWidgetDouble).
+let forcedRoll: number | null = null;
+
+export function setForcedRoll(value: number): void {
+  forcedRoll = value;
+}
+
+export function consumeForcedRoll(): number | null {
+  const v = forcedRoll;
+  forcedRoll = null;
+  return v;
+}
+
 function emit() {
   listeners.forEach((l) => l());
 }

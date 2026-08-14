@@ -5,6 +5,7 @@ import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
 import { DecoratedButton } from './DecoratedButton';
 import { getOverrides } from '../utils/overridesStore';
+import { setForcedRoll } from '../utils/diceStore';
 import { useT } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
@@ -61,6 +62,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   const [riders, setRiders] = useState(player.riders);
   const [fame, setFame] = useState(player.fame);
   const [forcedEnc, setForcedEnc] = useState<ForcedEncounter>('caravan-gold');
+  const [forcedRollValue, setForcedRollValue] = useState(1);
 
   const handleMove = () => {
     const tile = gameState.tiles[moveIdx];
@@ -102,6 +104,11 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
     gameState.forcedEncounter = forcedEnc;
     refresh();
     say(t('cheatScreen.forcedEncounterSet'), 'info');
+  };
+
+  const handleForceRoll = () => {
+    setForcedRoll(forcedRollValue);
+    say(t('cheatScreen.forcedRollSet', { value: forcedRollValue }), 'info');
   };
 
   return (
@@ -202,6 +209,20 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             <option value="dragon">{t('cheatScreen.encDragon')}</option>
           </select>
           <button className="game-menu-button" onClick={handleForceEncounter}>
+            {t('cheatScreen.force')}
+          </button>
+        </div>
+
+        <div className="cheat-row">
+          <label>{t('cheatScreen.forceRoll')}</label>
+          <select value={forcedRollValue} onChange={(e) => setForcedRollValue(Number(e.target.value))}>
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+          <button className="game-menu-button" onClick={handleForceRoll}>
             {t('cheatScreen.force')}
           </button>
         </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactDice, { ReactDiceRef } from 'react-dice-complete';
 import '../styles/dice.css';
-import { closeModal } from '../utils/diceStore';
+import { closeModal, consumeForcedRoll } from '../utils/diceStore';
 import { rollDice } from '../game/Dice';
 
 // Must match the rollTime prop passed to ReactDice (in ms)
@@ -29,7 +29,7 @@ export const DiceWidget: React.FC<Props> = ({ onRoll, rolling }) => {
 
   useEffect(() => {
     if (!rolling) return;
-    rollValueRef.current = rollDice();
+    rollValueRef.current = consumeForcedRoll() ?? rollDice();
     diceRef.current?.rollAll([rollValueRef.current]);
     const timer = setTimeout(() => {
       closeModal();

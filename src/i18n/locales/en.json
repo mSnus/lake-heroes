@@ -830,7 +830,9 @@
     "encCaravanSlaves": "Caravan / Slaves",
     "encRogue": "Rogue attack",
     "encDragon": "Dragon attack",
-    "forcedEncounterSet": "Encounter forced — it will fire on the next roll."
+    "forcedEncounterSet": "Encounter forced — it will fire on the next roll.",
+    "forceRoll": "Force next roll",
+    "forcedRollSet": "Next dice roll forced to {value}."
   },
   "overridesScreen": {
     "title": "Overrides",
