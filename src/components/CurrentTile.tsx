@@ -88,7 +88,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
   const ownerColor = ownerPlayer?.color;
 
   return (
-    <div className={`current-tile-card-wrapper ${ownerPlayer ? ' owned' : ''}`}>
+    <div className={shownTile ? `current-tile-card-wrapper ${ownerPlayer ? ' owned' : ''}` : 'current-tile-card-wrapper-empty'}>
       {ownerPlayer && ownerColor && (
         <div className="tile-card-owner-info">
           <div className="tile-owner">

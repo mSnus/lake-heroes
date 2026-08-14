@@ -64,6 +64,10 @@
   align-items: flex-end;
 }
 
+.current-tile-card-wrapper-empty {
+  display: none;
+}
+
 .tile-card-owner-info {
   margin-bottom: -40px;
 }
