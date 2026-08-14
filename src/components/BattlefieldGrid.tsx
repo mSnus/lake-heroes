@@ -357,6 +357,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   }}
                 >
                   <span className="bfg-unit-emoji">{emojiFor(u)}</span>
+                  {/* Invisible HP bar so the twin's emoji sits exactly where the
+                      real unit's does (same column layout) — no vertical jump
+                      when the real units snap in and the twins hide. */}
+                  <span className="bfg-unit-hp" style={{ opacity: 0 }}>
+                    <span className="bfg-unit-hp-fill" />
+                  </span>
                 </div>
               );
             })}

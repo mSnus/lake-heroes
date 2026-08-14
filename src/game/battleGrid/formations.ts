@@ -640,10 +640,14 @@ export function placeFormation(
   // would eat into the gap instead of staying inside the attacker's own
   // reserved space.
   const centerCol = Math.floor(cols / 2);
+  // Compact (brawl) armies stand a little further apart — 3 empty columns
+  // between the two fronts instead of 2 (the attacker already sits at
+  // centerCol-2, so nudging the defender to centerCol+2 centres a 3-cell gap).
+  const defenderOffset = formation.kind === 'compact' ? 2 : 1;
   const startCol =
     side === 'attacker'
       ? Math.max(0, centerCol - box.width - 1)
-      : Math.min(cols - box.width, centerCol + 1);
+      : Math.min(cols - box.width, centerCol + defenderOffset);
 
   // Zip cells to units per kind (not just militia/rider — the dragon
   // formation's cells are all kind 'dragon'), matching whatever kinds are
