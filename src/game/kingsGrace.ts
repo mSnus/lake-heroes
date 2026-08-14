@@ -2,14 +2,14 @@ import { GameState } from './GameState';
 import { Player } from './Player';
 import { MONEY_PASS_START, MONEY_PASS_START_FAME, FAME_STEP, UNITS_PASS_START } from './constants';
 import { syndicateMultiplier } from './syndicate';
-import { getDiamondGoldBonus } from './artifacts';
+import { getArtifactGoldBonus } from './artifacts';
 
 export interface KingsGraceReward {
   tileGold: number;
   tileUnits: number;
   kingsGold: number;
   kingsUnits: number;
-  diamondGold: number;
+  arifactGold: number;
   totalGold: number;
   totalUnits: number;
 }
@@ -20,9 +20,9 @@ export interface KingsGraceReward {
  * Shared by the actual payout (passStart.ts) and its preview (CurrentPlayer.tsx)
  * so they can't drift apart.
  */
-export function computeKingsGraceReward(board: GameState, player: Player): KingsGraceReward {
+export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
   const fame = player.fame || 1;
-  const fameMultiplier = fame - (fame % FAME_STEP) + 1; 
+  const fameMultiplier = Math.floor(fame / FAME_STEP);
   const kingsGold = MONEY_PASS_START + MONEY_PASS_START_FAME * fameMultiplier;
   const kingsUnits = UNITS_PASS_START * fameMultiplier;
 
@@ -39,18 +39,20 @@ export function computeKingsGraceReward(board: GameState, player: Player): Kings
       tileUnits += bonus;
     } else {
       tileGold += bonus;
+      //experimental: let each tile bring 2 units
+      tileUnits += 2;
     }
   }
 
-  const diamondGold = getDiamondGoldBonus(player);
+  const arifactGold = getArtifactGoldBonus(player);
 
   return {
     tileGold,
     tileUnits,
     kingsGold,
     kingsUnits,
-    diamondGold,
-    totalGold: tileGold + kingsGold + diamondGold,
+    arifactGold,
+    totalGold: tileGold + kingsGold + arifactGold,
     totalUnits: tileUnits + kingsUnits,
   };
 }

@@ -84,9 +84,9 @@ export function getArtifactRollBonus(
 
 /** The battle-relevant artifacts a player owns, for display under the names row. */
 export function getBattleArtifacts(player: Player): Artifact[] {
-  return RAW_ARTIFACTS
-    .filter((a) => (a.id === 'broken-blade' || a.id === 'dwemer-axe') && hasArtifact(player, a.id))
-    .map(translate);
+  return RAW_ARTIFACTS.filter(
+    (a) => (a.id === 'broken-blade' || a.id === 'dwemer-axe') && hasArtifact(player, a.id)
+  ).map(translate);
 }
 
 /** Per-artifact breakdown of `getArtifactRollBonus`, for display under the names row. */
@@ -109,7 +109,7 @@ export function getArtifactRollBonusBreakdown(
 }
 
 /** Pristine Diamond: +1000 gold added to the King's-grace reward each lap. */
-export function getDiamondGoldBonus(player: Player): number {
+export function getArtifactGoldBonus(player: Player): number {
   return hasArtifact(player, 'pristine-diamond') ? 1000 : 0;
 }
 

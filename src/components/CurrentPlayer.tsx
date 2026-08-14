@@ -3,7 +3,7 @@ import { GameState } from '../game/GameState';
 import '../styles/CurrentPlayer.css';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
-import { computeKingsGraceReward } from '../game/kingsGrace';
+import { computeAnnualReward } from '../game/kingsGrace';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
 import { getOverrides } from '../utils/overridesStore';
@@ -18,8 +18,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
   const t = useT();
   const activePlayer = gameState.activePlayer;
 
-  const { tileGold, tileUnits, kingsGold, kingsUnits, diamondGold, totalGold, totalUnits } =
-    computeKingsGraceReward(gameState, activePlayer);
+  const { tileGold, tileUnits, kingsGold, kingsUnits, arifactGold, totalGold, totalUnits } =
+    computeAnnualReward(gameState, activePlayer);
 
   return (
     <div className="player-pane">
@@ -29,9 +29,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <div
           className="player-stats-fame"
           id="statsFame"
-          onClick={() =>
-            say(t('currentPlayer.fameTooltip'), 'info')
-          }
+          onClick={() => say(t('currentPlayer.fameTooltip'), 'info')}
           style={{ cursor: 'pointer' }}
         >
           <div></div>
@@ -62,7 +60,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
                   key={c.tilePosition}
                   className="player-contract-badge"
                   onClick={() =>
-                    say(t('currentPlayer.kingsContractTooltip', { tileName: tile.name, award: c.award }), 'info')
+                    say(
+                      t('currentPlayer.kingsContractTooltip', {
+                        tileName: tile.name,
+                        award: c.award,
+                      }),
+                      'info'
+                    )
                   }
                   style={{ cursor: 'pointer' }}
                 >
@@ -77,7 +81,15 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
               <span
                 key={`artifact-${id}`}
                 className="player-artifact-badge"
-                onClick={() => say(t('currentPlayer.artifactTooltip', { name: artifact.name, description: artifact.description }), 'info')}
+                onClick={() =>
+                  say(
+                    t('currentPlayer.artifactTooltip', {
+                      name: artifact.name,
+                      description: artifact.description,
+                    }),
+                    'info'
+                  )
+                }
                 style={{ cursor: 'pointer' }}
               >
                 <span className="icon">{artifact.emoji}</span> {artifact.name}
@@ -120,11 +132,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
             const parts = [
               fmt(tileGold, tileUnits, t('currentPlayer.fromYourTiles')),
               fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
-              fmt(diamondGold, 0, t('currentPlayer.fromPristineDiamond')),
+              fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
             ].filter(Boolean);
 
             say(
-              t('currentPlayer.wagesMessage', { detail: parts.length ? ': ' + parts.join(', ') : '' }),
+              t('currentPlayer.wagesMessage', {
+                detail: parts.length ? ': ' + parts.join(', ') : '',
+              }),
               'info'
             );
           }}

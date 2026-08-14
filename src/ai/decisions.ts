@@ -5,7 +5,7 @@ import { CHARACTERS, CharacterConfig } from './characters';
 import { FeeOptions } from '../actions/feeOptions';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
-import { computeKingsGraceReward } from '../game/kingsGrace';
+import { computeAnnualReward } from '../game/kingsGrace';
 import { UnitTier, remainingCapacity } from '../game/army';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
@@ -21,7 +21,7 @@ function wouldFormSyndicate(board: GameState, tile: Tile): boolean {
 // "current income" = units gained per lap of the board (the King's grace
 // reward), since that's the only recurring unit income most players have.
 function closeToDragonGoalWithoutBuying(board: GameState, player: Player): boolean {
-  const perLapUnits = computeKingsGraceReward(board, player).totalUnits;
+  const perLapUnits = computeAnnualReward(board, player).totalUnits;
   return player.armyPower + perLapUnits * 3 >= DRAGON_UNITS_THRESHOLD;
 }
 
@@ -89,7 +89,9 @@ export function pickUpgradeCandidate(board: GameState, player: Player): Tile | n
     const bonusGain = tile.getBonus(nextLevel) - tile.getBonus(tile.level);
     const better =
       bonusGain > bestBonusGain ||
-      (bonusGain === bestBonusGain && best !== null && price.gold < best.prices[best.level + 1].gold);
+      (bonusGain === bestBonusGain &&
+        best !== null &&
+        price.gold < best.prices[best.level + 1].gold);
 
     if (better || best === null) {
       best = tile;
@@ -110,7 +112,9 @@ export function pickHeroHourTarget(player: Player, opponents: Player[]): Player 
   if (!cfg) return null;
 
   const byWeakest = [...opponents].sort((a, b) => a.armyPower - b.armyPower);
-  return byWeakest.find((o) => player.armyPower >= cfg.fightThreshold.heroHour * o.armyPower) ?? null;
+  return (
+    byWeakest.find((o) => player.armyPower >= cfg.fightThreshold.heroHour * o.armyPower) ?? null
+  );
 }
 
 /** Caravan: attack iff the player's army is big enough relative to the caravan's guards. */
@@ -164,15 +168,18 @@ export function pickGarrisonAction(
 
   const candidates = player.ownedTiles
     .map((idx) => board.tiles[idx])
-    .filter(
-      (t): t is Tile => !!t && t.owner === player.id && t.garrisonMilitia < t.baseGarrison
-    );
+    .filter((t): t is Tile => !!t && t.owner === player.id && t.garrisonMilitia < t.baseGarrison);
   if (candidates.length === 0) return null;
 
   const target = candidates.sort((a, b) => a.garrisonMilitia - b.garrisonMilitia)[0];
   const desired = target.baseGarrison - target.garrisonMilitia;
   const affordable = Math.floor(cfg.garrisonFraction * player.militia);
-  const cap = remainingCapacity(target.garrisonMilitia, target.garrisonRiders, target.garrisonSlots, 'militia');
+  const cap = remainingCapacity(
+    target.garrisonMilitia,
+    target.garrisonRiders,
+    target.garrisonSlots,
+    'militia'
+  );
   const amount = Math.min(desired, affordable, cap);
 
   return amount > 0 ? { tile: target, amount } : null;
@@ -188,7 +195,11 @@ export function pickKingsCastleHireTier(player: Player): UnitTier {
 }
 
 /** King's Castle: how many units to hire out of the actually-allowed maxAmount. */
-export function pickKingsCastleHireAmount(player: Player, maxAmount: number, unitPrice: number = getOverrides().militiaPrice): number {
+export function pickKingsCastleHireAmount(
+  player: Player,
+  maxAmount: number,
+  unitPrice: number = getOverrides().militiaPrice
+): number {
   const cfg = getCharacterConfig(player);
   if (!cfg) return 0;
 
