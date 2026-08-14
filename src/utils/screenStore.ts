@@ -79,6 +79,10 @@ export function showScreen(config: ScreenConfig): void {
   state = config;
   console.log('showing screen', state);
   emit();
+  // A screen always opens pinned to its own top -- otherwise it can render
+  // below wherever the page happened to be scrolled (e.g. after scrolling
+  // down to read the game log) and look like nothing happened.
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 export function markScreenResolved(): void {
