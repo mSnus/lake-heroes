@@ -43,7 +43,10 @@ export function handlePortal(
   }
 
   updateGameState(board);
-  gameEvent('displayTile', landedTile);
+  // Same rule as a normal landing (rollAndMove.ts): only auto-show the tile
+  // card for an ownable tile -- special tiles get PortalScreen right below
+  // instead, so the plain card would just be a redundant flash underneath it.
+  gameEvent('displayTile', landedTile.isOwnable ? landedTile : {});
 
   showScreen({
     screenType: 'portal',

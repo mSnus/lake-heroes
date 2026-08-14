@@ -88,8 +88,11 @@ export async function rollAndMove(
       revealTile(board);
     }
     // Show only the final tile the player landed on (the tiles passed over
-    // during the roll stayed hidden).
-    gameEvent('displayTile', board.activeTile);
+    // during the roll stayed hidden) -- and only if it's an ownable tile.
+    // Special tiles (King's Castle, Treasure Chest, etc.) get their own
+    // dedicated screen right below via continueTileLogic, so auto-showing
+    // the plain tile card underneath it would just be a redundant flash.
+    gameEvent('displayTile', board.activeTile.isOwnable ? board.activeTile : {});
 
     updateGameState(board);
 
