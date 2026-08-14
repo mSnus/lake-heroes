@@ -202,7 +202,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     // (an attack/stay keeps the unit on its own cell, so it's always fine).
     const isMove = !pl.attackTargetId && !(pl.col === unit.col && pl.row === unit.row);
     if (isMove && cellTaken(pl.col, pl.row, unit.id)) return;
-    setUndoStack((s) => [...s, { unitId: unit.id, prev: placementsRef.current[unit.id] }]);
+    // Capture the previous placement *before* committing — commitPlacements
+    // mutates placementsRef synchronously, so reading it inside the (deferred)
+    // setUndoStack updater would see the new value instead of the old one.
+    const prev = placementsRef.current[unit.id];
+    setUndoStack((s) => [...s, { unitId: unit.id, prev }]);
     commitPlacements({ ...placementsRef.current, [unit.id]: pl });
     completedRef.current = false;
   };
