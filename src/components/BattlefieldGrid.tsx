@@ -25,6 +25,9 @@ interface BattlefieldGridProps {
   /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells
    * and units at 180% of the normal height. */
   brawl?: boolean;
+  /** A small automatic (non-brawl) battle: bigger cells/units than the
+   * default battlefield, though not as large as brawl's. */
+  large?: boolean;
   /** When set, this side is being manually controlled: a shadow layer of
    * draggable "twin" units appears over that side's units and the caller is
    * handed the chosen destinations via onManualComplete once every unit is
@@ -73,6 +76,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   defenderIcon,
   showGridLines = true,
   brawl = false,
+  large = false,
   manualSide,
   onManualComplete,
   instant = false,
@@ -270,7 +274,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   return (
     <>
-    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : '') + (instant ? ' bfg-instant' : '')}>
+    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : large ? ' bfg-large' : '') + (instant ? ' bfg-instant' : '')}>
       <div className="bfg-arena" ref={arenaRef}>
         <div
           className="bfg-grid"

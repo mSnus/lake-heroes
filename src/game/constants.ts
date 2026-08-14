@@ -47,8 +47,14 @@ export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
 export const SPRITE_SIZE = 96;
 
 // ── Grid battle (BattlefieldGrid) ──
-export const BATTLEFIELD_COLS = 12;
-export const BATTLEFIELD_ROWS = 20;
+export const BATTLEFIELD_COLS = 11;
+// 16, not 13: a maxed-out 5-squad, 40-unit army (the AUTO_BATTLE_LARGE_THRESHOLD
+// case below) needs 16 rows to lay out without squads clamping into overlap.
+export const BATTLEFIELD_ROWS = 16;
+// An automatic (non-brawl) battle gets bigger cells/units when both sides
+// field at most this many grid units -- easier to read a small fight without
+// needing the full battlefield's tight packing.
+export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
 // Brawl (small skirmish): a compact board with larger cells, used for the
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most

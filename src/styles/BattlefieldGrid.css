@@ -43,6 +43,17 @@
   }
 }
 
+/* A small automatic battle (see AUTO_BATTLE_LARGE_THRESHOLD): bigger cells
+   than the default battlefield, but not as large as brawl's. */
+.bfg-battlefield.bfg-large {
+  --bfg-cell: 8.2vmin;
+}
+@supports (container-type: inline-size) {
+  .bfg-battlefield.bfg-large {
+    --bfg-cell: 8.2cqi;
+  }
+}
+
 /* Shared positioned box for .bfg-grid and .bfg-units — .bfg-units is
    position:absolute; inset:0, which needs to match the grid's own
    rendered box exactly (not .bfg-battlefield's, which is wider) for units

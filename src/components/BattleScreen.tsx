@@ -21,7 +21,7 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
-import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_THRESHOLD } from '../game/constants';
+import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_THRESHOLD, AUTO_BATTLE_LARGE_THRESHOLD } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
@@ -205,6 +205,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defenderGridTotal <= BRAWL_THRESHOLD;
   const gridCols = isBrawl ? BRAWL_COLS : BATTLEFIELD_COLS;
   const gridRows = isBrawl ? BRAWL_ROWS : BATTLEFIELD_ROWS;
+  // A small automatic battle (both sides at or below the threshold, but
+  // still too big to be a brawl) gets bigger cells/units too -- easier to
+  // read than the battlefield's default tight packing.
+  const isLargeAutoBattle =
+    !isBrawl &&
+    attackerGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD &&
+    defenderGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD;
   // A side is manually controlled when its player is the human at the
   // controls (the active player) — the attacker in a tile/player fight, the
   // defender when a rogue horde raids a human's tile. The other side (a bot,
@@ -737,6 +744,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             attackerIcon={attackerFieldIcon}
             defenderIcon={defenderFieldIcon}
             brawl={isBrawl}
+            large={isLargeAutoBattle}
             manualSide={brawlManualSide ?? undefined}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
             instant={instantMove}
