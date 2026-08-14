@@ -1,20 +1,9 @@
 .game-menu {
   position: relative;
-  min-height: 3rem;
-  padding: 8px;
-  top: 60px;
   z-index: 6000;
   display: flex;
   justify-content: center;
   width: 100%;
-}
-
-.game-menu>div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  gap: 12px;
 }
 
 .game-menu button.decorated {
@@ -37,9 +26,9 @@
 }
 
 .game-menu-button.silver {
-  background: linear-gradient(145deg, #e7f2f7, #adb897);
-  text-shadow: #afc4c7af 0 0 6px;
-  color: #424748da;
+    background: linear-gradient(145deg, #d2bb73, #dbc28a);
+    text-shadow: #736c5eaf 0 0 6px;
+    color: #484742da;
 }
 
 .game-menu-button:disabled {

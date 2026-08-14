@@ -162,7 +162,10 @@ export const TileCard: React.FC<TileCardProps> = ({
   // current price, a real penalty vs a straight sale (mirrored exactly in
   // sellTile.ts).
   const sellPrice = tile.isYielded
-    ? { gold: Math.floor(tile.currentPrice.gold * 0.4), units: Math.floor(tile.currentPrice.units * 0.4) }
+    ? {
+        gold: Math.floor(tile.currentPrice.gold * 0.4),
+        units: Math.floor(tile.currentPrice.units * 0.4),
+      }
     : tile.currentPrice;
 
   const handleClose = () => {
@@ -178,7 +181,10 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     if (
       !window.confirm(
-        t('tileCard.confirmSell', { tileName: tile.name, price: fmtPrice(sellPrice.gold, sellPrice.units, t('common.and')) })
+        t('tileCard.confirmSell', {
+          tileName: tile.name,
+          price: fmtPrice(sellPrice.gold, sellPrice.units, t('common.and')),
+        })
       )
     )
       return;
@@ -188,7 +194,12 @@ export const TileCard: React.FC<TileCardProps> = ({
     updateGameState && updateGameState(gameState);
 
     say(
-      t('tileCard.soldMessage', { playerName: activePlayer.name, tileName: tile.name, gold: refunds.gold, units: refunds.units }),
+      t('tileCard.soldMessage', {
+        playerName: activePlayer.name,
+        tileName: tile.name,
+        gold: refunds.gold,
+        units: refunds.units,
+      }),
       'info'
     );
   };
@@ -207,11 +218,13 @@ export const TileCard: React.FC<TileCardProps> = ({
         say(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
         return;
       }
-      if (!window.confirm(t('tileCard.confirmTakeBack', { tileName: tile.name, gold: cost }))) return;
+      if (!window.confirm(t('tileCard.confirmTakeBack', { tileName: tile.name, gold: cost })))
+        return;
       takeTileBack(gameState, activePlayer, tile);
     } else {
       const refund = Math.floor(tile.currentPrice.gold / 2);
-      if (!window.confirm(t('tileCard.confirmYield', { tileName: tile.name, gold: refund }))) return;
+      if (!window.confirm(t('tileCard.confirmYield', { tileName: tile.name, gold: refund })))
+        return;
       yieldTile(gameState, activePlayer, tile);
     }
 
@@ -236,7 +249,10 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const upgradeRowProps = (level: number) =>
-    mode === 'owned' && tile.owner === activePlayer?.id && !disableUpgradesScreen && level === nextLevel
+    mode === 'owned' &&
+    tile.owner === activePlayer?.id &&
+    !disableUpgradesScreen &&
+    level === nextLevel
       ? {
           onClick: (e: React.MouseEvent) => {
             // Don't also bubble to the table's collapse-on-click handler.
@@ -259,45 +275,38 @@ export const TileCard: React.FC<TileCardProps> = ({
       className={
         'tile-card' +
         (mode === 'owned' && isSyndicate ? ' syndicate' : '') +
+        (expanded ? ' expanded' : '') +
         (tile.isYielded ? ' yielded' : '')
       }
     >
-      <div
-        className="tile-card-header"
-        onClick={tile.owner === activePlayer?.id && !disableUpgradesScreen ? openUpgradesScreen : handleInfoClick}
-        style={{
-          background: groupColor + 'e0',
-          overflow: 'clip',
-          maxHeight: `${SPRITE_SIZE / 2}px`,
-          cursor: 'pointer',
-        }}
-      >
-        {tile.spriteImage && (
-          <div
-            className="tile-card-bg"
-            style={{
-              width: `${SPRITE_SIZE}px`,
-              height: `${SPRITE_SIZE}px`,
-              backgroundImage: `url(${tile.spriteImage})`,
-            }}
-          />
-        )}
+      {tile.spriteImage && (
+        <div
+          className="tile-card-bg"
+          style={{
+            backgroundImage: `url(${tile.spriteImage})`,
+            borderBottom: `solid 4px ${groupColor}`,
+          }}
+          onClick={
+            tile.owner === activePlayer?.id && !disableUpgradesScreen
+              ? openUpgradesScreen
+              : handleInfoClick
+          }
+        >
+          <div className="tile-card-title">{tile.name}</div>
+        </div>
+      )}
 
-        <div className="tile-card-title">{tile.name}</div>
-
-        {mode === 'display' && !demoMode && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClose();
-            }}
-            className="tile-card-close"
-            style={{ fontSize: '12px', filter: 'grayscale(100%)', opacity: 0.5 }}
-          >
-            ❌
-          </button>
-        )}
-      </div>
+      {mode === 'display' && !demoMode && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClose();
+          }}
+          className="tile-card-close"
+        >
+          ❌
+        </button>
+      )}
 
       {tile.isOwnable && (
         <div className="tile-card-ownable">
@@ -473,10 +482,16 @@ export const TileCard: React.FC<TileCardProps> = ({
 
             {expanded && (mode === 'owned' || demoMode) && (
               <div className="tile-card-sell" style={{ marginTop: '1rem' }}>
-                <div onClick={() => handleYieldToggle()} className={'tile-card-button tile-card-sell-item'}>
+                <div
+                  onClick={() => handleYieldToggle()}
+                  className={'tile-card-button tile-card-sell-item'}
+                >
                   🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
                 </div>
-                <div onClick={() => handleSell()} className={'tile-card-button tile-card-sell-item'}>
+                <div
+                  onClick={() => handleSell()}
+                  className={'tile-card-button tile-card-sell-item'}
+                >
                   🪙 {t('tileCard.sell')}
                 </div>
               </div>
@@ -484,36 +499,17 @@ export const TileCard: React.FC<TileCardProps> = ({
           </div>
 
           <div className="upgrade-row">
-            {((mode === 'owned' && !maxLevelReached) || demoMode) && (
+            {((mode === 'owned' && canUpgrade) || demoMode) && (
               <div
-                className="tile-card-actions"
+                className="tile-card-upgradable"
                 style={{ backgroundColor: tile.groupColor + '4f' }}
+                onClick={openUpgradesScreen}
               >
-                <div
-                  onClick={openUpgradesScreen}
-                  className={'tile-card-button' + (canUpgrade || demoMode ? '' : ' disabled')}
-                >
-                  <div>{priceCell(nextLevel, true)}</div>
-
-                  <div>→</div>
-
-                  <div>
-                    +{nextLevelBonus}
-                    {bonusTypeIcon}
-                  </div>
-                  <div>{slotsAtLevel(nextLevel)}🏯</div>
-                </div>
+                upgradable
               </div>
             )}
           </div>
         </div>
-      )}
-
-      {!tile.isOwnable && tile.description && (
-        <div
-          className="tile-card-description"
-          dangerouslySetInnerHTML={{ __html: tile.description }}
-        />
       )}
 
       {!tile.owner && (
@@ -534,12 +530,29 @@ export const TileCard: React.FC<TileCardProps> = ({
                   filter: 'drop-shadow(2px 2px 3px #00000050)',
                 }}
               >
-                <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center', gap: '0.1rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.1rem',
+                  }}
+                >
                   {/* Container gap is 0.1rem; add 1.1rem more so this specific
                       pair ends up 1.2rem apart, without widening the other gaps. */}
-                  <div style={{ marginRight: '1.1rem' }}>{isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}</div>
+                  <div style={{ marginRight: '1.1rem' }}>
+                    {isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}
+                  </div>
                   <div>{Math.round(attackerPower)}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      lineHeight: 1,
+                    }}
+                  >
                     <div style={{ fontSize: '0.6em' }}>{attackEmoji}</div>
                     <div style={{ fontSize: '0.55rem' }}>{t('common.vs')}</div>
                   </div>

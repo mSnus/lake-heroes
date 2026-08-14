@@ -1,19 +1,18 @@
 .current-tile-card-wrapper {
   position: absolute;
-  left: calc(30vw * 1vw / 1vh);
-  top: calc(38vw * 1vw / 1vh);
+  left: calc(50vw - (230px / 2));
+  top: calc(50vw * 1vw / 1vh);
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   z-index: 100;
-  scale: calc(1vw / 1vh * 1.44);
 }
 
-.current-tile {
-  background: transparent;
-  border-radius: 10px;
+.current-tile-card-wrapper .current-tile {
+  scale: calc(1vw / 1vh * 1.5);
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
-  padding: 0;
-  min-width: 230px;
-  width: 230px;
-  text-align: left;
 }
 
 .tile-card {
@@ -23,31 +22,83 @@
   background: #fff;
   font-size: 12px;
   color: #444;
+  margin-bottom: 0.5rem;
+  width: 106px;
+}
+
+.current-tile {
+  background: transparent;
+  border-radius: 10px;
+  padding: 0;
+  min-width: 230px;
+  width: 230px;
+  text-align: left;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+
+.current-tile .tile-card-title {
+  font-size: 1.5rem;
+}
+
+.current-tile .tile-card {
+  margin-bottom: 0;
+}
+
+.current-tile.special {
+  height: 230px;
+}
+
+
+.current-tile.special .tile-card {
+  background-color: transparent;
+  border: none;
+}
+
+.current-tile.special .tile-card-bg {
+  background-color: transparent;
+  height: 230px;
+  border-bottom: none !important;
+  backdrop-filter: blur(8px);
+  background-size: 80%;
+  background-position: center;
+  align-items: flex-end;
+}
+
+.tile-card-owner-info {
+  margin-bottom: -40px;
+}
+
+.tile-owner {
+  text-shadow: 1px 1px 3px #000000;
 }
 
 .tile-card.syndicate {
   background: #fdd06669;
 }
 
-.tile-card-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-  padding: 6px 6px 6px 0px;
-  border-radius: 6px 6px 0 0;
-  justify-content: space-between;
-  color: #0000007f;
-  font-weight: bold;
-  max-width: 100%;
+.tile-card.expanded {
+  width: 200px;
+}
+
+.current-tile .tile-card,
+.current-tile .tile-card.expanded {
+  width: 100%;
 }
 
 .tile-card-bg {
+  width: 100%;
+  height: 96px;
   flex-shrink: 0;
-  background-size: 70%;
-  background-position: left center;
+  background-size: cover;
+  background-position: top center;
   background-repeat: no-repeat;
-  margin-right: -8px;
+  display: flex;
+  align-items: center;
+}
+
+.tile-card-upgradable {
+  text-align: center;
+  padding: 4px;
 }
 
 .tile-sprite-box {
@@ -57,12 +108,23 @@
 }
 
 .tile-card-close {
+  font-size: 12px;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  position: absolute;
+  top: 10px;
+  right: 4px;
+
   padding: 0px 3px 18px 3px;
   border: none;
   cursor: pointer;
   background: none;
   background-color: transparent;
   opacity: 1;
+}
+
+.owned .tile-card-close {
+  top: 10px;
 }
 
 .tile-card-actions {
@@ -102,17 +164,18 @@
 }
 
 .tile-card-title {
-  font-weight: 300;
-  margin-left: -28px;
   text-align: center;
-  font-size: 18px;
+  font-size: 1.1rem;
   padding-top: 8px;
   padding-bottom: 8px;
   line-height: 1;
-  color: #000000a0;
+  color: #ffffffea;
+  font-weight: bold;
   width: 100%;
   font-family: 'Texturina', serif;
   font-weight: bold;
+  text-shadow: 1px 1px 3px #00000060;
+  filter: drop-shadow(0 0 3px #00000030);
 }
 
 .tile-card-base-level {
@@ -151,6 +214,7 @@
 
 .tile-card-base-row {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   justify-content: center;
   align-items: center;
@@ -181,11 +245,19 @@
   padding: 0 12px 12px 12px;
 }
 
-.tile-card.yielded .tile-card-header,
 .tile-card.yielded .tile-card-table-wrap,
 .tile-card.yielded .tile-card-base-level {
   filter: grayscale(0.8);
   background-color: #eee;
+}
+
+.tile-card.yielded {
+  background-color: #eee
+}
+
+.tile-card.yielded .tile-card-bg {
+  background-blend-mode: luminosity;
+  background-color: #cccccc;
 }
 
 .tile-card-table-wrap {
@@ -310,12 +382,23 @@
   gap: 1rem;
   width: fit-content;
   margin-left: auto;
+  margin-right: auto;
 }
 
 .tile-card-sell-item {
-  background: #fff3d8;
+  background: linear-gradient(145deg, #d2bb73, #dbc28a);
+  text-shadow: #736c5eaf 0 0 6px;
+  color: #484742da;
+  padding: 8px 12px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.tile-card-ownable .tile-card-sell-item {
+  background: #f8dc9b;
   border: 1px outset #ffde2c7a;
-  padding: 4px;
+  text-shadow: none;
+  padding: 6px;
   border-radius: 5px;
   white-space: nowrap;
 }

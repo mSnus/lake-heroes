@@ -189,7 +189,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         <button
           onClick={() => clearScreen()}
           className="tile-card-close"
-          style={{ position: 'absolute', top: '1rem', right: '1rem', fontSize: '16px', filter: 'grayscale(100%)', opacity: 0.7 }}
+          style={{ position: 'absolute', top: '1rem', right: '1rem', fontSize: '16px', filter: 'grayscale(100%)', opacity: 0.8, zIndex: 6002 }}
         >
           ❌
         </button>
@@ -309,7 +309,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       </div>
 
-      <div className="game-menu" style={{ top: '1rem' }}>
+      <div className="game-menu">
         <div>
           {tile.isYielded ? (
             <DecoratedButton onClick={() => clearScreen()}>
