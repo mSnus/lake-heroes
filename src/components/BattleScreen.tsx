@@ -220,21 +220,25 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const squadCountFor = (player: Player): number =>
     Math.max(1, buildSquadChunks(player.militia, player.riders, player.armySlots).filter((c) => c.count > 0).length);
 
-  const attackerFormation: FormationSpec = isAmbush
-    ? { kind: 'triangle' } // NPC ambushers: wedge pointed at the player
-    : { kind: 'grouped', groupCount: squadCountFor(attacker) };
+  const attackerFormation: FormationSpec = isBrawl
+    ? { kind: 'compact' } // brawl: a single tall, narrow formation
+    : isAmbush
+      ? { kind: 'triangle' } // NPC ambushers: wedge pointed at the player
+      : { kind: 'grouped', groupCount: squadCountFor(attacker) };
 
-  const defenderFormation: FormationSpec | undefined = isCaravan
-    ? { kind: 'columns' } // caravan guards: columns of maximum height
-    : isDragon
-      ? { kind: 'dragon' } // the dragon's fixed 50-unit coiled-dragon silhouette
-      : isPlayerBattle
-        ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
-        : isAmbush
-          ? { kind: 'grouped', groupCount: squadCountFor(attacker) } // real player occupies the defender role here
-          : (isTile || isRogue) && tile
-            ? { kind: 'grouped', groupCount: Math.max(1, tile.level) } // tile guards: one cluster per tower (tile level)
-            : undefined;
+  const defenderFormation: FormationSpec | undefined = isBrawl
+    ? { kind: 'compact' }
+    : isCaravan
+      ? { kind: 'columns' } // caravan guards: columns of maximum height
+      : isDragon
+        ? { kind: 'dragon' } // the dragon's fixed 50-unit coiled-dragon silhouette
+        : isPlayerBattle
+          ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
+          : isAmbush
+            ? { kind: 'grouped', groupCount: squadCountFor(attacker) } // real player occupies the defender role here
+            : (isTile || isRogue) && tile
+              ? { kind: 'grouped', groupCount: Math.max(1, tile.level) } // tile guards: one cluster per tower (tile level)
+              : undefined;
 
   // A fortified tile's level bonus is now a straight % addition to every
   // roll the defending garrison's units make each turn (applies in both

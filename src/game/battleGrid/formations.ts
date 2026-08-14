@@ -9,7 +9,7 @@ interface PlacedCell extends LocalCell {
   kind: UnitKind;
 }
 
-export type FormationKind = 'square' | 'triangle' | 'columns' | 'grouped' | 'dragon';
+export type FormationKind = 'square' | 'triangle' | 'columns' | 'grouped' | 'dragon' | 'compact';
 
 export interface FormationSpec {
   kind: FormationKind;
@@ -19,42 +19,191 @@ export interface FormationSpec {
   groupCount?: number;
 }
 
-/**
- * A compact, symmetric diamond/hexagon of `total` cells, oriented with its
- * enemy-facing front at local col 0 (see placeFormation's per-side mirroring).
- * The column heights taper up 1,2,…,h-1, run flat at the full height h across
- * a middle band, then taper back down — a hexagonal "lens" that stays compact
- * (roughly as wide as tall) for small counts and rounds out into a diamond for
- * larger ones. Each column is vertically centred, so the figure is symmetric
- * top-to-bottom (and front-to-back to within one column). Rows are normalised
- * to start at 0.
- */
-function diamondShape(total: number): LocalCell[] {
-  if (total <= 0) return [];
+// ── Hand-authored "circle" formations for headcounts 2-10 ──
+// Local (col,row) offsets, tip/front-neutral orientation; oriented per side
+// by placeFormation below. 1 unit is a trivial single cell (no spec given).
+const SHAPES: Record<number, LocalCell[]> = {
+  1: [{ col: 0, row: 0 }],
+  2: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+  ],
+  3: [
+    { col: 0, row: 0 },
+    { col: 0, row: 1 },
+    { col: 0, row: 2 },
+  ],
+  4: [
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 1, row: 2 },
+  ],
+  5: [
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 1, row: 2 },
+  ],
+  6: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+  ],
+  7: [
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+  8: [
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+  9: [
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 4, row: 1 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+  10: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+  ],
+};
 
-  const h = Math.max(1, Math.floor(Math.sqrt(total))); // full column height
-  const taperSum = h * (h - 1); // both 1..h-1 tapers
-  const middle = total - taperSum; // units in the full-height middle band
-  const m = Math.max(1, Math.floor(middle / h)); // full-height middle columns
-  const rem = middle - m * h; // leftover, bumped onto the centre column(s)
-
-  const mid = new Array(m).fill(h);
-  const bumpOrder = centerOutwardOrder(m);
-  for (let i = 0; i < rem; i++) mid[bumpOrder[i % m]] += 1;
-
-  const widths: number[] = [];
-  for (let i = 1; i < h; i++) widths.push(i); // taper up
-  widths.push(...mid); // flat middle band
-  for (let i = h - 1; i >= 1; i--) widths.push(i); // taper down
-
-  const cells: LocalCell[] = [];
-  widths.forEach((count, col) => {
-    const startRow = -Math.floor(count / 2);
-    for (let i = 0; i < count; i++) cells.push({ col, row: startRow + i });
-  });
-  const minRow = Math.min(...cells.map((c) => c.row));
-  return cells.map((c) => ({ col: c.col, row: c.row - minRow }));
-}
+// ── Brawl (compact board) formations for headcounts 1-12 ──
+// Deliberately tall and narrow (few columns) so a brawl needs fewer grid
+// columns and can render bigger cells. Authored front-neutral (local col 0 is
+// the enemy-facing edge, oriented per side by placeFormation), rows top-down.
+const BRAWL_SHAPES: Record<number, LocalCell[]> = {
+  1: [{ col: 0, row: 0 }],
+  2: [
+    { col: 0, row: 0 },
+    { col: 0, row: 1 },
+  ],
+  3: [
+    { col: 0, row: 0 },
+    { col: 1, row: 1 },
+    { col: 0, row: 2 },
+  ],
+  4: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+  ],
+  5: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 1, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+  ],
+  6: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+  ],
+  7: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+  ],
+  8: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 1, row: 3 },
+    { col: 2, row: 3 },
+  ],
+  9: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 1, row: 3 },
+    { col: 2, row: 3 },
+  ],
+  10: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 1, row: 3 },
+    { col: 2, row: 3 },
+    { col: 0, row: 4 },
+    { col: 1, row: 4 },
+  ],
+  11: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 1, row: 3 },
+    { col: 2, row: 3 },
+    { col: 0, row: 4 },
+    { col: 1, row: 4 },
+  ],
+  12: [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 0, row: 3 },
+    { col: 1, row: 3 },
+    { col: 2, row: 3 },
+    { col: 0, row: 4 },
+    { col: 1, row: 4 },
+  ],
+};
 
 /** The dragon's fixed 50-unit (DRAGON_UNITS) silhouette — a coiled dragon
  * shape, hand-derived from a reference pixel-art dragon by downsampling to
@@ -309,7 +458,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
   if (total <= 0) return [];
 
   if (!forcedGroupCount && total <= 10) {
-    const ordered = orderByFrontness(diamondShape(total));
+    const ordered = orderByFrontness(SHAPES[total]);
     return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
   }
 
@@ -367,7 +516,41 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
  * a wedge that keeps widening and gets abruptly truncated wherever the
  * army runs out. */
 function triangleLayout(comp: { militia: number; riders: number }): PlacedCell[] {
-  const ordered = orderByFrontness(diamondShape(comp.militia + comp.riders));
+  const total = comp.militia + comp.riders;
+  if (total <= 0) return [];
+  const cells: LocalCell[] = [];
+
+  let k = 0;
+  while ((k + 2) * (k + 2) <= total) k++;
+  const flankSum = k * (k + 1);
+  const peak = total - flankSum;
+
+  const widths: number[] = [];
+  for (let i = 1; i <= k; i++) widths.push(i);
+  widths.push(peak);
+  for (let i = k; i >= 1; i--) widths.push(i);
+
+  widths.forEach((count, col) => {
+    const startRow = -Math.floor(count / 2);
+    for (let i = 0; i < count; i++) cells.push({ col, row: startRow + i });
+  });
+
+  const ordered = orderByFrontness(cells);
+  return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
+}
+
+/**
+ * Brawl formation: a tall, narrow shape from BRAWL_SHAPES (1-12) — see that
+ * table. Riders take the front cells (lowest local col) as everywhere else.
+ * Falls back to full-height columns for the (out-of-range) 13+ case, which a
+ * brawl never actually reaches (both sides are capped at BRAWL_THRESHOLD).
+ */
+function compactLayout(comp: { militia: number; riders: number }, maxRows: number): PlacedCell[] {
+  const total = comp.militia + comp.riders;
+  if (total <= 0) return [];
+  const shape = BRAWL_SHAPES[total];
+  if (!shape) return columnsLayout(comp, maxRows);
+  const ordered = orderByFrontness(shape);
   return ordered.map((c, i) => ({ ...c, kind: i < comp.riders ? 'rider' : 'militia' }));
 }
 
@@ -419,6 +602,9 @@ export function placeFormation(
       break;
     case 'columns':
       placed = columnsLayout({ militia, riders }, rows);
+      break;
+    case 'compact':
+      placed = compactLayout({ militia, riders }, rows);
       break;
     case 'grouped':
       placed = layoutGroup({ militia, riders }, formation.groupCount);
