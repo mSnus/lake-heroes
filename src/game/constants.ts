@@ -73,8 +73,8 @@ export const SMALL_BATTLEFIELD_ROWS = 15;
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most
 // BRAWL_THRESHOLD grid units.
-export const BRAWL_COLS = 9;
-export const BRAWL_ROWS = 9;
+export const BRAWL_COLS = 6;
+export const BRAWL_ROWS = 7;
 export const MILITIA_HP = 6;
 export const MILITIA_DMG_MIN = 1;
 export const MILITIA_DMG_MAX = 4;
