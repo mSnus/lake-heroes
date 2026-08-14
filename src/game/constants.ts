@@ -55,14 +55,19 @@ export const BATTLEFIELD_ROWS = 16;
 // field at most this many grid units -- easier to read a small fight without
 // needing the full battlefield's tight packing.
 export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
-// Below this, an automatic battle also gets a smaller board (SMALL_BATTLEFIELD_
-// COLS/ROWS instead of BATTLEFIELD_COLS/ROWS). A real army's squads are always
+// Below this, an automatic battle also gets a shorter board (SMALL_BATTLEFIELD_
+// ROWS instead of BATTLEFIELD_ROWS). A real army's squads are always
 // front-loaded per tier (each slot filled to capacity before the next starts),
 // so a total under 30 can never actually split into more than 4 non-empty
 // squads (verified by enumeration) -- one fewer than the 5 a 30-40 army can
 // reach, which is why this band tolerates a shorter board than BATTLEFIELD_ROWS.
+// Width can't shrink the same way: two wide single-tier armies (e.g. both
+// all-militia) can still need the full BATTLEFIELD_COLS to keep their
+// formations from touching at the center gap, verified by exhaustive search
+// over every real militia/riders split under 30 -- so cols matches the
+// standard board and only rows gets smaller.
 export const SMALL_AUTO_BATTLE_THRESHOLD = 30;
-export const SMALL_BATTLEFIELD_COLS = 9;
+export const SMALL_BATTLEFIELD_COLS = BATTLEFIELD_COLS;
 export const SMALL_BATTLEFIELD_ROWS = 15;
 // Brawl (small skirmish): a compact board with larger cells, used for the
 // turn-based / manually-controlled brawl fights instead of the full-size

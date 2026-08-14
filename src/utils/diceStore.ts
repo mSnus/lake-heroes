@@ -13,8 +13,7 @@ const listeners = new Set<() => void>();
 
 // Cheat-screen "force next roll": makes the next movement die (DiceWidget's
 // single-die roll) return this value instead of a random 1-6, then reverts
-// to normal randomness. Doesn't touch the unrelated double-die battle roll
-// (DiceWidgetDouble).
+// to normal randomness.
 let forcedRoll: number | null = null;
 
 export function setForcedRoll(value: number): void {

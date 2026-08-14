@@ -46,27 +46,3 @@ export const DiceWidget: React.FC<Props> = ({ onRoll, rolling }) => {
     </div>
   );
 };
-
-/** Rolls two dice simultaneously and returns their sum. Used when defence > 12. */
-export const DiceWidgetDouble: React.FC<{ onRoll: (total: number) => void }> = ({ onRoll }) => {
-  const diceRef = useRef<ReactDiceRef>(null);
-  const val1Ref = useRef(1);
-  const val2Ref = useRef(1);
-
-  useEffect(() => {
-    val1Ref.current = rollDice();
-    val2Ref.current = rollDice();
-    diceRef.current?.rollAll([val1Ref.current, val2Ref.current]);
-    const timer = setTimeout(() => {
-      closeModal();
-      onRoll(val1Ref.current + val2Ref.current);
-    }, ROLL_TIME_MS + 200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="dice-container">
-      <ReactDice numDice={2} ref={diceRef} {...DICE_PROPS} />
-    </div>
-  );
-};
