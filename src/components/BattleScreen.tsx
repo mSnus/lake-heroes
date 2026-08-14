@@ -21,7 +21,18 @@ import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { useT } from '../i18n';
-import { DRAGON_UNITS, BATTLEFIELD_COLS, BATTLEFIELD_ROWS, BRAWL_COLS, BRAWL_ROWS, BRAWL_THRESHOLD, AUTO_BATTLE_LARGE_THRESHOLD } from '../game/constants';
+import {
+  DRAGON_UNITS,
+  BATTLEFIELD_COLS,
+  BATTLEFIELD_ROWS,
+  BRAWL_COLS,
+  BRAWL_ROWS,
+  BRAWL_THRESHOLD,
+  AUTO_BATTLE_LARGE_THRESHOLD,
+  SMALL_AUTO_BATTLE_THRESHOLD,
+  SMALL_BATTLEFIELD_COLS,
+  SMALL_BATTLEFIELD_ROWS,
+} from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
@@ -203,8 +214,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     (isTile || isRogue || isPlayerBattle) &&
     attackerGridTotal <= BRAWL_THRESHOLD &&
     defenderGridTotal <= BRAWL_THRESHOLD;
-  const gridCols = isBrawl ? BRAWL_COLS : BATTLEFIELD_COLS;
-  const gridRows = isBrawl ? BRAWL_ROWS : BATTLEFIELD_ROWS;
+  // A non-brawl battle under SMALL_AUTO_BATTLE_THRESHOLD also gets a smaller
+  // board -- see SMALL_BATTLEFIELD_COLS/ROWS's comment in constants.ts for why
+  // that's safe (a real army under 30 can never split into more than 4
+  // squads, so it needs less vertical room than the standard board budgets
+  // for a 30-40 army's worst case of 5). Scoped to the same modes as isBrawl:
+  // that squad-count math only holds for the 'grouped' formation these modes
+  // use -- ambush's triangle wedge needs far more height at the same
+  // headcount (a 29-unit triangle needs 17 rows), so it stays off the small
+  // board and keeps the standard one.
+  const isSmallAutoBattle =
+    (isTile || isRogue || isPlayerBattle) &&
+    attackerGridTotal < SMALL_AUTO_BATTLE_THRESHOLD &&
+    defenderGridTotal < SMALL_AUTO_BATTLE_THRESHOLD;
+  const gridCols = isBrawl ? BRAWL_COLS : isSmallAutoBattle ? SMALL_BATTLEFIELD_COLS : BATTLEFIELD_COLS;
+  const gridRows = isBrawl ? BRAWL_ROWS : isSmallAutoBattle ? SMALL_BATTLEFIELD_ROWS : BATTLEFIELD_ROWS;
   // A small automatic battle (both sides at or below the threshold, but
   // still too big to be a brawl) gets bigger cells/units too -- easier to
   // read than the battlefield's default tight packing.

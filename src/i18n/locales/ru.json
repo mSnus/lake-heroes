@@ -182,6 +182,7 @@
     "banzai": "Банзай!",
     "claimIt": "Занять!",
     "razed": "разрушено",
+    "upgradable": "можно улучшить",
     "yieldToKing": "передать",
     "takeBack": "забрать обратно",
     "confirmYield": "Передать «{tileName}» королю за {gold}🟡?",

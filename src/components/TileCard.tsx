@@ -511,7 +511,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 style={{ backgroundColor: tile.groupColor + '4f' }}
                 onClick={openUpgradesScreen}
               >
-                upgradable
+                {t('tileCard.upgradable')}
               </div>
             )}
           </div>

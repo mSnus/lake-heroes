@@ -182,6 +182,7 @@
     "banzai": "Banzai!",
     "claimIt": "Claim it!",
     "razed": "razed",
+    "upgradable": "upgradable",
     "yieldToKing": "yield",
     "takeBack": "take back",
     "confirmYield": "Yield {tileName} to the King for {gold}🟡?",
