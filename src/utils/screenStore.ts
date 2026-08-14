@@ -83,6 +83,9 @@ export function showScreen(config: ScreenConfig): void {
   // below wherever the page happened to be scrolled (e.g. after scrolling
   // down to read the game log) and look like nothing happened.
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Lock the page body so it can't be scrolled behind/around the screen
+  // while one is showing -- restored by clearScreen().
+  document.body.classList.add('screen-open');
 }
 
 export function markScreenResolved(): void {
@@ -97,6 +100,7 @@ export function clearScreen(): void {
   state = null;
   localStorage.removeItem('game-screen');
   emit();
+  document.body.classList.remove('screen-open');
 }
 
 export function showPrisonScreen(message: string): void {
