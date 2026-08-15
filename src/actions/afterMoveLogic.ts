@@ -80,6 +80,14 @@ export function afterMoveLogic(
       setEndTurn();
       return;
     }
+    // Already paid/fought/accepted the loss this turn -- a reload before End
+    // Turn was clicked would otherwise re-derive and re-show the same
+    // encounter from scratch, since turnPhase is still 'after-move' and
+    // (short of a win) tile ownership hasn't changed.
+    if (player.hasResolvedTileEncounterThisTurn) {
+      setEndTurn();
+      return;
+    }
     showTileEncounterScreen(board, updateGameState);
     return;
   }

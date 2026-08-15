@@ -43,6 +43,12 @@ export function resolveTileBattle(
   const goldBefore = attacker.gold;
   const claiming = !tile.isOwned();
 
+  // A tie leaves the tile owned by the same opponent, same as before the
+  // fight -- without this, a reload right after a tied battle would
+  // re-derive and re-show the same encounter screen from scratch (see
+  // Player.hasResolvedTileEncounterThisTurn).
+  attacker.hasResolvedTileEncounterThisTurn = true;
+
   let message = '';
   let victoryBg = false;
   let lostBg = false;

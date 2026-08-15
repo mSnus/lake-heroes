@@ -42,6 +42,7 @@ export function payFee(board: GameState | null, updateGameState: (board: GameSta
     updateGameState(board);
   }
 
+  player.hasResolvedTileEncounterThisTurn = true;
   clearScreen();
   setEndTurn();
 }

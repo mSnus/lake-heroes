@@ -29,6 +29,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   board.gameMessage = '';
   board.activePlayer.hasClaimedThisTurn = false;
   board.activePlayer.hasConsideredClaimThisTurn = false;
+  board.activePlayer.hasResolvedTileEncounterThisTurn = false;
   board.activePlayer.upgradesThisTurn = 0;
 
   if (board.activePlayerIndex === 0) {

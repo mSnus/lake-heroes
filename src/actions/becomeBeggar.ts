@@ -6,6 +6,7 @@ import { t } from '../i18n';
 export function becomeBeggar(board: GameState, updateGameState: (board: GameState) => void) {
   const player = board.activePlayer;
 
+  player.hasResolvedTileEncounterThisTurn = true;
   say(t('becomeBeggar.becomesBeggar', { playerName: player.name }), 'error');
 
   // 1. If player has any tiles, they are set unowned, level 1 (and all upgrades are removed)

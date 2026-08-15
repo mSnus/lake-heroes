@@ -39,6 +39,14 @@ export class Player {
   isPrisonerOfWar: boolean;
   hasClaimedThisTurn: boolean;
   hasConsideredClaimThisTurn: boolean;
+  /** Set once the current opponent-tile encounter (pay fee / fight / accept
+   * loss) has been resolved for this turn -- lets afterMoveLogic.ts skip
+   * re-showing the same encounter screen if the page is reloaded before the
+   * player gets around to clicking End Turn (turnPhase stays 'after-move'
+   * either way, so a reload would otherwise re-derive and re-show it from
+   * scratch since paying a fee, for instance, doesn't change tile
+   * ownership). */
+  hasResolvedTileEncounterThisTurn: boolean;
   hasBeenOfferedDragonChallenge: boolean;
   /** Set once the King's Promotion screen has fired — only then can Riders
    * actually be recruited, even if fame already meets KNIGHT_FAME. */
@@ -70,6 +78,7 @@ export class Player {
     this.isPrisonerOfWar = false;
     this.hasClaimedThisTurn = false;
     this.hasConsideredClaimThisTurn = false;
+    this.hasResolvedTileEncounterThisTurn = false;
     this.hasBeenOfferedDragonChallenge = false;
     this.isKnight = false;
     this.upgradesThisTurn = 0;
