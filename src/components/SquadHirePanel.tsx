@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
+import { DecoratedSlider } from './DecoratedSlider';
 import { useT } from '../i18n';
 import '../styles/SquadHirePanel.css';
 
@@ -28,18 +29,22 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
 
   // maxAmount can shrink after this row's own render — hiring on the OTHER
   // row spends the same shared gold, or a sale/purchase elsewhere changes
-  // slot capacity. Keep the input from sitting above whatever's actually
+  // slot capacity. Keep the slider from sitting above whatever's actually
   // still buyable.
   useEffect(() => {
     setAmount((a) => Math.min(a, maxAmount));
   }, [maxAmount]);
 
+  // Live value while the slider is being dragged, before it's actually
+  // committed on release -- null when not dragging, so the price/labels
+  // fall back to the real `amount`.
+  const [previewAmount, setPreviewAmount] = useState<number | null>(null);
+  const displayedAmount = previewAmount ?? amount;
+
   const handleBuy = () => {
     onBuy(amount, tier);
     setAmount(0);
   };
-  const handleInc = () => setAmount((a) => Math.min(maxAmount, a + 1));
-  const handleDec = () => setAmount((a) => Math.max(0, a - 1));
 
   return (
     <div className="hire-row">
@@ -49,23 +54,18 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
           {t('squadHirePanel.priceEachMax', { price: unitPrice, max: maxAmount })}
         </div>
       </div>
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => {
-          const parsed = parseInt(e.target.value, 10);
-          setAmount(Number.isNaN(parsed) ? 0 : Math.max(0, Math.min(maxAmount, parsed)));
-        }}
-        min="0"
+      <div className="hire-row-price-tag">{unitPrice}🟡</div>
+      <DecoratedSlider
+        min={0}
         max={maxAmount}
-        className="units-input"
+        value={displayedAmount}
+        onPreview={setPreviewAmount}
+        onCommit={(v) => {
+          setAmount(v);
+          setPreviewAmount(null);
+        }}
       />
-      <button className="game-menu-button silver" onClick={handleDec}>
-        −
-      </button>
-      <button className="game-menu-button silver" onClick={handleInc} disabled={amount >= maxAmount}>
-        +
-      </button>
+      <div className="hire-row-price-tag">{displayedAmount * unitPrice}🟡</div>
       <button
         className="game-menu-button hire-submit"
         onClick={handleBuy}

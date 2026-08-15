@@ -7,7 +7,7 @@ import { Fade } from './Fade';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
-import { GarrisonBalanceSlider } from './GarrisonBalanceSlider';
+import { DecoratedSlider } from './DecoratedSlider';
 import { fmtPrice } from './TileCard';
 import { clearScreen } from '../utils/screenStore';
 import { say } from '../utils/say';
@@ -279,7 +279,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                         </div>
                         <div>{t('tileCard.defence')}</div>
                       </div>
-                      <GarrisonBalanceSlider
+                      <DecoratedSlider
                         min={0}
                         max={maxGarrison}
                         value={displayedGarrison}

@@ -115,19 +115,6 @@
   font-family: 'Texturina';
 }
 
-.units-input-row {
-  display: flex;
-  align-items: center;
-  font-size: 1.2rem;
-  gap: 8px;
-  font-family: 'Texturina';
-}
-
-.units-input {
-  font-family: 'Texturina';
-  max-width: 3rem;
-}
-
 @media (min-width: 769px) {
   .game-menu > div {
     margin-left: auto;

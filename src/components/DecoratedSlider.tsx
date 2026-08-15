@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import '../styles/GarrisonBalanceSlider.css';
+import '../styles/DecoratedSlider.css';
 
-interface GarrisonBalanceSliderProps {
+interface DecoratedSliderProps {
   min: number;
   max: number;
   value: number;
@@ -17,8 +17,11 @@ interface GarrisonBalanceSliderProps {
 /**
  * A fully custom-styled (no native <input type="range">) horizontal slider:
  * drag the thumb, or click/tap anywhere on the track to jump straight there.
+ * Used wherever a screen needs to balance a value between two extremes (tile
+ * garrison vs. army, unit hire quantity, etc) with a big decorated look
+ * instead of a plain number input.
  */
-export const GarrisonBalanceSlider: React.FC<GarrisonBalanceSliderProps> = ({
+export const DecoratedSlider: React.FC<DecoratedSliderProps> = ({
   min,
   max,
   value,
@@ -58,19 +61,19 @@ export const GarrisonBalanceSlider: React.FC<GarrisonBalanceSliderProps> = ({
 
   return (
     <div
-      className={'garrison-slider' + (dragging ? ' garrison-slider-dragging' : '')}
+      className={'decorated-slider' + (dragging ? ' decorated-slider-dragging' : '')}
       ref={trackRef}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      <div className="garrison-slider-track">
-        <div className="garrison-slider-fill" style={{ width: `${pct}%` }} />
+      <div className="decorated-slider-track">
+        <div className="decorated-slider-fill" style={{ width: `${pct}%` }} />
       </div>
-      <div className="garrison-slider-thumb" style={{ left: `${pct}%` }} />
+      <div className="decorated-slider-thumb" style={{ left: `${pct}%` }} />
     </div>
   );
 };
 
-export default GarrisonBalanceSlider;
+export default DecoratedSlider;

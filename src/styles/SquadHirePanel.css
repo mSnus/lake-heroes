@@ -43,3 +43,11 @@
 .hire-submit {
   white-space: nowrap;
 }
+
+/* Unit price (left of the slider) / total price for the selected amount
+   (right of it) -- live, updates while dragging. */
+.hire-row-price-tag {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}

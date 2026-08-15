@@ -1,4 +1,4 @@
-.garrison-slider {
+.decorated-slider {
   position: relative;
   flex: 1 1 auto;
   min-width: 140px;
@@ -10,7 +10,7 @@
   user-select: none;
 }
 
-.garrison-slider-track {
+.decorated-slider-track {
   position: relative;
   width: 100%;
   height: 6px;
@@ -20,14 +20,14 @@
   overflow: hidden;
 }
 
-.garrison-slider-fill {
+.decorated-slider-fill {
   position: absolute;
   inset: 0 auto 0 0;
   height: 100%;
   background: linear-gradient(90deg, #8a6a2f, #cf9d39);
 }
 
-.garrison-slider-thumb {
+.decorated-slider-thumb {
   position: absolute;
   top: 50%;
   width: 22px;
@@ -41,6 +41,6 @@
   transition: scale 0.15s ease;
 }
 
-.garrison-slider-dragging .garrison-slider-thumb {
+.decorated-slider-dragging .decorated-slider-thumb {
   scale: 1.15;
 }
