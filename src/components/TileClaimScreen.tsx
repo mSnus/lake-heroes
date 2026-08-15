@@ -7,6 +7,7 @@ import { Fade } from './Fade';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
+import { GarrisonBalanceSlider } from './GarrisonBalanceSlider';
 import { fmtPrice } from './TileCard';
 import { clearScreen } from '../utils/screenStore';
 import { say } from '../utils/say';
@@ -76,6 +77,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     }
     setGarrisonAmount(clamped);
   };
+
+  // Live value while the slider is being dragged, before it's actually
+  // applied (and validated) on release -- null when not dragging, so the
+  // labels fall back to the real committed garrisonAmount.
+  const [previewGarrison, setPreviewGarrison] = useState<number | null>(null);
+  const displayedGarrison = previewGarrison ?? garrisonAmount;
 
   useEffect(() => {
     if (variant !== 'claimed' || !player.isComputer) return;
@@ -255,55 +262,39 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   </div>
                 )}
                 {totalMilitiaPool > 0 && !tile.isYielded && (
-                  <div className="tc-td" style={{paddingTop: '1.5rem', textAlign: 'center'}}>
+                  <div className="tc-td" style={{ paddingTop: '1.5rem', textAlign: 'center' }}>
                     {t('tileClaimScreen.onGuard')}
-                    <div className="units-input-row" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
-                      {tJsx('tileClaimScreen.onGuardLine', {
-                        slots: <span className="value">{tile.garrisonSlots}</span>,
-                        input: (
-                          <input
-                            type="number"
-                            value={garrisonAmount}
-                            onChange={(e) => {
-                              const parsed = parseInt(e.target.value, 10);
-                              applyGarrison(Number.isNaN(parsed) ? 0 : parsed);
-                            }}
-                            min="0"
-                            max={maxGarrison}
-                            id="garrisonInput"
-                            className="units-input"
-                          />
-                        ),
-                      })}
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
-                        <button
-                          className="game-menu-button silver"
-                          onClick={() => applyGarrison(garrisonAmount - 1)}
-                        >
-                          −
-                        </button>
-                        <button
-                          className="game-menu-button silver"
-                          onClick={() => applyGarrison(garrisonAmount + 1)}
-                        >
-                          +
-                        </button>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '12px',
+                        marginTop: '0.5rem',
+                      }}
+                    >
+                      <div className="big-icon-hint">
+                        <div>
+                          {tile.garrisonSlots}🏯 {displayedGarrison}🧍
+                        </div>
+                        <div>{t('tileCard.defence')}</div>
+                      </div>
+                      <GarrisonBalanceSlider
+                        min={0}
+                        max={maxGarrison}
+                        value={displayedGarrison}
+                        onPreview={setPreviewGarrison}
+                        onCommit={(v) => {
+                          applyGarrison(v);
+                          setPreviewGarrison(null);
+                        }}
+                      />
+                      <div className="big-icon-hint">
+                        <div>{totalMilitiaPool - displayedGarrison}🧍🚩</div>
+                        <div>{t('tileClaimScreen.army')}</div>
                       </div>
                     </div>
-                    <div>
-                      {(() => {
-                        const stayingMilitia = totalMilitiaPool - garrisonAmount;
-                        const stayingRiders = player.riders;
-                        if (stayingMilitia > 0 && stayingRiders > 0) {
-                          return t('tileClaimScreen.stayInArmyBoth', { count: stayingMilitia, riders: stayingRiders });
-                        }
-                        if (stayingRiders > 0) {
-                          return t('tileClaimScreen.stayInArmyRidersOnly', { riders: stayingRiders });
-                        }
-                        return t('tileClaimScreen.stayInArmy', { count: stayingMilitia });
-                      })()}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                    <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: '0.5rem' }}>
                       {t('tileClaimScreen.garrisonVisitCaveat')}
                     </div>
                   </div>
