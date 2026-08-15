@@ -148,8 +148,8 @@
   "kingsCastle": {
     "title": "Замок короля",
     "newContract": "📜 Новый контракт: захватите\n{tileName} за награду {award}🟡!",
-    "cannotRecruit": "Ваше золото {gold}\nи заполненные слоты армии\nне позволяют нанять больше юнитов",
-    "cannotRecruitNoMoney": "Ваше золото {gold}\nне позволяет нанять больше юнитов",
+    "cannotRecruit": "Ваше золото\nи заполненные слоты армии\nне позволяют нанять больше юнитов",
+    "cannotRecruitNoMoney": "Ваше золото\nне позволяет нанять больше юнитов",
     "iAmTheGreatest": "⚜️ Я величайший!",
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },

@@ -148,8 +148,8 @@
   "kingsCastle": {
     "title": "The King's Castle",
     "newContract": "📜 New contract: claim\n{tileName} for a reward of {award}🟡!",
-    "cannotRecruit": "Your money {gold}\nand full army slots\ndo not allow you to recruit more units",
-    "cannotRecruitNoMoney": "Your money {gold}\ndoes not allow you to recruit more units",
+    "cannotRecruit": "Your money\nand full army slots\ndo not allow you to recruit more units",
+    "cannotRecruitNoMoney": "Your money\ndoes not allow you to recruit more units",
     "iAmTheGreatest": "⚜️ I am the greatest!",
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },

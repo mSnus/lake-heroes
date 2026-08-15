@@ -122,9 +122,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
         {atMax ? (
           <h3 style={{ whiteSpace: 'pre-line' }}>
-            {tJsx(slotsFull ? 'kingsCastle.cannotRecruit' : 'kingsCastle.cannotRecruitNoMoney', {
-              gold: <span className="value">{player.gold}🟡</span>,
-            })}
+            {t(slotsFull ? 'kingsCastle.cannotRecruit' : 'kingsCastle.cannotRecruitNoMoney')}
           </h3>
         ) : (
           <SquadHirePanel player={player} showRiders={canRecruitRiders} onBuy={handleBuy} />
