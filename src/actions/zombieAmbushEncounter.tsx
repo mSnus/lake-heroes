@@ -22,9 +22,15 @@ export function checkZombieAmbushEncounter(
   const tile = board.activeTile;
 
   if (tile.isOwned() || !tile.abandoned || tile.garrison <= 0) return false;
-  if (Math.random() >= ZOMBIE_AMBUSH_CHANCE) return false;
 
   const attackerUnits = Math.max(1, Math.round(tile.garrison * ZOMBIE_AMBUSH_FORCE_RATIO));
+
+  // Only ambush a player whose army can actually field a real fight against
+  // the zombie force -- skips a near-defenseless player getting wiped out by
+  // a garrison much bigger than their whole army.
+  if (player.units < attackerUnits) return false;
+
+  if (Math.random() >= ZOMBIE_AMBUSH_CHANCE) return false;
 
   const startBattle = () => {
     showScreen({
