@@ -1,5 +1,5 @@
 .player-pane {
-  width: 100vw;
+  width: 90vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,7 +19,7 @@
   padding-bottom: 4px;
   padding-top: 4px;
   gap: 8px;
-  text-align: center;
+  justify-content: center;
 }
 
 .action-bar .current-player {
@@ -86,10 +86,10 @@
 
 .player-stats-gold {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 4px 16px;
   white-space: nowrap;
-  width: calc(100% - 64px);
+  width: 100%;
 }
 
 .player-stats-army-slots {
