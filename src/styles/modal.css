@@ -193,7 +193,8 @@ button.decorated:disabled {
   padding: 1rem;
   background-color: #f5f5dc29;
   border-radius: 12px;
-  width: fit-content;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   font-size: 0.8em;
   font-weight: normal;

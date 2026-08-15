@@ -18,10 +18,18 @@ export function handleKingCastle(
 
   console.log('Action: king castle for', board.activePlayer);
 
-  const contract = issueKingsContract(board, board.activePlayer);
-  if (contract) {
-    const tileName = board.tiles[contract.tilePosition]?.name ?? t('king.aTile');
-    say(t('king.contractOffered', { tileName, award: contract.award }), 'success');
+  const player = board.activePlayer;
+  // Only roll for a contract the first time this screen opens per turn --
+  // otherwise closing the modal and re-clicking the King's Castle tile
+  // would keep re-rolling the 20% chance for free.
+  let contract = null as ReturnType<typeof issueKingsContract>;
+  if (!player.hasCheckedKingsContractThisTurn) {
+    player.hasCheckedKingsContractThisTurn = true;
+    contract = issueKingsContract(board, player);
+    if (contract) {
+      const tileName = board.tiles[contract.tilePosition]?.name ?? t('king.aTile');
+      say(t('king.contractOffered', { tileName, award: contract.award }), 'success');
+    }
     updateGameState(board);
   }
 

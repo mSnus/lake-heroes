@@ -47,6 +47,11 @@ export class Player {
    * scratch since paying a fee, for instance, doesn't change tile
    * ownership). */
   hasResolvedTileEncounterThisTurn: boolean;
+  /** Set the first time the King's Castle screen is opened this turn (even
+   * if the contract roll fails) -- guards issueKingsContract against being
+   * re-rolled by re-clicking the King's Castle tile repeatedly before
+   * actually ending the turn. */
+  hasCheckedKingsContractThisTurn: boolean;
   hasBeenOfferedDragonChallenge: boolean;
   /** Set once the King's Promotion screen has fired — only then can Riders
    * actually be recruited, even if fame already meets KNIGHT_FAME. */
@@ -79,6 +84,7 @@ export class Player {
     this.hasClaimedThisTurn = false;
     this.hasConsideredClaimThisTurn = false;
     this.hasResolvedTileEncounterThisTurn = false;
+    this.hasCheckedKingsContractThisTurn = false;
     this.hasBeenOfferedDragonChallenge = false;
     this.isKnight = false;
     this.upgradesThisTurn = 0;
