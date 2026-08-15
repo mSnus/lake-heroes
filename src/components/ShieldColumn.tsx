@@ -215,7 +215,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         </div>
       ) : (
         (diceActive || canEndTurn) && (
-          <div style={{ ...colStyle, bottom: '60px' }}>
+          <div style={{ ...colStyle, top: 'calc(100vw * 5 / 4 - 25px)' }}>
             {diceActive && (
               <div
                 className="shield-button-container main-button"

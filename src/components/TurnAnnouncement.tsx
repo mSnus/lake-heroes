@@ -42,8 +42,14 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
 
   return (
     <div className="turn-announcement">
-      <DecoratedButton className="turn-announcement-badge" tabIndex={-1}>
-        <span>{tJsx('turnAnnouncement.text', { playerName: <PlayerLabel player={player} bold /> })}</span>
+      <DecoratedButton
+        className="turn-announcement-badge"
+        tabIndex={-1}
+        style={{ fontWeight: 'normal' }}
+      >
+        <span>
+          {tJsx('turnAnnouncement.text', { playerName: <PlayerLabel player={player}/> })}
+        </span>
       </DecoratedButton>
     </div>
   );
