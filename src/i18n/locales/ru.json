@@ -160,6 +160,8 @@
   "squadDisplay": {
     "sellSquad": "Продать этот отряд",
     "sell": "продать",
+    "upgradeSquad": "Улучшить отряд до рыцарей за {gold}🟡",
+    "upgraded": "{playerName} улучшил {amount}🧍 до рыцарей за {gold}🟡",
     "youHaveSquads": "{squads} отрядов:"
   },
   "tileCard": {

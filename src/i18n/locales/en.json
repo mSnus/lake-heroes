@@ -160,6 +160,8 @@
   "squadDisplay": {
     "sellSquad": "Sell this squad",
     "sell": "sell",
+    "upgradeSquad": "Upgrade this squad to Riders for {gold}🟡",
+    "upgraded": "{playerName} upgraded {amount}🧍 to Riders for {gold}🟡",
     "youHaveSquads": "{squads} squads:"
   },
   "tileCard": {

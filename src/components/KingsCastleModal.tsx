@@ -19,6 +19,7 @@ interface BuyUnitsModalProps {
   newContract?: KingsContract | null;
   onBuy: (amount: number, tier: UnitTier) => void;
   onSell: (tier: UnitTier, amount: number) => void;
+  onUpgrade: (count: number) => void;
   onSkip: () => void;
 }
 
@@ -27,6 +28,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   newContract,
   onBuy,
   onSell,
+  onUpgrade,
   onSkip,
 }) => {
   const t = useT();
@@ -45,6 +47,10 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   };
   const handleSell = (tier: UnitTier, count: number) => {
     onSell(tier, count);
+    forceRerender((v) => v + 1);
+  };
+  const handleUpgrade = (count: number) => {
+    onUpgrade(count);
     forceRerender((v) => v + 1);
   };
 
@@ -117,6 +123,9 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           riders={player.riders}
           totalSlots={player.armySlots}
           onSellSquad={handleSell}
+          onUpgradeSquad={handleUpgrade}
+          canUpgradeToRiders={canRecruitRiders}
+          playerGold={player.gold}
           className="squad-display-large"
         />
 
