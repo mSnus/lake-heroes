@@ -215,9 +215,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
   // Brawl: a small skirmish (both sides at or below BRAWL_THRESHOLD units).
   // These fight on a compact, larger-celled board (see BRAWL_COLS/ROWS) and
-  // are the ones that get turn-based / manual control.
+  // are the ones that get turn-based / manual control. Ambush stays excluded:
+  // its attacker/defender roles are reversed (the real player occupies the
+  // DEFENDER grid role), which attackerManual/defenderManual below aren't
+  // set up to handle.
   const isBrawl =
-    (isTile || isRogue || isPlayerBattle) &&
+    (isTile || isRogue || isPlayerBattle || isCaravan) &&
     attackerGridTotal <= BRAWL_THRESHOLD &&
     defenderGridTotal <= BRAWL_THRESHOLD;
   // A non-brawl battle under SMALL_AUTO_BATTLE_THRESHOLD also gets a smaller
