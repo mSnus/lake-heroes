@@ -155,9 +155,6 @@
   },
   "squadHirePanel": {
     "hireTitle": "Hire some more:",
-    "militia": "Militia",
-    "knights": "Knights",
-    "priceEachMax": "({price}🟡 each, max {max})",
     "hireButtonTitle": "👛 Hire"
   },
   "squadDisplay": {

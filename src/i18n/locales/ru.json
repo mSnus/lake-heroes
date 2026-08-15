@@ -155,9 +155,6 @@
   },
   "squadHirePanel": {
     "hireTitle": "Нанять ещё:",
-    "militia": "Ополчение",
-    "knights": "Рыцари",
-    "priceEachMax": "({price}🟡 за штуку, макс. {max})",
     "hireButtonTitle": "👛 Нанять"
   },
   "squadDisplay": {

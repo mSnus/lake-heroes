@@ -9,13 +9,12 @@ import '../styles/SquadHirePanel.css';
 interface HireRowProps {
   player: Player;
   tier: UnitTier;
-  label: string;
   emoji: string;
   unitPrice: number;
   onBuy: (amount: number, tier: UnitTier) => void;
 }
 
-const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice, onBuy }) => {
+const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy }) => {
   const t = useT();
   const goldCap = Math.floor(player.gold / unitPrice);
   const slotCap = player.remainingCapacity(tier);
@@ -48,12 +47,7 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, label, emoji, unitPrice
 
   return (
     <div className="hire-row">
-      <div className="hire-row-label">
-        <div className="hire-row-name">{emoji} {label}</div>
-        <div className="hire-row-price">
-          {t('squadHirePanel.priceEachMax', { price: unitPrice, max: maxAmount })}
-        </div>
-      </div>
+      <div className="hire-row-name">{emoji}</div>
       <div className="hire-row-price-tag">{unitPrice}🟡</div>
       <DecoratedSlider
         min={0}
@@ -97,7 +91,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
       <HireRow
         player={player}
         tier="militia"
-        label={t('squadHirePanel.militia')}
         emoji="🧍"
         unitPrice={ov.militiaPrice}
         onBuy={onBuy}
@@ -106,7 +99,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({ player, showRide
         <HireRow
           player={player}
           tier="riders"
-          label={t('squadHirePanel.knights')}
           emoji="🐎"
           unitPrice={ov.riderPrice}
           onBuy={onBuy}

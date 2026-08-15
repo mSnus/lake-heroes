@@ -19,24 +19,8 @@
   width: 100%;
 }
 
-/* Unit name on top, the "(200🟡 each, max N)" note under it. */
-.hire-row-label {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
 .hire-row-name {
-  font-size: 1rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.hire-row-price {
-  font-size: 0.8rem;
-  font-weight: 400;
-  opacity: 0.85;
+  font-size: 1.2rem;
   white-space: nowrap;
 }
 
