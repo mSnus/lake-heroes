@@ -135,14 +135,17 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         )}
 
         {!config.sellMode && (
-        <div className="game-menu">
+        <div
+          className={'game-menu' + (isGuardsFee ? ' pay-or-fight-grid' : '')}
+          style={
+            // 2 buttons -> 2x1, 3 -> 3x1, 4 -> 2x2 (wraps automatically at 2 cols).
+            isGuardsFee ? ({ '--pay-or-fight-cols': buttons.length === 4 ? 2 : buttons.length } as React.CSSProperties) : undefined
+          }
+        >
             {buttons.map((btn, i) =>
-              // The caravan screen decorates both buttons; the guards/fee
-              // screen decorates only the primary pay/fight actions (secondary
-              // sell/accept-loss stay plain so it's not a wall of big buttons).
-              buttons.length === 1 ||
-              isCaravan ||
-              (isGuardsFee && (btn.action === 'pay-fee' || btn.action === 'fight-tile')) ? (
+              // The caravan and guards/fee screens decorate every button;
+              // everything else stays as plain menu buttons.
+              buttons.length === 1 || isCaravan || isGuardsFee ? (
                 <DecoratedButton
                   key={i}
                   disabled={btn.disabled}
