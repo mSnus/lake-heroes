@@ -109,6 +109,10 @@ export type BattleScreenProps =
       updateGameState: (gs: GameState) => void;
       mode: 'ambush';
       ambushAttackerUnits: number;
+      /** True when the ambushers are an abandoned tile's zombie garrison
+       * rather than regular NPC ambushers (see zombieAmbushEncounter.tsx) —
+       * reskins the attacker-role grid units, field icon, and label. */
+      isZombieAmbush?: boolean;
       onClose: () => void;
       defender?: never;
       tile?: never;
@@ -156,6 +160,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   let caravanSlaves = false;
   let battlefieldUnits: number | undefined;
   let ambushAttackerUnits: number | undefined;
+  let isZombieAmbush = false;
 
   if (props.mode === 'caravan') {
     defence = props.caravanDefence;
@@ -170,6 +175,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   } else if (props.mode === 'ambush') {
     defence = props.ambushAttackerUnits;
     ambushAttackerUnits = props.ambushAttackerUnits;
+    isZombieAmbush = !!props.isZombieAmbush;
   } else {
     defence = props.tile?.defence ?? 1;
     defender = props.defender;
@@ -306,7 +312,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // ── State ──
   const [battle, setBattle] = useState<GridBattleState>(() =>
     createBattle(
-      { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount, formation: attackerFormation },
+      { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount, formation: attackerFormation, zombie: isZombieAmbush },
       { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount, formation: defenderFormation, zombie: !!tile?.abandoned },
       gridCols,
       gridRows
@@ -324,7 +330,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderLabel = isDragon
     ? t('battleScreen.theDragon')
     : isCaravan || isAmbush
-      ? isAmbush ? t('battleScreen.ambushers') : t('battleScreen.caravanGuards')
+      ? isAmbush
+        ? isZombieAmbush
+          ? t('battleScreen.zombies')
+          : t('battleScreen.ambushers')
+        : t('battleScreen.caravanGuards')
       : (defender?.name ?? t('battleScreen.guards'));
   const defenderColor = isDragon
     ? '#ff5816'
@@ -353,7 +363,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Mode-specific battlefield icons, matching the old duel screen's grid
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
   // Dragon and caravan guards occupy the defender role.
-  const attackerFieldIcon = isAmbush || isRogue ? '👹' : undefined;
+  const attackerFieldIcon = isZombieAmbush ? '🧟‍♀️' : isAmbush || isRogue ? '👹' : undefined;
   const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? '🥷' : undefined;
 
   // ── Initial log ──
@@ -362,7 +372,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (loggedRef.current) return;
     loggedRef.current = true;
     if (isAmbush) {
-      say(t('battleScreen.ambushedMessage', { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
+      const key = isZombieAmbush ? 'battleScreen.zombieAttackMessage' : 'battleScreen.ambushedMessage';
+      say(t(key, { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

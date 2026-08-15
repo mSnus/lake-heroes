@@ -10,6 +10,7 @@ import { fightTile } from './fightTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
 import { HeroHourScreen } from '../components/HeroHourScreen';
 import { computeFeeOptions } from './feeOptions';
+import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
 import { t } from '../i18n';
 
 export function afterMoveLogic(
@@ -81,6 +82,13 @@ export function afterMoveLogic(
     }
     showTileEncounterScreen(board, updateGameState);
     return;
+  }
+
+  // Landing on an abandoned (zombie-guarded) tile has a chance to ambush the
+  // player — resolves like any other battle screen, then falls through to
+  // end-turn same as always; the tile itself is untouched either way.
+  if (!tile.isOwned() && tile.abandoned) {
+    if (checkZombieAmbushEncounter(board, updateGameState, () => setEndTurn())) return;
   }
 
   setEndTurn();

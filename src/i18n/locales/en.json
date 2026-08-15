@@ -207,9 +207,11 @@
   "battleScreen": {
     "theDragon": "The Dragon",
     "ambushers": "Ambushers",
+    "zombies": "Zombies",
     "caravanGuards": "Caravan Guards",
     "guards": "Guards",
     "ambushedMessage": "{name} is ambushed by {units}🥷!",
+    "zombieAttackMessage": "{name} is attacked by {units}🧟‍♀️!",
     "heroHour": "Hero's Hour",
     "ambushRepelled": "The ambush is repelled!",
     "attackRepelled": "Attack repelled!",
@@ -768,6 +770,10 @@
     "title": "Ambush",
     "message": "{playerSpan} is ambushed!<br />A squad of {units}🥷 suddenly attacks. Fight for your lifes!",
     "defend": "Defend"
+  },
+  "zombieAmbush": {
+    "title": "Zombie Attack!",
+    "message": "{playerSpan} disturbs the ruins of {tileName}!<br />{units}🧟‍♀️ rise from the abandoned tile and attack. Fight for your lifes!"
   },
   "caravanEncounter": {
     "bringingChains": "bringing {prize}🧍 in chains",

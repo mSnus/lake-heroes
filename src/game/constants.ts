@@ -81,6 +81,11 @@ export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
 export const SMALL_AUTO_BATTLE_THRESHOLD = 30;
 export const SMALL_BATTLEFIELD_COLS = BATTLEFIELD_COLS;
 export const SMALL_BATTLEFIELD_ROWS = 15;
+// Landing on an abandoned (zombie-guarded) tile has this chance to trigger a
+// zombie ambush — same mechanics as a regular Ambush, but the attackers are
+// zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).
+export const ZOMBIE_AMBUSH_CHANCE = 0.3;
+export const ZOMBIE_AMBUSH_FORCE_RATIO = 2 / 3;
 // Brawl (small skirmish): a compact board with larger cells, used for the
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most

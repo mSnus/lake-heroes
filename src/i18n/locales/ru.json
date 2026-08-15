@@ -207,9 +207,11 @@
   "battleScreen": {
     "theDragon": "Дракон",
     "ambushers": "Разбойники",
+    "zombies": "Зомби",
     "caravanGuards": "Охрана каравана",
     "guards": "Стража",
     "ambushedMessage": "{name} попадает в засаду {units}🥷!",
+    "zombieAttackMessage": "На {name} нападают {units}🧟‍♀️!",
     "heroHour": "Час героя",
     "ambushRepelled": "Засада отражена!",
     "attackRepelled": "Атака отражена!",
@@ -768,6 +770,10 @@
     "title": "Засада",
     "message": "{playerSpan} попадает в засаду!<br />Отряд из {units}🥷 внезапно атакует. Сражайтесь за свою жизнь!",
     "defend": "Защищаться"
+  },
+  "zombieAmbush": {
+    "title": "Атака зомби!",
+    "message": "{playerSpan} потревожил руины «{tileName}»!<br />{units}🧟‍♀️ поднимаются с заброшенной клетки и атакуют. Сражайтесь за свою жизнь!"
   },
   "caravanEncounter": {
     "bringingChains": "везущий {prize}🧍 в цепях",
