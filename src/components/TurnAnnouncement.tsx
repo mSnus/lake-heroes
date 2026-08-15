@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../game/GameState';
 import { useModal } from '../utils/diceStore';
 import { DecoratedButton } from './DecoratedButton';
-import { useT } from '../i18n';
+import { PlayerLabel } from './PlayerLabel';
+import { tJsx } from '../i18n/tJsx';
+import { useLanguage } from '../i18n';
 import '../styles/TurnAnnouncement.css';
 
 const VISIBLE_MS = 2000;
@@ -18,7 +20,7 @@ interface TurnAnnouncementProps {
  * player starts rolling the dice, whichever comes first.
  */
 export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState }) => {
-  const t = useT();
+  useLanguage(); // subscribe so a language switch re-renders the translated text
   const { rolling } = useModal();
   const [visible, setVisible] = useState(false);
   const lastPlayerIdRef = useRef<number | null>(null);
@@ -41,7 +43,7 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   return (
     <div className="turn-announcement">
       <DecoratedButton className="turn-announcement-badge" tabIndex={-1}>
-        {t('turnAnnouncement.text', { playerName: player.name })}
+        {tJsx('turnAnnouncement.text', { playerName: <PlayerLabel player={player} bold /> })}
       </DecoratedButton>
     </div>
   );
