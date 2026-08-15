@@ -18,6 +18,7 @@ import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, rehydrateSavedTiles, SavedGameState } from './game/TileSet';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
+import { TurnAnnouncement } from './components/TurnAnnouncement';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import { PlayerSetup } from './utils/playerSetup';
@@ -658,6 +659,8 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
+          <TurnAnnouncement gameState={gameState} />
+
           <ShieldColumn
             gameState={gameState}
             updateGameState={updateGameState}

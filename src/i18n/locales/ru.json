@@ -1,4 +1,7 @@
 {
+  "turnAnnouncement": {
+    "text": "Ход игрока {playerName}"
+  },
   "common": {
     "language": "Язык",
     "hire": "Нанять",

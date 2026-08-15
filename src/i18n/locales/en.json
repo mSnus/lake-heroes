@@ -1,4 +1,7 @@
 {
+  "turnAnnouncement": {
+    "text": "{playerName}'s turn"
+  },
   "common": {
     "language": "Language",
     "hire": "Hire",
