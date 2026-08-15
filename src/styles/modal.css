@@ -102,6 +102,12 @@ button.decorated {
   aspect-ratio: 5 / 2;
 }
 
+button.decorated:disabled {
+  filter: grayscale(1) drop-shadow(2px 4px 6px black);
+  opacity: 0.8;
+  cursor: default;
+}
+
 .decorated-button-content {
   margin-top: -1.3rem;
   display: flex;
