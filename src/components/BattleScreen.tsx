@@ -461,6 +461,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const roundActiveRef = useRef(false); // a brawl round is in progress
   const roundStartPosRef = useRef<Map<string, { col: number; row: number }>>(new Map()); // positions at round start, to tell who moved
   const manualAttacksRef = useRef<Record<string, string>>({}); // human's attack orders this round (unitId -> enemyId)
+  const manualHoldsRef = useRef<Set<string>>(new Set()); // units the human explicitly dropped on their own cell to defend
 
   // The 3-beat combat playback (attack/defend icons -> hit flash -> death
   // flash), then commit the resolved state. Shared by the full-battle and
@@ -516,14 +517,24 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const p = start.get(u.id);
       if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
     }
-    // The human-controlled side attacks only the enemies it pointed at (others
-    // hold/defend); the bot side auto-targets. Fully-auto rounds pass no intent.
+    // The human-controlled side attacks the enemy it explicitly pointed at, or
+    // auto-targets like the bot for any unit not explicitly held back — so a
+    // unit that simply moved into contact (or was left untouched while already
+    // adjacent) still fights, the same as an AI unit does, instead of
+    // defending by default. Only a unit dropped on its own cell (explicit
+    // hold, shown as 🛡️) opts out of attacking. The bot side always
+    // auto-targets. Fully-auto rounds pass no intent.
     const manualS: BattleSide | null = attackerManual ? 'attacker' : defenderManual ? 'defender' : null;
     let intent: Map<string, string> | undefined;
     if (manualS) {
       intent = new Map();
       const atk = manualAttacksRef.current;
-      for (const u of s.units) intent.set(u.id, u.side === manualS ? atk[u.id] ?? 'none' : 'auto');
+      const holds = manualHoldsRef.current;
+      for (const u of s.units) {
+        if (u.side !== manualS) intent.set(u.id, 'auto');
+        else if (holds.has(u.id)) intent.set(u.id, 'none');
+        else intent.set(u.id, atk[u.id] ?? 'auto');
+      }
     }
     const { state, events } = resolveBrawlCombat(s, brawlOpts(), movedIds, intent);
     animateCombat(state, events);
@@ -551,13 +562,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     roundActiveRef.current = true;
     roundStartPosRef.current = new Map(battle.units.map((u) => [u.id, { col: u.col, row: u.row }]));
     manualAttacksRef.current = {};
+    manualHoldsRef.current = new Set();
     brawlDefenderPhase(battle);
   };
-  const handleManualComplete = (plan: BrawlPlan, attacks: Record<string, string>) => {
+  const handleManualComplete = (plan: BrawlPlan, attacks: Record<string, string>, holds: string[]) => {
     const side = brawlManualSide;
     const base = manualBaseRef.current;
     if (!side || !base) return;
     manualAttacksRef.current = attacks;
+    manualHoldsRef.current = new Set(holds);
     const moved = applyBrawlMoves(base, plan);
     // The twins already showed where these units go, so don't re-animate the
     // move: hide the twins and snap the real units into place in the same
@@ -784,7 +797,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             brawl={isBrawl}
             large={isLargeAutoBattle}
             manualSide={brawlManualSide ?? undefined}
-            onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
+            onManualComplete={(plan, attacks, holds) => handleManualCompleteRef.current(plan, attacks, holds)}
             instant={instantMove}
           />
         )}

@@ -34,9 +34,12 @@ interface BattlefieldGridProps {
    * placed. */
   manualSide?: BattleSide;
   /** Called when the human finishes placing: `plan` is the destination per
-   * unit, `attacks` maps a unit to the specific enemy it was pointed at (units
-   * not listed don't attack — they hold/defend). */
-  onManualComplete?: (plan: BrawlPlan, attacks: Record<string, string>) => void;
+   * unit, `attacks` maps a unit to the specific enemy it was pointed at, and
+   * `holds` lists units explicitly dropped on their own cell (deliberate
+   * defend). Any unit in neither — including one that simply moved and ended
+   * up adjacent to an enemy, or one left untouched — auto-attacks like an AI
+   * unit would, rather than defending by default. */
+  onManualComplete?: (plan: BrawlPlan, attacks: Record<string, string>, holds: string[]) => void;
   /** Suppress the unit slide transition for one commit — used to snap the real
    * units straight to where the twins already showed them, instead of
    * re-animating the moves the player just made. */
@@ -120,12 +123,14 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     completedRef.current = true;
     const plan: BrawlPlan = {};
     const attacks: Record<string, string> = {};
+    const holds: string[] = [];
     for (const u of sideUnits) {
       const pl = placements[u.id];
       plan[u.id] = { col: pl.col, row: pl.row };
       if (pl.attackTargetId) attacks[u.id] = pl.attackTargetId;
+      else if (pl.col === u.col && pl.row === u.row) holds.push(u.id);
     }
-    onManualComplete?.(plan, attacks);
+    onManualComplete?.(plan, attacks, holds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, manualSide]);
 
@@ -224,12 +229,14 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     completedRef.current = true;
     const plan: BrawlPlan = {};
     const attacks: Record<string, string> = {};
+    const holds: string[] = [];
     for (const u of sideUnits) {
       const pl = placementsRef.current[u.id];
       plan[u.id] = pl ? { col: pl.col, row: pl.row } : { col: u.col, row: u.row };
       if (pl?.attackTargetId) attacks[u.id] = pl.attackTargetId;
+      else if (pl && pl.col === u.col && pl.row === u.row) holds.push(u.id);
     }
-    onManualComplete?.(plan, attacks);
+    onManualComplete?.(plan, attacks, holds);
   };
 
   // ── Combat playback overrides (unchanged) ──
