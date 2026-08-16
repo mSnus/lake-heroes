@@ -70,7 +70,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
                     title={t('squadDisplay.upgradeSquad', { gold: upgradeCost })}
                     onClick={() => onUpgradeSquad!(chunk.count)}
                   >
-                    🆙
+                    🆙🐎
                   </button>
                 )}
               </span>

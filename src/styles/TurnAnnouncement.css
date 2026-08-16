@@ -2,24 +2,18 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.9);
   z-index: 5200;
   pointer-events: none;
-  animation: turnAnnouncementFade 0.3s ease-out;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.turn-announcement.turn-announcement-active {
+  opacity: 1;
 }
 
 .turn-announcement-badge.decorated {
   pointer-events: none;
   cursor: default;
-}
-
-@keyframes turnAnnouncementFade {
-  from {
-    opacity: 0;
-    scale: 0.75;
-  }
-  to {
-    opacity: 1;
-    scale: 0.9;
-  }
 }

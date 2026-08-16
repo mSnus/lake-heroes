@@ -8,6 +8,7 @@ import { useLanguage } from '../i18n';
 import '../styles/TurnAnnouncement.css';
 
 const VISIBLE_MS = 2000;
+const TRANSITION_MS = 500;
 
 interface TurnAnnouncementProps {
   gameState: GameState;
@@ -17,31 +18,51 @@ interface TurnAnnouncementProps {
  * A small decorated pop-up over the middle of the screen announcing whose
  * turn it is. Shows once per turn change (including the very first turn),
  * then disappears on its own after VISIBLE_MS -- or immediately once the
- * player starts rolling the dice, whichever comes first.
+ * player starts rolling the dice, whichever comes first. Fades in and out
+ * over TRANSITION_MS rather than popping in/out abruptly.
  */
 export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState }) => {
   useLanguage(); // subscribe so a language switch re-renders the translated text
   const { rolling } = useModal();
-  const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [active, setActive] = useState(false);
   const lastPlayerIdRef = useRef<number | null>(null);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const unmountTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const player = gameState.activePlayer;
+
+  const hide = () => {
+    clearTimeout(hideTimerRef.current);
+    setActive(false);
+    unmountTimerRef.current = setTimeout(() => setMounted(false), TRANSITION_MS);
+  };
 
   useEffect(() => {
     if (lastPlayerIdRef.current === player.id) return;
     lastPlayerIdRef.current = player.id;
-    setVisible(true);
-    const timer = setTimeout(() => setVisible(false), VISIBLE_MS);
-    return () => clearTimeout(timer);
+    clearTimeout(hideTimerRef.current);
+    clearTimeout(unmountTimerRef.current);
+    setMounted(true);
+    const raf = requestAnimationFrame(() => setActive(true));
+    hideTimerRef.current = setTimeout(hide, VISIBLE_MS);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.id]);
 
   useEffect(() => {
-    if (rolling) setVisible(false);
+    if (rolling) hide();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling]);
 
-  if (!visible) return null;
+  useEffect(() => () => {
+    clearTimeout(hideTimerRef.current);
+    clearTimeout(unmountTimerRef.current);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
-    <div className="turn-announcement">
+    <div className={`turn-announcement${active ? ' turn-announcement-active' : ''}`}>
       <DecoratedButton
         className="turn-announcement-badge"
         tabIndex={-1}

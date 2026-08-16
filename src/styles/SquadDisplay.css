@@ -8,6 +8,7 @@
 
 .squad-chunk {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   gap: 2px;
   white-space: nowrap;
@@ -29,13 +30,13 @@
   font-size: 1.8em;
 }
 
-/* Sell (and, when eligible, upgrade-to-riders) buttons stacked under the
-   squad badge. */
+/* Sell (and, when eligible, upgrade-to-riders) buttons sit side by side
+   under the squad badge. */
 .squad-chunk-actions {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 1px;
+  gap: 6px;
 }
 
 .squad-sell-button {
@@ -47,7 +48,6 @@
   padding: 0;
   margin: 0;
   cursor: pointer;
-  /* Smaller than before to leave room for the upgrade button underneath. */
   font-size: 0.45em;
   line-height: 1;
   opacity: 0.7;
