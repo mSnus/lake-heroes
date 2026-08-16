@@ -6,6 +6,18 @@
   width: 100%;
 }
 
+.text-message+.game-menu {
+  margin-top: 1rem;
+}
+
+.game-menu button.decorated {
+  scale: 1;
+}
+
+.game-menu button.decorated .decorated-button-content {
+  font-size: 1rem;
+  margin-top: -1rem;
+}
 
 /* Pay-or-fight (guards/fee) screen: every button decorated, arranged in a
    grid instead of a single row -- 2 buttons -> 2x1, 3 -> 3x1, 4 -> 2x2
@@ -40,9 +52,9 @@
 }
 
 .game-menu-button.silver {
-    background: linear-gradient(145deg, #d2bb73, #dbc28a);
-    text-shadow: #736c5eaf 0 0 6px;
-    color: #484742da;
+  background: linear-gradient(145deg, #d2bb73, #dbc28a);
+  text-shadow: #736c5eaf 0 0 6px;
+  color: #484742da;
 }
 
 .game-menu-button:disabled {
@@ -113,7 +125,7 @@
 }
 
 @media (min-width: 769px) {
-  .game-menu > div {
+  .game-menu>div {
     margin-left: auto;
     margin-right: auto;
   }
