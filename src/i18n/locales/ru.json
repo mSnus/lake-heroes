@@ -235,8 +235,9 @@
   "screenRenderer": {
     "encounters": "встречает",
     "belongsTo": "принадлежащую",
+    "andIsGuarded": "и охраняемую {amount}🧍",
     "riskOrPay": "Сжечь дотла или заплатить и уйти?",
-    "razedSmokeCaveat": "Сожжённые земли ничьи, пока не рассеется дым"
+    "razedSmokeCaveat": "Разорённые земли дымятся и не принадлежат никому"
   },
   "newGameModal": {
     "heroes": "Герои:",

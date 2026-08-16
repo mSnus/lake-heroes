@@ -6,9 +6,6 @@
   width: 100%;
 }
 
-.game-menu button.decorated {
-  scale: 0.7;
-}
 
 /* Pay-or-fight (guards/fee) screen: every button decorated, arranged in a
    grid instead of a single row -- 2 buttons -> 2x1, 3 -> 3x1, 4 -> 2x2
@@ -17,7 +14,7 @@
 .game-menu.pay-or-fight-grid {
   display: grid;
   grid-template-columns: repeat(var(--pay-or-fight-cols, 2), 1fr);
-  gap: 12px;
+  gap: 6px;
   justify-items: center;
   align-items: center;
 }

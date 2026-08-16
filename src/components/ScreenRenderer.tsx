@@ -73,11 +73,10 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               name={config.encounter.playerName}
               color={config.encounter.playerColor}
               bold
-            />{' '}
+            /><br/>
             {config.encounter?.gold !== undefined && (
               <>
                 <strong>{config.encounter.gold}🟡</strong>
-                <br />
                 <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
               </>
             )}
@@ -86,7 +85,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
             <strong style={{ color: config.encounter.tile?.groupTextColor }}>
               {config.encounter.tile?.name}
             </strong>
-            {config.encounter.tile && <> 🛡️ {config.encounter.tile.defence}</>}
             {config.encounter.ownerName && (
               <>
                 <br />
@@ -109,6 +107,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 )}
               </>
             )}
+            {config.encounter.tile && <> {t('screenRenderer.andIsGuarded', { amount: config.encounter.tile.defence })}</>}
             {config.encounter.outcomeText && (
               <>
                 <br />
