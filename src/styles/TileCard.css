@@ -407,6 +407,10 @@
   white-space: nowrap;
 }
 
+.tile-card .decorated-button-content {
+  margin-top: -0.3rem;
+}
+
 /* The "👛 N🟡" price tag inside the upgrade-info lines on the Tile
    Upgrades screen — doubles as the actual upgrade-purchase button. */
 .upgrade-price-badge {
