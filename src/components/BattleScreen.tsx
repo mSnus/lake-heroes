@@ -205,7 +205,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ? { militia: defender!.militia, riders: defender!.riders }
       : isDragon
         ? { militia: 0, riders: DRAGON_UNITS }
-        : { militia: initialDefence, riders: 0 };
+        : isAmbush
+          // Ambush is reversed: `attacker` holds the real player, who occupies
+          // the DEFENDER grid role — so their real army composition (not the
+          // NPC ambusher headcount) belongs here, riders included.
+          ? { militia: attacker.militia, riders: attacker.riders }
+          : { militia: initialDefence, riders: 0 };
 
   const attackerSizedRef = useRef(sizeArmyForGrid(attackerCompRaw.militia, attackerCompRaw.riders));
   const defenderSizedRef = useRef(sizeArmyForGrid(defenderCompRaw.militia, defenderCompRaw.riders));
