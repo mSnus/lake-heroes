@@ -261,6 +261,7 @@
     "isAt": "на клетке",
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
     "goldTooltip": "Ваше текущее золото",
+    "fromYourTiles": "с ваших клеток",
     "asKingsGrace": "в качестве королевской милости",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Ваше жалование за проход через Замок короля{detail}",

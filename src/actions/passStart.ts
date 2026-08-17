@@ -11,7 +11,7 @@ export function passStart(
   if (!board) return '';
 
   const player = board.activePlayer;
-  const { totalGold, totalUnits } = computeAnnualReward(player);
+  const { totalGold, totalUnits } = computeAnnualReward(board, player);
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;

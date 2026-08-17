@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Player } from '../game/Player';
 import { GameState } from '../game/GameState';
-import { playerIncome } from '../game/income';
+import { computeAnnualReward } from '../game/kingsGrace';
 import { useModal } from '../utils/diceStore';
 import { PlayerCard } from './PlayerCard';
 import { PlayerStats } from './PlayerStats';
@@ -53,6 +53,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
     .filter(Boolean);
 
   const currentTile = gameState.tiles[player.position % TILE_COUNT];
+  const { totalGold, totalUnits } = computeAnnualReward(gameState, player);
 
   return (
     <div className="current-player-card-wrapper game-modal-border" onClick={() => setPlayer(null)}>
@@ -72,7 +73,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
             </span>
           </div>
         )}
-        <PlayerStats player={player} income={playerIncome(player)} />
+        <PlayerStats player={player} income={{ gold: totalGold, units: totalUnits }} />
         {ownedTiles.length > 0 && (
           <div className="cpc-owned-tiles">
             {ownedTiles.map((tile) => (

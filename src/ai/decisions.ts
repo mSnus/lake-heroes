@@ -20,8 +20,8 @@ function wouldFormSyndicate(board: GameState, tile: Tile): boolean {
 
 // "current income" = units gained per lap of the board (the King's grace
 // reward), since that's the only recurring unit income most players have.
-function closeToDragonGoalWithoutBuying(player: Player): boolean {
-  const perLapUnits = computeAnnualReward(player).totalUnits;
+function closeToDragonGoalWithoutBuying(board: GameState, player: Player): boolean {
+  const perLapUnits = computeAnnualReward(board, player).totalUnits;
   return player.armyPower + perLapUnits * 3 >= DRAGON_UNITS_THRESHOLD;
 }
 
@@ -36,7 +36,7 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
   if (
     cfg.skipBuyingNearDragonGoal &&
     !wouldFormSyndicate(board, tile) &&
-    closeToDragonGoalWithoutBuying(player)
+    closeToDragonGoalWithoutBuying(board, player)
   ) {
     return false;
   }

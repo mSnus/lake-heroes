@@ -79,11 +79,16 @@ export const TileCard: React.FC<TileCardProps> = ({
     gameState && ownerPlayer ? syndicateMultiplier(gameState, ownerPlayer, tile.group) : 1;
   const isSyndicate = syndicateMult > 1;
 
-  // Combined per-turn payout at the tile's current level: its own bonus plus
-  // the flat opposite-resource trickle (see game/income.ts's tileTurnIncome),
-  // shown together in the same cell so a gold-tile's small units trickle (or
-  // a Camp/Tower's small gold trickle) isn't hidden.
+  // Per-turn payout at the tile's current level (see game/income.ts's
+  // tileTurnIncome) -- exactly one of gold/units is nonzero, depending on
+  // the tile's own bonus type.
   const turnIncome = tileTurnIncome(tile, syndicateMult);
+  const turnIncomeLabel = (
+    <>
+      {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
+      {turnIncome.units > 0 && <>+{turnIncome.units} 👬</>}
+    </>
+  );
 
   const bonusType = getBonusType(tile);
 
@@ -349,9 +354,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                           </div>
                         ) : (
                           <div className="big-icon-hint">
-                            <div>
-                              +{turnIncome.gold}🟡 +{turnIncome.units} 👬
-                            </div>
+                            <div>{turnIncomeLabel}</div>
                             <div>{t('tileCard.perTurn')}</div>
                           </div>
                         )}
@@ -374,7 +377,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                 <div className="tile-card-base-info">
                   <div className="tile-card-base-row">
                     <div className="big-icon-hint">
-                      +{turnIncome.gold}🟡 +{turnIncome.units} 👬
+                      {turnIncomeLabel}
                       <div>{t('tileCard.perTurn')}</div>
                     </div>
                   </div>

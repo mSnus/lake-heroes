@@ -24,19 +24,21 @@ export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
 // independent of TILE_BASE_PRICE, which stays at its full value for
 // purchase/upgrade costs.
 export const BONUS_GOLD_RATIO = 0.65;
-// Tile income pays out every turn, not once a lap -- a turn's worth is a
+// A tile's own income (gold for Mills/Farms/Fields/Traders, units for Camps/
+// Towers) pays out every turn now, not once a lap -- a turn's worth is a
 // small slice of what the old per-year figure was. Applied on top of
 // BONUS_GOLD_RATIO, with the rounding step shrinking from 100 to 50 to
-// match (see Tile.ts's `bonuses` getter and TURN_DEFAULT_GOLD below).
+// match (see Tile.ts's `bonuses` getter).
 export const TURN_INCOME_RATIO = 0.1;
-// Flat per-tile per-turn bonus each owned tile grants on top of its own
-// gold/units income, in whichever resource its own bonus ISN'T: a gold-bonus
-// tile (Mills/Farms/Fields/Traders) also brings TURN_DEFAULT_UNITS militia,
-// a units-bonus tile (Camps/Towers) also brings TURN_DEFAULT_GOLD gold --
-// same flat amount for every units-bonus tile, so Towers and Camps always
-// earn identical gold. See game/income.ts's tileTurnIncome.
-export const TURN_DEFAULT_UNITS = 2;
-export const TURN_DEFAULT_GOLD = Math.round((2.5 * TILE_BASE_PRICE * TURN_INCOME_RATIO) / 50) * 50;
+// Flat per-tile bonus each owned tile grants the King's-grace reward (once a
+// lap, on top of its own per-turn income -- see kingsGrace.ts's
+// computeAnnualReward), in whichever resource its own bonus ISN'T: a
+// gold-bonus tile (Mills/Farms/Fields/Traders) also brings
+// ANNUAL_DEFAULT_UNITS militia, a units-bonus tile (Camps/Towers) also
+// brings ANNUAL_DEFAULT_GOLD gold -- same flat amount for every units-bonus
+// tile, so Towers and Camps always earn identical gold.
+export const ANNUAL_DEFAULT_UNITS = 2;
+export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle

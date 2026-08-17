@@ -261,6 +261,7 @@
     "isAt": "is at",
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
     "goldTooltip": "Current gold you own",
+    "fromYourTiles": "from your own tiles",
     "asKingsGrace": "as the King's grace",
     "fromPristineDiamond": "from the Pristine Diamond 💎",
     "wagesMessage": "Your wages after passing the King's Castle{detail}",
