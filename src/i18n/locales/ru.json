@@ -193,8 +193,8 @@
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
     "belongsTo": "принадлежит игроку {player}",
-    "currentLevelLine": "{slots}🏯 +{bonus}{icon} в год",
-    "upgradeLine": "{priceTag} → {slots}🏯 и +{bonus}{icon} в год",
+    "currentLevelLine": "{slots}🏯 +{bonus}{icon} за ход",
+    "upgradeLine": "{priceTag} → {slots}🏯 и +{bonus}{icon} за ход",
     "onGuard": "В гарнизоне:",
     "army": "армия",
     "garrisonVisitCaveat": "(вернуть их в армию можно, только находясь на этой клетке)",
