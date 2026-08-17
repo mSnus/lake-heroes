@@ -47,8 +47,11 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
 
   return (
     <div className="hire-row">
-      <div className="hire-row-name">{emoji}</div>
-      <div className="hire-row-price-tag">{unitPrice}🟡</div>
+      <div className="hire-row-stack">
+        <div className="hire-row-name">{emoji}</div>
+        <div className="hire-row-caption">{unitPrice}🟡</div>
+      </div>
+      <div className="hire-row-amount-label">0</div>
       <DecoratedSlider
         min={0}
         max={maxAmount}
@@ -59,14 +62,17 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
           setPreviewAmount(null);
         }}
       />
-      <div className="hire-row-price-tag">{displayedAmount * unitPrice}🟡</div>
-      <button
-        className="game-menu-button hire-submit"
-        onClick={handleBuy}
-        disabled={!amount || amount <= 0 || amount > maxAmount}
-      >
-        {t('squadHirePanel.hireButtonTitle')}
-      </button>
+      <div className="hire-row-amount-label">{displayedAmount}</div>
+      <div className="hire-row-stack">
+        <button
+          className="game-menu-button hire-submit"
+          onClick={handleBuy}
+          disabled={!amount || amount <= 0 || amount > maxAmount}
+        >
+          {t('squadHirePanel.hireButtonTitle')}
+        </button>
+        <div className="hire-row-caption">{displayedAmount * unitPrice}🟡</div>
+      </div>
     </div>
   );
 };
