@@ -12,6 +12,7 @@
 
 .game-menu button.decorated {
   scale: 1;
+  max-width: 220px;
 }
 
 .game-menu button.decorated .decorated-button-content {

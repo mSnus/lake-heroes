@@ -103,7 +103,7 @@ button.decorated {
 }
 
 button.decorated:disabled {
-  filter: grayscale(1) drop-shadow(2px 4px 6px black);
+  filter: contrast(0.5) sepia(1) brightness(0.7) drop-shadow(2px 4px 6px black);
   opacity: 0.8;
   cursor: default;
 }

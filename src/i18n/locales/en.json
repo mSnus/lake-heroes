@@ -197,7 +197,7 @@
     "upgradeLine": "{priceTag} → {slots}🏯 and +{bonus}{icon} per turn",
     "onGuard": "On guard:",
     "army": "army",
-    "garrisonVisitCaveat": "(move them back to army while visiting this tile)",
+    "garrisonVisitCaveat": "you won't get them back to army until you return here",
     "leaveUnguarded": "Leave unprotected 🩸",
     "kingSeesTheWay": "👑 King sees the way",
     "setToGuard": "Guard with {amount} 🧍"

@@ -67,7 +67,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
-    zIndex: 1010,
+    zIndex: 7010,
   };
 
   return (
