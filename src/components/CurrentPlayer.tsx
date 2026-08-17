@@ -35,9 +35,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { tileGold, tileUnits, kingsGold, kingsUnits, arifactGold, totalGold, totalUnits } =
-    computeAnnualReward(gameState, activePlayer);
-  const turnGoldIncome = playerTurnIncome(gameState, activePlayer).gold;
+  const { kingsGold, kingsUnits, arifactGold } = computeAnnualReward(gameState, activePlayer);
+  const turnIncome = playerTurnIncome(gameState, activePlayer);
 
   return (
     <div className="player-pane-wrapper">
@@ -120,8 +119,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             </div>
             <div>
               <strong>{activePlayer.gold ?? 0}🟡</strong>
-              {turnGoldIncome > 0 && (
-                <div className="player-stats-turn-income">+{turnGoldIncome}🟡</div>
+              {turnIncome.gold > 0 && (
+                <div className="player-stats-turn-income">+{turnIncome.gold}🟡</div>
               )}
             </div>
           </div>
@@ -143,7 +142,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               <strong>{activePlayer.fame ?? 1}</strong>
             </div>
           </div>
-          {/* wages per year */}
+          {/* King's grace, on passing the King's Castle -- own-tile income
+              isn't part of this any more (it pays out every turn instead,
+              previewed next to gold/army above and below). */}
           <div
             className="player-stats-data"
             id="statsPerTurn"
@@ -156,16 +157,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
               };
               const parts = [
-                fmt(tileGold, tileUnits, t('currentPlayer.fromYourTiles')),
                 fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
                 fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
               ].filter(Boolean);
-              say(
-                t('currentPlayer.wagesMessage', {
-                  detail: parts.length ? ': ' + parts.join(', ') : '',
-                }),
-                'info'
-              );
+              say(t('currentPlayer.wagesMessage', { summary: parts.join(', ') }), 'info');
             }}
           >
             <div
@@ -175,8 +170,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               🏰
             </div>
             <div>
-              {totalGold > 0 && <strong>+{totalGold}🟡</strong>}
-              {totalUnits > 0 && <strong>+{totalUnits} 👬</strong>}
+              {kingsGold + arifactGold > 0 && <strong>+{kingsGold + arifactGold}🟡</strong>}
+              {kingsUnits > 0 && <strong>+{kingsUnits} 👬</strong>}
             </div>
           </div>
         </div>
@@ -201,12 +196,17 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           >
             ⚔️
           </div>
-          <SquadDisplay
-            militia={activePlayer.militia}
-            riders={activePlayer.riders}
-            totalSlots={activePlayer.armySlots}
-            className="player-stats-army-slots"
-          />
+          <div>
+            <SquadDisplay
+              militia={activePlayer.militia}
+              riders={activePlayer.riders}
+              totalSlots={activePlayer.armySlots}
+              className="player-stats-army-slots"
+            />
+            {turnIncome.units > 0 && (
+              <div className="player-stats-turn-income">+{turnIncome.units} 👬</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

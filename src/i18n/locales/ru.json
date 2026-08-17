@@ -193,8 +193,8 @@
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
     "belongsTo": "принадлежит игроку {player}",
-    "currentLevelLine": "{slots}🏯 +{bonus}{icon} за ход",
-    "upgradeLine": "{priceTag} → +{bonus}{icon} за ход и {slots}🏯 башни",
+    "currentLevelLine": "{slots}🏯",
+    "upgradeLine": "{priceTag} → {bonusBlock} и {slots}🏯 башни",
     "onGuard": "В гарнизоне:",
     "army": "армия",
     "garrisonVisitCaveat": "посетите эту клетку снова, чтобы вернуть их в армию",
@@ -261,10 +261,9 @@
     "isAt": "на клетке",
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
     "goldTooltip": "Ваше текущее золото",
-    "fromYourTiles": "с ваших клеток",
     "asKingsGrace": "в качестве королевской милости",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
-    "wagesMessage": "Ваше жалование за проход через Замок короля{detail}",
+    "wagesMessage": "Пройдите Замок короля и получите {summary}",
     "armyTooltip": "Ваша слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot} юнитов каждый",
     "artifactTooltip": "{name}: {description}"
   },

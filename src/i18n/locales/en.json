@@ -193,8 +193,8 @@
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
     "belongsTo": "belongs to {player}",
-    "currentLevelLine": "{slots}🏯 +{bonus}{icon} per turn",
-    "upgradeLine": "{priceTag} → +{bonus}{icon} per turn and {slots}🏯 towers",
+    "currentLevelLine": "{slots}🏯",
+    "upgradeLine": "{priceTag} → {bonusBlock} and {slots}🏯 towers",
     "onGuard": "On guard:",
     "army": "army",
     "garrisonVisitCaveat": "return to the tile to take units back from garrison",
@@ -261,10 +261,9 @@
     "isAt": "is at",
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
     "goldTooltip": "Current gold you own",
-    "fromYourTiles": "from your own tiles",
     "asKingsGrace": "as the King's grace",
     "fromPristineDiamond": "from the Pristine Diamond 💎",
-    "wagesMessage": "Your wages after passing the King's Castle{detail}",
+    "wagesMessage": "Pass the King's Castle for {summary}",
     "armyTooltip": "Your fame {fame}🏆 allows to have {slots} squads of {perSlot} units each",
     "artifactTooltip": "{name}: {description}"
   },

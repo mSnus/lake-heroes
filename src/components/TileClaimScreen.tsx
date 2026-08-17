@@ -231,33 +231,55 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
       <div className="text-message tile-card-table-wrap" style={{ marginTop: '3rem' }}>
         <div className="tile-card-table" style={{fontSize: '1.1rem', fontFamily: 'Encode', color: 'wheat'}}>
-                <div className="tc-td" style={{textAlign:'center'}}>
+                <div
+                  className="tc-td"
+                  style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
                   {tJsx('tileClaimScreen.currentLevelLine', {
                     slots: <span className="value">{currentLevel}</span>,
-                    bonus: <span className="value">{tile.bonuses[currentLevel] ?? 0}</span>,
-                    icon: bonusTypeIcon,
                   })}
+                  <div className="big-icon-hint">
+                    <div>
+                      +{tile.bonuses[currentLevel] ?? 0}{bonusTypeIcon}
+                    </div>
+                    <div>{t('tileCard.perTurn')}</div>
+                  </div>
                 </div>
                 {currentLevel < 2 && (
-                  <div className="tc-td" style={{paddingTop: '0.5rem', fontSize: '1rem'}}>
+                  <div
+                    className="tc-td"
+                    style={{ paddingTop: '0.5rem', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
                       {tJsx('tileClaimScreen.upgradeLine', {
                         priceTag: priceTag(2),
                         slots: <span className="value">2</span>,
-                        bonus: <span className="value">{tile.bonuses[2] ?? 0}</span>,
-                        icon: bonusTypeIcon,
+                        bonusBlock: (
+                          <div className="big-icon-hint">
+                            <div>
+                              +{tile.bonuses[2] ?? 0}{bonusTypeIcon}
+                            </div>
+                            <div>{t('tileCard.perTurn')}</div>
+                          </div>
+                        ),
                       })}
                   </div>
                 )}
                 {currentLevel < 3 && (
                   <div
                     className={'tc-td' + (nextLevel !== 3 ? ' upgrade-unreachable' : '')}
-                    style={{fontSize: '1rem'}}
+                    style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                       {tJsx('tileClaimScreen.upgradeLine', {
                         priceTag: priceTag(3),
                         slots: <span className="value">3</span>,
-                        bonus: <span className="value">{tile.bonuses[3] ?? 0}</span>,
-                        icon: bonusTypeIcon,
+                        bonusBlock: (
+                          <div className="big-icon-hint">
+                            <div>
+                              +{tile.bonuses[3] ?? 0}{bonusTypeIcon}
+                            </div>
+                            <div>{t('tileCard.perTurn')}</div>
+                          </div>
+                        ),
                       })}
                   </div>
                 )}
