@@ -132,6 +132,11 @@ export const TileCard: React.FC<TileCardProps> = ({
   // despite having fewer units than the tile's defence — as a deliberate gamble.
   const lvl1Defence = defence(1);
   const attackerPower = activePlayer?.armyPower ?? 0;
+  // Claim button label: raw militia+riders headcount, not the weighted power
+  // score -- riders only get a "+N" suffix when the player actually has any.
+  const attackerArmyLabel = activePlayer
+    ? `${activePlayer.militia}${activePlayer.riders > 0 ? `+${activePlayer.riders}` : ''}`
+    : '0';
   const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
   const isBanzai =
     !isBrawlTile &&
@@ -557,7 +562,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   <div style={{ marginRight: '1.1rem' }}>
                     {isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}
                   </div>
-                  <div>{Math.round(attackerPower)}</div>
+                  <div>{attackerArmyLabel}</div>
                   <div
                     style={{
                       display: 'flex',
