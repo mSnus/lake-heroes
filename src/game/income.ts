@@ -21,13 +21,13 @@ export function tileTurnIncome(tile: Tile, mult: number = 1): { gold: number; un
 }
 
 /**
- * Grant a player their per-turn income from every tile they own, applied
- * directly to their gold/units. Called once at the start of their turn (see
- * endTurn.ts) -- a tile's own income no longer waits for a lap around the
- * board. Derives ownership from tile.owner (authoritative) rather than
- * player.ownedTiles, which can be stale after a reload.
+ * A player's total per-turn income across every tile they own -- read-only,
+ * used both by collectTileTurnIncome (the actual payout) and by the stats
+ * panel's preview (CurrentPlayer.tsx), so they can't drift apart. Derives
+ * ownership from tile.owner (authoritative) rather than player.ownedTiles,
+ * which can be stale after a reload.
  */
-export function collectTileTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
+export function playerTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
   let gold = 0;
   let units = 0;
   for (const tile of board.tiles) {
@@ -36,7 +36,18 @@ export function collectTileTurnIncome(board: GameState, player: Player): { gold:
     gold += income.gold;
     units += income.units;
   }
-  player.gold += gold;
-  player.units += units;
   return { gold, units };
+}
+
+/**
+ * Grant a player their per-turn income from every tile they own, applied
+ * directly to their gold/units. Called once at the start of their turn (see
+ * endTurn.ts) -- a tile's own income no longer waits for a lap around the
+ * board.
+ */
+export function collectTileTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
+  const income = playerTurnIncome(board, player);
+  player.gold += income.gold;
+  player.units += income.units;
+  return income;
 }

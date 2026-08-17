@@ -4,6 +4,7 @@ import '../styles/CurrentPlayer.css';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
 import { computeAnnualReward } from '../game/kingsGrace';
+import { playerTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
 import { getOverrides } from '../utils/overridesStore';
@@ -36,6 +37,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
 
   const { tileGold, tileUnits, kingsGold, kingsUnits, arifactGold, totalGold, totalUnits } =
     computeAnnualReward(gameState, activePlayer);
+  const turnGoldIncome = playerTurnIncome(gameState, activePlayer).gold;
 
   return (
     <div className="player-pane-wrapper">
@@ -118,10 +120,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             </div>
             <div>
               <strong>{activePlayer.gold ?? 0}🟡</strong>
+              {turnGoldIncome > 0 && (
+                <div className="player-stats-turn-income">+{turnGoldIncome}🟡</div>
+              )}
             </div>
           </div>
-          
-          {/* fame */}        
+
+          {/* fame */}
           <div
             className="player-stats-data"
             id="statsFame"

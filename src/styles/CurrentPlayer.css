@@ -121,6 +121,13 @@
   letter-spacing: -2px;
 }
 
+/* Per-turn gold bonus under the current gold total -- same small caption
+   size as TileCard's "per turn" line (.big-icon-hint div:last-child). */
+.player-stats-turn-income {
+  font-size: 9px;
+  font-weight: normal;
+}
+
 
 @media (min-width: 769px) {
   .player-pane {
