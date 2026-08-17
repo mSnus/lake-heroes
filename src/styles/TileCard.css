@@ -46,12 +46,20 @@
 
 .current-tile.special {
   height: 230px;
+  border-radius: 50%;
 }
 
 
 .current-tile.special .tile-card {
   background-color: transparent;
   border: none;
+  border-radius: 50%;
+}
+
+.current-tile.special .tile-card-title {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  color: #897753;
 }
 
 .current-tile.special .tile-card-bg {
@@ -60,8 +68,9 @@
   border-bottom: none !important;
   backdrop-filter: blur(8px);
   background-size: 80%;
-  background-position: center;
+  background-position: center 0.6rem;
   align-items: flex-end;
+  border-radius: 50%;
 }
 
 .current-tile-card-wrapper-empty {

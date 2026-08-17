@@ -67,14 +67,14 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
-    zIndex: 7010,
+    zIndex: 1010,
   };
 
   return (
     <>
       <div style={{ ...colStyle, top: 8 }}>
         <div style={{ display: 'flex', flexDirection: 'row', gap: 8, justifyContent: 'flex-end' }}>
-          <div className="shield-button-container" title={t('shieldColumn.menu')}>
+          <div className="shield-button-container main-menu-button" title={t('shieldColumn.menu')}>
             <button onClick={() => setMenuOpen((o) => !o)} className="shield-button">
               🐲
             </button>
@@ -220,6 +220,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div
                 className="shield-button-container main-button"
                 title={t('shieldColumn.rollDice')}
+                style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'});` }}
               >
                 <button onClick={startDiceRoll} className="shield-button">
                   🎲
@@ -230,6 +231,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div
                 className="shield-button-container main-button"
                 title={t('shieldColumn.endTurn')}
+                style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'});` }}
               >
                 <button onClick={handleEndTurn} className="shield-button">
                   ⏳
