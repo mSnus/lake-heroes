@@ -154,8 +154,7 @@
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Hire some more:",
-    "hireButtonTitle": "👛 Hire"
+    "hireTitle": "Hire some more:"
   },
   "squadDisplay": {
     "sellSquad": "Sell this squad",

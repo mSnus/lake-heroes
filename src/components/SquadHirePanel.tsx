@@ -15,7 +15,6 @@ interface HireRowProps {
 }
 
 const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy }) => {
-  const t = useT();
   const goldCap = Math.floor(player.gold / unitPrice);
   const slotCap = player.remainingCapacity(tier);
   const maxAmount = Math.min(goldCap, slotCap);
@@ -63,16 +62,14 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
         }}
       />
       <div className="hire-row-amount-label">{displayedAmount}</div>
-      <div className="hire-row-stack">
-        <button
-          className="game-menu-button hire-submit"
-          onClick={handleBuy}
-          disabled={!amount || amount <= 0 || amount > maxAmount}
-        >
-          {t('squadHirePanel.hireButtonTitle')}
-        </button>
-        <div className="hire-row-caption">{displayedAmount * unitPrice}🟡</div>
-      </div>
+      <button
+        className="game-menu-button hire-submit"
+        onClick={handleBuy}
+        disabled={!amount || amount <= 0 || amount > maxAmount}
+      >
+        <span className="hire-submit-icon">👛</span>
+        <span className="hire-row-caption">{displayedAmount * unitPrice}🟡</span>
+      </button>
     </div>
   );
 };

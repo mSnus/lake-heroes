@@ -24,12 +24,23 @@
   white-space: nowrap;
 }
 
+/* Hire button: wallet icon over the total price for the selected amount,
+   stacked instead of a "Hire" label next to it. */
 .hire-submit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   white-space: nowrap;
 }
 
-/* Unit emoji + unit price, and the Hire button + total price for the
-   selected amount, each stacked so the row stays narrow. */
+.hire-submit-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Unit emoji + unit price, stacked so the row stays narrow. */
 .hire-row-stack {
   display: flex;
   flex-direction: column;
