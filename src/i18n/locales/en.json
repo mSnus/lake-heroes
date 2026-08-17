@@ -171,7 +171,7 @@
     "garrisonMilitiaPrompt": "How much to leave guarding {tileName}? (you have {militia}🧍 in your army{ridersNote})",
     "garrisonRidersNote": ", 🐎 can't be on guard",
     "fee": "fee",
-    "perYear": "per year",
+    "perTurn": "per turn",
     "defence": "defence",
     "defenceInfo": "Defence: {value}",
     "garrisonWarning": "You could take units from garrison back to army only while visiting your tile",
@@ -261,7 +261,6 @@
     "isAt": "is at",
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
     "goldTooltip": "Current gold you own",
-    "fromYourTiles": "from your own tiles",
     "asKingsGrace": "as the King's grace",
     "fromPristineDiamond": "from the Pristine Diamond 💎",
     "wagesMessage": "Your wages after passing the King's Castle{detail}",
@@ -457,7 +456,8 @@
     "prisonFameFine": "{playerSpan} quits the prison in shame, losing 1🏆",
     "prisonFameFineToast": "{playerName} has no gold to pay and loses 1 fame to quit the prison",
     "prisonFineWaived": "{playerSpan}'s {artifactName} {emoji} waives the fine to quit the prison",
-    "prisonFineWaivedToast": "{playerName}'s {artifactName} waives the fine to quit the prison"
+    "prisonFineWaivedToast": "{playerName}'s {artifactName} waives the fine to quit the prison",
+    "turnIncome": "{playerName} collects {summary} from their tiles"
   },
   "buyUnits": {
     "bought": "{playerName} bought {amount} {tier} for {gold}🟡.",

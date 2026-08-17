@@ -7,6 +7,7 @@ import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { recordTurnStat } from '../game/statistics';
+import { collectTileTurnIncome } from '../game/income';
 import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
 
@@ -32,6 +33,23 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   board.activePlayer.hasResolvedTileEncounterThisTurn = false;
   board.activePlayer.hasCheckedKingsContractThisTurn = false;
   board.activePlayer.upgradesThisTurn = 0;
+
+  // Tiles pay their owner at the start of every turn now, not once a lap --
+  // applies even to a player about to skip their turn in prison, since it's
+  // their tiles earning it, not them personally taking an action.
+  const turnIncome = collectTileTurnIncome(board, board.activePlayer);
+  if (turnIncome.gold > 0 || turnIncome.units > 0) {
+    const incomeParts: string[] = [];
+    if (turnIncome.gold > 0) incomeParts.push(`${turnIncome.gold}🟡`);
+    if (turnIncome.units > 0) incomeParts.push(`${turnIncome.units}🧍`);
+    say(
+      t('endTurn.turnIncome', {
+        playerName: board.activePlayer.name,
+        summary: incomeParts.join(` ${t('common.and')} `),
+      }),
+      'debug'
+    );
+  }
 
   if (board.activePlayerIndex === 0) {
     board.round++;

@@ -15,22 +15,28 @@ export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the pl
 // materialised into real gold in the Tile constructor. Change one number here
 // to rescale the whole economy. TILE_BASE_PRICE scales a tile's purchase price
 // (level-1 gold), TILE_BASE_UPGRADE its upgrade costs (level-2/3 gold), and
-// TILE_BASE_INCOME its yearly/visit gold income (bonuses on gold-type tiles).
+// TILE_BASE_INCOME its per-turn gold income (bonuses on gold-type tiles).
 export const TILE_BASE_PRICE = 200;
 export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 1;
 export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
 // Gold-type tile bonuses (Mills/Farms/Fields/Traders income) are cut by 35%
-// off their raw TILE_BASE_INCOME-scaled value, then rounded to the nearest
-// 100 -- a deliberate income nerf independent of TILE_BASE_PRICE, which
-// stays at its full value for purchase/upgrade costs.
+// off their raw TILE_BASE_INCOME-scaled value -- a deliberate income nerf
+// independent of TILE_BASE_PRICE, which stays at its full value for
+// purchase/upgrade costs.
 export const BONUS_GOLD_RATIO = 0.65;
-// Flat per-tile annual bonus each owned tile grants on top of its own
+// Tile income pays out every turn, not once a lap -- a turn's worth is a
+// small slice of what the old per-year figure was. Applied on top of
+// BONUS_GOLD_RATIO, with the rounding step shrinking from 100 to 50 to
+// match (see Tile.ts's `bonuses` getter and TURN_DEFAULT_GOLD below).
+export const TURN_INCOME_RATIO = 0.1;
+// Flat per-tile per-turn bonus each owned tile grants on top of its own
 // gold/units income, in whichever resource its own bonus ISN'T: a gold-bonus
-// tile (Mills/Farms/Fields/Traders) also brings ANNUAL_DEFAULT_UNITS militia,
-// a units-bonus tile (Camps/Towers) also brings ANNUAL_DEFAULT_GOLD gold —
-// see kingsGrace.ts's computeAnnualReward.
-export const ANNUAL_DEFAULT_UNITS = 2;
-export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
+// tile (Mills/Farms/Fields/Traders) also brings TURN_DEFAULT_UNITS militia,
+// a units-bonus tile (Camps/Towers) also brings TURN_DEFAULT_GOLD gold --
+// same flat amount for every units-bonus tile, so Towers and Camps always
+// earn identical gold. See game/income.ts's tileTurnIncome.
+export const TURN_DEFAULT_UNITS = 2;
+export const TURN_DEFAULT_GOLD = Math.round((2.5 * TILE_BASE_PRICE * TURN_INCOME_RATIO) / 50) * 50;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle

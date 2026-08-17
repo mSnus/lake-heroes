@@ -72,7 +72,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
             </span>
           </div>
         )}
-        <PlayerStats player={player} income={playerIncome(gameState, player)} />
+        <PlayerStats player={player} income={playerIncome(player)} />
         {ownedTiles.length > 0 && (
           <div className="cpc-owned-tiles">
             {ownedTiles.map((tile) => (

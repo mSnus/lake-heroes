@@ -171,7 +171,7 @@
     "garrisonMilitiaPrompt": "Сколько оставить охранять «{tileName}»? (у вас {militia}🧍 в армии{ridersNote})",
     "garrisonRidersNote": ", 🐎 не могут стоять в гарнизоне",
     "fee": "плата",
-    "perYear": "в год",
+    "perTurn": "за ход",
     "defence": "защита",
     "defenceInfo": "Защита: {value}",
     "garrisonWarning": "Забрать бойцов из гарнизона обратно в армию можно только находясь на своей клетке",
@@ -261,7 +261,6 @@
     "isAt": "на клетке",
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
     "goldTooltip": "Ваше текущее золото",
-    "fromYourTiles": "с ваших клеток",
     "asKingsGrace": "в качестве королевской милости",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Ваше жалование за проход через Замок короля{detail}",
@@ -457,7 +456,8 @@
     "prisonFameFine": "{playerSpan} с позором покидает темницу, теряя 1🏆",
     "prisonFameFineToast": "{playerName} не может заплатить и теряет 1 славу, чтобы выйти из темницы",
     "prisonFineWaived": "{artifactName} {emoji} игрока {playerSpan} освобождает от штрафа за выход из темницы",
-    "prisonFineWaivedToast": "{artifactName} игрока {playerName} освобождает от штрафа за выход из темницы"
+    "prisonFineWaivedToast": "{artifactName} игрока {playerName} освобождает от штрафа за выход из темницы",
+    "turnIncome": "{playerName} получает {summary} со своих клеток"
   },
   "buyUnits": {
     "bought": "{playerName} купил {amount} ({tier}) за {gold}🟡.",

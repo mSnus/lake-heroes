@@ -34,8 +34,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { tileGold, tileUnits, kingsGold, kingsUnits, arifactGold, totalGold, totalUnits } =
-    computeAnnualReward(gameState, activePlayer);
+  const { kingsGold, kingsUnits, arifactGold, totalGold, totalUnits } =
+    computeAnnualReward(activePlayer);
 
   return (
     <div className="player-pane-wrapper">
@@ -151,7 +151,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
               };
               const parts = [
-                fmt(tileGold, tileUnits, t('currentPlayer.fromYourTiles')),
                 fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
                 fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
               ].filter(Boolean);

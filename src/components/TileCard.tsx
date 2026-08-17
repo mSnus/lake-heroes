@@ -9,6 +9,7 @@ import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
+import { tileTurnIncome } from '../game/income';
 import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
@@ -77,6 +78,12 @@ export const TileCard: React.FC<TileCardProps> = ({
   const syndicateMult =
     gameState && ownerPlayer ? syndicateMultiplier(gameState, ownerPlayer, tile.group) : 1;
   const isSyndicate = syndicateMult > 1;
+
+  // Combined per-turn payout at the tile's current level: its own bonus plus
+  // the flat opposite-resource trickle (see game/income.ts's tileTurnIncome),
+  // shown together in the same cell so a gold-tile's small units trickle (or
+  // a Camp/Tower's small gold trickle) isn't hidden.
+  const turnIncome = tileTurnIncome(tile, syndicateMult);
 
   const bonusType = getBonusType(tile);
 
@@ -338,9 +345,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                         ) : (
                           <div className="big-icon-hint">
                             <div>
-                              +{bonus(tile.level)} {bonusTypeIcon}
+                              +{turnIncome.gold}🟡 +{turnIncome.units} 👬
                             </div>
-                            <div>{t('tileCard.perYear')}</div>
+                            <div>{t('tileCard.perTurn')}</div>
                           </div>
                         )}
                       </div>
@@ -362,8 +369,8 @@ export const TileCard: React.FC<TileCardProps> = ({
                 <div className="tile-card-base-info">
                   <div className="tile-card-base-row">
                     <div className="big-icon-hint">
-                      +{bonus(tile.level)} {bonusTypeIcon}
-                      <div>{t('tileCard.perYear')}</div>
+                      +{turnIncome.gold}🟡 +{turnIncome.units} 👬
+                      <div>{t('tileCard.perTurn')}</div>
                     </div>
                   </div>
 
