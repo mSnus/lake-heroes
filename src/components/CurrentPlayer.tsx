@@ -8,15 +8,31 @@ import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
 import { getOverrides } from '../utils/overridesStore';
 import { gameEvent } from '../utils/events';
+import { handleKingCastle } from '../actions/king';
+import { openTavernHireOnly } from '../actions/tavern';
 import { useT } from '../i18n';
 
 interface CurrentPlayerProps {
   gameState: GameState;
+  updateGameState: (gs: GameState) => void;
 }
 
-export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
+export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateGameState }) => {
   const t = useT();
   const activePlayer = gameState.activePlayer;
+
+  // The active tile's name is always clickable, but King's Castle and the
+  // Tavern get their own dialogue back (mirrors clicking the tile itself on
+  // the board) instead of the generic read-only tile card.
+  const handleTileNameClick = () => {
+    if (gameState.activeTile.id === 'king-castle') {
+      handleKingCastle(gameState, updateGameState);
+    } else if (gameState.activeTile.id === 'tavern') {
+      openTavernHireOnly(gameState, updateGameState);
+    } else {
+      gameEvent('displayTile', gameState.activeTile);
+    }
+  };
 
   const { tileGold, tileUnits, kingsGold, kingsUnits, arifactGold, totalGold, totalUnits } =
     computeAnnualReward(gameState, activePlayer);
@@ -29,7 +45,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState }) => {
         <span>{t('currentPlayer.isAt')}</span>
         <span
           style={{ color: gameState.activeTile.groupTextColor, cursor: 'pointer' }}
-          onClick={() => gameEvent('displayTile', gameState.activeTile)}
+          onClick={handleTileNameClick}
         >
           {gameState.activeTile.name}{' '}
         </span>

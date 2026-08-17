@@ -50,7 +50,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({ gameState, updateGameState
         borderTopWidth: '4px',
       }}
     >
-      {gameState && <CurrentPlayer gameState={gameState} />}
+      {gameState && <CurrentPlayer gameState={gameState} updateGameState={updateGameState} />}
     </div>
   );
 };
