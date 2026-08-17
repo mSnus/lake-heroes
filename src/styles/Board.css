@@ -355,6 +355,8 @@
   filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
 }
 
+/* Pins the bot-turn indicator to the column's right edge -- on its own, no
+   shield look (that indicator supplies its own inline-styled visuals). */
 .main-button {
   position: absolute;
   right: 0;
@@ -362,6 +364,24 @@
 
 .main-menu-button {
   z-index: 7000;
+}
+
+/* The roll-dice / end-turn shield button: the same shield look as
+   .shield-button-container, but its own container rather than combining
+   .shield-button-container and .main-button on one element. */
+.main-button-container {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/assets/shield.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
+  position: absolute;
+  right: 0;
 }
 
 .shield-button {

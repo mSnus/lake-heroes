@@ -218,7 +218,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
           <div style={{ ...colStyle, top: 'calc(100vw * 5 / 4 - 25px)' }}>
             {diceActive && (
               <div
-                className="shield-button-container main-button"
+                className="main-button-container"
                 title={t('shieldColumn.rollDice')}
                 style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'});` }}
               >
@@ -229,7 +229,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
             )}
             {canEndTurn && (
               <div
-                className="shield-button-container main-button"
+                className="main-button-container"
                 title={t('shieldColumn.endTurn')}
                 style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'});` }}
               >
