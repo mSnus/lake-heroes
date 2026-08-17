@@ -194,7 +194,7 @@
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
     "belongsTo": "belongs to {player}",
     "currentLevelLine": "{slots}🏯 +{bonus}{icon} per turn",
-    "upgradeLine": "{priceTag} → {slots}🏯 and +{bonus}{icon} per turn",
+    "upgradeLine": "{priceTag} → +{bonus}{icon} per turn and {slots}🏯 towers",
     "onGuard": "On guard:",
     "army": "army",
     "garrisonVisitCaveat": "return to the tile to take units back from garrison",

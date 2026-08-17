@@ -194,7 +194,7 @@
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
     "belongsTo": "принадлежит игроку {player}",
     "currentLevelLine": "{slots}🏯 +{bonus}{icon} за ход",
-    "upgradeLine": "{priceTag} → {slots}🏯 и +{bonus}{icon} за ход",
+    "upgradeLine": "{priceTag} → +{bonus}{icon} за ход и {slots}🏯 башни",
     "onGuard": "В гарнизоне:",
     "army": "армия",
     "garrisonVisitCaveat": "посетите эту клетку снова, чтобы вернуть их в армию",
