@@ -47,6 +47,14 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
 
   const buttons = config.buttons ?? [];
 
+  // Follows whichever line names the tile's guard -- "belongs to OWNER" when
+  // it's owned, or straight after "encounters TILE" when it's an unowned
+  // wild guard -- rather than trailing the whole encounter block (which used
+  // to land it after the raze-or-pay prompt, reading like it belonged there).
+  const guardedByNode = config.encounter?.tile && (
+    <> {t('screenRenderer.andIsGuarded', { amount: config.encounter.tile.defence })}</>
+  );
+
   function handleButtonClick(onClick: () => void, action?: string) {
     if (action === 'end-turn') gameEvent('setPhase', 'before-move');
     try {
@@ -85,6 +93,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
             <strong style={{ color: config.encounter.tile?.groupTextColor }}>
               {config.encounter.tile?.name}
             </strong>
+            {!config.encounter.ownerName && guardedByNode}
             {config.encounter.ownerName && (
               <>
                 <br />
@@ -94,6 +103,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   color={config.encounter.ownerColor}
                   bold
                 />
+                {guardedByNode}
                 {config.encounter.canFight && config.encounter.tile && (
                   <>
                     <br />
@@ -107,7 +117,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 )}
               </>
             )}
-            {config.encounter.tile && <> {t('screenRenderer.andIsGuarded', { amount: config.encounter.tile.defence })}</>}
             {config.encounter.outcomeText && (
               <>
                 <br />
