@@ -39,7 +39,8 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
     <div className={['squad-display', className].filter(Boolean).join(' ')}>
       {chunks.map((chunk, i) => {
         const upgradeCost = upgradeSquadCost(chunk.count);
-        const showUpgrade =
+        const canSell = !!onSellSquad && chunk.count > 0;
+        const canUpgrade =
           !!onUpgradeSquad &&
           canUpgradeToRiders &&
           chunk.tier === 'militia' &&
@@ -52,23 +53,31 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
               {chunk.count}
               {chunk.tier === 'riders' ? '🐎' : '🧍'}
             </span>
-            {((onSellSquad && chunk.count > 0) || showUpgrade) && (
+            {/* Buttons always render when the capability is offered at all
+                (onSellSquad/onUpgradeSquad provided), even for a squad that
+                can't currently use them -- hidden via opacity+disabled rather
+                than left out of the layout, so every squad's actions row
+                keeps the same footprint and the buttons stay pinned to the
+                same left/right edges across the whole hire dialogue. */}
+            {(onSellSquad || onUpgradeSquad) && (
               <span className="squad-chunk-actions">
-                {onSellSquad && chunk.count > 0 && (
+                {onSellSquad && (
                   <button
-                    className="squad-sell-button"
+                    className={'squad-sell-button' + (canSell ? '' : ' squad-action-hidden')}
                     title={t('squadDisplay.sellSquad')}
+                    disabled={!canSell}
                     onClick={() => onSellSquad(chunk.tier, chunk.count)}
                   >
                     <span className="squad-sell-x">✖️</span>
                     <span className="squad-sell-label">{t('squadDisplay.sell')}</span>
                   </button>
                 )}
-                {showUpgrade && (
+                {onUpgradeSquad && (
                   <button
-                    className="squad-upgrade-button"
+                    className={'squad-upgrade-button' + (canUpgrade ? '' : ' squad-action-hidden')}
                     title={t('squadDisplay.upgradeSquad', { gold: upgradeCost })}
-                    onClick={() => onUpgradeSquad!(chunk.count)}
+                    disabled={!canUpgrade}
+                    onClick={() => onUpgradeSquad(chunk.count)}
                   >
                     🆙🐎
                   </button>
