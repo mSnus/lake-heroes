@@ -12,8 +12,10 @@ import { useT } from '../i18n';
 
 interface TavernModalProps {
   gameState: GameState;
-  /** Pre-rendered HTML for the dice-roll result (joined/full-note message). */
-  joinedHtml: string;
+  /** Pre-rendered HTML for the dice-roll result (joined/full-note message).
+   * Omitted when reopening the tile's hire dialogue without a fresh roll
+   * (see tavern.ts's openTavernHireOnly). */
+  joinedHtml?: string;
   onBuy: (amount: number, tier: UnitTier) => void;
   onSell: (tier: UnitTier, amount: number) => void;
   onSkip: () => void;
@@ -68,7 +70,9 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
     >
       <div className="modal-content" style={{ color: 'white', fontFamily: 'Texturina' }}>
         <h2 className="game-title">{t('tavern.title')}</h2>
-        <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
+        {joinedHtml && (
+          <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
+        )}
 
         <h3>{t('squadDisplay.youHaveSquads', { squads: player.armySlots })}</h3>
 

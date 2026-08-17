@@ -92,3 +92,34 @@ export function handleTavern(
     }),
   });
 }
+
+/**
+ * Reopen the Tavern's hire dialogue for a player already standing on it, with
+ * no dice roll and no free-units bonus -- just recruiting. Covers clicking
+ * the tile again after a page reload lost the original post-roll screen (the
+ * roll itself only ever happens once, from rollAndMove landing on the tile).
+ */
+export function openTavernHireOnly(
+  board: GameState | null,
+  updateGameState: (board: GameState) => void
+) {
+  if (!board) return;
+  console.log('Action: reopen tavern (hire only)');
+
+  showScreen({
+    screenType: 'tavern-result',
+    content: React.createElement(TavernModal, {
+      gameState: board,
+      onBuy: (amount, tier) => {
+        buyUnits(board, amount, updateGameState, tier);
+      },
+      onSell: (tier, amount) => {
+        sellUnits(board, amount, updateGameState, tier);
+      },
+      onSkip: () => {
+        clearScreen();
+        setEndTurn();
+      },
+    }),
+  });
+}

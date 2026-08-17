@@ -9,6 +9,7 @@ import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
 import { handleKingCastle } from '../actions/king';
+import { openTavernHireOnly } from '../actions/tavern';
 import { challengeDragonFromBoard } from '../actions/fightDragon';
 import { useT } from '../i18n';
 
@@ -187,6 +188,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
       if (isActivePlayerTile && tile.id === 'king-castle') {
         handleKingCastle(board, updateGameState);
+        return;
+      }
+      if (isActivePlayerTile && tile.id === 'tavern') {
+        openTavernHireOnly(board, updateGameState);
         return;
       }
 
