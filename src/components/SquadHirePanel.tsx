@@ -44,6 +44,8 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
     setAmount(0);
   };
 
+  const canBuy = !!amount && amount > 0 && amount <= maxAmount;
+
   return (
     <div className="hire-row">
       <div className="hire-row-stack">
@@ -62,14 +64,12 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
         }}
       />
       <div className="hire-row-amount-label">{displayedAmount}</div>
-      <button
-        className="game-menu-button hire-submit"
-        onClick={handleBuy}
-        disabled={!amount || amount <= 0 || amount > maxAmount}
-      >
-        <span className="hire-submit-icon">👛</span>
-        <span className="hire-row-caption">{displayedAmount * unitPrice}🟡</span>
-      </button>
+      <div className={'shield-button-container' + (canBuy ? '' : ' shield-button-container--disabled')}>
+        <button className="shield-button hire-submit" onClick={handleBuy} disabled={!canBuy}>
+          <span className="hire-submit-icon">👛</span>
+          <span className="hire-row-caption">{displayedAmount * unitPrice}🟡</span>
+        </button>
+      </div>
     </div>
   );
 };
