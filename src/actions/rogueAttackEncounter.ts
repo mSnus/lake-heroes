@@ -35,6 +35,8 @@ export function checkRogueAttackEncounter(
 
     if (player.fame < 3) return false;
     if (player.armyPower < 5) return false;
+    // Not worth raiding a player who's barely got an army at all.
+    if (player.units < 5) return false;
   }
   // Yielded tiles are under the King's protection -- not a valid target.
   const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
