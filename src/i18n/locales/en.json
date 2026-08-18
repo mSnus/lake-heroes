@@ -172,6 +172,7 @@
     "garrisonRidersNote": ", 🐎 can't be on guard",
     "fee": "fee",
     "perTurn": "per turn",
+    "perYear": "per year",
     "defence": "defence",
     "defenceInfo": "Defence: {value}",
     "garrisonWarning": "You could take units from garrison back to army only while visiting your tile",

@@ -16,6 +16,7 @@ import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { remainingCapacity } from '../game/army';
 import { tileTurnIncome } from '../game/income';
+import { TOWER_LEVEL_GOLD_BONUS } from '../game/constants';
 import { getCharacterConfig } from '../ai/decisions';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
@@ -54,6 +55,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       </>
     );
   };
+
+  // Towers' fortification toll (see game/kingsGrace.ts's computeAnnualReward)
+  // only pays out once a lap, not every turn like the rest of a tile's
+  // income -- shown as its own "per year" block alongside the per-turn one.
+  const isTower = tile.group === 'Towers';
+  const towerYearlyLabel = (level: number) => <>+{TOWER_LEVEL_GOLD_BONUS * level}🟡</>;
 
   // garrisonAmount is an ABSOLUTE target headcount, not a delta — so the
   // pool it's bounded by is everything this player controls, whether
@@ -255,6 +262,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                     <div>{turnIncomeLabel(currentLevel)}</div>
                     <div>{t('tileCard.perTurn')}</div>
                   </div>
+                  {isTower && (
+                    <div className="big-icon-hint">
+                      <div>{towerYearlyLabel(currentLevel)}</div>
+                      <div>{t('tileCard.perYear')}</div>
+                    </div>
+                  )}
                 </div>
                 {currentLevel < 2 && (
                   <div
@@ -271,6 +284,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                           </div>
                         ),
                       })}
+                      {isTower && (
+                        <div className="big-icon-hint">
+                          <div>{towerYearlyLabel(2)}</div>
+                          <div>{t('tileCard.perYear')}</div>
+                        </div>
+                      )}
                   </div>
                 )}
                 {currentLevel < 3 && (
@@ -288,6 +307,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                           </div>
                         ),
                       })}
+                      {isTower && (
+                        <div className="big-icon-hint">
+                          <div>{towerYearlyLabel(3)}</div>
+                          <div>{t('tileCard.perYear')}</div>
+                        </div>
+                      )}
                   </div>
                 )}
                 {totalMilitiaPool > 0 && !tile.isYielded && (
