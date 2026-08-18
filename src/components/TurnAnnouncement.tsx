@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { useModal } from '../utils/diceStore';
 import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
+import { playerTurnIncome } from '../game/income';
 import { tJsx } from '../i18n/tJsx';
 import { useLanguage } from '../i18n';
 import '../styles/TurnAnnouncement.css';
@@ -30,6 +31,7 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const unmountTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const player = gameState.activePlayer;
+  const turnIncome = playerTurnIncome(gameState, player);
 
   const hide = () => {
     clearTimeout(hideTimerRef.current);
@@ -71,6 +73,12 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
         <span>
           {tJsx('turnAnnouncement.text', { playerName: <PlayerLabel player={player}/> })}
         </span>
+        {(turnIncome.gold > 0 || turnIncome.units > 0) && (
+          <span className="turn-announcement-income">
+            {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
+            {turnIncome.units > 0 && <>+{turnIncome.units}👬</>}
+          </span>
+        )}
       </DecoratedButton>
     </div>
   );
