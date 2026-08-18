@@ -4,6 +4,7 @@ import { useModal } from '../utils/diceStore';
 import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
 import { playerTurnIncome } from '../game/income';
+import { gameEvent } from '../utils/events';
 import { tJsx } from '../i18n/tJsx';
 import { useLanguage } from '../i18n';
 import '../styles/TurnAnnouncement.css';
@@ -36,7 +37,14 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   const hide = () => {
     clearTimeout(hideTimerRef.current);
     setActive(false);
-    unmountTimerRef.current = setTimeout(() => setMounted(false), TRANSITION_MS);
+    // Fires once the plate has actually finished fading out (not when the
+    // fade starts) -- other panels (e.g. CurrentPlayer's gold/army reveal)
+    // wait for this before showing this turn's income, so the numbers don't
+    // change while the plate announcing whose turn it is is still on screen.
+    unmountTimerRef.current = setTimeout(() => {
+      setMounted(false);
+      gameEvent('turnAnnouncementGone', player.id);
+    }, TRANSITION_MS);
   };
 
   useEffect(() => {

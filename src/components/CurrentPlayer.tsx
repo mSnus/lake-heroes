@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../game/GameState';
+import { Player } from '../game/Player';
 import '../styles/CurrentPlayer.css';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
@@ -16,6 +17,108 @@ import { useT } from '../i18n';
 interface CurrentPlayerProps {
   gameState: GameState;
   updateGameState: (gs: GameState) => void;
+}
+
+interface RevealedStats {
+  gold: number;
+  militia: number;
+  riders: number;
+}
+
+const REVEAL_ANIM_MS = 600;
+
+/**
+ * Gold/army numbers for the stats panel, held at their turn-start (pre-
+ * income) value across a turn change and only animated up to the real
+ * (post-income) value once the TurnAnnouncement plate has fully faded away
+ * (the 'turnAnnouncementGone' event) -- so the numbers don't visibly jump
+ * while "PlayerName's turn" is still on screen. A same-turn change (selling
+ * a tile, hiring units, ...) updates live with no delay or animation, since
+ * there's no announcement covering it.
+ */
+function useRevealedStats(player: Player): RevealedStats {
+  const lastPlayerIdRef = useRef<number | null>(null);
+  // Per-player "last revealed" snapshot -- what a player's numbers looked
+  // like at the end of their last reveal, i.e. their true turn-start value
+  // the next time it's their turn.
+  const snapshotsRef = useRef<Map<number, RevealedStats>>(new Map());
+  const pendingRef = useRef(false);
+  const rafRef = useRef<number | undefined>(undefined);
+  const [display, setDisplay] = useState<RevealedStats>({
+    gold: player.gold,
+    militia: player.militia,
+    riders: player.riders,
+  });
+
+  // Turn change: freeze the display at the new active player's last-known
+  // snapshot (if any) and mark a reveal as pending; a first-ever sighting of
+  // a player has nothing to hide, so it just shows their real values.
+  useEffect(() => {
+    if (lastPlayerIdRef.current === player.id) return;
+    lastPlayerIdRef.current = player.id;
+    if (rafRef.current !== undefined) cancelAnimationFrame(rafRef.current);
+    const snapshot = snapshotsRef.current.get(player.id);
+    const real = { gold: player.gold, militia: player.militia, riders: player.riders };
+    if (snapshot) {
+      setDisplay(snapshot);
+      pendingRef.current = true;
+    } else {
+      setDisplay(real);
+      snapshotsRef.current.set(player.id, real);
+      pendingRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [player.id]);
+
+  // Same-turn changes track live -- skipped while a turn-start reveal is
+  // intentionally being held back (see the effect above, which runs first
+  // within the same commit and sets pendingRef before this one checks it).
+  useEffect(() => {
+    if (pendingRef.current) return;
+    const real = { gold: player.gold, militia: player.militia, riders: player.riders };
+    setDisplay(real);
+    snapshotsRef.current.set(player.id, real);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [player.gold, player.militia, player.riders, player.id]);
+
+  useEffect(() => {
+    function onGone(e: Event) {
+      const id = (e as CustomEvent).detail as number;
+      if (id !== player.id || !pendingRef.current) return;
+      pendingRef.current = false;
+      const from = snapshotsRef.current.get(player.id) ?? display;
+      const to = { gold: player.gold, militia: player.militia, riders: player.riders };
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / REVEAL_ANIM_MS);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        setDisplay({
+          gold: Math.round(from.gold + (to.gold - from.gold) * eased),
+          militia: Math.round(from.militia + (to.militia - from.militia) * eased),
+          riders: Math.round(from.riders + (to.riders - from.riders) * eased),
+        });
+        if (progress < 1) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          snapshotsRef.current.set(player.id, to);
+        }
+      };
+      if (rafRef.current !== undefined) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(tick);
+    }
+    window.addEventListener('turnAnnouncementGone', onGone as EventListener);
+    return () => window.removeEventListener('turnAnnouncementGone', onGone as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [player.id, player.gold, player.militia, player.riders]);
+
+  useEffect(
+    () => () => {
+      if (rafRef.current !== undefined) cancelAnimationFrame(rafRef.current);
+    },
+    []
+  );
+
+  return display;
 }
 
 export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateGameState }) => {
@@ -37,6 +140,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
 
   const { kingsGold, kingsUnits, arifactGold, towerGold } = computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
+  const revealed = useRevealedStats(activePlayer);
 
   return (
     <div className="player-pane-wrapper">
@@ -118,7 +222,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               👛
             </div>
             <div>
-              <strong>{activePlayer.gold ?? 0}🟡</strong>
+              <strong>{revealed.gold ?? 0}🟡</strong>
               {turnIncome.gold > 0 && (
                 <div className="player-stats-turn-income">+{turnIncome.gold}🟡</div>
               )}
@@ -202,8 +306,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           </div>
           <div>
             <SquadDisplay
-              militia={activePlayer.militia}
-              riders={activePlayer.riders}
+              militia={revealed.militia}
+              riders={revealed.riders}
               totalSlots={activePlayer.armySlots}
               className="player-stats-army-slots"
             />
