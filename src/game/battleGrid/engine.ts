@@ -619,13 +619,15 @@ export function planBrawlSide(
   const plan: BrawlPlan = {};
   for (const u of order) {
     if (livingAdjacentEnemies(u, living).length >= 1) {
-      // Wounded pullback: a hurt unit in contact, with a friend beside it and a
-      // safe cell to step into, pulls back instead of fighting (capped 2 in a
-      // row via retreatStreak, so it can't kite forever).
+      // Wounded pullback: a hurt unit in contact, with NO friend beside it to
+      // hold the line and a safe cell to step into, pulls back instead of
+      // fighting on alone (capped 2 in a row via retreatStreak, so it can't
+      // kite forever). A friend adjacent means it stays and fights regardless
+      // of how wounded it is.
       if (
         u.hp <= u.maxHp / 2 &&
         u.safetyMoves < SAFETY_MOVE_CAP &&
-        livingAdjacentFriends(u, living).length >= 1
+        livingAdjacentFriends(u, living).length === 0
       ) {
         const safe = safeAdjacentCell(u, living, state.cols, state.rows, blocked);
         if (safe) {
@@ -753,9 +755,11 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     retreating.add(u.id);
   }
 
-  // ── Step 2b: wounded pullback — a hurt unit in contact with the enemy, with
-  // a friend beside it and a safe cell (out of enemy reach) to step into,
-  // pulls back to that cell so its friends can screen for it. Same 2-in-a-row
+  // ── Step 2b: wounded pullback — a hurt unit in contact with the enemy,
+  // with NO friend beside it to hold the line for it and a safe cell (out of
+  // enemy reach) to step into, pulls back to that cell instead of fighting
+  // on alone. A friend adjacent means it stays and fights regardless of how
+  // wounded it is — safety in numbers, no need to retreat. Same 2-in-a-row
   // cap as retreat, and it sits combat out this turn (it's moving, not
   // fighting). ──
   const seekingSafety = new Set<string>();
@@ -763,7 +767,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     if (retreating.has(u.id)) continue;
     if (u.hp > u.maxHp / 2) continue; // only pull back when at half HP or less
     if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
-    if (livingAdjacentFriends(u, living).length < 1) continue; // no friend beside it
+    if (livingAdjacentFriends(u, living).length > 0) continue; // has a friend beside it — stays and fights
     if (u.safetyMoves >= SAFETY_MOVE_CAP) continue; // used up its pullbacks
     if (!safeAdjacentCell(u, living, state.cols, state.rows, new Set())) continue; // nowhere safe
     seekingSafety.add(u.id);
