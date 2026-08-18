@@ -618,23 +618,36 @@ export function planBrawlSide(
 
   const plan: BrawlPlan = {};
   for (const u of order) {
+    // Already claimed as another wounded unit's swap reserve this turn --
+    // that claim stands in for its own plan entirely, no independent move.
+    if (plan[u.id]) continue;
     if (livingAdjacentEnemies(u, living).length >= 1) {
-      // Wounded pullback: a hurt unit in contact, with NO friend beside it to
-      // hold the line and a safe cell to step into, pulls back instead of
-      // fighting on alone (capped 2 in a row via retreatStreak, so it can't
-      // kite forever). A friend adjacent means it stays and fights regardless
-      // of how wounded it is.
-      if (
-        u.hp <= u.maxHp / 2 &&
-        u.safetyMoves < SAFETY_MOVE_CAP &&
-        livingAdjacentFriends(u, living).length === 0
-      ) {
-        const safe = safeAdjacentCell(u, living, state.cols, state.rows, blocked);
-        if (safe) {
-          blocked.delete(`${u.col},${u.row}`);
-          blocked.add(`${safe.col},${safe.row}`);
-          plan[u.id] = safe;
+      if (u.hp <= u.maxHp / 2 && u.safetyMoves < SAFETY_MOVE_CAP) {
+        const friends = livingAdjacentFriends(u, living);
+        // Swap: trade places with an adjacent ally that isn't itself in
+        // contact (a fresh reserve, not busy fighting) -- the wounded unit
+        // steps back, the reserve steps up, both in the same beat. Always
+        // valid: each vacates exactly the cell the other enters, so neither
+        // needs pathfinding or a blocked-set update.
+        const reserve = friends.find(
+          (f) => !plan[f.id] && livingAdjacentEnemies(f, living).length === 0
+        );
+        if (reserve) {
+          plan[u.id] = { col: reserve.col, row: reserve.row };
+          plan[reserve.id] = { col: u.col, row: u.row };
           continue;
+        }
+        // No ally to swap with -- pull back alone, but only when truly
+        // alone (any ally at all, even a busy one, means safety in numbers:
+        // stay and fight instead). Capped 2 in a row via retreatStreak.
+        if (friends.length === 0) {
+          const safe = safeAdjacentCell(u, living, state.cols, state.rows, blocked);
+          if (safe) {
+            blocked.delete(`${u.col},${u.row}`);
+            blocked.add(`${safe.col},${safe.row}`);
+            plan[u.id] = safe;
+            continue;
+          }
         }
       }
       plan[u.id] = { col: u.col, row: u.row }; // adjacent: stay and fight
@@ -773,11 +786,36 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     seekingSafety.add(u.id);
   }
 
+  // ── Step 2c: swap — a wounded unit in contact with the enemy, with an
+  // adjacent friend that ISN'T itself in contact (a fresh reserve, not busy
+  // fighting), trades places with it instead of fighting on or pulling back
+  // alone: the wounded unit steps back into the reserve's cell, the reserve
+  // steps forward into the wounded unit's. The reserve gets no independent
+  // plan of its own this turn — the wounded unit initiating the swap claims
+  // it outright. Both sit combat out (mid-swap, not fighting) and skip the
+  // normal destination pathfinding entirely below: the swap is always valid
+  // by construction, each vacating exactly the cell the other enters. ──
+  const swapPartner = new Map<string, GridUnit>();
+  for (const u of living) {
+    if (retreating.has(u.id) || seekingSafety.has(u.id)) continue;
+    if (swapPartner.has(u.id)) continue; // already claimed as someone else's reserve
+    if (u.hp > u.maxHp / 2) continue;
+    if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
+    const reserve = livingAdjacentFriends(u, living).find(
+      (f) => !swapPartner.has(f.id) && livingAdjacentEnemies(f, living).length === 0
+    );
+    if (!reserve) continue;
+    swapPartner.set(u.id, reserve);
+    swapPartner.set(reserve.id, u);
+  }
+
   // ── Step 3: combat, over every unit except this turn's retreaters / pullback
-  // units (who sit combat out) — shared with the brawl resolver, see
+  // / swapping units (who sit combat out) — shared with the brawl resolver, see
   // resolveCombat above. engagedIds (units adjacent to ≥1 enemy) is what tells
   // fighters from movers in the movement phase below. ──
-  const combatPool = living.filter((u) => !retreating.has(u.id) && !seekingSafety.has(u.id));
+  const combatPool = living.filter(
+    (u) => !retreating.has(u.id) && !seekingSafety.has(u.id) && !swapPartner.has(u.id)
+  );
   const { engagedIds } = resolveCombat(living, combatPool, opts, rng, events);
 
   // ── Apply combat damage, remove the dead ── (resolveCombat mutated hp)
@@ -804,6 +842,13 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   for (const u of alive) {
     if (!moverIds.has(u.id)) staticOccupancy.set(`${u.col},${u.row}`, u.id);
   }
+  // A swap pair's two cells are spoken for by the other half of the pair
+  // the instant either vacates -- never actually free for a third unit to
+  // path into, even though both members are technically movers.
+  for (const id of Array.from(swapPartner.keys())) {
+    const u = alive.find((a) => a.id === id);
+    if (u) staticOccupancy.set(`${u.col},${u.row}`, u.id);
+  }
 
   // Plan every mover's first step against a given obstacle set, in
   // priority order — a mover with no destination is "stuck" (its cell
@@ -822,7 +867,12 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
       const unit = alive.find((u) => u.id === mover.id)!;
 
       let dest: Cell | undefined;
-      if (seekingSafety.has(unit.id)) {
+      if (swapPartner.has(unit.id)) {
+        // Fixed by the swap itself, not pathfound -- the partner's current
+        // (pre-move) cell, which it's guaranteed to vacate this same beat.
+        const partner = swapPartner.get(unit.id)!;
+        dest = { col: partner.col, row: partner.row };
+      } else if (seekingSafety.has(unit.id)) {
         dest = safeAdjacentCell(unit, alive, state.cols, state.rows, blocked);
       } else if (retreating.has(unit.id)) {
         const friend = nearestLivingFriend(unit, alive);
