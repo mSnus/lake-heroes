@@ -86,10 +86,24 @@
 
 .player-stats-gold {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 4px 16px;
   white-space: nowrap;
   width: 100%;
+}
+
+/* Fame sits to the left of the squads block, which takes up the rest of the
+   row. */
+.player-stats-fame-army-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.player-stats-army-cell {
+  flex: 1;
+  min-width: 0;
 }
 
 .player-stats-army-slots {
@@ -98,17 +112,12 @@
   gap: 4px;
 }
 
-/* Squads + per-turn unit income on the same line, the income pinned to the
-   right of the squad badges rather than stacked underneath them. */
-.player-stats-army-row {
+/* A value + its per-turn income on the same line, the income pinned to the
+   right of the value rather than stacked underneath it. */
+.player-stats-inline-row {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-/* Army spans every column of the stats grid (2 cols on mobile, 4 on desktop). */
-.player-stats-army-cell {
-  grid-column: 1 / -1;
 }
 
 .player-stats-hint {
@@ -160,9 +169,5 @@
   .player-stats-army-slots,
   .player-stats-artifacts {
     justify-content: flex-start;
-  }
-
-  .player-stats-gold {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }

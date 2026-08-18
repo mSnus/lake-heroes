@@ -227,31 +227,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             >
               👛
             </div>
-            <div>
+            <div className="player-stats-inline-row">
               <strong>{revealed.gold ?? 0}🟡</strong>
               {turnIncome.gold > 0 && (
-                <div className="player-stats-turn-income">+{turnIncome.gold}🟡</div>
+                <span className="player-stats-turn-income">+{turnIncome.gold}🟡</span>
               )}
             </div>
           </div>
 
-          {/* fame */}
-          <div
-            className="player-stats-data"
-            id="statsFame"
-            onClick={() => say(t('currentPlayer.fameTooltip'), 'info')}
-            style={{ cursor: 'pointer' }}
-          >
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              🏆
-            </div>
-            <div>
-              <strong>{activePlayer.fame ?? 1}</strong>
-            </div>
-          </div>
           {/* King's grace, on passing the King's Castle -- each tile's own
               bonus resource pays out every turn instead (previewed next to
               gold/army above and below), but every owned tile also trickles
@@ -292,48 +275,65 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             </div>
           </div>
         </div>
-        {/* army, broken down slot by slot — spans the whole row */}
-        <div
-          className="player-stats-data player-stats-army-cell"
-          id="statsArmy"
-          onClick={() =>
-            say(
-              t('currentPlayer.armyTooltip', {
-                fame: activePlayer.fame,
-                slots: activePlayer.armySlots,
-                perSlot: getOverrides().garrisonCapacity,
-              }),
-              'info'
-            )
-          }
-        >
+        {/* fame + army: fame sits to the left of the squads block */}
+        <div className="player-stats-fame-army-row">
           <div
-            className="player-stats-hint"
-            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            className="player-stats-data"
+            id="statsFame"
+            onClick={() => say(t('currentPlayer.fameTooltip'), 'info')}
           >
-            ⚔️
+            <div
+              className="player-stats-hint"
+              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            >
+              🏆
+            </div>
+            <div>
+              <strong>{activePlayer.fame ?? 1}</strong>
+            </div>
           </div>
-          <div className="player-stats-army-row">
-            <SquadDisplay
-              militia={revealed.militia}
-              riders={revealed.riders}
-              totalSlots={activePlayer.armySlots}
-              className="player-stats-army-slots"
-            />
-            {turnIncome.units > 0 && (
-              <span
-                className="player-stats-turn-income player-stats-turn-income-clickable"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  say(
-                    t('currentPlayer.unitsIncomeTooltip', { units: turnIncome.units, tiles: ownedTileCount }),
-                    'info'
-                  );
-                }}
-              >
-                +{turnIncome.units} 👬
-              </span>
-            )}
+          <div
+            className="player-stats-data player-stats-army-cell"
+            id="statsArmy"
+            onClick={() =>
+              say(
+                t('currentPlayer.armyTooltip', {
+                  fame: activePlayer.fame,
+                  slots: activePlayer.armySlots,
+                  perSlot: getOverrides().garrisonCapacity,
+                }),
+                'info'
+              )
+            }
+          >
+            <div
+              className="player-stats-hint"
+              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            >
+              ⚔️
+            </div>
+            <div className="player-stats-inline-row">
+              <SquadDisplay
+                militia={revealed.militia}
+                riders={revealed.riders}
+                totalSlots={activePlayer.armySlots}
+                className="player-stats-army-slots"
+              />
+              {turnIncome.units > 0 && (
+                <span
+                  className="player-stats-turn-income player-stats-turn-income-clickable"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    say(
+                      t('currentPlayer.unitsIncomeTooltip', { units: turnIncome.units, tiles: ownedTileCount }),
+                      'info'
+                    );
+                  }}
+                >
+                  +{turnIncome.units} 👬
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
