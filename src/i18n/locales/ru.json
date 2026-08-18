@@ -220,7 +220,8 @@
     "keepCalmCarryOn": "🍀 Не унывать и жить дальше",
     "wasItWorthIt": "🩸 Стоило ли оно того?",
     "brawlUndo": "Отменить последний ход",
-    "brawlGo": "Закончить ход"
+    "brawlGo": "Закончить ход",
+    "autoResolveBrawl": "Автоматически завершить остаток битвы"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} решил атаковать {targetName}",

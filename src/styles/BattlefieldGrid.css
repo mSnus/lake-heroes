@@ -128,16 +128,18 @@
 }
 
 /* Remaining HP, shown for 1s after a click (see revealHp in
-   BattlefieldGrid.tsx) -- positioned just below the unit's own box rather
-   than squeezed inside it, so it doesn't disturb the emoji/HP-bar layout. */
+   BattlefieldGrid.tsx) -- a small fixed size (not cell-scaled, which made it
+   huge on brawl's oversized cells) overlaid near the bottom of the unit's
+   own box rather than pushed out below it, so it stays over the field
+   instead of spilling past the board's edge for a bottom-row unit. */
 .bfg-unit-hp-label {
   position: absolute;
-  top: 100%;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  margin-top: 2px;
-  font-size: calc(var(--bfg-cell) * 0.28);
+  font-size: 11px;
   font-weight: 700;
+  line-height: 1;
   color: #fff;
   text-shadow: 1px 1px 2px #000, 0 0 3px #000;
   white-space: nowrap;

@@ -461,6 +461,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // Manual brawl control: which side (if any) the human is currently placing.
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
+  // ⚔️ click during a brawl: hand the human's side over to the AI for every
+  // remaining round instead of placing manually -- checked fresh each time a
+  // new round starts, so the round already showing the placement UI when
+  // this is clicked still finishes manually; every round after it doesn't.
+  const [autoResolveBrawl, setAutoResolveBrawl] = useState(false);
   const [instantMove, setInstantMove] = useState(false); // snap (no slide) the human's just-placed units
   const manualBaseRef = useRef<GridBattleState | null>(null); // state a manual phase edits
   const roundActiveRef = useRef(false); // a brawl round is in progress
@@ -529,7 +534,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // defending by default. Only a unit dropped on its own cell (explicit
     // hold, shown as 🛡️) opts out of attacking. The bot side always
     // auto-targets. Fully-auto rounds pass no intent.
-    const manualS: BattleSide | null = attackerManual ? 'attacker' : defenderManual ? 'defender' : null;
+    const manualS: BattleSide | null = autoResolveBrawl
+      ? null
+      : attackerManual
+        ? 'attacker'
+        : defenderManual
+          ? 'defender'
+          : null;
     let intent: Map<string, string> | undefined;
     if (manualS) {
       intent = new Map();
@@ -545,7 +556,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     animateCombat(state, events);
   };
   const brawlAttackerPhase = (s: GridBattleState) => {
-    if (attackerManual) {
+    if (attackerManual && !autoResolveBrawl) {
       manualBaseRef.current = s;
       setBrawlManualSide('attacker');
       return;
@@ -554,7 +565,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     animateBrawlMove(moved, () => brawlResolve(moved));
   };
   const brawlDefenderPhase = (s: GridBattleState) => {
-    if (defenderManual) {
+    if (defenderManual && !autoResolveBrawl) {
       manualBaseRef.current = s;
       setBrawlManualSide('defender');
       return;
@@ -679,6 +690,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const handleVsIconClick = () => {
     if (phase !== 'ongoing') return;
+    // Brawl: hand the human's side over to the AI for the rest of the fight,
+    // instead of the non-brawl auto-play/step-by-step toggle below.
+    if (isBrawl) {
+      setAutoResolveBrawl(true);
+      return;
+    }
     setManualMode(true);
     handleNextTurn();
   };
@@ -760,8 +777,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           <div className="battle-vs-heading">
             <div
-              className={'vs-icon' + (phase === 'ongoing' ? ' vs-icon-clickable' : '')}
-              onClick={phase === 'ongoing' ? handleVsIconClick : undefined}
+              className={
+                'vs-icon' +
+                (phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? ' vs-icon-clickable' : '')
+              }
+              onClick={phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? handleVsIconClick : undefined}
+              title={isBrawl ? t('battleScreen.autoResolveBrawl') : undefined}
             >
               ⚔️
             </div>
