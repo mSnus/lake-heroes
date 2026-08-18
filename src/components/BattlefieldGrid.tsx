@@ -127,9 +127,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     hpRevealTimerRef.current = setTimeout(() => setHpRevealId(null), 1000);
   };
   useEffect(() => () => clearTimeout(hpRevealTimerRef.current), []);
-  // One entry per placement, so Undo can step back to the previous state of
-  // just the last-moved unit.
-  const [undoStack, setUndoStack] = useState<{ unitId: string; prev: Placement | undefined }[]>([]);
+  // One batch per user action, so Undo can step back through one action at a
+  // time — a plain placement is a 1-entry batch, a swap is 2 (both halves
+  // revert together, or a swap could undo into an inconsistent state with
+  // both units pointing at the same cell).
+  const [undoStack, setUndoStack] = useState<{ unitId: string; prev: Placement | undefined }[][]>([]);
   const completedRef = useRef(false);
 
   // A fresh manual turn (new side, or a new round) clears any prior placements.
@@ -240,7 +242,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     // mutates placementsRef synchronously, so reading it inside the (deferred)
     // setUndoStack updater would see the new value instead of the old one.
     const prev = placementsRef.current[unit.id];
-    setUndoStack((s) => [...s, { unitId: unit.id, prev }]);
+    setUndoStack((s) => [...s, [{ unitId: unit.id, prev }]]);
     commitPlacements({ ...placementsRef.current, [unit.id]: pl });
     completedRef.current = false;
     // A unit placed some other way (dragged instead of swapped) can't still
@@ -255,29 +257,32 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   // two calls to `place`) so neither is ever transiently "in the way" of the
   // other under the normal friendly-occupied guard -- a swap is valid by
   // construction, each vacating exactly the cell the other enters. Recorded
-  // as two separate undo entries, so Undo steps back through one half at a
-  // time like any other placement.
+  // as a single 2-entry undo batch, so Undo reverts both halves together.
   const performSwap = (a: GridUnit, b: GridUnit) => {
     if (placementsRef.current[a.id] || placementsRef.current[b.id]) return;
     const plA: Placement = { col: b.col, row: b.row, attackTargetId: null };
     const plB: Placement = { col: a.col, row: a.row, attackTargetId: null };
     setUndoStack((s) => [
       ...s,
-      { unitId: a.id, prev: placementsRef.current[a.id] },
-      { unitId: b.id, prev: placementsRef.current[b.id] },
+      [
+        { unitId: a.id, prev: placementsRef.current[a.id] },
+        { unitId: b.id, prev: placementsRef.current[b.id] },
+      ],
     ]);
     commitPlacements({ ...placementsRef.current, [a.id]: plA, [b.id]: plB });
     completedRef.current = false;
   };
 
-  // Undo only the most recent placement — restore that one unit to whatever it
-  // was before (its earlier placement, or un-placed).
+  // Undo only the most recent action — restore every unit in that batch to
+  // whatever it was before (its earlier placement, or un-placed).
   const undo = () => {
     if (undoStack.length === 0) return;
     const last = undoStack[undoStack.length - 1];
     const next = { ...placementsRef.current };
-    if (last.prev) next[last.unitId] = last.prev;
-    else delete next[last.unitId];
+    for (const entry of last) {
+      if (entry.prev) next[entry.unitId] = entry.prev;
+      else delete next[entry.unitId];
+    }
     commitPlacements(next);
     setUndoStack((s) => s.slice(0, -1));
     completedRef.current = false;
