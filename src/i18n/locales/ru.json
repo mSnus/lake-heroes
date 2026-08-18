@@ -264,6 +264,7 @@
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
     "goldTooltip": "Ваше текущее золото",
     "asKingsGrace": "в качестве королевской милости",
+    "fromYourTiles": "с ваших клеток",
     "fromYourTowers": "как дань с ваших башен",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Пройдите Замок короля и получите {summary}",

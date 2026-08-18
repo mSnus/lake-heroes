@@ -138,7 +138,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerGold } = computeAnnualReward(gameState, activePlayer);
+  const { kingsGold, kingsUnits, arifactGold, towerGold, tileGold, tileUnits } = computeAnnualReward(
+    gameState,
+    activePlayer
+  );
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   const revealed = useRevealedStats(activePlayer);
 
@@ -246,10 +249,12 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               <strong>{activePlayer.fame ?? 1}</strong>
             </div>
           </div>
-          {/* King's grace, on passing the King's Castle -- own-tile income
-              isn't part of this any more (it pays out every turn instead,
-              previewed next to gold/army above and below), except Towers'
-              level-scaled toll, which still only pays out on this cadence. */}
+          {/* King's grace, on passing the King's Castle -- each tile's own
+              bonus resource pays out every turn instead (previewed next to
+              gold/army above and below), but every owned tile also trickles
+              its *opposite* resource in here once per lap, on top of the
+              King's per-fame grace, Towers' extra level-scaled toll, and any
+              artifact bonus. */}
           <div
             className="player-stats-data"
             id="statsPerTurn"
@@ -263,6 +268,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               };
               const parts = [
                 fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
+                fmt(tileGold - towerGold, tileUnits, t('currentPlayer.fromYourTiles')),
                 fmt(towerGold, 0, t('currentPlayer.fromYourTowers')),
                 fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
               ].filter(Boolean);
@@ -276,10 +282,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               🏰
             </div>
             <div>
-              {kingsGold + arifactGold + towerGold > 0 && (
-                <strong>+{kingsGold + arifactGold + towerGold}🟡</strong>
+              {kingsGold + arifactGold + tileGold > 0 && (
+                <strong>+{kingsGold + arifactGold + tileGold}🟡</strong>
               )}
-              {kingsUnits > 0 && <strong>+{kingsUnits} 👬</strong>}
+              {kingsUnits + tileUnits > 0 && <strong>+{kingsUnits + tileUnits} 👬</strong>}
             </div>
           </div>
         </div>

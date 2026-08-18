@@ -264,6 +264,7 @@
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
     "goldTooltip": "Current gold you own",
     "asKingsGrace": "as the King's grace",
+    "fromYourTiles": "from your tiles",
     "fromYourTowers": "from your Towers' toll",
     "fromPristineDiamond": "from the Pristine Diamond 💎",
     "wagesMessage": "Pass the King's Castle for {summary}",
