@@ -106,6 +106,10 @@ export const SMALL_BATTLEFIELD_ROWS = 15;
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).
 export const ZOMBIE_AMBUSH_CHANCE = 0.3;
 export const ZOMBIE_AMBUSH_FORCE_RATIO = 2 / 3;
+// Repelling a zombie ambush thins out the tile's own wild garrison by this
+// fraction (rounded, but never down to 0 -- some zombies always survive to
+// guard it) -- see resolveAmbush.ts.
+export const ZOMBIE_GARRISON_REPEL_RATIO = 0.5;
 // Brawl (small skirmish): a compact board with larger cells, used for the
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most

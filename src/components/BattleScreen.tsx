@@ -418,7 +418,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         const ambushOutcome: AmbushOutcome =
           battleOutcome === 'defender' ? 'win' : battleOutcome === 'attacker' ? 'defeat' : 'tie';
         const res = resolveAmbush(
-          gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome
+          gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome, isZombieAmbush
         );
         return {
           outcome: battleOutcome,
