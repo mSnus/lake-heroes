@@ -1,4 +1,4 @@
-import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO } from './constants';
+import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity } from './army';
@@ -137,8 +137,9 @@ export class Tile implements TileJSON {
 
   /** Purchase/upgrade prices in real gold, computed from the authored
    * coefficients and the live TILE_BASE_PRICE / upgrade-multiplier overrides.
-   * Level-1 gold is the purchase price; higher levels are upgrade costs;
-   * `units` are raw headcounts, never scaled. */
+   * Level-1 gold is the purchase price; higher levels are upgrade costs
+   * (level 3 costs extra on top of the normal upgrade rate, see
+   * LEVEL_3_UPGRADE_MULT); `units` are raw headcounts, never scaled. */
   get prices(): { [level: number]: { gold: number; units: number } } {
     const ov = getOverrides();
     const upgradeBase = ov.tileBasePrice * ov.tileUpgradeMult;
@@ -146,7 +147,7 @@ export class Tile implements TileJSON {
     for (const key of Object.keys(this._priceCoeffs)) {
       const lvl = Number(key);
       const p = this._priceCoeffs[lvl];
-      const goldBase = lvl <= 1 ? ov.tileBasePrice : upgradeBase;
+      const goldBase = lvl <= 1 ? ov.tileBasePrice : lvl >= 3 ? upgradeBase * LEVEL_3_UPGRADE_MULT : upgradeBase;
       out[lvl] = { gold: p.gold * goldBase, units: p.units };
     }
     return out;

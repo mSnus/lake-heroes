@@ -19,6 +19,9 @@ export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the pl
 export const TILE_BASE_PRICE = 200;
 export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 1;
 export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
+// The final upgrade (to level 3) costs extra on top of TILE_BASE_UPGRADE's
+// normal rate -- level 2 is unaffected, only level 3's gold price doubles.
+export const LEVEL_3_UPGRADE_MULT = 2;
 // Gold-type tile bonuses (Mills/Farms/Fields/Traders income) are cut by 35%
 // off their raw TILE_BASE_INCOME-scaled value -- a deliberate income nerf
 // independent of TILE_BASE_PRICE, which stays at its full value for
