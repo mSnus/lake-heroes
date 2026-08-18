@@ -25,10 +25,12 @@ export function computeFeeOptions(board: GameState, player: Player, tile: Tile):
   const fee = getEffectiveFee(tile, player);
   const defence = tile.defence;
 
+  let hasSellableTiles = false;
   const sellable = player.ownedTiles.reduce(
     (acc, posIdx) => {
       const t = board.tiles[posIdx];
       if (!t || t.owner !== player.id) return acc;
+      hasSellableTiles = true;
       acc.gold += t.currentPrice.gold;
       acc.units += t.currentPrice.units;
       return acc;
@@ -44,7 +46,9 @@ export function computeFeeOptions(board: GameState, player: Player, tile: Tile):
   const canSellForFight = !canFight && player.armyPower + sellable.units >= defence;
   // Even if selling everything wouldn't fully cover the fee, offer the option
   // when fighting is available — the player may still prefer to sell first.
-  const canSell = canSellForFee || canSellForFight || (canFight && !canPay);
+  // Never offered with nothing left to sell, even if the "sell before
+  // fighting" clause below would otherwise apply.
+  const canSell = hasSellableTiles && (canSellForFee || canSellForFight || (canFight && !canPay));
   const showAcceptLoss = !canPay && !canFight && !canSell;
 
   return {

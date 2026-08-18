@@ -649,6 +649,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       // encounter instead of ending the turn — any army size can now attempt
       // the battle, so a loss shouldn't be a dead end: the attacker can
       // still pay, sell, accept the loss, or try again with what's left.
+      // resolveTileBattle unconditionally marks the encounter "resolved" (so
+      // a reload doesn't re-derive it from scratch once it's truly settled),
+      // but a loss isn't a settlement here — it's reset so every later step
+      // of paying/selling/accepting still routes back through this same
+      // encounter instead of afterMoveLogic's reload-dedup guard silently
+      // no-op'ing them (leaving the screen stuck on stale button states).
+      attacker.hasResolvedTileEncounterThisTurn = false;
       showTileEncounterScreen(gameState, updateGameState);
     } else {
       setEndTurn();
