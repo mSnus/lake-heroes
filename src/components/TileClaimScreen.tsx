@@ -15,6 +15,7 @@ import { setTileGarrison } from '../actions/garrisonTile';
 import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { remainingCapacity } from '../game/army';
+import { tileTurnIncome } from '../game/income';
 import { getCharacterConfig } from '../ai/decisions';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
@@ -40,7 +41,19 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   variant,
 }) => {
   const t = useT();
-  const bonusTypeIcon = tile.bonusType === 'units' ? '👬' : '🟡';
+
+  // Per-turn income at a given level (not necessarily the tile's current
+  // one -- levels 2/3 preview an upgrade not yet taken), same combined
+  // gold+units format as TileCard's own preview.
+  const turnIncomeLabel = (level: number) => {
+    const income = tileTurnIncome(tile, 1, level);
+    return (
+      <>
+        {income.gold > 0 && <>+{income.gold}🟡 </>}
+        {income.units > 0 && <>+{income.units} 👬</>}
+      </>
+    );
+  };
 
   // garrisonAmount is an ABSOLUTE target headcount, not a delta — so the
   // pool it's bounded by is everything this player controls, whether
@@ -239,9 +252,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                     slots: <span className="value">{currentLevel}</span>,
                   })}
                   <div className="big-icon-hint">
-                    <div>
-                      +{tile.bonuses[currentLevel] ?? 0}{bonusTypeIcon}
-                    </div>
+                    <div>{turnIncomeLabel(currentLevel)}</div>
                     <div>{t('tileCard.perTurn')}</div>
                   </div>
                 </div>
@@ -255,9 +266,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                         slots: <span className="value">2</span>,
                         bonusBlock: (
                           <div className="big-icon-hint">
-                            <div>
-                              +{tile.bonuses[2] ?? 0}{bonusTypeIcon}
-                            </div>
+                            <div>{turnIncomeLabel(2)}</div>
                             <div>{t('tileCard.perTurn')}</div>
                           </div>
                         ),
@@ -274,9 +283,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                         slots: <span className="value">3</span>,
                         bonusBlock: (
                           <div className="big-icon-hint">
-                            <div>
-                              +{tile.bonuses[3] ?? 0}{bonusTypeIcon}
-                            </div>
+                            <div>{turnIncomeLabel(3)}</div>
                             <div>{t('tileCard.perTurn')}</div>
                           </div>
                         ),

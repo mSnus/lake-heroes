@@ -39,9 +39,18 @@ export const TURN_INCOME_RATIO = 0.1;
 // gold-bonus tile (Mills/Farms/Fields/Traders) also brings
 // ANNUAL_DEFAULT_UNITS militia, a units-bonus tile (Camps/Towers) also
 // brings ANNUAL_DEFAULT_GOLD gold -- same flat amount for every units-bonus
-// tile, so Towers and Camps always earn identical gold.
+// tile. Towers earn extra on top of this, see TOWER_LEVEL_GOLD_BONUS.
 export const ANNUAL_DEFAULT_UNITS = 2;
 export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
+// Every owned tile also brings in a flat militia trickle every turn, on top
+// of whatever its own bonus produces (gold-type tiles) or in addition to it
+// (units-type tiles) -- see game/income.ts's tileTurnIncome.
+export const FLAT_TILE_UNIT_INCOME = 1;
+// Towers additionally levy a yearly toll toward the King's-grace reward,
+// scaled by their fortification level (1/2/3) -- their per-turn output is
+// otherwise just the flat FLAT_TILE_UNIT_INCOME like any other tile (see
+// tiles.json's archer/arquebus/cannon-tower bonuses, all zeroed out).
+export const TOWER_LEVEL_GOLD_BONUS = 250;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle

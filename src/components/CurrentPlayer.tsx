@@ -35,7 +35,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold } = computeAnnualReward(gameState, activePlayer);
+  const { kingsGold, kingsUnits, arifactGold, towerGold } = computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
 
   return (
@@ -144,7 +144,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           </div>
           {/* King's grace, on passing the King's Castle -- own-tile income
               isn't part of this any more (it pays out every turn instead,
-              previewed next to gold/army above and below). */}
+              previewed next to gold/army above and below), except Towers'
+              level-scaled toll, which still only pays out on this cadence. */}
           <div
             className="player-stats-data"
             id="statsPerTurn"
@@ -158,6 +159,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               };
               const parts = [
                 fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
+                fmt(towerGold, 0, t('currentPlayer.fromYourTowers')),
                 fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
               ].filter(Boolean);
               say(t('currentPlayer.wagesMessage', { summary: parts.join(', ') }), 'info');
@@ -170,7 +172,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               🏰
             </div>
             <div>
-              {kingsGold + arifactGold > 0 && <strong>+{kingsGold + arifactGold}🟡</strong>}
+              {kingsGold + arifactGold + towerGold > 0 && (
+                <strong>+{kingsGold + arifactGold + towerGold}🟡</strong>
+              )}
               {kingsUnits > 0 && <strong>+{kingsUnits} 👬</strong>}
             </div>
           </div>

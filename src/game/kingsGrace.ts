@@ -7,12 +7,17 @@ import {
   UNITS_PASS_START,
   ANNUAL_DEFAULT_UNITS,
   ANNUAL_DEFAULT_GOLD,
+  TOWER_LEVEL_GOLD_BONUS,
 } from './constants';
 import { getArtifactGoldBonus } from './artifacts';
 
 export interface KingsGraceReward {
   tileGold: number;
   tileUnits: number;
+  /** Towers' extra level-scaled share of tileGold, broken out for its own
+   * line in the stats panel/toast rather than blending into the flat
+   * per-tile trickle every other units-bonus tile earns. */
+  towerGold: number;
   kingsGold: number;
   kingsUnits: number;
   arifactGold: number;
@@ -25,8 +30,9 @@ export interface KingsGraceReward {
  * grace from the King, a flat per-tile trickle from every tile the player
  * owns -- in whichever resource its own bonus ISN'T, since that own resource
  * already pays out every turn instead (see game/income.ts's
- * collectTileTurnIncome) -- plus any artifact gold bonus (Pristine Diamond).
- * Shared by the actual payout (passStart.ts) and its preview
+ * collectTileTurnIncome) -- Towers' extra TOWER_LEVEL_GOLD_BONUS-per-level
+ * toll on top of that trickle, plus any artifact gold bonus (Pristine
+ * Diamond). Shared by the actual payout (passStart.ts) and its preview
  * (CurrentPlayer.tsx) so they can't drift apart.
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
@@ -37,6 +43,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
 
   let tileGold = 0;
   let tileUnits = 0;
+  let towerGold = 0;
 
   // Derive ownership from tile.owner (authoritative) rather than
   // player.ownedTiles, which can be stale after a reload.
@@ -44,6 +51,11 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     if (!tile || tile.owner !== player.id || tile.isYielded) continue;
     if ((tile.bonusType || 'gold') === 'units') {
       tileGold += ANNUAL_DEFAULT_GOLD;
+      if (tile.group === 'Towers') {
+        const bonus = TOWER_LEVEL_GOLD_BONUS * tile.level;
+        towerGold += bonus;
+        tileGold += bonus;
+      }
     } else {
       tileUnits += ANNUAL_DEFAULT_UNITS;
     }
@@ -54,6 +66,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   return {
     tileGold,
     tileUnits,
+    towerGold,
     kingsGold,
     kingsUnits,
     arifactGold,
