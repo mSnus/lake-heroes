@@ -33,7 +33,8 @@ export interface GameOverrides {
   riderDmgMin: number;
   riderDmgMax: number;
   riderPrice: number; // RIDER_UNIT_PRICE
-  garrisonCapacity: number; // ARMY_SLOT_CAPACITY (units per garrison/army slot)
+  armySlotCapacity: number; // ARMY_SLOT_CAPACITY (units per player army slot)
+  garrisonSlotCapacity: number; // ARMY_SLOT_CAPACITY (units per tile garrison slot) -- independent of armySlotCapacity
   tileBasePrice: number; // TILE_BASE_PRICE
   tileUpgradeMult: number; // TILE_BASE_UPGRADE as a multiple of tileBasePrice
   tileIncomeMult: number; // TILE_BASE_INCOME as a multiple of tileBasePrice
@@ -52,7 +53,8 @@ export const OVERRIDE_DEFAULTS: GameOverrides = {
   riderDmgMin: RIDER_DMG_MIN,
   riderDmgMax: RIDER_DMG_MAX,
   riderPrice: RIDER_UNIT_PRICE,
-  garrisonCapacity: ARMY_SLOT_CAPACITY,
+  armySlotCapacity: ARMY_SLOT_CAPACITY,
+  garrisonSlotCapacity: ARMY_SLOT_CAPACITY,
   tileBasePrice: TILE_BASE_PRICE,
   // Constants derive UPGRADE/INCOME from PRICE, so the default multiples are
   // whatever ratio they currently hold (1 out of the box).
@@ -81,7 +83,10 @@ function sanitize(raw: Partial<GameOverrides> | null | undefined): GameOverrides
     riderDmgMin: num(merged.riderDmgMin, OVERRIDE_DEFAULTS.riderDmgMin, 0),
     riderDmgMax: num(merged.riderDmgMax, OVERRIDE_DEFAULTS.riderDmgMax, 0),
     riderPrice: num(merged.riderPrice, OVERRIDE_DEFAULTS.riderPrice, 0),
-    garrisonCapacity: Math.round(num(merged.garrisonCapacity, OVERRIDE_DEFAULTS.garrisonCapacity, 1)),
+    armySlotCapacity: Math.round(num(merged.armySlotCapacity, OVERRIDE_DEFAULTS.armySlotCapacity, 1)),
+    garrisonSlotCapacity: Math.round(
+      num(merged.garrisonSlotCapacity, OVERRIDE_DEFAULTS.garrisonSlotCapacity, 1)
+    ),
     tileBasePrice: num(merged.tileBasePrice, OVERRIDE_DEFAULTS.tileBasePrice, 0),
     tileUpgradeMult: num(merged.tileUpgradeMult, OVERRIDE_DEFAULTS.tileUpgradeMult, 0),
     tileIncomeMult: num(merged.tileIncomeMult, OVERRIDE_DEFAULTS.tileIncomeMult, 0),

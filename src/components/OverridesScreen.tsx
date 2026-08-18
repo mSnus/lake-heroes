@@ -81,9 +81,20 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
         </div>
 
         <div className="cheat-row">
-          <label>🏯 {t('overridesScreen.garrisonCapacity')}</label>
-          {numInput(form.garrisonCapacity, (n) => set({ garrisonCapacity: n }))}
-          <button className="game-menu-button" onClick={() => commit({ garrisonCapacity: form.garrisonCapacity })}>
+          <label>⚔️ {t('overridesScreen.armySlotCapacity')}</label>
+          {numInput(form.armySlotCapacity, (n) => set({ armySlotCapacity: n }))}
+          <button className="game-menu-button" onClick={() => commit({ armySlotCapacity: form.armySlotCapacity })}>
+            {t('overridesScreen.set')}
+          </button>
+        </div>
+
+        <div className="cheat-row">
+          <label>🏯 {t('overridesScreen.garrisonSlotCapacity')}</label>
+          {numInput(form.garrisonSlotCapacity, (n) => set({ garrisonSlotCapacity: n }))}
+          <button
+            className="game-menu-button"
+            onClick={() => commit({ garrisonSlotCapacity: form.garrisonSlotCapacity })}
+          >
             {t('overridesScreen.set')}
           </button>
         </div>

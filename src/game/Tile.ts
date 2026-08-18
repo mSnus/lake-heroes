@@ -1,7 +1,7 @@
 import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
-import { computeArmyPower, remainingCapacity } from './army';
+import { computeArmyPower, remainingCapacity, garrisonSlotCapacity } from './army';
 import { t, tOptional } from '../i18n';
 
 export interface TileJSON {
@@ -202,7 +202,13 @@ export class Tile implements TileJSON {
     }
     const delta = value - this.garrison;
     if (delta >= 0) {
-      const cap = remainingCapacity(this.garrisonMilitia, this.garrisonRiders, this.garrisonSlots, 'militia');
+      const cap = remainingCapacity(
+        this.garrisonMilitia,
+        this.garrisonRiders,
+        this.garrisonSlots,
+        'militia',
+        garrisonSlotCapacity()
+      );
       this.garrisonMilitia += Math.min(delta, cap);
     } else {
       let loss = -delta;

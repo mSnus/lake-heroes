@@ -6,7 +6,7 @@ import { FeeOptions } from '../actions/feeOptions';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeAnnualReward } from '../game/kingsGrace';
-import { UnitTier, remainingCapacity } from '../game/army';
+import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
@@ -178,7 +178,8 @@ export function pickGarrisonAction(
     target.garrisonMilitia,
     target.garrisonRiders,
     target.garrisonSlots,
-    'militia'
+    'militia',
+    garrisonSlotCapacity()
   );
   const amount = Math.min(desired, affordable, cap);
 

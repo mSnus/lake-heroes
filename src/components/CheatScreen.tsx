@@ -53,7 +53,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   };
 
   const tileOptions = buildTileOptions(gameState);
-  const unitCap = getOverrides().garrisonCapacity * player.armySlots;
+  const unitCap = getOverrides().armySlotCapacity * player.armySlots;
 
   const [moveIdx, setMoveIdx] = useState(tileOptions[0]?.index ?? 0);
   const [ownIdx, setOwnIdx] = useState(tileOptions[0]?.index ?? 0);

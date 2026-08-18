@@ -14,7 +14,7 @@ import { say } from '../utils/say';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
-import { remainingCapacity } from '../game/army';
+import { remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { tileTurnIncome } from '../game/income';
 import { TOWER_LEVEL_GOLD_BONUS } from '../game/constants';
 import { getCharacterConfig } from '../ai/decisions';
@@ -68,7 +68,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // player.militia (which already excludes whatever's currently garrisoned).
   const totalMilitiaPool = player.militia + tile.garrisonMilitia;
   const maxGarrison = Math.min(
-    tile.garrisonMilitia + remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia'),
+    tile.garrisonMilitia +
+      remainingCapacity(
+        tile.garrisonMilitia,
+        tile.garrisonRiders,
+        tile.garrisonSlots,
+        'militia',
+        garrisonSlotCapacity()
+      ),
     totalMilitiaPool
   );
   // Decreasing an existing garrison is only allowed while physically

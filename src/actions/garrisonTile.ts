@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
-import { UnitTier, remainingCapacity } from '../game/army';
+import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { say } from '../utils/say';
 import { t } from '../i18n';
 
@@ -10,7 +10,13 @@ function moveTier(player: Player, tile: Tile, tier: UnitTier, requestedDelta: nu
 
   if (requestedDelta > 0) {
     const available = tier === 'militia' ? player.militia : player.riders;
-    const cap = remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, tier);
+    const cap = remainingCapacity(
+      tile.garrisonMilitia,
+      tile.garrisonRiders,
+      tile.garrisonSlots,
+      tier,
+      garrisonSlotCapacity()
+    );
     const move = Math.min(requestedDelta, available, cap);
     if (move <= 0) return;
     if (tier === 'militia') {

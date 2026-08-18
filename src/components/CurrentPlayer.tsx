@@ -300,7 +300,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 t('currentPlayer.armyTooltip', {
                   fame: activePlayer.fame,
                   slots: activePlayer.armySlots,
-                  perSlot: getOverrides().garrisonCapacity,
+                  perSlot: getOverrides().armySlotCapacity,
                 }),
                 'info'
               )
