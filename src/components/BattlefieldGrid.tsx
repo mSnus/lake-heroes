@@ -99,6 +99,19 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     setPlacements(next);
   };
   const [drag, setDrag] = useState<{ unitId: string; x: number; y: number } | null>(null);
+
+  // Brawl: clicking a unit (typically an enemy — a friendly unit's real cell
+  // sits under its drag twin during your own placement turn, so only enemies
+  // are actually reachable then) shows its remaining HP as a number under it
+  // for 1s, or until a different unit is clicked, whichever comes first.
+  const [hpRevealId, setHpRevealId] = useState<string | null>(null);
+  const hpRevealTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const revealHp = (unitId: string) => {
+    clearTimeout(hpRevealTimerRef.current);
+    setHpRevealId(unitId);
+    hpRevealTimerRef.current = setTimeout(() => setHpRevealId(null), 1000);
+  };
+  useEffect(() => () => clearTimeout(hpRevealTimerRef.current), []);
   // One entry per placement, so Undo can step back to the previous state of
   // just the last-moved unit.
   const [undoStack, setUndoStack] = useState<{ unitId: string; prev: Placement | undefined }[]>([]);
@@ -302,11 +315,15 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                 className={'bfg-unit bfg-unit-' + u.side + (actedIds.has(u.id) ? ' bfg-unit-acted' : '')}
                 style={{ ...cellStyle(u.col, u.row), ...(op !== undefined ? { opacity: op } : {}) }}
                 title={`${u.kind} ${u.hp}/${u.maxHp} hp`}
+                onClick={brawl ? () => revealHp(u.id) : undefined}
               >
                 <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? emojiFor(u)}</span>
                 <span className="bfg-unit-hp">
                   <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
                 </span>
+                {hpRevealId === u.id && (
+                  <span className="bfg-unit-hp-label">{Math.max(0, u.hp)}/{u.maxHp}</span>
+                )}
               </div>
             );
           })}

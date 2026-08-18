@@ -117,6 +117,34 @@
   transition: none;
 }
 
+/* Brawl only: units are clickable (reveals remaining HP -- see
+   .bfg-unit-hp-label below). A friendly unit's real cell sits under its drag
+   twin during your own placement turn, so in practice this only catches
+   enemies then; outside your placement turn (or on the enemy side, any
+   time), every unit is reachable. */
+.bfg-brawl .bfg-unit {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Remaining HP, shown for 1s after a click (see revealHp in
+   BattlefieldGrid.tsx) -- positioned just below the unit's own box rather
+   than squeezed inside it, so it doesn't disturb the emoji/HP-bar layout. */
+.bfg-unit-hp-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2px;
+  font-size: calc(var(--bfg-cell) * 0.28);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000, 0 0 3px #000;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 30;
+}
+
 .bfg-unit-emoji {
   font-size: calc(var(--bfg-cell) * 0.55);
   line-height: 1;
