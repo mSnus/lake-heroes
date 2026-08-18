@@ -230,6 +230,12 @@
   filter: drop-shadow(0 0 5px #ffca28) drop-shadow(0 0 9px #ffca28);
 }
 
+/* Selected as the first half of a click-to-swap pair -- awaiting a second
+   click on an adjacent friendly unit. Overrides the plain "active" glow. */
+.bfg-twin-selected .bfg-unit-emoji {
+  filter: drop-shadow(0 0 5px #6fe8ff) drop-shadow(0 0 9px #6fe8ff);
+}
+
 .bfg-twin-dragging {
   cursor: grabbing;
   z-index: 20;

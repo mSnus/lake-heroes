@@ -622,13 +622,15 @@ export function planBrawlSide(
     // that claim stands in for its own plan entirely, no independent move.
     if (plan[u.id]) continue;
     if (livingAdjacentEnemies(u, living).length >= 1) {
-      if (u.hp <= u.maxHp / 2 && u.safetyMoves < SAFETY_MOVE_CAP) {
+      if (u.hp <= u.maxHp / 2) {
         const friends = livingAdjacentFriends(u, living);
         // Swap: trade places with an adjacent ally that isn't itself in
         // contact (a fresh reserve, not busy fighting) -- the wounded unit
         // steps back, the reserve steps up, both in the same beat. Always
         // valid: each vacates exactly the cell the other enters, so neither
-        // needs pathfinding or a blocked-set update.
+        // needs pathfinding or a blocked-set update. Not capped by
+        // safetyMoves -- unlike a solo pullback, someone (the reserve) is
+        // always taking on the risk in exchange, not avoiding it for free.
         const reserve = friends.find(
           (f) => !plan[f.id] && livingAdjacentEnemies(f, living).length === 0
         );
@@ -640,7 +642,7 @@ export function planBrawlSide(
         // No ally to swap with -- pull back alone, but only when truly
         // alone (any ally at all, even a busy one, means safety in numbers:
         // stay and fight instead). Capped 2 in a row via retreatStreak.
-        if (friends.length === 0) {
+        if (friends.length === 0 && u.safetyMoves < SAFETY_MOVE_CAP) {
           const safe = safeAdjacentCell(u, living, state.cols, state.rows, blocked);
           if (safe) {
             blocked.delete(`${u.col},${u.row}`);

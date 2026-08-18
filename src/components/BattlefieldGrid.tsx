@@ -72,6 +72,10 @@ const colShiftFor = (row: number) => (row % 2 === 0 ? 0.5 : 0);
 const HEX_H_FACTOR = 1.1547; // hex box height / --bfg-cell (2/√3)
 const HEX_ROW_FACTOR = 0.866; // row vertical pitch / --bfg-cell (√3/2)
 
+// Below this much pointer travel, a release counts as a click (select for
+// swap) rather than a drag (resolve as a drop) -- see the twin's onPointerUp.
+const CLICK_MOVE_THRESHOLD_PX = 8;
+
 export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   battle,
   lastEvents,
@@ -100,6 +104,17 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     setPlacements(next);
   };
   const [drag, setDrag] = useState<{ unitId: string; x: number; y: number } | null>(null);
+  // Where a drag started, to tell a real drag from a plain click on release
+  // (see the swap gesture below) -- pointermove already updates `drag`
+  // itself to the live position, so the start point needs its own ref.
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  // Click-to-swap: click one of your own units, then click an adjacent
+  // friendly one to trade their places -- replaces the old "click = hold in
+  // place" gesture (holding in place is still reachable by dragging a unit
+  // out and releasing it back on itself). Cleared on a new manual turn, on
+  // clicking the same unit again, or once either half of a pair is placed
+  // some other way.
+  const [selectedForSwap, setSelectedForSwap] = useState<string | null>(null);
 
   // Brawl: clicking a unit (typically an enemy — a friendly unit's real cell
   // sits under its drag twin during your own placement turn, so only enemies
@@ -123,6 +138,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     commitPlacements({});
     setDrag(null);
     setUndoStack([]);
+    setSelectedForSwap(null);
     completedRef.current = false;
   }, [manualSide, battle.turn]);
 
@@ -220,6 +236,31 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const prev = placementsRef.current[unit.id];
     setUndoStack((s) => [...s, { unitId: unit.id, prev }]);
     commitPlacements({ ...placementsRef.current, [unit.id]: pl });
+    completedRef.current = false;
+    // A unit placed some other way (dragged instead of swapped) can't still
+    // be the pending half of a click-to-swap pair.
+    setSelectedForSwap((s) => (s === unit.id ? null : s));
+  };
+
+  const isHexAdjacent = (a: { col: number; row: number }, b: { col: number; row: number }): boolean =>
+    adjacentCells(a.col, a.row, cols, rows).some((c) => c.col === b.col && c.row === b.row);
+
+  // Click-to-swap: commits both units' placements in one update (rather than
+  // two calls to `place`) so neither is ever transiently "in the way" of the
+  // other under the normal friendly-occupied guard -- a swap is valid by
+  // construction, each vacating exactly the cell the other enters. Recorded
+  // as two separate undo entries, so Undo steps back through one half at a
+  // time like any other placement.
+  const performSwap = (a: GridUnit, b: GridUnit) => {
+    if (placementsRef.current[a.id] || placementsRef.current[b.id]) return;
+    const plA: Placement = { col: b.col, row: b.row, attackTargetId: null };
+    const plB: Placement = { col: a.col, row: a.row, attackTargetId: null };
+    setUndoStack((s) => [
+      ...s,
+      { unitId: a.id, prev: placementsRef.current[a.id] },
+      { unitId: b.id, prev: placementsRef.current[b.id] },
+    ]);
+    commitPlacements({ ...placementsRef.current, [a.id]: plA, [b.id]: plB });
     completedRef.current = false;
   };
 
@@ -353,13 +394,15 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
             {sideUnits.map((u) => {
               const pl = placements[u.id];
               const isDragging = drag?.unitId === u.id;
-              // Holding (placed, not attacking, not moved) = defence mode.
-              const isHold = !!pl && !pl.attackTargetId && pl.col === u.col && pl.row === u.row;
+              const isSelected = !pl && selectedForSwap === u.id;
 
               // Where the twin sits and how it looks: dragging follows the
-              // pointer; holding shows a 🛡️ in place; placed-by-move sits at its
-              // destination (0.7, no glow); placed-by-attack is invisible (the
-              // ⚔️ mark stands in); un-placed sits on the original with a glow.
+              // pointer; selected (awaiting a swap partner) glows blue in
+              // place; placed-by-move sits at its destination (0.7, no glow);
+              // placed-by-attack is invisible (the ⚔️ mark stands in);
+              // placed-by-hold (dragged out and back) shows a 🛡️; un-placed
+              // sits on the original with a yellow glow.
+              const isHold = !!pl && !pl.attackTargetId && pl.col === u.col && pl.row === u.row;
               let style: React.CSSProperties;
               let cls = 'bfg-twin bfg-unit-' + u.side;
               if (isDragging) {
@@ -379,6 +422,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
               } else {
                 style = cellStyle(u.col, u.row);
                 cls += ' bfg-twin-active';
+                if (isSelected) cls += ' bfg-twin-selected';
               }
 
               return (
@@ -392,6 +436,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                     if (pl) return;
                     e.preventDefault();
                     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+                    dragStartRef.current = { x: e.clientX, y: e.clientY };
                     setDrag({ unitId: u.id, x: e.clientX, y: e.clientY });
                   }}
                   onPointerMove={(e) => {
@@ -399,9 +444,32 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   }}
                   onPointerUp={(e) => {
                     if (drag?.unitId !== u.id) return;
+                    const start = dragStartRef.current;
+                    dragStartRef.current = null;
+                    setDrag(null);
+
+                    // A near-zero-movement release is a click, not a drag:
+                    // click-to-swap instead of resolving it as a drop.
+                    const moved = start ? Math.hypot(e.clientX - start.x, e.clientY - start.y) : Infinity;
+                    if (moved < CLICK_MOVE_THRESHOLD_PX) {
+                      if (selectedForSwap === u.id) {
+                        setSelectedForSwap(null); // clicked the same unit again — deselect
+                        return;
+                      }
+                      if (selectedForSwap) {
+                        const other = sideUnits.find((s) => s.id === selectedForSwap);
+                        if (other && !placementsRef.current[other.id] && isHexAdjacent(u, other)) {
+                          performSwap(u, other);
+                          setSelectedForSwap(null);
+                          return;
+                        }
+                      }
+                      setSelectedForSwap(u.id); // select this one, awaiting an adjacent partner click
+                      return;
+                    }
+
                     const pl = resolveDrop(e.clientX, e.clientY, u);
                     if (pl) place(u, pl);
-                    setDrag(null);
                   }}
                 >
                   <span className="bfg-unit-emoji">{isHold ? '🛡️' : emojiFor(u)}</span>
