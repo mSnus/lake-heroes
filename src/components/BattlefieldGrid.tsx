@@ -35,12 +35,11 @@ interface BattlefieldGridProps {
    * placed. */
   manualSide?: BattleSide;
   /** Called when the human finishes placing: `plan` is the destination per
-   * unit, `attacks` maps a unit to the specific enemy it was pointed at, and
-   * `holds` lists units explicitly dropped on their own cell (deliberate
-   * defend). Any unit in neither — including one that simply moved and ended
-   * up adjacent to an enemy, or one left untouched — auto-attacks like an AI
-   * unit would, rather than defending by default. */
-  onManualComplete?: (plan: BrawlPlan, attacks: Record<string, string>, holds: string[]) => void;
+   * unit, and `attacks` maps a unit to the specific enemy it was pointed at.
+   * Any unit not in `attacks` — including one that simply moved and ended up
+   * adjacent to an enemy, or one left untouched — auto-attacks like an AI
+   * unit would; there's no way to opt out of attacking. */
+  onManualComplete?: (plan: BrawlPlan, attacks: Record<string, string>) => void;
   /** Suppress the unit slide transition for one commit — used to snap the real
    * units straight to where the twins already showed them, instead of
    * re-animating the moves the player just made. */
@@ -153,14 +152,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     completedRef.current = true;
     const plan: BrawlPlan = {};
     const attacks: Record<string, string> = {};
-    const holds: string[] = [];
     for (const u of sideUnits) {
       const pl = placements[u.id];
       plan[u.id] = { col: pl.col, row: pl.row };
       if (pl.attackTargetId) attacks[u.id] = pl.attackTargetId;
-      else if (pl.col === u.col && pl.row === u.row) holds.push(u.id);
     }
-    onManualComplete?.(plan, attacks, holds);
+    onManualComplete?.(plan, attacks);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, manualSide]);
 
@@ -190,12 +187,16 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       return fc.col === col && fc.row === row;
     });
 
+  /** Either a normal one-unit placement, or a swap with another unplaced
+   * friendly unit whose cell was dropped onto. */
+  type DropResult = { kind: 'placement'; pl: Placement } | { kind: 'swap'; otherId: string };
+
   // On drop, snap to whichever cell (the unit's own cell or one of its hex
   // neighbours) is nearest the pointer, then classify it: the unit's own cell
-  // = stay/hold; an adjacent enemy = attack; an adjacent empty cell = move; an
-  // adjacent friendly-occupied cell = invalid (returns null → the unit is left
-  // un-placed, not dropped on top of the other unit).
-  const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): Placement | null => {
+  // = no-op (left un-placed); an adjacent enemy = attack; an adjacent cell
+  // held by an unplaced friendly unit = swap with that unit; an adjacent
+  // empty cell = move; anything else (occupied some other way) = invalid.
+  const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): DropResult | null => {
     const cr = cellAndRect();
     if (!cr) return null;
     const { rect, cell, rowStep, cellH } = cr;
@@ -216,13 +217,15 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       }
     }
 
-    if (target.col === origin.col && target.row === origin.row) {
-      return { col: origin.col, row: origin.row, attackTargetId: null }; // stay / hold
-    }
+    if (target.col === origin.col && target.row === origin.row) return null; // dropped back on itself
     const enemyAt = enemies.find((e) => e.col === target.col && e.row === target.row);
-    if (enemyAt) return { col: origin.col, row: origin.row, attackTargetId: enemyAt.id }; // attack
-    if (cellTaken(target.col, target.row, unit.id)) return null; // friendly-occupied — don't place
-    return { col: target.col, row: target.row, attackTargetId: null }; // move
+    if (enemyAt) return { kind: 'placement', pl: { col: origin.col, row: origin.row, attackTargetId: enemyAt.id } }; // attack
+    const friendAt = sideUnits.find(
+      (f) => f.id !== unit.id && !placementsRef.current[f.id] && f.col === target.col && f.row === target.row
+    );
+    if (friendAt) return { kind: 'swap', otherId: friendAt.id }; // dropped onto a friendly unit — swap
+    if (cellTaken(target.col, target.row, unit.id)) return null; // occupied some other way — don't place
+    return { kind: 'placement', pl: { col: target.col, row: target.row, attackTargetId: null } }; // move
   };
 
   const place = (unit: GridUnit, pl: Placement) => {
@@ -284,14 +287,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     completedRef.current = true;
     const plan: BrawlPlan = {};
     const attacks: Record<string, string> = {};
-    const holds: string[] = [];
     for (const u of sideUnits) {
       const pl = placementsRef.current[u.id];
       plan[u.id] = pl ? { col: pl.col, row: pl.row } : { col: u.col, row: u.row };
       if (pl?.attackTargetId) attacks[u.id] = pl.attackTargetId;
-      else if (pl && pl.col === u.col && pl.row === u.row) holds.push(u.id);
     }
-    onManualComplete?.(plan, attacks, holds);
+    onManualComplete?.(plan, attacks);
   };
 
   // ── Combat playback overrides (unchanged) ──
@@ -400,9 +401,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
               // pointer; selected (awaiting a swap partner) glows blue in
               // place; placed-by-move sits at its destination (0.7, no glow);
               // placed-by-attack is invisible (the ⚔️ mark stands in);
-              // placed-by-hold (dragged out and back) shows a 🛡️; un-placed
-              // sits on the original with a yellow glow.
-              const isHold = !!pl && !pl.attackTargetId && pl.col === u.col && pl.row === u.row;
+              // un-placed sits on the original with a yellow glow.
               let style: React.CSSProperties;
               let cls = 'bfg-twin bfg-unit-' + u.side;
               if (isDragging) {
@@ -413,9 +412,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                 cls += ' bfg-twin-dragging';
               } else if (pl?.attackTargetId) {
                 style = { ...cellStyle(pl.col, pl.row), opacity: 0 };
-              } else if (isHold) {
-                style = cellStyle(u.col, u.row);
-                cls += ' bfg-twin-hold';
               } else if (pl) {
                 style = { ...cellStyle(pl.col, pl.row), opacity: 0.7 };
                 cls += ' bfg-twin-placed';
@@ -468,11 +464,17 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                       return;
                     }
 
-                    const pl = resolveDrop(e.clientX, e.clientY, u);
-                    if (pl) place(u, pl);
+                    const result = resolveDrop(e.clientX, e.clientY, u);
+                    if (!result) return;
+                    if (result.kind === 'swap') {
+                      const other = sideUnits.find((s) => s.id === result.otherId);
+                      if (other) performSwap(u, other);
+                    } else {
+                      place(u, result.pl);
+                    }
                   }}
                 >
-                  <span className="bfg-unit-emoji">{isHold ? '🛡️' : emojiFor(u)}</span>
+                  <span className="bfg-unit-emoji">{emojiFor(u)}</span>
                   {/* Invisible HP bar so the twin's emoji sits exactly where the
                       real unit's does (same column layout) — no vertical jump
                       when the real units snap in and the twins hide. */}

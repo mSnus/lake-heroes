@@ -246,12 +246,6 @@
   cursor: default;
 }
 
-/* Holding position (defence mode) — shows a 🛡️ at full opacity, no glow. */
-.bfg-twin-hold {
-  cursor: default;
-  opacity: 1;
-}
-
 /* Undo / Go shield buttons under the battlefield during a manual turn. */
 .bfg-manual-controls {
   display: flex;
