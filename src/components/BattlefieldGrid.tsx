@@ -191,11 +191,15 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
    * friendly unit whose cell was dropped onto. */
   type DropResult = { kind: 'placement'; pl: Placement } | { kind: 'swap'; otherId: string };
 
-  // On drop, snap to whichever cell (the unit's own cell or one of its hex
-  // neighbours) is nearest the pointer, then classify it: the unit's own cell
-  // = no-op (left un-placed); an adjacent enemy = attack; an adjacent cell
-  // held by an unplaced friendly unit = swap with that unit; an adjacent
-  // empty cell = move; anything else (occupied some other way) = invalid.
+  // On drop (real drags only — a near-zero-movement release never reaches
+  // here, see the click-to-swap branch below), snap to whichever hex
+  // neighbour is nearest the pointer and classify it: an adjacent enemy =
+  // attack; an adjacent cell held by an unplaced friendly unit = swap with
+  // that unit; an adjacent empty cell = move; anything else (occupied some
+  // other way) = invalid. The unit's own cell isn't a candidate — dropping
+  // on yourself is a no-op now (see the click threshold), and leaving it in
+  // the running would win any drop released near the middle, since it's
+  // always closer to home than to a neighbour.
   const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): DropResult | null => {
     const cr = cellAndRect();
     if (!cr) return null;
@@ -204,7 +208,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const py = clientY - rect.top;
     const origin = { col: unit.col, row: unit.row };
 
-    const cells = [origin, ...adjacentCells(origin.col, origin.row, cols, rows)];
+    const cells = adjacentCells(origin.col, origin.row, cols, rows);
     let target = origin;
     let bestD = Infinity;
     for (const c of cells) {
@@ -217,7 +221,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       }
     }
 
-    if (target.col === origin.col && target.row === origin.row) return null; // dropped back on itself
     const enemyAt = enemies.find((e) => e.col === target.col && e.row === target.row);
     if (enemyAt) return { kind: 'placement', pl: { col: origin.col, row: origin.row, attackTargetId: enemyAt.id } }; // attack
     const friendAt = sideUnits.find(
