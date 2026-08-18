@@ -40,7 +40,7 @@ export const TURN_INCOME_RATIO = 0.1;
 // ANNUAL_DEFAULT_UNITS militia, a units-bonus tile (Camps/Towers) also
 // brings ANNUAL_DEFAULT_GOLD gold -- same flat amount for every units-bonus
 // tile. Towers earn extra on top of this, see TOWER_LEVEL_GOLD_BONUS.
-export const ANNUAL_DEFAULT_UNITS = 2;
+export const ANNUAL_DEFAULT_UNITS = 0;
 export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
 // Every owned tile also brings in a flat militia trickle every turn, on top
 // of whatever its own bonus produces (gold-type tiles) or in addition to it

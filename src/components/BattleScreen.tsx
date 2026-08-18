@@ -368,16 +368,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         ? getPlayerImageSrc(defender.image, defender.isKnight)
         : 'assets/figures/npc-saracen.png';
   // Center icon between the two portraits: the tile's own sprite for a tile
-  // fight, or the NPC art already computed into defenderImg for the
-  // dragon/caravan/ambush modes — a plain player-vs-player duel has no
-  // third icon to show (defenderImg there is just the defender's own
-  // portrait, already shown on the right).
-  const modeIconSrc =
-    (isTile || isRogue) && tile?.spriteImage
-      ? tile.spriteImage
-      : isDragon || isCaravan || isAmbush
-        ? defenderImg
-        : undefined;
+  // fight, nothing otherwise — dragon/caravan/ambush modes have no third
+  // icon to show, since defenderImg is already one of the two side portraits
+  // (the NPC's, or the real player's for ambush's reversed roles).
+  const modeIconSrc = (isTile || isRogue) && tile?.spriteImage ? tile.spriteImage : undefined;
 
   // Mode-specific battlefield icons, matching the old duel screen's grid
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
