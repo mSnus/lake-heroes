@@ -224,12 +224,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
   // Brawl: a small skirmish (both sides at or below BRAWL_THRESHOLD units).
   // These fight on a compact, larger-celled board (see BRAWL_COLS/ROWS) and
-  // are the ones that get turn-based / manual control. Ambush stays excluded:
+  // are the ones that get turn-based / manual control. Ambush is included —
   // its attacker/defender roles are reversed (the real player occupies the
-  // DEFENDER grid role), which attackerManual/defenderManual below aren't
-  // set up to handle.
+  // DEFENDER grid role), which attackerManual/defenderManual below account
+  // for separately.
   const isBrawl =
-    (isTile || isRogue || isPlayerBattle || isCaravan) &&
+    (isTile || isRogue || isPlayerBattle || isCaravan || isAmbush) &&
     attackerGridTotal <= BRAWL_THRESHOLD &&
     defenderGridTotal <= BRAWL_THRESHOLD;
   // A non-brawl battle under SMALL_AUTO_BATTLE_THRESHOLD also gets a smaller
@@ -256,11 +256,18 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defenderGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD;
   // A side is manually controlled when its player is the human at the
   // controls (the active player) — the attacker in a tile/player fight, the
-  // defender when a rogue horde raids a human's tile. The other side (a bot,
-  // or a player who isn't taking this turn) is auto-planned.
+  // defender when a rogue horde raids a human's tile. In ambush, `attacker`
+  // holds the real player but their army occupies the grid's DEFENDER role
+  // (the NPC/zombie horde is the grid attacker and never gets manual
+  // control), so the mapping is reversed there. The other side (a bot, or a
+  // player who isn't taking this turn) is auto-planned.
   const activePlayer = gameState.activePlayer;
-  const attackerManual = isBrawl && attacker.id === activePlayer.id && !attacker.isComputer;
-  const defenderManual = isBrawl && !!defender && defender.id === activePlayer.id && !defender.isComputer;
+  const attackerManual = isBrawl && !isAmbush && attacker.id === activePlayer.id && !attacker.isComputer;
+  const defenderManual =
+    isBrawl &&
+    (isAmbush
+      ? attacker.id === activePlayer.id && !attacker.isComputer
+      : !!defender && defender.id === activePlayer.id && !defender.isComputer);
 
   // ── Initial formation per side/mode — every attacker looks different
   // depending on who they are. A real player's own army always forms up
