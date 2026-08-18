@@ -49,9 +49,12 @@ type BattlePhase = 'ongoing' | 'result';
 // visible turn-by-turn playback rather than an instant jump to the result.
 const AUTO_TURN_DELAY_MS = 250;
 
-// Duration of each beat of the per-turn attack/defend -> hit -> death
-// emoji animation (see handleNextTurn).
+// Duration of each beat of the per-turn attack/defend -> hit -> blocked ->
+// death emoji animation (see handleNextTurn).
 const COMBAT_ANIM_BEAT_MS = 125;
+// The "blocked" beat (🛡️ on units whose defence fully absorbed a hit) gets
+// its own slightly longer flash to read clearly.
+const BLOCK_FLASH_MS = 200;
 // How long the brawl move phase animates (units slide to their new cells,
 // CSS transition ~0.25s) before the combat resolution plays out.
 const BRAWL_MOVE_ANIM_MS = 320;
@@ -457,7 +460,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // moving is "invisible" here, same as before — they just animate to
   // their new cell (via CSS transition) once the turn commits.
   const animatingRef = useRef(false);
-  const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'hit' | 'death'>('idle');
+  const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'hit' | 'blocked' | 'death'>('idle');
 
   // Manual brawl control: which side (if any) the human is currently placing.
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
@@ -473,9 +476,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const manualAttacksRef = useRef<Record<string, string>>({}); // human's attack orders this round (unitId -> enemyId)
   const manualHoldsRef = useRef<Set<string>>(new Set()); // units the human explicitly dropped on their own cell to defend
 
-  // The 3-beat combat playback (attack/defend icons -> hit flash -> death
-  // flash), then commit the resolved state. Shared by the full-battle and
-  // brawl turn handlers.
+  // The 4-beat combat playback (attack/defend icons -> hit flash -> blocked
+  // flash -> death flash), then commit the resolved state. Shared by the
+  // full-battle and brawl turn handlers.
   const animateCombat = useCallback((finalState: GridBattleState, events: TurnEvent[]) => {
     animatingRef.current = true;
     setLastEvents(events);
@@ -483,12 +486,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setTimeout(() => {
       setAnimPhase('hit');
       setTimeout(() => {
-        setAnimPhase('death');
+        setAnimPhase('blocked');
         setTimeout(() => {
-          setAnimPhase('idle');
-          animatingRef.current = false;
-          setBattle(finalState);
-        }, COMBAT_ANIM_BEAT_MS);
+          setAnimPhase('death');
+          setTimeout(() => {
+            setAnimPhase('idle');
+            animatingRef.current = false;
+            setBattle(finalState);
+          }, COMBAT_ANIM_BEAT_MS);
+        }, BLOCK_FLASH_MS);
       }, COMBAT_ANIM_BEAT_MS);
     }, COMBAT_ANIM_BEAT_MS);
   }, []);

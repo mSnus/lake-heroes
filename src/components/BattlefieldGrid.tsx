@@ -4,14 +4,15 @@ import { BrawlPlan, adjacentCells } from '../game/battleGrid/engine';
 import { useT } from '../i18n';
 import '../styles/BattlefieldGrid.css';
 
-type AnimPhase = 'idle' | 'attack-defend' | 'hit' | 'death';
+type AnimPhase = 'idle' | 'attack-defend' | 'hit' | 'blocked' | 'death';
 
 interface BattlefieldGridProps {
   battle: GridBattleState;
   lastEvents: TurnEvent[];
-  /** Which stage of this turn's 3-beat micro-animation is currently
-   * showing (attack/defend icons -> hit flash -> death flash), driving a
-   * temporary emoji override per unit — see the per-unit lookup below. */
+  /** Which stage of this turn's 4-beat micro-animation is currently showing
+   * (attack/defend icons -> hit flash -> blocked flash -> death flash),
+   * driving a temporary emoji override per unit — see the per-unit lookup
+   * below. */
   animPhase?: AnimPhase;
   /** Mode-specific icon override for a whole side (🐉 dragon, 👹 ambushers/
    * rogue horde, etc) in place of the normal rider/militia emoji — mirrors
@@ -265,6 +266,10 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   } else if (animPhase === 'hit') {
     for (const e of lastEvents) {
       if (e.type === 'attack' && e.targetId) overrideEmoji.set(e.targetId, '💥');
+    }
+  } else if (animPhase === 'blocked') {
+    for (const e of lastEvents) {
+      if (e.type === 'block') overrideEmoji.set(e.unitId, '🛡️');
     }
   } else if (animPhase === 'death') {
     for (const e of lastEvents) {

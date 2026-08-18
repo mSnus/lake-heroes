@@ -31,7 +31,10 @@ export interface GridBattleState {
   status: 'ongoing' | 'attacker-win' | 'defender-win' | 'tie';
 }
 
-export type TurnEventType = 'move' | 'attack' | 'defend' | 'skip' | 'death';
+/** 'block' fires alongside 'defend' when that defence roll fully absorbed
+ * the incoming attack (net damage 0) -- a purely cosmetic event, used only
+ * to flash 🛡️ on the units that actually stopped a hit. */
+export type TurnEventType = 'move' | 'attack' | 'defend' | 'block' | 'skip' | 'death';
 
 export interface TurnEvent {
   type: TurnEventType;

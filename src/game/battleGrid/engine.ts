@@ -518,26 +518,13 @@ function resolveCombat(
     else chosenTarget.set(u.id, adjacency.get(u.id)!.find((e) => e.id === it));
   }
 
-  const attackersOf = new Map<string, GridUnit[]>();
-  for (const u of engaged) attackersOf.set(u.id, []);
-  for (const u of engaged) {
-    const target = chosenTarget.get(u.id);
-    if (target) attackersOf.get(target.id)!.push(u);
-  }
-
-  // Auto units defend instead of attacking when they're under fire and not
-  // already trading blows with one of their own attackers; manual units simply
-  // attack if they have a valid target, else defend.
-  const isDefendingAuto = (u: GridUnit): boolean => {
-    const attackers = attackersOf.get(u.id) ?? [];
-    if (attackers.length === 0) return false;
-    const target = chosenTarget.get(u.id);
-    return !target || !attackers.some((a) => a.id === target.id);
-  };
-  const willAttack = (u: GridUnit): boolean => {
-    if (!chosenTarget.get(u.id)) return false;
-    return intentOf(u) === 'auto' ? !isDefendingAuto(u) : true;
-  };
+  // Every engaged unit with a target attacks it, full stop -- with every
+  // auto-intent unit already targeting *someone* whenever it's adjacent to
+  // an enemy, there's no longer a real "would rather defend" case to carve
+  // out here. The only unit that ever defends now is one explicitly held
+  // ('none' intent -- chosenTarget is unset for it, so it falls through to
+  // the defence-roll branch below on its own).
+  const willAttack = (u: GridUnit): boolean => !!chosenTarget.get(u.id);
 
   const rollFor = (u: GridUnit, defending: boolean): number => {
     const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
@@ -580,6 +567,11 @@ function resolveCombat(
     if (!inc) continue;
     const net = defenceRoll.has(u.id) ? Math.max(0, inc - defenceRoll.get(u.id)!) : inc;
     applyDamage(u.id, net);
+    // A held unit whose defence roll fully absorbed the hit -- purely
+    // cosmetic (see TurnEventType), flashes 🛡️ on it in the battle replay.
+    if (net === 0 && defenceRoll.has(u.id)) {
+      events.push({ type: 'block', unitId: u.id, side: u.side, kind: u.kind });
+    }
   }
 
   for (const [unitId, amount] of Array.from(damage)) {
