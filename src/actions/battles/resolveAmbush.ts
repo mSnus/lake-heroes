@@ -67,7 +67,7 @@ export function resolveAmbush(
     const loss = lossStr(goldLoss, unitLoss);
     board.gameMessage = t('resolveAmbush.barelySurvivesGameMessage', {
       playerName: player.name,
-      lossStr: loss ? t('resolveAmbush.unitsLostSuffix', { units: loss }) : '',
+      lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '',
     });
     message = t('resolveAmbush.bloodyStalemate', { lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '' });
   } else {
@@ -77,7 +77,7 @@ export function resolveAmbush(
     const loss = lossStr(goldLoss, playerUnitsKilled);
     board.gameMessage = t('resolveAmbush.overwhelmedGameMessage', {
       playerName: player.name,
-      lossStr: loss ? t('resolveAmbush.unitsLostSuffix', { units: loss }) : '',
+      lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '',
     });
     message = loss ? t('resolveAmbush.lost', { loss }) : t('resolveAmbush.overwhelmed');
   }

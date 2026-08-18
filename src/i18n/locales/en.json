@@ -269,6 +269,7 @@
     "fromPristineDiamond": "from the Pristine Diamond 💎",
     "wagesMessage": "Pass the King's Castle for {summary}",
     "armyTooltip": "Your fame {fame}🏆 allows to have {slots} squads of {perSlot} units each",
+    "unitsIncomeTooltip": "+{units} units from {tiles} tiles",
     "artifactTooltip": "{name}: {description}"
   },
   "botController": {

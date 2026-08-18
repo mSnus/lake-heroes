@@ -269,6 +269,7 @@
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Пройдите Замок короля и получите {summary}",
     "armyTooltip": "Ваша слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot} юнитов каждый",
+    "unitsIncomeTooltip": "+{units} юнитов с {tiles} клеток",
     "artifactTooltip": "{name}: {description}"
   },
   "botController": {

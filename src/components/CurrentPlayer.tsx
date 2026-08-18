@@ -143,6 +143,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     activePlayer
   );
   const turnIncome = playerTurnIncome(gameState, activePlayer);
+  const ownedTileCount = gameState.tiles.filter(
+    (tile) => tile && tile.owner === activePlayer.id && !tile.isYielded
+  ).length;
   const revealed = useRevealedStats(activePlayer);
 
   return (
@@ -310,7 +313,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           >
             ⚔️
           </div>
-          <div>
+          <div className="player-stats-army-row">
             <SquadDisplay
               militia={revealed.militia}
               riders={revealed.riders}
@@ -318,7 +321,18 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               className="player-stats-army-slots"
             />
             {turnIncome.units > 0 && (
-              <div className="player-stats-turn-income">+{turnIncome.units} 👬</div>
+              <span
+                className="player-stats-turn-income player-stats-turn-income-clickable"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  say(
+                    t('currentPlayer.unitsIncomeTooltip', { units: turnIncome.units, tiles: ownedTileCount }),
+                    'info'
+                  );
+                }}
+              >
+                +{turnIncome.units} 👬
+              </span>
             )}
           </div>
         </div>
