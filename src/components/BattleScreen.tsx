@@ -466,9 +466,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Manual brawl control: which side (if any) the human is currently placing.
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
   // ⚔️ click during a brawl: hand the human's side over to the AI for every
-  // remaining round instead of placing manually -- checked fresh each time a
-  // new round starts, so the round already showing the placement UI when
-  // this is clicked still finishes manually; every round after it doesn't.
+  // remaining round instead of placing manually. Checked fresh each time a
+  // new round starts, and also applied immediately to a round already
+  // showing the placement UI right when this is clicked (see
+  // handleVsIconClick) -- units start moving as soon as it's pressed.
   const [autoResolveBrawl, setAutoResolveBrawl] = useState(false);
   const [instantMove, setInstantMove] = useState(false); // snap (no slide) the human's just-placed units
   const manualBaseRef = useRef<GridBattleState | null>(null); // state a manual phase edits
@@ -692,9 +693,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const handleVsIconClick = () => {
     if (phase !== 'ongoing') return;
     // Brawl: hand the human's side over to the AI for the rest of the fight,
-    // instead of the non-brawl auto-play/step-by-step toggle below.
+    // instead of the non-brawl auto-play/step-by-step toggle below. If a
+    // round is already showing the manual placement UI right now, take it
+    // over immediately too (AI-planned, same as any other auto round)
+    // instead of waiting for the player to finish placing it themselves --
+    // units should visibly start moving as soon as this is clicked, not
+    // only from the next round onward.
     if (isBrawl) {
       setAutoResolveBrawl(true);
+      const side = brawlManualSide;
+      const base = manualBaseRef.current;
+      if (side && base) {
+        setBrawlManualSide(null);
+        const moved = applyBrawlMoves(base, planBrawlSide(base, side, Math.random));
+        animateBrawlMove(moved, () => (side === 'defender' ? brawlAttackerPhase(moved) : brawlResolve(moved)));
+      }
       return;
     }
     setManualMode(true);
