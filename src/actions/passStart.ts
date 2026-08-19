@@ -33,7 +33,7 @@ export function passStart(
   const parts: string[] = [];
 
   if (totalGold > 0) parts.push(`${totalGold}🟡`);
-  if (totalUnits > 0) parts.push(`${totalUnits}🧍`);
+  if (totalUnits > 0) parts.push(`${totalUnits}👬`);
 
   const summary = parts.join(` ${t('common.and')} `);
 

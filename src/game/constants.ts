@@ -39,18 +39,22 @@ export const TURN_INCOME_RATIO = 0.1;
 // gold-bonus tile (Mills/Farms/Fields/Traders) also brings
 // ANNUAL_DEFAULT_UNITS militia, a units-bonus tile (Camps/Towers) also
 // brings ANNUAL_DEFAULT_GOLD gold -- same flat amount for every units-bonus
-// tile. Towers earn extra on top of this, see TOWER_LEVEL_GOLD_BONUS.
+// tile. Towers additionally earn a level-scaled UNIT toll on top of this
+// (added to tileUnits, not tileGold) -- see TOWER_LEVEL_UNIT_BONUS.
 export const ANNUAL_DEFAULT_UNITS = 0;
 export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
 // Every owned tile also brings in a flat militia trickle every turn, on top
 // of whatever its own bonus produces (gold-type tiles) or in addition to it
 // (units-type tiles) -- see game/income.ts's tileTurnIncome.
 export const FLAT_TILE_UNIT_INCOME = 1;
-// Towers additionally levy a yearly toll toward the King's-grace reward,
-// scaled by their fortification level (1/2/3) -- their per-turn output is
-// otherwise just the flat FLAT_TILE_UNIT_INCOME like any other tile (see
-// tiles.json's archer/arquebus/cannon-tower bonuses, all zeroed out).
-export const TOWER_LEVEL_GOLD_BONUS = 250;
+// Towers additionally levy a yearly UNIT toll toward the King's-grace
+// reward, scaled by their fortification level (1/2/3) -- a garrison drawn
+// from the tower's own recruits at higher fortification. Their per-turn
+// output is otherwise just the flat FLAT_TILE_UNIT_INCOME like any other
+// tile (see tiles.json's archer/arquebus/cannon-tower bonuses, all zeroed
+// out) -- they still get the universal ANNUAL_DEFAULT_GOLD trickle every
+// units-bonus tile earns, just no *extra* level-scaled gold on top of it.
+export const TOWER_LEVEL_UNIT_BONUS = 2;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 50; // units on each side of the dragon battle
@@ -66,6 +70,9 @@ export const MILITIA_POWER_WEIGHT = 1;
 // roll multiplier a Rider gets in an actual battle duel.
 export const RIDER_DUEL_MULTIPLIER = 1.5;
 export const ARMY_SLOT_CAPACITY = 10; // max units of one tier per slot
+// A tile garrison's own per-slot cap -- independent of ARMY_SLOT_CAPACITY
+// (see overridesStore.ts's armySlotCapacity/garrisonSlotCapacity split).
+export const GARRISON_SLOT_CAPACITY = 8;
 export const MAX_ARMY_SLOTS = 5;
 // Fame thresholds for army slots: 0-2 fame -> 2 slots, 3-5 -> 3, 6-9 -> 4, 10+ -> 5.
 // Uneven bracket widths, so this is a lookup table, not a uniform step size.
@@ -116,12 +123,12 @@ export const ZOMBIE_GARRISON_REPEL_RATIO = 0.5;
 // BRAWL_THRESHOLD grid units.
 export const BRAWL_COLS = 6;
 export const BRAWL_ROWS = 7;
-export const MILITIA_HP = 6;
-export const MILITIA_DMG_MIN = 1;
-export const MILITIA_DMG_MAX = 4;
+export const MILITIA_HP = 12;
+export const MILITIA_DMG_MIN = 4;
+export const MILITIA_DMG_MAX = 8;
 export const RIDER_HP = 20;
-export const RIDER_DMG_MIN = 4;
-export const RIDER_DMG_MAX = 8;
+export const RIDER_DMG_MIN = 6;
+export const RIDER_DMG_MAX = 16;
 // The dragon fights as its own kind, not a rider — see the 'dragon'
 // formation in game/battleGrid/formations.ts, always exactly DRAGON_UNITS.
 export const DRAGON_HP = 24;

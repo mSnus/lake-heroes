@@ -10,7 +10,7 @@ import { gameEvent } from '../utils/events';
 import { SPRITE_SIZE } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
-import { BRAWL_THRESHOLD } from '../game/constants';
+import { BRAWL_THRESHOLD, TOWER_LEVEL_UNIT_BONUS } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
 import { TileUpgradesScreen } from './TileUpgradesScreen';
@@ -86,9 +86,15 @@ export const TileCard: React.FC<TileCardProps> = ({
   const turnIncomeLabel = (
     <>
       {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
-      {turnIncome.units > 0 && <>+{turnIncome.units} 👬</>}
+      {turnIncome.units > 0 && <>+{turnIncome.units} 🧍</>}
     </>
   );
+
+  // Towers' fortification toll (see game/kingsGrace.ts's computeAnnualReward)
+  // only pays out once a lap, not every turn like the rest of a tile's
+  // income -- shown as its own "per year" block alongside the per-turn one.
+  const isTower = tile.group === 'Towers';
+  const towerYearlyLabel = <>+{TOWER_LEVEL_UNIT_BONUS * tile.level} 👬</>;
 
   const bonusType = getBonusType(tile);
 
@@ -121,7 +127,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
   const defence = (level: number) => tile.getDefence(level);
 
-  const bonusTypeIcon = bonusType === 'gold' ? '🟡' : '👬';
+  const bonusTypeIcon = bonusType === 'gold' ? '🟡' : '🧍';
 
   const class1 = tile.isOwned() && tile.level < 2 ? 'tc-td level-highlighted' : 'tc-td';
   const class2 = tile.isOwned() && tile.level == 2 ? 'tc-td level-highlighted' : 'tc-td';
@@ -346,17 +352,25 @@ export const TileCard: React.FC<TileCardProps> = ({
                     )}
 
                     {tile.owner === activePlayer?.id && (
-                      <div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
                         {tile.isYielded ? (
                           <div className="big-icon-hint">
                             <div>🏦</div>
                             <div>{t('tileCard.yielded')}</div>
                           </div>
                         ) : (
-                          <div className="big-icon-hint">
-                            <div>{turnIncomeLabel}</div>
-                            <div>{t('tileCard.perTurn')}</div>
-                          </div>
+                          <>
+                            <div className="big-icon-hint">
+                              <div>{turnIncomeLabel}</div>
+                              <div>{t('tileCard.perTurn')}</div>
+                            </div>
+                            {isTower && (
+                              <div className="big-icon-hint">
+                                <div>{towerYearlyLabel}</div>
+                                <div>{t('tileCard.perYear')}</div>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
@@ -380,6 +394,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                       {turnIncomeLabel}
                       <div>{t('tileCard.perTurn')}</div>
                     </div>
+                    {isTower && (
+                      <div className="big-icon-hint">
+                        <div>{towerYearlyLabel}</div>
+                        <div>{t('tileCard.perYear')}</div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="tile-card-base-row">

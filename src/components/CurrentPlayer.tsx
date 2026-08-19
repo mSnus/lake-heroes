@@ -138,7 +138,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerGold, tileGold, tileUnits } = computeAnnualReward(
+  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits } = computeAnnualReward(
     gameState,
     activePlayer
   );
@@ -248,14 +248,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               const fmt = (gold: number, units: number, label: string) => {
                 const items = [
                   gold > 0 ? `${gold}🟡` : null,
-                  units > 0 ? `${units}🧍` : null,
+                  units > 0 ? `${units}👬` : null,
                 ].filter(Boolean);
                 return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
               };
               const parts = [
                 fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
-                fmt(tileGold - towerGold, tileUnits, t('currentPlayer.fromYourTiles')),
-                fmt(towerGold, 0, t('currentPlayer.fromYourTowers')),
+                fmt(tileGold, tileUnits - towerUnits, t('currentPlayer.fromYourTiles')),
+                fmt(0, towerUnits, t('currentPlayer.fromYourTowers')),
                 fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
               ].filter(Boolean);
               say(t('currentPlayer.wagesMessage', { summary: parts.join(', ') }), 'info');
@@ -330,7 +330,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                     );
                   }}
                 >
-                  +{turnIncome.units} 👬
+                  +{turnIncome.units} 🧍
                 </span>
               )}
             </div>

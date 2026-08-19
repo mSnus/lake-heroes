@@ -16,7 +16,7 @@ import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { tileTurnIncome } from '../game/income';
-import { TOWER_LEVEL_GOLD_BONUS } from '../game/constants';
+import { TOWER_LEVEL_UNIT_BONUS } from '../game/constants';
 import { getCharacterConfig } from '../ai/decisions';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
@@ -51,7 +51,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     return (
       <>
         {income.gold > 0 && <>+{income.gold}🟡 </>}
-        {income.units > 0 && <>+{income.units} 👬</>}
+        {income.units > 0 && <>+{income.units} 🧍</>}
       </>
     );
   };
@@ -60,7 +60,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // only pays out once a lap, not every turn like the rest of a tile's
   // income -- shown as its own "per year" block alongside the per-turn one.
   const isTower = tile.group === 'Towers';
-  const towerYearlyLabel = (level: number) => <>+{TOWER_LEVEL_GOLD_BONUS * level}🟡</>;
+  const towerYearlyLabel = (level: number) => <>+{TOWER_LEVEL_UNIT_BONUS * level} 👬</>;
 
   // garrisonAmount is an ABSOLUTE target headcount, not a delta — so the
   // pool it's bounded by is everything this player controls, whether

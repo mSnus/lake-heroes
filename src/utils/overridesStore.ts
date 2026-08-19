@@ -9,6 +9,7 @@ import {
   UNIT_PRICE,
   RIDER_UNIT_PRICE,
   ARMY_SLOT_CAPACITY,
+  GARRISON_SLOT_CAPACITY,
   TILE_BASE_PRICE,
   TILE_BASE_UPGRADE,
   TILE_BASE_INCOME,
@@ -54,7 +55,7 @@ export const OVERRIDE_DEFAULTS: GameOverrides = {
   riderDmgMax: RIDER_DMG_MAX,
   riderPrice: RIDER_UNIT_PRICE,
   armySlotCapacity: ARMY_SLOT_CAPACITY,
-  garrisonSlotCapacity: ARMY_SLOT_CAPACITY,
+  garrisonSlotCapacity: GARRISON_SLOT_CAPACITY,
   tileBasePrice: TILE_BASE_PRICE,
   // Constants derive UPGRADE/INCOME from PRICE, so the default multiples are
   // whatever ratio they currently hold (1 out of the box).

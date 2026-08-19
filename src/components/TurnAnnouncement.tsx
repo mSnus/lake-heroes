@@ -84,7 +84,7 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
         {(turnIncome.gold > 0 || turnIncome.units > 0) && (
           <span className="turn-announcement-income">
             {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
-            {turnIncome.units > 0 && <>+{turnIncome.units}👬</>}
+            {turnIncome.units > 0 && <>+{turnIncome.units}🧍</>}
           </span>
         )}
       </DecoratedButton>
