@@ -27,6 +27,8 @@
   padding: 8px 16px 4px 16px;
   border-radius: 7px;
   background: linear-gradient(180deg, #f5ffe0, #fff);
+  display: flex;
+  align-items: center;
 }
 
 .player-marker-indicator {
@@ -154,9 +156,17 @@
 
 
 @media (min-width: 769px) {
+  .player-pane-wrapper {
+    width: 100%;
+  }
   .player-pane {
+    width: 100%;
     padding-top: 1rem;
     font-size: 1.2rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
   .action-bar .current-player {
@@ -166,8 +176,17 @@
     margin-top: 0.5rem;
   }
 
+  .player-stats-contracts {
+    flex-basis: 100%;
+  }
+
   .player-stats-army-slots,
   .player-stats-artifacts {
     justify-content: flex-start;
+  }
+
+  .player-stats-gold {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: fit-content;    
   }
 }

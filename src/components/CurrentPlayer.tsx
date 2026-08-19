@@ -151,6 +151,24 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   return (
     <div className="player-pane-wrapper">
       <div className="current-player">
+        {/* fame */}
+        <div
+          className="player-stats-data"
+          id="statsFame"
+          onClick={() => say(t('currentPlayer.fameTooltip'), 'info')}
+          style={{ cursor: 'pointer' }}
+        >
+          <div
+            className="player-stats-hint"
+            style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+          >
+            🏆
+          </div>
+          <div>
+            <strong>{activePlayer.fame ?? 1}</strong>
+          </div>
+        </div>
+
         <PlayerLabel player={activePlayer} />
         
         <span>{t('currentPlayer.isAt')}</span>

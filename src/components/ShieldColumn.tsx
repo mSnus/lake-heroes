@@ -13,6 +13,7 @@ import StatsScreen from './StatsScreen';
 import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
+import { isMobileLayout } from './board/common';
 
 interface ShieldColumnProps {
   gameState: GameState;
@@ -215,10 +216,16 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         </div>
       ) : (
         (diceActive || canEndTurn) && (
-          <div style={{ ...colStyle, top: 'calc(100vw * 5 / 4 - 25px)' }}>
+          <div style={{ 
+              ...colStyle, 
+              top: isMobileLayout() ? 'calc(100vw * 5 / 4 - 25px)' : '8px' ,
+              right: isMobileLayout() ? '8px' : 'unset' ,
+              left: isMobileLayout() ? 'unset' : 'calc(100vh - 28px)' ,
+            }}>
             {diceActive && (
               <div
                 className="main-button-container"
+                id="rollDiceButton"
                 title={t('shieldColumn.rollDice')}
                 style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'});` }}
               >
@@ -230,6 +237,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
             {canEndTurn && (
               <div
                 className="main-button-container"
+                id="endTurnButton"
                 title={t('shieldColumn.endTurn')}
                 style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'});` }}
               >
