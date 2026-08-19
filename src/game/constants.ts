@@ -49,11 +49,11 @@ export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
 export const FLAT_TILE_UNIT_INCOME = 1;
 // Towers additionally levy a yearly UNIT toll toward the King's-grace
 // reward, scaled by their fortification level (1/2/3) -- a garrison drawn
-// from the tower's own recruits at higher fortification. Their per-turn
-// output is otherwise just the flat FLAT_TILE_UNIT_INCOME like any other
-// tile (see tiles.json's archer/arquebus/cannon-tower bonuses, all zeroed
-// out) -- they still get the universal ANNUAL_DEFAULT_GOLD trickle every
-// units-bonus tile earns, just no *extra* level-scaled gold on top of it.
+// from the tower's own recruits at higher fortification, on top of their
+// own per-turn unit bonus (tiles.json's archer/arquebus/cannon-tower
+// bonuses, 1/1/2 by level) plus the universal FLAT_TILE_UNIT_INCOME every
+// tile gets. They still get the universal ANNUAL_DEFAULT_GOLD trickle every
+// units-bonus tile earns too, just no *extra* level-scaled gold on top of it.
 export const TOWER_LEVEL_UNIT_BONUS = 2;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
