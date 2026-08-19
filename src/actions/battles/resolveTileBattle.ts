@@ -106,9 +106,15 @@ export function resolveTileBattle(
     message = t('resolveTileBattle.retreats', { attackerName: attacker.name, tileName: tile.name, lossStr });
     lostBg = true;
   } else {
-    const unitLoss = Math.floor(tile.defence / 4);
+    // A tie on a garrisoned (owned) tile costs the attacker exactly what the
+    // battle itself cost them (not the flat defence/4 formula below) and
+    // wipes the garrison out entirely, rather than only partially thinning
+    // it -- ownership stays with the defender either way. Wild guards on an
+    // unowned tile aren't a real player's army, so a tied claim attempt
+    // keeps the old flat-formula loss and leaves their numbers untouched.
+    const unitLoss = claiming ? Math.floor(tile.defence / 4) : attackerUnitsKilled;
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-    if (!claiming) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    if (!claiming) tile.garrison = 0;
     const lossStr = unitLoss > 0 ? t('resolveTileBattle.losingSuffix', { units: unitLoss }) : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;
