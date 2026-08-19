@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
-import { GameOverrides, getOverrides, setOverrides, useOverrides } from '../utils/overridesStore';
+import { GameOverrides, getOverrides, setOverrides, useOverrides, resetOverrides } from '../utils/overridesStore';
 import { useT } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
@@ -45,6 +45,17 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
   const applyAll = () => {
     commit(form);
     clearScreen();
+  };
+
+  // Overrides persist to localStorage across reloads (that's the point --
+  // a mid-game tweak should survive), which also means a stale saved value
+  // silently outlives a constants.ts change until something clears it. This
+  // is the only way to pick that up without starting a whole new game (the
+  // other place resetOverrides() runs, see ShieldColumn.tsx).
+  const resetToDefaults = () => {
+    resetOverrides();
+    setForm({ ...getOverrides() });
+    updateGameState(gameState);
   };
 
   return (
@@ -155,6 +166,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
 
         <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>
           <DecoratedButton onClick={applyAll}>{t('overridesScreen.apply')}</DecoratedButton>
+          <DecoratedButton onClick={resetToDefaults}>{t('overridesScreen.resetDefaults')}</DecoratedButton>
           <DecoratedButton onClick={clearScreen}>{t('common.close')}</DecoratedButton>
         </div>
       </div>

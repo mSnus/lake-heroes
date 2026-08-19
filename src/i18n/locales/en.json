@@ -859,7 +859,8 @@
     "stepByStep": "Step-by-step combat",
     "muteToasts": "Mute toast messages",
     "set": "Set",
-    "apply": "Apply"
+    "apply": "Apply",
+    "resetDefaults": "Reset to defaults"
   },
   "statsScreen": {
     "title": "Statistics",
