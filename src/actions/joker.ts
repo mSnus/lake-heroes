@@ -3,9 +3,10 @@ import { say } from '../utils/say';
 import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
-import { richestPlayer, poorestPlayer } from '../game/wealth';
+import { richestPlayer, poorestPlayer, totalWealth } from '../game/wealth';
 import { checkArtifactProtection } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
+import { HURRICANE_WEALTH_RATIO } from '../game/constants';
 import { t } from '../i18n';
 
 const EVENTS = [
@@ -45,9 +46,6 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
   const event: JokerEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
   let message = '';
-  // HTML-only detail (e.g. Hurricane's per-player tile list) — shown on the
-  // Joker screen, but kept out of the plain-text banner/log message.
-  let screenExtra = '';
 
   switch (event) {
     case 'Taxes':
@@ -75,44 +73,41 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     }
 
     case 'Hurricane': {
-      const lostMsgs: string[] = [];
-      const lostListItems: string[] = [];
-      const savedMsgs: string[] = [];
-      for (const p of board.players) {
-        if (!p.ownedTiles.length) continue;
+      // Only the richest player is ever at risk, and only while they're
+      // truly dominant -- at least HURRICANE_WEALTH_RATIO times wealthier
+      // than whoever ranks second. Ties for richest don't count as dominant
+      // (ratio can't clear 1x against an equally-wealthy second).
+      const ranked = [...board.players].sort((a, b) => totalWealth(board, b) - totalWealth(board, a));
+      const richest = ranked[0];
+      const second = ranked[1];
+      const dominant =
+        !!richest && !!second && totalWealth(board, richest) >= totalWealth(board, second) * HURRICANE_WEALTH_RATIO;
 
-        const protection = checkArtifactProtection(p, 'hurricane');
+      if (dominant && richest.ownedTiles.length > 0) {
+        const protection = checkArtifactProtection(richest, 'hurricane');
         if (protection.saved) {
-          savedMsgs.push(t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji }));
-          continue;
-        }
-
-        let maxGold = -1;
-        let targetIdx = -1;
-        for (const idx of p.ownedTiles) {
-          const candidate = board.tiles[idx];
-          if (candidate && candidate.currentPrice.gold > maxGold) {
-            maxGold = candidate.currentPrice.gold;
-            targetIdx = idx;
+          message = t('joker.savedByArtifact', { playerName: richest.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji });
+        } else {
+          let maxGold = -1;
+          let targetIdx = -1;
+          for (const idx of richest.ownedTiles) {
+            const candidate = board.tiles[idx];
+            if (candidate && candidate.currentPrice.gold > maxGold) {
+              maxGold = candidate.currentPrice.gold;
+              targetIdx = idx;
+            }
           }
-        }
-
-        if (targetIdx >= 0) {
           const tile = board.tiles[targetIdx];
           tile.owner = null;
           tile._level = 1;
           tile.isYielded = false;
-          p.ownedTiles = p.ownedTiles.filter((i) => i !== targetIdx);
-          changeFame(p, -1);
-          lostMsgs.push(t('joker.playerLosesTile', { playerName: p.name, tileName: tile.name }));
-          lostListItems.push(`${p.name}: ${tile.name} 🔥`);
+          richest.ownedTiles = richest.ownedTiles.filter((i) => i !== targetIdx);
+          changeFame(richest, -1);
+          message = t('joker.playerLosesTile', { playerName: richest.name, tileName: tile.name });
         }
+      } else {
+        message = t('joker.hurricaneNoEffect');
       }
-
-      if (lostMsgs.length) say(t('joker.hurricaneSweepsAway', { list: lostMsgs.join(', ') }), 'debug');
-      message = t('joker.hurricaneMessage');
-      if (lostListItems.length) screenExtra = `<br/>${lostListItems.join('<br/>')}`;
-      if (savedMsgs.length) message += ` ${savedMsgs.join('; ')}`;
       break;
     }
 
@@ -230,5 +225,5 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   recordStatEvent(board, board.activePlayer, 'joker');
   updateGameState(board);
   setEndTurn();
-  showJokerScreen(`${message}${screenExtra}`, `${EVENT_EMOJI[event]} ${eventName}`);
+  showJokerScreen(message, `${EVENT_EMOJI[event]} ${eventName}`);
 }

@@ -9,6 +9,10 @@ export const TREASURE_BOX_MULTIPLIER = 200;
 export const TILE_COUNT = 25;
 export const MAX_PLAYERS = 6;
 export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the player's laps around the board
+// Joker's Hurricane only strikes the richest player, and only when they're
+// this many times wealthier than whoever ranks second -- a check on a
+// runaway leader, not a routine hazard for everyone (see actions/joker.ts).
+export const HURRICANE_WEALTH_RATIO = 1.5;
 
 // ── Tile economy scale ──
 // tiles.json authors prices and income as small coefficients of these bases,
