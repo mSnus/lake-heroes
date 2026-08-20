@@ -156,17 +156,11 @@
   letter-spacing: -2px;
 }
 
-/* Per-turn gold/unit bonus next to the current total -- same small caption
-   size as TileCard's "per turn" line (.big-icon-hint div:last-child). */
-.player-stats-turn-income {
-  font-size: 9px;
-  font-weight: normal;
-}
 
-/* The units-income figure (next to the squad badges) has its own click
-   handler (a source breakdown), separate from the gold one which just
-   inherits its parent cell's click. */
-.player-stats-turn-income-clickable {
+.player-stats-turn-income {
+  font-size: 0.85rem;
+  font-weight: normal;
+  color: #7a662b;
   cursor: pointer;
 }
 

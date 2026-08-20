@@ -414,58 +414,93 @@ export const TileCard: React.FC<TileCardProps> = ({
                       </div>
                     ) : (
                       <div>
-                        <div style={cantAfford ? { color: '#ff4444' } : undefined}>
-                          {cantAfford ? t('tileCard.cantAfford') : t('tileCard.toOwn')}
-                        </div>
-                        <div>
-                          <div>
-                            {tile.requiredFame > 0 && (
-                              <>
-                                <span
-                                  style={
-                                    activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
-                                      ? { color: '#ff4444', marginRight: '8px' }
-                                      : { marginRight: '8px' }
-                                  }
-                                >
-                                  {activePlayer &&
-                                    (activePlayer.fame ?? 1) < tile.requiredFame &&
-                                    '🔻'}
-                                  🏆{tile.requiredFame}
-                                </span>
-                                {'  '}
-                              </>
-                            )}
 
-                            <span
-                              style={
-                                activePlayer &&
-                                (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                                  ? { color: '#ff4444' }
-                                  : {}
-                              }
-                            >
-                              {activePlayer &&
+                        {cantAfford ? (
+                        <div style={{ color: '#ff4444' }}>
+                           {t('tileCard.cantAfford')}
+                        </div>
+                        ) : (
+                        <div>
+                          {t('tileCard.toOwn')}
+                        </div>
+                        )}
+                        
+                        <div className="tile-card-claim-requirements">
+                          {tile.requiredFame > 0 && (
+                            <>
+                              <span
+                                style={
+                                  activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
+                                    ? { color: '#ff4444', marginRight: '8px' }
+                                    : { marginRight: '8px' }
+                                }
+                              >
+                                {activePlayer &&
+                                  (activePlayer.fame ?? 1) < tile.requiredFame &&
+                                  '🔻'}
+                                🏆{tile.requiredFame}
+                              </span>
+                              {'  '}
+                            </>
+                          )}
+
+                          <span
+                            style={
+                              activePlayer &&
                               (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                                ? '🔻'
-                                : '👛 '}
-                              {tile.currentPrice.gold ?? 0}🟡
-                            </span>
-                            {/* The help screen's static sample card skips the unit
-                                requirement line — misleading there since a battle now
-                                sends the whole army, not a squad sized to Defence. */}
-                            {!demoMode && (
-                              <>
-                                {'  '}
-                                <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
-                                  {unitsInsufficient && '🔻'}
+                                ? { color: '#ff4444', paddingRight: '8px' }
+                                : { paddingRight: '8px'}
+                            }
+                          >
+                            {activePlayer &&
+                            (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
+                              ? '🔻'
+                              : '👛 '}
+                            {tile.currentPrice.gold ?? 0}🟡{' '}
+                          </span>
+                          {/* The help screen's static sample card skips the unit
+                              requirement line — misleading there since a battle now
+                              sends the whole army, not a squad sized to Defence. */}
+                          {!demoMode && (
+                            <>
+                              {'  '}
+
+                              {unitsInsufficient ? (
+                                <div style={{ color: '#ff4444' }}>
+                                  {t('tileCard.unitsInsufficient')}
+                                  {'🔻'}
                                   {defence(1)}
                                   {tile.abandoned ? '🧟‍♀️' : '⚔️'}
-                                </span>
-                              </>
-                            )}
-                          </div>
+                                </div>
+                              ) : (
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexWrap: 'nowrap',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.1rem',
+                                  }}
+                                >
+                                  <div className="tile-card-attacker-army">{attackerArmyLabel}</div>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      alignItems: 'center',
+                                      lineHeight: 1
+                                    }}
+                                  >
+                                    <div className="tile-card-attack-emoji">{attackEmoji}</div>
+                                    <div className="tile-card-attack-vs">{t('common.vs')}</div>
+                                  </div>
+                                  <div className="tile-card-attacker-army">{defence(1)}</div>
+                                </div>
+                              )}
+                            </>
+                          )}
                         </div>
+
                       </div>
                     )}
                   </div>
@@ -584,24 +619,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                     gap: '0.1rem',
                   }}
                 >
-                  {/* Container gap is 0.1rem; add 1.1rem more so this specific
-                      pair ends up 1.2rem apart, without widening the other gaps. */}
-                  <div style={{ marginRight: '1.1rem' }}>
-                    {isBanzai ? t('tileCard.banzai') : t('tileCard.claimIt')}
-                  </div>
-                  <div>{attackerArmyLabel}</div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      lineHeight: 1,
-                    }}
-                  >
-                    <div style={{ fontSize: '0.6em' }}>{attackEmoji}</div>
-                    <div style={{ fontSize: '0.55rem' }}>{t('common.vs')}</div>
-                  </div>
-                  <div>{defence(1)}</div>
+                  <div>
+                    {isBanzai ? '🩸 ' + t('tileCard.banzai') : '⚔️ ' + t('tileCard.claimIt')}
+                  </div>                  
                 </div>
               </DecoratedButton>
             )}

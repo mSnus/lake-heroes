@@ -46,11 +46,11 @@
 /* A small automatic battle (see AUTO_BATTLE_LARGE_THRESHOLD): bigger cells
    than the default battlefield, but not as large as brawl's. */
 .bfg-battlefield.bfg-large {
-  --bfg-cell: 8.2vmin;
+  --bfg-cell: 10vmin;
 }
 @supports (container-type: inline-size) {
   .bfg-battlefield.bfg-large {
-    --bfg-cell: 8.2cqi;
+    --bfg-cell: 10cqi;
   }
 }
 

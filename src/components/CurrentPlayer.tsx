@@ -318,7 +318,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               />
               {turnIncome.units > 0 && (
                 <span
-                  className="player-stats-turn-income player-stats-turn-income-clickable"
+                  className="player-stats-turn-income"
                   onClick={(e) => {
                     e.stopPropagation();
                     say(

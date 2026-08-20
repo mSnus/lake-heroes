@@ -31,7 +31,7 @@
   border-collapse: collapse;
   display: flex;
   align-items: normal;
-  justify-content: space-between;
+  justify-content: center;
 
   font-size: 1.1rem;
   font-family: Encode;

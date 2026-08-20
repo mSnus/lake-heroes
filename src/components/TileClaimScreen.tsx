@@ -288,27 +288,35 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       )}
 
       <div className="upgrades-table">
-        <div className={'upgrade-level' + (currentLevel === 1 ? ' current-level' : '')}>
-          <div className="big-icon-hint">
-            <span className="value">1🏯</span> <div>{t('tileClaimScreen.tower')}</div>
-          </div>
-
-          <div className="big-icon-hint">
-            <div>{turnIncomeLabel(1)}</div>
-            <div>{t('tileCard.perTurn')}</div>
-          </div>
-
-          {isTower && (
+        {currentLevel < 3 && (
+          <div
+            className={
+              'upgrade-level' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
+            }
+          >
             <div className="big-icon-hint">
-              <div>{towerYearlyLabel(1)}</div>
-              <div>{t('tileCard.perYear')}</div>
+              <span className="value">1🏯</span> <div>{t('tileClaimScreen.tower')}</div>
             </div>
-          )}
 
-          <div className={'upgrade-price-badge'}>now</div>
-        </div>
+            <div className="big-icon-hint">
+              <div>{turnIncomeLabel(1)}</div>
+              <div>{t('tileCard.perTurn')}</div>
+            </div>
 
-        {currentLevel < 2 && (
+            {isTower && (
+              <div className="big-icon-hint">
+                <div>{towerYearlyLabel(1)}</div>
+                <div>{t('tileCard.perYear')}</div>
+              </div>
+            )}
+
+            <div className={'upgrade-price-badge'}>
+              {currentLevel === 1 ? t('tileClaimScreen.now') : ''}
+            </div>
+          </div>
+        )}
+
+        {currentLevel < 3 && (
           <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
             <div className="big-icon-hint">
               <span className="value">2🏯</span> <div>{t('tileClaimScreen.towers')}</div>
@@ -326,11 +334,17 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               </div>
             )}
 
-            {priceTag(2)}
+            {currentLevel === 2 ? t('tileClaimScreen.now') : priceTag(2)}
           </div>
         )}
-        {currentLevel < 3 && (
-          <div className={'upgrade-level' + (nextLevel !== 3 ? ' upgrade-unreachable' : '')}>
+        {currentLevel <= 3 && (
+          <div
+            className={
+              'upgrade-level' +
+              (nextLevel !== 3 ? ' upgrade-unreachable' : '') +
+              (currentLevel === 3 ? ' current-level' : '')
+            }
+          >
             <div className="big-icon-hint">
               <span className="value">3🏯</span> <div>{t('tileClaimScreen.towers')}</div>
             </div>
@@ -347,7 +361,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               </div>
             )}
 
-            {priceTag(3)}
+            {currentLevel === 3 ? t('tileClaimScreen.now') : priceTag(3)}
           </div>
         )}
       </div>

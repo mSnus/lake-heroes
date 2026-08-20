@@ -200,7 +200,7 @@
     "belongsTo": "belongs to {player}",
     "tower": "tower",
     "towers": "towers",
-    "now": "now",
+    "now": "currently",
     "upgradeLine": "{priceTag} {bonusBlock} {slots}",
     "onGuard": "On guard:",
     "army": "army",

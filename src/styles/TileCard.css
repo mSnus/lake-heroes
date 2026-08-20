@@ -388,7 +388,7 @@
 }
 
 .big-icon-hint div:last-child {
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .tile-card-base-info-data {
@@ -456,4 +456,27 @@
   border-radius: 0;
   color: wheat;
   font-family: 'Texturina';
+}
+
+
+.tile-card-attack-emoji {
+  font-size: 0.9rem;
+}
+
+.tile-card-attack-vs {
+  font-size: 0.7rem;
+}
+
+.tile-card-claim-requirements {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.tile-card-attacker-army {
+  color: #120707;
+  font-size: 1rem;
 }
