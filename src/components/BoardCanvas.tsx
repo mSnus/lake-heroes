@@ -247,6 +247,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     };
 
     const isFogged = tile.fogged();
+    const isOnFire = tile.isOnFire(board.round);
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
 
     const owner = tile.owner ? board.players.find((p) => p.id === tile.owner) : null;
@@ -266,6 +267,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           ...(isMapEditSelected
             ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
             : {}),
+          ...(isOnFire ? { filter: 'grayscale(0.5)' } : {}),
         }}
         onClick={handleTileClick}
         onPointerDown={handleTilePointerDown}
@@ -333,6 +335,26 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
               );
             })()}
         </div>
+      </div>
+    );
+  };
+
+  const cellStyleFor = (pos: { x: number; y: number }): React.CSSProperties => ({
+    top: pos.y + '%',
+    left: pos.x + '%',
+  });
+
+  // Purely decorative per-tile effects that sit above everything else on the
+  // board (tiles, players) but don't intercept clicks -- a still-smoldering
+  // (recently razed) tile shows a 🔥 here, on top of the grayscale filter
+  // renderTile applies to the tile itself. Add more overlay kinds to this
+  // same layer/function rather than bolting them onto renderTile directly.
+  const renderOverlay = (tile: any, i: number) => {
+    if (!tile.isOnFire(board.round)) return null;
+    const pos = getTilePosition(i);
+    return (
+      <div key={`overlay-fire-${i}`} className="tile-fire-overlay" style={cellStyleFor(pos)}>
+        🔥
       </div>
     );
   };
@@ -459,6 +481,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
         <div className="layer-tiles" aria-hidden>
           {board.tiles.map((tile, i) => renderTile(tile, i))}
+        </div>
+
+        <div className="layer-overlays" aria-hidden>
+          {board.tiles.map((tile, i) => renderOverlay(tile, i))}
         </div>
 
         {showForkChoice && <div className="layer-fork-choice">{renderForkChoice()}</div>}

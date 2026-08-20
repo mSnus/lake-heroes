@@ -70,6 +70,44 @@
   /* allow clicks to pass through to tiles unless specifically on player markers */
 }
 
+/* Purely decorative per-tile effects (currently just the still-smoldering
+   🔥) drawn on top of the tile art -- a dedicated layer rather than
+   piggybacking on .layer-tiles, so future overlay kinds have one obvious
+   place to render into. Above .tile's own z-index (5000) but below the
+   fork picker's, and never intercepts clicks -- .tile underneath still
+   handles them. */
+.layer-overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 5500;
+  pointer-events: none;
+}
+
+/* Same box as .tile itself (top/left is that box's top-left corner, not its
+   center -- no translate on .tile, so none here either), with the emoji
+   centered inside via flex instead. */
+.tile-fire-overlay {
+  position: absolute;
+  width: 14.8vmin;
+  height: 14.8vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  text-shadow: 0 0 4px #000, 0 0 4px #000;
+  pointer-events: none;
+}
+
+@supports (container-type: inline-size) {
+  .tile-fire-overlay {
+    width: 14.8cqi;
+    height: 14.8cqi;
+  }
+}
+
 /* Fork path picker (map13): two arrows near the fork's start tile, letting
    the active player choose short vs long before rolling. Own layer, on top
    of everything else on the board (see .fork-arrow's z-index vs .tile's). */
