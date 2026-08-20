@@ -29,6 +29,22 @@
   background: linear-gradient(180deg, #f5ffe0, #fff);
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+.player-pane-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.player-position {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: calc(100% - 64px);
 }
 
 .player-marker-indicator {

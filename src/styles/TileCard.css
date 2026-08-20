@@ -1,7 +1,7 @@
 .current-tile-card-wrapper {
   position: absolute;
   left: calc(50vw - (230px / 2));
-  top: calc(50vw * 1vw / 1vh);
+  top: calc(50vw * 1vw / 1vh - 40px);
 
   display: flex;
   justify-content: center;
@@ -42,6 +42,10 @@
 
 .current-tile .tile-card {
   margin-bottom: 0;
+}
+
+.current-tile .tile-card-bg {
+  height: 200px;
 }
 
 .current-tile.special {

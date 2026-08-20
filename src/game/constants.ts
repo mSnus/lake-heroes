@@ -90,9 +90,9 @@ export const MAX_ARMY_SLOTS = 5;
 // Uneven bracket widths, so this is a lookup table, not a uniform step size.
 export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
   { minFame: 10, slots: MAX_ARMY_SLOTS },
-  { minFame: 6, slots: 4 },
-  { minFame: 3, slots: 3 },
-  { minFame: 0, slots: 2 },
+  { minFame: 6, slots: 3 },
+  { minFame: 3, slots: 2 },
+  { minFame: 0, slots: 1 },
 ];
 
 export const SPRITE_SIZE = 96;

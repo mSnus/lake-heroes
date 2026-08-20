@@ -421,8 +421,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const SELECTED_COLOR = '#e6cc68';
     const UNSELECTED_COLOR = '#c18c3670';
 
-    const arrowStyle = (rotation: number, color: string, offsetXPct: number): React.CSSProperties => ({
-      top: pos.y + '%',
+    const arrowStyle = (rotation: number, color: string, offsetXPct: number, offsetYPct: number = 0): React.CSSProperties => ({
+      top: pos.y + offsetYPct + '%',
       left: pos.x + offsetXPct + '%',
       transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
       color,
@@ -432,7 +432,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       <>
         <div
           className="fork-arrow"
-          style={arrowStyle(135, forkChoice === 'short' ? SELECTED_COLOR : UNSELECTED_COLOR, -3)}
+          style={arrowStyle(135, forkChoice === 'short' ? SELECTED_COLOR : UNSELECTED_COLOR, -1)}
           onClick={(e) => {
             e.stopPropagation();
             setForkChoice('short');
@@ -442,7 +442,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         </div>
         <div
           className="fork-arrow"
-          style={arrowStyle(225, forkChoice === 'long' ? SELECTED_COLOR : UNSELECTED_COLOR, 3)}
+          style={arrowStyle(57, forkChoice === 'long' ? SELECTED_COLOR : UNSELECTED_COLOR, 12, 3)}
           onClick={(e) => {
             e.stopPropagation();
             setForkChoice('long');

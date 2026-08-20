@@ -169,15 +169,17 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           </div>
         </div>
 
-        <PlayerLabel player={activePlayer} />
-        
-        <span>{t('currentPlayer.isAt')}</span>
-        <span
-          style={{ color: gameState.activeTile.groupTextColor, cursor: 'pointer' }}
-          onClick={handleTileNameClick}
-        >
-          {gameState.activeTile.name}{' '}
-        </span>
+        <div className="player-position">          
+          <PlayerLabel player={activePlayer} />
+          
+          <span>{t('currentPlayer.isAt')}</span>
+          <span
+            style={{ color: gameState.activeTile.groupTextColor, cursor: 'pointer' }}
+            onClick={handleTileNameClick}
+          >
+            {gameState.activeTile.name}{' '}
+          </span>
+        </div>
       </div>
 
       <div className="player-pane">
