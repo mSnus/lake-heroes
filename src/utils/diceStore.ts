@@ -36,7 +36,6 @@ export function showDice(handler?: Function) {
     return;
   }
 
-  console.log('Showing dice', handler);
   state = { active: true, handler, key: state.key + 1, rolling: false };
   emit();
 }

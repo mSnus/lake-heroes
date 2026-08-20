@@ -93,6 +93,10 @@
     "joker": {
       "name": "Joker",
       "description": "Random evil joke"
+    },
+    "ruins": {
+      "name": "Ruins",
+      "description": "Ancient monsters guard them"
     }
   },
   "artifacts": {

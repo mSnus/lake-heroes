@@ -682,5 +682,20 @@
     },
     "bonuses": {},
     "defences": {}
+  },
+  {
+    "id": "ruins",
+    "group": "Special",
+    "icon": "🃏",
+    "spriteImage": "assets/sprites/ruins.png",
+    "isOwnable": false,
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "bonuses": {},
+    "defences": {}
   }
 ]

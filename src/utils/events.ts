@@ -1,5 +1,5 @@
 export function gameEvent(event: string, detail: any = null) {
-  if (event !== 'logMessage') {
+  if (!['displayTile', 'logMessage'].includes(event)) {
     console.debug(`✉️ received ${event}`, detail);
   }
 

@@ -62,7 +62,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const mapEdit = useMapEditStore();
 
   const [mapReady, setMapReady] = React.useState(false);
-  const mapUrl = 'assets/map12.jpg';
+  const mapUrl = 'assets/map13.jpg';
 
   // Preload map so tiles render only after background is ready
   useEffect(() => {
@@ -95,20 +95,24 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   // straight back in would just be a pointless flicker.
   const activePlayerId = board.activePlayer.id;
   const lastZoomPositionRef = React.useRef<number | null>(null);
+
+  //set to 1 to disable zoom, 2 to normal zoom-in
+  const ZOOM_MAX_LEVEL = 1; 
+
   useEffect(() => {
     const newPosition = board.activePlayer.position;
     const samePosition = lastZoomPositionRef.current === newPosition;
     lastZoomPositionRef.current = newPosition;
 
     if (samePosition) {
-      setZoomLevel(2);
+      setZoomLevel(ZOOM_MAX_LEVEL);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     setZoomLevel(1);
     const t = setTimeout(() => {
-      setZoomLevel(2);
+      setZoomLevel(ZOOM_MAX_LEVEL);
       // Zooming in centers the camera on the active player -- scroll the
       // page up first so that zoomed-in view is actually visible instead of
       // landing off-screen below wherever the page happened to be scrolled.

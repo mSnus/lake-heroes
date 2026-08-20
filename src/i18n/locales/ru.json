@@ -93,6 +93,10 @@
     "joker": {
       "name": "Джокер",
       "description": "Случайная злая шутка"
+    },
+    "ruins": {
+      "name": "Руины",
+      "description": "Древние монстры охраняют их"
     }
   },
   "artifacts": {

@@ -150,6 +150,10 @@ button.decorated:disabled {
   display: flex;
 }
 
+.color-picker-wrapper .player-image {
+  min-height: unset;
+}
+
 .color-swatch-list {
   position: absolute;
   top: 100%;
