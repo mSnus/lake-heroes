@@ -286,6 +286,7 @@
   width: 100%;
   border-collapse: collapse;
   overflow: hidden;
+  display: flex;
 }
 
 .tc-th {
@@ -428,13 +429,15 @@
    Upgrades screen — doubles as the actual upgrade-purchase button. */
 .upgrade-price-badge {
   display: inline-block;
-  border: 1px solid #ffde2c;
   border-radius: 4px;
+  margin-top: 1rem;
   padding: 0 6px;
+  border: 1px solid #ffde2c00;
 }
 
 .upgrade-price-badge.clickable {
   cursor: pointer;
+  border: 1px solid #ffde2c;
 }
 
 /* Matches King's Castle's input look (see modal.css's

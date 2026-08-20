@@ -198,8 +198,10 @@
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
     "belongsTo": "belongs to {player}",
-    "currentLevelLine": "{slots}🏯",
-    "upgradeLine": "{priceTag} → {bonusBlock} and {slots}🏯 towers",
+    "tower": "tower",
+    "towers": "towers",
+    "now": "now",
+    "upgradeLine": "{priceTag} {bonusBlock} {slots}",
     "onGuard": "On guard:",
     "army": "army",
     "garrisonVisitCaveat": "return to the tile to take units back from garrison",

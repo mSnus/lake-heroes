@@ -1,0 +1,76 @@
+.tile-guards-dialogue {
+  font-size: 1.1rem;
+  font-family: Encode;
+  color: wheat;
+  margin-top: 2rem;
+}
+
+.gurards-hire {
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.guards-hire-scroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 0.5rem;
+}
+
+.garrisonVisitCaveat {
+  font-size: 0.9rem;
+  font-family: Encode;
+  color: wheat;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.upgrades-table {
+  width: 100%;
+  border-collapse: collapse;
+  display: flex;
+  align-items: normal;
+  justify-content: space-between;
+
+  font-size: 1.1rem;
+  font-family: Encode;
+  color: wheat;
+
+  text-shadow: 4px 4px 12px black;
+  line-height: 1.8;
+  background-color: #04040460;
+  box-shadow: 1px 1px 20px 17px #04040460;
+
+  padding: 0 1rem;
+  margin-top: 2rem;
+
+  z-index: 6002;
+}
+
+.upgrade-level {
+  display: flex;
+  flex-direction: column;
+
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upgrade-level+.upgrade-level {
+  border-left: 1px solid wheat;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.upgrade-level.current-level {
+  background-color: #ffffff20;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.upgrade-level.upgrade-unreachable {
+  filter: sepia(1);
+  opacity: 0.5;
+}
