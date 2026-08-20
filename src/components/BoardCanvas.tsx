@@ -4,7 +4,7 @@ import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
-import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, playerIconOffset } from '../utils/mapEditStore';
+import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset } from '../utils/mapEditStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
@@ -75,6 +75,12 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const bgLayerRef = React.useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = React.useState<1 | 2>(1);
   const [resizeTick, setResizeTick] = React.useState(0);
+
+  // Map-edit tile drag: pointer position and the tile's own %-position at
+  // drag start, so every subsequent pointermove can compute an absolute new
+  // position from the pointer's total movement (measured against bg-layer's
+  // own rendered size, which already accounts for the zoom transform).
+  const tileDragRef = React.useRef<{ index: number; startClientX: number; startClientY: number; startXPct: number; startYPct: number } | null>(null);
 
   useEffect(() => {
     const onResize = () => setResizeTick((t) => t + 1);
@@ -201,6 +207,39 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const isMapEditSelected =
       mapEdit.active && mapEdit.target?.kind === 'tile' && mapEdit.target.index === i;
 
+    // Map-edit drag: mousedown starts tracking, every subsequent move turns
+    // the pointer's total on-screen movement into a %-of-board delta (via
+    // bg-layer's own rendered size, which already reflects the zoom
+    // transform) and writes it straight through to the tile's position.
+    // Pointer capture keeps move/up events targeting this tile even once
+    // the cursor strays outside it mid-drag.
+    const handleTilePointerDown = (e: React.PointerEvent) => {
+      if (!mapEdit.active) return;
+      e.preventDefault();
+      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+      tileDragRef.current = {
+        index: i,
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        startXPct: pos.x,
+        startYPct: pos.y,
+      };
+    };
+    const handleTilePointerMove = (e: React.PointerEvent) => {
+      const drag = tileDragRef.current;
+      if (!drag || drag.index !== i) return;
+      const rect = bgLayerRef.current?.getBoundingClientRect();
+      if (!rect || !rect.width || !rect.height) return;
+      const dxPct = ((e.clientX - drag.startClientX) / rect.width) * 100;
+      const dyPct = ((e.clientY - drag.startClientY) / rect.height) * 100;
+      mapEditDragTile(i, drag.startXPct + dxPct, drag.startYPct + dyPct);
+    };
+    const handleTilePointerUp = (e: React.PointerEvent) => {
+      if (tileDragRef.current?.index !== i) return;
+      tileDragRef.current = null;
+      (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
+    };
+
     const isFogged = tile.fogged();
     const ownedClass = tile.isOwned() ? 'tile-sprite-owned' : 'tile-sprite-unowned';
 
@@ -215,11 +254,17 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         style={{
           top: pos.y + '%',
           left: pos.x + '%',
+          ...(mapEdit.active
+            ? { cursor: tileDragRef.current?.index === i ? 'grabbing' : 'grab', touchAction: 'none' }
+            : {}),
           ...(isMapEditSelected
             ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
             : {}),
         }}
         onClick={handleTileClick}
+        onPointerDown={handleTilePointerDown}
+        onPointerMove={handleTilePointerMove}
+        onPointerUp={handleTilePointerUp}
       >
         <div className="tile-content">
           {tile?.name &&

@@ -44,12 +44,12 @@ function logPlayerIconOffset() {
   );
 }
 
-// Holding an arrow key fires keydown far faster than a render is useful for.
-// Every keydown still mutates the value immediately (so the final position
-// is always exactly right once you stop pressing), but the visual re-render
-// is coalesced to once per animation frame. Console output is intentionally
-// NOT emitted here -- only on Enter/disable, so the console isn't spammed
-// on every nudge.
+// Holding an arrow key fires keydown far faster than a render is useful for,
+// and a pointermove drag is just as chatty. Every event still mutates the
+// value immediately (so the final position is always exactly right once you
+// stop), but the visual re-render is coalesced to once per animation frame.
+// Console output is intentionally NOT emitted here -- only on Enter/disable,
+// so the console isn't spammed on every nudge/drag step.
 let rafScheduled = false;
 function scheduleAnnounce() {
   if (rafScheduled) return;
@@ -59,6 +59,23 @@ function scheduleAnnounce() {
     if (!state.target) return;
     emit();
   });
+}
+
+// Mouse-drag counterpart to the arrow-key nudging below -- BoardCanvas calls
+// this with the tile's new absolute position (computed from the pointer's
+// movement against the board's own rendered size, so it already accounts
+// for the board's zoom transform). Selects the tile as a side effect, same
+// as clicking it, so a drag alone is enough to start moving one.
+export function mapEditDragTile(index: number, xPct: number, yPct: number) {
+  if (!state.active) return;
+  const slot = slots[index];
+  if (!slot) return;
+  if (state.target?.kind !== 'tile' || state.target.index !== index) {
+    state = { ...state, target: { kind: 'tile', index } };
+  }
+  slot.xPct = xPct;
+  slot.yPct = yPct;
+  scheduleAnnounce();
 }
 
 function handleKeyDown(e: KeyboardEvent) {
@@ -139,7 +156,7 @@ export function enableMapEditMode() {
   window.addEventListener('keydown', handleKeyDown);
   emit();
   console.log(
-    '🗺️ Map edit mode ON — click a tile to select it (arrow keys to move, Enter to print+deselect), or click a player icon to adjust the shared offset (arrow keys for X/Y, +/- for cluster spacing, Enter to print+deselect). Nothing is printed to the console until Enter is pressed.'
+    '🗺️ Map edit mode ON — click and drag a tile to move it (or arrow keys once selected), Enter to print+deselect, or click a player icon to adjust the shared offset (arrow keys for X/Y, +/- for cluster spacing, Enter to print+deselect). Nothing is printed to the console until Enter is pressed.'
   );
 }
 
