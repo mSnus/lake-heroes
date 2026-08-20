@@ -8,6 +8,7 @@ import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { recordTurnStat } from '../game/statistics';
 import { collectTileTurnIncome } from '../game/income';
+import { resetForkChoice } from '../utils/forkChoiceStore';
 import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
 
@@ -28,6 +29,10 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
   board.gameMessage = '';
+  // Safety net alongside rollAndMove's own reset -- covers a turn that ends
+  // without ever rolling (e.g. a skipped prison turn), so a choice made on a
+  // prior visit to the fork can never leak into a later one.
+  resetForkChoice();
   board.activePlayer.hasClaimedThisTurn = false;
   board.activePlayer.hasConsideredClaimThisTurn = false;
   board.activePlayer.hasResolvedTileEncounterThisTurn = false;

@@ -70,6 +70,30 @@
   /* allow clicks to pass through to tiles unless specifically on player markers */
 }
 
+/* Fork path picker (map13): two arrows near the fork's start tile, letting
+   the active player choose short vs long before rolling. Own layer, on top
+   of everything else on the board (see .fork-arrow's z-index vs .tile's). */
+.layer-fork-choice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 6000;
+  pointer-events: none;
+}
+
+.fork-arrow {
+  position: absolute;
+  font-size: 2.2rem;
+  line-height: 1;
+  text-shadow: 0 0 4px #000, 0 0 4px #000, 0 0 6px #000;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
 .dragon-center-icon {
   position: absolute;
   top: 50%;

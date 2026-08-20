@@ -12,7 +12,8 @@ import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { say } from '../utils/say';
-import { TILE_COUNT } from '../game/constants';
+import { advanceBoardPosition, nextBoardPosition } from '../game/boardPath';
+import { getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
 import { gameEvent } from '../utils/events';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 import { checkDragonEncounter } from './dragonEncounter';
@@ -34,8 +35,18 @@ export async function rollAndMove(
   const roll = preRolledValue !== undefined ? preRolledValue : rollDice();
   const player = board.activePlayer;
 
-  const willCrossStart = player.position + roll >= TILE_COUNT;
-  const nextTileIdx = (player.position + roll) % TILE_COUNT;
+  // Locked in once, right before this roll's movement is simulated/applied
+  // -- the arrow picker on the fork's start tile (BoardCanvas.tsx) hides
+  // itself the moment a roll begins, so nothing later here should re-read a
+  // choice that might already be stale for some future visit to the fork.
+  const forkChoice = getForkChoice();
+  resetForkChoice();
+
+  const { finalIndex: nextTileIdx, crossedStart: willCrossStart } = advanceBoardPosition(
+    player.position,
+    roll,
+    forkChoice
+  );
   const nextTile = board.tiles[nextTileIdx];
 
   gameEvent('setPhase', 'rolling');
@@ -65,8 +76,8 @@ export async function rollAndMove(
   const proceedWithMove = async () => {
     // Step-by-step move with 0.2s delay per tile
     for (let step = 1; step <= roll; step++) {
-      const nextPos = (player.position + 1) % TILE_COUNT;
-      const willWrap = player.position + 1 >= TILE_COUNT;
+      const nextPos = nextBoardPosition(player.position, forkChoice);
+      const willWrap = nextPos === 0;
 
       gameEvent('setPhase', 'moving');
       player.position = nextPos;

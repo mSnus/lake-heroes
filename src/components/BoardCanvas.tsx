@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
 
-import { TILE_COUNT } from '../game/constants';
+import { TILE_COUNT, FORK_START_INDEX } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset } from '../utils/mapEditStore';
+import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
@@ -60,6 +61,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const t = useT();
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
+  const forkChoice = useForkChoice();
 
   const [mapReady, setMapReady] = React.useState(false);
   const mapUrl = 'assets/map13.jpg';
@@ -382,6 +384,54 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     );
   };
 
+  // Fork path picker (map13): shown only while the active player is a human
+  // actually standing on the fork's start tile, about to roll -- disappears
+  // the instant a roll begins (turnPhase leaves 'before-move'), matching the
+  // "choose before rolling" requirement. The choice itself lives in
+  // forkChoiceStore, read once by rollAndMove.ts right before movement.
+  const showForkChoice =
+    !board.activePlayer.isComputer &&
+    board.turnPhase === 'before-move' &&
+    board.activePlayer.position === FORK_START_INDEX;
+
+  const renderForkChoice = () => {
+    const pos = getTilePosition(FORK_START_INDEX);
+    const SELECTED_COLOR = '#e6cc68';
+    const UNSELECTED_COLOR = '#c18c3670';
+
+    const arrowStyle = (rotation: number, color: string, offsetXPct: number): React.CSSProperties => ({
+      top: pos.y + '%',
+      left: pos.x + offsetXPct + '%',
+      transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+      color,
+    });
+
+    return (
+      <>
+        <div
+          className="fork-arrow"
+          style={arrowStyle(135, forkChoice === 'short' ? SELECTED_COLOR : UNSELECTED_COLOR, -3)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setForkChoice('short');
+          }}
+        >
+          ➜
+        </div>
+        <div
+          className="fork-arrow"
+          style={arrowStyle(225, forkChoice === 'long' ? SELECTED_COLOR : UNSELECTED_COLOR, 3)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setForkChoice('long');
+          }}
+        >
+          ➜
+        </div>
+      </>
+    );
+  };
+
   // Render nothing until map loaded so BG is first layer and tiles render after it
   if (!mapReady) {
     return (
@@ -410,6 +460,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         <div className="layer-tiles" aria-hidden>
           {board.tiles.map((tile, i) => renderTile(tile, i))}
         </div>
+
+        {showForkChoice && <div className="layer-fork-choice">{renderForkChoice()}</div>}
 
         <div
           className="dragon-center-icon"
