@@ -138,10 +138,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits } = computeAnnualReward(
-    gameState,
-    activePlayer
-  );
+  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits } =
+    computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   const ownedTileCount = gameState.tiles.filter(
     (tile) => tile && tile.owner === activePlayer.id && !tile.isYielded
@@ -169,9 +167,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           </div>
         </div>
 
-        <div className="player-position">          
+        <div className="player-position">
           <PlayerLabel player={activePlayer} />
-          
+
           <span>{t('currentPlayer.isAt')}</span>
           <span
             style={{ color: gameState.activeTile.groupTextColor, cursor: 'pointer' }}
@@ -255,12 +253,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             </div>
           </div>
 
-          {/* King's grace, on passing the King's Castle -- each tile's own
-              bonus resource pays out every turn instead (previewed next to
-              gold/army above and below), but every owned tile also trickles
-              its *opposite* resource in here once per lap, on top of the
-              King's per-fame grace, Towers' extra level-scaled toll, and any
-              artifact bonus. */}
           <div
             className="player-stats-data"
             id="statsPerTurn"
@@ -295,23 +287,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             </div>
           </div>
         </div>
-        {/* fame + army: fame sits to the left of the squads block */}
-        <div className="player-stats-fame-army-row">
-          <div
-            className="player-stats-data"
-            id="statsFame"
-            onClick={() => say(t('currentPlayer.fameTooltip'), 'info')}
-          >
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              🏆
-            </div>
-            <div>
-              <strong>{activePlayer.fame ?? 1}</strong>
-            </div>
-          </div>
+
+        <div className="player-stats-army-row">
           <div
             className="player-stats-data player-stats-army-cell"
             id="statsArmy"
@@ -345,7 +322,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                   onClick={(e) => {
                     e.stopPropagation();
                     say(
-                      t('currentPlayer.unitsIncomeTooltip', { units: turnIncome.units, tiles: ownedTileCount }),
+                      t('currentPlayer.unitsIncomeTooltip', {
+                        units: turnIncome.units,
+                        tiles: ownedTileCount,
+                      }),
                       'info'
                     );
                   }}

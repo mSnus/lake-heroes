@@ -26,21 +26,6 @@ const ZOOM_SCALE = 1.33;
 const ZOOM_TRANSITION_MS = 600;
 const ZOOM_OUT_PAUSE_MS = 400;
 
-// A player marker is anchored this far (in % of the board) toward the
-// tile's right from the tile's own x/y, so even a single occupant never
-// centers directly on top of the tile art. Multiple players sharing a tile
-// then fan out from that anchor in a small non-overlapping grid (see
-// clusterOffset) instead of converging on one spot. Y stays 0 -- the
-// marker's own CSS transform (.player-wrapper, Board.css) already lifts it
-// up above its anchor point pin-style, so an additional JS-side vertical
-// offset would just push it further off the tile than intended.
-//
-// These are read LIVE from mapEditStore's `playerIconOffset` (not local
-// constants) so the in-browser map-edit tool (enableMapEditMode(), click a
-// player icon) can nudge them and see the result immediately -- the values
-// below are just the fallback/initial numbers, kept in sync with
-// mapEditStore.ts's `playerIconOffset` defaults. Once happy with a value,
-// copy it from the console log back into that file's defaults.
 const PLAYER_CLUSTER_COLUMNS = 2;
 
 /** Small non-overlapping grid offset (in % of the board) for the `index`-th

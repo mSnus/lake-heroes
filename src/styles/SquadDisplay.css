@@ -14,20 +14,19 @@
   white-space: nowrap;
 }
 
-/* The squad's count + unit type, framed in a thin gold border. */
 .squad-badge {
   display: inline-flex;
   align-items: center;
   gap: 2px;
   border: 1px solid #ffde2c;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 6px;
 }
 
 /* Recruiting dialogues (King's Castle, Tavern) show squads larger than the
  * compact top-bar display. */
 .squad-display-large {
-  font-size: 1.8em;
+  font-size: 1.6em;
 }
 
 /* Sell (and, when eligible, upgrade-to-riders) buttons sit under the squad

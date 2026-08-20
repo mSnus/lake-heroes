@@ -4,8 +4,8 @@ import { showScreen } from '../utils/screenStore';
 import { BattleScreen } from '../components/BattleScreen';
 import { t } from '../i18n';
 
-const RUINS_FORCE_RATIO_MIN = 0.9;
-const RUINS_FORCE_RATIO_MAX = 1.05;
+const RUINS_FORCE_RATIO_MIN = 0.6;
+const RUINS_FORCE_RATIO_MAX = 0.8;
 
 /**
  * The Ruins tile's fixed encounter: landing there always triggers a fight

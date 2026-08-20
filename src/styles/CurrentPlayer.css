@@ -34,9 +34,9 @@
 }
 
 .player-pane-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .player-position {
@@ -44,7 +44,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
-  width: calc(100% - 64px);
+  width: calc(100% - 78px);
 }
 
 .player-marker-indicator {
@@ -112,7 +112,7 @@
 
 /* Fame sits to the left of the squads block, which takes up the rest of the
    row. */
-.player-stats-fame-army-row {
+.player-stats-army-row {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -175,6 +175,7 @@
   .player-pane-wrapper {
     width: 100%;
   }
+
   .player-pane {
     width: 100%;
     padding-top: 1rem;
@@ -203,6 +204,6 @@
 
   .player-stats-gold {
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    width: fit-content;    
+    width: fit-content;
   }
 }
