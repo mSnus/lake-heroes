@@ -144,10 +144,14 @@ export const TileCard: React.FC<TileCardProps> = ({
   const lvl1Defence = defence(1);
   const attackerPower = activePlayer?.armyPower ?? 0;
   // Claim button label: raw militia+riders headcount, not the weighted power
-  // score -- riders only get a "+N" suffix when the player actually has any.
-  const attackerArmyLabel = activePlayer
-    ? `${activePlayer.militia}${activePlayer.riders > 0 ? `+${activePlayer.riders}` : ''}`
-    : '0';
+  // score -- riders only get a "+N" suffix when the player actually has any
+  // militia to add it to; with no militia at all, riders show alone instead
+  // of a leading "0+".
+  const attackerArmyLabel = !activePlayer
+    ? '0'
+    : activePlayer.militia > 0
+      ? `${activePlayer.militia}${activePlayer.riders > 0 ? `+${activePlayer.riders}` : ''}`
+      : `${activePlayer.riders}`;
   const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
   const isBanzai =
     !isBrawlTile &&
