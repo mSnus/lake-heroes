@@ -319,7 +319,11 @@ export const TileCard: React.FC<TileCardProps> = ({
               : handleInfoClick
           }
         >
-          <div className="tile-card-title">{tile.name}</div>
+          <div className="tile-card-title">
+            {tile.name}
+            <br />
+            {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
+          </div>
         </div>
       )}
 
@@ -363,7 +367,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                             <div>{t('tileCard.yielded')}</div>
                           </div>
                         ) : (
-                          <>
+                          <div style={{ display: 'flex', gap: '8px' }}>
                             <div className="big-icon-hint">
                               <div>{turnIncomeLabel}</div>
                               <div>{t('tileCard.perTurn')}</div>
@@ -374,7 +378,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                                 <div>{t('tileCard.perYear')}</div>
                               </div>
                             )}
-                          </>
+                          </div>
                         )}
                       </div>
                     )}
@@ -393,7 +397,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
               {!tile.owner && (
                 <div className="tile-card-base-info">
-                  <div className="tile-card-base-row">
+                  <div className="tile-card-base-row" style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
                     <div className="big-icon-hint">
                       {turnIncomeLabel}
                       <div>{t('tileCard.perTurn')}</div>
@@ -414,17 +418,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                       </div>
                     ) : (
                       <div>
-
                         {cantAfford ? (
-                        <div style={{ color: '#ff4444' }}>
-                           {t('tileCard.cantAfford')}
-                        </div>
+                          <div style={{ color: '#ff4444' }}>{t('tileCard.cantAfford')}</div>
                         ) : (
-                        <div>
-                          {t('tileCard.toOwn')}
-                        </div>
+                          <div>{t('tileCard.toOwn')}</div>
                         )}
-                        
+
                         <div className="tile-card-claim-requirements">
                           {tile.requiredFame > 0 && (
                             <>
@@ -449,7 +448,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                               activePlayer &&
                               (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
                                 ? { color: '#ff4444', paddingRight: '8px' }
-                                : { paddingRight: '8px'}
+                                : { paddingRight: '8px' }
                             }
                           >
                             {activePlayer &&
@@ -467,7 +466,6 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                               {unitsInsufficient ? (
                                 <div style={{ color: '#ff4444' }}>
-                                  {t('tileCard.unitsInsufficient')}
                                   {'🔻'}
                                   {defence(1)}
                                   {tile.abandoned ? '🧟‍♀️' : '⚔️'}
@@ -488,19 +486,20 @@ export const TileCard: React.FC<TileCardProps> = ({
                                       display: 'flex',
                                       flexDirection: 'column',
                                       alignItems: 'center',
-                                      lineHeight: 1
+                                      lineHeight: 1,
                                     }}
                                   >
                                     <div className="tile-card-attack-emoji">{attackEmoji}</div>
                                     <div className="tile-card-attack-vs">{t('common.vs')}</div>
                                   </div>
-                                  <div className="tile-card-attacker-army">{defence(1)}</div>
+                                  <div className="tile-card-attacker-army">
+                                    {defence(1)} {tile.abandoned ? '🧟‍♀️' : '🧍'}
+                                  </div>
                                 </div>
                               )}
                             </>
                           )}
                         </div>
-
                       </div>
                     )}
                   </div>
@@ -620,8 +619,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                   }}
                 >
                   <div>
-                    {isBanzai ? '🩸 ' + t('tileCard.banzai') : '⚔️ ' + t('tileCard.claimIt')}
-                  </div>                  
+                    {isBanzai
+                      ? '🩸 ' + t('tileCard.banzai')
+                      : attackEmoji + ' ' + t('tileCard.claimIt')}
+                  </div>
                 </div>
               </DecoratedButton>
             )}

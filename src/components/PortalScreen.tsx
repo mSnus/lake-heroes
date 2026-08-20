@@ -63,6 +63,7 @@ export const PortalScreen: React.FC<PortalScreenProps> = ({ player, landedTile, 
                 backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
+                borderRadius: SPRITE_SIZE / 2,
               }}
             />
           )}

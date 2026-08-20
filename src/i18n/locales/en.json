@@ -193,7 +193,8 @@
     "takeBack": "take back",
     "confirmYield": "Yield {tileName} to the King for {gold}🟡?",
     "confirmTakeBack": "Take {tileName} back for {gold}🟡?",
-    "yielded": "yielded"
+    "yielded": "yielded",
+    "abandoned": "(abandoned)"
   },
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
@@ -845,7 +846,7 @@
     "title": "Rogue Attack",
     "garrisonLost": "Your {tileName}'s garrison lost {units}🧍 repelling them",
     "attackersJoin": "{units}🧍 of attackers impressed by the might of {playerName} joined his garrison",
-    "wonFull": "Battle for {tileName} won, and your garrison is full again",
+    "wonFull": "Battle won, and your garrison is full again",
     "wonToast": "{playerName}'s garrison at {tileName} repels a roaming horde",
     "razed": "Your {tileName} was razed 🔥by the roaming horde!",
     "razedToast": "{playerName}'s {tileName} is razed by a roaming horde",

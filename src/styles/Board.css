@@ -65,7 +65,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  z-index: 3;
+  z-index: 90;
   pointer-events: none;
   /* allow clicks to pass through to tiles unless specifically on player markers */
 }
@@ -82,7 +82,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  z-index: 5500;
+  z-index: 80;
   pointer-events: none;
 }
 

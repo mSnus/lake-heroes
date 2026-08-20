@@ -21,7 +21,7 @@
 /* This turn's daily gold/unit bonus from owned tiles, under the player-name
    line -- same small caption size as TileCard's "per turn" line. */
 .turn-announcement-income {
-  font-size: 11px;
+  font-size: 1.2rem;
   opacity: 0.85;
   white-space: nowrap;
 }

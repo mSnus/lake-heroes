@@ -193,7 +193,8 @@
     "takeBack": "забрать обратно",
     "confirmYield": "Передать «{tileName}» королю за {gold}🟡?",
     "confirmTakeBack": "Забрать «{tileName}» обратно за {gold}🟡?",
-    "yielded": "передано королю"
+    "yielded": "передано королю",
+    "abandoned": "(заброшено)"
   },
   "tileClaimScreen": {
     "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
