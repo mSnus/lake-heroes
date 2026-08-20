@@ -20,6 +20,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   const joker = byId('joker');
   const portal = byId('portal');
   const ruins = byId('ruins');
+  const tower = byId('cannon-tower');
 
   if (!kingCastle) throw new Error('King Castle tile not found');
   if (!treasure) throw new Error('Treasure tile not found');
@@ -29,24 +30,28 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   if (!sphynx) throw new Error('Sphynx tile not found');
   if (!portal) throw new Error('Portal tile not found');
   if (!ruins) throw new Error('Ruins tile not found');
+  if (!tower) throw new Error('Cannon Tower tile not found');
 
   const slots: (any | undefined)[] = new Array(TILE_COUNT).fill(undefined);
 
   const FIXED: [number, any][] = [
     [0, kingCastle],
-    [5, treasure],
-    [7, sphynx],
-    [10, portal],
-    [13, prison],
-    [16, tavern],
-    [19, joker],
-    [23, ruins],
+    [8, joker],
+    [9, treasure],
+    [10, ruins],
+    [11, tower],
+    [13, sphynx],
+    [15, prison],
+    [18, tavern],
+
+    [22, portal],    
+    [25, treasure],
   ];
   FIXED.forEach(([idx, tpl]) => {
     slots[idx] = tpl;
   });
 
-  const fixedSet = new Set([kingCastle, prison, treasure, tavern, sphynx, joker, portal, ruins]);
+  const fixedSet = new Set([kingCastle, prison, treasure, tavern, sphynx, joker, portal, ruins, tower]);
   const pool = allTemplates.filter((t) => !fixedSet.has(t));
 
   // Group pool tiles by group name, sort each group cheapest first
