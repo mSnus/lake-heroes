@@ -12,9 +12,10 @@ export function isMobileLayout(): boolean {
   return window.matchMedia('(max-width: 768px)').matches;
 }
 
-// Load precomputed tile maps (percent coords relative to the board's square
-// container -- both axes are equivalent since .board-section/.board-wrapper
-// are aspect-ratio-locked to 1:1, see App.css/Board.css)
+// Load precomputed tile maps (percent coords relative to the board's
+// container, whose aspect-ratio is locked to the map image's own real ratio
+// -- see App.css's --board-aspect-ratio -- so these percentages always land
+// on the same spot in the artwork regardless of viewport size)
 import mapSetup from '../../settings/map.json';
 
 type MapSlotPct = {

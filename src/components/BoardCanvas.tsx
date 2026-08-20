@@ -4,7 +4,7 @@ import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT, FORK_START_INDEX } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
-import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset } from '../utils/mapEditStore';
+import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../utils/mapEditStore';
 import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
@@ -350,11 +350,16 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     const src = getPlayerImageSrc(player.image, player.isKnight);
 
+    // Tiles with their title laid out to the side (textPos 'left'/'right')
+    // need their own anchor offset -- the art sits differently within the
+    // tile box than a normal (title-below) tile.
+    const offset = pos.textPos === 'left' || pos.textPos === 'right' ? playerIconOffsetH : playerIconOffset;
+
     const sameTilePlayers = board.players
       .map((p, idx) => ({ p, idx }))
       .filter(({ p }) => p.position % TILE_COUNT === tileNumber);
     const indexInCluster = sameTilePlayers.findIndex(({ idx }) => idx === i);
-    const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length, playerIconOffset.clusterStepPct);
+    const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length, offset.clusterStepPct);
 
     const isPlayerIconEditSelected = mapEdit.active && mapEdit.target?.kind === 'player-icon';
 
@@ -363,8 +368,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         key={`player-${i}`}
         className="player-wrapper"
         style={{
-          top: pos.y + playerIconOffset.anchorYPct + dy + '%',
-          left: pos.x + playerIconOffset.anchorXPct + dx + '%',
+          top: pos.y + offset.anchorYPct + dy + '%',
+          left: pos.x + offset.anchorXPct + dx + '%',
           ...(isPlayerIconEditSelected
             ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
             : {}),

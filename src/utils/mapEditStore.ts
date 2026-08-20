@@ -17,6 +17,16 @@ export const playerIconOffset = {
   clusterStepPct: 4,
 };
 
+// Same as playerIconOffset, but for a tile whose textPos is 'left' or
+// 'right' (see components/board/common.ts's MapSlotPct) -- those tiles lay
+// their title text out to the side instead of below, so the player marker's
+// anchor needs its own offset to still land in the right spot.
+export const playerIconOffsetH = {
+  anchorXPct: 9,
+  anchorYPct: 10.5,
+  clusterStepPct: 4,
+};
+
 let state: MapEditState = { active: false, target: null };
 const listeners = new Set<() => void>();
 
