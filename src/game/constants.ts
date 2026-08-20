@@ -1,5 +1,5 @@
 export const MONEY_START = 1500;
-export const UNITS_START = 16;
+export const UNITS_START = 12;
 export const MONEY_PASS_START = 500;
 export const UNITS_PASS_START = 6;
 export const MONEY_PASS_START_FAME = 200;
@@ -81,7 +81,7 @@ export const MILITIA_POWER_WEIGHT = 1;
 // used both for army-power strength ratings (computeArmyPower) and as the
 // roll multiplier a Rider gets in an actual battle duel.
 export const RIDER_DUEL_MULTIPLIER = 1.5;
-export const ARMY_SLOT_CAPACITY = 10; // max units of one tier per slot
+export const ARMY_SLOT_CAPACITY = 12; // max units of one tier per slot
 // A tile garrison's own per-slot cap -- independent of ARMY_SLOT_CAPACITY
 // (see overridesStore.ts's armySlotCapacity/garrisonSlotCapacity split).
 export const GARRISON_SLOT_CAPACITY = 8;
