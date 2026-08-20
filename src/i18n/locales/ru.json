@@ -208,7 +208,7 @@
     "garrisonVisitCaveat": "посетите эту клетку снова, чтобы вернуть их в армию",
     "leaveUnguarded": "Оставить без защиты 🩸",
     "kingSeesTheWay": "👑 Король видит путь",
-    "setToGuard": "Охранять с {amount} 🧍"
+    "setToGuard": "Охранять с {amount}🧍"
   },
   "battleScreen": {
     "theDragon": "Дракон",

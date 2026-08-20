@@ -86,7 +86,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const turnIncomeLabel = (
     <>
       {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
-      {turnIncome.units > 0 && <>+{turnIncome.units} 🧍</>}
+      {turnIncome.units > 0 && <>+{turnIncome.units}🧍</>}
     </>
   );
 
@@ -94,7 +94,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // only pays out once a lap, not every turn like the rest of a tile's
   // income -- shown as its own "per year" block alongside the per-turn one.
   const isTower = tile.group === 'Towers';
-  const towerYearlyLabel = <>+{TOWER_LEVEL_UNIT_BONUS * tile.level} 👬</>;
+  const towerYearlyLabel = <>+{TOWER_LEVEL_UNIT_BONUS * tile.level}👬</>;
 
   const bonusType = getBonusType(tile);
 

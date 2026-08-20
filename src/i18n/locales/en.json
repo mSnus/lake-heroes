@@ -208,7 +208,7 @@
     "garrisonVisitCaveat": "return to the tile to take units back from garrison",
     "leaveUnguarded": "Leave unprotected 🩸",
     "kingSeesTheWay": "👑 King sees the way",
-    "setToGuard": "Guard with {amount} 🧍"
+    "setToGuard": "Guard with {amount}🧍"
   },
   "battleScreen": {
     "theDragon": "The Dragon",

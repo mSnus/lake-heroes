@@ -330,7 +330,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                     );
                   }}
                 >
-                  +{turnIncome.units} 🧍
+                  +{turnIncome.units}🧍
                 </span>
               )}
             </div>
