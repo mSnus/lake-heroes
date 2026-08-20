@@ -14,9 +14,9 @@ export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the pl
 // see game/boardPath.ts (movement) and utils/forkChoiceStore.ts (the pending
 // per-turn choice) and BoardCanvas.tsx (the on-tile arrow picker).
 export const FORK_START_INDEX = 5;
-export const FORK_MERGE_INDEX = 13;
-export const FORK_SHORT_PATH = [6, 7, 8];
-export const FORK_LONG_PATH = [9, 10, 11, 12];
+export const FORK_MERGE_INDEX = 12;
+export const FORK_SHORT_PATH = [6, 7];
+export const FORK_LONG_PATH = [8, 9, 10, 11];
 // Joker's Hurricane only strikes the richest player, and only when they're
 // this many times wealthier than whoever ranks second -- a check on a
 // runaway leader, not a routine hazard for everyone (see actions/joker.ts).
