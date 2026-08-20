@@ -294,7 +294,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
             (() => {
               const { textPart1, textPart2 } = parseTileName(tile.name);
               const isKingTile = tile.id === 'king-castle';
-              const tileSizeClass = isKingTile
+              const tileSizeClass = ['king-castle'].includes(tile.id)
                 ? 'tile-sprite-container tile-big'
                 : 'tile-sprite-container';
 
