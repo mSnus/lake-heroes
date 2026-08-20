@@ -460,7 +460,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                                 <span style={unitsInsufficient ? { color: '#ff4444' } : undefined}>
                                   {unitsInsufficient && '🔻'}
                                   {defence(1)}
-                                  {tile.abandoned ? '🧟‍♀️' : '🛡️'}
+                                  {tile.abandoned ? '🧟‍♀️' : '⚔️'}
                                 </span>
                               </>
                             )}
