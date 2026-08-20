@@ -266,6 +266,25 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         onPointerMove={handleTilePointerMove}
         onPointerUp={handleTilePointerUp}
       >
+        {isMapEditSelected && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2.5rem',
+              fontWeight: 900,
+              color: 'red',
+              textShadow: '0 0 4px #000, 0 0 4px #000, 0 0 4px #000',
+              pointerEvents: 'none',
+              zIndex: 1000,
+            }}
+          >
+            {i}
+          </div>
+        )}
         <div className="tile-content">
           {tile?.name &&
             (() => {
