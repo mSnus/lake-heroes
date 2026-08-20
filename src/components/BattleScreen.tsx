@@ -20,6 +20,7 @@ import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
 import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
+import { resolveRuinsBattle } from '../actions/battles/resolveRuinsBattle';
 import { useT } from '../i18n';
 import {
   DRAGON_UNITS,
@@ -117,6 +118,12 @@ export type BattleScreenProps =
        * rather than regular NPC ambushers (see zombieAmbushEncounter.tsx) —
        * reskins the attacker-role grid units, field icon, and label. */
       isZombieAmbush?: boolean;
+      /** True for the Ruins tile's fixed monster encounter (see
+       * ruinsEncounter.ts) — reuses the same reversed-role ambush shape, but
+       * with its own opening message, background, and outcome resolution
+       * (resolveRuinsBattle instead of resolveAmbush). Always paired with
+       * isZombieAmbush for the zombie reskin. */
+      isRuins?: boolean;
       onClose: () => void;
       defender?: never;
       tile?: never;
@@ -165,6 +172,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   let battlefieldUnits: number | undefined;
   let ambushAttackerUnits: number | undefined;
   let isZombieAmbush = false;
+  let isRuins = false;
 
   if (props.mode === 'caravan') {
     defence = props.caravanDefence;
@@ -180,6 +188,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defence = props.ambushAttackerUnits;
     ambushAttackerUnits = props.ambushAttackerUnits;
     isZombieAmbush = !!props.isZombieAmbush;
+    isRuins = !!props.isRuins;
   } else {
     defence = props.tile?.defence ?? 1;
     defender = props.defender;
@@ -385,7 +394,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (loggedRef.current) return;
     loggedRef.current = true;
     if (isAmbush) {
-      const key = isZombieAmbush ? 'battleScreen.zombieAttackMessage' : 'battleScreen.ambushedMessage';
+      const key = isRuins
+        ? 'battleScreen.ruinsAttackMessage'
+        : isZombieAmbush
+          ? 'battleScreen.zombieAttackMessage'
+          : 'battleScreen.ambushedMessage';
       say(t(key, { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -413,6 +426,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           defKilled,
           battleOutcome
         );
+      if (isAmbush && isRuins) {
+        // In ambush shape: attacker(grid)=monsters, defender(grid)=real player.
+        return resolveRuinsBattle(gameState, attacker, defKilled, battleOutcome);
+      }
       if (isAmbush) {
         // In ambush: attacker(grid)=NPC, defender(grid)=real player.
         // BattleOutcome 'defender' means the player wins the ambush.
@@ -742,7 +759,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
 
   return (
-    <ScreenBackground image={isAmbush || isRogue ? 'assets/screens/caravan.jpg' : 'assets/screens/battle.jpg'}>
+    <ScreenBackground
+      image={
+        isRuins
+          ? 'assets/screens/ruins.jpg'
+          : isAmbush || isRogue
+            ? 'assets/screens/caravan.jpg'
+            : 'assets/screens/battle.jpg'
+      }
+    >
       <div
         style={{
           position: 'absolute',

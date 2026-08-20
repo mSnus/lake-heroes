@@ -215,6 +215,7 @@
     "guards": "Guards",
     "ambushedMessage": "{name} is ambushed by {units}🥷!",
     "zombieAttackMessage": "{name} is attacked by {units}🧟‍♀️!",
+    "ruinsAttackMessage": "{name} is attacked by {units}🧟 among the ruins!",
     "heroHour": "Hero's Hour",
     "ambushRepelled": "The ambush is repelled!",
     "attackRepelled": "Attack repelled!",
@@ -346,7 +347,8 @@
       "tavern": "🍺 <strong>Tavern</strong> — recruit units",
       "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
       "prison": "⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for visiting your tiles",
-      "joker": "🃏 <strong>Joker</strong> — triggers a random global event, see below for the full list."
+      "joker": "🃏 <strong>Joker</strong> — triggers a random global event, see below for the full list.",
+      "ruins": "🏚️ <strong>Ruins</strong> — landing here always triggers a fight against monster occupants, see below for details."
     },
     "joker": {
       "title": "Joker 🃏",
@@ -363,6 +365,13 @@
       "title": "Caravan 🐪",
       "item1": "At the <em>start</em> of your turn you have a chance to encounter a caravan bringing treasures or slaves",
       "item2": "Defeat the caravan guards to free the slaves (they join your army) or pillage the treasures!"
+    },
+    "ruins": {
+      "title": "Ancient Ruins 🏚️",
+      "item1": "Landing on the Ruins tile always triggers a fight against its monster occupants — there's no way to decline.",
+      "item2": "The monster force is sized at <strong>90%-105%</strong> of your own squad, so it's always a close, unpredictable fight.",
+      "item3": "Units lost in the battle are gone either way, win, tie, or defeat.",
+      "item4": "A win or a tie has an <strong>80% chance</strong> of turning up an unowned artifact among the rubble, on top of the usual battle outcome."
     },
     "battle": {
       "title": "Battle ⚔️",
@@ -781,6 +790,20 @@
   "zombieAmbush": {
     "title": "Zombie Attack!",
     "message": "{playerSpan} disturbs the ruins of {tileName}!<br />{units}🧟‍♀️ rise from the abandoned tile and attack. Fight for your lifes!"
+  },
+  "ruinsEncounter": {
+    "title": "Ancient Ruins",
+    "message": "{playerSpan} discovers ruins of the ancient castle. Unfortunately, group of monsters occupy it. And the monsters attack!",
+    "fight": "🧟 Fight for your life!",
+    "lostSuffix": ", losing {units}🧍",
+    "victoryMessage": "The ruins are cleared!{lossStr}",
+    "victoryGameMessage": "{playerName} clears the ruins of monsters!{lossStr}",
+    "tieMessage": "A costly stalemate among the ruins!{lossStr}",
+    "tieGameMessage": "{playerName} barely survives the ruins!{lossStr}",
+    "defeatMessage": "Routed! The ruins remain monster-held.{lossStr}",
+    "defeatGameMessage": "{playerName} is driven out of the ruins!{lossStr}",
+    "foundArtifact": " Look what's in there! No way... It's an {artifact}!",
+    "foundArtifactToast": "{playerName} found the {artifactName} {emoji} among the ruins!"
   },
   "caravanEncounter": {
     "bringingChains": "bringing {prize}🧍 in chains",

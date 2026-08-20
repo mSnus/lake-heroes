@@ -141,6 +141,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.specialTiles.sphynx')} />
             <HtmlLi html={t('helpScreen.specialTiles.prison')} />
             <HtmlLi html={t('helpScreen.specialTiles.joker')} />
+            <HtmlLi html={t('helpScreen.specialTiles.ruins')} />
           </ul>
 
           <h3>{t('helpScreen.joker.title')}</h3>
@@ -159,6 +160,14 @@ const HelpScreen: React.FC = () => {
           <ul>
             <HtmlLi html={t('helpScreen.caravan.item1')} />
             <HtmlLi html={t('helpScreen.caravan.item2')} />
+          </ul>
+
+          <h3>{t('helpScreen.ruins.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.ruins.item1')} />
+            <HtmlLi html={t('helpScreen.ruins.item2')} />
+            <HtmlLi html={t('helpScreen.ruins.item3')} />
+            <HtmlLi html={t('helpScreen.ruins.item4')} />
           </ul>
 
           <h3>{t('helpScreen.battle.title')}</h3>

@@ -11,9 +11,11 @@ import { handleVisitOwnTile } from './visitOwnTile';
 import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
+import { showRuinsEncounter } from './ruinsEncounter';
 import { say } from '../utils/say';
 import { advanceBoardPosition, nextBoardPosition } from '../game/boardPath';
 import { getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
+import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 import { checkDragonEncounter } from './dragonEncounter';
@@ -143,6 +145,11 @@ export async function rollAndMove(
 
       if (tile.id === 'joker') {
         handleJoker(board, updateGameState);
+        return;
+      }
+
+      if (tile.id === 'ruins') {
+        showRuinsEncounter(board, updateGameState, () => setEndTurn());
         return;
       }
 
