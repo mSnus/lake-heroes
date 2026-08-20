@@ -48,7 +48,7 @@ export function tOptional(key: string, params?: Record<string, string | number>)
 export function t(key: string, params?: Record<string, string | number>): string {
   const value = tOptional(key, params);
   if (value === undefined) {
-    console.warn(`Missing i18n key: ${key}`);
+    //console.warn(`Missing i18n key: ${key}`);
     return key;
   }
   return value;
