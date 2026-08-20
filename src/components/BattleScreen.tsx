@@ -752,12 +752,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, showBattlefield, bothSidesAutomated]);
 
-  const battleResultEmoji = isRogue
-    ? '' // a repelled/failed roaming-horde raid shows no emoji before the verdict
-    : isAmbush
-      ? (outcome === 'defender' ? '🛡️' : outcome === 'attacker' ? '☠️' : '⚔️')
-      : (outcome === 'attacker' ? '⚔️' : outcome === 'defender' ? '☠️' : '🛡️');
-
   return (
     <ScreenBackground
       image={
@@ -870,12 +864,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         {phase === 'result' && !showBattlefield && (
           <div className="battle-result-inline">
             <div className="battle-result-sequence">
-              {battleResultEmoji && (
-                <>
-                  {battleResultEmoji}
-                  <br />
-                </>
-              )}
               <span className="battle-result-verdict">
                 {isAmbush
                   ? (outcome === 'defender'
