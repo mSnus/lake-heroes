@@ -20,7 +20,8 @@
   gap: 2px;
   border: 1px solid #f6d381;
   border-radius: 4px;
-  padding: 0px 6px 4px 6px;
+  padding: 0px 6px 0px 6px;
+  height: 1.8rem;
 }
 
 /* Recruiting dialogues (King's Castle, Tavern) show squads larger than the

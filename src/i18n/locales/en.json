@@ -297,10 +297,10 @@
   },
   "garrisonsScreen": {
     "title": "Garrisons",
-    "message": "Fame {fame}🏆 allows to have {slots} squads of {perSlot} units each. Daily income: +{units} units from {tiles} tiles",
+    "message": "Fame {fame}🏆 allows to have {slots} squads of {perSlot}🧍 each.\n Daily income: +{units}🧍 from {tiles} tiles",
     "inArmy": "🚩 in the army: {amount}🧍",
     "maxLabel": "max: {max}",
-    "atMax": "Already at maximum for {slots}🏯: {units}",
+    "atMax": "Already at maximum",
     "noTiles": "You don't own any tiles yet",
     "setGuards": "🛡️ Set guards",
     "neverMind": "✖️ Never mind"

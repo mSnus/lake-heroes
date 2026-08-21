@@ -289,10 +289,10 @@
   },
   "garrisonsScreen": {
     "title": "Гарнизоны",
-    "message": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot} юнитов каждый. Доход за ход: +{units} юнитов с {tiles} клеток",
+    "message": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot}🧍 каждый. Доход за ход: +{units}🧍 с {tiles} клеток",
     "inArmy": "🚩 в армии: {amount}🧍",
     "maxLabel": "макс: {max}",
-    "atMax": "Уже максимум для {slots}🏯: {units}",
+    "atMax": "Уже максимум",
     "noTiles": "У вас пока нет клеток",
     "setGuards": "🛡️ Расставить гарнизоны",
     "neverMind": "✖️ Отмена"

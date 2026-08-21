@@ -16,6 +16,7 @@ import '../styles/TileCard.css';
 import '../styles/TileClaim.css';
 import '../styles/GameMenu.css';
 import '../styles/GarrisonsScreen.css';
+import { Fade } from './Fade';
 
 interface GarrisonsScreenProps {
   gameState: GameState;
@@ -33,22 +34,7 @@ function maxMilitiaFor(tile: Tile): number {
   );
 }
 
-/**
- * Bulk garrison redistribution: one row per owned (non-yielded) tile, each
- * with a slider for its target militia headcount, applied all at once. Opened
- * from PlayerStatsPanel in place of the separate squad/income tooltips it
- * used to show on click.
- *
- * Each row's slider is bounded independently by that tile's own capacity
- * (maxMilitiaFor) rather than the shared pool -- there's no live cross-row
- * accounting the way a single-tile screen's pool-of-two can do. Instead,
- * over-requesting is resolved at Apply time the same way any limited
- * resource allocation is: setTileGarrison clamps each row to whatever's
- * actually left in player.militia when it's that row's turn to be applied,
- * and rows are applied with the player's current tile first (the only row
- * that can ever release units back into the pool) so a decrease there can
- * fund an increase elsewhere in the same pass.
- */
+
 export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, player, updateGameState }) => {
   const t = useT();
 
@@ -119,11 +105,18 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             // nowhere to grow (min === max here, see `min` above) -- a live
             // slider would just be dead weight, so swap it for a status line.
             const atMax = !isCurrentTile && tile.garrisonMilitia >= max;
+
             return (
               <div className="garrisons-row" key={idx}>
-                {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" />}
+                <div className="tile-icon-title">
+                  {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{marginBottom: 0}}/>}
+                  <div className="garrisons-row-name">{tile.name}{' '}</div>
+                  <div className="big-icon-hint">         
+                    <div className="garrison-towers">{[...Array(tile.garrisonSlots)].map(() => '🏯')}</div>
+                    <div>{t('garrisonsScreen.maxLabel', { max })}</div>
+                  </div>
+                </div>
                 <div className="garrisons-row-info">
-                  <div className="garrisons-row-name">{tile.name}</div>
                   {atMax ? (
                     <div className="garrisons-row-atmax">
                       {t('garrisonsScreen.atMax', { slots: tile.garrisonSlots, units: tile.garrisonMilitia })}
@@ -138,9 +131,8 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                     />
                   )}
                 </div>
-                <div className="big-icon-hint garrisons-row-value">
+                <div className="garrisons-row-value">
                   <div>{value}🧍</div>
-                  <div>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
               </div>
             );
@@ -149,10 +141,13 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
       )}
 
       <div className="game-menu pay-or-fight-grid">
-        <DecoratedButton onClick={handleApply}>{t('garrisonsScreen.setGuards')}</DecoratedButton>
         <DecoratedButton onClick={() => clearScreen()}>{t('garrisonsScreen.neverMind')}</DecoratedButton>
+        <DecoratedButton onClick={handleApply}>{t('garrisonsScreen.setGuards')}</DecoratedButton>
       </div>
+
+      <Fade />
     </ScreenBackground>
+    
   );
 };
 
