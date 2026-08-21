@@ -1,13 +1,24 @@
-/* Pointy-top hex battlefield: outlined (not filled) hexagons on an even-r
-   offset grid -- even rows pushed half a cell to the right. This matches
-   game/battleGrid/engine.ts's adjacency/distance/pathfinding exactly (see
-   its toAxial/hexDistance/neighborOffsetsFor). --bfg-cell is the horizontal
-   cell pitch (hex flat-to-flat width); the hex box is taller than that and
-   rows overlap vertically so the hexes tessellate:
+/* Pointy-top hex battlefield on an even-r offset grid -- even rows pushed
+   half a cell to the right. This matches game/battleGrid/engine.ts's
+   adjacency/distance/pathfinding exactly (see its toAxial/hexDistance/
+   neighborOffsetsFor). --bfg-cell is the horizontal cell pitch (hex
+   flat-to-flat width); the hex box is taller than that and rows overlap
+   vertically so the hexes tessellate:
      hex box height  = --bfg-cell * 2/sqrt(3)  (--bfg-cell-h)
      row vertical step = 3/4 of that = --bfg-cell * sqrt(3)/2  (--bfg-row)
    Keep these two factors in sync with BattlefieldGrid.tsx's HEX_H_FACTOR /
-   HEX_ROW_FACTOR, which the drag hit-testing uses. */
+   HEX_ROW_FACTOR, which the drag hit-testing uses.
+
+   Each cell is an inline <svg> (.bfg-cell) containing one hex <polygon>
+   (.bfg-cell-hex, viewBox "0 0 100 115.47" matching the ratio above), rather
+   than a <div> shaped with `clip-path: polygon(...)`. A `clip-path`ed div
+   can't take a normal CSS `border` -- the border is a rectangular stroke
+   applied before clipping, so it lines up with the hex's flat edges but gets
+   clipped unevenly (thin/missing/pinched) along the diagonal edges and at
+   the points. The polygon instead gets its border from an SVG filter (see
+   BattlefieldGrid.tsx's hexFilterId def) that dilates the hex's own
+   silhouette and subtracts the original back out, producing a uniform-width
+   ring that follows the true hex outline everywhere, corners included. */
 
 .bfg-battlefield {
   container-type: inline-size;
@@ -72,15 +83,19 @@
 }
 
 .bfg-cell {
-  background-color: #44494696;
+  display: block;
   width: var(--bfg-cell);
   /* Taller than the row pitch (--bfg-row), so consecutive rows overlap and the
      hexes tessellate. */
   height: var(--bfg-cell-h);
-  border: 1px solid transparent;
-  box-sizing: border-box;
-  /* Pointy-top hexagon. */
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  /* The border filter dilates the hex slightly past its own viewBox bounds
+     (see BattlefieldGrid.tsx) -- SVG's UA default is `overflow: hidden`,
+     which would clip that ring's outer edge right back off again. */
+  overflow: visible;
+}
+
+.bfg-cell-hex {
+  fill: #44494696;
 }
 
 /* Even rows sit half a cell to the right of odd rows -- a shift, not a

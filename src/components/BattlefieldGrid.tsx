@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useId } from 'react';
 import { GridBattleState, TurnEvent, BattleSide, GridUnit } from '../game/battleGrid/types';
 import { BrawlPlan, adjacentCells } from '../game/battleGrid/engine';
 import { useT } from '../i18n';
@@ -87,6 +87,9 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   const t = useT();
   const { cols, rows, units } = battle;
   const arenaRef = useRef<HTMLDivElement>(null);
+  // Unique per mount so multiple battlefields on screen at once (unlikely
+  // today, but cheap to guard) don't collide on the SVG filter's id.
+  const hexFilterId = 'bfg-hex-border-' + useId().replace(/[^a-zA-Z0-9]/g, '');
 
   // ── Manual (drag) state ──
   const [placements, setPlacements] = useState<Record<string, Placement>>({});
@@ -347,6 +350,27 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   return (
     <>
+    {/* Shared hex-border filter (see BattlefieldGrid.css's .bfg-cell comment):
+        dilates the polygon's own silhouette, flood-fills the dilated copy,
+        then subtracts the original silhouette back out, leaving a uniform-
+        width ring that follows the hex's edges/vertices exactly -- unlike a
+        plain CSS `border` on a `clip-path`ed box, which is a rectangular
+        stroke that only lines up with a polygon's flat edges and gets
+        clipped unevenly (missing/pinched) at the diagonal edges and points. */}
+    <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden focusable="false">
+      <defs>
+        <filter id={hexFilterId} x="-30%" y="-30%" width="160%" height="160%">
+          <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="dilated" />
+          <feFlood floodColor="#ffffff" floodOpacity="0.35" result="borderColor" />
+          <feComposite in="borderColor" in2="dilated" operator="in" result="borderFilled" />
+          <feComposite in="borderFilled" in2="SourceAlpha" operator="out" result="borderRing" />
+          <feMerge>
+            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="borderRing" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
     <div className={'bfg-battlefield' + (brawl ? ' bfg-brawl' : large ? ' bfg-large' : '') + (instant ? ' bfg-instant' : '')}>
       <div className="bfg-arena" ref={arenaRef}>
         <div
@@ -355,7 +379,20 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         >
           {Array.from({ length: cols * rows }, (_, i) => {
             const row = Math.floor(i / cols);
-            return <div key={i} className={'bfg-cell' + (row % 2 === 0 ? ' bfg-cell-shifted' : '')} />;
+            return (
+              <svg
+                key={i}
+                className={'bfg-cell' + (row % 2 === 0 ? ' bfg-cell-shifted' : '')}
+                viewBox="0 0 100 115.47"
+                preserveAspectRatio="none"
+              >
+                <polygon
+                  className="bfg-cell-hex"
+                  points="50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87"
+                  filter={`url(#${hexFilterId})`}
+                />
+              </svg>
+            );
           })}
         </div>
         <div className="bfg-units">
