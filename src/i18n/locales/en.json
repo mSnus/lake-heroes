@@ -298,7 +298,7 @@
     "message": "Fame {fame}🏆 allows to have {slots} squads of {perSlot}🧍 each.\n Daily income: +{units}🧍 from {tiles} tiles",
     "inArmy": "🚩 in the army: {amount}🧍",
     "maxLabel": "max: {max}",
-    "atMax": "Already at maximum",
+    "atMax": "At maximum",
     "noTiles": "You don't own any tiles yet",
     "setGuards": "🛡️ Set guards",
     "neverMind": "✖️ Never mind"

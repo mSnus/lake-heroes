@@ -113,9 +113,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
               <React.Fragment key={idx}>
                 {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{ marginBottom: 0 }} />}
 
-                <div className="garrisons-row-name">{tile.name}</div>
+                <div className="garrisons-row-name">{tile.shortName}</div>
 
-                <div className="big-icon-hint">
+                <div className="big-icon-hint towers-max">
                   <div className="garrison-towers">{[...Array(tile.garrisonSlots)].map(() => '🏯')}</div>
                   <div style={{color: 'wheat'}}>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
