@@ -102,14 +102,11 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             const max = Math.max(min, maxMilitiaFor(tile));
             const value = targets[idx] ?? tile.garrisonMilitia;
             const atMax = !isCurrentTile && tile.garrisonMilitia >= max;
-            // Bounded by the tile's own capacity AND by what's actually left
-            // in the shared pool once every OTHER row's current pick is
-            // subtracted -- otherwise several rows could each be dragged up
-            // to their own tile cap independently and the "in the army"
-            // total would go negative (nothing here enforces the total,
-            // it's just each row's own ceiling). Excludes this row's own
-            // value from the subtraction, so dragging this slider doesn't
-            // shrink its own headroom.
+            // How far the thumb can actually be dragged -- the pool left
+            // once every OTHER row's current pick is subtracted, else rows
+            // could each max out independently and push "in the army"
+            // negative. Excludes this row's own value so dragging it
+            // doesn't shrink its own headroom.
             const liveMax = Math.max(min, Math.min(max, totalPool - (allocated - value)));
 
             return (
@@ -131,7 +128,8 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                   ) : (
                     <DecoratedSlider
                       min={min}
-                      max={liveMax}
+                      max={max}
+                      maxPosition={liveMax}
                       value={value}
                       onPreview={(v) => setRowValue(idx, v)}
                       onCommit={(v) => setRowValue(idx, v)}
