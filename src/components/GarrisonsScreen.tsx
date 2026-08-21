@@ -106,18 +106,22 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             // slider would just be dead weight, so swap it for a status line.
             const atMax = !isCurrentTile && tile.garrisonMilitia >= max;
 
+            // Direct grid children (no per-row wrapper div) -- .garrisons-list
+            // is a 5-column grid (icon/name/towers/slider/amount), and a
+            // wrapper here would put each row's 5 cells one grid level too
+            // deep, breaking column alignment across rows. React still needs
+            // one key per row, so a Fragment stands in for the div.
             return (
-              <div className="garrisons-row" key={idx}>
+              <React.Fragment key={idx}>
+                {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{ marginBottom: 0 }} />}
 
-                {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{marginBottom: 0}}/>}
-                
-                <div className="garrisons-row-name">{tile.name}{' '}</div>
-                
-                <div className="big-icon-hint">         
+                <div className="garrisons-row-name">{tile.name}</div>
+
+                <div className="big-icon-hint">
                   <div className="garrison-towers">{[...Array(tile.garrisonSlots)].map(() => '🏯')}</div>
                   <div>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
-                
+
                 <div className="garrisons-row-info">
                   {atMax ? (
                     <div className="garrisons-row-atmax">
@@ -133,11 +137,11 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                     />
                   )}
                 </div>
-                
+
                 <div className="garrisons-row-value">
                   <div>{value}🧍</div>
                 </div>
-              </div>
+              </React.Fragment>
             );
           })}
         </div>
