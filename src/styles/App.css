@@ -15,13 +15,15 @@
   --body-font-family: 'Inter, sans-serif';
   --sprite-scale: 48%;
   --shield-width: 60px;
+  --map-width: 1150;
+  --map-height: 1368;
   /* map13.jpg's real pixel size (1150x1368) -- .board-section MUST stay
      locked to this exact ratio (see below) so object-fit:cover on .bg-image
      never has to crop, which is what kept tile xPct/yPct (measured against
      the container, not the visible image) drifting off their art whenever
      the container's own ratio didn't match the image's. Update this if the
      map image is ever swapped for one with different dimensions. */
-  --board-aspect-ratio: 1150 / 1368;
+  --board-aspect-ratio: var(--map-width) / var(--map-height);
 }
 
 @media screen and (max-width: 768px) {

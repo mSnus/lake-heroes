@@ -220,7 +220,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               ...colStyle, 
               top: isMobileLayout() ? 'calc(100vw * 5 / 4 - 25px)' : '8px' ,
               right: isMobileLayout() ? '8px' : 'unset' ,
-              left: isMobileLayout() ? 'unset' : 'calc(100vh - 28px)' ,
+              left: isMobileLayout() ? 'unset' : 'calc(100vh * var(--board-aspect-ratio) - 20px)' ,
             }}>
             {diceActive && (
               <div

@@ -408,13 +408,13 @@
 }
 
 .tile-card-sell-item {
-    background: linear-gradient(1deg, #68613ec7, #41382894);
-    text-shadow: #736c5eaf 0 0 6px;
-    color: wheat;
-    padding: 8px 12px;
-    border-radius: 5px;
-    white-space: nowrap;
-    border: 1px solid #ffde2c;
+  background: linear-gradient(1deg, #68613ec7, #41382894);
+  text-shadow: #736c5eaf 0 0 6px;
+  color: wheat;
+  padding: 8px 12px;
+  border-radius: 5px;
+  white-space: nowrap;
+  border: 1px solid #ffde2c;
 }
 
 .tile-card-ownable .tile-card-sell-item {
@@ -485,4 +485,12 @@
 .tile-card-attacker-army {
   color: #120707;
   font-size: 1rem;
+}
+
+@media (min-width: 769px) {
+  .current-tile-card-wrapper {
+    left: calc(50vh * var(--board-aspect-ratio) - (230px / 2));
+    top: calc(40vh * var(--board-aspect-ratio) - 40px);
+    scale: 0.4;
+  }
 }

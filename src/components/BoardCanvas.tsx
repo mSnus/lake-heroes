@@ -432,7 +432,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         </div>
         <div
           className="fork-arrow"
-          style={arrowStyle(57, forkChoice === 'long' ? SELECTED_COLOR : UNSELECTED_COLOR, 12, 3)}
+          style={arrowStyle(57, forkChoice === 'long' ? SELECTED_COLOR : UNSELECTED_COLOR, 14, 1)}
           onClick={(e) => {
             e.stopPropagation();
             setForkChoice('long');
