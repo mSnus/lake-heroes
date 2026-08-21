@@ -854,7 +854,9 @@
     "razedToast": "{playerName}'s {tileName} is razed by a roaming horde",
     "tie": "Your {tileName}'s garrison barely holds, losing {units}🧍 to the roaming horde",
     "tieToast": "{playerName}'s garrison at {tileName} loses {units}🧍 to a roaming horde",
-    "horde": "Roaming Horde"
+    "horde": "Roaming Horde",
+    "incoming": "Scouts spot a roaming horde of {units}🧍 closing in on {tileName}!",
+    "defend": "Defend the garrison!"
   },
   "cheatScreen": {
     "title": "Cheat Menu",

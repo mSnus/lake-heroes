@@ -33,10 +33,10 @@ export function checkRogueAttackEncounter(
     // No rogue attacks during the first lap around the board.
     if ((player.circles ?? 0) < 1) return false;
 
+    // Gated on fame alone -- this raids the tile's own garrison, not the
+    // player's personal army, so the player's own armyPower/units aren't a
+    // relevant precondition.
     if (player.fame < 3) return false;
-    if (player.armyPower < 5) return false;
-    // Not worth raiding a player who's barely got an army at all.
-    if (player.units < 5) return false;
   }
   // Yielded tiles are under the King's protection -- not a valid target.
   const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
@@ -89,30 +89,46 @@ export function checkRogueAttackEncounter(
 
   const attackFactor = 0.3 + Math.random() * 0.9;
   const hordeUnits = Math.max(1, Math.round(garrison * attackFactor));
+  const tileName = tile.name;
 
-  const horde = new Player({
-    name: t('rogueAttack.horde'),
-    color: '#8b5a2b',
-    gold: 0,
-    units: hordeUnits,
-    position: -1,
-    image: 'black',
-    isComputer: true,
-  });
+  const startBattle = () => {
+    const horde = new Player({
+      name: t('rogueAttack.horde'),
+      color: '#8b5a2b',
+      gold: 0,
+      units: hordeUnits,
+      position: -1,
+      image: 'black',
+      isComputer: true,
+    });
 
+    showScreen({
+      screenType: 'rogue-attack',
+      tileIndex: tileIdx,
+      hordeUnits,
+      content: React.createElement(BattleScreen, {
+        mode: 'rogue',
+        attacker: horde,
+        defender: player,
+        tile,
+        gameState: board,
+        updateGameState,
+        onClose: onContinue,
+      }),
+    });
+  };
+
+  // Announce the raid before it happens -- same background as an ambush
+  // (both are "a hostile force appears" beats), with a button to move on to
+  // the actual battle.
   showScreen({
-    screenType: 'rogue-attack',
-    tileIndex: tileIdx,
-    hordeUnits,
-    content: React.createElement(BattleScreen, {
-      mode: 'rogue',
-      attacker: horde,
-      defender: player,
-      tile,
-      gameState: board,
-      updateGameState,
-      onClose: onContinue,
-    }),
+    screenType: 'rogue-attack-incoming',
+    background: 'assets/screens/caravan.jpg',
+    title: t('rogueAttack.title'),
+    fade: true,
+    spriteImage: 'assets/figures/npc-saracen.png',
+    htmlMessage: t('rogueAttack.incoming', { tileName, units: hordeUnits }),
+    buttons: [{ label: t('rogueAttack.defend'), onClick: startBattle }],
   });
 
   return true;

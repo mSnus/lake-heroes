@@ -854,7 +854,9 @@
     "razedToast": "{tileName} de {playerName} es arrasada por una horda errante",
     "tie": "La guarnición de tu {tileName} apenas resiste, perdiendo {units}🧍 ante la horda errante",
     "tieToast": "La guarnición de {playerName} en {tileName} pierde {units}🧍 ante una horda errante",
-    "horde": "Horda Errante"
+    "horde": "Horda Errante",
+    "incoming": "¡Los exploradores avistan una horda errante de {units}🧍 acercándose a {tileName}!",
+    "defend": "¡Defender la guarnición!"
   },
   "cheatScreen": {
     "title": "Menú de Trucos",
