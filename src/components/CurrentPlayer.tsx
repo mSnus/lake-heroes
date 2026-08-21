@@ -8,8 +8,9 @@ import { computeAnnualReward } from '../game/kingsGrace';
 import { playerTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
-import { getOverrides } from '../utils/overridesStore';
+import { GarrisonsScreen } from './GarrisonsScreen';
 import { gameEvent } from '../utils/events';
+import { showScreen } from '../utils/screenStore';
 import { handleKingCastle } from '../actions/king';
 import { openTavernHireOnly } from '../actions/tavern';
 import { useT } from '../i18n';
@@ -293,14 +294,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             className="player-stats-data player-stats-army-cell"
             id="statsArmy"
             onClick={() =>
-              say(
-                t('currentPlayer.armyTooltip', {
-                  fame: activePlayer.fame,
-                  slots: activePlayer.armySlots,
-                  perSlot: getOverrides().armySlotCapacity,
+              showScreen({
+                content: React.createElement(GarrisonsScreen, {
+                  gameState,
+                  player: activePlayer,
+                  updateGameState,
                 }),
-                'info'
-              )
+              })
             }
           >
             <div
@@ -317,21 +317,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 className="player-stats-army-slots"
               />
               {turnIncome.units > 0 && (
-                <span
-                  className="player-stats-turn-income"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    say(
-                      t('currentPlayer.unitsIncomeTooltip', {
-                        units: turnIncome.units,
-                        tiles: ownedTileCount,
-                      }),
-                      'info'
-                    );
-                  }}
-                >
-                  +{turnIncome.units}🧍
-                </span>
+                <span className="player-stats-turn-income">+{turnIncome.units}🧍</span>
               )}
             </div>
           </div>

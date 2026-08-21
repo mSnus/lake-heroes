@@ -284,6 +284,13 @@
     "unitsIncomeTooltip": "+{units} units from {tiles} tiles",
     "artifactTooltip": "{name}: {description}"
   },
+  "garrisonsScreen": {
+    "title": "Garrisons",
+    "unassigned": "🧍 unassigned: {amount}",
+    "noTiles": "You don't own any tiles yet",
+    "setGuards": "🛡️ Set guards",
+    "neverMind": "✖️ Never mind"
+  },
   "botController": {
     "decided": "{name} decided to {decision}",
     "takeUndefendedTile": "take the undefended tile",

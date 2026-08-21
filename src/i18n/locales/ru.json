@@ -284,6 +284,13 @@
     "unitsIncomeTooltip": "+{units} юнитов с {tiles} клеток",
     "artifactTooltip": "{name}: {description}"
   },
+  "garrisonsScreen": {
+    "title": "Гарнизоны",
+    "unassigned": "🧍 не распределено: {amount}",
+    "noTiles": "У вас пока нет клеток",
+    "setGuards": "🛡️ Расставить гарнизоны",
+    "neverMind": "✖️ Отмена"
+  },
   "botController": {
     "decided": "{name} решил {decision}",
     "takeUndefendedTile": "занять беззащитную клетку",

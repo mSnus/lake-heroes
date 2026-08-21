@@ -284,6 +284,13 @@
     "unitsIncomeTooltip": "+{units} unidades de {tiles} casillas",
     "artifactTooltip": "{name}: {description}"
   },
+  "garrisonsScreen": {
+    "title": "Guarniciones",
+    "unassigned": "🧍 sin asignar: {amount}",
+    "noTiles": "Todavía no posees ninguna casilla",
+    "setGuards": "🛡️ Colocar guarniciones",
+    "neverMind": "✖️ Cancelar"
+  },
   "botController": {
     "decided": "{name} decidió {decision}",
     "takeUndefendedTile": "tomar la casilla indefensa",
