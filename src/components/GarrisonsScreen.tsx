@@ -78,7 +78,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         {t('garrisonsScreen.title')}
       </div>
 
-      <div className="text-message" style={{ lineHeight: '1.2' }}>
+      <div className="army-stats" style={{ lineHeight: '1.2' }}>
         {t('garrisonsScreen.message', {
           fame: player.fame,
           slots: player.armySlots,
@@ -101,9 +101,6 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             const min = isCurrentTile ? 0 : tile.garrisonMilitia;
             const max = Math.max(min, maxMilitiaFor(tile));
             const value = targets[idx] ?? tile.garrisonMilitia;
-            // A remote (not-currently-visited) tile already at its cap has
-            // nowhere to grow (min === max here, see `min` above) -- a live
-            // slider would just be dead weight, so swap it for a status line.
             const atMax = !isCurrentTile && tile.garrisonMilitia >= max;
             // Bounded by the tile's own capacity AND by what's actually left
             // in the shared pool once every OTHER row's current pick is
@@ -115,11 +112,6 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             // shrink its own headroom.
             const liveMax = Math.max(min, Math.min(max, totalPool - (allocated - value)));
 
-            // Direct grid children (no per-row wrapper div) -- .garrisons-list
-            // is a 5-column grid (icon/name/towers/slider/amount), and a
-            // wrapper here would put each row's 5 cells one grid level too
-            // deep, breaking column alignment across rows. React still needs
-            // one key per row, so a Fragment stands in for the div.
             return (
               <React.Fragment key={idx}>
                 {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{ marginBottom: 0 }} />}
