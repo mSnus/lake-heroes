@@ -105,6 +105,15 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             // nowhere to grow (min === max here, see `min` above) -- a live
             // slider would just be dead weight, so swap it for a status line.
             const atMax = !isCurrentTile && tile.garrisonMilitia >= max;
+            // Bounded by the tile's own capacity AND by what's actually left
+            // in the shared pool once every OTHER row's current pick is
+            // subtracted -- otherwise several rows could each be dragged up
+            // to their own tile cap independently and the "in the army"
+            // total would go negative (nothing here enforces the total,
+            // it's just each row's own ceiling). Excludes this row's own
+            // value from the subtraction, so dragging this slider doesn't
+            // shrink its own headroom.
+            const liveMax = Math.max(min, Math.min(max, totalPool - (allocated - value)));
 
             // Direct grid children (no per-row wrapper div) -- .garrisons-list
             // is a 5-column grid (icon/name/towers/slider/amount), and a
@@ -130,7 +139,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                   ) : (
                     <DecoratedSlider
                       min={min}
-                      max={max}
+                      max={liveMax}
                       value={value}
                       onPreview={(v) => setRowValue(idx, v)}
                       onCommit={(v) => setRowValue(idx, v)}
