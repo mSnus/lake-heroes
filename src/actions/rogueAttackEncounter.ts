@@ -70,7 +70,7 @@ export function checkRogueAttackEncounter(
       screenType: 'rogue-attack-razed',
       background: 'assets/screens/raid.jpeg',
       title: t('rogueAttack.title'),
-      spriteImage: 'assets/figures/npc-saracen.png',
+      spriteImage: tile.spriteImage,
       fade: true,
       message: t('rogueAttack.razed', { tileName }),
       buttons: [
@@ -126,7 +126,7 @@ export function checkRogueAttackEncounter(
     background: 'assets/screens/raid.jpeg',
     title: t('rogueAttack.title'),
     fade: true,
-    spriteImage: 'assets/figures/npc-saracen.png',
+    spriteImage: tile.spriteImage,
     htmlMessage: t('rogueAttack.incoming', { tileName, units: hordeUnits }),
     buttons: [{ label: t('rogueAttack.defend'), onClick: startBattle }],
   });
