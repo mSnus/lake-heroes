@@ -826,10 +826,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             >
               ⚔️
             </div>
+            {/* attackerGridTotal/defenderGridTotal already track whichever
+                side is shown on the left/right respectively -- ambush's
+                role reversal is baked into their assignment above, so no
+                extra isAmbush swap is needed (or correct) here. */}
             <div className="vs-count">
-              {isAmbush ? defenderGridTotal : attackerGridTotal}
+              {attackerGridTotal}
               <span className="vs"> {t('common.vs')} </span>
-              {isAmbush ? attackerGridTotal : defenderGridTotal}
+              {defenderGridTotal}
             </div>
             {modeIconSrc && <SpriteCircleIcon src={modeIconSrc} size="4.5rem" />}
           </div>
