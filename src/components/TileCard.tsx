@@ -475,7 +475,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                                   {defence(1)}
                                   {tile.abandoned ? '🧟‍♀️' : '⚔️'}
                                 </div>
-                              ) : (
+                              ) : cantAfford ? (<div >
+                                  {defence(1)}
+                                  {tile.abandoned ? '🧟‍♀️' : '⚔️'}
+                                </div>) : (
                                 <div
                                   style={{
                                     display: 'flex',

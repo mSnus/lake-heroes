@@ -37,6 +37,7 @@
 .bfg-battlefield.bfg-brawl {
   --bfg-cell: 15.1vmin;
 }
+
 @supports (container-type: inline-size) {
   .bfg-battlefield.bfg-brawl {
     --bfg-cell: 15.1cqi;
@@ -48,6 +49,7 @@
 .bfg-battlefield.bfg-large {
   --bfg-cell: 10vmin;
 }
+
 @supports (container-type: inline-size) {
   .bfg-battlefield.bfg-large {
     --bfg-cell: 10cqi;
@@ -66,14 +68,15 @@
 .bfg-grid {
   display: grid;
   position: relative;
+  gap: 2px;
 }
 
 .bfg-cell {
+  background-color: #44494696;
   width: var(--bfg-cell);
   /* Taller than the row pitch (--bfg-row), so consecutive rows overlap and the
      hexes tessellate. */
   height: var(--bfg-cell-h);
-  background: transparent;
   border: 1px solid transparent;
   box-sizing: border-box;
   /* Pointy-top hexagon. */
@@ -84,14 +87,6 @@
    relayout, so it doesn't disturb the CSS Grid's own column tracking. */
 .bfg-cell-shifted {
   transform: translateX(50%);
-}
-
-/* TEMPORARY: visible grid outline, meant to be removed later -- one class
-   to drop (or the `showGridLines` prop it's driven by) once it's no longer
-   needed for playtesting. The border is clipped along with the rest of the
-   element, so it traces the hexagon's silhouette rather than a plain box. */
-.bfg-grid-visible .bfg-cell {
-  border-color: #ffffff2a;
 }
 
 .bfg-units {
@@ -213,7 +208,8 @@
   justify-content: center;
   pointer-events: auto;
   cursor: grab;
-  touch-action: none; /* let pointer-drag work on touch without scrolling */
+  touch-action: none;
+  /* let pointer-drag work on touch without scrolling */
 }
 
 .bfg-twin .bfg-unit-emoji {
@@ -222,8 +218,13 @@
   text-shadow: 1px 1px 3px #000;
 }
 
-.bfg-twin-attacker .bfg-unit-emoji { color: #6fd1ff; }
-.bfg-twin-defender .bfg-unit-emoji { color: #ff8a6f; }
+.bfg-twin-attacker .bfg-unit-emoji {
+  color: #6fd1ff;
+}
+
+.bfg-twin-defender .bfg-unit-emoji {
+  color: #ff8a6f;
+}
 
 /* Un-moved this turn: pulsing yellow glow, inviting a drag. */
 .bfg-twin-active .bfg-unit-emoji {

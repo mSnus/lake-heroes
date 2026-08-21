@@ -20,9 +20,6 @@ interface BattlefieldGridProps {
    * mode maps to which side; this component just renders it). */
   attackerIcon?: string;
   defenderIcon?: string;
-  /** Toggle for the octagon grid outline — a temporary debug aid, kept behind
-   * a single prop so it's a one-line change to drop later. */
-  showGridLines?: boolean;
   /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells
    * and units at 180% of the normal height. */
   brawl?: boolean;
@@ -81,7 +78,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   animPhase = 'idle',
   attackerIcon,
   defenderIcon,
-  showGridLines = true,
   brawl = false,
   large = false,
   manualSide,
@@ -351,7 +347,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
   return (
     <>
-    <div className={'bfg-battlefield' + (showGridLines ? ' bfg-grid-visible' : '') + (brawl ? ' bfg-brawl' : large ? ' bfg-large' : '') + (instant ? ' bfg-instant' : '')}>
+    <div className={'bfg-battlefield' + (brawl ? ' bfg-brawl' : large ? ' bfg-large' : '') + (instant ? ' bfg-instant' : '')}>
       <div className="bfg-arena" ref={arenaRef}>
         <div
           className="bfg-grid"
