@@ -1,6 +1,8 @@
 {
   "turnAnnouncement": {
-    "text": "Turno de {playerName}"
+    "text": "Turno de {playerName}",
+    "goLeft": "Ir a la izquierda",
+    "goRight": "Ir a la derecha"
   },
   "common": {
     "language": "Idioma",

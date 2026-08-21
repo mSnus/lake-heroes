@@ -1,6 +1,8 @@
 {
   "turnAnnouncement": {
-    "text": "Ход игрока {playerName}"
+    "text": "Ход игрока {playerName}",
+    "goLeft": "Налево",
+    "goRight": "Направо"
   },
   "common": {
     "language": "Язык",

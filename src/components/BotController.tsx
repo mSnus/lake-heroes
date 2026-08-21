@@ -22,9 +22,12 @@ import {
   shouldChallengeDragon,
   pickGuardsAction,
   pickGarrisonAction,
+  pickForkChoice,
 } from '../ai/decisions';
 import { findSyndicateSaleCandidate } from '../ai/syndicate';
 import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
+import { FORK_START_INDEX } from '../game/constants';
+import { setForkChoice } from '../utils/forkChoiceStore';
 import { t } from '../i18n';
 
 // Matches the ~600ms auto-roll delay BattleScreen already uses for NPC sides.
@@ -178,7 +181,18 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
     return pickGenericScreenAction(ctx); // unrecognized multi-button screen -> null, don't guess
   }
 
-  if (diceActive && !rolling) return action(() => startDiceRoll());
+  if (diceActive && !rolling) {
+    return action(() => {
+      // Standing on the fork's start tile about to roll -- pick a path (see
+      // pickForkChoice) before rolling, same spot a human's turn-announcement
+      // buttons would set it. rollAndMove.ts reads it once and resets it
+      // right after, so it's fine to always (re-)set it here regardless.
+      if (board.turnPhase === 'before-move' && player.position === FORK_START_INDEX) {
+        setForkChoice(pickForkChoice(player.character));
+      }
+      startDiceRoll();
+    });
+  }
   if (diceActive && rolling) return null; // mid-animation, wait
   if (screen) return null; // some other screen we don't recognize is up
 

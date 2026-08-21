@@ -28,6 +28,14 @@ const ZOOM_OUT_PAUSE_MS = 400;
 
 const PLAYER_CLUSTER_COLUMNS = 2;
 
+// Fork picker arrow look, shared with TurnAnnouncement's own left/right
+// buttons (see showForkChoice/renderForkChoice below) so both pickers read
+// as the same visual language.
+export const SELECTED_COLOR = '#e6cc68';
+const UNSELECTED_COLOR = '#81a585ad';
+export const ANGLE_LEFT = 135; // short path
+export const ANGLE_RIGHT = 57; // long path
+
 /** Small non-overlapping grid offset (in % of the board) for the `index`-th
  * of `count` players sharing a tile, centered on the anchor point rather
  * than trailing off to one side. */
@@ -408,10 +416,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
   const renderForkChoice = () => {
     const pos = getTilePosition(FORK_START_INDEX);
-    const SELECTED_COLOR = '#e6cc68';
-    const UNSELECTED_COLOR = '#81a585ad;';
-    const ANGLE_LEFT = 135;
-    const ANGLE_RIGHT = 57;
 
     const arrowStyle = (rotation: number, color: string, offsetXPct: number, offsetYPct: number = 0): React.CSSProperties => ({
       top: pos.y + offsetYPct + '%',

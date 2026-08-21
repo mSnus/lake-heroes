@@ -25,3 +25,44 @@
   opacity: 0.85;
   white-space: nowrap;
 }
+
+/* Fork path picker: shown instead of auto-hiding when a human player's turn
+   starts on the fork's start tile (see TurnAnnouncement.tsx's atFork). The
+   badge above stays non-interactive (.turn-announcement itself is
+   pointer-events: none) -- only this row opts back in, since it's the only
+   actually clickable part. */
+.turn-announcement-fork-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+  pointer-events: auto;
+}
+
+.turn-announcement-fork-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #f6d38155;
+  border-radius: 8px;
+  background: #00000060;
+  padding: 6px 14px;
+  font-family: 'Texturina', serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #f6d381;
+  text-shadow: 2px 1px 4px black;
+  filter: drop-shadow(1px 2px 4px black);
+  cursor: pointer;
+}
+
+.turn-announcement-fork-button:hover {
+  background: #00000090;
+  border-color: #f6d381;
+}
+
+.turn-announcement-fork-arrow {
+  display: inline-block;
+  font-size: 1.4rem;
+  line-height: 1;
+}

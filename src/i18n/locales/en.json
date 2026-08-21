@@ -1,6 +1,8 @@
 {
   "turnAnnouncement": {
-    "text": "{playerName}'s turn"
+    "text": "{playerName}'s turn",
+    "goLeft": "Go left",
+    "goRight": "Go right"
   },
   "common": {
     "language": "Language",

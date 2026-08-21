@@ -1,15 +1,30 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
-import { CHARACTERS, CharacterConfig } from './characters';
+import { CHARACTERS, CharacterConfig, CharacterId } from './characters';
 import { FeeOptions } from '../actions/feeOptions';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeAnnualReward } from '../game/kingsGrace';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
+import { ForkChoice } from '../utils/forkChoiceStore';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
+}
+
+// Chance a bot takes the fork's short/left path rather than the long/right
+// one -- stands in for a human's manual "Go left"/"Go right" pick (see
+// TurnAnnouncement.tsx), since a bot never sees those buttons.
+const FORK_LEFT_CHANCE: Record<CharacterId, number> = {
+  explorer: 0.8,
+  warrior: 0.2,
+  wizard: 0.6,
+};
+
+export function pickForkChoice(character: CharacterId | undefined): ForkChoice {
+  const chance = FORK_LEFT_CHANCE[character ?? 'explorer'];
+  return Math.random() < chance ? 'short' : 'long';
 }
 
 function wouldFormSyndicate(board: GameState, tile: Tile): boolean {
