@@ -60,7 +60,7 @@ interface Placement {
   attackTargetId: string | null;
 }
 
-const colShiftFor = (row: number) => (row % 2 === 0 ? 0.5 : 0);
+const colShiftFor = (row: number) => (row % 2 === 0 ? 0.7 : 0.2);
 
 // Pointy-top hex geometry, kept in sync with BattlefieldGrid.css's
 // --bfg-cell-h / --bfg-row: the hex box is taller than the horizontal pitch,

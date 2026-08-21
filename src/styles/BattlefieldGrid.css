@@ -95,7 +95,8 @@
 }
 
 .bfg-cell-hex {
-  fill: #44494696;
+  fill: #000000e8;
+  opacity: 0.3;
 }
 
 /* Even rows sit half a cell to the right of odd rows -- a shift, not a
