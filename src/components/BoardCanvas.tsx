@@ -332,39 +332,28 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     );
   };
 
-  const cellStyleFor = (
-    pos: { x: number; y: number },
-    offsetXPct: number = 0,
-    offsetYPct: number = 0
-  ): React.CSSProperties => ({
-    top: pos.y + offsetYPct + '%',
-    left: pos.x + offsetXPct + '%',
+  const cellStyleFor = (pos: { x: number; y: number }): React.CSSProperties => ({
+    top: pos.y + '%',
+    left: pos.x + '%',
   });
 
-  // Purely decorative per-tile effects that sit above everything else on the
-  // board (tiles, players) but don't intercept clicks -- a still-smoldering
-  // (recently razed) tile shows a 🔥 here, on top of the grayscale filter
-  // renderTile applies to the tile itself; an abandoned (zombie-guarded)
-  // tile shows a 🧟‍♀️. Not mutually exclusive -- a tile razed this round is
-  // both at once, so each gets a small opposing nudge rather than fully
-  // overlapping. Add more overlay kinds to this same layer/function rather
-  // than bolting them onto renderTile directly.
+  // Purely decorative per-tile effect that sits above everything else on the
+  // board (tiles, players) but doesn't intercept clicks -- at most one at a
+  // time, in priority order: still-smoldering 🔥 (on top of the grayscale
+  // filter renderTile applies to the tile itself -- a smoldering tile can't
+  // be attacked/claimed regardless of any abandoned/zombie garrison it also
+  // has, so that's the one that should read as the tile's actual state),
+  // then abandoned/zombie-guarded 🧟‍♀️, then yielded-to-the-King 👑. Add more
+  // overlay kinds to this same layer/function rather than bolting them onto
+  // renderTile directly.
   const renderOverlay = (tile: any, i: number) => {
     const pos = getTilePosition(i);
-    const both = tile.isOnFire(board.round) && tile.abandoned;
+    const emoji = tile.isOnFire(board.round) ? '🔥' : tile.abandoned ? '🧟‍♀️' : tile.isYielded ? '👑' : null;
+    if (!emoji) return null;
     return (
-      <React.Fragment key={`overlay-${i}`}>
-        {tile.isOnFire(board.round) && (
-          <div className="tile-emoji-overlay" style={cellStyleFor(pos, both ? -3 : 0, both ? -3 : 0)}>
-            🔥
-          </div>
-        )}
-        {tile.abandoned && (
-          <div className="tile-emoji-overlay" style={cellStyleFor(pos, both ? 3 : 0, both ? 3 : 0)}>
-            🧟‍♀️
-          </div>
-        )}
-      </React.Fragment>
+      <div key={`overlay-${i}`} className="tile-emoji-overlay" style={cellStyleFor(pos)}>
+        {emoji}
+      </div>
     );
   };
 
