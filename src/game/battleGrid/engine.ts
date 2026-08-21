@@ -331,6 +331,15 @@ function livingAdjacentFriends(u: GridUnit, living: GridUnit[]): GridUnit[] {
   return living.filter((v) => v.id !== u.id && v.side === u.side && hexDistance(u, v) === 1);
 }
 
+/** True when `u` is the only living unit left on its side -- last stand:
+ * retreating, pulling back wounded, or swapping to safety aren't options
+ * (there's nowhere to retreat TO in any meaningful sense and no one left to
+ * protect by doing so), so every fleeing-behaviour check gates on this being
+ * false first and falls through to stand and fight instead. */
+function isLastAlive(u: GridUnit, living: GridUnit[]): boolean {
+  return !living.some((v) => v.id !== u.id && v.side === u.side);
+}
+
 // Whether `u` has at least one in-bounds neighbor cell not already occupied
 // by another living unit — a cheap, static (pre-movement-planning) check for
 // "is retreat even physically possible", using turn-start positions. The
@@ -622,7 +631,10 @@ export function planBrawlSide(
     // that claim stands in for its own plan entirely, no independent move.
     if (plan[u.id]) continue;
     if (livingAdjacentEnemies(u, living).length >= 1) {
-      if (u.hp <= u.maxHp / 2) {
+      // The last unit standing on its side never swaps out or pulls back
+      // (see isLastAlive) -- nothing left to protect by doing so, so it
+      // falls straight through to "stay and fight" below regardless of HP.
+      if (u.hp <= u.maxHp / 2 && !isLastAlive(u, living)) {
         const friends = livingAdjacentFriends(u, living);
         // Swap: trade places with an adjacent ally that isn't itself in
         // contact (a fresh reserve, not busy fighting) -- the wounded unit
@@ -760,9 +772,11 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // from whoever it's fleeing if it doesn't. Capped at 2 retreats in a row
   // (retreatStreak) — a unit that's already ducked out twice is forced to
   // fight on its third otherwise-qualifying turn, rather than kiting
-  // indefinitely.
+  // indefinitely. The last unit standing on its side never qualifies (see
+  // isLastAlive) -- it has nothing left to fall back on, so it fights.
   const retreating = new Set<string>();
   for (const u of living) {
+    if (isLastAlive(u, living)) continue;
     if (livingAdjacentEnemies(u, living).length < 3) continue;
     if (livingAdjacentFriends(u, living).length > 0) continue;
     if (u.retreatStreak >= 2) continue;
@@ -776,10 +790,12 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // on alone. A friend adjacent means it stays and fights regardless of how
   // wounded it is — safety in numbers, no need to retreat. Same 2-in-a-row
   // cap as retreat, and it sits combat out this turn (it's moving, not
-  // fighting). ──
+  // fighting). The last unit standing never pulls back either -- see
+  // isLastAlive. ──
   const seekingSafety = new Set<string>();
   for (const u of living) {
     if (retreating.has(u.id)) continue;
+    if (isLastAlive(u, living)) continue;
     if (u.hp > u.maxHp / 2) continue; // only pull back when at half HP or less
     if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
     if (livingAdjacentFriends(u, living).length > 0) continue; // has a friend beside it — stays and fights
