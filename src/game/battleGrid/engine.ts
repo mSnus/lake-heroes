@@ -527,12 +527,7 @@ function resolveCombat(
     else chosenTarget.set(u.id, adjacency.get(u.id)!.find((e) => e.id === it));
   }
 
-  // Every engaged unit with a target attacks it, full stop -- with every
-  // auto-intent unit already targeting *someone* whenever it's adjacent to
-  // an enemy, there's no longer a real "would rather defend" case to carve
-  // out here. The only unit that ever defends now is one explicitly held
-  // ('none' intent -- chosenTarget is unset for it, so it falls through to
-  // the defence-roll branch below on its own).
+  // Every engaged unit with a target attacks it, full stop.
   const willAttack = (u: GridUnit): boolean => !!chosenTarget.get(u.id);
 
   const rollFor = (u: GridUnit, defending: boolean): number => {
@@ -554,15 +549,15 @@ function resolveCombat(
   const incoming = new Map<string, number>();
   const defenceRoll = new Map<string, number>();
 
+  // Every engaged unit rolls a defence value, attacking or not.
+  for (const u of engaged) defenceRoll.set(u.id, rollFor(u, true));
+
   for (const u of engaged) {
-    if (willAttack(u)) {
-      const target = chosenTarget.get(u.id)!;
-      const roll = rollFor(u, false);
-      incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
-      events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
-    } else {
-      defenceRoll.set(u.id, rollFor(u, true));
-    }
+    if (!willAttack(u)) continue;
+    const target = chosenTarget.get(u.id)!;
+    const roll = rollFor(u, false);
+    incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
+    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
   }
 
   for (const u of engaged) {

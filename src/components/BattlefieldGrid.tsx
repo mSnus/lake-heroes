@@ -308,9 +308,14 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   );
   const overrideEmoji = new Map<string, string>();
   if (animPhase === 'attack-defend') {
+    // Every engaged unit now rolls defence, attacking or not -- 🗡️ wins for
+    // one that's also attacking, so 'attack' is applied after 'defend'
+    // regardless of event order.
+    for (const e of lastEvents) {
+      if (e.type === 'defend') overrideEmoji.set(e.unitId, '🛡️');
+    }
     for (const e of lastEvents) {
       if (e.type === 'attack') overrideEmoji.set(e.unitId, '🗡️');
-      else if (e.type === 'defend') overrideEmoji.set(e.unitId, '🛡️');
     }
   } else if (animPhase === 'outcome') {
     // Every unit's own outcome flashes together in one beat: damaged (💥),
