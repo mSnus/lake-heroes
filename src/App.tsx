@@ -448,7 +448,7 @@ function App() {
                   message: savedScreen.message,
                   buttons: [
                     {
-                      label: 'New folks are always welcome!',
+                      label: t('tavern.newFolksWelcome'),
                       action: 'end-turn',
                       onClick: () => {
                         clearScreen();

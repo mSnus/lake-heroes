@@ -152,8 +152,8 @@
   "kingsCastle": {
     "title": "El Castillo del Rey",
     "newContract": "📜 Nuevo contrato: reclama\n{tileName} por una recompensa de {award}🟡!",
-    "cannotRecruit": "Tu dinero\ny las ranuras del ejército llenas\nno te permiten reclutar más unidades",
-    "cannotRecruitNoMoney": "Tu dinero\nno te permite reclutar más unidades",
+    "cannotRecruit": "Tu oro y tus escuadrones completos\nno te permiten reclutar más",
+    "cannotRecruitNoMoney": "Tu oro\nno te permite reclutar más",
     "iAmTheGreatest": "⚜️ ¡Soy el más grande!",
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
@@ -834,7 +834,7 @@
     "horsesJoined": "¡{units}🧍 del generoso {playerSpan} recibieron caballos gratis 🐴<br />y se convirtieron en jinetes!",
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...y {units}🧍 se quedaron borrachos en la taberna)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} ranuras del ejército llenas — {turnedAway}🧍 rechazados)</span>",
-    "newFolksWelcome": "¡Siempre se agradecen caras nuevas!",
+    "newFolksWelcome": "🍻 A la gloria!",
     "title": "La Taberna",
     "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades"
   },

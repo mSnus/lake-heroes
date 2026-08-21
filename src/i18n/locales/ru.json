@@ -152,8 +152,8 @@
   "kingsCastle": {
     "title": "Замок короля",
     "newContract": "📜 Новый контракт: захватите\n{tileName} за награду {award}🟡!",
-    "cannotRecruit": "Ваше золото\nи заполненные слоты армии\nне позволяют нанять больше юнитов",
-    "cannotRecruitNoMoney": "Ваше золото\nне позволяет нанять больше юнитов",
+    "cannotRecruit": "Ваше золото\nи заполненные отряды\nне позволяют нанять больше",
+    "cannotRecruitNoMoney": "Ваше золото\nне позволяет нанять больше",
     "iAmTheGreatest": "⚜️ Я величайший!",
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
@@ -834,7 +834,7 @@
     "horsesJoined": "{units}🧍 щедрого {playerSpan} получили коней 🐴<br />и стали всадниками!",
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...а {units}🧍 остались пьянствовать в таверне)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} слотов армии заполнено — {turnedAway}🧍 отправлены прочь)</span>",
-    "newFolksWelcome": "Новым лицам здесь всегда рады!",
+    "newFolksWelcome": "🍻 За славные победы!",
     "title": "Таверна",
     "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов"
   },

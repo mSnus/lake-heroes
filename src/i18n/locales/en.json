@@ -152,8 +152,8 @@
   "kingsCastle": {
     "title": "The King's Castle",
     "newContract": "📜 New contract: claim\n{tileName} for a reward of {award}🟡!",
-    "cannotRecruit": "Your money\nand full army slots\ndo not allow you to recruit more units",
-    "cannotRecruitNoMoney": "Your money\ndoes not allow you to recruit more units",
+    "cannotRecruit": "Your gold and full squads\ndo not allow you to recruit more",
+    "cannotRecruitNoMoney": "Your gold\nis not enough to recruit more",
     "iAmTheGreatest": "⚜️ I am the greatest!",
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
@@ -834,7 +834,7 @@
     "horsesJoined": "{units}🧍 of generous {playerSpan} were given free horses 🐴<br />and become riders!",
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...and {units}🧍 were left drunk at the tavern)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} army slots full — {turnedAway}🧍 turned away)</span>",
-    "newFolksWelcome": "New folks are always welcome!",
+    "newFolksWelcome": "🍻 To glory!",
     "title": "The Tavern",
     "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units"
   },

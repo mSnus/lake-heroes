@@ -8,7 +8,7 @@
 
 .squad-chunk {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: 2px;
   white-space: nowrap;
@@ -18,35 +18,26 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  border: 1px solid #ffde2c;
+  border: 1px solid #f6d381;
   border-radius: 4px;
-  padding: 6px;
+  padding: 0px 6px 4px 6px;
 }
 
 /* Recruiting dialogues (King's Castle, Tavern) show squads larger than the
  * compact top-bar display. */
 .squad-display-large {
-  font-size: 1.6em;
+  font-size: 1.4em;
 }
 
-/* Sell (and, when eligible, upgrade-to-riders) buttons sit under the squad
-   badge, pushed to opposite edges (sell left, upgrade right) for maximum
-   spacing between them -- width: 100% (rather than the column parent's
-   default center-sized shrink-to-fit) is what gives space-between room to
-   actually spread them apart instead of collapsing to their combined size. */
 .squad-chunk-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
 }
 
-/* A button whose action isn't available for this squad right now (nothing
-   to sell, or upgrade not eligible/affordable) stays in the layout --
-   invisible and inert -- instead of being left out, so every squad's actions
-   row keeps the same footprint and stays aligned across the whole display. */
 .squad-action-hidden {
   opacity: 0 !important;
   pointer-events: none;
