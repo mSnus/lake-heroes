@@ -153,9 +153,12 @@ export const TileCard: React.FC<TileCardProps> = ({
       ? `${activePlayer.militia}${activePlayer.riders > 0 ? `+${activePlayer.riders}` : ''}`
       : `${activePlayer.riders}`;
   const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
-  
-  const isBanzai = !!activePlayer && (attackerPower >= lvl1Defence * BANZAI_THRESHOLD) && attackerPower < lvl1Defence;
-    
+
+  const isBanzai =
+    !!activePlayer &&
+    attackerPower >= lvl1Defence * BANZAI_THRESHOLD &&
+    attackerPower < lvl1Defence;
+
   const attackEmoji = (isBrawlTile ? '👊' : '⚔️') + (isBanzai ? '🩸' : '');
 
   const unitsInsufficient = !isBanzai && !!activePlayer && attackerPower < lvl1Defence;
@@ -362,7 +365,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <div style={{ display: 'flex', gap: '8px' }}>
                         {tile.isYielded ? (
                           <div className="big-icon-hint">
-                            <div>🏦</div>
+                            <div>👑</div>
                             <div>{t('tileCard.yielded')}</div>
                           </div>
                         ) : (
@@ -396,7 +399,10 @@ export const TileCard: React.FC<TileCardProps> = ({
 
               {!tile.owner && (
                 <div className="tile-card-base-info">
-                  <div className="tile-card-base-row" style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
+                  <div
+                    className="tile-card-base-row"
+                    style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}
+                  >
                     <div className="big-icon-hint">
                       {turnIncomeLabel}
                       <div>{t('tileCard.perTurn')}</div>
@@ -491,9 +497,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                                     <div className="tile-card-attack-emoji">{attackEmoji}</div>
                                     <div className="tile-card-attack-vs">{t('common.vs')}</div>
                                   </div>
-                                  <div className="tile-card-attacker-army">
-                                    {defence(1)}
-                                  </div>
+                                  <div className="tile-card-attacker-army">{defence(1)}</div>
                                 </div>
                               )}
                             </>
@@ -564,7 +568,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   onClick={() => handleYieldToggle()}
                   className={'tile-card-button tile-card-sell-item'}
                 >
-                  🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
+                  👑 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
                 </div>
                 <div
                   onClick={() => handleSell()}

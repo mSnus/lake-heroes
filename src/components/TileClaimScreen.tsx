@@ -233,6 +233,13 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     forceRerender((v) => v + 1);
   };
 
+  const ownerTag =
+    variant === 'claimed'
+      ? 'tileClaimScreen.claimedBy'
+      : tile.isYielded
+        ? 'tileClaimScreen.yieldedBelongsTo'
+        : 'tileClaimScreen.belongsTo';
+
   return (
     <ScreenBackground image="assets/screens/victory.jpg" style={{ paddingTop: '1rem' }}>
       <Fade />
@@ -259,12 +266,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       </div>
 
       <div className="text-message" style={{ lineHeight: '1.2', whiteSpace: 'pre-line' }}>
-        {variant === 'claimed'
-          ? tJsx('tileClaimScreen.claimedBy', {
+        {tJsx(ownerTag, {
               player: <PlayerLabel player={player} bold />,
               fame: <>🏆{player.fame}</>,
-            })
-          : tJsx('tileClaimScreen.belongsTo', { player: <PlayerLabel player={player} bold /> })}
+              gold: <>🟡{player.gold}</>,
+            })}
       </div>
 
       {variant === 'upgrades' && (
@@ -279,7 +285,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
           }}
         >
           <div onClick={handleYieldToggle} className="tile-card-button tile-card-sell-item">
-            🏦 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
+            👑 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
           </div>
           <div onClick={handleSell} className="tile-card-button tile-card-sell-item">
             🪙 {t('tileCard.sell')}
@@ -287,84 +293,86 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       )}
 
-      <div className="upgrades-table">
-        {currentLevel < 3 && (
-          <div
-            className={
-              'upgrade-level' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
-            }
-          >
-            <div className="big-icon-hint">
-              <span className="value">1🏯</span> <div>{t('tileClaimScreen.tower')}</div>
-            </div>
-
-            <div className="big-icon-hint">
-              <div>{turnIncomeLabel(1)}</div>
-              <div>{t('tileCard.perTurn')}</div>
-            </div>
-
-            {isTower && (
+      {!tile.isYielded && (
+        <div className="upgrades-table">
+          {currentLevel < 3 && (
+            <div
+              className={
+                'upgrade-level' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
+              }
+            >
               <div className="big-icon-hint">
-                <div>{towerYearlyLabel(1)}</div>
-                <div>{t('tileCard.perYear')}</div>
+                <span className="value">1🏯</span> <div>{t('tileClaimScreen.tower')}</div>
               </div>
-            )}
 
-            <div className={'upgrade-price-badge'}>
-              {currentLevel === 1 ? t('tileClaimScreen.now') : ''}
-            </div>
-          </div>
-        )}
-
-        {currentLevel < 3 && (
-          <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
-            <div className="big-icon-hint">
-              <span className="value">2🏯</span> <div>{t('tileClaimScreen.towers')}</div>
-            </div>
-
-            <div className="big-icon-hint">
-              <div>{turnIncomeLabel(2)}</div>
-              <div>{t('tileCard.perTurn')}</div>
-            </div>
-
-            {isTower && (
               <div className="big-icon-hint">
-                <div>{towerYearlyLabel(2)}</div>
-                <div>{t('tileCard.perYear')}</div>
+                <div>{turnIncomeLabel(1)}</div>
+                <div>{t('tileCard.perTurn')}</div>
               </div>
-            )}
 
-            {currentLevel === 2 ? t('tileClaimScreen.now') : priceTag(2)}
-          </div>
-        )}
-        {currentLevel <= 3 && (
-          <div
-            className={
-              'upgrade-level' +
-              (nextLevel !== 3 ? ' upgrade-unreachable' : '') +
-              (currentLevel === 3 ? ' current-level' : '')
-            }
-          >
-            <div className="big-icon-hint">
-              <span className="value">3🏯</span> <div>{t('tileClaimScreen.towers')}</div>
+              {isTower && (
+                <div className="big-icon-hint">
+                  <div>{towerYearlyLabel(1)}</div>
+                  <div>{t('tileCard.perYear')}</div>
+                </div>
+              )}
+
+              <div className={'upgrade-price-badge'}>
+                {currentLevel === 1 ? t('tileClaimScreen.now') : ''}
+              </div>
             </div>
+          )}
 
-            <div className="big-icon-hint">
-              <div>{turnIncomeLabel(3)}</div>
-              <div>{t('tileCard.perTurn')}</div>
-            </div>
-
-            {isTower && (
+          {currentLevel < 3 && (
+            <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
               <div className="big-icon-hint">
-                <div>{towerYearlyLabel(3)}</div>
-                <div>{t('tileCard.perYear')}</div>
+                <span className="value">2🏯</span> <div>{t('tileClaimScreen.towers')}</div>
               </div>
-            )}
 
-            {currentLevel === 3 ? t('tileClaimScreen.now') : priceTag(3)}
-          </div>
-        )}
-      </div>
+              <div className="big-icon-hint">
+                <div>{turnIncomeLabel(2)}</div>
+                <div>{t('tileCard.perTurn')}</div>
+              </div>
+
+              {isTower && (
+                <div className="big-icon-hint">
+                  <div>{towerYearlyLabel(2)}</div>
+                  <div>{t('tileCard.perYear')}</div>
+                </div>
+              )}
+
+              {currentLevel === 2 ? t('tileClaimScreen.now') : priceTag(2)}
+            </div>
+          )}
+          {currentLevel <= 3 && (
+            <div
+              className={
+                'upgrade-level' +
+                (nextLevel !== 3 ? ' upgrade-unreachable' : '') +
+                (currentLevel === 3 ? ' current-level' : '')
+              }
+            >
+              <div className="big-icon-hint">
+                <span className="value">3🏯</span> <div>{t('tileClaimScreen.towers')}</div>
+              </div>
+
+              <div className="big-icon-hint">
+                <div>{turnIncomeLabel(3)}</div>
+                <div>{t('tileCard.perTurn')}</div>
+              </div>
+
+              {isTower && (
+                <div className="big-icon-hint">
+                  <div>{towerYearlyLabel(3)}</div>
+                  <div>{t('tileCard.perYear')}</div>
+                </div>
+              )}
+
+              {currentLevel === 3 ? t('tileClaimScreen.now') : priceTag(3)}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="text-message tile-guards-dialogue">
         {totalMilitiaPool > 0 && !tile.isYielded && (

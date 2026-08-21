@@ -126,11 +126,11 @@
     },
     "medal-of-honor": {
       "name": "Медаль почёта",
-      "description": "Даёт +5🏆. Не позволяет владельцу попасть в Тюрьму."
+      "description": "Даёт +5🏆. Позволяет владельцу не сидеть в Тюрьме."
     },
     "medal-of-distinction": {
       "name": "Медаль отличия",
-      "description": "Даёт +3🏆. Не позволяет владельцу попасть в Тюрьму. Не может принадлежать вместе с Медалью почёта."
+      "description": "Даёт +3🏆. Позволяет владельцу не сидеть в Тюрьме."
     }
   },
   "shieldColumn": {
@@ -146,7 +146,7 @@
     "cheat": "Читы",
     "overrides": "Параметры",
     "statistics": "Статистика",
-    "mapEditOn": "Редактор карты: ВКЛ (нажмите на клетку или иконку игрока)",
+    "mapEditOn": "Редактор карты: ВКЛ",
     "mapEditOff": "Редактор карты: ВЫКЛ"
   },
   "kingsCastle": {
@@ -197,8 +197,9 @@
     "abandoned": "(заброшено)"
   },
   "tileClaimScreen": {
-    "claimedBy": "занята игроком {player}\nего слава теперь {fame}",
-    "belongsTo": "принадлежит игроку {player}",
+    "claimedBy": "занята {player}\n теперь у него {fame} {gold}",
+    "belongsTo": "принадлежит {player}\n{fame} {gold}",
+    "yieldedBelongsTo": "принадлежит 👑 Королю\n после передачи {player}\n{fame} {gold}",
     "tower": "башня",
     "towers": "башни",
     "now": "сейчас",
