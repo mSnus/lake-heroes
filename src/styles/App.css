@@ -57,13 +57,6 @@ body.screen-open {
 }
 
 @font-face {
-  font-family: 'Boldonce';
-  src: url('/assets/fonts/Boldonse-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
   font-family: 'StyleScript';
   src: url('/assets/fonts/StyleScript-Regular.ttf') format('truetype');
   font-weight: normal;

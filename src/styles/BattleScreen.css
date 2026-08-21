@@ -119,19 +119,20 @@
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  font-family: 'Texturina';
 }
 
 .battle-result-verdict {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   letter-spacing: normal;
-  text-shadow: 1px 1px 4px #000;
   font-weight: bold;
   color: #fff;
 }
 
 .battle-result-message {
+  font-family: 'Encode';
   color: #eee;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   margin: 0;
   line-height: 1.5;
   text-shadow: 1px 1px 3px #000;
