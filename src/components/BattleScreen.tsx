@@ -764,9 +764,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           ? 'assets/screens/ruins.jpg'
           : isRogue
             ? 'assets/screens/raid.jpeg'
-            : isAmbush
-              ? 'assets/screens/ambush.jpg'
-              : 'assets/screens/battle.jpg'
+            // Zombie-flavored fight: either the ambush interrupt from an
+            // abandoned tile's garrison, or a normal tile-claim battle
+            // fought directly against one (same zombie: !!tile?.abandoned
+            // grid reskin either way, see the createBattle call above).
+            : isZombieAmbush || (isTile && !!tile?.abandoned)
+              ? 'assets/screens/zombies.jpeg'
+              : isAmbush
+                ? 'assets/screens/ambush.jpg'
+                : 'assets/screens/battle.jpg'
       }
     >
       <div
