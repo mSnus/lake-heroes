@@ -833,7 +833,7 @@
     "ranksFull": "{units}🧍 хотели присоединиться, но в ваших рядах не осталось места",
     "horsesJoined": "{units}🧍 щедрого {playerSpan} получили коней 🐴<br />и стали всадниками!",
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...а {units}🧍 остались пьянствовать в таверне)</span>",
-    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} слотов армии заполнено — {turnedAway}🧍 отправлены прочь)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} отрядов заполнено — {turnedAway}🧍 отправлены восвояси)</span>",
     "newFolksWelcome": "🍻 За славные победы!",
     "title": "Таверна",
     "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов"

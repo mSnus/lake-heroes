@@ -833,7 +833,7 @@
     "ranksFull": "{units}🧍 estaban a punto de unirse a ti, pero tus filas están llenas",
     "horsesJoined": "¡{units}🧍 del generoso {playerSpan} recibieron caballos gratis 🐴<br />y se convirtieron en jinetes!",
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...y {units}🧍 se quedaron borrachos en la taberna)</span>",
-    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} ranuras del ejército llenas — {turnedAway}🧍 rechazados)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} esquadrones completas — {turnedAway}🧍 rechazados)</span>",
     "newFolksWelcome": "🍻 A la gloria!",
     "title": "La Taberna",
     "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades"
