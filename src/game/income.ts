@@ -34,9 +34,14 @@ export function tileTurnIncome(
 /**
  * A player's total per-turn income across every tile they own -- read-only,
  * used both by collectTileTurnIncome (the actual payout) and by the stats
- * panel's preview (CurrentPlayer.tsx), so they can't drift apart. Derives
- * ownership from tile.owner (authoritative) rather than player.ownedTiles,
- * which can be stale after a reload.
+ * panel's preview (CurrentPlayer.tsx, TurnAnnouncement.tsx), so they can't
+ * drift apart. Derives ownership from tile.owner (authoritative) rather than
+ * player.ownedTiles, which can be stale after a reload.
+ *
+ * `units` is capped to the player's remaining militia slot capacity (income
+ * always lands on militia -- see Player's `units` setter) so a full-or-
+ * nearly-full squad's preview matches what will actually be granted, rather
+ * than promising units the squad limit will silently swallow.
  */
 export function playerTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
   let gold = 0;
@@ -47,7 +52,7 @@ export function playerTurnIncome(board: GameState, player: Player): { gold: numb
     gold += income.gold;
     units += income.units;
   }
-  return { gold, units };
+  return { gold, units: Math.min(units, player.remainingCapacity('militia')) };
 }
 
 /**
