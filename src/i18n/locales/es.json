@@ -196,7 +196,7 @@
     "confirmYield": "¿Ceder {tileName} al Rey por {gold}🟡?",
     "confirmTakeBack": "¿Recuperar {tileName} por {gold}🟡?",
     "yielded": "cedida",
-    "abandoned": "(abandonada)"
+    "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
     "claimedBy": "fue reclamada por {player}\nque ahora es {fame} {gold}",

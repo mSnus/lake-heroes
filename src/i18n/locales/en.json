@@ -196,7 +196,7 @@
     "confirmYield": "Yield {tileName} to the King for {gold}🟡?",
     "confirmTakeBack": "Take {tileName} back for {gold}🟡?",
     "yielded": "yielded",
-    "abandoned": "(abandoned)"
+    "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
     "claimedBy": "was claimed by {player}\nwho is now {fame} {gold}",

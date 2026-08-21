@@ -196,7 +196,7 @@
     "confirmYield": "Передать «{tileName}» королю за {gold}🟡?",
     "confirmTakeBack": "Забрать «{tileName}» обратно за {gold}🟡?",
     "yielded": "передано королю",
-    "abandoned": "(заброшено)"
+    "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
     "claimedBy": "занята {player}\n теперь у него {fame} {gold}",

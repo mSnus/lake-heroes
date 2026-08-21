@@ -61,7 +61,7 @@ export function checkZombieAmbushEncounter(
       units: attackerUnits,
       tileName: tile.name,
     }),
-    buttons: [{ label: t('ambushEncounter.defend'), onClick: startBattle }],
+    buttons: [{ label: '🧟‍♀️' + t('ambushEncounter.defend'), onClick: startBattle }],
   });
 
   return true;
