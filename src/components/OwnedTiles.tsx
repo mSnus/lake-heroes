@@ -78,11 +78,10 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disabl
       {totalOwned > 3 && (
         <div className="owned-tiles-dots">
           {grouped.flatMap((bucket) =>
-            bucket.items.map(({ tile, idx }) => (
+            bucket.items.map(({ idx }) => (
               <span
                 key={idx}
                 className="owned-tiles-dot"
-                title={tile.shortName}
                 style={{ backgroundColor: groupColor(bucket.group) }}
               />
             ))
