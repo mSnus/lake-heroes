@@ -70,11 +70,11 @@
   /* allow clicks to pass through to tiles unless specifically on player markers */
 }
 
-/* Purely decorative per-tile effects (currently just the still-smoldering
-   🔥) drawn on top of the tile art -- a dedicated layer rather than
-   piggybacking on .layer-tiles, so future overlay kinds have one obvious
-   place to render into. Above .tile's own z-index (5000) but below the
-   fork picker's, and never intercepts clicks -- .tile underneath still
+/* Purely decorative per-tile effects (still-smoldering 🔥, abandoned/
+   zombie-guarded 🧟‍♀️) drawn on top of the tile art -- a dedicated layer
+   rather than piggybacking on .layer-tiles, so future overlay kinds have one
+   obvious place to render into. Above .tile's own z-index (5000) but below
+   the fork picker's, and never intercepts clicks -- .tile underneath still
    handles them. */
 .layer-overlays {
   position: absolute;
@@ -88,8 +88,10 @@
 
 /* Same box as .tile itself (top/left is that box's top-left corner, not its
    center -- no translate on .tile, so none here either), with the emoji
-   centered inside via flex instead. */
-.tile-fire-overlay {
+   centered inside via flex instead. Shared by every overlay kind (fire,
+   zombie, ...) -- a tile can show more than one at once, each its own
+   .tile-emoji-overlay sharing this box. */
+.tile-emoji-overlay {
   position: absolute;
   width: 14.8vmin;
   height: 14.8vmin;
@@ -102,7 +104,7 @@
 }
 
 @supports (container-type: inline-size) {
-  .tile-fire-overlay {
+  .tile-emoji-overlay {
     width: 14.8cqi;
     height: 14.8cqi;
   }

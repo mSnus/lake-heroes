@@ -332,23 +332,39 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     );
   };
 
-  const cellStyleFor = (pos: { x: number; y: number }): React.CSSProperties => ({
-    top: pos.y + '%',
-    left: pos.x + '%',
+  const cellStyleFor = (
+    pos: { x: number; y: number },
+    offsetXPct: number = 0,
+    offsetYPct: number = 0
+  ): React.CSSProperties => ({
+    top: pos.y + offsetYPct + '%',
+    left: pos.x + offsetXPct + '%',
   });
 
   // Purely decorative per-tile effects that sit above everything else on the
   // board (tiles, players) but don't intercept clicks -- a still-smoldering
   // (recently razed) tile shows a 🔥 here, on top of the grayscale filter
-  // renderTile applies to the tile itself. Add more overlay kinds to this
-  // same layer/function rather than bolting them onto renderTile directly.
+  // renderTile applies to the tile itself; an abandoned (zombie-guarded)
+  // tile shows a 🧟‍♀️. Not mutually exclusive -- a tile razed this round is
+  // both at once, so each gets a small opposing nudge rather than fully
+  // overlapping. Add more overlay kinds to this same layer/function rather
+  // than bolting them onto renderTile directly.
   const renderOverlay = (tile: any, i: number) => {
-    if (!tile.isOnFire(board.round)) return null;
     const pos = getTilePosition(i);
+    const both = tile.isOnFire(board.round) && tile.abandoned;
     return (
-      <div key={`overlay-fire-${i}`} className="tile-fire-overlay" style={cellStyleFor(pos)}>
-        🔥
-      </div>
+      <React.Fragment key={`overlay-${i}`}>
+        {tile.isOnFire(board.round) && (
+          <div className="tile-emoji-overlay" style={cellStyleFor(pos, both ? -3 : 0, both ? -3 : 0)}>
+            🔥
+          </div>
+        )}
+        {tile.abandoned && (
+          <div className="tile-emoji-overlay" style={cellStyleFor(pos, both ? 3 : 0, both ? 3 : 0)}>
+            🧟‍♀️
+          </div>
+        )}
+      </React.Fragment>
     );
   };
 
