@@ -20,3 +20,10 @@
       overflow-y: auto;
 }
 
+@media (min-width: 769px) {
+      .screen-common {
+            width: calc(100vh * var(--board-aspect-ratio));
+            max-width: calc(100vh * var(--board-aspect-ratio));
+            padding: 0;
+      }
+}

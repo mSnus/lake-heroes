@@ -137,11 +137,11 @@ export const ZOMBIE_GARRISON_REPEL_RATIO = 0.5;
 export const BRAWL_COLS = 6;
 export const BRAWL_ROWS = 7;
 export const MILITIA_HP = 12;
-export const MILITIA_DMG_MIN = 4;
-export const MILITIA_DMG_MAX = 8;
+export const MILITIA_DMG_MIN = 3;
+export const MILITIA_DMG_MAX = 6;
 export const RIDER_HP = 20;
 export const RIDER_DMG_MIN = 6;
-export const RIDER_DMG_MAX = 16;
+export const RIDER_DMG_MAX = 12;
 // The dragon fights as its own kind, not a rider — see the 'dragon'
 // formation in game/battleGrid/formations.ts, always exactly DRAGON_UNITS.
 export const DRAGON_HP = 24;

@@ -37,10 +37,10 @@
   align-items: flex-start;
 }
 
-@supports (container-type: inline-size) {
-  .bfg-battlefield {
-    --bfg-cell: 6.2cqi;
-  }
+/* A small automatic battle (see AUTO_BATTLE_LARGE_THRESHOLD): bigger cells
+   than the default battlefield, but not as large as brawl's. */
+.bfg-battlefield.bfg-large {
+  --bfg-cell: 10vmin;
 }
 
 /* Brawl board: fewer, bigger cells. Sized so the 6-wide grid fills the
@@ -48,22 +48,46 @@
 .bfg-battlefield.bfg-brawl {
   --bfg-cell: 15.1vmin;
 }
-
 @supports (container-type: inline-size) {
+  .bfg-battlefield {
+    --bfg-cell: 6.2cqi;
+  }
+
+  .bfg-battlefield.bfg-large {
+    --bfg-cell: 10cqi;
+  }
+
   .bfg-battlefield.bfg-brawl {
     --bfg-cell: 15.1cqi;
   }
 }
 
-/* A small automatic battle (see AUTO_BATTLE_LARGE_THRESHOLD): bigger cells
-   than the default battlefield, but not as large as brawl's. */
-.bfg-battlefield.bfg-large {
-  --bfg-cell: 10vmin;
-}
 
-@supports (container-type: inline-size) {
+@media (min-width: 769px) {
+  .bfg-battlefield {
+    --bfg-cell: 6vmin;
+  }
+
   .bfg-battlefield.bfg-large {
-    --bfg-cell: 10cqi;
+    --bfg-cell: 7vmin;
+  }
+
+  .bfg-battlefield.bfg-brawl {
+    --bfg-cell: 8vmin;
+  }
+
+  @supports (container-type: inline-size) {
+    .bfg-battlefield {
+      --bfg-cell: 6cqi;
+    }
+
+    .bfg-battlefield.bfg-large {
+      --bfg-cell: 7cqi;
+    }
+
+        .bfg-battlefield.bfg-brawl {
+      --bfg-cell: 8cqi;
+    }
   }
 }
 
