@@ -8,6 +8,24 @@
   box-sizing: border-box;
 }
 
+.owned-tiles-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.owned-tiles-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 1px solid #ffffff55;
+  box-shadow: 0 0 3px #000a;
+  flex-shrink: 0;
+}
+
 .owned-cards {
   flex: 1;
   display: flex;

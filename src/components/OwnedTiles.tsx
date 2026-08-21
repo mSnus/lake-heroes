@@ -13,6 +13,9 @@ const groupOrder = (group: string): number => {
   return i === -1 ? Number.MAX_SAFE_INTEGER : i;
 };
 
+const groupColor = (group: string): string =>
+  (groups as { name: string; color: string }[]).find((g) => g.name === group)?.color ?? '#888';
+
 const basePrice = (tile: Tile): number => tile.prices?.['1']?.gold ?? 0;
 
 interface Props {
@@ -64,9 +67,28 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disabl
   }, [gameState, activePlayer.name]);
 
   const isEmpty = grouped.length === 0;
+  const totalOwned = grouped.reduce((sum, bucket) => sum + bucket.items.length, 0);
 
   return (
     <div className="cards-pane-wrapper">
+      {/* A quick-glance summary of the whole portfolio once it's too big to
+          eyeball from the cards themselves -- one dot per owned tile, in the
+          same group order as the cards below, colored by that tile's own
+          group color. */}
+      {totalOwned > 3 && (
+        <div className="owned-tiles-dots">
+          {grouped.flatMap((bucket) =>
+            bucket.items.map(({ idx }) => (
+              <span
+                key={idx}
+                className="owned-tiles-dot"
+                style={{ backgroundColor: groupColor(bucket.group) }}
+              />
+            ))
+          )}
+        </div>
+      )}
+
       <div className="owned-cards">
         {isEmpty && <div className="poor-player">{t('ownedTiles.ownsNothing', { name: activePlayer.name })}</div>}
 
