@@ -280,13 +280,14 @@
     "fromYourTowers": "как дань с ваших башен",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Пройдите Замок короля и получите {summary}",
-    "armyTooltip": "Ваша слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot} юнитов каждый",
-    "unitsIncomeTooltip": "+{units} юнитов с {tiles} клеток",
     "artifactTooltip": "{name}: {description}"
   },
   "garrisonsScreen": {
     "title": "Гарнизоны",
-    "unassigned": "🧍 не распределено: {amount}",
+    "message": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot} юнитов каждый. Доход за ход: +{units} юнитов с {tiles} клеток",
+    "inArmy": "🚩 в армии: {amount}🧍",
+    "maxLabel": "макс: {max}",
+    "atMax": "Уже максимум для {slots}🏯: {units}",
     "noTiles": "У вас пока нет клеток",
     "setGuards": "🛡️ Расставить гарнизоны",
     "neverMind": "✖️ Отмена"

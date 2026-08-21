@@ -280,13 +280,14 @@
     "fromYourTowers": "del peaje de tus Torres",
     "fromPristineDiamond": "del Diamante Puro 💎",
     "wagesMessage": "Pasa por el Castillo del Rey para {summary}",
-    "armyTooltip": "Tu fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot} unidades cada uno",
-    "unitsIncomeTooltip": "+{units} unidades de {tiles} casillas",
     "artifactTooltip": "{name}: {description}"
   },
   "garrisonsScreen": {
     "title": "Guarniciones",
-    "unassigned": "🧍 sin asignar: {amount}",
+    "message": "Fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot} unidades cada uno. Ingreso diario: +{units} unidades de {tiles} casillas",
+    "inArmy": "🚩 en el ejército: {amount}🧍",
+    "maxLabel": "máx: {max}",
+    "atMax": "Ya al máximo para {slots}🏯: {units}",
     "noTiles": "Todavía no posees ninguna casilla",
     "setGuards": "🛡️ Colocar guarniciones",
     "neverMind": "✖️ Cancelar"

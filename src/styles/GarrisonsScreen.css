@@ -1,5 +1,5 @@
 .garrisons-unassigned {
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-family: 'Texturina';
   color: wheat;
   text-align: center;
@@ -49,12 +49,24 @@
   text-overflow: ellipsis;
 }
 
+/* Status line replacing the slider for a remote tile already at capacity
+   (see GarrisonsScreen.tsx's atMax) -- same slot the slider would occupy. */
+.garrisons-row-atmax {
+  color: wheat;
+  font-family: 'Texturina';
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 0.85;
+  text-shadow: 2px 2px 6px black;
+}
+
+/* .big-icon-hint (see TileCard.css) supplies the big-value/small-caption
+   layout and font sizes -- this just adds the row's color/shadow/width on
+   top, and keeps it from shrinking when the name column is long. */
 .garrisons-row-value {
   flex: 0 0 auto;
   min-width: 3.2rem;
-  text-align: right;
   color: wheat;
   font-family: 'Texturina';
-  font-size: 1rem;
   text-shadow: 2px 2px 6px black;
 }

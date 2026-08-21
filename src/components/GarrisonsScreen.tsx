@@ -93,19 +93,17 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
       </div>
 
       <div className="text-message" style={{ lineHeight: '1.2' }}>
-        {t('currentPlayer.armyTooltip', {
+        {t('garrisonsScreen.message', {
           fame: player.fame,
           slots: player.armySlots,
           perSlot: getOverrides().armySlotCapacity,
-        })}{' '}
-        {t('currentPlayer.unitsIncomeTooltip', {
           units: turnIncome.units,
           tiles: rows.length,
         })}
       </div>
 
       <div className="garrisons-unassigned">
-        {t('garrisonsScreen.unassigned', { amount: unassigned })}
+        {t('garrisonsScreen.inArmy', { amount: unassigned })}
       </div>
 
       {rows.length === 0 ? (
@@ -117,20 +115,33 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
             const min = isCurrentTile ? 0 : tile.garrisonMilitia;
             const max = Math.max(min, maxMilitiaFor(tile));
             const value = targets[idx] ?? tile.garrisonMilitia;
+            // A remote (not-currently-visited) tile already at its cap has
+            // nowhere to grow (min === max here, see `min` above) -- a live
+            // slider would just be dead weight, so swap it for a status line.
+            const atMax = !isCurrentTile && tile.garrisonMilitia >= max;
             return (
               <div className="garrisons-row" key={idx}>
                 {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" />}
                 <div className="garrisons-row-info">
                   <div className="garrisons-row-name">{tile.name}</div>
-                  <DecoratedSlider
-                    min={min}
-                    max={max}
-                    value={value}
-                    onPreview={(v) => setRowValue(idx, v)}
-                    onCommit={(v) => setRowValue(idx, v)}
-                  />
+                  {atMax ? (
+                    <div className="garrisons-row-atmax">
+                      {t('garrisonsScreen.atMax', { slots: tile.garrisonSlots, units: tile.garrisonMilitia })}
+                    </div>
+                  ) : (
+                    <DecoratedSlider
+                      min={min}
+                      max={max}
+                      value={value}
+                      onPreview={(v) => setRowValue(idx, v)}
+                      onCommit={(v) => setRowValue(idx, v)}
+                    />
+                  )}
                 </div>
-                <div className="garrisons-row-value">{value}🧍</div>
+                <div className="big-icon-hint garrisons-row-value">
+                  <div>{value}🧍</div>
+                  <div>{t('garrisonsScreen.maxLabel', { max })}</div>
+                </div>
               </div>
             );
           })}
