@@ -7,7 +7,7 @@ import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
-import { SPRITE_SIZE } from '../game/constants';
+import { BANZAI_THRESHOLD, ZOMBIE_HP_MULTIPLIER } from '../game/constants';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
 import { BRAWL_THRESHOLD, TOWER_LEVEL_UNIT_BONUS } from '../game/constants';
@@ -141,7 +141,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // (mirrors BattleScreen's isBrawl rule). Above the brawl threshold, an
   // attacker with more than BRAWL_THRESHOLD units may "banzai" — attack
   // despite having fewer units than the tile's defence — as a deliberate gamble.
-  const lvl1Defence = defence(1);
+  const lvl1Defence = defence(1) * (tile.abandoned ? ZOMBIE_HP_MULTIPLIER : 1);
   const attackerPower = activePlayer?.armyPower ?? 0;
   // Claim button label: raw militia+riders headcount, not the weighted power
   // score -- riders only get a "+N" suffix when the player actually has any
@@ -153,12 +153,11 @@ export const TileCard: React.FC<TileCardProps> = ({
       ? `${activePlayer.militia}${activePlayer.riders > 0 ? `+${activePlayer.riders}` : ''}`
       : `${activePlayer.riders}`;
   const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
-  const isBanzai =
-    !isBrawlTile &&
-    !!activePlayer &&
-    attackerPower > BRAWL_THRESHOLD &&
-    attackerPower < lvl1Defence;
-  const attackEmoji = isBrawlTile ? '👊' : isBanzai ? '🩸' : '⚔️';
+  
+  const isBanzai = !!activePlayer && (attackerPower >= lvl1Defence * BANZAI_THRESHOLD) && attackerPower < lvl1Defence;
+    
+  const attackEmoji = (isBrawlTile ? '👊' : '⚔️') + (isBanzai ? '🩸' : '');
+
   const unitsInsufficient = !isBanzai && !!activePlayer && attackerPower < lvl1Defence;
 
   const cantAfford =
@@ -493,7 +492,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                                     <div className="tile-card-attack-vs">{t('common.vs')}</div>
                                   </div>
                                   <div className="tile-card-attacker-army">
-                                    {defence(1)} {tile.abandoned ? '🧟‍♀️' : '🧍'}
+                                    {defence(1)}
                                   </div>
                                 </div>
                               )}

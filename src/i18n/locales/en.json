@@ -197,7 +197,7 @@
     "abandoned": "(abandoned)"
   },
   "tileClaimScreen": {
-    "claimedBy": "was claimed by {player}\nwho's fame is now {fame}",
+    "claimedBy": "was claimed by {player}\nwho is now {fame}",
     "belongsTo": "belongs to {player}",
     "tower": "tower",
     "towers": "towers",
