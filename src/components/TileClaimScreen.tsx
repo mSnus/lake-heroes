@@ -265,22 +265,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         {tile.name}
       </div>
 
-      <div className="text-message" style={{ lineHeight: '1.2', whiteSpace: 'pre-line' }}>
-        {tJsx(ownerTag, {
-              player: <PlayerLabel player={player} bold />,
-              fame: <>🏆{player.fame}</>,
-              gold: <>🟡{player.gold}</>,
-            })}
-      </div>
-
       {variant === 'upgrades' && (
         <div
           className="tile-card-sell"
           style={{
-            marginTop: '1rem',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            position: 'relative',
+            margin: '0.6rem auto',
             zIndex: 6002,
           }}
         >
@@ -293,6 +282,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       )}
 
+      <div className="text-message" style={{ lineHeight: '1.2', whiteSpace: 'pre-line' }}>
+        {tJsx(ownerTag, {
+              player: <PlayerLabel player={player} bold />,
+              fame: <>🏆{player.fame}</>,
+              gold: <>🟡{player.gold}</>,
+            })}
+      </div>
+
       {!tile.isYielded && (
         <div className="upgrades-table">
           {currentLevel < 3 && (
@@ -302,7 +299,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               }
             >
               <div className="big-icon-hint">
-                <span className="value">1🏯</span> <div>{t('tileClaimScreen.tower')}</div>
+                <span className="value">1🏯</span> 
               </div>
 
               <div className="big-icon-hint">
@@ -326,7 +323,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
           {currentLevel < 3 && (
             <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
               <div className="big-icon-hint">
-                <span className="value">2🏯</span> <div>{t('tileClaimScreen.towers')}</div>
+                <span className="value">2🏯</span>
               </div>
 
               <div className="big-icon-hint">
@@ -353,7 +350,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               }
             >
               <div className="big-icon-hint">
-                <span className="value">3🏯</span> <div>{t('tileClaimScreen.towers')}</div>
+                <span className="value">3🏯</span>
               </div>
 
               <div className="big-icon-hint">

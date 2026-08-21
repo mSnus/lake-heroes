@@ -404,12 +404,13 @@
 }
 
 .tile-card-sell-item {
-  background: linear-gradient(145deg, #d2bb73, #dbc28a);
-  text-shadow: #736c5eaf 0 0 6px;
-  color: #484742da;
-  padding: 8px 12px;
-  border-radius: 5px;
-  white-space: nowrap;
+    background: linear-gradient(1deg, #68613ec7, #41382894);
+    text-shadow: #736c5eaf 0 0 6px;
+    color: wheat;
+    padding: 8px 12px;
+    border-radius: 5px;
+    white-space: nowrap;
+    border: 1px solid #ffde2c;
 }
 
 .tile-card-ownable .tile-card-sell-item {
@@ -438,6 +439,7 @@
 .upgrade-price-badge.clickable {
   cursor: pointer;
   border: 1px solid #ffde2c;
+  background: linear-gradient(1deg, #68613ec7, #41382894);
 }
 
 /* Matches King's Castle's input look (see modal.css's
