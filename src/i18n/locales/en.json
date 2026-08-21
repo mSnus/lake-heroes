@@ -217,6 +217,7 @@
     "zombies": "Zombies",
     "caravanGuards": "Caravan Guards",
     "guards": "Guards",
+    "garrisonOf": "Garrison of {tileName}",
     "ambushedMessage": "{name} is ambushed by {units}🥷!",
     "zombieAttackMessage": "{name} is attacked by {units}🧟‍♀️!",
     "ruinsAttackMessage": "{name} is attacked by {units}🧟 among the ruins!",

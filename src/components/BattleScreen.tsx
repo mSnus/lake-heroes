@@ -363,7 +363,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           ? t('battleScreen.zombies')
           : t('battleScreen.ambushers')
         : t('battleScreen.caravanGuards')
-      : (defender?.name ?? t('battleScreen.guards'));
+      // Rogue attack: the tile's garrison is defending, not the player in
+      // person -- label it as such (still in the owner's color, see
+      // defenderColor below) rather than showing the player's own name.
+      : isRogue && tile
+        ? t('battleScreen.garrisonOf', { tileName: tile.name })
+        : (defender?.name ?? t('battleScreen.guards'));
   const defenderColor = isDragon
     ? '#ff5816'
     : isCaravan || isAmbush

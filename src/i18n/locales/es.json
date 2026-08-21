@@ -217,6 +217,7 @@
     "zombies": "Zombis",
     "caravanGuards": "Guardias de la Caravana",
     "guards": "Guardias",
+    "garrisonOf": "Guarnición de {tileName}",
     "ambushedMessage": "¡{name} cae en una emboscada de {units}🥷!",
     "zombieAttackMessage": "¡{name} es atacado por {units}🧟‍♀️!",
     "ruinsAttackMessage": "¡{name} es atacado por {units}🧟 entre las ruinas!",
