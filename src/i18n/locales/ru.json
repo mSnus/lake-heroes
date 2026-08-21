@@ -18,10 +18,12 @@
   },
   "tiles": {
     "water-mill": {
-      "name": "Водяная мельница"
+      "name": "Водяная мельница",
+      "shortName": "Воды"
     },
     "windmill": {
-      "name": "Ветряная мельница"
+      "name": "Ветряная мельница",
+      "shortName": "Ветра"
     },
     "brick-factory": {
       "name": "Кирпич"
@@ -60,13 +62,16 @@
       "name": "Мечи"
     },
     "archer-tower": {
-      "name": "Башня лучников"
+      "name": "Башня лучников",
+      "shortName": "Лучники"
     },
     "arquebus-tower": {
-      "name": "Башня аркебузиров"
+      "name": "Башня аркебузиров",
+      "shortName": "Аркебузиры"
     },
     "cannon-tower": {
-      "name": "Пушечная башня"
+      "name": "Пушечная башня",
+      "shortName": "Пушки"
     },
     "treasure-chest": {
       "name": "Сундук",

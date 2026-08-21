@@ -18,31 +18,40 @@
   },
   "tiles": {
     "water-mill": {
-      "name": "Molino de agua"
+      "name": "Molino de agua",
+      "shortName": "Aguas"
     },
     "windmill": {
-      "name": "Molino de viento"
+      "name": "Molino de viento",
+      "shortName": "Vientos"
     },
     "brick-factory": {
-      "name": "Fábrica de ladrillos"
+      "name": "Fábrica de ladrillos",
+      "shortName": "Ladrillos"
     },
     "pigs-farm": {
-      "name": "Granja de cerdos"
+      "name": "Granja de cerdos",
+      "shortName": "Cerdos"
     },
     "cows-farm": {
-      "name": "Granja de vacas"
+      "name": "Granja de vacas",
+      "shortName": "Vacas"
     },
     "sheep-farm": {
-      "name": "Granja de ovejas"
+      "name": "Granja de ovejas",
+      "shortName": "Ovejas"
     },
     "wheat-field": {
-      "name": "Campo de trigo"
+      "name": "Campo de trigo",
+      "shortName": "Trigos"
     },
     "cabbage-field": {
-      "name": "Campo de coles"
+      "name": "Campo de coles",
+      "shortName": "Coles"
     },
     "fruit-garden": {
-      "name": "Huerto de frutas"
+      "name": "Huerto de frutas",
+      "shortName": "Frutas"
     },
     "grapes": {
       "name": "Uvas"
@@ -60,13 +69,16 @@
       "name": "Espadas"
     },
     "archer-tower": {
-      "name": "Torre de arqueros"
+      "name": "Torre de arqueros",
+      "shortName": "Arqueros"
     },
     "arquebus-tower": {
-      "name": "Torre de arcabuceros"
+      "name": "Torre de arcabuceros",
+      "shortName": "Arcabuceros"
     },
     "cannon-tower": {
-      "name": "Torre de cañones"
+      "name": "Torre de cañones",
+      "shortName": "Cañones"
     },
     "treasure-chest": {
       "name": "Cofre del tesoro",

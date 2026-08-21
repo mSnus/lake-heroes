@@ -138,6 +138,15 @@ export class Tile implements TileJSON {
     return t(`tiles.${this.id}.name`);
   }
 
+  /** Compact plural label (e.g. "Pigs farm" -> "Pigs", "Cannon tower" ->
+   * "Cannons") -- the significant part of the full name, for places too
+   * small for it (e.g. the owned-tiles summary dots). Falls back to the
+   * full name for tiles that don't have one (the non-ownable "special"
+   * tiles, whose names are already short). */
+  get shortName(): string {
+    return tOptional(`tiles.${this.id}.shortName`) ?? this.name;
+  }
+
   /** Purchase/upgrade prices in real gold, computed from the authored
    * coefficients and the live TILE_BASE_PRICE / upgrade-multiplier overrides.
    * Level-1 gold is the purchase price; higher levels are upgrade costs

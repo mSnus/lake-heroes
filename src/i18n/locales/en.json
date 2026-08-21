@@ -18,31 +18,40 @@
   },
   "tiles": {
     "water-mill": {
-      "name": "Water mill"
+      "name": "Water mill",
+      "shortName": "Waters"
     },
     "windmill": {
-      "name": "Windmill"
+      "name": "Windmill",
+      "shortName": "Winds"
     },
     "brick-factory": {
-      "name": "Brick factory"
+      "name": "Brick factory",
+      "shortName": "Bricks"
     },
     "pigs-farm": {
-      "name": "Pigs farm"
+      "name": "Pigs farm",
+      "shortName": "Pigs"
     },
     "cows-farm": {
-      "name": "Cows farm"
+      "name": "Cows farm",
+      "shortName": "Cows"
     },
     "sheep-farm": {
-      "name": "Sheep farm"
+      "name": "Sheep farm",
+      "shortName": "Sheep"
     },
     "wheat-field": {
-      "name": "Wheat field"
+      "name": "Wheat field",
+      "shortName": "Wheats"
     },
     "cabbage-field": {
-      "name": "Cabbage field"
+      "name": "Cabbage field",
+      "shortName": "Cabbages"
     },
     "fruit-garden": {
-      "name": "Fruit garden"
+      "name": "Fruit garden",
+      "shortName": "Fruits"
     },
     "grapes": {
       "name": "Grapes"
@@ -51,7 +60,8 @@
       "name": "Fish"
     },
     "fur": {
-      "name": "Fur"
+      "name": "Fur",
+      "shortName": "Furs"
     },
     "bows": {
       "name": "Bows"
@@ -60,13 +70,16 @@
       "name": "Swords"
     },
     "archer-tower": {
-      "name": "Archer tower"
+      "name": "Archer tower",
+      "shortName": "Archers"
     },
     "arquebus-tower": {
-      "name": "Arquebus tower"
+      "name": "Arquebus tower",
+      "shortName": "Arquebuses"
     },
     "cannon-tower": {
-      "name": "Cannon tower"
+      "name": "Cannon tower",
+      "shortName": "Cannons"
     },
     "treasure-chest": {
       "name": "Treasure chest",
