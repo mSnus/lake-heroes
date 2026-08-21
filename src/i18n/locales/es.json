@@ -1,0 +1,915 @@
+{
+  "turnAnnouncement": {
+    "text": "Turno de {playerName}"
+  },
+  "common": {
+    "language": "Idioma",
+    "hire": "Contratar",
+    "slot": "ranura",
+    "slots": "ranuras",
+    "and": "y",
+    "vs": "vs",
+    "close": "Cerrar",
+    "continue": "Continuar",
+    "tierMilitia": "milicia",
+    "tierRiders": "jinetes"
+  },
+  "tiles": {
+    "water-mill": {
+      "name": "Molino de agua"
+    },
+    "windmill": {
+      "name": "Molino de viento"
+    },
+    "brick-factory": {
+      "name": "Fábrica de ladrillos"
+    },
+    "pigs-farm": {
+      "name": "Granja de cerdos"
+    },
+    "cows-farm": {
+      "name": "Granja de vacas"
+    },
+    "sheep-farm": {
+      "name": "Granja de ovejas"
+    },
+    "wheat-field": {
+      "name": "Campo de trigo"
+    },
+    "cabbage-field": {
+      "name": "Campo de coles"
+    },
+    "fruit-garden": {
+      "name": "Huerto de frutas"
+    },
+    "grapes": {
+      "name": "Uvas"
+    },
+    "fish": {
+      "name": "Pescado"
+    },
+    "fur": {
+      "name": "Pieles"
+    },
+    "bows": {
+      "name": "Arcos"
+    },
+    "swords": {
+      "name": "Espadas"
+    },
+    "archer-tower": {
+      "name": "Torre de arqueros"
+    },
+    "arquebus-tower": {
+      "name": "Torre de arcabuceros"
+    },
+    "cannon-tower": {
+      "name": "Torre de cañones"
+    },
+    "treasure-chest": {
+      "name": "Cofre del tesoro",
+      "description": "Posibilidad de recibir 🟡"
+    },
+    "tavern": {
+      "name": "Taberna",
+      "description": "Posibilidad de contratar 🧍"
+    },
+    "king-castle": {
+      "name": "Castillo del Rey",
+      "description": "Reclutar 🧍"
+    },
+    "prison": {
+      "name": "Prisión",
+      "description": "Pierde un turno ⏳"
+    },
+    "sphynx": {
+      "name": "Esfinge",
+      "description": "Podría comerte o recompensarte"
+    },
+    "portal": {
+      "name": "Portal",
+      "description": "Vórtice mágico. ¿A dónde te llevará?"
+    },
+    "joker": {
+      "name": "Comodín",
+      "description": "Broma maligna aleatoria"
+    },
+    "ruins": {
+      "name": "Ruinas",
+      "description": "Antiguos monstruos las custodian"
+    }
+  },
+  "artifacts": {
+    "broken-blade": {
+      "name": "Espada Rota",
+      "description": "+2 a las tiradas contra el Dragón, +1 a las tiradas en batallas que no sean de combate cuerpo a cuerpo."
+    },
+    "dwemer-axe": {
+      "name": "Hacha Dwemer",
+      "description": "+1 a las tiradas contra el Dragón, +1 a las tiradas en batallas de combate cuerpo a cuerpo."
+    },
+    "pristine-diamond": {
+      "name": "Diamante Puro",
+      "description": "+1000🟡 cada año."
+    },
+    "indestructible-umbrella": {
+      "name": "Paraguas Indestructible",
+      "description": "Salva al jugador de los ataques del Dragón y la caída del Meteorito."
+    },
+    "divine-beads": {
+      "name": "Cuentas Divinas",
+      "description": "50% de probabilidad de salvar al jugador del Terremoto, el Meteorito, el Huracán y el ataque del Dragón."
+    },
+    "pipe-of-hamelin": {
+      "name": "Flauta de Hamelín",
+      "description": "Reduce a la mitad las tarifas debidas a las casillas de otros jugadores. Protege de la Peste."
+    },
+    "medal-of-honor": {
+      "name": "Medalla al Honor",
+      "description": "Otorga +5🏆. Evita que el propietario more en la Prisión."
+    },
+    "medal-of-distinction": {
+      "name": "Medalla de Distinción",
+      "description": "Otorga +3🏆. Evita que el propietario more en la Prisión. No puede poseerse junto con la Medalla al Honor."
+    }
+  },
+  "shieldColumn": {
+    "menu": "Menú",
+    "newGame": "Nueva Partida",
+    "help": "Ayuda",
+    "gameLog": "Registro del Juego",
+    "reload": "Recargar",
+    "aiTurn": "La IA está jugando su turno",
+    "rollDice": "Tirar Dado",
+    "endTurn": "Terminar Turno",
+    "confirmNewGame": "¿Seguro que quieres empezar una nueva partida? Se perderá tu progreso actual.",
+    "cheat": "Trucos",
+    "overrides": "Ajustes",
+    "statistics": "Estadísticas",
+    "mapEditOn": "Edición de mapa: ACTIVADA (haz clic en una casilla o icono de jugador para ajustar)",
+    "mapEditOff": "Edición de mapa: DESACTIVADA"
+  },
+  "kingsCastle": {
+    "title": "El Castillo del Rey",
+    "newContract": "📜 Nuevo contrato: reclama\n{tileName} por una recompensa de {award}🟡!",
+    "cannotRecruit": "Tu dinero\ny las ranuras del ejército llenas\nno te permiten reclutar más unidades",
+    "cannotRecruitNoMoney": "Tu dinero\nno te permite reclutar más unidades",
+    "iAmTheGreatest": "⚜️ ¡Soy el más grande!",
+    "moneyAndFame": "{gold}   {fame}   {squads}"
+  },
+  "squadHirePanel": {
+    "hireTitle": "Contratar más:"
+  },
+  "squadDisplay": {
+    "sellSquad": "Vender este escuadrón",
+    "sell": "vender",
+    "upgradeSquad": "Mejorar este escuadrón a Jinetes por {gold}🟡",
+    "upgraded": "{playerName} mejoró {amount}🧍 a Jinetes por {gold}🟡",
+    "youHaveSquads": "{squads} escuadrones:"
+  },
+  "tileCard": {
+    "confirmUpgrade": "¿Mejorar de verdad {tileName} por {gold}🟡?",
+    "upgradedMessage": "{playerName} mejoró {tileName} al nivel {level}",
+    "confirmSell": "¿Vender {tileName} por {price}, en serio?",
+    "soldMessage": "{playerName} vendió {tileName} y recibió {gold}🟡 y {units}🧍",
+    "garrisonMilitiaPrompt": "¿Cuántos dejar defendiendo {tileName}? (tienes {militia}🧍 en tu ejército{ridersNote})",
+    "garrisonRidersNote": ", los 🐎 no pueden estar de guardia",
+    "fee": "tarifa",
+    "perTurn": "por turno",
+    "perYear": "por año",
+    "defence": "defensa",
+    "defenceInfo": "Defensa: {value}",
+    "garrisonWarning": "Solo puedes devolver unidades de la guarnición a tu ejército mientras visitas tu casilla",
+    "garrisonYieldedWarning": "No se puede cambiar la guarnición de una casilla cedida",
+    "cantAfford": "no puede pagarlo",
+    "toOwn": "para poseer:",
+    "sell": "vender",
+    "stillSmoldering": "aún humeante",
+    "banzai": "¡Banzai!",
+    "claimIt": "¡Reclamarla!",
+    "razed": "arrasada",
+    "upgradable": "mejorable",
+    "yieldToKing": "ceder",
+    "takeBack": "recuperar",
+    "confirmYield": "¿Ceder {tileName} al Rey por {gold}🟡?",
+    "confirmTakeBack": "¿Recuperar {tileName} por {gold}🟡?",
+    "yielded": "cedida",
+    "abandoned": "(abandonada)"
+  },
+  "tileClaimScreen": {
+    "claimedBy": "fue reclamada por {player}\ncuya fama ahora es {fame}",
+    "belongsTo": "pertenece a {player}",
+    "tower": "torre",
+    "towers": "torres",
+    "now": "actualmente",
+    "upgradeLine": "{priceTag} {bonusBlock} {slots}",
+    "onGuard": "De guardia:",
+    "army": "ejército",
+    "garrisonVisitCaveat": "vuelve a la casilla para recuperar unidades de la guarnición",
+    "leaveUnguarded": "Dejar sin protección 🩸",
+    "kingSeesTheWay": "👑 El Rey ve el camino",
+    "setToGuard": "Defender con {amount}🧍"
+  },
+  "battleScreen": {
+    "theDragon": "El Dragón",
+    "ambushers": "Emboscadores",
+    "zombies": "Zombis",
+    "caravanGuards": "Guardias de la Caravana",
+    "guards": "Guardias",
+    "ambushedMessage": "¡{name} cae en una emboscada de {units}🥷!",
+    "zombieAttackMessage": "¡{name} es atacado por {units}🧟‍♀️!",
+    "ruinsAttackMessage": "¡{name} es atacado por {units}🧟 entre las ruinas!",
+    "heroHour": "La Hora del Héroe",
+    "ambushRepelled": "¡La emboscada ha sido repelida!",
+    "attackRepelled": "¡Ataque repelido!",
+    "defeat": "¡Derrota!",
+    "bloodyStalemate": "¡Un sangriento empate!",
+    "gloriousVictory": "¡Victoria gloriosa!",
+    "aTie": "¡Empate!",
+    "keepCalmCarryOn": "🍀 Mantén la calma y sigue adelante",
+    "wasItWorthIt": "🩸 ¿Valió la pena?",
+    "brawlUndo": "Deshacer último movimiento",
+    "brawlGo": "Terminar turno",
+    "autoResolveBrawl": "Resolver automáticamente el resto de esta batalla"
+  },
+  "heroHourScreen": {
+    "decidedToAttack": "{playerName} decidió atacar a {targetName}",
+    "goToGuards": "Ir a la guardia de {tileName}",
+    "greetAndPass": "✖ Saludar y pasar",
+    "encounters": "se encuentra sorprendentemente con",
+    "challengeSingular": "¿Le retarías a un combate?",
+    "challengePlural": "¿Retar a uno de ellos a un combate?",
+    "fightButton": "Luchar contra {name} ⚔️"
+  },
+  "screenRenderer": {
+    "encounters": "se encuentra con",
+    "belongsTo": "que pertenece a",
+    "andIsGuarded": "y está defendida por {amount}🧍",
+    "riskOrPay": "¿Luchar para arrasarla o pagar y seguir?",
+    "razedSmokeCaveat": "Las casillas arrasadas no pertenecen a nadie hasta que se disipe el humo"
+  },
+  "newGameModal": {
+    "heroes": "Héroes:",
+    "randomName": "Nombre aleatorio",
+    "humanComputerToggle": "Humano / Ordenador (clic para alternar)",
+    "startGame": "Empezar Partida",
+    "characterSuffixFarmer": "Granjero",
+    "characterSuffixWarrior": "Guerrero",
+    "characterSuffixWizard": "Mago"
+  },
+  "ownedTiles": {
+    "ownsNothing": "El pobre {name} no posee nada"
+  },
+  "gameLogModal": {
+    "noMessages": "Aún no hay mensajes."
+  },
+  "playerStats": {
+    "incomePerYear": "Ingresos por año"
+  },
+  "currentPlayer": {
+    "fameTooltip": "Tu Fama. ¡Gánala poseyendo casillas y ganando batallas!",
+    "isAt": "está en",
+    "kingsContractTooltip": "Contrato del Rey: ¡reclama {tileName} por {award}🟡!",
+    "goldTooltip": "Oro que posees actualmente",
+    "asKingsGrace": "como gracia del Rey",
+    "fromYourTiles": "de tus casillas",
+    "fromYourTowers": "del peaje de tus Torres",
+    "fromPristineDiamond": "del Diamante Puro 💎",
+    "wagesMessage": "Pasa por el Castillo del Rey para {summary}",
+    "armyTooltip": "Tu fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot} unidades cada uno",
+    "unitsIncomeTooltip": "+{units} unidades de {tiles} casillas",
+    "artifactTooltip": "{name}: {description}"
+  },
+  "botController": {
+    "decided": "{name} decidió {decision}",
+    "takeUndefendedTile": "tomar la casilla indefensa",
+    "payTheFee": "pagar la tarifa",
+    "fight": "luchar",
+    "sellTilesToFight": "vender casillas para luchar",
+    "sellTilesToPayFee": "vender casillas para pagar la tarifa",
+    "acceptTheLoss": "aceptar la pérdida",
+    "fightTheDragon": "luchar contra el dragón",
+    "attackTheCaravan": "atacar la caravana",
+    "sellForSyndicate": "vender {saleName} para completar un sindicato con {tileName}",
+    "claimTile": "reclamar {tileName}",
+    "garrisonTile": "guarnecer {amount}🧍 en {tileName}"
+  },
+  "boardCanvas": {
+    "challengeDragon": "Desafiar al Dragón"
+  },
+  "helpScreen": {
+    "objective": {
+      "title": "Objetivo",
+      "body": "¡Sé el primero en reunir <strong>50+ guerreros 🧍</strong> y matar al Dragón 🐉 para reclamar la victoria!"
+    },
+    "turnOrder": {
+      "title": "Orden del turno",
+      "step1": "Tira el dado 🎲 (o agita tu teléfono 📳) y mueve a tu héroe por el tablero",
+      "step2": "Actúa según la casilla en la que caigas",
+      "step3": "Mejora o vende tus casillas si es necesario",
+      "step4": "Termina tu turno ⏳",
+      "step5": "Cada vuelta completa un año — pasa por el 🏰 Castillo del Rey para recibir las recompensas"
+    },
+    "goldUnits": {
+      "title": "Oro 🟡 y unidades 🧍",
+      "item1": "El Oro 🟡 y las unidades 🧍 son los recursos básicos para comprar casillas, luchar o iniciar la batalla final",
+      "item2": "Ingreso anual: cuantas más casillas poseas, más recibirás cada año",
+      "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
+      "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
+      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
+      "item6": "Unidades como 🧟👹🥷 equivalen o son <i>casi</i> equivalentes a 🧍. El Dragón 🐉 equivale a 🐎."
+    },
+    "fame": {
+      "title": "Fama 🏆",
+      "item1": "Es tu reputación. Depende de cada batalla ganada o perdida y de las casillas que posees.",
+      "item2": "Una fama de {knightFame} o más te hace apto para el ascenso — el Rey te nombra caballero (desbloqueando el reclutamiento de Jinetes) la próxima vez que cruces su Castillo. También te hace más visible para un dragón - ¡cuidado, podría atacar!",
+      "item3": "Más fama te permite reclutar más unidades en el Castillo del Rey, aumenta tu ingreso estable de unidades 🧍 y te permite poseer las mejores casillas"
+    },
+    "tiles": {
+      "title": "Casillas 🧩",
+      "discoverTitle": "Descubrir",
+      "discoverBody": "nuevas casillas y ser recompensado por ello",
+      "own": "<strong>👛 Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Visitar tus propias casillas te aporta un bono",
+      "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — paga una tarifa 💰 o lucha ⚔️ para arrasarla. Una casilla arrasada 🔥 pierde todas sus mejoras y queda sin dueño, pero ese jugador no podrá reclamarla tras la batalla. Si no tienes suficiente oro o unidades, vende algunas de tus casillas. La batalla cuesta unidades al atacante. Si no puedes luchar ni pagar, te conviertes en prisionero de guerra: pasas 2 turnos en prisión, y después recibes un bono inicial para seguir jugando.",
+      "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: el bono de ingresos y la tarifa se <strong>duplican</strong>",
+      "sellAnytime": "<strong>Vender</strong> — las casillas pueden venderse en cualquier momento por el precio total de la casilla y sus mejoras. Haz clic en el encabezado de la casilla para ver los botones de Vender/Ceder.",
+      "yieldToKing": "<strong>Ceder al Rey</strong> — cede una casilla ('media venta'): recibes la mitad de su precio de inmediato, pero no produce ingresos y no se puede luchar por ella. Recupérala por el 60% del precio de la casilla. Vender una casilla cedida reembolsa un 10% menos de su valor restante.",
+      "clickToView": "<strong>Haz clic en el título o los datos de la casilla</strong> para ver sus bonos y defensas en cada nivel"
+    },
+    "tileUpgrades": {
+      "title": "Mejoras de casilla ⬆️",
+      "item1": "<strong>Mejora las casillas</strong> pagando 🟡 para aumentar sus ingresos y defensa. Haz clic en el botón ⬆️ para mejorar, haz clic en el título para ver las mejoras posibles.",
+      "item2": "Cada mejora añade una torre de guarnición 🏯 más a la casilla. Cada torre puede albergar hasta 10 unidades defensoras y añade un bono a sus tiradas de defensa.",
+      "item3": "Las mejoras no se pueden vender por separado ni desmantelar, pero su precio se suma al valor de la casilla.",
+      "item4": "Puedes enviar unidades a guarnecer una casilla en cualquier momento, pero solo puedes recuperarlas en tu ejército mientras visitas esa casilla."
+    },
+    "specialTiles": {
+      "title": "Casillas especiales 🃏",
+      "kingsCastle": "🏰 <strong>Castillo del Rey</strong> — visítalo para reclutar unidades 🧍 con oro; la cantidad está limitada por tu fama. Pasar por el Castillo del Rey otorga ingresos base más bonos de todas tus propiedades.",
+      "treasureChest": "📦 <strong>Cofre del Tesoro</strong> — recompensa en oro, de tamaño pequeño/mediano/grande.",
+      "tavern": "🍺 <strong>Taberna</strong> — recluta unidades",
+      "sphynx": "🦁 <strong>Esfinge</strong>: <br/>Tira el dado 🎲:<br/> <b>1,2</b> - pierdes la mitad de tu 🟡<br/><b>3,4</b> - pierdes 1/3 de tus 🧍<br/> <b>5</b> - nada, exhala 🌬️<br/> <b>6</b> - ganas la mitad de tu 🟡",
+      "prison": "⛓️ <strong>Prisión</strong> — pierdes un turno. Mientras estás en prisión, nadie paga por visitar tus casillas",
+      "joker": "🃏 <strong>Comodín</strong> — desencadena un evento global aleatorio, ver la lista completa abajo.",
+      "ruins": "🏚️ <strong>Ruinas</strong> — caer aquí siempre desencadena una lucha contra sus ocupantes monstruosos, ver los detalles abajo."
+    },
+    "joker": {
+      "title": "Comodín 🃏",
+      "intro": "Caer en la casilla del Comodín desencadena un evento aleatorio, que afecta a todos (o, en algunos casos, a un solo jugador):",
+      "taxes": "🧾 <strong>Impuestos</strong> — todos los jugadores pierden la mitad de su oro.",
+      "plague": "🦠 <strong>Peste</strong> — todos los jugadores pierden la mitad de sus unidades.",
+      "hurricane": "🌪️ <strong>Huracán</strong> — golpea la casilla más cara del jugador más rico, arrasándola, pero solo si es al menos 1.5 veces más rico que el segundo.",
+      "blessing": "👑 <strong>Bendición</strong> — todas las casillas en propiedad suben un nivel.",
+      "queensGift": "💍 <strong>Regalo de la Reina</strong> — el jugador que lo obtuvo recibe una casilla de Campamento/Torre gratis, o 2000🟡 y 5🧍 si no hay ninguna libre.",
+      "earthquake": "🪨 <strong>Terremoto</strong> — las casillas mejoradas pierden un nivel; los jugadores sin casillas mejoradas pierden su casilla más barata en su lugar.",
+      "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola."
+    },
+    "caravan": {
+      "title": "Caravana 🐪",
+      "item1": "Al <em>inicio</em> de tu turno tienes la posibilidad de encontrarte con una caravana que trae tesoros o esclavos",
+      "item2": "¡Derrota a los guardias de la caravana para liberar a los esclavos (se unen a tu ejército) o saquear los tesoros!"
+    },
+    "ruins": {
+      "title": "Ruinas Antiguas 🏚️",
+      "item1": "Caer en la casilla de las Ruinas siempre desencadena una lucha contra sus ocupantes monstruosos — no hay forma de rechazarla.",
+      "item2": "La fuerza de los monstruos equivale a entre el <strong>90% y el 105%</strong> de tu propio escuadrón, así que siempre es una lucha reñida e impredecible.",
+      "item3": "Las unidades perdidas en la batalla se pierden de todos modos, ya sea victoria, empate o derrota.",
+      "item4": "Una victoria o un empate tienen un <strong>80% de probabilidad</strong> de encontrar un artefacto sin dueño entre los escombros, además del resultado habitual de la batalla."
+    },
+    "battle": {
+      "title": "Batalla ⚔️",
+      "squad": "<strong>Todo el ejército</strong> del atacante marcha a la batalla, arriesgando sus vidas por algún objetivo: bienes o esclavos de una caravana, arrasar la casilla o luchar contra el Dragón.",
+      "razing": "<strong>Arrasar</strong> significa que la casilla pierde todas sus mejoras y no pertenece a nadie",
+      "twoModes": "Hay dos modos: combate cuerpo a cuerpo y batalla normal",
+      "brawlMode": "En el <strong>modo Combate:</strong> Modo simple, usado cuando el escuadrón tiene menos de 6 unidades. Atacante y defensor tiran el dado, quien saque más gana la ronda.",
+      "normalMode": "<strong>Batalla normal:</strong> El combate se resuelve por rondas. En cada ronda ambos bandos tiran el dado; la cantidad obtenida es el número de unidades enemigas destruidas. Quien destruya primero todas las unidades enemigas gana.",
+      "tie": "Si mueren todas las unidades del atacante y del defensor, es un Empate",
+      "priceOfVictory": "¡La victoria tiene un precio! Como resultado de una batalla, el vencedor pierde las unidades muertas en combate."
+    },
+    "artifacts": {
+      "title": "Artefactos",
+      "intro": "Se encuentran dentro de los Cofres del Tesoro 📦 — cada artefacto otorga a su dueño un bono permanente para el resto de la partida."
+    },
+    "dragon": {
+      "title": "Dragón 🐉",
+      "item1": "Si tienes más de 50 guerreros al <em>inicio</em> de tu turno — puedes elegir desafiar al Dragón o tirar el dado en su lugar.",
+      "item2": "A veces, mientras viajas, puedes ver al dragón en el cielo. Y si eres rico y famoso, ten cuidado: ¡podría atacarte y quemar tus casillas hasta los cimientos!"
+    }
+  },
+  "screenStore": {
+    "rollDice": "Tirar Dado 🎲",
+    "tavernMessage": "¡Dales una ronda y lanza una moneda!",
+    "sphynxTitle": "Esfinge",
+    "sphynxMessage": "Su mirada pesa como piedra",
+    "acceptYourDestiny": "Acepta tu destino",
+    "you": "Tú",
+    "dragonInSky": "{who} ve un dragón negro gigante pasar por el cielo",
+    "scatterAndHide": "Dispérsate y escóndete, para que no ataque",
+    "rollDiceInstead": "Tirar Dado en su Lugar 🎲",
+    "challengeTheDragon": "Desafiar al Dragón 🐉",
+    "promotionTitle": "Ascenso",
+    "promotionMessage": "Por tu valor y fama, ¡el Rey asciende a {playerSpan} a Caballero!<br />Ahora también puedes reclutar jinetes 🐎",
+    "keepCalmAndCarryOn": "⚜️ Mantén la calma y sigue adelante"
+  },
+  "treasureBox": {
+    "size": {
+      "small": "pequeño",
+      "medium": "mediano",
+      "large": "grande"
+    },
+    "treasureFound": "¡Tesoro encontrado!",
+    "letTreasuresGrow": "🪎 ¡Mi tesoooro!",
+    "foundArtifact": "¡{playerName} encontró un cofre del tesoro {size} y descubrió {artifactName}!",
+    "foundArtifactHtml": "{playerSpan} encontró un cofre {size} que contenía {emoji} {artifactName}",
+    "foundGold": "¡{playerName} encontró un cofre del tesoro {size}! Sacó {roll}, recibió {gold}🟡!",
+    "foundGoldHtml": "{playerSpan} encontró un cofre {size} con {gold}🟡"
+  },
+  "sellUnits": {
+    "sold": "{playerName} vendió {amount} {tier} por {gold}🟡."
+  },
+  "dragonEncounter": {
+    "descends": "¡El Dragón desciende del cielo sobre {playerSpan}!",
+    "flee": "¡Huir! 🏃",
+    "soarsOverhead": "Un enorme dragón negro sobrevuela...",
+    "savedByArtifact": "El Dragón se abalanza sobre {playerName}, pero el {artifactName} {emoji} le salva del daño!",
+    "attacksYou": "¡El Dragón se abalanza y te ataca!",
+    "attackedFameLost": "¡{playerName} es atacado por el dragón! Pierde fama.",
+    "burnsYourTile": "¡El Dragón quema tu {tileName}!",
+    "tileDestroyed": "¡El {tileName} de {playerName} fue destruido por el Dragón!",
+    "tileDamaged": "¡El {tileName} de {playerName} fue dañado por el Dragón (ahora nivel {level})!"
+  },
+  "sphynx": {
+    "pipeSavedMessage": "Calmas a la Esfinge gruñona con tu Flauta 🪈 y te alejas rápidamente.",
+    "pipeSavedScreen": "Calmas a la Esfinge gruñona con tu Flauta 🪈 y te alejas rápidamente",
+    "lostGoldMessage": "Perdiste la mitad de tu oro: -{gold}🟡",
+    "lostGoldScreen": "Escapas de la Esfinge perdiendo {gold}🟡",
+    "povertyMessage": "Ve tu pobreza y te deja ir.",
+    "povertyScreen": "La Esfinge se niega a tratar con mendigos",
+    "ateUnitsMessage": "La Esfinge se comió a {units}🧍",
+    "ateUnitsScreen": "La Esfinge se come a {units}🧍, pero escapas.",
+    "nothingMessage": "No pasa nada.",
+    "nothingScreen": "La Esfinge permaneció en silencio.",
+    "gainGoldMessage": "Recibiste {gold}🟡 (20%).",
+    "gainGoldScreen": "¡La Esfinge te recompensó con {gold}🟡 por tu sabiduría!",
+    "fameSuffix": "Fama +1🏆 por la aventura."
+  },
+  "king": {
+    "aTile": "una casilla",
+    "contractOffered": "📜 ¡El Rey te entrega un contrato: reclama {tileName} por {award}🟡!"
+  },
+  "becomeBeggar": {
+    "becomesBeggar": "¡{playerName} se convierte en un mendigo!",
+    "unitsLeave": "{units} unidades abandonan a {playerName} mientras su reputación se desvanece",
+    "capturedAndMoved": "{playerName} es capturado y trasladado a Prisión",
+    "lostTileSingular": "Perdió {count} casilla y ",
+    "lostTilesPlural": "Perdió {count} casillas y ",
+    "unitDesertedSingular": "{count} unidad desertó",
+    "unitsDesertedPlural": "{count} unidades desertaron",
+    "gameMessage": "¡{playerName} se convirtió en prisionero de guerra! {tilesMsg}{lostUnitsMsg}. Encarcelado, pero todavía noble."
+  },
+  "endTurn": {
+    "prisonIsWetAndCold": "La prisión está húmeda y fría, {playerName}",
+    "dwellsInPrison": "{playerName} permanece en prisión y pierde el turno",
+    "enoughToChallengeDragon": "¡{playerName} tiene {army} — suficiente para desafiar al Dragón!",
+    "dragonGuardsGold": "Un dragón aterrador custodia un montón de oro y joyas",
+    "prisonGoldFine": "{playerSpan} soborna a los guardias con {fine}🟡 para escapar de la prisión",
+    "prisonGoldFineToast": "{playerName} soborna a los guardias con {fine}🟡 para escapar de la prisión",
+    "prisonFameFine": "{playerSpan} abandona la prisión avergonzado, perdiendo 1🏆",
+    "prisonFameFineToast": "{playerName} no tiene oro para pagar y pierde 1 de fama para salir de la prisión",
+    "prisonFineWaived": "El {artifactName} {emoji} de {playerSpan} exime la multa para salir de la prisión",
+    "prisonFineWaivedToast": "El {artifactName} de {playerName} exime la multa para salir de la prisión",
+    "turnIncome": "{playerName} recoge {summary} de sus casillas"
+  },
+  "buyUnits": {
+    "bought": "{playerName} compró {amount} {tier} por {gold}🟡.",
+    "notEnoughGold": "No hay suficiente oro para comprar unidades."
+  },
+  "payFee": {
+    "paidButOwnerInPrison": "{playerName} pagó {fee}🟡 por {tileName}, pero {ownerName} está en prisión y no recibe nada.",
+    "paid": "{playerName} pagó {fee}🟡 a {ownerName} por {tileName}."
+  },
+  "passStart": {
+    "spentYearsWandering": "{playerName} pasó {circles} años vagando, buscando la gloria",
+    "receives": "{playerName} recibe {summary}",
+    "aYear": "un año",
+    "years": "{count} años",
+    "kingRewardsYou": "El Rey te recompensa por {years} de tu servicio"
+  },
+  "garrisonTile": {
+    "setGarrison": "{playerName} fija la guarnición de {tileName} en {militia}🧍/{riders}🐎"
+  },
+  "resolvePlayerBattle": {
+    "losingUnits": ", perdiendo {units}🧍",
+    "attackerWinsGameMessage": "¡{attackerName} derrota a {defenderName}! {defenderName} huye al Castillo del Rey{lossStr}",
+    "attackerWinsMessage": "¡{defenderName} huye al Castillo del Rey!{lossStr}",
+    "tieGameMessage": "{attackerName} y {defenderName} luchan hasta un sangriento empate — ambos pierden {loss}🧍",
+    "tieMessage": "Un sangriento empate — ambos bandos pierden {loss}🧍",
+    "defenderLoses": "{defenderName} pierde {units}🧍.",
+    "defenderWinsGameMessage": "{attackerName} es derrotado por {defenderName} y huye al Castillo del Rey",
+    "defenderWinsMessage": "¡Derrotado! Huyes al Castillo del Rey.{defLossStr}",
+    "attackerWinsLabel": "gana el atacante",
+    "defenderWinsLabel": "gana el defensor",
+    "tieLabel": "empate",
+    "logLine": "⚔️ La Hora del Héroe: {attackerName} vs {defenderName} — {outcomeLabel} ({unitsBefore}→{unitsAfter}🧍{goldPart})"
+  },
+  "afterMoveLogic": {
+    "ownerInPrison": "{ownerName} está en prisión, así que otros solo le envían flores 🌹 al visitar su propiedad",
+    "defencelessItsMine": "¿Indefensa? es mía",
+    "payFee": "🕊️ Pagar {fee}🟡",
+    "battle": "🔥 Luchar para arrasarla",
+    "acceptLoss": "Aceptar la pérdida 😢",
+    "sellHeader": "Vende casillas para pagar la tarifa de {fee}🟡, reúne un ejército, o cédela temporalmente al Rey por la mitad del precio",
+    "sellTiles": "Vender casillas 💰",
+    "enjoysYieldedVisit": "{playerName} disfruta visitando {tileName} mientras está cedida"
+  },
+  "fightDragon": {
+    "willDareChallenge": "Un dragón aterrador custodia un montón de oro y joyas. ¿Se atreverá {playerSpan} a desafiarlo?",
+    "needsAtLeast": "{playerName} necesita al menos {threshold}🧍 para desafiar al Dragón",
+    "notNow": "Ahora No"
+  },
+  "sellTile": {
+    "sold": "{playerName} vendió {tileName} por {gold} de oro y {units} unidades"
+  },
+  "yieldTile": {
+    "yielded": "{playerName} cede {tileName} al Rey, recibiendo {gold}🟡",
+    "takenBack": "{playerName} recupera {tileName} del Rey por {gold}🟡",
+    "cannotAfford": "Se necesitan {gold}🟡 para recuperar {tileName}"
+  },
+  "claimUndefendedTile": {
+    "findsDefenceless": "¡{attackerName} encuentra {tileName} indefensa y la toma!",
+    "claimsWithoutFight": "🏴 {attackerName} reclama la indefensa {tileName} sin luchar"
+  },
+  "resolveAmbush": {
+    "receivingGold": ", recibiendo {reward}🟡",
+    "unitsLostSuffix": ", {units}🧍 perdidos",
+    "repelsGameMessage": "{playerName} repele la emboscada{rewardStr}{lossStr}",
+    "repelledWithReward": "Tu recompensa es {reward}🟡{lossStr}",
+    "repelled": "¡Emboscada repelida!{lossStr}",
+    "barelySurvivesGameMessage": "{playerName} apenas sobrevive a la emboscada{lossStr}",
+    "bloodyStalemate": "Un sangriento empate{lossStr}",
+    "lostSuffix": " — perdió {loss}",
+    "overwhelmedGameMessage": "{playerName} es abrumado por la emboscada{lossStr}",
+    "lost": "Perdió {loss}",
+    "overwhelmed": "Abrumado",
+    "lostUnitsPart": ", perdió {units}🧍",
+    "gainedGoldPart": ", ganó {gold}🟡",
+    "lostGoldPart": ", perdió {gold}🟡",
+    "repelsVerb": "repele una emboscada",
+    "isAmbushedVerb": "cae en una emboscada",
+    "survivesVerb": "sobrevive a una emboscada",
+    "logLine": "{playerName} {verb}{unitsPart}{goldPart}"
+  },
+  "revealTile": {
+    "discovered": "{playerName} descubrió {tileName}. Recompensa: {reward}"
+  },
+  "rollAndMove": {
+    "rolledAndWentTo": "{playerName} sacó {roll} y fue a {tileName}",
+    "cannotBuyIt": "no puede comprarla",
+    "defenceTooStrong": "la defensa parece demasiado fuerte",
+    "butReasons": ", pero {reasons}."
+  },
+  "joker": {
+    "eventName": {
+      "taxes": "Impuestos",
+      "plague": "Peste",
+      "hurricane": "Huracán",
+      "blessing": "Bendición",
+      "queensGift": "Regalo de la Reina",
+      "earthquake": "Terremoto",
+      "meteor": "Meteorito"
+    },
+    "taxesMessage": "Todos los jugadores pierden la mitad de su oro.",
+    "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
+    "plagueMessage": "Todos los jugadores pierden la mitad de sus unidades.",
+    "playerLosesTile": "{playerName} pierde {tileName}",
+    "hurricaneNoEffect": "El cielo permanece calmo — ningún jugador es lo bastante rico para atraer la ira del huracán.",
+    "blessingMessage": "Todas las casillas en propiedad suben un nivel.",
+    "earthquakeDestroys": "El terremoto destruye: {list}",
+    "earthquakeMessage": "Todas las casillas mejoradas pierden un nivel, algunas son destruidas",
+    "meteorSaved": "¡Una lluvia de meteoritos cae sobre las tierras de {playerName}, pero el {artifactName} {emoji} las salva del daño!",
+    "meteorDestroys": "Una lluvia de meteoritos cae sobre {tileName}, destruyéndola",
+    "meteorWilderness": "Una lluvia de meteoritos cae sobre tierras salvajes, sin dañar a nadie",
+    "queensGiftTile": "¡{playerName} recibe {tileName} gratis!",
+    "queensGiftGold": "La Reina envía 2000🟡 y 5🧍 a {playerName}",
+    "eventLogLine": "{eventName}: {message}"
+  },
+  "battleCommon": {
+    "losingUnitsPart": " perdiendo {units}🧍",
+    "paidToOwnPart": " y pagó {gold}🟡 por poseerla",
+    "wonBattleForTile": "⚔️ {attackerName} ganó la batalla por {tileName}{unitsPart}{paidPart}",
+    "winsVerb": "gana una batalla",
+    "losesVerb": "pierde una batalla",
+    "tiesVerb": "empata",
+    "razedPart": ", arrasó {tileName}",
+    "lostUnitsPart": ", perdió {units}🧍 ({before}→{after})",
+    "gainedUnitsPart": ", ganó {units}🧍 ({before}→{after})",
+    "gainedGoldPart": ", ganó {gold}🟡",
+    "lostGoldPart": ", perdió {gold}🟡 ({before}→{after})",
+    "logLine": "⚔️ {attackerName} {outcomeVerb} con {defenderLabel}{capturePart}{unitsPart}{goldPart}"
+  },
+  "resolveTileBattle": {
+    "losingSuffix": ", perdiendo {units}🧍",
+    "claims": "¡{attackerName} reclama {tileName}{lossStr}!",
+    "contractFulfilled": "📜 ¡Contrato del Rey cumplido: +{award}🟡!",
+    "razedGameMessage": "¡{attackerName} arrasó {tileName}{lossStr}!",
+    "razes": "¡{attackerName} arrasa {tileName}{lossStr}!",
+    "lostBattleGameMessage": "{attackerName} perdió la batalla por {tileName}{lossStr}",
+    "retreats": "{attackerName} se retira de {tileName}{lossStr}",
+    "degradedGameMessage": "El asalto de {attackerName} degradó {tileName} al nivel {level}{lossStr}",
+    "degradedMessage": "No se pagó la tarifa y {tileName} se degradó{lossStr}",
+    "stalemateGameMessage": "El asalto de {attackerName} a {tileName} termina en un empate{lossStr}",
+    "armyRetreats": "El ejército de {attackerName} se retira{lossStr}",
+    "theGuards": "la guardia"
+  },
+  "resolveCaravanBattle": {
+    "whileUnitsLostGame": " mientras se perdían {units}🧍",
+    "whileUnitsLostScreen": " mientras se perdían {units}🧍 luchando por ella",
+    "freedGameMessage": "¡{attackerName} liberó a {prize}🧍!",
+    "freedMessage": "¡{prize}🧍 fueron liberados y se unen a tu ejército!",
+    "pillagedGameMessage": "¡{attackerName} asaltó la caravana y saqueó {prize}🟡!",
+    "pillagedMessage": "Saqueados {prize}🟡",
+    "losingSuffix": ", perdiendo {units}🧍",
+    "freedOnlyGameMessage": "{attackerName} solo liberó a {prize}🧍 de la caravana{lossStr}",
+    "freedOnlyMessage": "¡Solo se liberaron {prize}🧍{lossStr}!",
+    "pillagedOnlyGameMessage": "{attackerName} solo saqueó {prize}🟡{lossStr}",
+    "pillagedOnlyMessage": "Los guardias de la caravana resistieron, solo se saquearon {prize}🟡{lossStr}",
+    "failedGameMessage": "¡{attackerName} no logró asaltar la caravana!",
+    "gotAway": "¡La caravana escapó!",
+    "caravanGuards": "Guardias de la Caravana"
+  },
+  "resolveDragonBattle": {
+    "slaysGameMessage": "¡{attackerName} mata al Dragón! 🐉 ¡VICTORIA!",
+    "slaysMessage": "¡El Dragón ha sido abatido! 🐉 ¡VICTORIA!",
+    "woundedGameMessage": "{attackerName} hirió al Dragón, pero este escapó, llevándose {units}🧍",
+    "woundedMessage": "El Dragón herido se retira, llevándose {units}🧍 con él",
+    "defeatedGameMessage": "¡{attackerName} fue derrotado por el Dragón!{lossStr}",
+    "lostSuffix": " Perdió {loss}",
+    "lost": "Perdió {loss}",
+    "defeated": "Derrotado",
+    "theDragon": "El Dragón"
+  },
+  "playerNames": {
+    "pronouns": {
+      "m": [
+        "Borracho",
+        "Risueño",
+        "Cantor",
+        "Enojado",
+        "Somnoliento",
+        "Mugriento",
+        "Patético",
+        "Desdentado",
+        "Valiente",
+        "Andrajoso",
+        "Sucio",
+        "Reluciente",
+        "Despiadado",
+        "Dorado",
+        "Radiante",
+        "Noble",
+        "Valeroso",
+        "Bizco",
+        "Feliz",
+        "Baboso",
+        "Espantoso",
+        "Cobarde",
+        "Místico"
+      ],
+      "f": [
+        "Borracha",
+        "Risueña",
+        "Cantora",
+        "Enojada",
+        "Somnolienta",
+        "Mugrienta",
+        "Patética",
+        "Desdentada",
+        "Valiente",
+        "Andrajosa",
+        "Sucia",
+        "Reluciente",
+        "Despiadada",
+        "Dorada",
+        "Radiante",
+        "Noble",
+        "Valerosa",
+        "Bizca",
+        "Feliz",
+        "Babosa",
+        "Espantosa",
+        "Cobarde",
+        "Mística"
+      ]
+    },
+    "nouns": [
+      {
+        "word": "Campesino",
+        "gender": "m"
+      },
+      {
+        "word": "Sepulturero",
+        "gender": "m"
+      },
+      {
+        "word": "Caballero",
+        "gender": "m"
+      },
+      {
+        "word": "Escudero",
+        "gender": "m"
+      },
+      {
+        "word": "Saqueador",
+        "gender": "m"
+      },
+      {
+        "word": "Campeón",
+        "gender": "m"
+      },
+      {
+        "word": "Monje",
+        "gender": "m"
+      },
+      {
+        "word": "Monja",
+        "gender": "f"
+      },
+      {
+        "word": "Enano",
+        "gender": "m"
+      },
+      {
+        "word": "Barón",
+        "gender": "m"
+      },
+      {
+        "word": "Dama",
+        "gender": "f"
+      },
+      {
+        "word": "Príncipe",
+        "gender": "m"
+      },
+      {
+        "word": "Princesa",
+        "gender": "f"
+      },
+      {
+        "word": "Bandido",
+        "gender": "m"
+      },
+      {
+        "word": "Asesino",
+        "gender": "m"
+      },
+      {
+        "word": "Payaso",
+        "gender": "m"
+      },
+      {
+        "word": "Duquesa",
+        "gender": "f"
+      }
+    ]
+  },
+  "playerOptions": {
+    "red": "Rojo",
+    "blue": "Azul",
+    "yellow": "Amarillo",
+    "green": "Verde",
+    "violet": "Violeta",
+    "black": "Negro"
+  },
+  "visitOwnTile": {
+    "provides": "{tileName} le proporciona a {playerName} {rewards}{syndicateTag}",
+    "yourTileProvides": "Tu {tileName} proporciona {rewards}{syndicateTag}",
+    "yourTileYielded": "Tu {tileName} está cedida al Rey — sin bono mientras esté cedida"
+  },
+  "ambushEncounter": {
+    "title": "Emboscada",
+    "message": "¡{playerSpan} cae en una emboscada!<br />Un escuadrón de {units}🥷 ataca de repente. ¡Lucha por tu vida!",
+    "defend": "Defender"
+  },
+  "zombieAmbush": {
+    "title": "¡Ataque Zombi!",
+    "message": "¡{playerSpan} perturba las ruinas de {tileName}!<br />{units}🧟‍♀️ se levantan de la casilla abandonada y atacan. ¡Lucha por tu vida!"
+  },
+  "ruinsEncounter": {
+    "title": "Ruinas Antiguas",
+    "message": "{playerSpan} descubre las ruinas de un castillo antiguo. Por desgracia, un grupo de monstruos las ocupa. ¡Y los monstruos atacan!",
+    "fight": "🧟 ¡Lucha por tu vida!",
+    "lostSuffix": ", perdiendo {units}🧍",
+    "victoryMessage": "¡Las ruinas han sido despejadas!{lossStr}",
+    "victoryGameMessage": "¡{playerName} limpia las ruinas de monstruos!{lossStr}",
+    "tieMessage": "¡Un costoso empate entre las ruinas!{lossStr}",
+    "tieGameMessage": "¡{playerName} apenas sobrevive a las ruinas!{lossStr}",
+    "defeatMessage": "¡Derrotado! Las ruinas siguen en poder de los monstruos.{lossStr}",
+    "defeatGameMessage": "¡{playerName} es expulsado de las ruinas!{lossStr}",
+    "foundArtifact": " ¡Mira lo que hay ahí! No puede ser... ¡Es {artifact}!",
+    "foundArtifactToast": "¡{playerName} encontró {artifactName} {emoji} entre las ruinas!"
+  },
+  "caravanEncounter": {
+    "bringingChains": "trayendo a {prize}🧍 encadenados",
+    "ofGoodsWorth": "de bienes por valor de {prize}🟡",
+    "message": "{playerSpan} <br />{gold}🟡 {army}<br /> se encuentra con una caravana<br /> custodiada por {defendingUnits}🥷\n    <br /> {caravanDesc}<br /> ¿Atacarías?",
+    "letThemPass": "✖️ Dejarles pasar..",
+    "attack": "⚔️ ¡Atacar!"
+  },
+  "gameStart": {
+    "message": "¡Nueva partida iniciada! Buena suerte a todos los jugadores."
+  },
+  "releasePrisonerOfWar": {
+    "message": "El Rey, en su gracia, te envía {units}🧍 y {gold}🟡"
+  },
+  "prison": {
+    "title": "La prisión está fría y oscura",
+    "flavorText": "Moscas verdes y zumbantes 🪰 llenan este calabozo de desesperación",
+    "savedByArtifact": "{playerName} es enviado a Prisión, pero el {artifactName} {emoji} le mantiene libre — ¡ningún turno perdido!"
+  },
+  "tavern": {
+    "joined": "{units}🧍 se unieron al poderoso ejército<br />de {playerSpan}",
+    "ranksFull": "{units}🧍 estaban a punto de unirse a ti, pero tus filas están llenas",
+    "horsesJoined": "¡{units}🧍 del generoso {playerSpan} recibieron caballos gratis 🐴<br />y se convirtieron en jinetes!",
+    "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...y {units}🧍 se quedaron borrachos en la taberna)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} ranuras del ejército llenas — {turnedAway}🧍 rechazados)</span>",
+    "newFolksWelcome": "¡Siempre se agradecen caras nuevas!",
+    "title": "La Taberna",
+    "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades"
+  },
+  "portal": {
+    "title": "Torbellino de luces",
+    "message": "{playerName} se siente desorientado y perdido 🌀",
+    "surprised": "...y sorprendido de encontrarse en",
+    "whereAreYou": "¿Dónde estás?"
+  },
+  "rogueAttack": {
+    "title": "Ataque de Bandidos",
+    "garrisonLost": "La guarnición de tu {tileName} perdió {units}🧍 al repelerlos",
+    "attackersJoin": "{units}🧍 de los atacantes, impresionados por el poder de {playerName}, se unieron a su guarnición",
+    "wonFull": "Batalla ganada, y tu guarnición está llena de nuevo",
+    "wonToast": "La guarnición de {playerName} en {tileName} repele a una horda errante",
+    "razed": "¡Tu {tileName} fue arrasada 🔥por la horda errante!",
+    "razedToast": "{tileName} de {playerName} es arrasada por una horda errante",
+    "tie": "La guarnición de tu {tileName} apenas resiste, perdiendo {units}🧍 ante la horda errante",
+    "tieToast": "La guarnición de {playerName} en {tileName} pierde {units}🧍 ante una horda errante",
+    "horde": "Horda Errante"
+  },
+  "cheatScreen": {
+    "title": "Menú de Trucos",
+    "moveTo": "Mover a",
+    "move": "Mover",
+    "ownTile": "Poseer una casilla",
+    "own": "Poseer",
+    "setMoney": "Fijar dinero",
+    "setUnits": "Fijar unidades",
+    "setFame": "Fijar fama",
+    "set": "Fijar",
+    "forceEncounter": "Forzar encuentro",
+    "force": "Forzar",
+    "encCaravanGold": "Caravana / Dinero",
+    "encCaravanSlaves": "Caravana / Esclavos",
+    "encRogue": "Ataque de bandidos",
+    "encDragon": "Ataque de dragón",
+    "forcedEncounterSet": "Encuentro forzado — se activará en la próxima tirada.",
+    "forceRoll": "Forzar próxima tirada",
+    "forcedRollSet": "Próxima tirada de dado forzada a {value}."
+  },
+  "overridesScreen": {
+    "title": "Ajustes",
+    "militia": "Milicia",
+    "rider": "Jinete",
+    "hp": "PV",
+    "dmg": "daño",
+    "armySlotCapacity": "Capacidad del escuadrón del ejército",
+    "garrisonSlotCapacity": "Capacidad de la torre de guarnición",
+    "zombie": "Zombi (casillas abandonadas)",
+    "tileBasePrice": "Precio base de casilla",
+    "tileUpgradeMult": "Multiplicador de mejora",
+    "tileIncomeMult": "Multiplicador de ingresos",
+    "stepByStep": "Combate paso a paso",
+    "muteToasts": "Silenciar mensajes emergentes",
+    "set": "Fijar",
+    "apply": "Aplicar",
+    "resetDefaults": "Restablecer valores predeterminados"
+  },
+  "statsScreen": {
+    "title": "Estadísticas",
+    "wealth": "Riqueza",
+    "units": "Unidades",
+    "fame": "Fama",
+    "turnAxis": "Turno",
+    "noData": "Aún no hay datos — vuelve a comprobarlo después de una ronda completa.",
+    "legend": "Leyenda",
+    "vsOpponent": "vs {opponent}",
+    "event": {
+      "sphynx": "Esfinge",
+      "joker": "Comodín",
+      "battle-won": "Batalla ganada",
+      "battle-lost": "Batalla perdida",
+      "treasure": "Tesoro",
+      "promotion": "Ascenso a Caballero",
+      "dragon": "Batalla contra el dragón",
+      "kings-castle": "Castillo del Rey"
+    }
+  }
+}

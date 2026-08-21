@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-export type Language = 'en' | 'ru';
+export type Language = 'en' | 'ru' | 'es';
 
 export interface LanguageOption {
   code: Language;
@@ -12,6 +12,7 @@ export interface LanguageOption {
 export const LANGUAGES: LanguageOption[] = [
   { code: 'en', flag: '🇬🇧', name: 'English' },
   { code: 'ru', flag: '🇷🇺', name: 'Русский' },
+  { code: 'es', flag: '🇪🇸', name: 'Español' },
 ];
 
 const STORAGE_KEY = 'language';
