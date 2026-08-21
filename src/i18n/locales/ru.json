@@ -19,11 +19,11 @@
   "tiles": {
     "water-mill": {
       "name": "Водяная мельница",
-      "shortName": "Воды"
+      "shortName": "Колесо"
     },
     "windmill": {
       "name": "Ветряная мельница",
-      "shortName": "Ветра"
+      "shortName": "Мельница"
     },
     "brick-factory": {
       "name": "Кирпич"
@@ -277,7 +277,7 @@
   },
   "currentPlayer": {
     "fameTooltip": "Ваша слава. Растёт за владение клетками и победы в боях!",
-    "isAt": "на клетке",
+    "isAt": "на клетке",
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
     "goldTooltip": "Ваше текущее золото",
     "asKingsGrace": "в качестве королевской милости",

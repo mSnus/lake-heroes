@@ -19,11 +19,10 @@
   "tiles": {
     "water-mill": {
       "name": "Water mill",
-      "shortName": "Waters"
+      "shortName": "Water"
     },
     "windmill": {
-      "name": "Windmill",
-      "shortName": "Winds"
+      "name": "Windmill"
     },
     "brick-factory": {
       "name": "Brick factory",
@@ -43,7 +42,7 @@
     },
     "wheat-field": {
       "name": "Wheat field",
-      "shortName": "Wheats"
+      "shortName": "Wheat"
     },
     "cabbage-field": {
       "name": "Cabbage field",
@@ -60,8 +59,7 @@
       "name": "Fish"
     },
     "fur": {
-      "name": "Fur",
-      "shortName": "Furs"
+      "name": "Fur"
     },
     "bows": {
       "name": "Bows"

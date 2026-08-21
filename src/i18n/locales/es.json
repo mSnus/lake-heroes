@@ -19,11 +19,11 @@
   "tiles": {
     "water-mill": {
       "name": "Molino de agua",
-      "shortName": "Aguas"
+      "shortName": "Molino"
     },
     "windmill": {
       "name": "Molino de viento",
-      "shortName": "Vientos"
+      "shortName": "Molino"
     },
     "brick-factory": {
       "name": "Fábrica de ladrillos",

@@ -73,7 +73,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
   };
 
   return (
-    <ScreenBackground image="assets/screens/guards.jpg" style={{ paddingTop: '1rem' }}>
+    <ScreenBackground image="assets/screens/guards.jpg" style={{ paddingTop: '1rem', justifyContent: 'space-evenly' }}>
       <div className="text-title" style={{ marginBottom: '0' }}>
         {t('garrisonsScreen.title')}
       </div>
@@ -108,14 +108,16 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
 
             return (
               <div className="garrisons-row" key={idx}>
-                <div className="tile-icon-title">
-                  {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{marginBottom: 0}}/>}
-                  <div className="garrisons-row-name">{tile.name}{' '}</div>
-                  <div className="big-icon-hint">         
-                    <div className="garrison-towers">{[...Array(tile.garrisonSlots)].map(() => '🏯')}</div>
-                    <div>{t('garrisonsScreen.maxLabel', { max })}</div>
-                  </div>
+
+                {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{marginBottom: 0}}/>}
+                
+                <div className="garrisons-row-name">{tile.name}{' '}</div>
+                
+                <div className="big-icon-hint">         
+                  <div className="garrison-towers">{[...Array(tile.garrisonSlots)].map(() => '🏯')}</div>
+                  <div>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
+                
                 <div className="garrisons-row-info">
                   {atMax ? (
                     <div className="garrisons-row-atmax">
@@ -131,6 +133,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                     />
                   )}
                 </div>
+                
                 <div className="garrisons-row-value">
                   <div>{value}🧍</div>
                 </div>
