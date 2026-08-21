@@ -97,6 +97,10 @@
   width: 200px;
 }
 
+.tile-card.expanded .tile-card-button.tile-card-sell-item {
+  color: #4c412d;
+}
+
 .current-tile .tile-card,
 .current-tile .tile-card.expanded {
   width: 100%;

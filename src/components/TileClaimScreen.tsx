@@ -241,7 +241,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         : 'tileClaimScreen.belongsTo';
 
   return (
-    <ScreenBackground image="assets/screens/victory.jpg" style={{ paddingTop: '1rem' }}>
+    <ScreenBackground image={variant === 'upgrades' ? "assets/screens/guards.jpg" : "assets/screens/victory.jpg"} style={{ paddingTop: '1rem' }}>
       <Fade />
       {variant === 'upgrades' && (
         <button
@@ -292,7 +292,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
       {!tile.isYielded && (
         <div className="upgrades-table">
-          {currentLevel < 3 && (
+          {currentLevel < 2 && (
             <div
               className={
                 'upgrade-level' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
