@@ -48,7 +48,7 @@ export function checkAmbushEncounter(
 
   showScreen({
     screenType: 'ambush',
-    background: 'assets/screens/caravan.jpg',
+    background: 'assets/screens/ambush.jpg',
     title: t('ambushEncounter.title'),
     fade: true,
     spriteImage: 'assets/figures/npc-saracen.png',

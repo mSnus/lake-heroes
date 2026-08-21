@@ -68,7 +68,7 @@ export function checkRogueAttackEncounter(
 
     showScreen({
       screenType: 'rogue-attack-razed',
-      background: 'assets/screens/caravan.jpg',
+      background: 'assets/screens/raid.jpeg',
       title: t('rogueAttack.title'),
       spriteImage: 'assets/figures/npc-saracen.png',
       fade: true,
@@ -123,7 +123,7 @@ export function checkRogueAttackEncounter(
   // the actual battle.
   showScreen({
     screenType: 'rogue-attack-incoming',
-    background: 'assets/screens/caravan.jpg',
+    background: 'assets/screens/raid.jpeg',
     title: t('rogueAttack.title'),
     fade: true,
     spriteImage: 'assets/figures/npc-saracen.png',

@@ -762,9 +762,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       image={
         isRuins
           ? 'assets/screens/ruins.jpg'
-          : isAmbush || isRogue
-            ? 'assets/screens/caravan.jpg'
-            : 'assets/screens/battle.jpg'
+          : isRogue
+            ? 'assets/screens/raid.jpeg'
+            : isAmbush
+              ? 'assets/screens/ambush.jpg'
+              : 'assets/screens/battle.jpg'
       }
     >
       <div

@@ -52,7 +52,7 @@ export function checkZombieAmbushEncounter(
 
   showScreen({
     screenType: 'zombie-ambush',
-    background: 'assets/screens/caravan.jpg',
+    background: 'assets/screens/ambush.jpg',
     title: t('zombieAmbush.title'),
     fade: true,
     spriteImage: 'assets/figures/npc-saracen.png',
