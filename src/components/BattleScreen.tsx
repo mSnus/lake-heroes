@@ -264,20 +264,18 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     !isBrawl &&
     attackerGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD &&
     defenderGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD;
-  // A side is manually controlled when its player is the human at the
-  // controls (the active player) — the attacker in a tile/player fight, the
-  // defender when a rogue horde raids a human's tile. In ambush, `attacker`
+  // A side is manually controlled whenever its player is a real human, not
+  // just whoever's turn it currently is -- so if a human attacks another
+  // human's tile/hero, that other player also gets to place their own
+  // defence instead of it auto-planning for them. In ambush, `attacker`
   // holds the real player but their army occupies the grid's DEFENDER role
   // (the NPC/zombie horde is the grid attacker and never gets manual
-  // control), so the mapping is reversed there. The other side (a bot, or a
-  // player who isn't taking this turn) is auto-planned.
-  const activePlayer = gameState.activePlayer;
-  const attackerManual = isBrawl && !isAmbush && attacker.id === activePlayer.id && !attacker.isComputer;
+  // control), so the mapping is reversed there. brawlDefenderPhase/
+  // brawlAttackerPhase run one after the other (never simultaneously), so
+  // both sides being manual in the same round is fine.
+  const attackerManual = isBrawl && !isAmbush && !attacker.isComputer;
   const defenderManual =
-    isBrawl &&
-    (isAmbush
-      ? attacker.id === activePlayer.id && !attacker.isComputer
-      : !!defender && defender.id === activePlayer.id && !defender.isComputer);
+    isBrawl && (isAmbush ? !attacker.isComputer : !!defender && !defender.isComputer);
 
   // ── Initial formation per side/mode — every attacker looks different
   // depending on who they are. A real player's own army always forms up
