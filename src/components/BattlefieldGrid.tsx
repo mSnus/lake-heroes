@@ -9,10 +9,10 @@ type AnimPhase = 'idle' | 'attack-defend' | 'impact' | 'outcome';
 interface BattlefieldGridProps {
   battle: GridBattleState;
   lastEvents: TurnEvent[];
-  /** Which stage of this turn's 3-beat micro-animation is showing: 🗡️/🛡️ who's
-   * attacking/defending -> 💥 who's under attack -> each unit's own result
-   * (☠️ died, 🩸 wounded, 🛡️ blocked). Drives a temporary emoji override per
-   * unit — see the per-unit lookup below. */
+  /** Which stage of this turn's 3-beat micro-animation is showing: 🗡️ who's
+   * attacking -> 💥 who's under attack -> each unit's own result (☠️ died,
+   * 🩸 wounded, 🛡️ blocked). Drives a temporary emoji override per unit —
+   * see the per-unit lookup below. */
   animPhase?: AnimPhase;
   /** Mode-specific icon override for a whole side (🐉 dragon, 👹 ambushers/
    * rogue horde, etc) in place of the normal rider/militia emoji — mirrors
@@ -308,12 +308,9 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   );
   const overrideEmoji = new Map<string, string>();
   if (animPhase === 'attack-defend') {
-    // Every engaged unit now rolls defence, attacking or not -- 🗡️ wins for
-    // one that's also attacking, so 'attack' is applied after 'defend'
-    // regardless of event order.
-    for (const e of lastEvents) {
-      if (e.type === 'defend') overrideEmoji.set(e.unitId, '🛡️');
-    }
+    // Every engaged unit attacks if it has a target -- 'defend'-only never
+    // actually happens, so no separate icon for it here (🛡️ means "blocked,
+    // no damage" in the outcome phase instead).
     for (const e of lastEvents) {
       if (e.type === 'attack') overrideEmoji.set(e.unitId, '🗡️');
     }
