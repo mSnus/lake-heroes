@@ -533,9 +533,9 @@ function resolveCombat(
   const rollFor = (u: GridUnit, defending: boolean): number => {
     const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
     const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
-    // Held-position (defence-mode) bonus: only for a unit that neither moved
-    // nor attacked this turn — it's defending from a spot it held.
-    const held = defending && !movedIds.has(u.id) ? HELD_POSITION_BONUS : 0;
+    // Held-position bonus: only when neither moved nor attacked -- true
+    // turtling, not stacked on top of an attacker's own DEFENSE_ROLL_BONUS.
+    const held = defending && !movedIds.has(u.id) && !willAttack(u) ? HELD_POSITION_BONUS : 0;
     const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) + held;
     return rollDamage(u.kind, pct, sideFlat, rng);
   };
