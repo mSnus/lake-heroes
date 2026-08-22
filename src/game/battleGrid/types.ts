@@ -21,6 +21,12 @@ export interface GridUnit {
    * pullback) — a lifetime cap (not consecutive) that guarantees a wounded
    * unit eventually commits to fighting instead of kiting forever. */
   safetyMoves: number;
+  /** Per-unit damage-roll override, set only by the battle simulator (see
+   * simulate.ts) to give one side a custom range independent of the live
+   * kind-based overrides. Undefined for every real-game unit, which keeps
+   * the normal kind+getOverrides() lookup exactly as before. */
+  dmgMin?: number;
+  dmgMax?: number;
 }
 
 export interface GridBattleState {

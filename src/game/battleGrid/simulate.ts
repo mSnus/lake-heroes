@@ -6,6 +6,12 @@ import { GridBattleState, StepTurnOptions } from './types';
 export interface SimAttacker {
   militia: number;
   riders: number;
+  militiaHp: number;
+  militiaDmgMin: number;
+  militiaDmgMax: number;
+  riderHp: number;
+  riderDmgMin: number;
+  riderDmgMax: number;
 }
 
 export type SimDefenderKind = 'normal' | 'zombie' | 'dragon';
@@ -13,6 +19,9 @@ export type SimDefenderKind = 'normal' | 'zombie' | 'dragon';
 export interface SimDefender {
   amount: number;
   kind: SimDefenderKind;
+  hp: number;
+  dmgMin: number;
+  dmgMax: number;
 }
 
 export interface SimResult {
@@ -46,12 +55,29 @@ export function simulateOneBattle(
   const rows = isBrawl ? BRAWL_ROWS : BATTLEFIELD_ROWS;
 
   let state: GridBattleState = createBattle(
-    { militia: atk.militiaCount, riders: atk.ridersCount, formation: { kind: 'compact' } },
+    {
+      militia: atk.militiaCount,
+      riders: atk.ridersCount,
+      formation: { kind: 'compact' },
+      militiaHp: attacker.militiaHp,
+      militiaDmgMin: attacker.militiaDmgMin,
+      militiaDmgMax: attacker.militiaDmgMax,
+      riderHp: attacker.riderHp,
+      riderDmgMin: attacker.riderDmgMin,
+      riderDmgMax: attacker.riderDmgMax,
+    },
     {
       militia: def.militiaCount,
       riders: def.ridersCount,
       formation: { kind: isDragon ? 'dragon' : 'compact' },
       zombie: defender.kind === 'zombie',
+      // The defender is always a single kind at a time -- its custom stats
+      // land in whichever slot (militia or rider) that kind actually uses
+      // (see createBattle: dragon-formation sides get their headcount via
+      // the rider slot).
+      ...(isDragon
+        ? { riderHp: defender.hp, riderDmgMin: defender.dmgMin, riderDmgMax: defender.dmgMax }
+        : { militiaHp: defender.hp, militiaDmgMin: defender.dmgMin, militiaDmgMax: defender.dmgMax }),
     },
     cols,
     rows

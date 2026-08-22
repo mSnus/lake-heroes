@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { runBattleSimulations, attackerLossPercentile, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
+import { getOverrides } from '../utils/overridesStore';
+import { DRAGON_HP, DRAGON_DMG_MIN, DRAGON_DMG_MAX } from '../game/constants';
 import { useT } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
 import '../styles/CheatScreen.css';
 import '../styles/OverridesScreen.css';
 
-const PERCENTILES = [10, 20, 40, 60, 80];
+const PERCENTILES = [10, 20, 40, 50, 60, 80];
 
 interface ResultRow {
   label: string;
@@ -34,16 +36,48 @@ const KIND_EMOJI: Record<SimDefenderKind, string> = {
   dragon: '🐉',
 };
 
+/** What the defender's hp/dmg fields reset to when the kind dropdown
+ * changes -- the real effective stats for that kind today (zombie's
+ * multipliers pre-applied, dragon's fixed constants), so switching kinds
+ * always starts from an accurate baseline the user can then tweak. */
+function defaultDefenderStats(kind: SimDefenderKind): { hp: number; dmgMin: number; dmgMax: number } {
+  if (kind === 'dragon') return { hp: DRAGON_HP, dmgMin: DRAGON_DMG_MIN, dmgMax: DRAGON_DMG_MAX };
+  const ov = getOverrides();
+  if (kind === 'zombie') {
+    return {
+      hp: Math.round(ov.militiaHp * ov.zombieHpMult),
+      dmgMin: Math.round(ov.militiaDmgMin * ov.zombieDmgMult),
+      dmgMax: Math.round(ov.militiaDmgMax * ov.zombieDmgMult),
+    };
+  }
+  return { hp: ov.militiaHp, dmgMin: ov.militiaDmgMin, dmgMax: ov.militiaDmgMax };
+}
+
 const BattleSimScreen: React.FC = () => {
   const t = useT();
+  const ov = getOverrides();
 
   const [attackerMilitia, setAttackerMilitia] = useState(12);
   const [attackerRiders, setAttackerRiders] = useState(0);
+  const [militiaHp, setMilitiaHp] = useState(ov.militiaHp);
+  const [militiaDmgMin, setMilitiaDmgMin] = useState(ov.militiaDmgMin);
+  const [militiaDmgMax, setMilitiaDmgMax] = useState(ov.militiaDmgMax);
+  const [riderHp, setRiderHp] = useState(ov.riderHp);
+  const [riderDmgMin, setRiderDmgMin] = useState(ov.riderDmgMin);
+  const [riderDmgMax, setRiderDmgMax] = useState(ov.riderDmgMax);
+
   const [defenderAmount, setDefenderAmount] = useState(6);
   const [defenderKind, setDefenderKind] = useState<SimDefenderKind>('normal');
+  const [defenderStats, setDefenderStats] = useState(() => defaultDefenderStats('normal'));
   const [defenderBonusPct, setDefenderBonusPct] = useState(0);
+
   const [running, setRunning] = useState(false);
   const [rows, setRows] = useState<ResultRow[]>([]);
+
+  const handleDefenderKindChange = (kind: SimDefenderKind) => {
+    setDefenderKind(kind);
+    setDefenderStats(defaultDefenderStats(kind));
+  };
 
   const settingLabel = () =>
     `${attackerMilitia}🧍+${attackerRiders}🐎 ${t('common.vs')} ${defenderAmount}${KIND_EMOJI[defenderKind]}` +
@@ -55,8 +89,17 @@ const BattleSimScreen: React.FC = () => {
     // (synchronous, CPU-bound) run blocks the thread.
     setTimeout(() => {
       const results: SimResult[] = runBattleSimulations(
-        { militia: attackerMilitia, riders: attackerRiders },
-        { amount: defenderAmount, kind: defenderKind },
+        {
+          militia: attackerMilitia,
+          riders: attackerRiders,
+          militiaHp,
+          militiaDmgMin,
+          militiaDmgMax,
+          riderHp,
+          riderDmgMin,
+          riderDmgMax,
+        },
+        { amount: defenderAmount, kind: defenderKind, ...defenderStats },
         defenderBonusPct / 100,
         100
       );
@@ -69,37 +112,44 @@ const BattleSimScreen: React.FC = () => {
   return (
     <GameModal className="game-modal cheat-screen" backgroundImage="assets/screens/dragon.jpg" noBorder>
       <div className="modal-content cheat-screen">
-        <h2 className="game-title">🤼 {t('battleSimScreen.title')}</h2>
-
         <div className="cheat-row">
           <label>⚔️ {t('battleSimScreen.attacker')}</label>
           🧍 {numInput(attackerMilitia, setAttackerMilitia)}
           🐎 {numInput(attackerRiders, setAttackerRiders)}
         </div>
+        <div className="cheat-row">
+          <label>🧍 {t('overridesScreen.militia')}</label>
+          {numInput(militiaHp, setMilitiaHp)} {t('overridesScreen.hp')}
+          {numInput(militiaDmgMin, setMilitiaDmgMin)}–{numInput(militiaDmgMax, setMilitiaDmgMax)} {t('overridesScreen.dmg')}
+        </div>
+        <div className="cheat-row">
+          <label>🐎 {t('overridesScreen.rider')}</label>
+          {numInput(riderHp, setRiderHp)} {t('overridesScreen.hp')}
+          {numInput(riderDmgMin, setRiderDmgMin)}–{numInput(riderDmgMax, setRiderDmgMax)} {t('overridesScreen.dmg')}
+        </div>
 
         <div className="cheat-row">
           <label>🛡️ {t('battleSimScreen.defender')}</label>
           {numInput(defenderAmount, setDefenderAmount)}
-          <select value={defenderKind} onChange={(e) => setDefenderKind(e.target.value as SimDefenderKind)}>
-            <option value="normal">{t('battleSimScreen.normal')}</option>
-            <option value="zombie">{t('battleSimScreen.zombie')}</option>
-            <option value="dragon">{t('battleSimScreen.dragon')}</option>
+          <select value={defenderKind} onChange={(e) => handleDefenderKindChange(e.target.value as SimDefenderKind)}>
+            <option value="normal">{KIND_EMOJI.normal}</option>
+            <option value="zombie">{KIND_EMOJI.zombie}</option>
+            <option value="dragon">{KIND_EMOJI.dragon}</option>
           </select>
         </div>
-
+        <div className="cheat-row">
+          {numInput(defenderStats.hp, (n) => setDefenderStats((s) => ({ ...s, hp: n })))} {t('overridesScreen.hp')}
+          {numInput(defenderStats.dmgMin, (n) => setDefenderStats((s) => ({ ...s, dmgMin: n })))}–
+          {numInput(defenderStats.dmgMax, (n) => setDefenderStats((s) => ({ ...s, dmgMax: n })))} {t('overridesScreen.dmg')}
+        </div>
         <div className="cheat-row">
           <label>{t('battleSimScreen.bonus')}</label>
-          {[0, 10, 20, 30].map((pct) => (
-            <label key={pct} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <input
-                type="radio"
-                name="defenderBonusPct"
-                checked={defenderBonusPct === pct}
-                onChange={() => setDefenderBonusPct(pct)}
-              />
-              {pct}%
-            </label>
-          ))}
+          <select value={defenderBonusPct} onChange={(e) => setDefenderBonusPct(parseInt(e.target.value, 10))}>
+            <option value={0}>0%</option>
+            <option value={10}>10%</option>
+            <option value={20}>20%</option>
+            <option value={30}>30%</option>
+          </select>
         </div>
 
         <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '12px' }}>

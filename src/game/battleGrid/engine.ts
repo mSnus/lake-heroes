@@ -100,18 +100,46 @@ function hpFor(kind: UnitKind): number {
   return kind === 'rider' ? ov.riderHp : ov.militiaHp;
 }
 
-function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: () => number): number {
+/** Damage roll for one unit. A per-unit dmgMin/dmgMax (see GridUnit --
+ * battle simulator only) takes over the range entirely, used as-is; every
+ * real-game unit has neither set, so this is the same kind+getOverrides()
+ * lookup as before. */
+function rollDamage(u: GridUnit, pctBonus: number, flatBonus: number, rng: () => number): number {
   const ov = getOverrides();
-  // Zombies share militia's roll range, scaled by the zombie damage multiplier.
-  const [min, max] =
-    kind === 'dragon'
-      ? [DRAGON_DMG_MIN, DRAGON_DMG_MAX]
-      : kind === 'rider'
-        ? [ov.riderDmgMin, ov.riderDmgMax]
-        : [ov.militiaDmgMin, ov.militiaDmgMax];
-  const mult = kind === 'zombie' ? ov.zombieDmgMult : 1;
+  let min: number, max: number, mult = 1;
+  if (u.dmgMin !== undefined && u.dmgMax !== undefined) {
+    min = u.dmgMin;
+    max = u.dmgMax;
+  } else if (u.kind === 'dragon') {
+    min = DRAGON_DMG_MIN;
+    max = DRAGON_DMG_MAX;
+  } else if (u.kind === 'rider') {
+    min = ov.riderDmgMin;
+    max = ov.riderDmgMax;
+  } else {
+    // Zombies share militia's roll range, scaled by the zombie damage multiplier.
+    min = ov.militiaDmgMin;
+    max = ov.militiaDmgMax;
+    if (u.kind === 'zombie') mult = ov.zombieDmgMult;
+  }
   const base = rollInRange(min, max, rng) * mult;
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
+}
+
+interface SideComp {
+  militia: number;
+  riders: number;
+  formation?: FormationSpec;
+  zombie?: boolean;
+  /** Battle simulator only (see simulate.ts) — overrides the militia-slot
+   * and/or rider-slot units' hp/damage range for this side, independent of
+   * getOverrides(). Undefined in every real (non-simulator) call. */
+  militiaHp?: number;
+  militiaDmgMin?: number;
+  militiaDmgMax?: number;
+  riderHp?: number;
+  riderDmgMin?: number;
+  riderDmgMax?: number;
 }
 
 /** Build a fresh battle, both armies placed on opposite long edges. With no
@@ -121,8 +149,8 @@ function rollDamage(kind: UnitKind, pctBonus: number, flatBonus: number, rng: ()
  * (ambushers), columns (caravan guards), or grouped (towers/squads) — see
  * formations.ts. */
 export function createBattle(
-  attacker: { militia: number; riders: number; formation?: FormationSpec; zombie?: boolean },
-  defender: { militia: number; riders: number; formation?: FormationSpec; zombie?: boolean },
+  attacker: SideComp,
+  defender: SideComp,
   cols: number = BATTLEFIELD_COLS,
   rows: number = BATTLEFIELD_ROWS
 ): GridBattleState {
@@ -132,7 +160,7 @@ export function createBattle(
   // Militia fill first (placeArmy fills columns outward from the edge, so
   // earlier-pushed units land in the back rows) and riders fill last, so
   // riders end up in the front rows — closest to the enemy.
-  const buildSide = (side: BattleSide, comp: { militia: number; riders: number; formation?: FormationSpec; zombie?: boolean }) => {
+  const buildSide = (side: BattleSide, comp: SideComp) => {
     const sideUnits: GridUnit[] = [];
     // The dragon fight's defender is its own unit kind (own HP/damage), not
     // a rider — its full DRAGON_UNITS headcount arrives via `riders` (see
@@ -141,13 +169,16 @@ export function createBattle(
     // An abandoned tile's wild garrison guards as Zombies instead of regular
     // militia (see BattleScreen.tsx's `zombie: !!tile?.abandoned`).
     const militiaKind: UnitKind = comp.zombie ? 'zombie' : 'militia';
+    const militiaHp = comp.militiaHp ?? hpFor(militiaKind);
     for (let i = 0; i < comp.militia; i++) {
       sideUnits.push({
         id: `${side}-${stableIndex}`,
         side,
         kind: militiaKind,
-        hp: hpFor(militiaKind),
-        maxHp: hpFor(militiaKind),
+        hp: militiaHp,
+        maxHp: militiaHp,
+        dmgMin: comp.militiaDmgMin,
+        dmgMax: comp.militiaDmgMax,
         col: 0,
         row: 0,
         stableIndex: stableIndex++,
@@ -155,14 +186,17 @@ export function createBattle(
         safetyMoves: 0,
       });
     }
+    const riderKind: UnitKind = isDragonSide ? 'dragon' : 'rider';
+    const riderHp = comp.riderHp ?? hpFor(riderKind);
     for (let i = 0; i < comp.riders; i++) {
-      const kind: UnitKind = isDragonSide ? 'dragon' : 'rider';
       sideUnits.push({
         id: `${side}-${stableIndex}`,
         side,
-        kind,
-        hp: hpFor(kind),
-        maxHp: hpFor(kind),
+        kind: riderKind,
+        hp: riderHp,
+        maxHp: riderHp,
+        dmgMin: comp.riderDmgMin,
+        dmgMax: comp.riderDmgMax,
         col: 0,
         row: 0,
         stableIndex: stableIndex++,
@@ -533,7 +567,7 @@ function resolveCombat(
     const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
     const movedPenalty = defending && movedIds.has(u.id) ? MOVED_DEFENSE_PENALTY : 0;
     const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) - movedPenalty;
-    return rollDamage(u.kind, pct, sideFlat, rng);
+    return rollDamage(u, pct, sideFlat, rng);
   };
 
   const damage = new Map<string, number>();

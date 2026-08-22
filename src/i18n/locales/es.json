@@ -921,14 +921,10 @@
     "resetDefaults": "Restablecer valores predeterminados"
   },
   "battleSimScreen": {
-    "title": "Simulador de Batallas",
     "attacker": "Atacante",
     "defender": "Defensor",
-    "normal": "Normal",
-    "zombie": "Zombi",
-    "dragon": "Dragón",
     "bonus": "Bonificación del defensor",
-    "simulate": "🎲 Simular 100 batallas",
+    "simulate": "🎲 Ejecutar 100 batallas",
     "simulating": "Simulando…",
     "clear": "Borrar resultados",
     "setting": "Configuración"
