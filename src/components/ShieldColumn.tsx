@@ -10,6 +10,7 @@ import HelpScreen from './HelpScreen';
 import CheatScreen from './CheatScreen';
 import OverridesScreen from './OverridesScreen';
 import StatsScreen from './StatsScreen';
+import BattleSimScreen from './BattleSimScreen';
 import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
@@ -174,6 +175,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   📈
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.battleSim')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <BattleSimScreen /> });
+                  }}
+                  className="shield-button"
+                >
+                  🤼
                 </button>
               </div>
               <div

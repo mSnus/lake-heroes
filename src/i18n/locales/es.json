@@ -160,6 +160,7 @@
     "cheat": "Trucos",
     "overrides": "Ajustes",
     "statistics": "Estadísticas",
+    "battleSim": "Simulador de Batallas",
     "mapEditOn": "Edición de mapa: ACTIVADA (haz clic en una casilla o icono de jugador para ajustar)",
     "mapEditOff": "Edición de mapa: DESACTIVADA"
   },
@@ -918,6 +919,19 @@
     "set": "Fijar",
     "apply": "Aplicar",
     "resetDefaults": "Restablecer valores predeterminados"
+  },
+  "battleSimScreen": {
+    "title": "Simulador de Batallas",
+    "attacker": "Atacante",
+    "defender": "Defensor",
+    "normal": "Normal",
+    "zombie": "Zombi",
+    "dragon": "Dragón",
+    "bonus": "Bonificación del defensor",
+    "simulate": "🎲 Simular 100 batallas",
+    "simulating": "Simulando…",
+    "clear": "Borrar resultados",
+    "setting": "Configuración"
   },
   "statsScreen": {
     "title": "Estadísticas",
