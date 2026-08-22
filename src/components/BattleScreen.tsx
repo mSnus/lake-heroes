@@ -50,12 +50,13 @@ type BattlePhase = 'ongoing' | 'result';
 // visible turn-by-turn playback rather than an instant jump to the result.
 const AUTO_TURN_DELAY_MS = 250;
 
-// Duration of the per-turn attack/defend -> outcome emoji animation (see
-// handleNextTurn): weapons/shields first, then every unit's own outcome
-// (💥 damaged, 🛡️ blocked, ☠️ died) flashes together in one beat.
+// Duration of the per-turn combat animation (see handleNextTurn): weapons/
+// shields (🗡️/🛡️) -> who's under attack (💥) -> each unit's own result
+// (🩸 wounded, 🛡️ blocked, ☠️ died).
 const COMBAT_ANIM_BEAT_MS = 125;
-// The combined outcome beat gets a slightly longer flash than attack-defend
-// to give more per-unit detail time to actually read.
+const IMPACT_FLASH_MS = 150;
+// The result beat gets a slightly longer flash than the others to give more
+// per-unit detail time to actually read.
 const OUTCOME_FLASH_MS = 250;
 // How long the brawl move phase animates (units slide to their new cells,
 // CSS transition ~0.25s) before the combat resolution plays out.
@@ -484,7 +485,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // moving is "invisible" here, same as before — they just animate to
   // their new cell (via CSS transition) once the turn commits.
   const animatingRef = useRef(false);
-  const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'outcome'>('idle');
+  const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'impact' | 'outcome'>('idle');
 
   // Manual brawl control: which side (if any) the human is currently placing.
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
@@ -500,20 +501,23 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const roundStartPosRef = useRef<Map<string, { col: number; row: number }>>(new Map()); // positions at round start, to tell who moved
   const manualAttacksRef = useRef<Record<string, string>>({}); // human's attack orders this round (unitId -> enemyId)
 
-  // The 2-beat combat playback (attack/defend icons -> everyone's outcome at
-  // once: 💥 damaged, 🛡️ blocked, ☠️ died), then commit the resolved state.
-  // Shared by the full-battle and brawl turn handlers.
+  // The 3-beat combat playback (attack/defend icons -> who's under attack ->
+  // everyone's own result at once), then commit the resolved state. Shared
+  // by the full-battle and brawl turn handlers.
   const animateCombat = useCallback((finalState: GridBattleState, events: TurnEvent[]) => {
     animatingRef.current = true;
     setLastEvents(events);
     setAnimPhase('attack-defend');
     setTimeout(() => {
-      setAnimPhase('outcome');
+      setAnimPhase('impact');
       setTimeout(() => {
-        setAnimPhase('idle');
-        animatingRef.current = false;
-        setBattle(finalState);
-      }, OUTCOME_FLASH_MS);
+        setAnimPhase('outcome');
+        setTimeout(() => {
+          setAnimPhase('idle');
+          animatingRef.current = false;
+          setBattle(finalState);
+        }, OUTCOME_FLASH_MS);
+      }, IMPACT_FLASH_MS);
     }, COMBAT_ANIM_BEAT_MS);
   }, []);
 

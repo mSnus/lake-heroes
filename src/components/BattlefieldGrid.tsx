@@ -4,15 +4,15 @@ import { BrawlPlan, adjacentCells } from '../game/battleGrid/engine';
 import { useT } from '../i18n';
 import '../styles/BattlefieldGrid.css';
 
-type AnimPhase = 'idle' | 'attack-defend' | 'outcome';
+type AnimPhase = 'idle' | 'attack-defend' | 'impact' | 'outcome';
 
 interface BattlefieldGridProps {
   battle: GridBattleState;
   lastEvents: TurnEvent[];
-  /** Which stage of this turn's 2-beat micro-animation is currently showing
-   * (attack/defend icons -> every unit's own outcome at once: 💥 damaged,
-   * 🛡️ blocked, ☠️ died), driving a temporary emoji override per unit — see
-   * the per-unit lookup below. */
+  /** Which stage of this turn's 3-beat micro-animation is showing: 🗡️/🛡️ who's
+   * attacking/defending -> 💥 who's under attack -> each unit's own result
+   * (☠️ died, 🩸 wounded, 🛡️ blocked). Drives a temporary emoji override per
+   * unit — see the per-unit lookup below. */
   animPhase?: AnimPhase;
   /** Mode-specific icon override for a whole side (🐉 dragon, 👹 ambushers/
    * rogue horde, etc) in place of the normal rider/militia emoji — mirrors
@@ -317,13 +317,17 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     for (const e of lastEvents) {
       if (e.type === 'attack') overrideEmoji.set(e.unitId, '🗡️');
     }
-  } else if (animPhase === 'outcome') {
-    // Every unit's own outcome flashes together in one beat: damaged (💥),
-    // blocked (🛡️), or died (☠️) -- applied in that order so a unit that's
-    // both a damaged target and blocked shows the block, and a unit that
-    // died shows that above either, regardless of event order.
+  } else if (animPhase === 'impact') {
+    // Who's under attack this round, regardless of outcome yet.
     for (const e of lastEvents) {
       if (e.type === 'attack' && e.targetId) overrideEmoji.set(e.targetId, '💥');
+    }
+  } else if (animPhase === 'outcome') {
+    // Every unit's own result flashes together: wounded (🩸), blocked (🛡️),
+    // or died (☠️) -- in that order so a wounded+blocked unit shows the
+    // block, and a dead one shows that above either, regardless of event order.
+    for (const e of lastEvents) {
+      if (e.type === 'attack' && e.targetId) overrideEmoji.set(e.targetId, '🩸');
     }
     for (const e of lastEvents) {
       if (e.type === 'block') overrideEmoji.set(e.unitId, '🛡️');
