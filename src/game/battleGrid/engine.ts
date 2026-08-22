@@ -85,10 +85,9 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
 // dealing it), which doesn't make tactical sense.
 const DEFENSE_ROLL_BONUS = 0.5;
 
-// A unit that held its ground this turn (didn't move) fights in "defence
-// mode" — this bonus is added to its combat roll on top of any side bonuses,
-// rewarding standing firm over charging into contact.
-const HELD_POSITION_BONUS = 0.5;
+// A unit that moved this turn defends less effectively -- it hasn't set its
+// footing to brace for the hit.
+const MOVED_DEFENSE_PENALTY = 0.1;
 
 // Lifetime cap on wounded-pullback moves per unit — after this many total
 // break-offs to safety, a wounded unit commits to fighting instead, which
@@ -481,7 +480,7 @@ function resolveCombat(
   opts: StepTurnOptions,
   rng: () => number,
   events: TurnEvent[],
-  // Units that moved this turn — used with attackIntent for the held bonus.
+  // Units that moved this turn -- their defence roll takes MOVED_DEFENSE_PENALTY.
   movedIds: Set<string> = new Set(),
   // Per-unit attack order: an enemy id to attack exactly that unit, 'none' to
   // hold/defend without attacking, or 'auto' (the default for any unit not
@@ -533,10 +532,8 @@ function resolveCombat(
   const rollFor = (u: GridUnit, defending: boolean): number => {
     const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
     const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
-    // Held-position bonus: only when neither moved nor attacked -- true
-    // turtling, not stacked on top of an attacker's own DEFENSE_ROLL_BONUS.
-    const held = defending && !movedIds.has(u.id) && !willAttack(u) ? HELD_POSITION_BONUS : 0;
-    const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) + held;
+    const movedPenalty = defending && movedIds.has(u.id) ? MOVED_DEFENSE_PENALTY : 0;
+    const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) - movedPenalty;
     return rollDamage(u.kind, pct, sideFlat, rng);
   };
 

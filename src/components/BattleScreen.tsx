@@ -545,8 +545,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // the ⚔️ click always invoke the current version.
   const brawlResolve = (s: GridBattleState) => {
     roundActiveRef.current = false;
-    // Units whose cell changed since the round started fought "on the move"
-    // and miss the held-position defence bonus.
+    // Units whose cell changed since the round started defend less
+    // effectively this round -- see MOVED_DEFENSE_PENALTY.
     const start = roundStartPosRef.current;
     const movedIds = new Set<string>();
     for (const u of s.units) {
