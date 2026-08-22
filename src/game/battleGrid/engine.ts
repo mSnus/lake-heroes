@@ -80,10 +80,9 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
 
 // A unit that's actively defending (mitigating incoming damage rather than
 // dealing it) rolls with this bonus on top of whatever side bonuses
-// (artifacts, garrison) already apply — otherwise defending is strictly
-// worse than attacking (same roll, but only reduces damage instead of
-// dealing it), which doesn't make tactical sense.
-const DEFENSE_ROLL_BONUS = 0.5;
+// (artifacts, garrison) already apply. Set to 0 (off) -- balance knob, adjust
+// as needed.
+const DEFENSE_ROLL_BONUS = 0;
 
 // A unit that moved this turn defends less effectively -- it hasn't set its
 // footing to brace for the hit.
