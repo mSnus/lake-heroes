@@ -116,11 +116,11 @@
   "artifacts": {
     "broken-blade": {
       "name": "Espada Rota",
-      "description": "+2 a las tiradas contra el Dragón, +1 a las tiradas en batallas que no sean de combate cuerpo a cuerpo."
+      "description": "+2 a las tiradas contra el Dragón, +1 a las tiradas en cada batalla."
     },
     "dwemer-axe": {
       "name": "Hacha Dwemer",
-      "description": "+1 a las tiradas contra el Dragón, +1 a las tiradas en batallas de combate cuerpo a cuerpo."
+      "description": "+2 a las tiradas contra el Dragón, +1 a las tiradas en cada batalla."
     },
     "pristine-diamond": {
       "name": "Diamante Puro",
@@ -232,6 +232,7 @@
     "caravanGuards": "Guardias de la Caravana",
     "guards": "Guardias",
     "garrisonOf": "Guarnición de {tileName}",
+    "fortification": "Fortificación",
     "ambushedMessage": "¡{name} cae en una emboscada de {units}🥷!",
     "zombieAttackMessage": "¡{name} es atacado por {units}🧟‍♀️!",
     "ruinsAttackMessage": "¡{name} es atacado por {units}🧟 entre las ruinas!",

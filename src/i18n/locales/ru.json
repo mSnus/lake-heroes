@@ -109,11 +109,11 @@
   "artifacts": {
     "broken-blade": {
       "name": "Сломанный клинок",
-      "description": "+2 к броскам против Дракона, +1 к броскам в обычных битвах (не в рукопашной)."
+      "description": "+2 к броскам против Дракона, +1 к броскам в каждой битве."
     },
     "dwemer-axe": {
       "name": "Секира двемеров",
-      "description": "+1 к броскам против Дракона, +1 к броскам в рукопашных битвах."
+      "description": "+2 к броскам против Дракона, +1 к броскам в каждой битве."
     },
     "pristine-diamond": {
       "name": "Чистейший алмаз",
@@ -225,6 +225,7 @@
     "caravanGuards": "Охрана каравана",
     "guards": "Стража",
     "garrisonOf": "Гарнизон: {tileName}",
+    "fortification": "Укрепление",
     "ambushedMessage": "{name} попадает в засаду {units}🥷!",
     "zombieAttackMessage": "На {name} нападают {units}🧟‍♀️!",
     "ruinsAttackMessage": "На {name} среди руин нападают {units}🧟!",

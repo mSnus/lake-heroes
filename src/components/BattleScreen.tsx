@@ -309,13 +309,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // tile and rogue-attack modes alike).
   const garrisonRollBonusPct = (isTile || isRogue) && tile ? tile.getGarrisonBonusPct(tile.level) : 0;
 
-  const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon, isBrawl: false });
+  const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon });
   // In a tile battle (or a rogue attack), the defending side is the tile's
   // stationed garrison, not the owner's hero in person — artifacts like
   // Broken Blade only work when the player's own hero is actually taking
   // part in the fight.
   const defenderArtifactBonus =
-    defender && !isTile && !isRogue ? getArtifactRollBonus(defender, { isDragon, isBrawl: false }) : 0;
+    defender && !isTile && !isRogue ? getArtifactRollBonus(defender, { isDragon }) : 0;
   // Ambush is visually/mechanically reversed: the `attacker` prop holds the
   // real player, but they occupy the DEFENDER role in the fight (the NPC
   // ambushers are the attacker-role grid) — so the real player's artifact
@@ -323,10 +323,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const attackerRollBonus = isAmbush ? 0 : attackerArtifactBonus;
   const defenderRollBonus = isAmbush ? attackerArtifactBonus : defenderArtifactBonus;
 
-  type BonusEntry = { key: string; label: string; emoji?: string; bonus: number };
+  type BonusEntry = { key: string; label: string; emoji?: string; bonus: number; suffix?: string };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
     player
-      ? getArtifactRollBonusBreakdown(player, { isDragon, isBrawl: false }).map(({ artifact, bonus }) => ({
+      ? getArtifactRollBonusBreakdown(player, { isDragon }).map(({ artifact, bonus }) => ({
           key: artifact.id,
           label: artifact.name,
           emoji: artifact.emoji,
@@ -334,7 +334,24 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         }))
       : [];
   const attackerBonusEntries = buildBonusEntries(attacker);
-  const defenderBonusEntries = buildBonusEntries(isTile || isRogue ? undefined : defender);
+  // Shown as its own badge alongside (or instead of) artifact badges, same
+  // spot under the garrison's name -- a fortified tile's level bonus.
+  const garrisonBonusEntries: BonusEntry[] =
+    garrisonRollBonusPct > 0
+      ? [
+          {
+            key: 'garrison-fortification',
+            label: t('battleScreen.fortification'),
+            emoji: '🏯',
+            bonus: Math.round(garrisonRollBonusPct * 100),
+            suffix: '%',
+          },
+        ]
+      : [];
+  const defenderBonusEntries = [
+    ...buildBonusEntries(isTile || isRogue ? undefined : defender),
+    ...garrisonBonusEntries,
+  ];
 
   // ── State ──
   const [battle, setBattle] = useState<GridBattleState>(() =>
@@ -816,7 +833,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             <div className="battle-artifacts-row">
                 {(isAmbush ? defenderBonusEntries : attackerBonusEntries).map((e) => (
                   <span key={e.key} className="battle-artifact-badge">
-                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
+                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}{e.suffix ?? ''}
                   </span>
                 ))}
             </div>
@@ -857,7 +874,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             <div className="battle-artifacts-row">
                 {(isAmbush ? attackerBonusEntries : defenderBonusEntries).map((e) => (
                   <span key={e.key} className="battle-artifact-badge">
-                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}<br />
+                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}{e.suffix ?? ''}<br />
                   </span>
                 ))}
             </div>

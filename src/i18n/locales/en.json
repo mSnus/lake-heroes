@@ -115,11 +115,11 @@
   "artifacts": {
     "broken-blade": {
       "name": "Broken Blade",
-      "description": "+2 to rolls against the Dragon, +1 to rolls in non-brawl battles."
+      "description": "+2 to rolls against the Dragon, +1 to rolls in every battle."
     },
     "dwemer-axe": {
       "name": "Dwemer Axe",
-      "description": "+1 to rolls against the Dragon, +1 to rolls in brawl-mode battles."
+      "description": "+2 to rolls against the Dragon, +1 to rolls in every battle."
     },
     "pristine-diamond": {
       "name": "Pristine Diamond",
@@ -231,6 +231,7 @@
     "caravanGuards": "Caravan Guards",
     "guards": "Guards",
     "garrisonOf": "Garrison of {tileName}",
+    "fortification": "Fortification",
     "ambushedMessage": "{name} is ambushed by {units}🥷!",
     "zombieAttackMessage": "{name} is attacked by {units}🧟‍♀️!",
     "ruinsAttackMessage": "{name} is attacked by {units}🧟 among the ruins!",
