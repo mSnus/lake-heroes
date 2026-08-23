@@ -662,14 +662,17 @@ export function planBrawlSide(
       if (u.hp <= u.maxHp / 2 && !isLastAlive(u, living)) {
         const friends = livingAdjacentFriends(u, living);
         // Swap: trade places with an adjacent ally that isn't itself in
-        // contact (a fresh reserve, not busy fighting) -- the wounded unit
-        // steps back, the reserve steps up, both in the same beat. Always
-        // valid: each vacates exactly the cell the other enters, so neither
-        // needs pathfinding or a blocked-set update. Not capped by
-        // safetyMoves -- unlike a solo pullback, someone (the reserve) is
-        // always taking on the risk in exchange, not avoiding it for free.
+        // contact (a fresh reserve, not busy fighting) AND is actually
+        // healthier than it (strictly more HP, and above half its own max)
+        // -- otherwise two similarly-wounded units could swap back and forth
+        // forever without ever resolving anything. The wounded unit steps
+        // back, the reserve steps up, both in the same beat. Always valid:
+        // each vacates exactly the cell the other enters, so neither needs
+        // pathfinding or a blocked-set update. Not capped by safetyMoves --
+        // unlike a solo pullback, someone (the reserve) is always taking on
+        // the risk in exchange, not avoiding it for free.
         const reserve = friends.find(
-          (f) => !plan[f.id] && livingAdjacentEnemies(f, living).length === 0
+          (f) => !plan[f.id] && livingAdjacentEnemies(f, living).length === 0 && f.hp > u.hp && f.hp > f.maxHp / 2
         );
         if (reserve) {
           plan[u.id] = { col: reserve.col, row: reserve.row };
@@ -831,21 +834,32 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
 
   // ── Step 2c: swap — a wounded unit in contact with the enemy, with an
   // adjacent friend that ISN'T itself in contact (a fresh reserve, not busy
-  // fighting), trades places with it instead of fighting on or pulling back
-  // alone: the wounded unit steps back into the reserve's cell, the reserve
-  // steps forward into the wounded unit's. The reserve gets no independent
-  // plan of its own this turn — the wounded unit initiating the swap claims
-  // it outright. Both sit combat out (mid-swap, not fighting) and skip the
+  // fighting) AND is actually healthier than it (strictly more HP, and above
+  // half its own max) — otherwise two similarly-wounded units next to each
+  // other could swap back and forth forever without ever resolving anything.
+  // Trades places with it instead of fighting on or pulling back alone: the
+  // wounded unit steps back into the reserve's cell, the reserve steps
+  // forward into the wounded unit's. The reserve gets no independent plan of
+  // its own this turn — the wounded unit initiating the swap claims it
+  // outright. Both sit combat out (mid-swap, not fighting) and skip the
   // normal destination pathfinding entirely below: the swap is always valid
-  // by construction, each vacating exactly the cell the other enters. ──
+  // by construction, each vacating exactly the cell the other enters. The
+  // last unit standing on its side never swaps out either -- see isLastAlive
+  // (redundant today since a true last unit has no same-side reserve to swap
+  // with anyway, but kept explicit like the retreat/pullback checks above). ──
   const swapPartner = new Map<string, GridUnit>();
   for (const u of living) {
     if (retreating.has(u.id) || seekingSafety.has(u.id)) continue;
     if (swapPartner.has(u.id)) continue; // already claimed as someone else's reserve
+    if (isLastAlive(u, living)) continue;
     if (u.hp > u.maxHp / 2) continue;
     if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
     const reserve = livingAdjacentFriends(u, living).find(
-      (f) => !swapPartner.has(f.id) && livingAdjacentEnemies(f, living).length === 0
+      (f) =>
+        !swapPartner.has(f.id) &&
+        livingAdjacentEnemies(f, living).length === 0 &&
+        f.hp > u.hp &&
+        f.hp > f.maxHp / 2
     );
     if (!reserve) continue;
     swapPartner.set(u.id, reserve);
