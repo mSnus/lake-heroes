@@ -17,12 +17,13 @@ interface ResultRow {
   percentiles: number[];
 }
 
-const numInput = (value: number, onChange: (n: number) => void, width = '3.2rem') => (
+const numInput = (value: number, onChange: (n: number) => void, width = '3.2rem', disabled = false) => (
   <input
     type="number"
     min={0}
     value={Number.isFinite(value) ? value : 0}
-    style={{ width }}
+    disabled={disabled}
+    style={{ width, opacity: disabled ? 0.5 : 1 }}
     onChange={(e) => {
       const n = parseInt(e.target.value, 10);
       onChange(Number.isNaN(n) ? 0 : Math.max(0, n));
@@ -138,9 +139,31 @@ const BattleSimScreen: React.FC = () => {
           </select>
         </div>
         <div className="cheat-row">
-          {numInput(defenderStats.hp, (n) => setDefenderStats((s) => ({ ...s, hp: n })))} {t('overridesScreen.hp')}
-          {numInput(defenderStats.dmgMin, (n) => setDefenderStats((s) => ({ ...s, dmgMin: n })))}–
-          {numInput(defenderStats.dmgMax, (n) => setDefenderStats((s) => ({ ...s, dmgMax: n })))} {t('overridesScreen.dmg')}
+          {/* A 'normal' defender is genuinely the same militia kind as the
+              attacker's own -- these inputs are disabled and show the
+              attacker's live militia stats instead, since that's what a
+              normal-defender battle actually uses (see simulate.ts). */}
+          {numInput(
+            defenderKind === 'normal' ? militiaHp : defenderStats.hp,
+            (n) => setDefenderStats((s) => ({ ...s, hp: n })),
+            '3.2rem',
+            defenderKind === 'normal'
+          )}{' '}
+          {t('overridesScreen.hp')}
+          {numInput(
+            defenderKind === 'normal' ? militiaDmgMin : defenderStats.dmgMin,
+            (n) => setDefenderStats((s) => ({ ...s, dmgMin: n })),
+            '3.2rem',
+            defenderKind === 'normal'
+          )}
+          –
+          {numInput(
+            defenderKind === 'normal' ? militiaDmgMax : defenderStats.dmgMax,
+            (n) => setDefenderStats((s) => ({ ...s, dmgMax: n })),
+            '3.2rem',
+            defenderKind === 'normal'
+          )}{' '}
+          {t('overridesScreen.dmg')}
         </div>
         <div className="cheat-row">
           <label>{t('battleSimScreen.bonus')}</label>

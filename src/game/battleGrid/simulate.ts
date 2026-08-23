@@ -74,10 +74,15 @@ export function simulateOneBattle(
       // The defender is always a single kind at a time -- its custom stats
       // land in whichever slot (militia or rider) that kind actually uses
       // (see createBattle: dragon-formation sides get their headcount via
-      // the rider slot).
+      // the rider slot). A 'normal' defender is genuinely the same militia
+      // kind as the attacker's own -- its own hp/dmg inputs are ignored
+      // entirely, sharing the attacker's militia stats instead, same as
+      // real militia everywhere in the actual game.
       ...(isDragon
         ? { riderHp: defender.hp, riderDmgMin: defender.dmgMin, riderDmgMax: defender.dmgMax }
-        : { militiaHp: defender.hp, militiaDmgMin: defender.dmgMin, militiaDmgMax: defender.dmgMax }),
+        : defender.kind === 'normal'
+          ? { militiaHp: attacker.militiaHp, militiaDmgMin: attacker.militiaDmgMin, militiaDmgMax: attacker.militiaDmgMax }
+          : { militiaHp: defender.hp, militiaDmgMin: defender.dmgMin, militiaDmgMax: defender.dmgMax }),
     },
     cols,
     rows
