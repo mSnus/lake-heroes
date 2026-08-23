@@ -22,25 +22,13 @@ import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { resolveRuinsBattle } from '../actions/battles/resolveRuinsBattle';
 import { useT } from '../i18n';
-import {
-  DRAGON_UNITS,
-  BATTLEFIELD_COLS,
-  BATTLEFIELD_ROWS,
-  BRAWL_COLS,
-  BRAWL_ROWS,
-  BRAWL_THRESHOLD,
-  AUTO_BATTLE_LARGE_THRESHOLD,
-  SMALL_AUTO_BATTLE_THRESHOLD,
-  SMALL_BATTLEFIELD_COLS,
-  SMALL_BATTLEFIELD_ROWS,
-  HUGE_BATTLEFIELD_ROWS,
-} from '../game/constants';
+import { DRAGON_UNITS } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
+import { battleBoardFor, squadGroupCount } from '../game/battleGrid/layout';
 import { GridBattleState, TurnEvent, BattleSide } from '../game/battleGrid/types';
 import { FormationSpec } from '../game/battleGrid/formations';
-import { buildSquadChunks } from '../game/army';
 import { TileClaimScreen } from './TileClaimScreen';
 import { showTileEncounterScreen } from '../actions/afterMoveLogic';
 import '../styles/BattleScreen.css';
@@ -255,52 +243,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const defenderSized = defenderSizedRef.current;
   const attackerGridTotal = attackerSized.militiaCount + attackerSized.ridersCount;
   const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
-  // Brawl: a small skirmish (both sides at or below BRAWL_THRESHOLD units).
-  // These fight on a compact, larger-celled board (see BRAWL_COLS/ROWS) and
-  // are the ones that get turn-based / manual control. Ambush is included —
-  // its attacker/defender roles are reversed (the real player occupies the
-  // DEFENDER grid role), which attackerManual/defenderManual below account
-  // for separately.
-  const isBrawl =
-    (isTile || isRogue || isPlayerBattle || isCaravan || isAmbush) &&
-    attackerGridTotal <= BRAWL_THRESHOLD &&
-    defenderGridTotal <= BRAWL_THRESHOLD;
-  // A non-brawl battle under SMALL_AUTO_BATTLE_THRESHOLD also gets a smaller
-  // board -- see SMALL_BATTLEFIELD_COLS/ROWS's comment in constants.ts for why
-  // that's safe (a real army under 30 can never split into more than 4
-  // squads, so it needs less vertical room than the standard board budgets
-  // for a 30-40 army's worst case of 5). Scoped to the same modes as isBrawl:
-  // that squad-count math only holds for the 'grouped' formation these modes
-  // use -- ambush's triangle wedge needs far more height at the same
-  // headcount (a 29-unit triangle needs 17 rows), so it stays off the small
-  // board and keeps the standard one.
-  const isSmallAutoBattle =
-    (isTile || isRogue || isPlayerBattle) &&
-    attackerGridTotal < SMALL_AUTO_BATTLE_THRESHOLD &&
-    defenderGridTotal < SMALL_AUTO_BATTLE_THRESHOLD;
-  // Mirrors isSmallAutoBattle at the same threshold, the other direction: a
-  // symmetric ~39-a-side fight (or the dragon's fixed 50-unit silhouette
-  // against a big attacker army) can overlap units at the standard
-  // BATTLEFIELD_ROWS -- see HUGE_BATTLEFIELD_ROWS's comment in constants.ts.
-  const isHugeBattle =
-    !isBrawl && !isSmallAutoBattle &&
-    attackerGridTotal > SMALL_AUTO_BATTLE_THRESHOLD &&
-    defenderGridTotal > SMALL_AUTO_BATTLE_THRESHOLD;
-  const gridCols = isBrawl ? BRAWL_COLS : isSmallAutoBattle ? SMALL_BATTLEFIELD_COLS : BATTLEFIELD_COLS;
-  const gridRows = isBrawl
-    ? BRAWL_ROWS
-    : isSmallAutoBattle
-      ? SMALL_BATTLEFIELD_ROWS
-      : isHugeBattle
-        ? HUGE_BATTLEFIELD_ROWS
-        : BATTLEFIELD_ROWS;
-  // A small automatic battle (both sides at or below the threshold, but
-  // still too big to be a brawl) gets bigger cells/units too -- easier to
-  // read than the battlefield's default tight packing.
-  const isLargeAutoBattle =
-    !isBrawl &&
-    attackerGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD &&
-    defenderGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD;
+  // Board tier -- shared with the battle simulator via battleBoardFor (see
+  // layout.ts), so a simulated fight always lands on the same board a real
+  // one would. Brawl (both sides at or below BRAWL_THRESHOLD: a compact,
+  // larger-celled board with turn-based / manual control) covers every mode
+  // except dragon; ambush is included, its reversed attacker/defender roles
+  // being handled by attackerManual/defenderManual below. The small-board
+  // tier is scoped tighter -- ambush's triangle wedge needs far more height
+  // than a 'grouped' formation at the same headcount, so it stays off it.
+  const isDragonFight = isDragon || statOverrides?.defenderKind === 'dragon';
+  const board = battleBoardFor(attackerGridTotal, defenderGridTotal, {
+    allowBrawl: !isDragonFight && (isTile || isRogue || isPlayerBattle || isCaravan || isAmbush),
+    allowSmall: !isDragonFight && (isTile || isRogue || isPlayerBattle),
+  });
+  const { isBrawl, isLargeAutoBattle, cols: gridCols, rows: gridRows } = board;
   // A side is manually controlled whenever its player is a real human, not
   // just whoever's turn it currently is -- so if a human attacks another
   // human's tile/hero, that other player also gets to place their own
@@ -318,8 +274,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // depending on who they are. A real player's own army always forms up
   // as its filled army-slot squads (buildSquadChunks); NPC/garrison sides
   // get a role-appropriate shape instead. ──
-  const squadCountFor = (player: Player): number =>
-    Math.max(1, buildSquadChunks(player.militia, player.riders, player.armySlots).filter((c) => c.count > 0).length);
+  const squadCountFor = (player: Player): number => squadGroupCount(player.militia, player.riders);
 
   const attackerFormation: FormationSpec = isBrawl
     ? { kind: 'compact' } // brawl: a single tall, narrow formation
@@ -331,7 +286,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     ? { kind: 'compact' }
     : isCaravan
       ? { kind: 'columns' } // caravan guards: columns of maximum height
-      : isDragon || statOverrides?.defenderKind === 'dragon'
+      : isDragonFight
         ? { kind: 'dragon' } // the dragon's fixed 50-unit coiled-dragon silhouette
         : isPlayerBattle
           ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
