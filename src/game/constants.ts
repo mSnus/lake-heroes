@@ -121,6 +121,12 @@ export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
 export const SMALL_AUTO_BATTLE_THRESHOLD = 30;
 export const SMALL_BATTLEFIELD_COLS = BATTLEFIELD_COLS;
 export const SMALL_BATTLEFIELD_ROWS = 15;
+// Above this on BOTH sides (the same threshold as the small board, mirrored),
+// the board instead gets taller -- a maxed-out ~39-a-side symmetric fight (or
+// the dragon's fixed 50-unit silhouette against a big attacker army) can
+// overlap units at the standard BATTLEFIELD_ROWS, verified by exhaustive
+// search -- cols stays standard, only rows grows.
+export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 4;
 // Landing on an abandoned (zombie-guarded) tile has this chance to trigger a
 // zombie ambush — same mechanics as a regular Ambush, but the attackers are
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).

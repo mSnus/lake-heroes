@@ -3,7 +3,7 @@ import { clearScreen, showScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { runBattleSimulations, attackerLossPercentile, lightLossRate, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
 import { getOverrides } from '../utils/overridesStore';
-import { DRAGON_HP, DRAGON_DMG_MIN, DRAGON_DMG_MAX } from '../game/constants';
+import { DRAGON_HP, DRAGON_DMG_MIN, DRAGON_DMG_MAX, DRAGON_UNITS } from '../game/constants';
 import { Player } from '../game/Player';
 import { GameState } from '../game/GameState';
 import { BattleScreen } from './BattleScreen';
@@ -142,6 +142,9 @@ const BattleSimScreen: React.FC = () => {
     const lines: string[] = [`${attackerMilitia}+${attackerRiders} ${t('common.vs')} ${defenderAmount}${defenderEmoji}`];
     if (attackerMilitia > 0) lines.push(`🧍${militiaHp}/${militiaDmgMin}-${militiaDmgMax}`);
     if (attackerRiders > 0) lines.push(`🐎${riderHp}/${riderDmgMin}-${riderDmgMax}`);
+    if (defenderKind !== 'normal') {
+      lines.push(`${KIND_EMOJI[defenderKind]}${defenderStats.hp}/${defenderStats.dmgMin}-${defenderStats.dmgMax}`);
+    }
     return lines.map((line, i) => (
       <React.Fragment key={i}>
         {i > 0 && <br />}
@@ -184,7 +187,12 @@ const BattleSimScreen: React.FC = () => {
     const atkPlayer = new Player({ name: t('battleSimScreen.attacker'), color: 'red', gold: 0, units: attackerMilitia, position: -1, image: 'red', isComputer: true });
     atkPlayer.riders = attackerRiders;
     const defPlayer = new Player({ name: t('battleSimScreen.defender'), color: 'blue', gold: 0, units: 0, position: -1, image: 'blue', isComputer: true });
-    if (defenderKind === 'dragon') defPlayer.riders = defenderAmount;
+    // The dragon's fixed 50-unit coiled-dragon silhouette formation only
+    // ever lays out DRAGON_UNITS cells (see formations.ts) -- any other
+    // count either leaves cells empty or drops units with nowhere to go, so
+    // a dragon test battle always fights the real DRAGON_UNITS headcount,
+    // same as the actual dragon encounter, regardless of the amount field.
+    if (defenderKind === 'dragon') defPlayer.riders = DRAGON_UNITS;
     else defPlayer.militia = defenderAmount;
     const battleGameState = new GameState([], [atkPlayer, defPlayer]);
 

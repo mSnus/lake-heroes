@@ -33,6 +33,7 @@ import {
   SMALL_AUTO_BATTLE_THRESHOLD,
   SMALL_BATTLEFIELD_COLS,
   SMALL_BATTLEFIELD_ROWS,
+  HUGE_BATTLEFIELD_ROWS,
 } from '../game/constants';
 import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
@@ -277,8 +278,22 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     (isTile || isRogue || isPlayerBattle) &&
     attackerGridTotal < SMALL_AUTO_BATTLE_THRESHOLD &&
     defenderGridTotal < SMALL_AUTO_BATTLE_THRESHOLD;
+  // Mirrors isSmallAutoBattle at the same threshold, the other direction: a
+  // symmetric ~39-a-side fight (or the dragon's fixed 50-unit silhouette
+  // against a big attacker army) can overlap units at the standard
+  // BATTLEFIELD_ROWS -- see HUGE_BATTLEFIELD_ROWS's comment in constants.ts.
+  const isHugeBattle =
+    !isBrawl && !isSmallAutoBattle &&
+    attackerGridTotal > SMALL_AUTO_BATTLE_THRESHOLD &&
+    defenderGridTotal > SMALL_AUTO_BATTLE_THRESHOLD;
   const gridCols = isBrawl ? BRAWL_COLS : isSmallAutoBattle ? SMALL_BATTLEFIELD_COLS : BATTLEFIELD_COLS;
-  const gridRows = isBrawl ? BRAWL_ROWS : isSmallAutoBattle ? SMALL_BATTLEFIELD_ROWS : BATTLEFIELD_ROWS;
+  const gridRows = isBrawl
+    ? BRAWL_ROWS
+    : isSmallAutoBattle
+      ? SMALL_BATTLEFIELD_ROWS
+      : isHugeBattle
+        ? HUGE_BATTLEFIELD_ROWS
+        : BATTLEFIELD_ROWS;
   // A small automatic battle (both sides at or below the threshold, but
   // still too big to be a brawl) gets bigger cells/units too -- easier to
   // read than the battlefield's default tight packing.
@@ -316,7 +331,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     ? { kind: 'compact' }
     : isCaravan
       ? { kind: 'columns' } // caravan guards: columns of maximum height
-      : isDragon
+      : isDragon || statOverrides?.defenderKind === 'dragon'
         ? { kind: 'dragon' } // the dragon's fixed 50-unit coiled-dragon silhouette
         : isPlayerBattle
           ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
