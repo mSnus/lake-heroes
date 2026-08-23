@@ -13,7 +13,7 @@ import '../styles/OverridesScreen.css';
 const PERCENTILES = [10, 20, 40, 50, 60, 80];
 
 interface ResultRow {
-  label: string;
+  label: React.ReactNode;
   percentiles: number[];
 }
 
@@ -86,9 +86,23 @@ const BattleSimScreen: React.FC = () => {
     setDefenderStats(defaultDefenderStats(kind));
   };
 
-  const settingLabel = () =>
-    `${attackerMilitia}🧍+${attackerRiders}🐎 ${t('common.vs')} ${defenderAmount}${KIND_EMOJI[defenderKind]}` +
-    (defenderBonusPct > 0 ? ` +${defenderBonusPct}%` : '');
+  // Headcounts (no per-side emoji, just the numbers) + defender kind emoji
+  // -- omitted for 'normal', since that's just plain militia, same as the
+  // attacker's own -- then one line per attacker tier actually in play,
+  // showing that tier's hp/dmg so two rows with the same headcounts but
+  // different stats don't look identical.
+  const settingLabel = (): React.ReactNode => {
+    const defenderEmoji = defenderKind === 'normal' ? '' : KIND_EMOJI[defenderKind];
+    const lines: string[] = [`${attackerMilitia}+${attackerRiders} ${t('common.vs')} ${defenderAmount}${defenderEmoji}`];
+    if (attackerMilitia > 0) lines.push(`🧍${militiaHp}/${militiaDmgMin}-${militiaDmgMax}`);
+    if (attackerRiders > 0) lines.push(`🐎${riderHp}/${riderDmgMin}-${riderDmgMax}`);
+    return lines.map((line, i) => (
+      <React.Fragment key={i}>
+        {i > 0 && <br />}
+        {line}
+      </React.Fragment>
+    ));
+  };
 
   const handleSimulate = () => {
     setRunning(true);
