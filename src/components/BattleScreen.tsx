@@ -74,6 +74,7 @@ export type BattleScreenProps =
       defender?: Player;
       tile?: Tile;
       onClose?: never;
+      statOverrides?: never;
     }
   | {
       attacker: Player;
@@ -86,6 +87,7 @@ export type BattleScreenProps =
       onClose: () => void;
       defender?: never;
       tile?: never;
+      statOverrides?: never;
     }
   | {
       attacker: Player;
@@ -95,6 +97,7 @@ export type BattleScreenProps =
       defender?: never;
       tile?: never;
       onClose?: never;
+      statOverrides?: never;
     }
   | {
       attacker: Player;
@@ -108,6 +111,22 @@ export type BattleScreenProps =
       caravanDefence?: never;
       caravanPrize?: never;
       caravanSlaves?: never;
+      /** Set only by the battle simulator's "Run battle" button — fights this
+       * one-off test battle with custom hp/dmg instead of the live
+       * overridesStore values (see BattleSimScreen.tsx). */
+      statOverrides?: {
+        attackerMilitiaHp: number;
+        attackerMilitiaDmgMin: number;
+        attackerMilitiaDmgMax: number;
+        attackerRiderHp: number;
+        attackerRiderDmgMin: number;
+        attackerRiderDmgMax: number;
+        defenderKind: 'normal' | 'zombie' | 'dragon';
+        defenderHp: number;
+        defenderDmgMin: number;
+        defenderDmgMax: number;
+        defenderPctBonus: number;
+      };
     }
   | {
       attacker: Player;
@@ -132,6 +151,7 @@ export type BattleScreenProps =
       caravanPrize?: never;
       caravanSlaves?: never;
       battlefieldUnits?: never;
+      statOverrides?: never;
     }
   | {
       // `attacker` is a synthetic NPC "horde" Player (see
@@ -151,6 +171,7 @@ export type BattleScreenProps =
       caravanSlaves?: never;
       battlefieldUnits?: never;
       ambushAttackerUnits?: never;
+      statOverrides?: never;
     };
 
 export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
@@ -164,6 +185,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const isAmbush = props.mode === 'ambush';
   const isRogue = props.mode === 'rogue';
   const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush && !isRogue;
+  const statOverrides = props.mode === 'player' ? props.statOverrides : undefined;
 
   let defence: number;
   let defender: Player | undefined;
@@ -307,7 +329,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // A fortified tile's level bonus is now a straight % addition to every
   // roll the defending garrison's units make each turn (applies in both
   // tile and rogue-attack modes alike).
-  const garrisonRollBonusPct = (isTile || isRogue) && tile ? tile.getGarrisonBonusPct(tile.level) : 0;
+  const garrisonRollBonusPct = (isTile || isRogue) && tile
+    ? tile.getGarrisonBonusPct(tile.level)
+    : (statOverrides?.defenderPctBonus ?? 0);
 
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon });
   // In a tile battle (or a rogue attack), the defending side is the tile's
@@ -356,8 +380,46 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // ── State ──
   const [battle, setBattle] = useState<GridBattleState>(() =>
     createBattle(
-      { militia: attackerSized.militiaCount, riders: attackerSized.ridersCount, formation: attackerFormation, zombie: isZombieAmbush },
-      { militia: defenderSized.militiaCount, riders: defenderSized.ridersCount, formation: defenderFormation, zombie: !!tile?.abandoned },
+      {
+        militia: attackerSized.militiaCount,
+        riders: attackerSized.ridersCount,
+        formation: attackerFormation,
+        zombie: isZombieAmbush,
+        ...(statOverrides
+          ? {
+              militiaHp: statOverrides.attackerMilitiaHp,
+              militiaDmgMin: statOverrides.attackerMilitiaDmgMin,
+              militiaDmgMax: statOverrides.attackerMilitiaDmgMax,
+              riderHp: statOverrides.attackerRiderHp,
+              riderDmgMin: statOverrides.attackerRiderDmgMin,
+              riderDmgMax: statOverrides.attackerRiderDmgMax,
+            }
+          : {}),
+      },
+      {
+        militia: defenderSized.militiaCount,
+        riders: defenderSized.ridersCount,
+        formation: defenderFormation,
+        zombie: statOverrides ? statOverrides.defenderKind === 'zombie' : !!tile?.abandoned,
+        // A 'normal' test defender shares the attacker's own militia stats,
+        // same as simulate.ts — its own hp/dmg inputs are ignored.
+        ...(statOverrides
+          ? statOverrides.defenderKind === 'normal'
+            ? {
+                militiaHp: statOverrides.attackerMilitiaHp,
+                militiaDmgMin: statOverrides.attackerMilitiaDmgMin,
+                militiaDmgMax: statOverrides.attackerMilitiaDmgMax,
+              }
+            : {
+                militiaHp: statOverrides.defenderHp,
+                militiaDmgMin: statOverrides.defenderDmgMin,
+                militiaDmgMax: statOverrides.defenderDmgMax,
+                riderHp: statOverrides.defenderHp,
+                riderDmgMin: statOverrides.defenderDmgMin,
+                riderDmgMax: statOverrides.defenderDmgMax,
+              }
+          : {}),
+      },
       gridCols,
       gridRows
     )

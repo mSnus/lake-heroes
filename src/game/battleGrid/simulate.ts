@@ -26,6 +26,7 @@ export interface SimDefender {
 
 export interface SimResult {
   attackerLost: number;
+  attackerTotal: number;
   defenderLost: number;
   outcome: GridBattleState['status'];
 }
@@ -114,6 +115,7 @@ export function simulateOneBattle(
   const defenderLeft = state.units.filter((u) => u.side === 'defender').length;
   return {
     attackerLost: attackerTotal - attackerLeft,
+    attackerTotal,
     defenderLost: defenderTotal - defenderLeft,
     outcome: state.status,
   };
@@ -133,4 +135,11 @@ export function attackerLossPercentile(results: SimResult[], p: number): number 
   const sorted = [...results].map((r) => r.attackerLost).sort((a, b) => a - b);
   const idx = Math.min(sorted.length - 1, Math.max(0, Math.floor((p / 100) * sorted.length)));
   return sorted[idx];
+}
+
+/** % of runs where the attacker lost less than `threshold` of its own army. */
+export function lightLossRate(results: SimResult[], threshold: number = 0.2): number {
+  if (results.length === 0) return 0;
+  const count = results.filter((r) => r.attackerLost < r.attackerTotal * threshold).length;
+  return Math.round((count / results.length) * 100);
 }

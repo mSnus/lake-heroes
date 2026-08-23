@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
-import { clearScreen } from '../utils/screenStore';
+import { clearScreen, showScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
-import { runBattleSimulations, attackerLossPercentile, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
+import { runBattleSimulations, attackerLossPercentile, lightLossRate, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_HP, DRAGON_DMG_MIN, DRAGON_DMG_MAX } from '../game/constants';
+import { Player } from '../game/Player';
+import { GameState } from '../game/GameState';
+import { BattleScreen } from './BattleScreen';
 import { useT } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
 import '../styles/CheatScreen.css';
 import '../styles/OverridesScreen.css';
 
-const PERCENTILES = [80, 60, 50, 40, 20, 10];
+// The <20% column is computed separately (see lightLossRate), not a raw
+// percentile -- kept out of this list, and spliced into the table between
+// the 40% and 10% columns.
+const PERCENTILES = [80, 60, 50, 40, 10];
 
 interface ResultRow {
   label: React.ReactNode;
   percentiles: number[];
+  lightLossPct: number;
 }
 
 const numInput = (value: number, onChange: (n: number) => void, width = '3.2rem', disabled = false) => (
@@ -125,9 +132,49 @@ const BattleSimScreen: React.FC = () => {
         100
       );
       const percentiles = PERCENTILES.map((p) => attackerLossPercentile(results, p));
-      setRows((prev) => [{ label: settingLabel(), percentiles }, ...prev]);
+      const lightLossPct = lightLossRate(results);
+      setRows((prev) => [{ label: settingLabel(), percentiles, lightLossPct }, ...prev]);
       setRunning(false);
     }, 0);
+  };
+
+  // Opens the real battle screen (full UI/animation) for a single run of the
+  // exact setting currently configured, using synthetic throwaway Player/
+  // GameState objects so nothing about the real game is touched.
+  const handleRunBattle = () => {
+    const atkPlayer = new Player({ name: t('battleSimScreen.attacker'), color: 'red', gold: 0, units: attackerMilitia, position: -1, image: 'red', isComputer: true });
+    atkPlayer.riders = attackerRiders;
+    const defPlayer = new Player({ name: t('battleSimScreen.defender'), color: 'blue', gold: 0, units: 0, position: -1, image: 'blue', isComputer: true });
+    if (defenderKind === 'dragon') defPlayer.riders = defenderAmount;
+    else defPlayer.militia = defenderAmount;
+    const battleGameState = new GameState([], [atkPlayer, defPlayer]);
+
+    showScreen({
+      content: (
+        <BattleScreen
+          attacker={atkPlayer}
+          gameState={battleGameState}
+          updateGameState={() => {}}
+          mode="player"
+          defender={defPlayer}
+          battlefieldUnits={Math.min(atkPlayer.units, defPlayer.units)}
+          onClose={() => {}}
+          statOverrides={{
+            attackerMilitiaHp: militiaHp,
+            attackerMilitiaDmgMin: militiaDmgMin,
+            attackerMilitiaDmgMax: militiaDmgMax,
+            attackerRiderHp: riderHp,
+            attackerRiderDmgMin: riderDmgMin,
+            attackerRiderDmgMax: riderDmgMax,
+            defenderKind,
+            defenderHp: defenderKind === 'normal' ? militiaHp : defenderStats.hp,
+            defenderDmgMin: defenderKind === 'normal' ? militiaDmgMin : defenderStats.dmgMin,
+            defenderDmgMax: defenderKind === 'normal' ? militiaDmgMax : defenderStats.dmgMax,
+            defenderPctBonus: defenderBonusPct / 100,
+          }}
+        />
+      ),
+    });
   };
 
   return (
@@ -199,6 +246,7 @@ const BattleSimScreen: React.FC = () => {
           <DecoratedButton onClick={handleSimulate} disabled={running}>
             {running ? t('battleSimScreen.simulating') : t('battleSimScreen.simulate')}
           </DecoratedButton>
+          <DecoratedButton onClick={handleRunBattle}>{t('battleSimScreen.runBattle')}</DecoratedButton>
           {rows.length > 0 && (
             <DecoratedButton onClick={() => setRows([])}>{t('battleSimScreen.clear')}</DecoratedButton>
           )}
@@ -211,18 +259,22 @@ const BattleSimScreen: React.FC = () => {
               <thead>
                 <tr className="player-stats-header">
                   <th className="player-stats-header-cell">{t('battleSimScreen.setting')}</th>
-                  {PERCENTILES.map((p) => (
+                  {PERCENTILES.slice(0, -1).map((p) => (
                     <th key={p} className="player-stats-header-cell">{p}%</th>
                   ))}
+                  <th className="player-stats-header-cell">&lt;20%</th>
+                  <th className="player-stats-header-cell">{PERCENTILES[PERCENTILES.length - 1]}%</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r, i) => (
                   <tr key={i} className={i % 2 === 0 ? 'player-stats-row' : 'player-stats-row-alt'}>
-                    <td className="player-stats-cell">{r.label}</td>
-                    {r.percentiles.map((v, j) => (
+                    <td className="player-stats-cell" style={{ whiteSpace: 'nowrap' }}>{r.label}</td>
+                    {r.percentiles.slice(0, -1).map((v, j) => (
                       <td key={j} className="player-stats-cell">{v}</td>
                     ))}
+                    <td className="player-stats-cell">{r.lightLossPct}%</td>
+                    <td className="player-stats-cell">{r.percentiles[r.percentiles.length - 1]}</td>
                   </tr>
                 ))}
               </tbody>
