@@ -10,7 +10,7 @@ import '../styles/modal.css';
 import '../styles/CheatScreen.css';
 import '../styles/OverridesScreen.css';
 
-const PERCENTILES = [10, 20, 40, 50, 60, 80];
+const PERCENTILES = [80, 60, 50, 40, 20, 10];
 
 interface ResultRow {
   label: React.ReactNode;
