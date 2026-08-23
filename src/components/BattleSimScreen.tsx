@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { clearScreen, showScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { runBattleSimulations, attackerLossPercentile, lightLossRate, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
@@ -51,46 +51,85 @@ const KIND_EMOJI: Record<SimDefenderKind, string> = {
 };
 
 /** What the defender's hp/dmg fields reset to when the kind dropdown
- * changes -- the real effective stats for that kind today (zombie's
- * multipliers pre-applied, dragon's fixed constants), so switching kinds
- * always starts from an accurate baseline the user can then tweak. */
-function defaultDefenderStats(kind: SimDefenderKind): { hp: number; dmgMin: number; dmgMax: number } {
+ * changes -- dragon is a fixed monster, unrelated to militia/rider stats;
+ * zombie is the *current* militia row's hp/dmg (whatever's typed above
+ * right now, not the Overrides screen's saved defaults) times the global
+ * zombie multipliers, so switching kinds always starts from an accurate
+ * baseline the user can then tweak further. */
+function defaultDefenderStats(
+  kind: SimDefenderKind,
+  militiaHp: number,
+  militiaDmgMin: number,
+  militiaDmgMax: number
+): { hp: number; dmgMin: number; dmgMax: number } {
   if (kind === 'dragon') return { hp: DRAGON_HP, dmgMin: DRAGON_DMG_MIN, dmgMax: DRAGON_DMG_MAX };
-  const ov = getOverrides();
   if (kind === 'zombie') {
+    const ov = getOverrides();
     return {
-      hp: Math.round(ov.militiaHp * ov.zombieHpMult),
-      dmgMin: Math.round(ov.militiaDmgMin * ov.zombieDmgMult),
-      dmgMax: Math.round(ov.militiaDmgMax * ov.zombieDmgMult),
+      hp: Math.round(militiaHp * ov.zombieHpMult),
+      dmgMin: Math.round(militiaDmgMin * ov.zombieDmgMult),
+      dmgMax: Math.round(militiaDmgMax * ov.zombieDmgMult),
     };
   }
-  return { hp: ov.militiaHp, dmgMin: ov.militiaDmgMin, dmgMax: ov.militiaDmgMax };
+  return { hp: militiaHp, dmgMin: militiaDmgMin, dmgMax: militiaDmgMax };
 }
+
+/** Persists the form (and results) across the screen closing and reopening
+ * -- e.g. after "Run battle" hands off to the battle screen and back --
+ * since the component itself unmounts each time the screen is cleared. */
+interface SimFormState {
+  attackerMilitia: number;
+  attackerRiders: number;
+  militiaHp: number;
+  militiaDmgMin: number;
+  militiaDmgMax: number;
+  riderHp: number;
+  riderDmgMin: number;
+  riderDmgMax: number;
+  defenderAmount: number;
+  defenderKind: SimDefenderKind;
+  defenderStats: { hp: number; dmgMin: number; dmgMax: number };
+  defenderBonusPct: number;
+  rows: ResultRow[];
+}
+let savedFormState: SimFormState | null = null;
 
 const BattleSimScreen: React.FC = () => {
   const t = useT();
   const ov = getOverrides();
 
-  const [attackerMilitia, setAttackerMilitia] = useState(12);
-  const [attackerRiders, setAttackerRiders] = useState(0);
-  const [militiaHp, setMilitiaHp] = useState(ov.militiaHp);
-  const [militiaDmgMin, setMilitiaDmgMin] = useState(ov.militiaDmgMin);
-  const [militiaDmgMax, setMilitiaDmgMax] = useState(ov.militiaDmgMax);
-  const [riderHp, setRiderHp] = useState(ov.riderHp);
-  const [riderDmgMin, setRiderDmgMin] = useState(ov.riderDmgMin);
-  const [riderDmgMax, setRiderDmgMax] = useState(ov.riderDmgMax);
+  const [attackerMilitia, setAttackerMilitia] = useState(savedFormState?.attackerMilitia ?? 12);
+  const [attackerRiders, setAttackerRiders] = useState(savedFormState?.attackerRiders ?? 0);
+  const [militiaHp, setMilitiaHp] = useState(savedFormState?.militiaHp ?? ov.militiaHp);
+  const [militiaDmgMin, setMilitiaDmgMin] = useState(savedFormState?.militiaDmgMin ?? ov.militiaDmgMin);
+  const [militiaDmgMax, setMilitiaDmgMax] = useState(savedFormState?.militiaDmgMax ?? ov.militiaDmgMax);
+  const [riderHp, setRiderHp] = useState(savedFormState?.riderHp ?? ov.riderHp);
+  const [riderDmgMin, setRiderDmgMin] = useState(savedFormState?.riderDmgMin ?? ov.riderDmgMin);
+  const [riderDmgMax, setRiderDmgMax] = useState(savedFormState?.riderDmgMax ?? ov.riderDmgMax);
 
-  const [defenderAmount, setDefenderAmount] = useState(6);
-  const [defenderKind, setDefenderKind] = useState<SimDefenderKind>('normal');
-  const [defenderStats, setDefenderStats] = useState(() => defaultDefenderStats('normal'));
-  const [defenderBonusPct, setDefenderBonusPct] = useState(0);
+  const [defenderAmount, setDefenderAmount] = useState(savedFormState?.defenderAmount ?? 6);
+  const [defenderKind, setDefenderKind] = useState<SimDefenderKind>(savedFormState?.defenderKind ?? 'normal');
+  const [defenderStats, setDefenderStats] = useState(
+    () => savedFormState?.defenderStats ?? defaultDefenderStats('normal', ov.militiaHp, ov.militiaDmgMin, ov.militiaDmgMax)
+  );
+  const [defenderBonusPct, setDefenderBonusPct] = useState(savedFormState?.defenderBonusPct ?? 0);
 
   const [running, setRunning] = useState(false);
-  const [rows, setRows] = useState<ResultRow[]>([]);
+  const [rows, setRows] = useState<ResultRow[]>(savedFormState?.rows ?? []);
+
+  // Keep the module-level snapshot current, so a remount (e.g. after "Run
+  // battle" closes) can restore exactly where things were left.
+  useEffect(() => {
+    savedFormState = {
+      attackerMilitia, attackerRiders, militiaHp, militiaDmgMin, militiaDmgMax,
+      riderHp, riderDmgMin, riderDmgMax, defenderAmount, defenderKind, defenderStats,
+      defenderBonusPct, rows,
+    };
+  });
 
   const handleDefenderKindChange = (kind: SimDefenderKind) => {
     setDefenderKind(kind);
-    setDefenderStats(defaultDefenderStats(kind));
+    setDefenderStats(defaultDefenderStats(kind, militiaHp, militiaDmgMin, militiaDmgMax));
   };
 
   // Headcounts (no per-side emoji, just the numbers) + defender kind emoji
@@ -158,7 +197,7 @@ const BattleSimScreen: React.FC = () => {
           mode="player"
           defender={defPlayer}
           battlefieldUnits={Math.min(atkPlayer.units, defPlayer.units)}
-          onClose={() => {}}
+          onClose={() => showScreen({ content: <BattleSimScreen /> })}
           statOverrides={{
             attackerMilitiaHp: militiaHp,
             attackerMilitiaDmgMin: militiaDmgMin,
@@ -254,7 +293,7 @@ const BattleSimScreen: React.FC = () => {
         </div>
 
         {rows.length > 0 && (
-          <div className="player-stats-container">
+          <div className="player-stats-container" style={{ maxHeight: '40vh', overflowY: 'auto' }}>
             <table className="player-stats-table">
               <thead>
                 <tr className="player-stats-header">
