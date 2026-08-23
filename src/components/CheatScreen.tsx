@@ -16,6 +16,17 @@ import '../styles/CheatScreen.css';
 const GOLD_CAP = 999999;
 const FAME_CAP = 99;
 
+/** Clamp a number input's value to [0, max], and write the clamped text
+ * back into the input itself -- if the parsed value doesn't change (e.g. a
+ * leading zero typed in front of an existing digit), React bails out of
+ * re-rendering since the state is unchanged, leaving the stray zero in the
+ * DOM otherwise. */
+function clampedInput(e: React.ChangeEvent<HTMLInputElement>, max: number, setter: (n: number) => void) {
+  const n = Math.max(0, Math.min(max, parseInt(e.target.value, 10) || 0));
+  e.target.value = String(n);
+  setter(n);
+}
+
 interface CheatScreenProps {
   gameState: GameState;
   updateGameState: (gs: GameState) => void;
@@ -152,7 +163,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             max={GOLD_CAP}
             value={gold}
             style={{ width: '5.5rem' }}
-            onChange={(e) => setGold(Math.max(0, Math.min(GOLD_CAP, parseInt(e.target.value, 10) || 0)))}
+            onChange={(e) => clampedInput(e, GOLD_CAP, setGold)}
           />
           <button className="game-menu-button" onClick={handleSetGold}>
             {t('cheatScreen.set')}
@@ -167,7 +178,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             max={unitCap}
             value={militia}
             style={{ width: '4rem' }}
-            onChange={(e) => setMilitia(Math.max(0, Math.min(unitCap, parseInt(e.target.value, 10) || 0)))}
+            onChange={(e) => clampedInput(e, unitCap, setMilitia)}
           />
           🧍
           <input
@@ -176,7 +187,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             max={unitCap}
             value={riders}
             style={{ width: '4rem' }}
-            onChange={(e) => setRiders(Math.max(0, Math.min(unitCap, parseInt(e.target.value, 10) || 0)))}
+            onChange={(e) => clampedInput(e, unitCap, setRiders)}
           />
           🐎
           <button className="game-menu-button" onClick={handleSetUnits}>
@@ -192,7 +203,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             max={FAME_CAP}
             value={fame}
             style={{ width: '4rem' }}
-            onChange={(e) => setFame(Math.max(0, Math.min(FAME_CAP, parseInt(e.target.value, 10) || 0)))}
+            onChange={(e) => clampedInput(e, FAME_CAP, setFame)}
           />
           🏆
           <button className="game-menu-button" onClick={handleSetFame}>

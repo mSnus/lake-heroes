@@ -26,7 +26,13 @@ const numInput = (value: number, onChange: (n: number) => void, width = '3.2rem'
     style={{ width, opacity: disabled ? 0.5 : 1 }}
     onChange={(e) => {
       const n = parseInt(e.target.value, 10);
-      onChange(Number.isNaN(n) ? 0 : Math.max(0, n));
+      const clamped = Number.isNaN(n) ? 0 : Math.max(0, n);
+      // If the parsed value didn't change (e.g. a leading zero typed in
+      // front of an existing digit), React bails out of re-rendering since
+      // the state is unchanged, leaving the stray zero in the DOM -- write
+      // the trimmed text back directly so it never lingers.
+      e.target.value = String(clamped);
+      onChange(clamped);
     }}
   />
 );

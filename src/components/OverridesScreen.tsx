@@ -21,7 +21,13 @@ const numInput = (value: number, onChange: (n: number) => void, width = '1.6rem'
     style={{ width }}
     onChange={(e) => {
       const n = parseFloat(e.target.value);
-      onChange(Number.isNaN(n) ? 0 : n);
+      const value = Number.isNaN(n) ? 0 : n;
+      // If the parsed value didn't change (e.g. a leading zero typed in
+      // front of an existing digit), React bails out of re-rendering since
+      // the state is unchanged, leaving the stray zero in the DOM -- write
+      // the trimmed text back directly so it never lingers.
+      e.target.value = String(value);
+      onChange(value);
     }}
   />
 );
