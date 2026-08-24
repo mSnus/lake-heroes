@@ -918,8 +918,7 @@
     "passStart": "Pass start bonus",
     "stepByStep": "Step-by-step combat",
     "muteToasts": "Mute toast messages",
-    "headlessCombats": "Headless combats (skip battle screens)",
-    "set": "Set",
+    "headlessCombats": "Headless combats",
     "apply": "Apply",
     "resetDefaults": "Reset to defaults"
   },

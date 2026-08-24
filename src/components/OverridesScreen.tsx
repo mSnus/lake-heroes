@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
-import { GameOverrides, getOverrides, setOverrides, useOverrides, resetOverrides } from '../utils/overridesStore';
+import { GameOverrides, getOverrides, setOverrides, resetOverrides } from '../utils/overridesStore';
 import { useT } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
@@ -34,22 +34,20 @@ const numInput = (value: number, onChange: (n: number) => void, width = '1.6rem'
 
 const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGameState }) => {
   const t = useT();
-  const live = useOverrides();
 
-  // Local, editable copy of every numeric field. Toggles read/write the live
-  // store directly (they take effect the instant you flip them).
+  // Local, editable draft of every field, toggles included -- nothing
+  // reaches the live store until Apply. (Toggles used to write straight to
+  // the live store on every click, which meant this draft's own stale
+  // initial value for them would silently overwrite that change the next
+  // time Apply ran for anything else.)
   const [form, setForm] = useState<GameOverrides>(() => ({ ...getOverrides() }));
   const set = (patch: Partial<GameOverrides>) => setForm((f) => ({ ...f, ...patch }));
 
-  // Commit a subset (or everything) to the live store, then re-render the
-  // board so repriced tiles / recomputed slots show immediately.
-  const commit = (patch: Partial<GameOverrides>) => {
-    setOverrides(patch);
-    updateGameState(gameState);
-  };
-
+  // Commit the whole draft to the live store, then re-render the board so
+  // repriced tiles / recomputed slots show immediately.
   const applyAll = () => {
-    commit(form);
+    setOverrides(form);
+    updateGameState(gameState);
     clearScreen();
   };
 
@@ -75,12 +73,6 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.militiaDmgMin, (n) => set({ militiaDmgMin: n }))}–
           {numInput(form.militiaDmgMax, (n) => set({ militiaDmgMax: n }))} {t('overridesScreen.dmg')}
           {numInput(form.militiaPrice, (n) => set({ militiaPrice: n }), '3rem')}🟡
-          <button
-            className="game-menu-button"
-            onClick={() => commit({ militiaHp: form.militiaHp, militiaDmgMin: form.militiaDmgMin, militiaDmgMax: form.militiaDmgMax, militiaPrice: form.militiaPrice })}
-          >
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
@@ -89,12 +81,6 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.riderDmgMin, (n) => set({ riderDmgMin: n }))}–
           {numInput(form.riderDmgMax, (n) => set({ riderDmgMax: n }))} {t('overridesScreen.dmg')}
           {numInput(form.riderPrice, (n) => set({ riderPrice: n }), '3rem')}🟡
-          <button
-            className="game-menu-button"
-            onClick={() => commit({ riderHp: form.riderHp, riderDmgMin: form.riderDmgMin, riderDmgMax: form.riderDmgMax, riderPrice: form.riderPrice })}
-          >
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
@@ -102,75 +88,45 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.zombieHp, (n) => set({ zombieHp: n }))} {t('overridesScreen.hp')}
           {numInput(form.zombieDmgMin, (n) => set({ zombieDmgMin: n }))}–
           {numInput(form.zombieDmgMax, (n) => set({ zombieDmgMax: n }))} {t('overridesScreen.dmg')}
-          <button
-            className="game-menu-button"
-            onClick={() => commit({ zombieHp: form.zombieHp, zombieDmgMin: form.zombieDmgMin, zombieDmgMax: form.zombieDmgMax })}
-          >
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
           <label>⚔️ {t('overridesScreen.armySlotCapacity')}</label>
           {numInput(form.armySlotCapacity, (n) => set({ armySlotCapacity: n }))}
-          <button className="game-menu-button" onClick={() => commit({ armySlotCapacity: form.armySlotCapacity })}>
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
           <label>🏯 {t('overridesScreen.garrisonSlotCapacity')}</label>
           {numInput(form.garrisonSlotCapacity, (n) => set({ garrisonSlotCapacity: n }))}
-          <button
-            className="game-menu-button"
-            onClick={() => commit({ garrisonSlotCapacity: form.garrisonSlotCapacity })}
-          >
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
           <label>{t('overridesScreen.passStart')}</label>
           🟡{numInput(form.moneyPassStart, (n) => set({ moneyPassStart: n }), '3rem')}
           🧍{numInput(form.unitsPassStart, (n) => set({ unitsPassStart: n }))}
-          <button
-            className="game-menu-button"
-            onClick={() => commit({ moneyPassStart: form.moneyPassStart, unitsPassStart: form.unitsPassStart })}
-          >
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
           <label>{t('overridesScreen.tileBasePrice')}</label>
           {numInput(form.tileBasePrice, (n) => set({ tileBasePrice: n }), '3rem')}
-          <button className="game-menu-button" onClick={() => commit({ tileBasePrice: form.tileBasePrice })}>
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
           <label>{t('overridesScreen.tileUpgradeMult')}</label>
           {numInput(form.tileUpgradeMult, (n) => set({ tileUpgradeMult: n }))}×
-          <button className="game-menu-button" onClick={() => commit({ tileUpgradeMult: form.tileUpgradeMult })}>
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row">
           <label>{t('overridesScreen.tileIncomeMult')}</label>
           {numInput(form.tileIncomeMult, (n) => set({ tileIncomeMult: n }))}×
-          <button className="game-menu-button" onClick={() => commit({ tileIncomeMult: form.tileIncomeMult })}>
-            {t('overridesScreen.set')}
-          </button>
         </div>
 
         <div className="cheat-row overrides-toggle">
           <label>{t('overridesScreen.stepByStep')}</label>
           <input
             type="checkbox"
-            checked={live.stepByStepCombat}
-            onChange={(e) => commit({ stepByStepCombat: e.target.checked })}
+            checked={form.stepByStepCombat}
+            onChange={(e) => set({ stepByStepCombat: e.target.checked })}
           />
         </div>
 
@@ -178,8 +134,8 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           <label>{t('overridesScreen.muteToasts')}</label>
           <input
             type="checkbox"
-            checked={live.muteToasts}
-            onChange={(e) => commit({ muteToasts: e.target.checked })}
+            checked={form.muteToasts}
+            onChange={(e) => set({ muteToasts: e.target.checked })}
           />
         </div>
 
@@ -187,8 +143,8 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           <label>{t('overridesScreen.headlessCombats')}</label>
           <input
             type="checkbox"
-            checked={live.headlessCombats}
-            onChange={(e) => commit({ headlessCombats: e.target.checked })}
+            checked={form.headlessCombats}
+            onChange={(e) => set({ headlessCombats: e.target.checked })}
           />
         </div>
 
