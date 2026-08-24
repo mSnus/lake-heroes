@@ -519,7 +519,6 @@
   "passStart": {
     "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory",
     "receives": "{playerName} receives {summary}",
-    "kingsSupport": "👑 The King sees {playerName} falling behind and grants {gold}🟡 and {units}🧍 in support",
     "aYear": "a year",
     "years": "{count} years",
     "kingRewardsYou": "The King rewards you for {years} of your service"

@@ -11,7 +11,7 @@ export function passStart(
   if (!board) return '';
 
   const player = board.activePlayer;
-  const { totalGold, totalUnits, catchUpGold, catchUpUnits } = computeAnnualReward(board, player);
+  const { totalGold, totalUnits } = computeAnnualReward(board, player);
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
@@ -38,13 +38,6 @@ export function passStart(
   const summary = parts.join(` ${t('common.and')} `);
 
   say(t('passStart.receives', { playerName: player.name, summary }), 'success');
-
-  if (catchUpGold > 0 || catchUpUnits > 0) {
-    say(
-      t('passStart.kingsSupport', { playerName: player.name, gold: catchUpGold, units: catchUpUnits }),
-      'info'
-    );
-  }
 
   const years =
     player.circles < 3 ? t('passStart.aYear') : t('passStart.years', { count: player.circles - 1 });
