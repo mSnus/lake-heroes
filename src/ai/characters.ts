@@ -43,7 +43,10 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     upgrade: { goldFraction: 1 / 2, unitsFraction: 1 / 2, maxPerTurn: 1 },
     fightThreshold: { heroHour: 2, caravan: 2 },
     guards: { strategy: 'last-resort-fight' },
-    dragonThreshold: 70,
+    // Recalibrated alongside DRAGON_UNITS_THRESHOLD (see fightDragon.ts) --
+    // same 1.4x/1.0x/1.2x spread as before (explorer most cautious, warrior
+    // least), recentered on the new 136 baseline instead of the old 50.
+    dragonThreshold: 190,
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: false,
@@ -57,7 +60,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     upgrade: { goldFraction: 1 / 3, unitsFraction: 1 / 3, maxPerTurn: 1 },
     fightThreshold: { heroHour: 1.5, caravan: 1.5 },
     guards: { strategy: 'prefer-fight' },
-    dragonThreshold: 50,
+    dragonThreshold: 136,
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
     skipBuyingNearDragonGoal: true,
@@ -71,7 +74,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     upgrade: { goldFraction: 1 / 3, unitsFraction: 1 / 3, maxPerTurn: 2 },
     fightThreshold: { heroHour: 1.7, caravan: 1.7 },
     guards: { strategy: 'wizard' },
-    dragonThreshold: 60,
+    dragonThreshold: 163,
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: true,

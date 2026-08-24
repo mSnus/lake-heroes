@@ -93,7 +93,8 @@ export function checkDragonEncounter(
 
 function dragonSkyWithSay(board: GameState, onContinue: () => void) {
   const player = board.activePlayer;
-  say(t('dragonEncounter.soarsOverhead'), 'info');
+  // Flavor-only message -- skip it headless so it doesn't clutter the sim log.
+  if (!isHeadlessRun()) say(t('dragonEncounter.soarsOverhead'), 'info');
   showDragonSkyScreen(onContinue, player.name, player.color);
 }
 

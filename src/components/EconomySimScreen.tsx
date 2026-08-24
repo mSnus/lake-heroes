@@ -114,10 +114,11 @@ function formatCell(s: PlayerSnapshot): string {
 /** "X🧍X🟡" for the daily-income summary -- null when there's nothing to
  * show, same zero-hiding rule as formatUnits. */
 function formatIncomeSummary(gold: number, units: number): string | null {
-  if (gold <= 0 && units <= 0) return null;
+  const roundedGold = Math.floor(gold / 50) * 50;
+  if (roundedGold <= 0 && units <= 0) return null;
   const parts: string[] = [];
   if (units > 0) parts.push(`${units}🧍`);
-  if (gold > 0) parts.push(`${gold}🟡`);
+  if (roundedGold > 0) parts.push(`${roundedGold}🟡`);
   return parts.join(' ');
 }
 
@@ -187,7 +188,7 @@ const EconomySimScreen: React.FC = () => {
         }
       };
 
-      const runOutcome = await runHeadlessGame(board, onTick, { unitThreshold: 60, maxCircles: 50 });
+      const runOutcome = await runHeadlessGame(board, onTick, { maxCircles: 50 });
       setHeadlessOverrides(null);
 
       // onTick only fires on a circle change, so the stop condition can fire
@@ -217,9 +218,6 @@ const EconomySimScreen: React.FC = () => {
         // The dragon fight doesn't advance the turn on a win (see
         // driveOneTurn), so the active player is still whoever slew it.
         winnerIndex = board.players.findIndex((p) => p.id === board.activePlayer.id);
-        if (winnerIndex < 0) winnerIndex = 0;
-      } else if (runOutcome.stopReason === 'unit-threshold') {
-        winnerIndex = board.players.findIndex((p) => p.units >= 60);
         if (winnerIndex < 0) winnerIndex = 0;
       } else {
         let bestWealth = -1;

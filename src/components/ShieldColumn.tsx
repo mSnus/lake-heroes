@@ -121,6 +121,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   📜
                 </button>
               </div>
+              <div className="shield-button-container" title={t('shieldColumn.statistics')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <StatsScreen gameState={gameState} /> });
+                  }}
+                  className="shield-button"
+                >
+                  📈
+                </button>
+              </div>
               <div className="shield-button-container" title={t('common.language')}>
                 <button onClick={cycleLanguage} className="shield-button">
                   {currentFlag}
@@ -128,7 +139,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               </div>
             </div>
 
-            {/* Left column: reload, cheat, statistics, map edit */}
+            {/* Left column: reload, cheat, overrides, sims, map edit */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div className="shield-button-container" title={t('shieldColumn.reload')}>
                 <button
@@ -169,17 +180,6 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   ⚖️
-                </button>
-              </div>
-              <div className="shield-button-container" title={t('shieldColumn.statistics')}>
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    showScreen({ content: <StatsScreen gameState={gameState} /> });
-                  }}
-                  className="shield-button"
-                >
-                  📈
                 </button>
               </div>
               <div className="shield-button-container" title={t('shieldColumn.battleSim')}>

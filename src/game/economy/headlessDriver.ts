@@ -17,20 +17,17 @@ import {
 import { findSyndicateSaleCandidate } from '../../ai/syndicate';
 
 export interface HeadlessGameOptions {
-  /** Stop once any player's raw unit headcount reaches this. */
-  unitThreshold?: number;
   /** Hard cap on the highest circle count reached by any player. */
   maxCircles?: number;
 }
 
-export type HeadlessStopReason = 'unit-threshold' | 'circle-cap' | 'game-over';
+export type HeadlessStopReason = 'circle-cap' | 'game-over';
 
 export interface HeadlessGameResult {
   stopReason: HeadlessStopReason;
   turnsPlayed: number;
 }
 
-const DEFAULT_UNIT_THRESHOLD = 60;
 const DEFAULT_MAX_CIRCLES = 50;
 
 /**
@@ -116,7 +113,6 @@ export async function runHeadlessGame(
   updateGameState: (board: GameState) => void,
   options: HeadlessGameOptions = {}
 ): Promise<HeadlessGameResult> {
-  const unitThreshold = options.unitThreshold ?? DEFAULT_UNIT_THRESHOLD;
   const maxCircles = options.maxCircles ?? DEFAULT_MAX_CIRCLES;
 
   setHeadlessRun(true);
@@ -124,10 +120,6 @@ export async function runHeadlessGame(
   setSimLogBoard(board);
   try {
     for (;;) {
-      if (board.players.some((p) => p.units >= unitThreshold)) {
-        return { stopReason: 'unit-threshold', turnsPlayed: board.turns };
-      }
-
       if (Math.max(...board.players.map((p) => p.circles)) >= maxCircles) {
         return { stopReason: 'circle-cap', turnsPlayed: board.turns };
       }

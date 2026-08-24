@@ -4,7 +4,14 @@ import { showDragonChallengeScreen, clearScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { t } from '../i18n';
 
-export const DRAGON_UNITS_THRESHOLD = 50;
+// Army power (see Player.armyPower) at which a player is even OFFERED the
+// challenge -- was a flat 50, disconnected from the Dragon's actual
+// strength on the same scale (48 units, see DRAGON_UNITS). Recalibrated to
+// the minimal squad that can genuinely contest it: 9 riders ~= 7 dragons,
+// so 48 dragons ~= 62 riders, converted to armyPower via the game's own
+// RIDER_DUEL_MULTIPLIER (2.2) -- 62 * 2.2 ~= 136. If either constant moves
+// again, recheck this against that same 62-rider minimum.
+export const DRAGON_UNITS_THRESHOLD = 136;
 
 export function fightDragon(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;

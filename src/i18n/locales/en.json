@@ -951,7 +951,6 @@
     "settingSummary": "Tile price {tileBasePrice} (income ×{tileIncomeMult}, upgrade ×{tileUpgradeMult}) · Pass start {passStartGold}🟡 {passStartUnits}🧍 · {playerCount} players",
     "stopReason": "Stopped after {turns} turns: {reason}",
     "stopReasonLabel": {
-      "unit-threshold": "a player reached 60 units",
       "circle-cap": "hit the 50-circle cap",
       "game-over": "a player slew the Dragon"
     }
