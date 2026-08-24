@@ -1,7 +1,9 @@
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
-import { DRAGON_UNITS_THRESHOLD, offerDragonChallenge } from './fightDragon';
+import { DRAGON_UNITS_THRESHOLD, offerDragonChallenge, fightDragon } from './fightDragon';
+import { isHeadlessRun } from '../utils/headlessStore';
+import { shouldChallengeDragon } from '../ai/decisions';
 import { setEndTurn } from '../utils/endTurnStore';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
@@ -123,6 +125,12 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     );
     board.gameMessage = t('endTurn.dragonGuardsGold');
     updateGameState(board);
+    // Fight-or-flee is a real 2-way decision -- same call BotController
+    // makes, and the same one checkDragonEncounter's headless branch uses.
+    if (isHeadlessRun()) {
+      if (shouldChallengeDragon(board.activePlayer)) fightDragon(board, updateGameState);
+      return;
+    }
     offerDragonChallenge(board, updateGameState, () => gameEvent('showDice', null));
     return;
   }

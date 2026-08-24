@@ -1,7 +1,7 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { ZOMBIE_AMBUSH_CHANCE, ZOMBIE_AMBUSH_FORCE_RATIO } from '../game/constants';
 import { t } from '../i18n';
 
@@ -33,22 +33,17 @@ export function checkZombieAmbushEncounter(
   if (Math.random() >= ZOMBIE_AMBUSH_CHANCE) return false;
 
   const startBattle = () => {
-    showScreen({
-      screenType: 'zombie-ambush-battle',
-      ambushAttackerUnits: attackerUnits,
-      content: (
-        <BattleScreen
-          mode="ambush"
-          attacker={player}
-          ambushAttackerUnits={attackerUnits}
-          isZombieAmbush
-          gameState={board}
-          updateGameState={updateGameState}
-          onClose={onContinue}
-        />
-      ),
-    });
+    showBattleScreen(
+      { mode: 'ambush', attacker: player, ambushAttackerUnits: attackerUnits, isZombieAmbush: true, gameState: board, updateGameState, onClose: onContinue },
+      { screenType: 'zombie-ambush-battle', ambushAttackerUnits: attackerUnits }
+    );
   };
+
+  // No decision -- a zombie ambush always has to be fought.
+  if (isHeadlessRun()) {
+    startBattle();
+    return true;
+  }
 
   showScreen({
     screenType: 'zombie-ambush',

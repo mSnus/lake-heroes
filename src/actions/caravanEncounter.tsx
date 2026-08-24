@@ -1,9 +1,10 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { formatArmy } from '../utils/formatArmy';
+import { isHeadlessRun } from '../utils/headlessStore';
+import { shouldAttackCaravan } from '../ai/decisions';
 import { t } from '../i18n';
 
 export function checkCaravanEncounter(
@@ -49,24 +50,26 @@ export function checkCaravanEncounter(
     : 100 * defendingUnits * (Math.floor(Math.random() * 2.3) + 1);
 
   const startBattle = () => {
-    showScreen({
-      screenType: 'caravan-battle',
-      caravanDefence: defendingUnits,
-      caravanPrize: prize,
-      content: (
-        <BattleScreen
-          mode="caravan"
-          attacker={player}
-          gameState={board}
-          updateGameState={updateGameState}
-          caravanDefence={defendingUnits}
-          caravanPrize={prize}
-          caravanSlaves={isSlaves}
-          onClose={onContinue}
-        />
-      ),
-    });
+    showBattleScreen(
+      {
+        mode: 'caravan',
+        attacker: player,
+        gameState: board,
+        updateGameState,
+        caravanDefence: defendingUnits,
+        caravanPrize: prize,
+        caravanSlaves: isSlaves,
+        onClose: onContinue,
+      },
+      { screenType: 'caravan-battle', caravanDefence: defendingUnits, caravanPrize: prize }
+    );
   };
+
+  if (isHeadlessRun()) {
+    if (shouldAttackCaravan(player, defendingUnits)) startBattle();
+    else onContinue();
+    return true;
+  }
 
   const caravanDesc = isSlaves
     ? t('caravanEncounter.bringingChains', { prize })

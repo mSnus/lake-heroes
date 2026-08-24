@@ -1,3 +1,4 @@
+import React from 'react';
 import { BattleOutcome, BattleResolution } from '../../actions/battles/common';
 import { resolveTileBattle } from '../../actions/battles/resolveTileBattle';
 import { resolveRogueAttack } from '../../actions/battles/resolveRogueAttack';
@@ -6,8 +7,14 @@ import { resolveDragonBattle } from '../../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../../actions/battles/resolveAmbush';
 import { resolveRuinsBattle } from '../../actions/battles/resolveRuinsBattle';
-import type { BattleScreenProps } from '../../components/BattleScreen';
+import { showTileEncounterScreen } from '../../actions/afterMoveLogic';
+import { showTileClaimScreen } from '../../actions/showTileClaimScreen';
+import { setEndTurn } from '../../utils/endTurnStore';
+import { showScreen, ScreenConfig } from '../../utils/screenStore';
+import { isHeadlessRun } from '../../utils/headlessStore';
+import { BattleScreen, type BattleScreenProps } from '../../components/BattleScreen';
 import { BattleSetup } from './battleSetup';
+import { runHeadlessBattle } from './headlessBattle';
 
 /**
  * Which real-game outcome a finished grid battle produces -- gold, fame, tile
@@ -56,4 +63,62 @@ export function dispatchBattleResolution(
   }
   if (isRogue) return resolveRogueAttack(gameState, defender!, tile!, defKilled, battleOutcome);
   return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome);
+}
+
+/**
+ * Everything BattleScreen's own handleClose does once a fight ends and the
+ * player (or bot) moves on -- extracted so the headless path (below) can
+ * replicate it exactly instead of a second, divergence-prone copy.
+ */
+export function handleBattleClose(props: BattleScreenProps, setup: BattleSetup, outcome: BattleOutcome | null): void {
+  const { attacker, gameState, updateGameState } = props;
+  const { isCaravan, isPlayerBattle, isAmbush, isRogue, isDragon, isTile, defender, tile } = setup;
+
+  if (isCaravan || isPlayerBattle || isAmbush || isRogue) {
+    (props as { onClose: () => void }).onClose();
+  } else if (isDragon) {
+    if (outcome !== 'attacker') setEndTurn();
+  } else if (isTile && defender && outcome === 'defender') {
+    // Losing a banzai attack on an owned tile returns to the guards
+    // encounter instead of ending the turn -- see the identical comment on
+    // BattleScreen's own handleClose for why.
+    attacker.hasResolvedTileEncounterThisTurn = false;
+    showTileEncounterScreen(gameState, updateGameState);
+  } else {
+    setEndTurn();
+    if (isTile && tile && outcome === 'attacker' && tile.owner === attacker.id) {
+      showTileClaimScreen({ tile, player: attacker, gameState, updateGameState });
+    }
+  }
+}
+
+/**
+ * Fight this battle -- headless straight to a resolved GameState with no
+ * animation, or the real interactive BattleScreen -- applying the same
+ * post-battle continuation either way. The one place every battle in the
+ * game (tile, caravan, dragon, player, ambush, rogue) should be started
+ * from, so a headless run and a real one can never resolve differently.
+ */
+export function showBattleScreen(
+  props: BattleScreenProps,
+  // Reload-restore identifiers (SavedScreen) -- irrelevant headlessly, since
+  // nothing ever gets persisted there (screenStore's writes no-op too).
+  screenExtras?: Pick<
+    ScreenConfig,
+    | 'screenType'
+    | 'tileIndex'
+    | 'defenderId'
+    | 'battlefieldUnits'
+    | 'ambushAttackerUnits'
+    | 'hordeUnits'
+    | 'caravanDefence'
+    | 'caravanPrize'
+  >
+): void {
+  if (isHeadlessRun()) {
+    const { setup, resolution } = runHeadlessBattle(props);
+    handleBattleClose(props, setup, resolution.outcome);
+    return;
+  }
+  showScreen({ ...screenExtras, content: React.createElement(BattleScreen, props) });
 }

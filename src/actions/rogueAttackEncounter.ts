@@ -1,8 +1,8 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { showScreen, clearScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
 
@@ -66,6 +66,12 @@ export function checkRogueAttackEncounter(
     changeFame(player, -1);
     updateGameState(board);
 
+    // No decision, no battle -- the raze already happened above.
+    if (isHeadlessRun()) {
+      onContinue();
+      return true;
+    }
+
     showScreen({
       screenType: 'rogue-attack-razed',
       background: 'assets/screens/raid.jpeg',
@@ -102,21 +108,17 @@ export function checkRogueAttackEncounter(
       isComputer: true,
     });
 
-    showScreen({
-      screenType: 'rogue-attack',
-      tileIndex: tileIdx,
-      hordeUnits,
-      content: React.createElement(BattleScreen, {
-        mode: 'rogue',
-        attacker: horde,
-        defender: player,
-        tile,
-        gameState: board,
-        updateGameState,
-        onClose: onContinue,
-      }),
-    });
+    showBattleScreen(
+      { mode: 'rogue', attacker: horde, defender: player, tile, gameState: board, updateGameState, onClose: onContinue },
+      { screenType: 'rogue-attack', tileIndex: tileIdx, hordeUnits }
+    );
   };
+
+  // No decision here either -- a rogue raid always has to be fought.
+  if (isHeadlessRun()) {
+    startBattle();
+    return true;
+  }
 
   // Announce the raid before it happens -- same background as an ambush
   // (both are "a hostile force appears" beats), with a button to move on to

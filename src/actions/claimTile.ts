@@ -1,7 +1,5 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
-import { showScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
 
 export function claimTile(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -15,13 +13,8 @@ export function claimTile(board: GameState | null, updateGameState: (board: Game
 
   attacker.hasClaimedThisTurn = true;
 
-  showScreen({
-    screenType: 'tile-battle',
-    content: React.createElement(BattleScreen, {
-      attacker,
-      tile,
-      gameState: board,
-      updateGameState,
-    }),
-  });
+  showBattleScreen(
+    { attacker, tile, gameState: board, updateGameState },
+    { screenType: 'tile-battle' }
+  );
 }

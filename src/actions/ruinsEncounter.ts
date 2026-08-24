@@ -1,7 +1,7 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { t } from '../i18n';
 
 const RUINS_FORCE_RATIO_MIN = 0.6;
@@ -24,10 +24,8 @@ export function showRuinsEncounter(
   const attackerUnits = Math.max(1, Math.round(player.units * ratio));
 
   const startBattle = () => {
-    showScreen({
-      screenType: 'ruins-battle',
-      ambushAttackerUnits: attackerUnits,
-      content: React.createElement(BattleScreen, {
+    showBattleScreen(
+      {
         mode: 'ambush',
         attacker: player,
         ambushAttackerUnits: attackerUnits,
@@ -36,9 +34,16 @@ export function showRuinsEncounter(
         gameState: board,
         updateGameState,
         onClose: onContinue,
-      }),
-    });
+      },
+      { screenType: 'ruins-battle', ambushAttackerUnits: attackerUnits }
+    );
   };
+
+  // No decision -- the Ruins always have to be fought.
+  if (isHeadlessRun()) {
+    startBattle();
+    return;
+  }
 
   showScreen({
     screenType: 'ruins',

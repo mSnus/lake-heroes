@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
-import { clearScreen, markScreenResolved, showScreen } from '../utils/screenStore';
+import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { getOverrides } from '../utils/overridesStore';
-import { setEndTurn } from '../utils/endTurnStore';
 import { say } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
@@ -19,10 +18,8 @@ import { getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { realLossFromGridLoss } from '../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../game/battleGrid/battleSetup';
-import { dispatchBattleResolution } from '../game/battleGrid/battleResolution';
+import { dispatchBattleResolution, handleBattleClose } from '../game/battleGrid/battleResolution';
 import { GridBattleState, TurnEvent, BattleSide } from '../game/battleGrid/types';
-import { TileClaimScreen } from './TileClaimScreen';
-import { showTileEncounterScreen } from '../actions/afterMoveLogic';
 import '../styles/BattleScreen.css';
 
 type BattlePhase = 'ongoing' | 'result';
@@ -525,39 +522,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [battle, phase]);
 
+  // What happens once the fight is over and the player (or bot) moves on --
+  // shared with the headless economy simulator via handleBattleClose, see
+  // battleResolution.ts, so a real and a headless fight can never diverge
+  // here. clearScreen() itself stays local: it's a no-op headlessly anyway
+  // (screenStore gates it), and is purely a rendering concern either way.
   const handleClose = () => {
     clearScreen();
-    if (isCaravan || isPlayerBattle || isAmbush || isRogue) {
-      (props as { onClose: () => void }).onClose();
-    } else if (isDragon) {
-      if (outcome !== 'attacker') setEndTurn();
-    } else if (isTile && defender && outcome === 'defender') {
-      // Losing a banzai attack on an owned tile returns to the guards
-      // encounter instead of ending the turn — any army size can now attempt
-      // the battle, so a loss shouldn't be a dead end: the attacker can
-      // still pay, sell, accept the loss, or try again with what's left.
-      // resolveTileBattle unconditionally marks the encounter "resolved" (so
-      // a reload doesn't re-derive it from scratch once it's truly settled),
-      // but a loss isn't a settlement here — it's reset so every later step
-      // of paying/selling/accepting still routes back through this same
-      // encounter instead of afterMoveLogic's reload-dedup guard silently
-      // no-op'ing them (leaving the screen stuck on stale button states).
-      attacker.hasResolvedTileEncounterThisTurn = false;
-      showTileEncounterScreen(gameState, updateGameState);
-    } else {
-      setEndTurn();
-      // Winning a fight for a previously unowned tile claims it — show the claim screen.
-      if (isTile && tile && outcome === 'attacker' && tile.owner === attacker.id) {
-        showScreen({
-          content: React.createElement(TileClaimScreen, {
-            tile,
-            player: attacker,
-            gameState,
-            updateGameState,
-          }),
-        });
-      }
-    }
+    handleBattleClose(props, setupRef.current, outcome);
   };
 
   // Every battle auto-plays turns until it ends — no click required —

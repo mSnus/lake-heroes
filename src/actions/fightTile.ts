@@ -1,7 +1,5 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
-import { showScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { Player } from '../game/Player';
 
 export function fightTile(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -16,14 +14,8 @@ export function fightTile(board: GameState | null, updateGameState: (board: Game
   const defender = board.players.find((p: Player) => p.id === tile.owner);
   if (!defender) return;
 
-  showScreen({
-    screenType: 'tile-battle',
-    content: React.createElement(BattleScreen, {
-      attacker,
-      defender,
-      tile,
-      gameState: board,
-      updateGameState,
-    }),
-  });
+  showBattleScreen(
+    { attacker, defender, tile, gameState: board, updateGameState },
+    { screenType: 'tile-battle' }
+  );
 }

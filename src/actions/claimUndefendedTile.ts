@@ -1,10 +1,8 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
 import { changeFame } from '../utils/fame';
 import { say } from '../utils/say';
-import { showScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
-import { TileClaimScreen } from '../components/TileClaimScreen';
+import { showTileClaimScreen } from './showTileClaimScreen';
 import { t } from '../i18n';
 
 /**
@@ -47,12 +45,5 @@ export function claimUndefendedTile(
   setEndTurn();
   updateGameState(board);
 
-  showScreen({
-    content: React.createElement(TileClaimScreen, {
-      tile,
-      player: attacker,
-      gameState: board,
-      updateGameState,
-    }),
-  });
+  showTileClaimScreen({ tile, player: attacker, gameState: board, updateGameState });
 }

@@ -1,16 +1,22 @@
 import React from 'react';
+import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { becomeBeggar } from './becomeBeggar';
 import { showScreen, showPrisonScreen, clearScreen, ScreenButton } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { say } from '../utils/say';
 import { payFee } from './payFee';
 import { fightTile } from './fightTile';
+import { sellTile } from './sellTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
 import { HeroHourScreen } from '../components/HeroHourScreen';
-import { computeFeeOptions } from './feeOptions';
+import { computeFeeOptions, FeeOptions } from './feeOptions';
 import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
+import { getCharacterConfig, pickGuardsAction, pickHeroHourTarget } from '../ai/decisions';
+import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { t } from '../i18n';
 
 export function afterMoveLogic(
@@ -51,6 +57,24 @@ export function afterMoveLogic(
       tile.isOwned() && tile.owner !== player.id
         ? (board.players.find((p) => p.id === tile.owner) ?? null)
         : null;
+
+    // Same decision HeroHourScreen's own self-drive effect makes, and the
+    // same onFightDone/onGreetDone continuations it uses.
+    if (isHeadlessRun()) {
+      const target = pickHeroHourTarget(player, playersHere);
+      if (target) {
+        const battlefieldUnits = Math.min(player.units, target.units);
+        showBattleScreen(
+          { mode: 'player', attacker: player, defender: target, battlefieldUnits, gameState: board, updateGameState, onClose: () => setEndTurn() },
+          { screenType: 'player-battle', defenderId: target.id, battlefieldUnits }
+        );
+      } else if (tileOwner) {
+        showTileEncounterScreen(board, updateGameState);
+      } else {
+        setEndTurn();
+      }
+      return;
+    }
 
     showScreen({
       content: React.createElement(HeroHourScreen, {
@@ -124,11 +148,13 @@ export function showTileEncounterScreen(
 
   const ownerColor = owner?.color;
 
-  const { fee, defence, canPay, canFight, canSell, showAcceptLoss } = computeFeeOptions(
-    board,
-    player,
-    tile
-  );
+  const feeOptions = computeFeeOptions(board, player, tile);
+  const { fee, defence, canPay, canFight, canSell, showAcceptLoss } = feeOptions;
+
+  if (isHeadlessRun()) {
+    resolveGuardsHeadless(board, updateGameState, tile, feeOptions);
+    return;
+  }
 
   // An empty garrison means nothing to fight — skip straight to a free,
   // no-battle takeover instead of the usual pay/fight/sell/accept-loss choice.
@@ -228,4 +254,83 @@ export function showTileEncounterScreen(
 
   if (showAcceptLoss) extraButtons.push(acceptLossButton);
   showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
+}
+
+/**
+ * The guards encounter's pay/fight/sell/accept-loss decision, headless --
+ * the exact same decision BotController's pickGenericScreenAction makes
+ * (wizard strategy via pickWizardGuardsAction, otherwise pickGuardsAction),
+ * just calling the target action directly instead of finding it by button
+ * tag on a screen that was never shown.
+ */
+function resolveGuardsHeadless(
+  board: GameState,
+  updateGameState: (board: GameState) => void,
+  tile: Tile,
+  opts: FeeOptions
+): void {
+  const player = board.activePlayer;
+
+  // An empty garrison is a free takeover, not a fight -- same shortcut the
+  // real guards screen takes above (see the defence === 0 branch).
+  if (opts.defence === 0) {
+    claimUndefendedTile(board, updateGameState);
+    return;
+  }
+
+  const cheapestFirst = () =>
+    player.ownedTiles
+      .map((idx) => board.tiles[idx])
+      .filter((t): t is Tile => !!t && t.owner === player.id)
+      .sort((a, b) => a.currentPrice.gold - b.currentPrice.gold);
+
+  const sellThenResolve = (wantsToPay: boolean, only?: Tile, order: Tile[] = cheapestFirst()) => {
+    const candidates = only ? [only] : order;
+    for (const t of candidates) {
+      const satisfied = wantsToPay ? player.gold >= opts.fee : player.armyPower >= opts.defence;
+      if (satisfied) break;
+      sellTile(board, player, t);
+    }
+    updateGameState(board);
+    if (wantsToPay) payFee(board, updateGameState);
+    else fightTile(board, updateGameState);
+  };
+
+  const acceptLoss = () => {
+    player.isPrisonerOfWar = true;
+    becomeBeggar(board, updateGameState);
+    setEndTurn();
+  };
+
+  const cfg = getCharacterConfig(player);
+  if (cfg?.guards.strategy === 'wizard') {
+    const decision = pickWizardGuardsAction(board, player, tile, opts);
+    switch (decision.kind) {
+      case 'pay':
+        payFee(board, updateGameState);
+        return;
+      case 'fight':
+        fightTile(board, updateGameState);
+        return;
+      case 'sell-one-then-fight':
+        sellThenResolve(false, decision.tile);
+        return;
+      case 'sell-one-then-pay':
+        sellThenResolve(true, decision.tile);
+        return;
+      case 'sell-multiple-then-pay':
+        sellThenResolve(true, undefined, sortTilesBySacrifice(board, player));
+        return;
+      case 'accept-loss':
+        acceptLoss();
+        return;
+    }
+    return;
+  }
+
+  const decision = pickGuardsAction(player, opts);
+  if (decision === 'sell-then-resolve') sellThenResolve(opts.canSellForFee);
+  else if (decision === 'pay') payFee(board, updateGameState);
+  else if (decision === 'fight') fightTile(board, updateGameState);
+  else acceptLoss();
 }

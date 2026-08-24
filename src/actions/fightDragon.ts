@@ -1,8 +1,7 @@
-import React from 'react';
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { showScreen, showDragonChallengeScreen, clearScreen } from '../utils/screenStore';
-import { BattleScreen } from '../components/BattleScreen';
+import { showDragonChallengeScreen, clearScreen } from '../utils/screenStore';
+import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { t } from '../i18n';
 
 export const DRAGON_UNITS_THRESHOLD = 50;
@@ -12,15 +11,10 @@ export function fightDragon(board: GameState | null, updateGameState: (board: Ga
 
   const player = board.activePlayer;
 
-  showScreen({
-    screenType: 'dragon-battle',
-    content: React.createElement(BattleScreen, {
-      mode: 'dragon',
-      attacker: player,
-      gameState: board,
-      updateGameState,
-    }),
-  });
+  showBattleScreen(
+    { mode: 'dragon', attacker: player, gameState: board, updateGameState },
+    { screenType: 'dragon-battle' }
+  );
 }
 
 export function offerDragonChallenge(

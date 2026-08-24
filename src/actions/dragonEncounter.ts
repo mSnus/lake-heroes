@@ -8,6 +8,8 @@ import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
 import { checkArtifactProtection } from '../game/artifacts';
+import { isHeadlessRun } from '../utils/headlessStore';
+import { shouldChallengeDragon } from '../ai/decisions';
 import { t } from '../i18n';
 
 const ENCOUNTER_CHANCE = 1 / 12;
@@ -68,6 +70,12 @@ export function checkDragonEncounter(
   // Dragon attacks!
   if (player.armyPower < DRAGON_UNITS_THRESHOLD) {
     handleWeakPlayerAttack(board, updateGameState, onContinue);
+  } else if (isHeadlessRun()) {
+    // Fight-or-flee is a real 2-way decision (showDragonChallengeScreen's
+    // 2 buttons aren't auto-resolvable) -- same call BotController makes.
+    updateGameState(board);
+    if (shouldChallengeDragon(player)) fightDragon(board, updateGameState);
+    else onContinue();
   } else {
     updateGameState(board);
     showDragonChallengeScreen(
