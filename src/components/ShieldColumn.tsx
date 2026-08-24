@@ -127,8 +127,35 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               </div>
             </div>
 
-            {/* Left column: cheat, statistics, map edit */}
+            {/* Left column: reload, cheat, statistics, map edit */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="shield-button-container" title={t('shieldColumn.reload')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    // The versioned auto-update (registerServiceWorker.ts)
+                    // isn't reliably catching every deploy in practice --
+                    // this is the manual escape hatch. Unregistering (not
+                    // just .update()ing) every SW and wiping Cache Storage
+                    // forces the next load to fetch everything from
+                    // scratch, same as the "clear site data" nuclear option
+                    // that's been needed to actually pick up fresh code.
+                    // localStorage is untouched, so the current game/
+                    // overrides survive.
+                    Promise.all([
+                      navigator.serviceWorker
+                        ?.getRegistrations()
+                        .then((regs) => Promise.all(regs.map((r) => r.unregister()))) ?? Promise.resolve(),
+                      typeof caches !== 'undefined'
+                        ? caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+                        : Promise.resolve(),
+                    ]).finally(() => window.location.reload());
+                  }}
+                  className="shield-button"
+                >
+                  ♻️
+                </button>
+              </div>
               <div className="shield-button-container" title={t('shieldColumn.cheat')}>
                 <button
                   onClick={() => {

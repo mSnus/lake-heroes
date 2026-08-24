@@ -151,6 +151,7 @@
     "newGame": "New Game",
     "help": "Help",
     "gameLog": "Game Log",
+    "reload": "Reload",
     "aiTurn": "AI is taking its turn",
     "rollDice": "Roll Dice",
     "endTurn": "End Turn",

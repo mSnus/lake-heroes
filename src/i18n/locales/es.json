@@ -152,6 +152,7 @@
     "newGame": "Nueva Partida",
     "help": "Ayuda",
     "gameLog": "Registro del Juego",
+    "reload": "Recargar",
     "aiTurn": "La IA está jugando su turno",
     "rollDice": "Tirar Dado",
     "endTurn": "Terminar Turno",
