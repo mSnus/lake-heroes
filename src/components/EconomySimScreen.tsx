@@ -27,6 +27,9 @@ interface PlayerSnapshot {
   militia: number;
   riders: number;
   tilesOwned: number;
+  /** Compact names of every tile owned at this snapshot, shown under the
+   * stats line. */
+  tileNames: string[];
   wealth: number;
   artifactsEmoji: string;
   isPOW: boolean;
@@ -78,13 +81,14 @@ const numInput = (
 );
 
 function snapshotPlayer(board: GameState, player: Player): PlayerSnapshot {
-  const tilesOwned = board.tiles.filter((t) => t.owner === player.id).length;
+  const owned = board.tiles.filter((t) => t.owner === player.id);
   return {
     fame: player.fame,
     gold: player.gold,
     militia: player.militia,
     riders: player.riders,
-    tilesOwned,
+    tilesOwned: owned.length,
+    tileNames: owned.map((t) => t.shortName),
     wealth: totalWealth(board, player),
     artifactsEmoji: player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join(''),
     isPOW: player.isPrisonerOfWar,
@@ -325,6 +329,11 @@ const EconomySimScreen: React.FC = () => {
                         return (
                           <td key={j} className="player-stats-cell" style={{ verticalAlign: 'top' }}>
                             <div style={{ whiteSpace: 'nowrap' }}>{formatCell(p)}</div>
+                            {p.tileNames.length > 0 && (
+                              <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
+                                🧩 {p.tileNames.join(', ')}
+                              </div>
+                            )}
                             {p.log.length > 0 && (
                               <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
                                 {p.log.map((line, k) => (

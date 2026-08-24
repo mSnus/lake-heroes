@@ -9,13 +9,16 @@ export function buyUnits(
   board: GameState | null,
   amount: number,
   updateGameState: (board: GameState) => void,
-  tier: UnitTier = 'militia'
+  tier: UnitTier = 'militia',
+  // Overrides the normal per-tier price -- the Tavern charges a premium
+  // over the King's Castle's own militia price (see tavern.ts).
+  priceOverride?: number
 ) {
   if (!board) return;
 
   const player = board.activePlayer;
   const ov = getOverrides();
-  const unitPrice = tier === 'riders' ? ov.riderPrice : ov.militiaPrice;
+  const unitPrice = priceOverride ?? (tier === 'riders' ? ov.riderPrice : ov.militiaPrice);
   const cost = amount * unitPrice;
 
   if (player.gold >= cost) {

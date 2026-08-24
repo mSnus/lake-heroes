@@ -63,6 +63,9 @@ export const ANNUAL_DEFAULT_GOLD_MULT = 2.5;
 export const FLAT_TILE_UNIT_INCOME = 1;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
+// The Tavern charges a premium over the King's Castle's own militia price --
+// a night of drinking recruits costs more than the crown's standing offer.
+export const TAVERN_MILITIA_PRICE_MULT = 2;
 export const DRAGON_UNITS = 48; // how many units the Dragon fields
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting

@@ -10,14 +10,17 @@ import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier 
  * battle simulator fell into.
  */
 
-/** What a bot buys at the King's Castle (any tier) or the Tavern (militia). */
+/** What a bot buys at the King's Castle (any tier) or the Tavern (militia,
+ * with priceOverride set to the Tavern's own premium price -- see
+ * tavern.ts's tavernMilitiaPrice). */
 export function planUnitHire(
   player: Player,
-  forcedTier?: UnitTier
+  forcedTier?: UnitTier,
+  priceOverride?: number
 ): { tier: UnitTier; amount: number } {
   const tier = forcedTier ?? pickKingsCastleHireTier(player);
   const ov = getOverrides();
-  const price = tier === 'riders' ? ov.riderPrice : ov.militiaPrice;
+  const price = priceOverride ?? (tier === 'riders' ? ov.riderPrice : ov.militiaPrice);
   const maxAmount = Math.min(Math.floor(player.gold / price), player.remainingCapacity(tier));
   return { tier, amount: pickKingsCastleHireAmount(player, maxAmount, price) };
 }

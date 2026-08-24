@@ -92,7 +92,11 @@ export async function rollAndMove(
       updateGameState(board);
 
       if (willWrap) {
-        passStart(board, updateGameState);
+        // The King's Grace fame-units grant needs the move to actually END
+        // here, not just wrap through King's Castle on the way to a later
+        // tile -- gold and every other unit source still pay out either way
+        // (see passStart's isLanding param).
+        passStart(board, updateGameState, step === roll);
       }
 
       if (!isHeadlessRun()) {

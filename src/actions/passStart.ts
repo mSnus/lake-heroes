@@ -4,14 +4,23 @@ import { computeAnnualReward } from '../game/kingsGrace';
 import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
 
+/**
+ * @param isLanding Whether this player's move actually ENDS on King's
+ * Castle, rather than just wrapping past it partway through a longer roll.
+ * Gold (and every other unit source folded into this payout -- tile income,
+ * catch-up support) still pays out on every pass, same as always; only the
+ * direct per-fame King's Grace units require landing exactly on the tile.
+ */
 export function passStart(
   board: GameState | null,
-  updateGameState: (board: GameState) => void
+  updateGameState: (board: GameState) => void,
+  isLanding: boolean
 ): string {
   if (!board) return '';
 
   const player = board.activePlayer;
-  const { totalGold, totalUnits } = computeAnnualReward(board, player);
+  const { totalGold, tileUnits, catchUpUnits, kingsUnits } = computeAnnualReward(board, player);
+  const unitsGranted = tileUnits + catchUpUnits + (isLanding ? kingsUnits : 0);
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;
@@ -27,13 +36,13 @@ export function passStart(
 
   // Apply rewards
   player.gold += totalGold;
-  player.units += totalUnits;
+  player.units += unitsGranted;
 
   // Build toast message summarizing rewards
   const parts: string[] = [];
 
   if (totalGold > 0) parts.push(`${totalGold}🟡`);
-  if (totalUnits > 0) parts.push(`${totalUnits}👬`);
+  if (unitsGranted > 0) parts.push(`${unitsGranted}👬`);
 
   const summary = parts.join(` ${t('common.and')} `);
 

@@ -40,7 +40,10 @@ export function handlePortal(
   // stuck at 0, silently losing every own-tile bonus (handleVisitOwnTile
   // requires circles > 0) until they eventually wrap around for real.
   if (landedTile.id === 'king-castle') {
-    passStart(board, updateGameState);
+    // A portal teleport that lands exactly on King's Castle is a genuine
+    // landing, not a pass-through -- the fame-units grant applies (see
+    // passStart's isLanding param).
+    passStart(board, updateGameState, true);
   }
 
   updateGameState(board);

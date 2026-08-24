@@ -3,7 +3,6 @@ import { GameState } from '../game/GameState';
 import '../styles/modal.css';
 import GameModal from './GameModal';
 import { UnitTier } from '../game/army';
-import { getOverrides } from '../utils/overridesStore';
 import { DecoratedButton } from './DecoratedButton';
 import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
@@ -16,6 +15,11 @@ interface TavernModalProps {
    * Omitted when reopening the tile's hire dialogue without a fresh roll
    * (see tavern.ts's openTavernHireOnly). */
   joinedHtml?: string;
+  /** The Tavern's own (premium) militia price -- passed in rather than
+   * computed here to avoid a components/ <-> actions/ import cycle with
+   * tavern.ts, which already imports this component. See tavern.ts's
+   * tavernMilitiaPrice, the single source of truth both call sites use. */
+  militiaPrice: number;
   onBuy: (amount: number, tier: UnitTier) => void;
   onSell: (tier: UnitTier, amount: number) => void;
   onSkip: () => void;
@@ -24,8 +28,9 @@ interface TavernModalProps {
 /** Tavern's post-roll screen: shows the free militia the roll won, then lets
  * the player recruit more with gold — same mechanics as King's Castle, but
  * militia only (the tavern doesn't train knights, so `showRiders` is always
- * false regardless of the player's rank). */
-const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy, onSell, onSkip }) => {
+ * false regardless of the player's rank), and at a premium over the King's
+ * Castle's own price (see militiaPrice). */
+const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, militiaPrice, onBuy, onSell, onSkip }) => {
   const t = useT();
   const player = gameState.activePlayer;
 
@@ -38,17 +43,18 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
     onBuy(amount, tier);
     forceRerender((v) => v + 1);
   };
+
   const handleSell = (tier: UnitTier, count: number) => {
     onSell(tier, count);
     forceRerender((v) => v + 1);
   };
 
-  const militiaMax = Math.min(Math.floor(player.gold / getOverrides().militiaPrice), player.remainingCapacity('militia'));
+  const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.remainingCapacity('militia'));
   const atMax = militiaMax <= 0;
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const { amount: hireAmount } = planUnitHire(player, 'militia');
+    const { amount: hireAmount } = planUnitHire(player, 'militia', militiaPrice);
     const timer = setTimeout(() => {
       if (hireAmount > 0) onBuy(hireAmount, 'militia');
       onSkip();
@@ -83,7 +89,7 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
         {atMax ? (
           <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
         ) : (
-          <SquadHirePanel player={player} showRiders={false} onBuy={handleBuy} />
+          <SquadHirePanel player={player} showRiders={false} onBuy={handleBuy} militiaPrice={militiaPrice} />
         )}
 
         <div

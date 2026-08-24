@@ -9,12 +9,20 @@ import TavernModal from '../components/TavernModal';
 import { computeSlotsUsed } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { planUnitHire } from '../ai/botPlans';
+import { TAVERN_MILITIA_PRICE_MULT } from '../game/constants';
 import { t } from '../i18n';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
 // soldiers — converting existing militia to riders rather than granting new
 // militia.
 const KNIGHT_HORSE_CHANCE = 0.2;
+
+/** The Tavern's militia hire price -- a premium over the King's Castle's own
+ * price, shared by the human hire panel, the bot decision, and the actual
+ * charge so all three can never drift apart. */
+export function tavernMilitiaPrice(): number {
+  return getOverrides().militiaPrice * TAVERN_MILITIA_PRICE_MULT;
+}
 
 export function handleTavern(
   board: GameState | null,
@@ -78,8 +86,8 @@ export function handleTavern(
 
   // Same decision TavernModal's own self-drive effect makes.
   if (isHeadlessRun()) {
-    const { amount: hireAmount } = planUnitHire(player, 'militia');
-    if (hireAmount > 0) buyUnits(board, hireAmount, updateGameState, 'militia');
+    const { amount: hireAmount } = planUnitHire(player, 'militia', tavernMilitiaPrice());
+    if (hireAmount > 0) buyUnits(board, hireAmount, updateGameState, 'militia', tavernMilitiaPrice());
     setEndTurn();
     return;
   }
@@ -89,8 +97,9 @@ export function handleTavern(
     content: React.createElement(TavernModal, {
       gameState: board,
       joinedHtml: `${joinedMsg}${fullNote}`,
+      militiaPrice: tavernMilitiaPrice(),
       onBuy: (amount, tier) => {
-        buyUnits(board, amount, updateGameState, tier);
+        buyUnits(board, amount, updateGameState, tier, tavernMilitiaPrice());
       },
       onSell: (tier, amount) => {
         sellUnits(board, amount, updateGameState, tier);
@@ -120,8 +129,9 @@ export function openTavernHireOnly(
     screenType: 'tavern-result',
     content: React.createElement(TavernModal, {
       gameState: board,
+      militiaPrice: tavernMilitiaPrice(),
       onBuy: (amount, tier) => {
-        buyUnits(board, amount, updateGameState, tier);
+        buyUnits(board, amount, updateGameState, tier, tavernMilitiaPrice());
       },
       onSell: (tier, amount) => {
         sellUnits(board, amount, updateGameState, tier);
