@@ -2,12 +2,14 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
 import KingsCastleModal from '../components/KingsCastleModal';
 import { say } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
+import { planUnitHire } from '../ai/botPlans';
 import { t } from '../i18n';
 
 export function handleKingCastle(
@@ -31,7 +33,16 @@ export function handleKingCastle(
       const tileName = board.tiles[contract.tilePosition]?.name ?? t('king.aTile');
       say(t('king.contractOffered', { tileName, award: contract.award }), 'success');
     }
+
     updateGameState(board);
+  }
+
+  // Same decision KingsCastleModal's own self-drive effect makes.
+  if (isHeadlessRun()) {
+    const { tier: botTier, amount: hireAmount } = planUnitHire(player);
+    if (hireAmount > 0) buyUnits(board, hireAmount, updateGameState, botTier);
+    setEndTurn();
+    return;
   }
 
   showScreen({

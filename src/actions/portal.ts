@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { TILE_COUNT } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { revealTile } from './revealTile';
 import { passStart } from './passStart';
 import { PortalScreen } from '../components/PortalScreen';
@@ -47,6 +48,13 @@ export function handlePortal(
   // card for an ownable tile -- special tiles get PortalScreen right below
   // instead, so the plain card would just be a redundant flash underneath it.
   gameEvent('displayTile', landedTile.isOwnable ? landedTile : {});
+
+  // Nothing to decide -- PortalScreen is just a timed reveal for a human to
+  // read, then calls onContinue itself for a bot too.
+  if (isHeadlessRun()) {
+    onContinue();
+    return;
+  }
 
   showScreen({
     screenType: 'portal',

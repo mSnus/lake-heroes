@@ -2,11 +2,13 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import TavernModal from '../components/TavernModal';
 import { computeSlotsUsed } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
+import { planUnitHire } from '../ai/botPlans';
 import { t } from '../i18n';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
@@ -73,6 +75,14 @@ export function handleTavern(
   }
 
   updateGameState(board);
+
+  // Same decision TavernModal's own self-drive effect makes.
+  if (isHeadlessRun()) {
+    const { amount: hireAmount } = planUnitHire(player, 'militia');
+    if (hireAmount > 0) buyUnits(board, hireAmount, updateGameState, 'militia');
+    setEndTurn();
+    return;
+  }
 
   showScreen({
     screenType: 'tavern-result',
