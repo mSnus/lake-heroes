@@ -14,18 +14,12 @@ import { PlayerCard } from './PlayerCard';
 import { DecoratedButton } from './DecoratedButton';
 import { BattlefieldGrid } from './BattlefieldGrid';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
-import { resolveTileBattle } from '../actions/battles/resolveTileBattle';
-import { resolveRogueAttack } from '../actions/battles/resolveRogueAttack';
-import { resolveCaravanBattle } from '../actions/battles/resolveCaravanBattle';
-import { resolveDragonBattle } from '../actions/battles/resolveDragonBattle';
-import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
-import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
-import { resolveRuinsBattle } from '../actions/battles/resolveRuinsBattle';
 import { useT } from '../i18n';
 import { getArtifactRollBonusBreakdown } from '../game/artifacts';
-import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
+import { stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { realLossFromGridLoss } from '../game/battleGrid/scale';
-import { buildBattleSetup, BattleSetup } from '../game/battleGrid/battleSetup';
+import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../game/battleGrid/battleSetup';
+import { dispatchBattleResolution } from '../game/battleGrid/battleResolution';
 import { GridBattleState, TurnEvent, BattleSide } from '../game/battleGrid/types';
 import { TileClaimScreen } from './TileClaimScreen';
 import { showTileEncounterScreen } from '../actions/afterMoveLogic';
@@ -234,55 +228,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   ];
 
   // ── State ──
-  const [battle, setBattle] = useState<GridBattleState>(() =>
-    createBattle(
-      {
-        militia: attackerSized.militiaCount,
-        riders: attackerSized.ridersCount,
-        formation: attackerFormation,
-        zombie: isZombieAmbush,
-        ...(statOverrides
-          ? {
-              militiaHp: statOverrides.attackerMilitiaHp,
-              militiaDmgMin: statOverrides.attackerMilitiaDmgMin,
-              militiaDmgMax: statOverrides.attackerMilitiaDmgMax,
-              riderHp: statOverrides.attackerRiderHp,
-              riderDmgMin: statOverrides.attackerRiderDmgMin,
-              riderDmgMax: statOverrides.attackerRiderDmgMax,
-            }
-          : {}),
-      },
-      {
-        militia: defenderSized.militiaCount,
-        riders: defenderSized.ridersCount,
-        formation: defenderFormation,
-        // Kept as its own kind (HP/damage/🐉) even though it now lines up in
-        // a normal grouped formation rather than the dragon silhouette.
-        dragon: isDragonFight,
-        zombie: statOverrides ? statOverrides.defenderKind === 'zombie' : !!tile?.abandoned,
-        // A 'normal' test defender shares the attacker's own militia stats,
-        // same as simulate.ts — its own hp/dmg inputs are ignored.
-        ...(statOverrides
-          ? statOverrides.defenderKind === 'normal'
-            ? {
-                militiaHp: statOverrides.attackerMilitiaHp,
-                militiaDmgMin: statOverrides.attackerMilitiaDmgMin,
-                militiaDmgMax: statOverrides.attackerMilitiaDmgMax,
-              }
-            : {
-                militiaHp: statOverrides.defenderHp,
-                militiaDmgMin: statOverrides.defenderDmgMin,
-                militiaDmgMax: statOverrides.defenderDmgMax,
-                riderHp: statOverrides.defenderHp,
-                riderDmgMin: statOverrides.defenderDmgMin,
-                riderDmgMax: statOverrides.defenderDmgMax,
-              }
-          : {}),
-      },
-      gridCols,
-      gridRows
-    )
-  );
+  const [battle, setBattle] = useState<GridBattleState>(() => buildInitialBattleState(setupRef.current));
   const [lastEvents, setLastEvents] = useState<TurnEvent[]>([]);
   const [phase, setPhase] = useState<BattlePhase>('ongoing');
   const [outcome, setOutcome] = useState<BattleOutcome | null>(null);
@@ -348,48 +294,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // ── Resolve result (fed by the grid battle's final casualty tally) ──
   const resolveResult = useCallback(
-    (battleOutcome: BattleOutcome, atkKilled: number, defKilled: number): BattleResolution => {
-      if (isDragon) return resolveDragonBattle(gameState, attacker, atkKilled, battleOutcome);
-      if (isCaravan)
-        return resolveCaravanBattle(
-          gameState,
-          attacker,
-          { prize: caravanPrize!, slaves: caravanSlaves, defence },
-          atkKilled,
-          battleOutcome
-        );
-      if (isPlayerBattle)
-        return resolvePlayerBattle(
-          gameState,
-          attacker,
-          defender!,
-          battlefieldUnits!,
-          atkKilled,
-          defKilled,
-          battleOutcome
-        );
-      if (isAmbush && isRuins) {
-        // In ambush shape: attacker(grid)=monsters, defender(grid)=real player.
-        return resolveRuinsBattle(gameState, attacker, defKilled, battleOutcome);
-      }
-      if (isAmbush) {
-        // In ambush: attacker(grid)=NPC, defender(grid)=real player.
-        // BattleOutcome 'defender' means the player wins the ambush.
-        const ambushOutcome: AmbushOutcome =
-          battleOutcome === 'defender' ? 'win' : battleOutcome === 'attacker' ? 'defeat' : 'tie';
-        const res = resolveAmbush(
-          gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome, isZombieAmbush
-        );
-        return {
-          outcome: battleOutcome,
-          message: res.message,
-          victoryBg: ambushOutcome === 'win',
-          lostBg: ambushOutcome !== 'win',
-        };
-      }
-      if (isRogue) return resolveRogueAttack(gameState, defender!, tile!, defKilled, battleOutcome);
-      return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome);
-    },
+    (battleOutcome: BattleOutcome, atkKilled: number, defKilled: number): BattleResolution =>
+      dispatchBattleResolution(props, setupRef.current, battleOutcome, atkKilled, defKilled),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -726,7 +632,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             // Zombie-flavored fight: either the ambush interrupt from an
             // abandoned tile's garrison, or a normal tile-claim battle
             // fought directly against one (same zombie: !!tile?.abandoned
-            // grid reskin either way, see the createBattle call above).
+            // grid reskin either way, see buildInitialBattleState).
             : isZombieAmbush || (isTile && !!tile?.abandoned)
               ? 'assets/screens/zombies.jpeg'
               : isAmbush

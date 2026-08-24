@@ -1,4 +1,4 @@
-import { createBattle, isBattleOver, stepTurn, planBrawlSide, applyBrawlMoves, resolveBrawlCombat } from './engine';
+import { createBattle, runGridBattleToCompletion } from './engine';
 import { sizeArmyForGrid } from './scale';
 import { battleBoardFor, squadGroupCount } from './layout';
 import { FormationSpec } from './formations';
@@ -34,9 +34,6 @@ export interface SimResult {
   defenderLost: number;
   outcome: GridBattleState['status'];
 }
-
-// Same battle can't run forever -- a real fight always ends well before this.
-const MAX_ROUNDS = 300;
 
 /**
  * One full battle, resolved with the same engine real gameplay uses --
@@ -105,26 +102,7 @@ export function simulateOneBattle(
   );
 
   const opts: StepTurnOptions = { defenderPctBonus, attackerFlatBonus: attacker.flatBonus ?? 0 };
-  let rounds = 0;
-  if (isBrawl) {
-    while (!isBattleOver(state) && rounds < MAX_ROUNDS) {
-      rounds++;
-      const startPos = new Map(state.units.map((u) => [u.id, { col: u.col, row: u.row }]));
-      const defMoved = applyBrawlMoves(state, planBrawlSide(state, 'defender', Math.random));
-      const atkMoved = applyBrawlMoves(defMoved, planBrawlSide(defMoved, 'attacker', Math.random));
-      const movedIds = new Set<string>();
-      for (const u of atkMoved.units) {
-        const p = startPos.get(u.id);
-        if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
-      }
-      state = resolveBrawlCombat(atkMoved, opts, movedIds, undefined).state;
-    }
-  } else {
-    while (!isBattleOver(state) && rounds < MAX_ROUNDS) {
-      rounds++;
-      state = stepTurn(state, opts).state;
-    }
-  }
+  state = runGridBattleToCompletion(state, isBrawl, opts);
 
   const attackerLeft = state.units.filter((u) => u.side === 'attacker').length;
   const defenderLeft = state.units.filter((u) => u.side === 'defender').length;

@@ -1108,3 +1108,44 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     events,
   };
 }
+
+// A real battle always ends well before this, on either path -- just a
+// backstop against an unresolvable stalemate looping forever.
+const MAX_ROUNDS = 300;
+
+/**
+ * Run a battle straight to its outcome -- the brawl move/fight loop or the
+ * stepTurn loop, whichever the board calls for, with no animation and no
+ * intermediate state kept. Shared by the battle simulator and the headless
+ * economy simulator so "what a battle of these exact parameters resolves to"
+ * is decided in exactly one place.
+ */
+export function runGridBattleToCompletion(
+  initialState: GridBattleState,
+  isBrawl: boolean,
+  opts: StepTurnOptions = {},
+  rng: () => number = Math.random
+): GridBattleState {
+  let state = initialState;
+  let rounds = 0;
+  if (isBrawl) {
+    while (!isBattleOver(state) && rounds < MAX_ROUNDS) {
+      rounds++;
+      const startPos = new Map(state.units.map((u) => [u.id, { col: u.col, row: u.row }]));
+      const defMoved = applyBrawlMoves(state, planBrawlSide(state, 'defender', rng));
+      const atkMoved = applyBrawlMoves(defMoved, planBrawlSide(defMoved, 'attacker', rng));
+      const movedIds = new Set<string>();
+      for (const u of atkMoved.units) {
+        const p = startPos.get(u.id);
+        if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
+      }
+      state = resolveBrawlCombat(atkMoved, opts, movedIds, undefined).state;
+    }
+  } else {
+    while (!isBattleOver(state) && rounds < MAX_ROUNDS) {
+      rounds++;
+      state = stepTurn(state, opts).state;
+    }
+  }
+  return state;
+}

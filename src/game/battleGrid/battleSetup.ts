@@ -7,6 +7,8 @@ import { sizeArmyForGrid } from './scale';
 type SizedArmy = ReturnType<typeof sizeArmyForGrid>;
 import { battleBoardFor, squadGroupCount, BattleBoard } from './layout';
 import { FormationSpec } from './formations';
+import { createBattle } from './engine';
+import { GridBattleState } from './types';
 import type { BattleScreenProps } from '../../components/BattleScreen';
 
 export interface BattleSetup {
@@ -183,4 +185,61 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     attackerManual,
     defenderManual,
   };
+}
+
+/**
+ * The initial grid state for a battle already described by a BattleSetup --
+ * shared by BattleScreen (which then plays it out turn by turn) and the
+ * headless runner (which runs it straight to completion).
+ */
+export function buildInitialBattleState(setup: BattleSetup): GridBattleState {
+  const { attackerSized, defenderSized, attackerFormation, defenderFormation, isZombieAmbush, isDragonFight, tile, statOverrides, board } = setup;
+
+  return createBattle(
+    {
+      militia: attackerSized.militiaCount,
+      riders: attackerSized.ridersCount,
+      formation: attackerFormation,
+      zombie: isZombieAmbush,
+      ...(statOverrides
+        ? {
+            militiaHp: statOverrides.attackerMilitiaHp,
+            militiaDmgMin: statOverrides.attackerMilitiaDmgMin,
+            militiaDmgMax: statOverrides.attackerMilitiaDmgMax,
+            riderHp: statOverrides.attackerRiderHp,
+            riderDmgMin: statOverrides.attackerRiderDmgMin,
+            riderDmgMax: statOverrides.attackerRiderDmgMax,
+          }
+        : {}),
+    },
+    {
+      militia: defenderSized.militiaCount,
+      riders: defenderSized.ridersCount,
+      formation: defenderFormation,
+      // Kept as its own kind (HP/damage/🐉) even though it now lines up in
+      // a normal grouped formation rather than the dragon silhouette.
+      dragon: isDragonFight,
+      zombie: statOverrides ? statOverrides.defenderKind === 'zombie' : !!tile?.abandoned,
+      // A 'normal' test defender shares the attacker's own militia stats,
+      // same as simulate.ts — its own hp/dmg inputs are ignored.
+      ...(statOverrides
+        ? statOverrides.defenderKind === 'normal'
+          ? {
+              militiaHp: statOverrides.attackerMilitiaHp,
+              militiaDmgMin: statOverrides.attackerMilitiaDmgMin,
+              militiaDmgMax: statOverrides.attackerMilitiaDmgMax,
+            }
+          : {
+              militiaHp: statOverrides.defenderHp,
+              militiaDmgMin: statOverrides.defenderDmgMin,
+              militiaDmgMax: statOverrides.defenderDmgMax,
+              riderHp: statOverrides.defenderHp,
+              riderDmgMin: statOverrides.defenderDmgMin,
+              riderDmgMax: statOverrides.defenderDmgMax,
+            }
+        : {}),
+    },
+    board.cols,
+    board.rows
+  );
 }
