@@ -12,6 +12,7 @@ import { showTileClaimScreen } from '../../actions/showTileClaimScreen';
 import { setEndTurn } from '../../utils/endTurnStore';
 import { showScreen, ScreenConfig } from '../../utils/screenStore';
 import { isHeadlessRun } from '../../utils/headlessStore';
+import { getOverrides } from '../../utils/overridesStore';
 import { BattleScreen, type BattleScreenProps } from '../../components/BattleScreen';
 import { BattleSetup } from './battleSetup';
 import { runHeadlessBattle } from './headlessBattle';
@@ -98,6 +99,12 @@ export function handleBattleClose(props: BattleScreenProps, setup: BattleSetup, 
  * post-battle continuation either way. The one place every battle in the
  * game (tile, caravan, dragon, player, ambush, rogue) should be started
  * from, so a headless run and a real one can never resolve differently.
+ *
+ * Also goes headless for a real, on-screen game when the ⚖️ "headless
+ * combats" override is on -- unlike isHeadlessRun(), that doesn't touch
+ * toasts/game-log/screenStore, so everything except the battle animation
+ * itself still behaves normally (result toasts, the claim/garrison screen
+ * after a win, etc).
  */
 export function showBattleScreen(
   props: BattleScreenProps,
@@ -117,7 +124,7 @@ export function showBattleScreen(
     | 'caravanPrize'
   >
 ): void {
-  if (isHeadlessRun()) {
+  if (isHeadlessRun() || getOverrides().headlessCombats) {
     const { setup, resolution } = runHeadlessBattle(props);
     handleBattleClose(props, setup, resolution.outcome);
     return;

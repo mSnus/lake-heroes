@@ -909,7 +909,6 @@
     "dmg": "daño",
     "armySlotCapacity": "Capacidad del escuadrón del ejército",
     "garrisonSlotCapacity": "Capacidad de la torre de guarnición",
-    "zombie": "Zombi (casillas abandonadas)",
     "tileBasePrice": "Precio base de casilla",
     "tileUpgradeMult": "Multiplicador de mejora",
     "tileIncomeMult": "Multiplicador de ingresos",

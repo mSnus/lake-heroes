@@ -902,7 +902,6 @@
     "dmg": "урон",
     "armySlotCapacity": "Вместимость отряда армии",
     "garrisonSlotCapacity": "Вместимость гарнизонной башни",
-    "zombie": "Зомби (заброшенные земли)",
     "tileBasePrice": "Базовая цена постройки",
     "tileUpgradeMult": "Множитель улучшения",
     "tileIncomeMult": "Множитель дохода",

@@ -50,6 +50,7 @@ export interface GameOverrides {
   zombieDmgMax: number; // ZOMBIE_DMG_MAX
   stepByStepCombat: boolean; // battles start in manual step-by-step mode
   muteToasts: boolean; // suppress toast pop-ups (console + game log still fire)
+  headlessCombats: boolean; // resolve every battle through the headless engine instead of showing BattleScreen
 }
 
 export const OVERRIDE_DEFAULTS: GameOverrides = {
@@ -75,6 +76,7 @@ export const OVERRIDE_DEFAULTS: GameOverrides = {
   zombieDmgMax: ZOMBIE_DMG_MAX,
   stepByStepCombat: false,
   muteToasts: false,
+  headlessCombats: false,
 };
 
 const STORAGE_KEY = 'game-overrides';
@@ -109,6 +111,7 @@ function sanitize(raw: Partial<GameOverrides> | null | undefined): GameOverrides
     zombieDmgMax: num(merged.zombieDmgMax, OVERRIDE_DEFAULTS.zombieDmgMax, 0),
     stepByStepCombat: !!merged.stepByStepCombat,
     muteToasts: !!merged.muteToasts,
+    headlessCombats: !!merged.headlessCombats,
   };
 }
 

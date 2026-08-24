@@ -70,7 +70,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
         <h2 className="game-title">⚖️ {t('overridesScreen.title')}</h2>
 
         <div className="cheat-row">
-          <label>🧍 {t('overridesScreen.militia')}</label>
+          <label>🧍</label>
           {numInput(form.militiaHp, (n) => set({ militiaHp: n }))} {t('overridesScreen.hp')}
           {numInput(form.militiaDmgMin, (n) => set({ militiaDmgMin: n }))}–
           {numInput(form.militiaDmgMax, (n) => set({ militiaDmgMax: n }))} {t('overridesScreen.dmg')}
@@ -84,7 +84,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
         </div>
 
         <div className="cheat-row">
-          <label>🐎 {t('overridesScreen.rider')}</label>
+          <label>🐎</label>
           {numInput(form.riderHp, (n) => set({ riderHp: n }))} {t('overridesScreen.hp')}
           {numInput(form.riderDmgMin, (n) => set({ riderDmgMin: n }))}–
           {numInput(form.riderDmgMax, (n) => set({ riderDmgMax: n }))} {t('overridesScreen.dmg')}
@@ -92,6 +92,19 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           <button
             className="game-menu-button"
             onClick={() => commit({ riderHp: form.riderHp, riderDmgMin: form.riderDmgMin, riderDmgMax: form.riderDmgMax, riderPrice: form.riderPrice })}
+          >
+            {t('overridesScreen.set')}
+          </button>
+        </div>
+
+        <div className="cheat-row">
+          <label>🧟‍♀️</label>
+          {numInput(form.zombieHp, (n) => set({ zombieHp: n }))} {t('overridesScreen.hp')}
+          {numInput(form.zombieDmgMin, (n) => set({ zombieDmgMin: n }))}–
+          {numInput(form.zombieDmgMax, (n) => set({ zombieDmgMax: n }))} {t('overridesScreen.dmg')}
+          <button
+            className="game-menu-button"
+            onClick={() => commit({ zombieHp: form.zombieHp, zombieDmgMin: form.zombieDmgMin, zombieDmgMax: form.zombieDmgMax })}
           >
             {t('overridesScreen.set')}
           </button>
@@ -117,13 +130,12 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
         </div>
 
         <div className="cheat-row">
-          <label>🧟‍♀️ {t('overridesScreen.zombie')}</label>
-          {numInput(form.zombieHp, (n) => set({ zombieHp: n }))} {t('overridesScreen.hp')}
-          {numInput(form.zombieDmgMin, (n) => set({ zombieDmgMin: n }))}–
-          {numInput(form.zombieDmgMax, (n) => set({ zombieDmgMax: n }))} {t('overridesScreen.dmg')}
+          <label>{t('overridesScreen.passStart')}</label>
+          🟡{numInput(form.moneyPassStart, (n) => set({ moneyPassStart: n }), '3rem')}
+          🧍{numInput(form.unitsPassStart, (n) => set({ unitsPassStart: n }))}
           <button
             className="game-menu-button"
-            onClick={() => commit({ zombieHp: form.zombieHp, zombieDmgMin: form.zombieDmgMin, zombieDmgMax: form.zombieDmgMax })}
+            onClick={() => commit({ moneyPassStart: form.moneyPassStart, unitsPassStart: form.unitsPassStart })}
           >
             {t('overridesScreen.set')}
           </button>
@@ -168,6 +180,15 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
             type="checkbox"
             checked={live.muteToasts}
             onChange={(e) => commit({ muteToasts: e.target.checked })}
+          />
+        </div>
+
+        <div className="cheat-row overrides-toggle">
+          <label>{t('overridesScreen.headlessCombats')}</label>
+          <input
+            type="checkbox"
+            checked={live.headlessCombats}
+            onChange={(e) => commit({ headlessCombats: e.target.checked })}
           />
         </div>
 
