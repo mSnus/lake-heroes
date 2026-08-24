@@ -13,6 +13,9 @@ export interface SimAttacker {
   riderHp: number;
   riderDmgMin: number;
   riderDmgMax: number;
+  /** Flat bonus added to every attacker roll -- what artifacts grant in a
+   * real fight (see getArtifactRollBonus). Omit for an unequipped player. */
+  flatBonus?: number;
 }
 
 export type SimDefenderKind = 'normal' | 'zombie' | 'dragon';
@@ -101,7 +104,7 @@ export function simulateOneBattle(
     rows
   );
 
-  const opts: StepTurnOptions = { defenderPctBonus };
+  const opts: StepTurnOptions = { defenderPctBonus, attackerFlatBonus: attacker.flatBonus ?? 0 };
   let rounds = 0;
   if (isBrawl) {
     while (!isBattleOver(state) && rounds < MAX_ROUNDS) {

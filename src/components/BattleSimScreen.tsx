@@ -48,6 +48,11 @@ const numInput = (value: number, onChange: (n: number) => void, width = '3.2rem'
   />
 );
 
+// The two battle artifacts, in the order getArtifactRollBonus checks them.
+// Each is worth +1 to every attacker roll, and +2 more against the Dragon.
+const BATTLE_ARTIFACTS = ['broken-blade', 'dwemer-axe'];
+const artifactFlatBonus = (count: number, vsDragon: boolean): number => count * (vsDragon ? 3 : 1);
+
 const KIND_EMOJI: Record<SimDefenderKind, string> = {
   normal: '🧍',
   zombie: '🧟‍♀️',
@@ -94,6 +99,7 @@ interface SimFormState {
   defenderKind: SimDefenderKind;
   defenderStats: { hp: number; dmgMin: number; dmgMax: number };
   defenderBonusPct: number;
+  artifactCount: number;
   rows: ResultRow[];
 }
 let savedFormState: SimFormState | null = null;
@@ -117,6 +123,7 @@ const BattleSimScreen: React.FC = () => {
     () => savedFormState?.defenderStats ?? defaultDefenderStats('normal', ov.militiaHp, ov.militiaDmgMin, ov.militiaDmgMax)
   );
   const [defenderBonusPct, setDefenderBonusPct] = useState(savedFormState?.defenderBonusPct ?? 0);
+  const [artifactCount, setArtifactCount] = useState(savedFormState?.artifactCount ?? 0);
 
   const [running, setRunning] = useState(false);
   const [rows, setRows] = useState<ResultRow[]>(savedFormState?.rows ?? []);
@@ -127,7 +134,7 @@ const BattleSimScreen: React.FC = () => {
     savedFormState = {
       attackerMilitia, attackerRiders, militiaHp, militiaDmgMin, militiaDmgMax,
       riderHp, riderDmgMin, riderDmgMax, defenderAmount, defenderKind, defenderStats,
-      defenderBonusPct, rows,
+      defenderBonusPct, artifactCount, rows,
     };
   });
 
@@ -152,6 +159,7 @@ const BattleSimScreen: React.FC = () => {
     if (defenderKind !== 'normal') {
       lines.push(`${KIND_EMOJI[defenderKind]}${defenderStats.hp}/${defenderStats.dmgMin}-${defenderStats.dmgMax}`);
     }
+    if (artifactCount > 0) lines.push(`${'🗡️'.repeat(artifactCount)}+${artifactFlatBonus(artifactCount, defenderKind === 'dragon')}`);
     return lines.map((line, i) => (
       <React.Fragment key={i}>
         {i > 0 && <br />}
@@ -175,6 +183,7 @@ const BattleSimScreen: React.FC = () => {
           riderHp,
           riderDmgMin,
           riderDmgMax,
+          flatBonus: artifactFlatBonus(artifactCount, defenderKind === 'dragon'),
         },
         { amount: defenderAmount, kind: defenderKind, ...defenderStats },
         defenderBonusPct / 100,
@@ -201,6 +210,7 @@ const BattleSimScreen: React.FC = () => {
     // header portraits read the opposite way round from the units below.
     const atkPlayer = new Player({ name: t('battleSimScreen.attacker'), color: 'blue', gold: 0, units: attackerMilitia, position: -1, image: 'blue', isComputer: true });
     atkPlayer.riders = attackerRiders;
+    atkPlayer.artifacts = BATTLE_ARTIFACTS.slice(0, artifactCount);
     const defPlayer = new Player({ name: t('battleSimScreen.defender'), color: 'red', gold: 0, units: 0, position: -1, image: 'red', isComputer: true });
     // Dragons occupy the rider slot (that's how createBattle builds them as
     // their own kind), at whatever headcount the amount field says -- they
@@ -305,6 +315,15 @@ const BattleSimScreen: React.FC = () => {
             <option value={4}>4%</option>
             <option value={6}>6%</option>
           </select>
+        </div>
+        <div className="cheat-row">
+          <label>🗡️ {t('battleSimScreen.artifacts')}</label>
+          <select value={artifactCount} onChange={(e) => setArtifactCount(parseInt(e.target.value, 10))}>
+            <option value={0}>0</option>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+          </select>
+          +{artifactFlatBonus(artifactCount, defenderKind === 'dragon')}
         </div>
 
         <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '12px' }}>

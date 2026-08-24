@@ -306,13 +306,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     ? tile.getGarrisonBonusPct(tile.level)
     : (statOverrides?.defenderPctBonus ?? 0);
 
-  const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon });
+  // isDragonFight, not isDragon: a simulator test battle fights a dragon in
+  // 'player' mode, and should still get the artifacts' dragon-only bonus.
+  const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon: isDragonFight });
   // In a tile battle (or a rogue attack), the defending side is the tile's
   // stationed garrison, not the owner's hero in person — artifacts like
   // Broken Blade only work when the player's own hero is actually taking
   // part in the fight.
   const defenderArtifactBonus =
-    defender && !isTile && !isRogue ? getArtifactRollBonus(defender, { isDragon }) : 0;
+    defender && !isTile && !isRogue ? getArtifactRollBonus(defender, { isDragon: isDragonFight }) : 0;
   // Ambush is visually/mechanically reversed: the `attacker` prop holds the
   // real player, but they occupy the DEFENDER role in the fight (the NPC
   // ambushers are the attacker-role grid) — so the real player's artifact
@@ -323,7 +325,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   type BonusEntry = { key: string; label: string; emoji?: string; bonus: number; suffix?: string };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
     player
-      ? getArtifactRollBonusBreakdown(player, { isDragon }).map(({ artifact, bonus }) => ({
+      ? getArtifactRollBonusBreakdown(player, { isDragon: isDragonFight }).map(({ artifact, bonus }) => ({
           key: artifact.id,
           label: artifact.name,
           emoji: artifact.emoji,

@@ -916,6 +916,7 @@
   "battleSimScreen": {
     "attacker": "Атакующий",
     "defender": "Защитник",
+    "artifacts": "Артефакты",
     "bonus": "Бонус защитника",
     "simulate": "🎲 Провести 100 боёв",
     "simulating": "Моделирование…",

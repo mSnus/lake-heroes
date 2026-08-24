@@ -923,6 +923,7 @@
   "battleSimScreen": {
     "attacker": "Atacante",
     "defender": "Defensor",
+    "artifacts": "Artefactos",
     "bonus": "Bonificación del defensor",
     "simulate": "🎲 Ejecutar 100 batallas",
     "simulating": "Simulando…",

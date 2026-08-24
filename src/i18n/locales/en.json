@@ -922,6 +922,7 @@
   "battleSimScreen": {
     "attacker": "Attacker",
     "defender": "Defender",
+    "artifacts": "Artifacts",
     "bonus": "Defender bonus",
     "simulate": "🎲 Run 100 battles",
     "simulating": "Simulating…",
