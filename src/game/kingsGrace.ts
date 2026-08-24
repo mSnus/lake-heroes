@@ -18,8 +18,10 @@ export interface KingsGraceReward {
   kingsGold: number;
   kingsUnits: number;
   arifactGold: number;
-  /** Share of the full fame grace this player actually got, 0.2-1 by wealth
-   * rank -- see fameHandicap. */
+  /** Share of the full fame grace this player actually got -- 1 (untouched)
+   * unless the richest player is at least FAME_HANDICAP_GAP_MULT times
+   * wealthier than the poorest, in which case 0.2-0.8 by wealth position.
+   * See fameHandicap. */
   kingsHandicap: number;
   /** Extra support for a player the leader has left unreachably far behind
    * -- see computeCatchUp. Zero for everyone else. */
@@ -37,9 +39,14 @@ const CATCH_UP_GAP_RATIO = 1;
 const CATCH_UP_SHARE_POOREST = 1 / 3;
 const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
 
-// What the fame grace is scaled by at each end of the wealth table.
+// What the fame grace is scaled by at each end of the wealth spread, once
+// the gate below is satisfied.
 const FAME_HANDICAP_RICHEST = 0.2;
-const FAME_HANDICAP_POOREST = 1;
+const FAME_HANDICAP_POOREST = 0.8;
+// The handicap curve only applies at all once the richest player is at
+// least this many times wealthier than the poorest -- below that, nobody's
+// grace is touched.
+const FAME_HANDICAP_GAP_MULT = 2;
 
 /** Players sorted poorest-first, with each player's rank and total wealth. */
 function rankByWealth(board: GameState): {
@@ -54,15 +61,26 @@ function rankByWealth(board: GameState): {
 }
 
 /**
- * Scales the King's fame grace by how well the player is already doing:
- * the poorest keeps all of it, the richest only FAME_HANDICAP_RICHEST, and
- * everyone between is spread evenly across that range by wealth rank. Fame
- * still sets the size of the grace -- this only decides how much of it a
- * player is allowed to keep.
+ * Scales the King's fame grace by how well the player is already doing --
+ * relative to the actual wealth spread in this game, not pure rank, so a
+ * near-even game leaves everyone's grace untouched. Only kicks in once the
+ * richest player is at least FAME_HANDICAP_GAP_MULT times wealthier than
+ * the poorest; below that this returns 1 (no handicap) for everyone,
+ * richest included. Once it kicks in, a player's own wealth POSITION
+ * between the poorest and richest (not their ordinal rank) linearly sets
+ * their share, from FAME_HANDICAP_POOREST down to FAME_HANDICAP_RICHEST --
+ * the richest player's own position is 1, which already lands exactly on
+ * FAME_HANDICAP_RICHEST, no separate case needed. Fame still sets the size
+ * of the grace -- this only decides how much of it a player keeps.
  */
-function fameHandicap(rank: number, playerCount: number): number {
-  if (playerCount < 2) return FAME_HANDICAP_POOREST;
-  const position = rank / (playerCount - 1);
+function fameHandicap(playerWealth: number, poorestWealth: number, richestWealth: number): number {
+  if (richestWealth < FAME_HANDICAP_GAP_MULT * poorestWealth) return 1;
+  // Only reachable when poorestWealth <= 0 and richestWealth === poorestWealth
+  // (every player at exactly zero) -- the gate above can't otherwise pass
+  // with an empty spread.
+  if (richestWealth === poorestWealth) return FAME_HANDICAP_POOREST;
+
+  const position = (playerWealth - poorestWealth) / (richestWealth - poorestWealth);
   return FAME_HANDICAP_POOREST - position * (FAME_HANDICAP_POOREST - FAME_HANDICAP_RICHEST);
 }
 
@@ -127,7 +145,14 @@ function computeCatchUp(
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
   const ov = getOverrides();
   const ranking = rankByWealth(board);
-  const kingsHandicap = fameHandicap(ranking.rankOf.get(player.id) ?? 0, board.players.length);
+  const kingsHandicap =
+    board.players.length < 2
+      ? 1
+      : fameHandicap(
+          ranking.wealthOf.get(player.id)!,
+          ranking.wealthOf.get(ranking.ranked[0].id)!,
+          ranking.wealthOf.get(ranking.ranked[ranking.ranked.length - 1].id)!
+        );
 
   const fame = player.fame || 1;
   const fameMultiplier = Math.floor(fame / FAME_STEP);
