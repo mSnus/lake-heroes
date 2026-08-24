@@ -139,7 +139,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits } =
+  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits, kingsHandicap } =
     computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   const ownedTileCount = gameState.tiles.filter(
@@ -266,7 +266,15 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
               };
               const parts = [
-                fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
+                fmt(
+                  kingsGold,
+                  kingsUnits,
+                  kingsHandicap < 1
+                    ? t('currentPlayer.asKingsGraceHandicapped', {
+                        pct: Math.round(kingsHandicap * 100),
+                      })
+                    : t('currentPlayer.asKingsGrace')
+                ),
                 fmt(catchUpGold, catchUpUnits, t('currentPlayer.asKingsSupport')),
                 fmt(tileGold, tileUnits - towerUnits, t('currentPlayer.fromYourTiles')),
                 fmt(0, towerUnits, t('currentPlayer.fromYourTowers')),

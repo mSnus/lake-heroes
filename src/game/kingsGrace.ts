@@ -21,6 +21,9 @@ export interface KingsGraceReward {
   kingsGold: number;
   kingsUnits: number;
   arifactGold: number;
+  /** Share of the full fame grace this player actually got, 0.2-1 by wealth
+   * rank -- see fameHandicap. */
+  kingsHandicap: number;
   /** Extra support for a player the leader has left unreachably far behind
    * -- see computeCatchUp. Zero for everyone else. */
   catchUpGold: number;
@@ -37,6 +40,35 @@ const CATCH_UP_GAP_RATIO = 1;
 const CATCH_UP_SHARE_POOREST = 1 / 3;
 const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
 
+// What the fame grace is scaled by at each end of the wealth table.
+const FAME_HANDICAP_RICHEST = 0.2;
+const FAME_HANDICAP_POOREST = 1;
+
+/** Players sorted poorest-first, with each player's rank and total wealth. */
+function rankByWealth(board: GameState): {
+  ranked: Player[];
+  rankOf: Map<number, number>;
+  wealthOf: Map<number, number>;
+} {
+  const wealthOf = new Map(board.players.map((p) => [p.id, totalWealth(board, p)]));
+  const ranked = [...board.players].sort((a, b) => wealthOf.get(a.id)! - wealthOf.get(b.id)!);
+  const rankOf = new Map(ranked.map((p, i) => [p.id, i]));
+  return { ranked, rankOf, wealthOf };
+}
+
+/**
+ * Scales the King's fame grace by how well the player is already doing:
+ * the poorest keeps all of it, the richest only FAME_HANDICAP_RICHEST, and
+ * everyone between is spread evenly across that range by wealth rank. Fame
+ * still sets the size of the grace -- this only decides how much of it a
+ * player is allowed to keep.
+ */
+function fameHandicap(rank: number, playerCount: number): number {
+  if (playerCount < 2) return FAME_HANDICAP_POOREST;
+  const position = rank / (playerCount - 1);
+  return FAME_HANDICAP_POOREST - position * (FAME_HANDICAP_POOREST - FAME_HANDICAP_RICHEST);
+}
+
 /**
  * Support for a player who has fallen so far behind the leader that normal
  * play can't realistically close the gap: only the two poorest qualify, and
@@ -49,18 +81,17 @@ const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
 function computeCatchUp(
   board: GameState,
   player: Player,
-  unitCapacity: number
+  unitCapacity: number,
+  ranking: ReturnType<typeof rankByWealth>
 ): { gold: number; units: number } {
   const none = { gold: 0, units: 0 };
   if (board.players.length < 2) return none;
 
-  const wealthOf = new Map(board.players.map((p) => [p.id, totalWealth(board, p)]));
-  const ranked = [...board.players].sort((a, b) => wealthOf.get(a.id)! - wealthOf.get(b.id)!);
-
+  const { ranked, rankOf, wealthOf } = ranking;
   const leader = ranked[ranked.length - 1];
   if (leader.id === player.id) return none;
 
-  const rank = ranked.findIndex((p) => p.id === player.id);
+  const rank = rankOf.get(player.id)!;
   if (rank > 1) return none;
 
   const playerTotal = wealthOf.get(player.id)!;
@@ -97,10 +128,13 @@ function computeCatchUp(
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
   const ov = getOverrides();
+  const ranking = rankByWealth(board);
+  const kingsHandicap = fameHandicap(ranking.rankOf.get(player.id) ?? 0, board.players.length);
+
   const fame = player.fame || 1;
   const fameMultiplier = Math.floor(fame / FAME_STEP);
-  const kingsGold = ov.moneyPassStart + MONEY_PASS_START_FAME * fameMultiplier;
-  const kingsUnits = ov.unitsPassStart * fameMultiplier;
+  const kingsGold = Math.round((ov.moneyPassStart + MONEY_PASS_START_FAME * fameMultiplier) * kingsHandicap);
+  const kingsUnits = Math.round(ov.unitsPassStart * fameMultiplier * kingsHandicap);
 
   let tileGold = 0;
   let tileUnits = 0;
@@ -128,7 +162,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   // catch-up share is capped to it rather than being silently dropped by
   // Player.gainMilitia later.
   const unitCapacity = player.remainingCapacity('militia') - (tileUnits + kingsUnits);
-  const catchUp = computeCatchUp(board, player, unitCapacity);
+  const catchUp = computeCatchUp(board, player, unitCapacity, ranking);
 
   return {
     tileGold,
@@ -137,6 +171,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     kingsGold,
     kingsUnits,
     arifactGold,
+    kingsHandicap,
     catchUpGold: catchUp.gold,
     catchUpUnits: catchUp.units,
     totalGold: tileGold + kingsGold + arifactGold + catchUp.gold,
