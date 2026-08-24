@@ -35,15 +35,25 @@ function randomSalt(): string {
   return salt;
 }
 
-/** Non-hook variant for one-off lookups outside a component, e.g. a toast fired from a mount effect. */
-export async function resolveAppVersion(): Promise<string> {
+/** The raw fetch, with no fallback -- null means "couldn't tell" (network
+ * error, non-OK response, empty body), not "here's a version". Kept
+ * separate from resolveAppVersion's pkg.version fallback, which is only
+ * appropriate for display (some string is better than a blank UI) and
+ * actively wrong for the staleness check below (a transient fetch failure
+ * would otherwise masquerade as a real version mismatch). */
+async function fetchLiveVersion(): Promise<string | null> {
   try {
     const r = await fetch(`version.txt?${randomSalt()}`);
     const text = r.ok ? await r.text() : null;
-    return text?.trim() ? text.trim() : pkg.version;
+    return text?.trim() || null;
   } catch {
-    return pkg.version;
+    return null;
   }
+}
+
+/** Non-hook variant for one-off lookups outside a component, e.g. a toast fired from a mount effect. */
+export async function resolveAppVersion(): Promise<string> {
+  return (await fetchLiveVersion()) ?? pkg.version;
 }
 
 /** How often to re-check for a newer deployed version while the tab stays open. */
@@ -71,7 +81,11 @@ export interface VersionMismatch {
  * Skipped entirely for a local dev/unbuilt-CI run (VITE_APP_VERSION unset)
  * -- there's nothing meaningful to compare against, and version.txt's own
  * package.json fallback would otherwise never match the dev bundle's
- * missing version, showing a permanent false positive.
+ * missing version, showing a permanent false positive. Uses
+ * fetchLiveVersion (not resolveAppVersion) for the same reason: a
+ * transient fetch failure must read as "still unknown", not as a fake
+ * mismatch against pkg.version -- a network hiccup isn't stale code, and
+ * offering an "update" for it wouldn't fix anything.
  */
 export function useVersionMismatch(): VersionMismatch {
   const running = import.meta.env.VITE_APP_VERSION;
@@ -82,8 +96,8 @@ export function useVersionMismatch(): VersionMismatch {
 
     let cancelled = false;
     const check = () => {
-      resolveAppVersion().then((v) => {
-        if (!cancelled) setLatest(v);
+      fetchLiveVersion().then((v) => {
+        if (!cancelled && v !== null) setLatest(v);
       });
     };
 
