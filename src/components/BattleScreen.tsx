@@ -22,13 +22,11 @@ import { resolvePlayerBattle } from '../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../actions/battles/resolveAmbush';
 import { resolveRuinsBattle } from '../actions/battles/resolveRuinsBattle';
 import { useT } from '../i18n';
-import { DRAGON_UNITS } from '../game/constants';
-import { getArtifactRollBonus, getArtifactRollBonusBreakdown } from '../game/artifacts';
+import { getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { createBattle, stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
-import { sizeArmyForGrid, realLossFromGridLoss } from '../game/battleGrid/scale';
-import { battleBoardFor, squadGroupCount } from '../game/battleGrid/layout';
+import { realLossFromGridLoss } from '../game/battleGrid/scale';
+import { buildBattleSetup, BattleSetup } from '../game/battleGrid/battleSetup';
 import { GridBattleState, TurnEvent, BattleSide } from '../game/battleGrid/types';
-import { FormationSpec } from '../game/battleGrid/formations';
 import { TileClaimScreen } from './TileClaimScreen';
 import { showTileEncounterScreen } from '../actions/afterMoveLogic';
 import '../styles/BattleScreen.css';
@@ -167,160 +165,43 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const t = useT();
   const { attacker, gameState, updateGameState } = props;
 
-  // ── Mode extraction (TypeScript narrowing per branch) ──
-  const isCaravan = props.mode === 'caravan';
-  const isDragon = props.mode === 'dragon';
-  const isPlayerBattle = props.mode === 'player';
-  const isAmbush = props.mode === 'ambush';
-  const isRogue = props.mode === 'rogue';
-  const isTile = !isCaravan && !isDragon && !isPlayerBattle && !isAmbush && !isRogue;
-  const statOverrides = props.mode === 'player' ? props.statOverrides : undefined;
-
-  let defence: number;
-  let defender: Player | undefined;
-  let tile: Tile | undefined;
-  let caravanPrize: number | undefined;
-  let caravanSlaves = false;
-  let battlefieldUnits: number | undefined;
-  let ambushAttackerUnits: number | undefined;
-  let isZombieAmbush = false;
-  let isRuins = false;
-
-  if (props.mode === 'caravan') {
-    defence = props.caravanDefence;
-    caravanPrize = props.caravanPrize;
-    caravanSlaves = props.caravanSlaves ?? false;
-  } else if (props.mode === 'dragon') {
-    defence = DRAGON_UNITS;
-  } else if (props.mode === 'player') {
-    defence = props.battlefieldUnits;
-    defender = props.defender;
-    battlefieldUnits = props.battlefieldUnits;
-  } else if (props.mode === 'ambush') {
-    defence = props.ambushAttackerUnits;
-    ambushAttackerUnits = props.ambushAttackerUnits;
-    isZombieAmbush = !!props.isZombieAmbush;
-    isRuins = !!props.isRuins;
-  } else {
-    defence = props.tile?.defence ?? 1;
-    defender = props.defender;
-    tile = props.tile;
-  }
-
-  // `defence`/`attacker` army composition are read live from props/Player
-  // fields, which is fine while the fight is in progress — but resolving the
-  // battle mutates the underlying tile/player, and this component stays
-  // mounted showing the result afterward. Snapshot once so the grid the
-  // player watched fighting keeps matching the "X vs Y" readout and the
-  // eventual casualty translation, rather than reflecting what's left after
-  // the fight already happened.
-  const defenceRef = useRef(defence);
-  const initialDefence = defenceRef.current;
-
-  // ── Grid army composition per mode (militia/riders), then capped to fit
-  // the battlefield via sizeArmyForGrid — mirrors the old attacker/defender
-  // tier-count derivation, now producing real grid units instead of a duel
-  // headcount/rider-multiplier split. ──
-  const attackerCompRaw = isAmbush
-    ? { militia: ambushAttackerUnits!, riders: 0 }
-    : { militia: attacker.militia, riders: attacker.riders };
-  const defenderCompRaw = (isTile || isRogue) && defender
-    ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
-    : isPlayerBattle
-      ? { militia: defender!.militia, riders: defender!.riders }
-      : isDragon
-        ? { militia: 0, riders: DRAGON_UNITS }
-        : isAmbush
-          // Ambush is reversed: `attacker` holds the real player, who occupies
-          // the DEFENDER grid role — so their real army composition (not the
-          // NPC ambusher headcount) belongs here, riders included.
-          ? { militia: attacker.militia, riders: attacker.riders }
-          : { militia: initialDefence, riders: 0 };
-
-  const attackerSizedRef = useRef(sizeArmyForGrid(attackerCompRaw.militia, attackerCompRaw.riders));
-  const defenderSizedRef = useRef(sizeArmyForGrid(defenderCompRaw.militia, defenderCompRaw.riders));
-  const attackerSized = attackerSizedRef.current;
-  const defenderSized = defenderSizedRef.current;
-  const attackerGridTotal = attackerSized.militiaCount + attackerSized.ridersCount;
-  const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
-  // Board tier -- shared with the battle simulator via battleBoardFor (see
-  // layout.ts), so a simulated fight always lands on the same board a real
-  // one would. Brawl (both sides at or below BRAWL_THRESHOLD: a compact,
-  // larger-celled board with turn-based / manual control) covers every mode
-  // except dragon; ambush is included, its reversed attacker/defender roles
-  // being handled by attackerManual/defenderManual below. The small-board
-  // tier is scoped tighter -- ambush's triangle wedge needs far more height
-  // than a 'grouped' formation at the same headcount, so it stays off it.
-  const isDragonFight = isDragon || statOverrides?.defenderKind === 'dragon';
-  const board = battleBoardFor(attackerGridTotal, defenderGridTotal, {
-    allowBrawl: isTile || isRogue || isPlayerBattle || isCaravan || isAmbush,
-    allowSmall: isTile || isRogue || isPlayerBattle,
-  });
-  const { isBrawl, isLargeAutoBattle, cols: gridCols, rows: gridRows } = board;
-  // A side is manually controlled whenever its player is a real human, not
-  // just whoever's turn it currently is -- so if a human attacks another
-  // human's tile/hero, that other player also gets to place their own
-  // defence instead of it auto-planning for them. In ambush, `attacker`
-  // holds the real player but their army occupies the grid's DEFENDER role
-  // (the NPC/zombie horde is the grid attacker and never gets manual
-  // control), so the mapping is reversed there. brawlDefenderPhase/
-  // brawlAttackerPhase run one after the other (never simultaneously), so
-  // both sides being manual in the same round is fine.
-  const attackerManual = isBrawl && !isAmbush && !attacker.isComputer;
-  const defenderManual =
-    isBrawl && (isAmbush ? !attacker.isComputer : !!defender && !defender.isComputer);
-
-  // ── Initial formation per side/mode — every attacker looks different
-  // depending on who they are. A real player's own army always forms up
-  // as its filled army-slot squads (buildSquadChunks); NPC/garrison sides
-  // get a role-appropriate shape instead. ──
-  const squadCountFor = (player: Player): number => squadGroupCount(player.militia, player.riders);
-
-  const attackerFormation: FormationSpec = isBrawl
-    ? { kind: 'compact' } // brawl: a single tall, narrow formation
-    : isAmbush
-      ? { kind: 'triangle' } // NPC ambushers: wedge pointed at the player
-      : { kind: 'grouped', groupCount: squadCountFor(attacker) };
-
-  const defenderFormation: FormationSpec | undefined = isBrawl
-    ? { kind: 'compact' }
-    : isCaravan
-      ? { kind: 'columns' } // caravan guards: columns of maximum height
-      : isDragonFight
-        // The dragon lines up by the normal squad rules for now -- its fixed
-        // coiled-dragon silhouette is 7 columns wide and no longer fits the
-        // narrower huge board, pending a reworked shape.
-        ? { kind: 'grouped', groupCount: squadGroupCount(0, defenderGridTotal) }
-        : isPlayerBattle
-          ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
-          : isAmbush
-            ? { kind: 'grouped', groupCount: squadCountFor(attacker) } // real player occupies the defender role here
-            : (isTile || isRogue) && tile
-              ? { kind: 'grouped', groupCount: Math.max(1, tile.level) } // tile guards: one cluster per tower (tile level)
-              : undefined;
-
-  // A fortified tile's level bonus is now a straight % addition to every
-  // roll the defending garrison's units make each turn (applies in both
-  // tile and rogue-attack modes alike).
-  const garrisonRollBonusPct = (isTile || isRogue) && tile
-    ? tile.getGarrisonBonusPct(tile.level)
-    : (statOverrides?.defenderPctBonus ?? 0);
-
-  // isDragonFight, not isDragon: a simulator test battle fights a dragon in
-  // 'player' mode, and should still get the artifacts' dragon-only bonus.
-  const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon: isDragonFight });
-  // In a tile battle (or a rogue attack), the defending side is the tile's
-  // stationed garrison, not the owner's hero in person — artifacts like
-  // Broken Blade only work when the player's own hero is actually taking
-  // part in the fight.
-  const defenderArtifactBonus =
-    defender && !isTile && !isRogue ? getArtifactRollBonus(defender, { isDragon: isDragonFight }) : 0;
-  // Ambush is visually/mechanically reversed: the `attacker` prop holds the
-  // real player, but they occupy the DEFENDER role in the fight (the NPC
-  // ambushers are the attacker-role grid) — so the real player's artifact
-  // bonus has to land on the defender-role roll, or it silently boosts the NPC.
-  const attackerRollBonus = isAmbush ? 0 : attackerArtifactBonus;
-  const defenderRollBonus = isAmbush ? attackerArtifactBonus : defenderArtifactBonus;
+  // Everything mode/army/board/formation/roll-bonus related is decided once,
+  // by the same pure function the headless economy simulator uses (see
+  // battleSetup.ts) -- frozen for the fight's lifetime the same way the old
+  // per-field useRefs did, so resolving the battle (which mutates the
+  // underlying tile/player) can't retroactively change what's shown.
+  const setupRef = useRef<BattleSetup>(buildBattleSetup(props));
+  const {
+    isCaravan,
+    isDragon,
+    isPlayerBattle,
+    isAmbush,
+    isRogue,
+    isTile,
+    isDragonFight,
+    statOverrides,
+    defence,
+    defender,
+    tile,
+    caravanPrize,
+    caravanSlaves,
+    battlefieldUnits,
+    ambushAttackerUnits,
+    isZombieAmbush,
+    isRuins,
+    attackerSized,
+    defenderSized,
+    attackerGridTotal,
+    defenderGridTotal,
+    attackerFormation,
+    defenderFormation,
+    garrisonRollBonusPct,
+    attackerRollBonus,
+    defenderRollBonus,
+    attackerManual,
+    defenderManual,
+  } = setupRef.current;
+  const { isBrawl, isLargeAutoBattle, cols: gridCols, rows: gridRows } = setupRef.current.board;
 
   type BonusEntry = { key: string; label: string; emoji?: string; bonus: number; suffix?: string };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
@@ -473,7 +354,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         return resolveCaravanBattle(
           gameState,
           attacker,
-          { prize: caravanPrize!, slaves: caravanSlaves, defence: initialDefence },
+          { prize: caravanPrize!, slaves: caravanSlaves, defence },
           atkKilled,
           battleOutcome
         );
