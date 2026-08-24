@@ -145,12 +145,12 @@ export const ZOMBIE_GARRISON_REPEL_RATIO = 0.5;
 // letting the starting geometry decide the whole fight).
 export const BRAWL_COLS = 7;
 export const BRAWL_ROWS = 7;
-export const MILITIA_HP = 12;
-export const MILITIA_DMG_MIN = 3;
-export const MILITIA_DMG_MAX = 6;
-export const RIDER_HP = 20;
-export const RIDER_DMG_MIN = 6;
-export const RIDER_DMG_MAX = 12;
+export const MILITIA_HP = 6;
+export const MILITIA_DMG_MIN = 4;
+export const MILITIA_DMG_MAX = 16;
+export const RIDER_HP = 12;
+export const RIDER_DMG_MIN = 8;
+export const RIDER_DMG_MAX = 18;
 // The dragon fights as its own kind, not a rider — see the 'dragon'
 // formation in game/battleGrid/formations.ts, always exactly DRAGON_UNITS.
 export const DRAGON_HP = 24;
@@ -162,6 +162,11 @@ export const DRAGON_DMG_MAX = 10;
 export const MAX_GRID_ARMY_SIZE = 150;
 
 // Abandoned tiles (razed, never reclaimed) are guarded by Zombies instead of
-// regular militia — same base militia stats, scaled by these multipliers.
-export const ZOMBIE_HP_MULTIPLIER = 2;
-export const ZOMBIE_DMG_MULTIPLIER = 1.5;
+// regular militia — their own stats, not a multiple of militia's (the damage
+// range needed a different factor at each end, so multipliers couldn't express it).
+export const ZOMBIE_HP = 10;
+export const ZOMBIE_DMG_MIN = 6;
+export const ZOMBIE_DMG_MAX = 18;
+/** How much tougher a zombie garrison is than a militia one, for defence
+ * ratings (see TileCard) -- derived so it tracks the stats above. */
+export const ZOMBIE_HP_MULTIPLIER = ZOMBIE_HP / MILITIA_HP;

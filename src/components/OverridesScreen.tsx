@@ -118,11 +118,12 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
 
         <div className="cheat-row">
           <label>🧟‍♀️ {t('overridesScreen.zombie')}</label>
-          {numInput(form.zombieHpMult, (n) => set({ zombieHpMult: n }))}× {t('overridesScreen.hp')}
-          {numInput(form.zombieDmgMult, (n) => set({ zombieDmgMult: n }))}× {t('overridesScreen.dmg')}
+          {numInput(form.zombieHp, (n) => set({ zombieHp: n }))} {t('overridesScreen.hp')}
+          {numInput(form.zombieDmgMin, (n) => set({ zombieDmgMin: n }))}–
+          {numInput(form.zombieDmgMax, (n) => set({ zombieDmgMax: n }))} {t('overridesScreen.dmg')}
           <button
             className="game-menu-button"
-            onClick={() => commit({ zombieHpMult: form.zombieHpMult, zombieDmgMult: form.zombieDmgMult })}
+            onClick={() => commit({ zombieHp: form.zombieHp, zombieDmgMin: form.zombieDmgMin, zombieDmgMax: form.zombieDmgMax })}
           >
             {t('overridesScreen.set')}
           </button>

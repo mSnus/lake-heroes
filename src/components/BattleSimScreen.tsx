@@ -66,9 +66,9 @@ function defaultDefenderStats(
   if (kind === 'zombie') {
     const ov = getOverrides();
     return {
-      hp: Math.round(militiaHp * ov.zombieHpMult),
-      dmgMin: Math.round(militiaDmgMin * ov.zombieDmgMult),
-      dmgMax: Math.round(militiaDmgMax * ov.zombieDmgMult),
+      hp: ov.zombieHp,
+      dmgMin: ov.zombieDmgMin,
+      dmgMax: ov.zombieDmgMax,
     };
   }
   return { hp: militiaHp, dmgMin: militiaDmgMin, dmgMax: militiaDmgMax };
@@ -130,6 +130,10 @@ const BattleSimScreen: React.FC = () => {
   const handleDefenderKindChange = (kind: SimDefenderKind) => {
     setDefenderKind(kind);
     setDefenderStats(defaultDefenderStats(kind, militiaHp, militiaDmgMin, militiaDmgMax));
+    // A dragon always fights at its full fixed headcount, same as the real
+    // encounter -- both the simulation and "Run battle" force it anyway, so
+    // show the number that will actually be used.
+    if (kind === 'dragon') setDefenderAmount(DRAGON_UNITS);
   };
 
   // Headcounts (no per-side emoji, just the numbers) + defender kind emoji

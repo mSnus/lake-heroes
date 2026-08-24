@@ -96,7 +96,7 @@ const SAFETY_MOVE_CAP = 3;
 function hpFor(kind: UnitKind): number {
   const ov = getOverrides();
   if (kind === 'dragon') return DRAGON_HP;
-  if (kind === 'zombie') return Math.round(ov.militiaHp * ov.zombieHpMult);
+  if (kind === 'zombie') return ov.zombieHp;
   return kind === 'rider' ? ov.riderHp : ov.militiaHp;
 }
 
@@ -116,11 +116,12 @@ function rollDamage(u: GridUnit, pctBonus: number, flatBonus: number, rng: () =>
   } else if (u.kind === 'rider') {
     min = ov.riderDmgMin;
     max = ov.riderDmgMax;
+  } else if (u.kind === 'zombie') {
+    min = ov.zombieDmgMin;
+    max = ov.zombieDmgMax;
   } else {
-    // Zombies share militia's roll range, scaled by the zombie damage multiplier.
     min = ov.militiaDmgMin;
     max = ov.militiaDmgMax;
-    if (u.kind === 'zombie') mult = ov.zombieDmgMult;
   }
   const base = rollInRange(min, max, rng) * mult;
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
