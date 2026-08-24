@@ -1,7 +1,7 @@
 import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
-import { computeArmyPower, remainingCapacity, garrisonSlotCapacity } from './army';
+import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER } from './army';
 import { t, tOptional } from '../i18n';
 
 export interface TileJSON {
@@ -286,7 +286,10 @@ export class Tile implements TileJSON {
   ): boolean {
     if (this.isOnFire(currentRound)) return false;
 
-    const lvl1Defence = this.getDefence(1);
+    // Rated strength, not headcount -- an abandoned tile's zombies are worth
+    // more than their number, and the attacker's own power is weighted the
+    // same way, so the two sides are compared on one scale.
+    const lvl1Defence = this.getDefence(1) * (this.abandoned ? UNIT_POWER.zombies : 1);
     // Brawl tiles (low defence) always require enough units to win the
     // winner-take-all round. Above the brawl threshold, an attacker with
     // more than that many units may "banzai" — attack a tougher tile than
@@ -341,6 +344,18 @@ export class Tile implements TileJSON {
    * have more defenders than it really does. */
   getGarrisonBonusPct(level: number): number {
     return level >= 3 ? 0.2 : level === 2 ? 0.1 : 0;
+  }
+
+  /**
+   * The tile's defence as a strength rating rather than a headcount — an
+   * abandoned tile's wild garrison guards as zombies, which are worth more
+   * than their number (see UNIT_POWER). This is what decisions and displays
+   * compare an army against; getDefence() stays a headcount because that's
+   * what sizes the actual battle grid, where the zombies get their real
+   * hp/damage and would otherwise be counted twice.
+   */
+  get defencePower(): number {
+    return this.getDefence(this.level) * (this.abandoned ? UNIT_POWER.zombies : 1);
   }
 
   getDefence(_level: number = 1): number {

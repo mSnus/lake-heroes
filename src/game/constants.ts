@@ -77,11 +77,27 @@ export const BANZAI_THRESHOLD = 0.8; // risky banzai mode triggers when the atta
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
 export const RIDER_UNIT_PRICE = 500; // gold per rider
+// How much one unit of each kind is worth on a single strength scale, in
+// militia. Everything that rates a force -- AI decisions, the Banzai
+// threshold, the tile-card strength readout -- measures with these, so the
+// four kinds stay directly comparable (see army.ts's forcePower).
+//
+// Fitted to the authored equivalences 10 riders = 22 militia,
+// 9 riders = 11 zombies = 7 dragons, 22 militia = 9 zombies = 7 dragons.
+// Those over-determine the scale and don't quite agree -- they imply three
+// different rider:militia rates (2.20 stated directly, 2.44 via dragons,
+// 2.99 via zombies) -- so the rider rate, the one stated twice and
+// consistently, is taken as the anchor and the other two are the best fit
+// between their two readings. That lands 22 militia + 9 riders at 13.9
+// dragons, i.e. the intended 14.
 export const MILITIA_POWER_WEIGHT = 1;
 // Single source of truth for "how much a Rider is worth vs a Militia" --
 // used both for army-power strength ratings (computeArmyPower) and as the
 // roll multiplier a Rider gets in an actual battle duel.
-export const RIDER_DUEL_MULTIPLIER = 1.5;
+export const RIDER_DUEL_MULTIPLIER = 2.2;
+/** An abandoned tile's wild garrison guards as zombies -- tougher per head. */
+export const ZOMBIE_POWER_WEIGHT = 2.1;
+export const DRAGON_POWER_WEIGHT = 3;
 export const ARMY_SLOT_CAPACITY = 12; // max units of one tier per slot
 // A tile garrison's own per-slot cap -- independent of ARMY_SLOT_CAPACITY
 // (see overridesStore.ts's armySlotCapacity/garrisonSlotCapacity split).
@@ -167,6 +183,3 @@ export const MAX_GRID_ARMY_SIZE = 150;
 export const ZOMBIE_HP = 10;
 export const ZOMBIE_DMG_MIN = 6;
 export const ZOMBIE_DMG_MAX = 18;
-/** How much tougher a zombie garrison is than a militia one, for defence
- * ratings (see TileCard) -- derived so it tracks the stats above. */
-export const ZOMBIE_HP_MULTIPLIER = ZOMBIE_HP / MILITIA_HP;

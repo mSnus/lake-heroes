@@ -2,6 +2,9 @@ import {
   ARMY_SLOT_FAME_THRESHOLDS,
   MILITIA_POWER_WEIGHT,
   RIDER_DUEL_MULTIPLIER,
+  ZOMBIE_POWER_WEIGHT,
+  DRAGON_POWER_WEIGHT,
+  DRAGON_UNITS,
 } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 
@@ -27,6 +30,38 @@ export type UnitTier = 'militia' | 'riders';
 export function computeArmyPower(militia: number, riders: number): number {
   return militia * MILITIA_POWER_WEIGHT + riders * RIDER_DUEL_MULTIPLIER;
 }
+
+/** Per-unit strength of every kind that can hold a battlefield, in militia. */
+export const UNIT_POWER: Record<'militia' | 'riders' | 'zombies' | 'dragons', number> = {
+  militia: MILITIA_POWER_WEIGHT,
+  riders: RIDER_DUEL_MULTIPLIER,
+  zombies: ZOMBIE_POWER_WEIGHT,
+  dragons: DRAGON_POWER_WEIGHT,
+};
+
+/**
+ * Strength of any mixed force on the shared militia-equivalent scale — the
+ * general form of computeArmyPower, extended to the two NPC kinds so a
+ * player's army and a zombie garrison (or the Dragon) can be compared
+ * directly. Divide two of these to express one force in units of another:
+ * forcePower({militia:22, riders:9}) / UNIT_POWER.dragons ≈ 14 dragons.
+ */
+export function forcePower(force: {
+  militia?: number;
+  riders?: number;
+  zombies?: number;
+  dragons?: number;
+}): number {
+  return (
+    (force.militia ?? 0) * UNIT_POWER.militia +
+    (force.riders ?? 0) * UNIT_POWER.riders +
+    (force.zombies ?? 0) * UNIT_POWER.zombies +
+    (force.dragons ?? 0) * UNIT_POWER.dragons
+  );
+}
+
+/** What the Dragon's whole host is worth on the same scale. */
+export const DRAGON_FORCE_POWER = forcePower({ dragons: DRAGON_UNITS });
 
 /** How many army slots a given fame grants — see ARMY_SLOT_FAME_THRESHOLDS. */
 export function slotCountForFame(fame: number): number {
