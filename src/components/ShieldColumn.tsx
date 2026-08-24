@@ -11,6 +11,7 @@ import CheatScreen from './CheatScreen';
 import OverridesScreen from './OverridesScreen';
 import StatsScreen from './StatsScreen';
 import BattleSimScreen from './BattleSimScreen';
+import EconomySimScreen from './EconomySimScreen';
 import { halt } from '../utils/haltStore';
 import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
@@ -192,6 +193,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   🤼
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.economySim')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <EconomySimScreen /> });
+                  }}
+                  className="shield-button"
+                >
+                  📊
                 </button>
               </div>
               <div

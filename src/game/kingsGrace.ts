@@ -1,15 +1,14 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
 import {
-  MONEY_PASS_START,
   MONEY_PASS_START_FAME,
   FAME_STEP,
-  UNITS_PASS_START,
   ANNUAL_DEFAULT_UNITS,
   ANNUAL_DEFAULT_GOLD,
   TOWER_LEVEL_UNIT_BONUS,
 } from './constants';
 import { getArtifactGoldBonus } from './artifacts';
+import { getOverrides } from '../utils/overridesStore';
 
 export interface KingsGraceReward {
   tileGold: number;
@@ -36,10 +35,11 @@ export interface KingsGraceReward {
  * (CurrentPlayer.tsx) so they can't drift apart.
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
+  const ov = getOverrides();
   const fame = player.fame || 1;
   const fameMultiplier = Math.floor(fame / FAME_STEP);
-  const kingsGold = MONEY_PASS_START + MONEY_PASS_START_FAME * fameMultiplier;
-  const kingsUnits = UNITS_PASS_START * fameMultiplier;
+  const kingsGold = ov.moneyPassStart + MONEY_PASS_START_FAME * fameMultiplier;
+  const kingsUnits = ov.unitsPassStart * fameMultiplier;
 
   let tileGold = 0;
   let tileUnits = 0;

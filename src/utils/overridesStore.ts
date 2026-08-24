@@ -16,7 +16,10 @@ import {
   ZOMBIE_HP,
   ZOMBIE_DMG_MIN,
   ZOMBIE_DMG_MAX,
+  MONEY_PASS_START,
+  UNITS_PASS_START,
 } from '../game/constants';
+import { isHeadlessRun } from './headlessStore';
 
 /**
  * Live, tweakable game parameters (the ⚖️ Overrides screen). These shadow the
@@ -40,6 +43,8 @@ export interface GameOverrides {
   tileBasePrice: number; // TILE_BASE_PRICE
   tileUpgradeMult: number; // TILE_BASE_UPGRADE as a multiple of tileBasePrice
   tileIncomeMult: number; // TILE_BASE_INCOME as a multiple of tileBasePrice
+  moneyPassStart: number; // MONEY_PASS_START
+  unitsPassStart: number; // UNITS_PASS_START
   zombieHp: number; // ZOMBIE_HP (abandoned-tile guards -- own stats, not a multiple of militia's)
   zombieDmgMin: number; // ZOMBIE_DMG_MIN
   zombieDmgMax: number; // ZOMBIE_DMG_MAX
@@ -63,6 +68,8 @@ export const OVERRIDE_DEFAULTS: GameOverrides = {
   // whatever ratio they currently hold (1 out of the box).
   tileUpgradeMult: TILE_BASE_UPGRADE / TILE_BASE_PRICE,
   tileIncomeMult: TILE_BASE_INCOME / TILE_BASE_PRICE,
+  moneyPassStart: MONEY_PASS_START,
+  unitsPassStart: UNITS_PASS_START,
   zombieHp: ZOMBIE_HP,
   zombieDmgMin: ZOMBIE_DMG_MIN,
   zombieDmgMax: ZOMBIE_DMG_MAX,
@@ -78,6 +85,7 @@ function sanitize(raw: Partial<GameOverrides> | null | undefined): GameOverrides
     const n = typeof v === 'number' ? v : Number(v);
     return Number.isFinite(n) ? Math.max(min, n) : fallback;
   };
+
   return {
     militiaHp: num(merged.militiaHp, OVERRIDE_DEFAULTS.militiaHp, 1),
     militiaDmgMin: num(merged.militiaDmgMin, OVERRIDE_DEFAULTS.militiaDmgMin, 0),
@@ -94,6 +102,8 @@ function sanitize(raw: Partial<GameOverrides> | null | undefined): GameOverrides
     tileBasePrice: num(merged.tileBasePrice, OVERRIDE_DEFAULTS.tileBasePrice, 0),
     tileUpgradeMult: num(merged.tileUpgradeMult, OVERRIDE_DEFAULTS.tileUpgradeMult, 0),
     tileIncomeMult: num(merged.tileIncomeMult, OVERRIDE_DEFAULTS.tileIncomeMult, 0),
+    moneyPassStart: num(merged.moneyPassStart, OVERRIDE_DEFAULTS.moneyPassStart, 0),
+    unitsPassStart: num(merged.unitsPassStart, OVERRIDE_DEFAULTS.unitsPassStart, 0),
     zombieHp: num(merged.zombieHp, OVERRIDE_DEFAULTS.zombieHp, 1),
     zombieDmgMin: num(merged.zombieDmgMin, OVERRIDE_DEFAULTS.zombieDmgMin, 0),
     zombieDmgMax: num(merged.zombieDmgMax, OVERRIDE_DEFAULTS.zombieDmgMax, 0),
@@ -114,6 +124,19 @@ function load(): GameOverrides {
 let current: GameOverrides = load();
 const listeners = new Set<() => void>();
 
+// A headless economy sim needs its own tile-price/income/pass-start knobs
+// to test settings without touching the real game's live overrides -- this
+// module-level `current` is a singleton, so writing to it directly while a
+// real game is mounted would rescale its prices mid-sim, same class of leak
+// gameEvent/screenStore/endTurnStore already had to be gated against.
+let headlessOverrides: GameOverrides | null = null;
+
+/** Sim-only overrides layer, read instead of `current` while isHeadlessRun()
+ * is true. Pass null to clear it once the sim finishes. */
+export function setHeadlessOverrides(patch: Partial<GameOverrides> | null): void {
+  headlessOverrides = patch ? sanitize({ ...OVERRIDE_DEFAULTS, ...patch }) : null;
+}
+
 function persist(): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
@@ -129,6 +152,7 @@ function emit(): void {
 /** Current live overrides — read this from game logic instead of the raw
  * constant so a mid-game tweak takes effect immediately. */
 export function getOverrides(): GameOverrides {
+  if (isHeadlessRun() && headlessOverrides) return headlessOverrides;
   return current;
 }
 
@@ -148,6 +172,7 @@ export function resetOverrides(): void {
   } catch {
     // ignore
   }
+
   emit();
 }
 

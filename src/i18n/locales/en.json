@@ -160,6 +160,7 @@
     "overrides": "Overrides",
     "statistics": "Statistics",
     "battleSim": "Battle Simulator",
+    "economySim": "Economy Simulator",
     "mapEditOn": "Map edit: ON (click a tile or player icon to adjust)",
     "mapEditOff": "Map edit: OFF"
   },
@@ -929,6 +930,24 @@
     "runBattle": "⚔️ Run battle",
     "clear": "Clear results",
     "setting": "Setting"
+  },
+  "economySimScreen": {
+    "tileBasePrice": "Tile base price",
+    "tileIncomeMult": "Income ×",
+    "tileUpgradeMult": "Upgrade ×",
+    "passStart": "Pass start bonus",
+    "playerCount": "Players",
+    "simulate": "📊 Run simulation",
+    "simulating": "Simulating…",
+    "circle": "Circle",
+    "winner": "(winner)",
+    "settingSummary": "Tile price {tileBasePrice} (income ×{tileIncomeMult}, upgrade ×{tileUpgradeMult}) · Pass start {passStartGold}🟡 {passStartUnits}🧍 · {playerCount} players",
+    "stopReason": "Stopped after {turns} turns: {reason}",
+    "stopReasonLabel": {
+      "unit-threshold": "a player reached 60 units",
+      "circle-cap": "hit the 50-circle cap",
+      "game-over": "a player slew the Dragon"
+    }
   },
   "statsScreen": {
     "title": "Statistics",
