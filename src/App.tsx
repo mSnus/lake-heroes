@@ -58,6 +58,7 @@ import { getOverrides } from './utils/overridesStore';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
+import VersionMismatchBanner from './components/VersionMismatchBanner';
 import { ScreenRenderer } from './components/ScreenRenderer';
 import { DecoratedButton } from './components/DecoratedButton';
 import StatsScreen from './components/StatsScreen';
@@ -579,6 +580,8 @@ function App() {
 
   return (
     <div className="App">
+      <VersionMismatchBanner />
+
       <ToastContainer
         position={isMobileLayout() ? 'top-center' : 'top-right'}
         autoClose={3500}

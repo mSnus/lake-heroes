@@ -923,6 +923,10 @@
     "apply": "Apply",
     "resetDefaults": "Reset to defaults"
   },
+  "versionMismatch": {
+    "message": "🔄 New version available (you have {running}, server has {latest}) — tap to update",
+    "tooltip": "Unregisters cached service workers and reloads. Your game is not affected."
+  },
   "battleSimScreen": {
     "attacker": "Attacker",
     "defender": "Defender",

@@ -13,6 +13,7 @@ import StatsScreen from './StatsScreen';
 import BattleSimScreen from './BattleSimScreen';
 import EconomySimScreen from './EconomySimScreen';
 import { halt } from '../utils/haltStore';
+import { forceFreshReload } from '../utils/forceReload';
 import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
@@ -133,23 +134,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 <button
                   onClick={() => {
                     setMenuOpen(false);
-                    // The versioned auto-update (registerServiceWorker.ts)
-                    // isn't reliably catching every deploy in practice --
-                    // this is the manual escape hatch. Unregistering (not
-                    // just .update()ing) every SW and wiping Cache Storage
-                    // forces the next load to fetch everything from
-                    // scratch, same as the "clear site data" nuclear option
-                    // that's been needed to actually pick up fresh code.
-                    // localStorage is untouched, so the current game/
-                    // overrides survive.
-                    Promise.all([
-                      navigator.serviceWorker
-                        ?.getRegistrations()
-                        .then((regs) => Promise.all(regs.map((r) => r.unregister()))) ?? Promise.resolve(),
-                      typeof caches !== 'undefined'
-                        ? caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
-                        : Promise.resolve(),
-                    ]).finally(() => window.location.reload());
+                    forceFreshReload();
                   }}
                   className="shield-button"
                 >
