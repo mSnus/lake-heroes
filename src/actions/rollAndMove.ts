@@ -18,6 +18,7 @@ import { getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
@@ -94,8 +95,11 @@ export async function rollAndMove(
         passStart(board, updateGameState);
       }
 
-      await new Promise((res) => setTimeout(res, 300));
+      if (!isHeadlessRun()) {
+        await new Promise((res) => setTimeout(res, 300));
+      }
     }
+
     if (isHalted()) return;
 
     board.setPhase('after-move');
@@ -106,6 +110,7 @@ export async function rollAndMove(
     if (wasFogged) {
       revealTile(board);
     }
+
     // Show only the final tile the player landed on (the tiles passed over
     // during the roll stayed hidden) -- and only if it's an ownable tile.
     // Special tiles (King's Castle, Treasure Chest, etc.) get their own
@@ -117,7 +122,16 @@ export async function rollAndMove(
 
     const continueTileLogic = () => {
       const tile = board.activeTile;
+      // Treasure/Tavern/Sphynx normally roll via the animated DiceModal
+      // (showDice, a module singleton entirely separate from screenStore --
+      // not gated by isHeadlessRun) -- too slow for a sim anyway, so call
+      // the handler straight with a synchronous roll instead of showing it.
       if (tile.id === 'treasure-chest') {
+        if (isHeadlessRun()) {
+          handleTreasureBox(board, updateGameState, rollDice());
+          return;
+        }
+
         showTreasureScreen(t('treasureBox.treasureFound'), (roll) =>
           handleTreasureBox(board, updateGameState, roll)
         );
@@ -125,6 +139,11 @@ export async function rollAndMove(
       }
 
       if (tile.id === 'tavern') {
+        if (isHeadlessRun()) {
+          handleTavern(board, updateGameState, rollDice());
+          return;
+        }
+
         showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
         return;
       }
@@ -135,6 +154,11 @@ export async function rollAndMove(
       }
 
       if (tile.id === 'sphynx') {
+        if (isHeadlessRun()) {
+          handleSphynx(board, updateGameState, rollDice());
+          return;
+        }
+
         showSphynxScreen((roll) => handleSphynx(board, updateGameState, roll));
         return;
       }
