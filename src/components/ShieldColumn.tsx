@@ -11,6 +11,7 @@ import CheatScreen from './CheatScreen';
 import OverridesScreen from './OverridesScreen';
 import StatsScreen from './StatsScreen';
 import BattleSimScreen from './BattleSimScreen';
+import { halt } from '../utils/haltStore';
 import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
@@ -44,8 +45,13 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   function handleNewGame() {
     setMenuOpen(false);
     if (window.confirm(t('shieldColumn.confirmNewGame'))) {
+      // Halt first: reload is asynchronous, and bot timers queued while the
+      // confirm dialog blocked would otherwise fire, re-persist the old game
+      // over the removal below, and have it restored after the reload.
+      halt();
       try {
         localStorage.removeItem('game-state');
+        localStorage.removeItem('game-screen');
         // Cheated parameters shouldn't leak into a fresh game.
         resetOverrides();
       } catch {

@@ -12,6 +12,7 @@ import { BoardCanvas } from './components/BoardCanvas';
 import { PlayerLabel } from './components/PlayerLabel';
 import { CurrentPlayerCard } from './components/CurrentPlayerCard';
 import { loadFromStorage, saveToStorage } from './utils/storage';
+import { halt, isHalted, resumeAfterHalt } from './utils/haltStore';
 import { say } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
 import tilesData from './settings/tiles.json';
@@ -520,6 +521,10 @@ function App() {
 
   useEffect(() => {
     if (!gameState) return;
+    // A halted session is being torn down -- persisting here would write the
+    // old game back over the removal that New Game just did, and the reload
+    // would restore it (bots and all).
+    if (isHalted()) return;
     saveToStorage('game-state', gameState);
     if (screen?.screenType && !screen?.doNotPersist) {
       saveToStorage<SavedScreen>('game-screen', {
@@ -549,6 +554,8 @@ function App() {
         return new Player({ ...p, name, id: i + 1 });
       });
       const initialGameState = new GameState(tiles, players);
+      // Fresh session -- let loops run again (New Game halts them first).
+      resumeAfterHalt();
       gameStart(initialGameState, updateGameState);
 
       // "Start Game" is a real user gesture, which iOS requires before it
@@ -576,7 +583,6 @@ function App() {
       />
 
       <ModalRenderer />
-      <BotController gameState={gameState} updateGameState={updateGameState} />
 
       {!gameState && screen?.content && <>{screen.content}</>}
 
@@ -644,6 +650,7 @@ function App() {
                 </DecoratedButton>
                 <DecoratedButton
                   onClick={() => {
+                    halt();
                     localStorage.removeItem('game-state');
                     localStorage.removeItem('game-screen');
                     setGameState(null);
@@ -656,6 +663,10 @@ function App() {
             </div>
           );
         })()}
+
+      {gameState && (
+        <BotController gameState={gameState} updateGameState={updateGameState} />
+      )}
 
       {gameState && (
         <div id="mainContainer">

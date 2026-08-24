@@ -17,6 +17,7 @@ import { advanceBoardPosition, nextBoardPosition } from '../game/boardPath';
 import { getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
+import { isHalted } from '../utils/haltStore';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
@@ -78,6 +79,10 @@ export async function rollAndMove(
   const proceedWithMove = async () => {
     // Step-by-step move with 0.2s delay per tile
     for (let step = 1; step <= roll; step++) {
+      // The game was torn down (new game) while this loop was awaiting --
+      // stop rather than keep mutating a board that nothing owns any more.
+      if (isHalted()) return;
+
       const nextPos = nextBoardPosition(player.position, forkChoice);
       const willWrap = nextPos === 0;
 
@@ -91,6 +96,7 @@ export async function rollAndMove(
 
       await new Promise((res) => setTimeout(res, 300));
     }
+    if (isHalted()) return;
 
     board.setPhase('after-move');
     board.incTurns();

@@ -4,6 +4,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { ScreenConfig, useScreen } from '../utils/screenStore';
 import { useModal, startDiceRoll } from '../utils/diceStore';
+import { isHalted } from '../utils/haltStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { say } from '../utils/say';
@@ -294,7 +295,12 @@ export function BotController({ gameState, updateGameState }: Props) {
     });
     if (!nextAction) return;
 
-    const t = setTimeout(nextAction.run, nextAction.delayMs);
+    // Re-checked inside the timer, not just here: the game can be torn down
+    // during the delay, and this action captures the board it was planned for.
+    const t = setTimeout(() => {
+      if (isHalted()) return;
+      nextAction.run();
+    }, nextAction.delayMs);
     return () => clearTimeout(t);
   }, [gameState, screen, diceActive, rolling, endTurnReady, updateGameState]);
 
