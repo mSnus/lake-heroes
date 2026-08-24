@@ -2,6 +2,7 @@ import { toast, ToastContent } from 'react-toastify';
 import { gameEvent } from './events';
 import { getOverrides } from './overridesStore';
 import { isHeadlessRun } from './headlessStore';
+import { recordSimLog } from './simLogStore';
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
@@ -12,6 +13,15 @@ export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'd
  * - Dispatches a 'logMessage' event for history tracking
  */
 export function say(message: ToastContent, level: SayLevel = 'info'): void {
+  // A headless sim plays thousands of turns against its own board -- toasting
+  // (or console-mirroring) all of that would flood the real app and slow the
+  // run down. Collect the meaningful messages into the per-circle sim log for
+  // the results table instead; 'debug' is per-roll chatter, so it's dropped.
+  if (isHeadlessRun()) {
+    if (level !== 'debug' && typeof message === 'string') recordSimLog(message);
+    return;
+  }
+
   // Show toast by level. The mute override suppresses only the pop-up — the
   // console mirror and game-log event below still fire, so nothing is lost.
   const muted = getOverrides().muteToasts;
@@ -59,9 +69,8 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
       break;
   }
 
-  // Dispatch event for history (gameEvent itself also no-ops when headless,
-  // but skip building the detail object too rather than relying on that).
-  if (typeof message === 'string' && !isHeadlessRun()) {
+  // Dispatch event for history. A headless run never reaches this far.
+  if (typeof message === 'string') {
     gameEvent('logMessage', { message, level, timestamp: Date.now() });
   }
 }

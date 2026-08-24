@@ -7,6 +7,7 @@ import { sellTile } from '../../actions/sellTile';
 import { setTileGarrison } from '../../actions/garrisonTile';
 import { setHeadlessRun } from '../../utils/headlessStore';
 import { resetEndTurn } from '../../utils/endTurnStore';
+import { setSimLogBoard, resetSimLog } from '../../utils/simLogStore';
 import {
   getCharacterConfig,
   shouldClaimTile,
@@ -119,6 +120,8 @@ export async function runHeadlessGame(
   const maxCircles = options.maxCircles ?? DEFAULT_MAX_CIRCLES;
 
   setHeadlessRun(true);
+  resetSimLog();
+  setSimLogBoard(board);
   try {
     for (;;) {
       if (board.players.some((p) => p.units >= unitThreshold)) {
@@ -137,5 +140,6 @@ export async function runHeadlessGame(
     }
   } finally {
     setHeadlessRun(false);
+    setSimLogBoard(null);
   }
 }

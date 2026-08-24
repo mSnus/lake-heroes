@@ -9,6 +9,7 @@ import { runHeadlessGame, HeadlessStopReason } from '../game/economy/headlessDri
 import { getOverrides, setHeadlessOverrides } from '../utils/overridesStore';
 import { totalWealth } from '../game/wealth';
 import { getArtifact } from '../game/artifacts';
+import { getSimLog } from '../utils/simLogStore';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { useT } from '../i18n';
@@ -28,6 +29,9 @@ interface PlayerSnapshot {
   wealth: number;
   artifactsEmoji: string;
   isPOW: boolean;
+  /** What happened to this player during this circle -- filled in after the
+   * run from the sim log (see attachLogs). */
+  log: string[];
 }
 
 interface CircleRow {
@@ -74,6 +78,7 @@ function snapshotPlayer(board: GameState, player: Player): PlayerSnapshot {
     wealth: totalWealth(board, player),
     artifactsEmoji: player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join(''),
     isPOW: player.isPrisonerOfWar,
+    log: [],
   };
 }
 
@@ -160,6 +165,15 @@ const EconomySimScreen: React.FC = () => {
         JSON.stringify(rows[rows.length - 1].players) !== JSON.stringify(finalSnapshot)
       ) {
         rows.push({ circle: lastCircle, players: finalSnapshot });
+      }
+
+      // Read the sim log only now it's complete -- a row's circle is the max
+      // any player had reached, so a player still lapping behind keeps adding
+      // to an earlier circle's log well after that row was captured.
+      for (const row of rows) {
+        row.players.forEach((snapshot, i) => {
+          snapshot.log = getSimLog(players[i].id, row.circle);
+        });
       }
 
       let winnerIndex = 0;
@@ -252,8 +266,15 @@ const EconomySimScreen: React.FC = () => {
                     <tr key={i} className={i % 2 === 0 ? 'player-stats-row' : 'player-stats-row-alt'}>
                       <td className="player-stats-cell">{row.circle}</td>
                       {row.players.map((p, j) => (
-                        <td key={j} className="player-stats-cell" style={{ whiteSpace: 'nowrap' }}>
-                          {formatCell(p)}
+                        <td key={j} className="player-stats-cell" style={{ verticalAlign: 'top' }}>
+                          <div style={{ whiteSpace: 'nowrap' }}>{formatCell(p)}</div>
+                          {p.log.length > 0 && (
+                            <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
+                              {p.log.map((line, k) => (
+                                <div key={k}>{line}</div>
+                              ))}
+                            </div>
+                          )}
                         </td>
                       ))}
                     </tr>
