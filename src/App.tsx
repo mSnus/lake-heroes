@@ -501,11 +501,6 @@ function App() {
 
           gameEvent('setPhase', restored.turnPhase);
 
-          const first = restored.activePlayer;
-          if (!first.turnsToSkip || first.turnsToSkip <= 0) {
-            say(`${first.name}'s turn`, 'info');
-          }
-
           return;
         } catch (e) {
           console.error('Failed to restore saved game, starting fresh:', e);

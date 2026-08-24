@@ -1,6 +1,7 @@
 import { toast, ToastContent } from 'react-toastify';
 import { gameEvent } from './events';
 import { getOverrides } from './overridesStore';
+import { isSilentMode } from './silentStore';
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
@@ -59,7 +60,7 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
   }
 
   // Dispatch event for history
-  if (typeof message === 'string') {
+  if (typeof message === 'string' && !isSilentMode()) {
     gameEvent('logMessage', { message, level, timestamp: Date.now() });
   }
 }

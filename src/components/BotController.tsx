@@ -266,9 +266,6 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
       gameEvent('setPhase', 'before-move');
       gameEvent('displayTile', {});
       endTurn(board, updateGameState);
-      // endTurn() already advanced board.activePlayerIndex synchronously,
-      // so board.activePlayer here is the next player up.
-      setTimeout(() => say(`${board.activePlayer.name}'s turn`, 'info'), 500);
     });
   }
 
