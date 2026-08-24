@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { clearScreen, showScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
-import { runBattleSimulations, attackerLossPercentile, lightLossRate, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
+import { runBattleSimulations, attackerLossPercentile, SimDefenderKind, SimResult } from '../game/battleGrid/simulate';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_HP, DRAGON_DMG_MIN, DRAGON_DMG_MAX, DRAGON_UNITS } from '../game/constants';
 import { Player } from '../game/Player';
@@ -13,15 +13,19 @@ import '../styles/modal.css';
 import '../styles/CheatScreen.css';
 import '../styles/OverridesScreen.css';
 
-// The <20% column is computed separately (see lightLossRate), not a raw
-// percentile -- kept out of this list, and spliced into the table between
-// the 40% and 10% columns.
-const PERCENTILES = [80, 60, 50, 40, 10];
+// Every cell is a share of the attacker's own army, not a unit count, so
+// runs of different sizes stay comparable. The trailing "<20%" column is
+// the 20th and 10th percentiles averaged into one best-case figure, so
+// neither needs a column of its own.
+const PERCENTILES = [80, 60, 50, 40];
+const LOW_PERCENTILES = [20, 10];
 
 interface ResultRow {
   label: React.ReactNode;
+  /** Attacker losses at each of PERCENTILES, as a % of its army size. */
   percentiles: number[];
-  lightLossPct: number;
+  /** LOW_PERCENTILES averaged, same units. */
+  lowPct: number;
 }
 
 const numInput = (value: number, onChange: (n: number) => void, width = '3.2rem', disabled = false) => (
@@ -176,9 +180,14 @@ const BattleSimScreen: React.FC = () => {
         defenderBonusPct / 100,
         100
       );
-      const percentiles = PERCENTILES.map((p) => attackerLossPercentile(results, p));
-      const lightLossPct = lightLossRate(results);
-      setRows((prev) => [{ label: settingLabel(), percentiles, lightLossPct }, ...prev]);
+      // Every run in a batch fields the same army, so any result's total works.
+      const armySize = results[0]?.attackerTotal || 1;
+      const pctOfArmy = (lost: number) => Math.round((lost / armySize) * 100);
+      const percentiles = PERCENTILES.map((p) => pctOfArmy(attackerLossPercentile(results, p)));
+      const lowPct = pctOfArmy(
+        LOW_PERCENTILES.reduce((sum, p) => sum + attackerLossPercentile(results, p), 0) / LOW_PERCENTILES.length
+      );
+      setRows((prev) => [{ label: settingLabel(), percentiles, lowPct }, ...prev]);
       setRunning(false);
     }, 0);
   };
@@ -315,22 +324,20 @@ const BattleSimScreen: React.FC = () => {
               <thead>
                 <tr className="player-stats-header">
                   <th className="player-stats-header-cell">{t('battleSimScreen.setting')}</th>
-                  {PERCENTILES.slice(0, -1).map((p) => (
+                  {PERCENTILES.map((p) => (
                     <th key={p} className="player-stats-header-cell">{p}%</th>
                   ))}
                   <th className="player-stats-header-cell">&lt;20%</th>
-                  <th className="player-stats-header-cell">{PERCENTILES[PERCENTILES.length - 1]}%</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r, i) => (
                   <tr key={i} className={i % 2 === 0 ? 'player-stats-row' : 'player-stats-row-alt'}>
                     <td className="player-stats-cell" style={{ whiteSpace: 'nowrap' }}>{r.label}</td>
-                    {r.percentiles.slice(0, -1).map((v, j) => (
-                      <td key={j} className="player-stats-cell">{v}</td>
+                    {r.percentiles.map((v, j) => (
+                      <td key={j} className="player-stats-cell">{v}%</td>
                     ))}
-                    <td className="player-stats-cell">{r.lightLossPct}%</td>
-                    <td className="player-stats-cell">{r.percentiles[r.percentiles.length - 1]}</td>
+                    <td className="player-stats-cell">{r.lowPct}%</td>
                   </tr>
                 ))}
               </tbody>

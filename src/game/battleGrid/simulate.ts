@@ -149,9 +149,3 @@ export function attackerLossPercentile(results: SimResult[], p: number): number 
   return sorted[idx];
 }
 
-/** % of runs where the attacker lost less than `threshold` of its own army. */
-export function lightLossRate(results: SimResult[], threshold: number = 0.2): number {
-  if (results.length === 0) return 0;
-  const count = results.filter((r) => r.attackerLost < r.attackerTotal * threshold).length;
-  return Math.round((count / results.length) * 100);
-}
