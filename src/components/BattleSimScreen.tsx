@@ -284,11 +284,16 @@ const BattleSimScreen: React.FC = () => {
         </div>
         <div className="cheat-row">
           <label>{t('battleSimScreen.bonus')}</label>
+          {/* Small values on purpose: the bonus lifts every roll the defending
+              side makes, and damage is the difference of two similar rolls, so
+              it swings the outcome far harder than the number suggests -- 10%
+              already flips an even fight to a near-certain defender win. These
+              four span the whole usable range. */}
           <select value={defenderBonusPct} onChange={(e) => setDefenderBonusPct(parseInt(e.target.value, 10))}>
             <option value={0}>0%</option>
-            <option value={10}>10%</option>
-            <option value={20}>20%</option>
-            <option value={30}>30%</option>
+            <option value={2}>2%</option>
+            <option value={4}>4%</option>
+            <option value={6}>6%</option>
           </select>
         </div>
 
