@@ -58,20 +58,14 @@ export function simulateOneBattle(
   const defenderTotal = def.militiaCount + def.ridersCount;
   // Board tier and formations both come from the same helpers the live
   // battle screen uses, so simulated odds match what a real fight of these
-  // exact parameters would produce -- see layout.ts. A dragon fight never
-  // brawls or shrinks its board, mirroring BattleScreen's 'dragon' mode.
-  const { isBrawl, cols, rows } = battleBoardFor(attackerTotal, defenderTotal, {
-    allowBrawl: !isDragon,
-    allowSmall: !isDragon,
-  });
+  // exact parameters would produce -- see layout.ts.
+  const { isBrawl, cols, rows } = battleBoardFor(attackerTotal, defenderTotal);
   const attackerFormation: FormationSpec = isBrawl
     ? { kind: 'compact' }
     : { kind: 'grouped', groupCount: squadGroupCount(attacker.militia, attacker.riders) };
-  const defenderFormation: FormationSpec = isDragon
-    ? { kind: 'dragon' }
-    : isBrawl
-      ? { kind: 'compact' }
-      : { kind: 'grouped', groupCount: squadGroupCount(defenderRaw, 0) };
+  const defenderFormation: FormationSpec = isBrawl
+    ? { kind: 'compact' }
+    : { kind: 'grouped', groupCount: squadGroupCount(isDragon ? 0 : defenderRaw, isDragon ? defenderRaw : 0) };
 
   let state: GridBattleState = createBattle(
     {
@@ -89,6 +83,7 @@ export function simulateOneBattle(
       militia: def.militiaCount,
       riders: def.ridersCount,
       formation: defenderFormation,
+      dragon: isDragon,
       zombie: defender.kind === 'zombie',
       // The defender is always a single kind at a time -- its custom stats
       // land in whichever slot (militia or rider) that kind actually uses

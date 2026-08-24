@@ -113,20 +113,20 @@ export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
 // so a total under 30 can never actually split into more than 4 non-empty
 // squads (verified by enumeration) -- one fewer than the 5 a 30-40 army can
 // reach, which is why this band tolerates a shorter board than BATTLEFIELD_ROWS.
-// Width can't shrink the same way: two wide single-tier armies (e.g. both
-// all-militia) can still need the full BATTLEFIELD_COLS to keep their
-// formations from touching at the center gap, verified by exhaustive search
-// over every real militia/riders split under 30 -- so cols matches the
-// standard board and only rows gets smaller.
+// Width is the tighter of the two: at 10 columns two evenly-matched
+// single-tier armies whose squads happen to pack widest (9v9, 19v19, 29v29
+// -- 20 of 3364 real size/tier combos) overlap by 2-3 units at the center
+// gap, which extra rows don't help since it's a horizontal squeeze. Kept at
+// 10 deliberately for the tighter board; 11 is the collision-free width.
 export const SMALL_AUTO_BATTLE_THRESHOLD = 30;
-export const SMALL_BATTLEFIELD_COLS = BATTLEFIELD_COLS;
+export const SMALL_BATTLEFIELD_COLS = 10;
 export const SMALL_BATTLEFIELD_ROWS = 15;
 // Above this on BOTH sides (the same threshold as the small board, mirrored),
-// the board instead gets taller -- a maxed-out ~39-a-side symmetric fight (or
-// the dragon's fixed 50-unit silhouette against a big attacker army) can
-// overlap units at the standard BATTLEFIELD_ROWS, verified by exhaustive
-// search -- cols stays standard, only rows grows.
-export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 4;
+// the board gets much taller and a little narrower -- the extra height keeps
+// a maxed-out ~39-a-side symmetric fight from overlapping at the standard
+// BATTLEFIELD_ROWS, and the tighter width closes the approach.
+export const HUGE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
+export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 9;
 // Landing on an abandoned (zombie-guarded) tile has this chance to trigger a
 // zombie ambush — same mechanics as a regular Ambush, but the attackers are
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).
@@ -140,7 +140,10 @@ export const ZOMBIE_GARRISON_REPEL_RATIO = 0.5;
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most
 // BRAWL_THRESHOLD grid units.
-export const BRAWL_COLS = 6;
+// 7, not 6: the extra column of approach room measurably evens out the
+// small-fight win rates (the two blocks otherwise start almost in contact,
+// letting the starting geometry decide the whole fight).
+export const BRAWL_COLS = 7;
 export const BRAWL_ROWS = 7;
 export const MILITIA_HP = 12;
 export const MILITIA_DMG_MIN = 3;

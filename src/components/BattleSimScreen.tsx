@@ -184,9 +184,12 @@ const BattleSimScreen: React.FC = () => {
   // exact setting currently configured, using synthetic throwaway Player/
   // GameState objects so nothing about the real game is touched.
   const handleRunBattle = () => {
-    const atkPlayer = new Player({ name: t('battleSimScreen.attacker'), color: 'red', gold: 0, units: attackerMilitia, position: -1, image: 'red', isComputer: true });
+    // Blue attacker / red defender, matching the battlefield grid's own
+    // fixed per-side unit colours (see BattlefieldGrid.css) -- otherwise the
+    // header portraits read the opposite way round from the units below.
+    const atkPlayer = new Player({ name: t('battleSimScreen.attacker'), color: 'blue', gold: 0, units: attackerMilitia, position: -1, image: 'blue', isComputer: true });
     atkPlayer.riders = attackerRiders;
-    const defPlayer = new Player({ name: t('battleSimScreen.defender'), color: 'blue', gold: 0, units: 0, position: -1, image: 'blue', isComputer: true });
+    const defPlayer = new Player({ name: t('battleSimScreen.defender'), color: 'red', gold: 0, units: 0, position: -1, image: 'red', isComputer: true });
     // The dragon's fixed 50-unit coiled-dragon silhouette formation only
     // ever lays out DRAGON_UNITS cells (see formations.ts) -- any other
     // count either leaves cells empty or drops units with nowhere to go, so

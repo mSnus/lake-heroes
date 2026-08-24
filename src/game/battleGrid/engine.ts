@@ -131,6 +131,11 @@ interface SideComp {
   riders: number;
   formation?: FormationSpec;
   zombie?: boolean;
+  /** Marks this side's rider-slot units as Dragons (own kind, HP and damage)
+   * independently of which formation it lines up in -- the 'dragon'
+   * formation implies it, but a dragon fighting in a normal formation sets
+   * this explicitly. */
+  dragon?: boolean;
   /** Battle simulator only (see simulate.ts) — overrides the militia-slot
    * and/or rider-slot units' hp/damage range for this side, independent of
    * getOverrides(). Undefined in every real (non-simulator) call. */
@@ -165,7 +170,7 @@ export function createBattle(
     // The dragon fight's defender is its own unit kind (own HP/damage), not
     // a rider — its full DRAGON_UNITS headcount arrives via `riders` (see
     // BattleScreen.tsx's composition for isDragon), militia always 0.
-    const isDragonSide = comp.formation?.kind === 'dragon';
+    const isDragonSide = comp.dragon || comp.formation?.kind === 'dragon';
     // An abandoned tile's wild garrison guards as Zombies instead of regular
     // militia (see BattleScreen.tsx's `zombie: !!tile?.abandoned`).
     const militiaKind: UnitKind = comp.zombie ? 'zombie' : 'militia';
@@ -184,6 +189,7 @@ export function createBattle(
         stableIndex: stableIndex++,
         retreatStreak: 0,
         safetyMoves: 0,
+        swapCooldown: 0,
       });
     }
     const riderKind: UnitKind = isDragonSide ? 'dragon' : 'rider';
@@ -202,6 +208,7 @@ export function createBattle(
         stableIndex: stableIndex++,
         retreatStreak: 0,
         safetyMoves: 0,
+        swapCooldown: 0,
       });
     }
     if (comp.formation && comp.formation.kind !== 'square') {
@@ -670,10 +677,20 @@ export function planBrawlSide(
         // each vacates exactly the cell the other enters, so neither needs
         // pathfinding or a blocked-set update. Not capped by safetyMoves --
         // unlike a solo pullback, someone (the reserve) is always taking on
-        // the risk in exchange, not avoiding it for free.
-        const reserve = friends.find(
-          (f) => !plan[f.id] && livingAdjacentEnemies(f, living).length === 0 && f.hp > u.hp && f.hp > f.maxHp / 2
-        );
+        // the risk in exchange, not avoiding it for free. A unit that just
+        // swapped sits the next round out (swapCooldown), so a pair can't
+        // trade places every round instead of ever fighting.
+        const reserve =
+          u.swapCooldown > 0
+            ? undefined
+            : friends.find(
+                (f) =>
+                  !plan[f.id] &&
+                  f.swapCooldown === 0 &&
+                  livingAdjacentEnemies(f, living).length === 0 &&
+                  f.hp > u.hp &&
+                  f.hp > f.maxHp / 2
+              );
         if (reserve) {
           plan[u.id] = { col: reserve.col, row: reserve.row };
           plan[reserve.id] = { col: u.col, row: u.row };
@@ -716,12 +733,31 @@ export function planBrawlSide(
 export function applyBrawlMoves(state: GridBattleState, plan: BrawlPlan): GridBattleState {
   const adjEnemy = (col: number, row: number, side: BattleSide) =>
     state.units.some((v) => v.hp > 0 && v.side !== side && hexDistance({ col, row }, v) === 1);
+  // A swap is exactly a pair trading cells: each one's destination is the
+  // other's current cell. Set to 2, not 1, because resolveBrawlCombat ticks
+  // every cooldown down once at the end of this same round -- leaving 1,
+  // which blocks the next round, then clears.
+  const at = new Map(state.units.filter((u) => u.hp > 0).map((u) => [`${u.col},${u.row}`, u]));
+  const swapped = new Set<string>();
+  for (const u of state.units) {
+    const dest = plan[u.id];
+    if (!dest) continue;
+    const other = at.get(`${dest.col},${dest.row}`);
+    const otherDest = other && other.id !== u.id ? plan[other.id] : undefined;
+    if (otherDest && otherDest.col === u.col && otherDest.row === u.row) swapped.add(u.id);
+  }
   const units = state.units.map((u) => {
     const dest = plan[u.id];
     if (!dest) return { ...u };
     const movedAway = dest.col !== u.col || dest.row !== u.row;
     const pulledBack = movedAway && adjEnemy(u.col, u.row, u.side) && !adjEnemy(dest.col, dest.row, u.side);
-    return { ...u, col: dest.col, row: dest.row, safetyMoves: pulledBack ? u.safetyMoves + 1 : u.safetyMoves };
+    return {
+      ...u,
+      col: dest.col,
+      row: dest.row,
+      safetyMoves: pulledBack ? u.safetyMoves + 1 : u.safetyMoves,
+      swapCooldown: swapped.has(u.id) ? 2 : u.swapCooldown,
+    };
   });
   return { ...state, units };
 }
@@ -748,6 +784,9 @@ export function resolveBrawlCombat(
   const dead = living.filter((u) => u.hp <= 0);
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
   const alive = living.filter((u) => u.hp > 0);
+
+  // End of round: tick every swap cooldown down one (see applyBrawlMoves).
+  for (const u of alive) if (u.swapCooldown > 0) u.swapCooldown -= 1;
 
   const attackerAlive = alive.some((u) => u.side === 'attacker');
   const defenderAlive = alive.some((u) => u.side === 'defender');
@@ -852,11 +891,13 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     if (retreating.has(u.id) || seekingSafety.has(u.id)) continue;
     if (swapPartner.has(u.id)) continue; // already claimed as someone else's reserve
     if (isLastAlive(u, living)) continue;
+    if (u.swapCooldown > 0) continue; // swapped recently -- sits this one out
     if (u.hp > u.maxHp / 2) continue;
     if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
     const reserve = livingAdjacentFriends(u, living).find(
       (f) =>
         !swapPartner.has(f.id) &&
+        f.swapCooldown === 0 &&
         livingAdjacentEnemies(f, living).length === 0 &&
         f.hp > u.hp &&
         f.hp > f.maxHp / 2
@@ -1014,6 +1055,11 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   for (const u of alive) {
     u.retreatStreak = retreating.has(u.id) && plannedMove.has(u.id) ? u.retreatStreak + 1 : 0;
     if (seekingSafety.has(u.id) && plannedMove.has(u.id)) u.safetyMoves += 1;
+    // Just swapped -> blocked for exactly the next turn, which then ticks
+    // this back to 0. (The brawl path sets 2 instead, since its tick runs
+    // unconditionally after the move -- see applyBrawlMoves.)
+    if (swapPartner.has(u.id)) u.swapCooldown = 1;
+    else if (u.swapCooldown > 0) u.swapCooldown -= 1;
   }
 
   alive = alive.map((u) => u);

@@ -73,14 +73,17 @@ const SHAPES: Record<number, LocalCell[]> = {
     { col: 1, row: 2 },
     { col: 2, row: 2 },
   ],
+  // Three ranks of three. Authored as a plain block: the grid's own half-cell
+  // row offset (plus placeFormation's attacker compensation) is what steps the
+  // middle rank forward on both sides -- xxx / .xxx / xxx as seen on screen.
   9: [
+    { col: 0, row: 0 },
     { col: 1, row: 0 },
     { col: 2, row: 0 },
     { col: 0, row: 1 },
     { col: 1, row: 1 },
     { col: 2, row: 1 },
-    { col: 3, row: 1 },
-    { col: 4, row: 1 },
+    { col: 0, row: 2 },
     { col: 1, row: 2 },
     { col: 2, row: 2 },
   ],
@@ -555,18 +558,27 @@ export function placeFormation(
   // between the two fronts instead of 2 (the attacker already sits at
   // centerCol-2, so nudging the defender to centerCol+2 centres a 3-cell gap).
   const defenderOffset = formation.kind === 'compact' ? 2 : 1;
+  // A compact defender reserves one extra column the same way the attacker
+  // does above, because its own odd-row nudge below shifts it one column
+  // right -- without the margin that nudge would clamp at the board edge and
+  // squash the block instead of mirroring it.
+  const defenderMargin = formation.kind === 'compact' ? 1 : 0;
   const startCol =
     side === 'attacker'
       ? Math.max(0, centerCol - box.width - 1)
-      : Math.min(cols - box.width, centerCol + defenderOffset);
+      : Math.max(0, Math.min(cols - box.width, centerCol + defenderOffset) - defenderMargin);
 
   // Zip cells to units per kind (not just militia/rider — the dragon
   // formation's cells are all kind 'dragon'), matching whatever kinds are
   // actually present. Zombies are laid out exactly like militia (the layout
   // functions above only ever emit 'militia'/'rider'/'dragon' cells, never
   // knowing about the zombie reskin), so they're matched to militia-shaped
-  // cells too.
-  const cellKindOf = (k: UnitKind): UnitKind => (k === 'zombie' ? 'militia' : k);
+  // cells too. Dragons occupy the rider slot, so outside their own
+  // silhouette (whose cells really are kind 'dragon') they match rider
+  // cells -- without this every dragon finds no cell at all and stays
+  // stacked on its default position.
+  const cellKindOf = (k: UnitKind): UnitKind =>
+    k === 'zombie' ? 'militia' : k === 'dragon' && formation.kind !== 'dragon' ? 'rider' : k;
   const kinds = Array.from(new Set<UnitKind>([...placed.map((c) => c.kind), ...units.map((u) => cellKindOf(u.kind))]));
   for (const kind of kinds) {
     const cellsOfKind = placed.filter((c) => c.kind === kind);
@@ -584,11 +596,21 @@ export function placeFormation(
       // automatic shift, so nudging the attacker's odd-row cells one
       // column over restores the same visual spacing the defender already
       // has for free.
-      // The compact (brawl) shapes are authored for the offset grid already —
-      // the attacker-odd-row nudge (a fix for the wider full-battle shapes)
-      // just collapses them, so skip it there.
+      // Brawl blocks are filled rectangles, so mirrorHorizontal is a no-op on
+      // them and both sides ended up zigzagging the same way instead of
+      // mirroring -- which also handed one side more forward-facing diagonals
+      // (hex diagonals point right on even rows, left on odd), skewing small
+      // fights badly. Nudging the *defender's* odd rows flips its phase, so
+      // the two blocks are true mirror images. The wider full-battle shapes
+      // still need the original attacker-side nudge instead.
       const hexCompensation =
-        formation.kind !== 'compact' && side === 'attacker' && row % 2 !== 0 ? 1 : 0;
+        formation.kind === 'compact'
+          ? side === 'defender' && row % 2 !== 0
+            ? 1
+            : 0
+          : side === 'attacker' && row % 2 !== 0
+            ? 1
+            : 0;
       unit.col = Math.max(0, Math.min(cols - 1, startCol + c.col + hexCompensation));
       unit.row = Math.max(0, Math.min(rows - 1, row));
     });

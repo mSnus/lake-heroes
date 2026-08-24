@@ -253,8 +253,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // than a 'grouped' formation at the same headcount, so it stays off it.
   const isDragonFight = isDragon || statOverrides?.defenderKind === 'dragon';
   const board = battleBoardFor(attackerGridTotal, defenderGridTotal, {
-    allowBrawl: !isDragonFight && (isTile || isRogue || isPlayerBattle || isCaravan || isAmbush),
-    allowSmall: !isDragonFight && (isTile || isRogue || isPlayerBattle),
+    allowBrawl: isTile || isRogue || isPlayerBattle || isCaravan || isAmbush,
+    allowSmall: isTile || isRogue || isPlayerBattle,
   });
   const { isBrawl, isLargeAutoBattle, cols: gridCols, rows: gridRows } = board;
   // A side is manually controlled whenever its player is a real human, not
@@ -287,7 +287,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isCaravan
       ? { kind: 'columns' } // caravan guards: columns of maximum height
       : isDragonFight
-        ? { kind: 'dragon' } // the dragon's fixed 50-unit coiled-dragon silhouette
+        // The dragon lines up by the normal squad rules for now -- its fixed
+        // coiled-dragon silhouette is 7 columns wide and no longer fits the
+        // narrower huge board, pending a reworked shape.
+        ? { kind: 'grouped', groupCount: squadGroupCount(0, defenderGridTotal) }
         : isPlayerBattle
           ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
           : isAmbush
@@ -370,6 +373,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         militia: defenderSized.militiaCount,
         riders: defenderSized.ridersCount,
         formation: defenderFormation,
+        // Kept as its own kind (HP/damage/🐉) even though it now lines up in
+        // a normal grouped formation rather than the dragon silhouette.
+        dragon: isDragonFight,
         zombie: statOverrides ? statOverrides.defenderKind === 'zombie' : !!tile?.abandoned,
         // A 'normal' test defender shares the attacker's own militia stats,
         // same as simulate.ts — its own hp/dmg inputs are ignored.
