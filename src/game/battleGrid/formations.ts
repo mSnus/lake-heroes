@@ -119,12 +119,12 @@ const BRAWL_SHAPES: Record<number, LocalCell[]> = Object.fromEntries(
   Array.from({ length: 12 }, (_, i) => [i + 1, brawlBlock(i + 1)])
 );
 
-/** The dragon's fixed 50-unit (DRAGON_UNITS) silhouette — a coiled dragon
- * shape, hand-derived from a reference pixel-art dragon by downsampling to
- * fit the battlefield and landing on exactly 50 filled cells, then
- * hand-symmetrized left-right. Only ever used for the dragon fight, whose
- * defender count never varies, so unlike every other formation this one is
- * a single fixed shape rather than a size-driven lookup/split. */
+/** A coiled-dragon silhouette of exactly 50 cells — hand-derived from a
+ * reference pixel-art dragon by downsampling to fit the battlefield, then
+ * hand-symmetrized left-right. Currently unused: the dragon fight lines up
+ * in a normal grouped formation, since this shape is 7 columns wide and no
+ * longer fits the narrower huge board, and its fixed 50 cells no longer
+ * match DRAGON_UNITS. Kept for a reworked dragon shape. */
 const DRAGON_SHAPE: LocalCell[] = [
   { col: 3, row: 0 },
   { col: 5, row: 0 },
@@ -524,10 +524,10 @@ export function placeFormation(
       placed = layoutGroup({ militia, riders }, formation.groupCount);
       break;
     case 'dragon':
-      // DRAGON_UNITS (50) never varies, so this is a single fixed shape,
-      // not a size-driven layout — every cell is the dragon's own kind
-      // (createBattle builds these units as 'dragon', not 'rider', for
-      // this formation — see engine.ts).
+      // A single fixed shape rather than a size-driven layout, so it only
+      // fits a side of exactly DRAGON_SHAPE.length. No caller asks for this
+      // formation today (see DRAGON_SHAPE) -- dragons are marked by
+      // SideComp.dragon now and lay out grouped like everyone else.
       placed = DRAGON_SHAPE.map((c) => ({ ...c, kind: 'dragon' as UnitKind }));
       break;
     default:

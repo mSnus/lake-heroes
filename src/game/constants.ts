@@ -69,7 +69,7 @@ export const FLAT_TILE_UNIT_INCOME = 1;
 export const TOWER_LEVEL_UNIT_BONUS = 2;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
-export const DRAGON_UNITS = 50; // units on each side of the dragon battle
+export const DRAGON_UNITS = 48; // how many units the Dragon fields
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
 export const BRAWL_THRESHOLD = 12; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
@@ -153,9 +153,9 @@ export const RIDER_DMG_MIN = 8;
 export const RIDER_DMG_MAX = 18;
 // The dragon fights as its own kind, not a rider — see the 'dragon'
 // formation in game/battleGrid/formations.ts, always exactly DRAGON_UNITS.
-export const DRAGON_HP = 24;
-export const DRAGON_DMG_MIN = 6;
-export const DRAGON_DMG_MAX = 10;
+export const DRAGON_HP = 28;
+export const DRAGON_DMG_MIN = 2;
+export const DRAGON_DMG_MAX = 20;
 // Per-side cap on how many real militia/riders get their own grid unit —
 // above this, army composition is proportionally downscaled to fit the
 // 16x20=320-cell battlefield (see game/battleGrid/scale.ts).
