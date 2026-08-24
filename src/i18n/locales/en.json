@@ -290,6 +290,7 @@
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
     "goldTooltip": "Current gold you own",
     "asKingsGrace": "as the King's grace",
+    "asKingsSupport": "as the King's support for the struggling",
     "fromYourTiles": "from your tiles",
     "fromYourTowers": "from your Towers' toll",
     "fromPristineDiamond": "from the Pristine Diamond 💎",
@@ -517,6 +518,7 @@
   "passStart": {
     "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory",
     "receives": "{playerName} receives {summary}",
+    "kingsSupport": "👑 The King sees {playerName} falling behind and grants {gold}🟡 and {units}🧍 in support",
     "aYear": "a year",
     "years": "{count} years",
     "kingRewardsYou": "The King rewards you for {years} of your service"

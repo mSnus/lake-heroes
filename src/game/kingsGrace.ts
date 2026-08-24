@@ -9,6 +9,7 @@ import {
 } from './constants';
 import { getArtifactGoldBonus } from './artifacts';
 import { getOverrides } from '../utils/overridesStore';
+import { totalWealth } from './wealth';
 
 export interface KingsGraceReward {
   tileGold: number;
@@ -20,8 +21,68 @@ export interface KingsGraceReward {
   kingsGold: number;
   kingsUnits: number;
   arifactGold: number;
+  /** Extra support for a player the leader has left unreachably far behind
+   * -- see computeCatchUp. Zero for everyone else. */
+  catchUpGold: number;
+  catchUpUnits: number;
   totalGold: number;
   totalUnits: number;
+}
+
+// The leader has to be more than this far ahead in total wealth (1 = 100%,
+// i.e. more than double) before the King steps in to level the field.
+const CATCH_UP_GAP_RATIO = 1;
+// Share of the leader's real estate handed to the poorest player, and to
+// the one just above them.
+const CATCH_UP_SHARE_POOREST = 1 / 3;
+const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
+
+/**
+ * Support for a player who has fallen so far behind the leader that normal
+ * play can't realistically close the gap: only the two poorest qualify, and
+ * only while the leader is more than CATCH_UP_GAP_RATIO ahead in total
+ * wealth. The payout is a share of the LEADER's real estate -- the gold
+ * they've sunk into their tiles and upgrades, and those tiles' base-level
+ * defence as units -- so the richer the runaway leader, the harder the King
+ * pushes back. Nothing is taken from the leader; this is minted.
+ */
+function computeCatchUp(
+  board: GameState,
+  player: Player,
+  unitCapacity: number
+): { gold: number; units: number } {
+  const none = { gold: 0, units: 0 };
+  if (board.players.length < 2) return none;
+
+  const wealthOf = new Map(board.players.map((p) => [p.id, totalWealth(board, p)]));
+  const ranked = [...board.players].sort((a, b) => wealthOf.get(a.id)! - wealthOf.get(b.id)!);
+
+  const leader = ranked[ranked.length - 1];
+  if (leader.id === player.id) return none;
+
+  const rank = ranked.findIndex((p) => p.id === player.id);
+  if (rank > 1) return none;
+
+  const playerTotal = wealthOf.get(player.id)!;
+  const leaderTotal = wealthOf.get(leader.id)!;
+  if (leaderTotal <= playerTotal) return none;
+  // A player with nothing at all is always unreachably behind -- the ratio
+  // would divide by zero.
+  if (playerTotal > 0 && (leaderTotal - playerTotal) / playerTotal <= CATCH_UP_GAP_RATIO) return none;
+
+  let realEstateGold = 0;
+  let realEstateUnits = 0;
+  for (const tile of board.tiles) {
+    if (!tile || tile.owner !== leader.id) continue;
+    realEstateGold += tile.currentPrice.gold;
+    realEstateUnits += tile.defences[1] ?? 0;
+  }
+
+  const share = rank === 0 ? CATCH_UP_SHARE_POOREST : CATCH_UP_SHARE_RUNNER_UP;
+  return {
+    gold: Math.round(realEstateGold * share),
+    units: Math.min(Math.round(realEstateUnits * share), Math.max(0, unitCapacity)),
+  };
 }
 
 /**
@@ -63,6 +124,12 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
 
   const arifactGold = getArtifactGoldBonus(player);
 
+  // Whatever slot room is left once this payout's other units land -- the
+  // catch-up share is capped to it rather than being silently dropped by
+  // Player.gainMilitia later.
+  const unitCapacity = player.remainingCapacity('militia') - (tileUnits + kingsUnits);
+  const catchUp = computeCatchUp(board, player, unitCapacity);
+
   return {
     tileGold,
     tileUnits,
@@ -70,7 +137,9 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     kingsGold,
     kingsUnits,
     arifactGold,
-    totalGold: tileGold + kingsGold + arifactGold,
-    totalUnits: tileUnits + kingsUnits,
+    catchUpGold: catchUp.gold,
+    catchUpUnits: catchUp.units,
+    totalGold: tileGold + kingsGold + arifactGold + catchUp.gold,
+    totalUnits: tileUnits + kingsUnits + catchUp.units,
   };
 }

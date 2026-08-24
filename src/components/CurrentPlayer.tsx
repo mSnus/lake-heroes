@@ -139,7 +139,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits } =
+  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits } =
     computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   const ownedTileCount = gameState.tiles.filter(
@@ -267,6 +267,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               };
               const parts = [
                 fmt(kingsGold, kingsUnits, t('currentPlayer.asKingsGrace')),
+                fmt(catchUpGold, catchUpUnits, t('currentPlayer.asKingsSupport')),
                 fmt(tileGold, tileUnits - towerUnits, t('currentPlayer.fromYourTiles')),
                 fmt(0, towerUnits, t('currentPlayer.fromYourTowers')),
                 fmt(arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
@@ -281,10 +282,12 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               🏰
             </div>
             <div>
-              {kingsGold + arifactGold + tileGold > 0 && (
-                <strong>+{kingsGold + arifactGold + tileGold}🟡</strong>
+              {kingsGold + arifactGold + tileGold + catchUpGold > 0 && (
+                <strong>+{kingsGold + arifactGold + tileGold + catchUpGold}🟡</strong>
               )}
-              {kingsUnits + tileUnits > 0 && <strong>+{kingsUnits + tileUnits} 👬</strong>}
+              {kingsUnits + tileUnits + catchUpUnits > 0 && (
+                <strong>+{kingsUnits + tileUnits + catchUpUnits} 👬</strong>
+              )}
             </div>
           </div>
         </div>
