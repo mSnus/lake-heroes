@@ -177,7 +177,12 @@ const EconomySimScreen: React.FC = () => {
       }
 
       let winnerIndex = 0;
-      if (runOutcome.stopReason === 'unit-threshold') {
+      if (runOutcome.stopReason === 'game-over') {
+        // The dragon fight doesn't advance the turn on a win (see
+        // driveOneTurn), so the active player is still whoever slew it.
+        winnerIndex = board.players.findIndex((p) => p.id === board.activePlayer.id);
+        if (winnerIndex < 0) winnerIndex = 0;
+      } else if (runOutcome.stopReason === 'unit-threshold') {
         winnerIndex = board.players.findIndex((p) => p.units >= 60);
         if (winnerIndex < 0) winnerIndex = 0;
       } else {
