@@ -1,7 +1,7 @@
 import { toast, ToastContent } from 'react-toastify';
 import { gameEvent } from './events';
 import { getOverrides } from './overridesStore';
-import { isSilentMode } from './silentStore';
+import { isHeadlessRun } from './headlessStore';
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
@@ -59,8 +59,9 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
       break;
   }
 
-  // Dispatch event for history
-  if (typeof message === 'string' && !isSilentMode()) {
+  // Dispatch event for history (gameEvent itself also no-ops when headless,
+  // but skip building the detail object too rather than relying on that).
+  if (typeof message === 'string' && !isHeadlessRun()) {
     gameEvent('logMessage', { message, level, timestamp: Date.now() });
   }
 }

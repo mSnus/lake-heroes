@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 import React from 'react';
 import { setEndTurn } from './endTurnStore';
 import { showDice, startDiceRoll } from './diceStore';
+import { isHeadlessRun } from './headlessStore';
 import { Tile } from '../game/Tile';
 import { t } from '../i18n';
 
@@ -76,6 +77,19 @@ function emit() {
 }
 
 export function showScreen(config: ScreenConfig): void {
+  if (isHeadlessRun()) {
+    // Nothing ever renders during a headless run -- but a single-button
+    // screen ("acknowledge and continue", the overwhelming majority of
+    // encounter screens) still needs its click to fire or the turn would
+    // hang forever waiting for a click that will never come. Anything else
+    // (a real decision between 2+ buttons, or a custom `content` component
+    // like BattleScreen/TavernModal whose self-driving logic only runs once
+    // mounted) is resolved by its own caller checking isHeadlessRun() and
+    // never reaching this function at all -- see showBattleScreen and the
+    // per-encounter headless branches.
+    if (config.buttons?.length === 1) config.buttons[0].onClick();
+    return;
+  }
   state = config;
   console.log('showing screen', state);
   emit();
@@ -89,6 +103,7 @@ export function showScreen(config: ScreenConfig): void {
 }
 
 export function markScreenResolved(): void {
+  if (isHeadlessRun()) return;
   if (state) {
     state = { ...state, doNotPersist: true };
     localStorage.removeItem('game-screen');
@@ -97,6 +112,7 @@ export function markScreenResolved(): void {
 }
 
 export function clearScreen(): void {
+  if (isHeadlessRun()) return;
   state = null;
   localStorage.removeItem('game-screen');
   emit();
