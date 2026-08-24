@@ -80,9 +80,9 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
 
 // A unit that's actively defending (mitigating incoming damage rather than
 // dealing it) rolls with this bonus on top of whatever side bonuses
-// (artifacts, garrison) already apply. Set to 0 (off) -- balance knob, adjust
-// as needed.
-const DEFENSE_ROLL_BONUS = 0;
+// (artifacts, garrison) already apply. Negative: defence rolls 10% weaker
+// than the same unit's attack -- balance knob, adjust as needed.
+const DEFENSE_ROLL_BONUS = -0.1;
 
 // A unit that moved this turn defends less effectively -- it hasn't set its
 // footing to brace for the hit.
@@ -583,34 +583,48 @@ function resolveCombat(
     damage.set(unitId, (damage.get(unitId) ?? 0) + amount);
   };
 
-  const incoming = new Map<string, number>();
-  const defenceRoll = new Map<string, number>();
-
-  // Every engaged unit rolls a defence value, attacking or not.
-  for (const u of engaged) defenceRoll.set(u.id, rollFor(u, true));
-
+  // Each attack is resolved against its own fresh defence roll, rather than
+  // one roll subtracted from the summed incoming -- being swarmed should
+  // hurt, but every attacker after the first meets a progressively weaker
+  // guard rather than a free pass through one already-spent roll.
+  const incomingBy = new Map<string, GridUnit[]>();
   for (const u of engaged) {
     if (!willAttack(u)) continue;
     const target = chosenTarget.get(u.id)!;
-    const roll = rollFor(u, false);
-    incoming.set(target.id, (incoming.get(target.id) ?? 0) + roll);
-    events.push({ type: 'attack', unitId: u.id, side: u.side, kind: u.kind, targetId: target.id, roll, damage: roll });
+    const list = incomingBy.get(target.id);
+    if (list) list.push(u);
+    else incomingBy.set(target.id, [u]);
   }
 
-  for (const u of engaged) {
-    const roll = defenceRoll.get(u.id);
-    if (roll === undefined) continue;
-    events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll });
-  }
+  // How much of its defence roll a target still brings to bear against its
+  // i-th attacker this turn (1-based): full against the first, then 80%,
+  // 70%, ... A hex cell has at most 6 neighbours, so this bottoms out at
+  // 40%; floored at 0 regardless.
+  const defenceFactor = (i: number): number => (i <= 1 ? 1 : Math.max(0, (100 - i * 10) / 100));
 
   for (const u of engaged) {
-    const inc = incoming.get(u.id);
-    if (!inc) continue;
-    const net = defenceRoll.has(u.id) ? Math.max(0, inc - defenceRoll.get(u.id)!) : inc;
-    applyDamage(u.id, net);
-    // A held unit whose defence roll fully absorbed the hit -- purely
-    // cosmetic (see TurnEventType), flashes 🛡️ on it in the battle replay.
-    if (net === 0 && defenceRoll.has(u.id)) {
+    // Attackers are taken in a random order, so no unit is permanently the
+    // one that meets the target at full strength.
+    const attackers = (incomingBy.get(u.id) ?? []).sort(
+      (a, b) => (rand.get(a.id) ?? 0) - (rand.get(b.id) ?? 0)
+    );
+    let total = 0;
+    let defenceTotal = 0;
+    attackers.forEach((atk, idx) => {
+      const roll = rollFor(atk, false);
+      const guard = Math.round(rollFor(u, true) * defenceFactor(idx + 1));
+      defenceTotal += guard;
+      total += Math.max(0, roll - guard);
+      events.push({ type: 'attack', unitId: atk.id, side: atk.side, kind: atk.kind, targetId: u.id, roll, damage: roll });
+    });
+    // Every engaged unit shows as defending, attacking or not -- an unattacked
+    // one just has nothing to soak.
+    events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll: defenceTotal });
+    if (attackers.length === 0) continue;
+    applyDamage(u.id, total);
+    // Soaked the whole volley -- purely cosmetic (see TurnEventType), flashes
+    // 🛡️ on it in the battle replay.
+    if (total === 0) {
       events.push({ type: 'block', unitId: u.id, side: u.side, kind: u.kind });
     }
   }
@@ -907,19 +921,25 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     swapPartner.set(reserve.id, u);
   }
 
-  // ── Step 3: combat, over every unit except this turn's retreaters / pullback
-  // / swapping units (who sit combat out) — shared with the brawl resolver, see
-  // resolveCombat above. engagedIds (units adjacent to ≥1 enemy) is what tells
-  // fighters from movers in the movement phase below. ──
-  const combatPool = living.filter(
-    (u) => !retreating.has(u.id) && !seekingSafety.has(u.id) && !swapPartner.has(u.id)
+  // ── Step 3: who holds position. A unit already touching an enemy at
+  // turn-start stays to fight; everyone else advances. Retreaters, pullbacks
+  // and swap pairs are in contact but move anyway, so they count as movers.
+  // This used to come out of combat's own return value, but combat now runs
+  // *after* movement (same order as a brawl round), so the decision is made
+  // up front from turn-start positions instead. ──
+  const engagedIds = new Set(
+    living
+      .filter(
+        (u) =>
+          livingAdjacentEnemies(u, living).length >= 1 &&
+          !retreating.has(u.id) &&
+          !seekingSafety.has(u.id) &&
+          !swapPartner.has(u.id)
+      )
+      .map((u) => u.id)
   );
-  const { engagedIds } = resolveCombat(living, combatPool, opts, rng, events);
 
-  // ── Apply combat damage, remove the dead ── (resolveCombat mutated hp)
-  const dead = living.filter((u) => u.hp <= 0);
-  for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
-  let alive = living.filter((u) => u.hp > 0);
+  let alive = living;
 
   // ── Steps 4/5: movement, non-engaged units plus this turn's retreaters,
   // planned against a "shadow map" rather than executed sequentially. A
@@ -1032,10 +1052,12 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     }
   }
 
+  const movedIds = new Set<string>();
   for (const mover of movers) {
     const dest = plannedMove.get(mover.id);
     if (!dest) continue;
     const unit = alive.find((u) => u.id === mover.id)!;
+    if (dest.col !== unit.col || dest.row !== unit.row) movedIds.add(unit.id);
     events.push({
       type: 'move',
       unitId: unit.id,
@@ -1047,6 +1069,19 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     unit.col = dest.col;
     unit.row = dest.row;
   }
+
+  // ── Step 6: combat, at the positions everyone actually ended the turn in
+  // (same order as a brawl round: move, then fight). Everyone still standing
+  // takes part -- closing to contact means fighting this turn rather than
+  // getting a free one, and a unit that broke off only escapes if it got far
+  // enough. Movers defend at MOVED_DEFENSE_PENALTY, which is what movedIds
+  // carries; before this ran after movement it was always empty here, leaving
+  // that penalty dead on this path. ──
+  resolveCombat(alive, alive, opts, rng, events, movedIds);
+
+  const dead = alive.filter((u) => u.hp <= 0);
+  for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
+  alive = alive.filter((u) => u.hp > 0);
 
   // A unit's streak only continues if it actually retreated this turn (was
   // marked as retreating *and* found somewhere to go) — anything else
@@ -1062,7 +1097,6 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     else if (u.swapCooldown > 0) u.swapCooldown -= 1;
   }
 
-  alive = alive.map((u) => u);
   const attackerAlive = alive.some((u) => u.side === 'attacker');
   const defenderAlive = alive.some((u) => u.side === 'defender');
   const status: GridBattleState['status'] =

@@ -695,7 +695,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       defenderPctBonus: garrisonRollBonusPct,
       defenderFlatBonus: defenderRollBonus,
     });
-    animateCombat(state, events);
+    // stepTurn now moves first and fights afterwards (same order as a brawl
+    // round), so the fight has to play out at the cells everyone ended up in
+    // -- animating it against the pre-turn snapshot would draw every mover's
+    // 🗡️/💥 on the cell it just left. Slide the movers first, then play the
+    // combat beats, exactly like animateBrawlMove -> brawlResolve does.
+    const moveEvents = events.filter((e) => e.type === 'move');
+    const combatEvents = events.filter((e) => e.type !== 'move');
+    if (moveEvents.length === 0) {
+      animateCombat(state, combatEvents);
+      return;
+    }
+    const movedTo = new Map(moveEvents.map((e) => [e.unitId, e.to!]));
+    const afterMove: GridBattleState = {
+      ...battle,
+      units: battle.units.map((u) => {
+        const to = movedTo.get(u.id);
+        return to ? { ...u, col: to.col, row: to.row } : u;
+      }),
+    };
+    animateBrawlMove(afterMove, () => animateCombat(state, combatEvents));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, battle, isBrawl, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus, animateCombat]);
 
