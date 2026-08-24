@@ -48,25 +48,19 @@ export const TURN_INCOME_RATIO = 0.1;
 // Flat per-tile bonus each owned tile grants the King's-grace reward (once a
 // lap, on top of its own per-turn income -- see kingsGrace.ts's
 // computeAnnualReward), in whichever resource its own bonus ISN'T: a
-// gold-bonus tile (Mills/Farms/Fields/Traders) also brings
-// ANNUAL_DEFAULT_UNITS militia, a units-bonus tile (Camps/Towers) also
-// brings ANNUAL_DEFAULT_GOLD gold -- same flat amount for every units-bonus
-// tile. Towers additionally earn a level-scaled UNIT toll on top of this
-// (added to tileUnits, not tileGold) -- see TOWER_LEVEL_UNIT_BONUS.
+// gold-bonus tile (Mills/Farms/Fields/Traders) always brings
+// ANNUAL_DEFAULT_UNITS militia. A units-bonus tile (Camps/Towers) brings
+// gold instead -- its own tiles.json entry (annualGoldMult, a multiple of
+// TILE_BASE_PRICE so it rescales with a live tile-price override the same
+// way prices/bonuses do) sets how much, defaulting to
+// ANNUAL_DEFAULT_GOLD_MULT when unset. It may also earn extra units on top
+// (tiles.json's annualUnits, per level) -- see Tile.ts's annualGold getter.
 export const ANNUAL_DEFAULT_UNITS = 0;
-export const ANNUAL_DEFAULT_GOLD = 2.5 * TILE_BASE_PRICE;
+export const ANNUAL_DEFAULT_GOLD_MULT = 2.5;
 // Every owned tile also brings in a flat militia trickle every turn, on top
 // of whatever its own bonus produces (gold-type tiles) or in addition to it
 // (units-type tiles) -- see game/income.ts's tileTurnIncome.
 export const FLAT_TILE_UNIT_INCOME = 1;
-// Towers additionally levy a yearly UNIT toll toward the King's-grace
-// reward, scaled by their fortification level (1/2/3) -- a garrison drawn
-// from the tower's own recruits at higher fortification, on top of their
-// own per-turn unit bonus (tiles.json's archer/arquebus/cannon-tower
-// bonuses, 1/1/2 by level) plus the universal FLAT_TILE_UNIT_INCOME every
-// tile gets. They still get the universal ANNUAL_DEFAULT_GOLD trickle every
-// units-bonus tile earns too, just no *extra* level-scaled gold on top of it.
-export const TOWER_LEVEL_UNIT_BONUS = 2;
 
 export const UNIT_PRICE = 200; // gold per militia unit (King's Castle recruit price)
 export const DRAGON_UNITS = 48; // how many units the Dragon fields

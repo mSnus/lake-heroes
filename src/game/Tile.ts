@@ -1,4 +1,4 @@
-import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT } from './constants';
+import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER } from './army';
@@ -19,6 +19,18 @@ export interface TileJSON {
   prices?: { [level: number]: { gold: number; units: number } };
   bonuses?: { [level: number]: number };
   defences?: { [level: number]: number };
+  /** King's Castle pass reward, units-type tiles only (Camps/Towers) --
+   * multiple of TILE_BASE_PRICE, so it rescales with a live tile-price
+   * override the same way prices/bonuses do. Falls back to
+   * ANNUAL_DEFAULT_GOLD's own multiple when a units-type tile doesn't set
+   * this (there's currently no such tile, but new ones may not bother). */
+  annualGoldMult?: number;
+  /** King's Castle pass reward's OTHER resource, units-type tiles only --
+   * flat per level, not a TILE_BASE_PRICE multiple (unlike annualGoldMult),
+   * since these are small hand-tuned numbers rather than a price-derived
+   * curve. Absent (or 0) means no per-level bonus, the default for every
+   * tile except the ones that opt in. */
+  annualUnits?: { [level: number]: number };
   owner?: number | null;
   level?: number;
   description?: string;
@@ -65,7 +77,11 @@ export class Tile implements TileJSON {
    * tile immediately. */
   private _priceCoeffs: { [level: number]: { gold: number; units: number } };
   private _bonusCoeffs: { [level: number]: number };
+  private _annualGoldMult?: number;
   defences: { [level: number]: number };
+  /** Extra King's-grace units on top of annualGold, units-type tiles only --
+   * see the TileJSON field for why this isn't a TILE_BASE_PRICE multiple. */
+  annualUnits: { [level: number]: number };
   owner?: number | null;
   _level?: number;
   sprite?: { x: number; y: number };
@@ -107,6 +123,8 @@ export class Tile implements TileJSON {
       this._bonusCoeffs[lvl] = data.bonuses![lvl] || 0;
     }
     this.defences = Object.assign({}, data.defences || {});
+    this._annualGoldMult = data.annualGoldMult;
+    this.annualUnits = Object.assign({}, data.annualUnits || {});
     this.owner = data.owner ?? null;
     this._level = typeof data.level === 'number' ? data.level : 1;
     this.sprite = data.sprite;
@@ -181,6 +199,13 @@ export class Tile implements TileJSON {
       out[lvl] = isGold ? Math.round((raw * BONUS_GOLD_RATIO * TURN_INCOME_RATIO) / 50) * 50 : raw;
     }
     return out;
+  }
+
+  /** King's-grace gold for a units-type tile (Camps/Towers) -- see
+   * kingsGrace.ts's computeAnnualReward, the only consumer. Rescales with a
+   * live tileBasePrice override, same as prices/bonuses. */
+  get annualGold(): number {
+    return (this._annualGoldMult ?? ANNUAL_DEFAULT_GOLD_MULT) * getOverrides().tileBasePrice;
   }
 
   /** Only some tiles (the non-ownable "special" ones) have flavor text —
@@ -377,6 +402,8 @@ export class Tile implements TileJSON {
       prices: this.prices,
       bonuses: this.bonuses,
       defences: this.defences,
+      annualGoldMult: this.annualGold,
+      annualUnits: this.annualUnits,
       owner: this.owner,
       level: this.level,
       description: this.description,

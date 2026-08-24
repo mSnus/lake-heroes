@@ -11,7 +11,7 @@ import { BANZAI_THRESHOLD } from '../game/constants';
 import { UNIT_POWER } from '../game/army';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
-import { BRAWL_THRESHOLD, TOWER_LEVEL_UNIT_BONUS } from '../game/constants';
+import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
 import { TileUpgradesScreen } from './TileUpgradesScreen';
@@ -91,11 +91,13 @@ export const TileCard: React.FC<TileCardProps> = ({
     </>
   );
 
-  // Towers' fortification toll (see game/kingsGrace.ts's computeAnnualReward)
-  // only pays out once a lap, not every turn like the rest of a tile's
-  // income -- shown as its own "per year" block alongside the per-turn one.
-  const isTower = tile.group === 'Towers';
-  const towerYearlyLabel = <>+{TOWER_LEVEL_UNIT_BONUS * tile.level}👬</>;
+  // Some units-type tiles' (Camps/Towers) extra per-level toll (see
+  // game/kingsGrace.ts's computeAnnualReward) only pays out once a lap, not
+  // every turn like the rest of a tile's income -- shown as its own "per
+  // year" block alongside the per-turn one.
+  const yearlyUnitsBonus = tile.annualUnits[tile.level] ?? 0;
+  const isTower = yearlyUnitsBonus > 0;
+  const towerYearlyLabel = <>+{yearlyUnitsBonus}👬</>;
 
   const bonusType = getBonusType(tile);
 

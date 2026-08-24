@@ -1,12 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import {
-  MONEY_PASS_START_FAME,
-  FAME_STEP,
-  ANNUAL_DEFAULT_UNITS,
-  ANNUAL_DEFAULT_GOLD,
-  TOWER_LEVEL_UNIT_BONUS,
-} from './constants';
+import { MONEY_PASS_START_FAME, FAME_STEP, ANNUAL_DEFAULT_UNITS } from './constants';
 import { getArtifactGoldBonus } from './artifacts';
 import { getOverrides } from '../utils/overridesStore';
 import { totalWealth } from './wealth';
@@ -14,9 +8,12 @@ import { totalWealth } from './wealth';
 export interface KingsGraceReward {
   tileGold: number;
   tileUnits: number;
-  /** Towers' extra level-scaled share of tileUnits, broken out for its own
-   * line in the stats panel/toast rather than blending into the flat
-   * per-tile trickle every other gold-bonus tile earns. */
+  /** Towers' extra per-tile share of tileUnits (tiles.json's annualUnits),
+   * broken out for its own line in the stats panel/toast rather than
+   * blending into the flat per-tile trickle every other gold-bonus tile
+   * earns. Camps earn an annualUnits bonus too now, but fold into tileUnits
+   * without their own breakout -- the UI line this feeds is Towers-only by
+   * name ("from your Towers"). */
   towerUnits: number;
   kingsGold: number;
   kingsUnits: number;
@@ -121,9 +118,10 @@ function computeCatchUp(
  * grace from the King, a flat per-tile trickle from every tile the player
  * owns -- in whichever resource its own bonus ISN'T, since that own resource
  * already pays out every turn instead (see game/income.ts's
- * collectTileTurnIncome) -- Towers' extra TOWER_LEVEL_UNIT_BONUS-per-level
- * toll on top of that trickle, plus any artifact gold bonus (Pristine
- * Diamond). Shared by the actual payout (passStart.ts) and its preview
+ * collectTileTurnIncome). A units-type tile's (Camps/Towers) own
+ * annualGold/annualUnits (tiles.json) can add an extra per-level unit toll
+ * on top of that trickle, plus any artifact gold bonus (Pristine Diamond).
+ * Shared by the actual payout (passStart.ts) and its preview
  * (CurrentPlayer.tsx) so they can't drift apart.
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
@@ -145,12 +143,10 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id || tile.isYielded) continue;
     if ((tile.bonusType || 'gold') === 'units') {
-      tileGold += ANNUAL_DEFAULT_GOLD;
-      if (tile.group === 'Towers') {
-        const bonus = TOWER_LEVEL_UNIT_BONUS * tile.level;
-        towerUnits += bonus;
-        tileUnits += bonus;
-      }
+      tileGold += tile.annualGold;
+      const bonus = tile.annualUnits[tile.level] ?? 0;
+      if (tile.group === 'Towers') towerUnits += bonus;
+      tileUnits += bonus;
     } else {
       tileUnits += ANNUAL_DEFAULT_UNITS;
     }

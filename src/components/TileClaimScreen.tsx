@@ -16,7 +16,6 @@ import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { tileTurnIncome } from '../game/income';
-import { TOWER_LEVEL_UNIT_BONUS } from '../game/constants';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
 import '../styles/TileCard.css';
@@ -57,11 +56,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     );
   };
 
-  // Towers' fortification toll (see game/kingsGrace.ts's computeAnnualReward)
-  // only pays out once a lap, not every turn like the rest of a tile's
-  // income -- shown as its own "per year" block alongside the per-turn one.
-  const isTower = tile.group === 'Towers';
-  const towerYearlyLabel = (level: number) => <>+{TOWER_LEVEL_UNIT_BONUS * level}👬</>;
+  // Some units-type tiles' (Camps/Towers) extra per-level toll (see
+  // game/kingsGrace.ts's computeAnnualReward) only pays out once a lap, not
+  // every turn like the rest of a tile's income -- shown as its own "per
+  // year" block alongside the per-turn one.
+  const isTower = Object.values(tile.annualUnits).some((v) => v > 0);
+  const towerYearlyLabel = (level: number) => <>+{tile.annualUnits[level] ?? 0}👬</>;
 
   // garrisonAmount is an ABSOLUTE target headcount, not a delta — so the
   // pool it's bounded by is everything this player controls, whether
