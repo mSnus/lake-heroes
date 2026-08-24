@@ -10,6 +10,7 @@ import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { recordTurnStat } from '../game/statistics';
 import { collectTileTurnIncome } from '../game/income';
+import { recordSimIncome } from '../utils/simLogStore';
 import { resetForkChoice } from '../utils/forkChoiceStore';
 import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
@@ -45,6 +46,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   // applies even to a player about to skip their turn in prison, since it's
   // their tiles earning it, not them personally taking an action.
   const turnIncome = collectTileTurnIncome(board, board.activePlayer);
+  if (isHeadlessRun()) recordSimIncome(turnIncome.gold, turnIncome.units);
   if (turnIncome.gold > 0 || turnIncome.units > 0) {
     const incomeParts: string[] = [];
     if (turnIncome.gold > 0) incomeParts.push(`${turnIncome.gold}🟡`);

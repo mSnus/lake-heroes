@@ -18,6 +18,7 @@ interface SimLogBoard {
 
 let board: SimLogBoard | null = null;
 let entries = new Map<string, string[]>();
+let income = new Map<string, { gold: number; units: number }>();
 
 const key = (playerId: number, circle: number) => `${playerId}:${circle}`;
 
@@ -27,6 +28,7 @@ export function setSimLogBoard(next: SimLogBoard | null): void {
 
 export function resetSimLog(): void {
   entries = new Map();
+  income = new Map();
 }
 
 /**
@@ -62,4 +64,27 @@ export function recordSimLog(message: string): void {
 
 export function getSimLog(playerId: number, circle: number): string[] {
   return entries.get(key(playerId, circle)) ?? [];
+}
+
+/** Tile income is collected every turn, not toasted per-turn like other
+ * events -- accumulated per circle instead of logged line by line, so a
+ * player who owns tiles for a whole lap gets one running total rather than
+ * a repeat of "collects Ngold" once per turn (see endTurn.ts). */
+export function recordSimIncome(gold: number, units: number): void {
+  if (!board || (gold <= 0 && units <= 0)) return;
+  const player = board.activePlayer;
+  if (!player) return;
+
+  const k = key(player.id, player.circles);
+  const existing = income.get(k);
+  if (existing) {
+    existing.gold += gold;
+    existing.units += units;
+  } else {
+    income.set(k, { gold, units });
+  }
+}
+
+export function getSimIncome(playerId: number, circle: number): { gold: number; units: number } {
+  return income.get(key(playerId, circle)) ?? { gold: 0, units: 0 };
 }

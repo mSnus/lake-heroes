@@ -943,6 +943,7 @@
     "simulating": "Simulating…",
     "circle": "Circle",
     "winner": "(winner)",
+    "fromDaily": "from daily: {summary}",
     "settingSummary": "Tile price {tileBasePrice} (income ×{tileIncomeMult}, upgrade ×{tileUpgradeMult}) · Pass start {passStartGold}🟡 {passStartUnits}🧍 · {playerCount} players",
     "stopReason": "Stopped after {turns} turns: {reason}",
     "stopReasonLabel": {

@@ -9,7 +9,7 @@ import { runHeadlessGame, HeadlessStopReason } from '../game/economy/headlessDri
 import { getOverrides, setHeadlessOverrides } from '../utils/overridesStore';
 import { totalWealth } from '../game/wealth';
 import { getArtifact } from '../game/artifacts';
-import { getSimLog } from '../utils/simLogStore';
+import { getSimLog, getSimIncome } from '../utils/simLogStore';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { useT } from '../i18n';
@@ -24,7 +24,8 @@ const PLAYER_SWATCH: Record<string, string> = { blue: '🔵', red: '🔴', green
 interface PlayerSnapshot {
   fame: number;
   gold: number;
-  units: number;
+  militia: number;
+  riders: number;
   tilesOwned: number;
   wealth: number;
   artifactsEmoji: string;
@@ -32,6 +33,9 @@ interface PlayerSnapshot {
   /** What happened to this player during this circle -- filled in after the
    * run from the sim log (see attachLogs). */
   log: string[];
+  /** Tile income collected across every turn this circle -- filled in after
+   * the run from the sim income accumulator, alongside log. */
+  dailyIncome: { gold: number; units: number };
 }
 
 interface CircleRow {
@@ -42,6 +46,11 @@ interface CircleRow {
 interface RunResult {
   playerColors: string[];
   winnerIndex: number;
+  /** The winner's own final circle count -- may be less than another
+   * player's if the winner simply had worse luck lapping the board. Rows
+   * past this were only added because someone else kept circling; the
+   * winner's own progress had already stopped (see the table's render). */
+  winnerCircles: number;
   stopReason: HeadlessStopReason;
   turnsPlayed: number;
   settingSummary: string;
@@ -73,18 +82,39 @@ function snapshotPlayer(board: GameState, player: Player): PlayerSnapshot {
   return {
     fame: player.fame,
     gold: player.gold,
-    units: player.units,
+    militia: player.militia,
+    riders: player.riders,
     tilesOwned,
     wealth: totalWealth(board, player),
     artifactsEmoji: player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join(''),
     isPOW: player.isPrisonerOfWar,
     log: [],
+    dailyIncome: { gold: 0, units: 0 },
   };
+}
+
+/** 🧍/🐎, each shown only when that tier actually has units -- a wiped-out
+ * tier disappears instead of showing a bare "0". */
+function formatUnits(militia: number, riders: number): string {
+  const parts: string[] = [];
+  if (militia > 0) parts.push(`🧍${militia}`);
+  if (riders > 0) parts.push(`🐎${riders}`);
+  return parts.length > 0 ? parts.join(' ') : '0';
 }
 
 function formatCell(s: PlayerSnapshot): string {
   const pow = s.isPOW ? ' ⛓️' : '';
-  return `${s.fame}🏆 ${s.gold}🟡 ${s.units}🧍 ${s.tilesOwned}🧩 🧮${s.wealth}${s.artifactsEmoji}${pow}`;
+  return `${s.fame}🏆 ${s.gold}🟡 ${formatUnits(s.militia, s.riders)} ${s.tilesOwned}🧩 🧮${s.wealth}${s.artifactsEmoji}${pow}`;
+}
+
+/** "X🧍X🟡" for the daily-income summary -- null when there's nothing to
+ * show, same zero-hiding rule as formatUnits. */
+function formatIncomeSummary(gold: number, units: number): string | null {
+  if (gold <= 0 && units <= 0) return null;
+  const parts: string[] = [];
+  if (units > 0) parts.push(`${units}🧍`);
+  if (gold > 0) parts.push(`${gold}🟡`);
+  return parts.join(' ');
 }
 
 const EconomySimScreen: React.FC = () => {
@@ -167,12 +197,14 @@ const EconomySimScreen: React.FC = () => {
         rows.push({ circle: lastCircle, players: finalSnapshot });
       }
 
-      // Read the sim log only now it's complete -- a row's circle is the max
-      // any player had reached, so a player still lapping behind keeps adding
-      // to an earlier circle's log well after that row was captured.
+      // Read the sim log/income only now they're complete -- a row's circle
+      // is the max any player had reached, so a player still lapping behind
+      // keeps adding to an earlier circle's totals well after that row was
+      // captured.
       for (const row of rows) {
         row.players.forEach((snapshot, i) => {
           snapshot.log = getSimLog(players[i].id, row.circle);
+          snapshot.dailyIncome = getSimIncome(players[i].id, row.circle);
         });
       }
 
@@ -199,6 +231,7 @@ const EconomySimScreen: React.FC = () => {
       setResult({
         playerColors: players.map((p) => p.color),
         winnerIndex,
+        winnerCircles: board.players[winnerIndex].circles,
         stopReason: runOutcome.stopReason,
         turnsPlayed: runOutcome.turnsPlayed,
         settingSummary,
@@ -245,7 +278,7 @@ const EconomySimScreen: React.FC = () => {
 
         {result && (
           <div>
-            <p style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
+            <p style={{ whiteSpace: 'pre-line', textAlign: 'center', color: 'white' }}>
               {result.settingSummary}
               <br />
               {t('economySimScreen.stopReason', {
@@ -270,18 +303,43 @@ const EconomySimScreen: React.FC = () => {
                   {result.rows.map((row, i) => (
                     <tr key={i} className={i % 2 === 0 ? 'player-stats-row' : 'player-stats-row-alt'}>
                       <td className="player-stats-cell">{row.circle}</td>
-                      {row.players.map((p, j) => (
-                        <td key={j} className="player-stats-cell" style={{ verticalAlign: 'top' }}>
-                          <div style={{ whiteSpace: 'nowrap' }}>{formatCell(p)}</div>
-                          {p.log.length > 0 && (
-                            <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
-                              {p.log.map((line, k) => (
-                                <div key={k}>{line}</div>
-                              ))}
-                            </div>
-                          )}
-                        </td>
-                      ))}
+                      {row.players.map((p, j) => {
+                        // The winner's own progress stopped at winnerCircles --
+                        // a later row only exists because someone else kept
+                        // lapping, so their cell here would just be a stale
+                        // repeat of their final stats. Show the trophy instead.
+                        if (j === result.winnerIndex && row.circle > result.winnerCircles) {
+                          return (
+                            <td
+                              key={j}
+                              className="player-stats-cell"
+                              style={{ textAlign: 'center', fontSize: '2em' }}
+                            >
+                              🥇
+                            </td>
+                          );
+                        }
+
+                        const incomeSummary = formatIncomeSummary(p.dailyIncome.gold, p.dailyIncome.units);
+
+                        return (
+                          <td key={j} className="player-stats-cell" style={{ verticalAlign: 'top' }}>
+                            <div style={{ whiteSpace: 'nowrap' }}>{formatCell(p)}</div>
+                            {p.log.length > 0 && (
+                              <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
+                                {p.log.map((line, k) => (
+                                  <div key={k}>{line}</div>
+                                ))}
+                              </div>
+                            )}
+                            {incomeSummary && (
+                              <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px' }}>
+                                {t('economySimScreen.fromDaily', { summary: incomeSummary })}
+                              </div>
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>
