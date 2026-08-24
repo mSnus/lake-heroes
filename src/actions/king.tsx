@@ -9,7 +9,7 @@ import { upgradeSquad } from './upgradeSquad';
 import KingsCastleModal from '../components/KingsCastleModal';
 import { say } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
-import { planUnitHire } from '../ai/botPlans';
+import { planArmyPurchase } from '../ai/botPlans';
 import { t } from '../i18n';
 
 export function handleKingCastle(
@@ -39,8 +39,11 @@ export function handleKingCastle(
 
   // Same decision KingsCastleModal's own self-drive effect makes.
   if (isHeadlessRun()) {
-    const { tier: botTier, amount: hireAmount } = planUnitHire(player);
-    if (hireAmount > 0) buyUnits(board, hireAmount, updateGameState, botTier);
+    for (const step of planArmyPurchase(player)) {
+      if (step.kind === 'sell') sellUnits(board, step.count, updateGameState, step.tier);
+      else buyUnits(board, step.count, updateGameState, step.tier);
+    }
+
     setEndTurn();
     return;
   }

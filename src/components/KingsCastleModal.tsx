@@ -11,7 +11,7 @@ import { SquadHirePanel } from './SquadHirePanel';
 import { KingsContract } from '../game/kingsContracts';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
-import { planUnitHire } from '../ai/botPlans';
+import { planArmyPurchase } from '../ai/botPlans';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -45,10 +45,12 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
     onBuy(amount, tier);
     forceRerender((v) => v + 1);
   };
+
   const handleSell = (tier: UnitTier, count: number) => {
     onSell(tier, count);
     forceRerender((v) => v + 1);
   };
+
   const handleUpgrade = (count: number) => {
     onUpgrade(count);
     forceRerender((v) => v + 1);
@@ -75,9 +77,13 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const { tier: botTier, amount: hireAmount } = planUnitHire(player);
+    const plan = planArmyPurchase(player);
     const timer = setTimeout(() => {
-      if (hireAmount > 0) onBuy(hireAmount, botTier);
+      for (const step of plan) {
+        if (step.kind === 'sell') onSell(step.tier, step.count);
+        else onBuy(step.count, step.tier);
+      }
+
       onSkip();
     }, 600);
     return () => clearTimeout(timer);
