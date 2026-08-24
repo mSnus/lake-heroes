@@ -1,5 +1,6 @@
 import { GameState } from '../game/GameState';
 import { playerWealth, richestPlayer } from '../game/wealth';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 /**
@@ -21,5 +22,5 @@ export function releasePrisonerOfWar(board: GameState): void {
   player.gold += goldGift;
   player.units += unitsGift;
 
-  board.gameMessage = t('releasePrisonerOfWar.message', { units: unitsGift, gold: goldGift });
+  setGameMessage(board, t('releasePrisonerOfWar.message', { units: unitsGift, gold: goldGift }));
 }

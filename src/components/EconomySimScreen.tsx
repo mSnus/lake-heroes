@@ -114,11 +114,10 @@ function formatCell(s: PlayerSnapshot): string {
 /** "X🧍X🟡" for the daily-income summary -- null when there's nothing to
  * show, same zero-hiding rule as formatUnits. */
 function formatIncomeSummary(gold: number, units: number): string | null {
-  const roundedGold = Math.floor(gold / 50) * 50;
-  if (roundedGold <= 0 && units <= 0) return null;
+  if (gold <= 0 && units <= 0) return null;
   const parts: string[] = [];
   if (units > 0) parts.push(`${units}🧍`);
-  if (roundedGold > 0) parts.push(`${roundedGold}🟡`);
+  if (gold > 0) parts.push(`${gold}🟡`);
   return parts.join(' ');
 }
 

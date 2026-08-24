@@ -52,6 +52,10 @@ export function playerTurnIncome(board: GameState, player: Player): { gold: numb
     gold += income.gold;
     units += income.units;
   }
+  // Rounded down to a clean 50 -- both the real per-turn grant and every
+  // preview reading this (CurrentPlayer.tsx, TurnAnnouncement.tsx, etc.)
+  // share this function, so they stay in sync automatically.
+  gold = Math.floor(gold / 50) * 50;
   return { gold, units: Math.min(units, player.remainingCapacity('militia')) };
 }
 

@@ -1,6 +1,7 @@
 import { Player } from '../game/Player';
 import { UnitTier, remainingCapacity, slotChunks } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
+import { upgradeSquadCost } from '../actions/upgradeSquad';
 import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
 
 /**
@@ -28,7 +29,8 @@ export function planUnitHire(
 /** One move in a bot's shopping trip at the King's Castle. */
 export type ArmyStep =
   | { kind: 'sell'; tier: UnitTier; count: number }
-  | { kind: 'hire'; tier: UnitTier; count: number };
+  | { kind: 'hire'; tier: UnitTier; count: number }
+  | { kind: 'upgrade'; count: number };
 
 // Every step either spends gold or disbands a squad, so the loop below can't
 // run away -- but overrides can set a 0 unit price, which makes "how many can
@@ -40,10 +42,12 @@ const MAX_ARMY_STEPS = 24;
  * at slots x capacity), so a Knight bot spends its way toward them:
  *
  * 1. Any rider capacity going spare gets filled, as far as gold allows.
- * 2. Once nothing is spare, the smallest militia squad is a candidate to be
- *    disbanded and re-spent on riders -- but only when the gold on hand buys
- *    at least half as many riders as the militia being given up, which is
- *    still a clear power gain (see computeArmyPower's weights).
+ * 2. Once nothing is spare, convert the smallest militia squad into riders
+ *    in place via upgradeSquad -- same total slots either way (see
+ *    upgradeSquadCost), so it needs no capacity room and is a guaranteed
+ *    power gain at any amount the bot can afford, unlike disbanding for a
+ *    fresh hire which used to require affording back at least half the
+ *    squad given up.
  * 3. Re-check with the new gold/squad counts, and keep going until neither
  *    rule fires.
  *
@@ -65,25 +69,27 @@ function planRiderBuildUp(player: Player): ArmyStep[] {
 
   for (let guard = 0; guard < MAX_ARMY_STEPS; guard++) {
     const affordable = Math.floor(gold / ov.riderPrice);
-    if (affordable < 1) break;
-
-    const room = remainingCapacity(militia, riders, slots, 'riders', cap);
-    if (room > 0) {
-      const count = Math.min(affordable, room);
-      steps.push({ kind: 'hire', tier: 'riders', count });
-      gold -= count * ov.riderPrice;
-      riders += count;
-      continue;
+    if (affordable >= 1) {
+      const room = remainingCapacity(militia, riders, slots, 'riders', cap);
+      if (room > 0) {
+        const count = Math.min(affordable, room);
+        steps.push({ kind: 'hire', tier: 'riders', count });
+        gold -= count * ov.riderPrice;
+        riders += count;
+        continue;
+      }
     }
 
     const chunks = slotChunks(militia, cap);
     if (chunks.length === 0) break;
     const smallest = Math.min(...chunks);
-    if (affordable < smallest / 2) break;
+    const upgradeCost = upgradeSquadCost(smallest);
+    if (gold < upgradeCost) break;
 
-    steps.push({ kind: 'sell', tier: 'militia', count: smallest });
-    gold += smallest * ov.militiaPrice;
+    steps.push({ kind: 'upgrade', count: smallest });
+    gold -= upgradeCost;
     militia -= smallest;
+    riders += smallest;
   }
 
   return steps;

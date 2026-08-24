@@ -13,6 +13,8 @@ import { collectTileTurnIncome } from '../game/income';
 import { recordSimIncome } from '../utils/simLogStore';
 import { resetForkChoice } from '../utils/forkChoiceStore';
 import { formatArmy } from '../utils/formatArmy';
+import { announce } from '../utils/announce';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -31,7 +33,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   }
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
-  board.gameMessage = '';
+  setGameMessage(board, '');
   // Safety net alongside rollAndMove's own reset -- covers a turn that ends
   // without ever rolling (e.g. a skipped prison turn), so a choice made on a
   // prior visit to the fork can never leak into a later one.
@@ -78,24 +80,27 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
       const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
       const prisonArtifact = getPrisonProtectionArtifact(player);
       if (prisonArtifact) {
-        board.gameMessage = t('endTurn.prisonFineWaived', {
-          playerSpan,
-          artifactName: prisonArtifact.name,
-          emoji: prisonArtifact.emoji,
-        });
+        setGameMessage(
+          board,
+          t('endTurn.prisonFineWaived', {
+            playerSpan,
+            artifactName: prisonArtifact.name,
+            emoji: prisonArtifact.emoji,
+          })
+        );
         say(t('endTurn.prisonFineWaivedToast', { playerName: player.name, artifactName: prisonArtifact.name }), 'info');
       } else if (player.gold < 100) {
         changeFame(player, -1, player.isKnight ? KNIGHT_FAME : 1);
-        board.gameMessage = t('endTurn.prisonFameFine', { playerSpan });
+        setGameMessage(board, t('endTurn.prisonFameFine', { playerSpan }));
         say(t('endTurn.prisonFameFineToast', { playerName: player.name }), 'info');
       } else {
         const fine = Math.round(player.gold / 4 / 100) * 100;
         player.gold -= fine;
-        board.gameMessage = t('endTurn.prisonGoldFine', { playerSpan, fine });
+        setGameMessage(board, t('endTurn.prisonGoldFine', { playerSpan, fine }));
         say(t('endTurn.prisonGoldFineToast', { playerName: player.name, fine }), 'info');
       }
     } else {
-      board.gameMessage = t('endTurn.prisonIsWetAndCold', { playerName: player.name });
+      setGameMessage(board, t('endTurn.prisonIsWetAndCold', { playerName: player.name }));
       say(t('endTurn.dwellsInPrison', { playerName: player.name }), 'info');
     }
 
@@ -125,14 +130,19 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
       }),
       'info'
     );
-    board.gameMessage = t('endTurn.dragonGuardsGold');
+    setGameMessage(board, t('endTurn.dragonGuardsGold'));
     updateGameState(board);
     // Fight-or-flee is a real 2-way decision -- same call BotController
     // makes, and the same one checkDragonEncounter's headless branch uses.
     if (isHeadlessRun()) {
-      if (shouldChallengeDragon(board.activePlayer)) fightDragon(board, updateGameState);
+      if (shouldChallengeDragon(board.activePlayer)) {
+        announce(board.activePlayer, 'botController.fightTheDragon');
+        fightDragon(board, updateGameState);
+      }
+
       return;
     }
+
     offerDragonChallenge(board, updateGameState, () => gameEvent('showDice', null));
     return;
   }

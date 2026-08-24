@@ -7,6 +7,7 @@ import { richestPlayer, poorestPlayer, totalWealth } from '../game/wealth';
 import { checkArtifactProtection } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO } from '../game/constants';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 const EVENTS = [
@@ -221,7 +222,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
   const eventName = t(EVENT_NAME_KEY[event]);
   say(t('joker.eventLogLine', { eventName, message }), 'info');
-  board.gameMessage = t('joker.eventLogLine', { eventName, message });
+  setGameMessage(board, t('joker.eventLogLine', { eventName, message }));
   recordStatEvent(board, board.activePlayer, 'joker');
   updateGameState(board);
   setEndTurn();

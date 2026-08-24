@@ -5,6 +5,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { formatArmy, CARAVAN_EMOJI } from '../utils/formatArmy';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldAttackCaravan } from '../ai/decisions';
+import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
 export function checkCaravanEncounter(
@@ -81,8 +82,10 @@ export function checkCaravanEncounter(
   };
 
   if (isHeadlessRun()) {
-    if (shouldAttackCaravan(player, defendingUnits)) startBattle();
-    else onContinue();
+    if (shouldAttackCaravan(player, defendingUnits)) {
+      announce(player, 'botController.attackTheCaravan');
+      startBattle();
+    } else onContinue();
     return true;
   }
 

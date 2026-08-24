@@ -3,6 +3,7 @@ import { Player } from '../../game/Player';
 import { DRAGON_UNITS } from '../../game/constants';
 import { BattleResolution, BattleOutcome, logBattleSummary, lossStr } from './common';
 import { recordStatEvent } from '../../game/statistics';
+import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
 /**
@@ -27,24 +28,27 @@ export function resolveDragonBattle(
   let lostBg = false;
 
   if (outcome === 'attacker') {
-    board.gameMessage = t('resolveDragonBattle.slaysGameMessage', { attackerName: attacker.name });
+    setGameMessage(board, t('resolveDragonBattle.slaysGameMessage', { attackerName: attacker.name }));
     board.gameOver = true;
     message = t('resolveDragonBattle.slaysMessage');
     victoryBg = true;
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(DRAGON_UNITS / 4);
     attacker.units = Math.max(0, attacker.units - unitLoss);
-    board.gameMessage = t('resolveDragonBattle.woundedGameMessage', { attackerName: attacker.name, units: unitLoss });
+    setGameMessage(board, t('resolveDragonBattle.woundedGameMessage', { attackerName: attacker.name, units: unitLoss }));
     message = t('resolveDragonBattle.woundedMessage', { units: unitLoss });
     lostBg = true;
   } else {
     const unitLoss = attacker.units;
     attacker.units = 0;
     const loss = lossStr(0, unitLoss);
-    board.gameMessage = t('resolveDragonBattle.defeatedGameMessage', {
-      attackerName: attacker.name,
-      lossStr: loss ? t('resolveDragonBattle.lostSuffix', { loss }) : '',
-    });
+    setGameMessage(
+      board,
+      t('resolveDragonBattle.defeatedGameMessage', {
+        attackerName: attacker.name,
+        lossStr: loss ? t('resolveDragonBattle.lostSuffix', { loss }) : '',
+      })
+    );
     message = loss ? t('resolveDragonBattle.lost', { loss }) : t('resolveDragonBattle.defeated');
     lostBg = true;
   }

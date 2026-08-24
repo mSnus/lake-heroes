@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { syndicateMultiplier } from '../game/syndicate';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 export function handleVisitOwnTile(
   board: GameState | null,
@@ -16,7 +17,7 @@ export function handleVisitOwnTile(
   console.log('Action: visit own tile', player, tile);
 
   if (tile.isYielded) {
-    board.gameMessage = t('visitOwnTile.yourTileYielded', { tileName: tile.name });
+    setGameMessage(board, t('visitOwnTile.yourTileYielded', { tileName: tile.name }));
     updateGameState(board);
     setEndTurn();
     return;
@@ -44,7 +45,7 @@ export function handleVisitOwnTile(
 
   const rewardsStr = rewards.join(` ${t('common.and')} `);
   say(t('visitOwnTile.provides', { tileName: tile.name, playerName: player.name, rewards: rewardsStr, syndicateTag }), 'debug');
-  board.gameMessage = t('visitOwnTile.yourTileProvides', { tileName: tile.name, rewards: rewardsStr, syndicateTag });
+  setGameMessage(board, t('visitOwnTile.yourTileProvides', { tileName: tile.name, rewards: rewardsStr, syndicateTag }));
 
   updateGameState(board);
   setEndTurn();

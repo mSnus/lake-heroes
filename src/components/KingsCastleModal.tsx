@@ -81,6 +81,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
     const timer = setTimeout(() => {
       for (const step of plan) {
         if (step.kind === 'sell') onSell(step.tier, step.count);
+        else if (step.kind === 'upgrade') onUpgrade(step.count);
         else onBuy(step.count, step.tier);
       }
 

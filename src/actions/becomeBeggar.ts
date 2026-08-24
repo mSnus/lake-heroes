@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { changeFame } from '../utils/fame';
 import { say } from '../utils/say';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 export function becomeBeggar(board: GameState, updateGameState: (board: GameState) => void) {
@@ -51,11 +52,14 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
           count: loss,
         })
       : '';
-  board.gameMessage = t('becomeBeggar.gameMessage', {
-    playerName: player.name,
-    tilesMsg,
-    lostUnitsMsg,
-  });
+  setGameMessage(
+    board,
+    t('becomeBeggar.gameMessage', {
+      playerName: player.name,
+      tilesMsg,
+      lostUnitsMsg,
+    })
+  );
 
   updateGameState(board);
 }

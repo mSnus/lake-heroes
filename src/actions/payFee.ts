@@ -4,6 +4,7 @@ import { say } from '../utils/say';
 import { clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { getEffectiveFee } from './feeOptions';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 export function payFee(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -37,7 +38,7 @@ export function payFee(board: GameState | null, updateGameState: (board: GameSta
 
     // Set the banner too, otherwise it lingers on a stale (e.g. battle) message.
     say(msg, 'info');
-    board.gameMessage = msg;
+    setGameMessage(board, msg);
 
     updateGameState(board);
   }

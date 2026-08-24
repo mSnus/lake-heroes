@@ -509,7 +509,7 @@
     "turnIncome": "{playerName} collects {summary} from their tiles"
   },
   "buyUnits": {
-    "bought": "{playerName} bought {amount} {tier} for {gold}🟡.",
+    "bought": "{playerName} bought {amount} {tier} for {gold}🟡, and now has {army}.",
     "notEnoughGold": "Not enough gold to buy units."
   },
   "payFee": {

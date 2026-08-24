@@ -19,6 +19,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
 import { isHeadlessRun } from '../utils/headlessStore';
+import { setGameMessage } from '../utils/gameMessage';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
@@ -55,7 +56,7 @@ export async function rollAndMove(
 
   gameEvent('setPhase', 'rolling');
 
-  board.gameMessage = '';
+  setGameMessage(board, '');
 
   let tileMessage = t('rollAndMove.rolledAndWentTo', { playerName: player.name, roll, tileName: nextTile.name });
 

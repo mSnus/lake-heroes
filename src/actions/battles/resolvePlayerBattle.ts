@@ -3,6 +3,7 @@ import { Player } from '../../game/Player';
 import { changeFame } from '../../utils/fame';
 import { say } from '../../utils/say';
 import { BattleResolution, BattleOutcome } from './common';
+import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
 /**
@@ -37,11 +38,14 @@ export function resolvePlayerBattle(
     changeFame(defender, -1);
 
     const lossStr = attackerUnitsKilled > 0 ? t('resolvePlayerBattle.losingUnits', { units: attackerUnitsKilled }) : '';
-    board.gameMessage = t('resolvePlayerBattle.attackerWinsGameMessage', {
-      attackerName: attacker.name,
-      defenderName: defender.name,
-      lossStr,
-    });
+    setGameMessage(
+      board,
+      t('resolvePlayerBattle.attackerWinsGameMessage', {
+        attackerName: attacker.name,
+        defenderName: defender.name,
+        lossStr,
+      })
+    );
     message = t('resolvePlayerBattle.attackerWinsMessage', { defenderName: defender.name, lossStr });
     victoryBg = true;
   } else if (outcome === 'tie') {
@@ -50,11 +54,14 @@ export function resolvePlayerBattle(
       attacker.units = Math.max(0, attacker.units - quarterLoss);
       defender.units = Math.max(0, defender.units - quarterLoss);
     }
-    board.gameMessage = t('resolvePlayerBattle.tieGameMessage', {
-      attackerName: attacker.name,
-      defenderName: defender.name,
-      loss: quarterLoss,
-    });
+    setGameMessage(
+      board,
+      t('resolvePlayerBattle.tieGameMessage', {
+        attackerName: attacker.name,
+        defenderName: defender.name,
+        loss: quarterLoss,
+      })
+    );
     message = t('resolvePlayerBattle.tieMessage', { loss: quarterLoss });
   } else {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
@@ -67,10 +74,13 @@ export function resolvePlayerBattle(
       defenderUnitsKilled > 0
         ? ' ' + t('resolvePlayerBattle.defenderLoses', { defenderName: defender.name, units: defenderUnitsKilled })
         : '';
-    board.gameMessage = t('resolvePlayerBattle.defenderWinsGameMessage', {
-      attackerName: attacker.name,
-      defenderName: defender.name,
-    });
+    setGameMessage(
+      board,
+      t('resolvePlayerBattle.defenderWinsGameMessage', {
+        attackerName: attacker.name,
+        defenderName: defender.name,
+      })
+    );
     message = t('resolvePlayerBattle.defenderWinsMessage', { defLossStr });
     lostBg = true;
   }

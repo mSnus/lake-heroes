@@ -3,6 +3,7 @@ import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
 import { lossStr } from './common';
 import { ZOMBIE_GARRISON_REPEL_RATIO } from '../../game/constants';
+import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
 export type AmbushOutcome = 'win' | 'defeat' | 'tie';
@@ -54,7 +55,7 @@ export function resolveAmbush(
 
     const rewardStr = reward > 0 ? t('resolveAmbush.receivingGold', { reward }) : '';
     const killLossStr = playerUnitsKilled > 0 ? t('resolveAmbush.unitsLostSuffix', { units: playerUnitsKilled }) : '';
-    board.gameMessage = t('resolveAmbush.repelsGameMessage', { playerName: player.name, rewardStr, lossStr: killLossStr });
+    setGameMessage(board, t('resolveAmbush.repelsGameMessage', { playerName: player.name, rewardStr, lossStr: killLossStr }));
     message =
       reward > 0
         ? t('resolveAmbush.repelledWithReward', { reward, lossStr: killLossStr })
@@ -65,20 +66,26 @@ export function resolveAmbush(
     if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);
-    board.gameMessage = t('resolveAmbush.barelySurvivesGameMessage', {
-      playerName: player.name,
-      lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '',
-    });
+    setGameMessage(
+      board,
+      t('resolveAmbush.barelySurvivesGameMessage', {
+        playerName: player.name,
+        lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '',
+      })
+    );
     message = t('resolveAmbush.bloodyStalemate', { lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '' });
   } else {
     const goldLoss = Math.floor(player.gold / 4 / 100) * 100;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, playerUnitsKilled);
-    board.gameMessage = t('resolveAmbush.overwhelmedGameMessage', {
-      playerName: player.name,
-      lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '',
-    });
+    setGameMessage(
+      board,
+      t('resolveAmbush.overwhelmedGameMessage', {
+        playerName: player.name,
+        lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '',
+      })
+    );
     message = loss ? t('resolveAmbush.lost', { loss }) : t('resolveAmbush.overwhelmed');
   }
 

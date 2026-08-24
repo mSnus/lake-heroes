@@ -41,6 +41,7 @@ export function handleKingCastle(
   if (isHeadlessRun()) {
     for (const step of planArmyPurchase(player)) {
       if (step.kind === 'sell') sellUnits(board, step.count, updateGameState, step.tier);
+      else if (step.kind === 'upgrade') upgradeSquad(board, step.count, updateGameState);
       else buyUnits(board, step.count, updateGameState, step.tier);
     }
 

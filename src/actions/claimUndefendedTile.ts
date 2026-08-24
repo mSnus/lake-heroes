@@ -3,6 +3,7 @@ import { changeFame } from '../utils/fame';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { showTileClaimScreen } from './showTileClaimScreen';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 /**
@@ -39,7 +40,7 @@ export function claimUndefendedTile(
   changeFame(attacker, 1);
   if (defender) changeFame(defender, -1);
 
-  board.gameMessage = t('claimUndefendedTile.findsDefenceless', { attackerName: attacker.name, tileName: tile.name });
+  setGameMessage(board, t('claimUndefendedTile.findsDefenceless', { attackerName: attacker.name, tileName: tile.name }));
   say(t('claimUndefendedTile.claimsWithoutFight', { attackerName: attacker.name, tileName: tile.name }), 'success');
 
   setEndTurn();

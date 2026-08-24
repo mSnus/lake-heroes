@@ -3,6 +3,7 @@ import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { getOverrides } from '../utils/overridesStore';
 import { UnitTier } from '../game/army';
+import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
 
 export function buyUnits(
@@ -25,7 +26,16 @@ export function buyUnits(
     const gained = tier === 'riders' ? player.gainRiders(amount) : player.gainMilitia(amount);
     player.gold -= gained * unitPrice;
     const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
-    say(t('buyUnits.bought', { playerName: player.name, amount: gained, tier: tierLabel, gold: gained * unitPrice }), 'success');
+    say(
+      t('buyUnits.bought', {
+        playerName: player.name,
+        amount: gained,
+        tier: tierLabel,
+        gold: gained * unitPrice,
+        army: formatArmy(player.militia, player.riders),
+      }),
+      'success'
+    );
     updateGameState(board);
   } else {
     say(t('buyUnits.notEnoughGold'), 'error');

@@ -7,7 +7,7 @@ import { useModal, startDiceRoll } from '../utils/diceStore';
 import { isHalted } from '../utils/haltStore';
 import { useEndTurnReady } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
-import { say } from '../utils/say';
+import { announce } from '../utils/announce';
 import { endTurn } from '../actions/endTurn';
 import { claimTile } from '../actions/claimTile';
 import { sellTile } from '../actions/sellTile';
@@ -29,21 +29,12 @@ import { findSyndicateSaleCandidate } from '../ai/syndicate';
 import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
 import { FORK_START_INDEX } from '../game/constants';
 import { setForkChoice } from '../utils/forkChoiceStore';
-import { t } from '../i18n';
 
 // Matches the ~600ms auto-roll delay BattleScreen already uses for NPC sides.
 const BOT_ACTION_DELAY_MS = 600;
 // Closing a result screen gets a beat longer, so a human watching has time
 // to read the outcome before it's dismissed.
 const BOT_CLOSE_DELAY_MS = 800;
-
-/** `decisionKey` is an i18n key (translated fresh at call time — this file
- * has no React render cycle to subscribe to language changes, but that's
- * fine since these are one-shot toasts fired in direct response to a bot
- * action, always reading whatever language is active right now). */
-function announce(player: Player, decisionKey: string, params?: Record<string, string | number>) {
-  say(t('botController.decided', { name: player.name, decision: t(decisionKey, params) }), 'info');
-}
 
 interface BotAction {
   run: () => void;

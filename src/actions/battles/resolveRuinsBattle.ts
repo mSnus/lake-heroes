@@ -3,6 +3,7 @@ import { Player } from '../../game/Player';
 import { pickRandomUnownedArtifact } from '../../game/artifacts';
 import { say } from '../../utils/say';
 import { BattleOutcome, BattleResolution } from './common';
+import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
 const ARTIFACT_FIND_CHANCE = 0.8;
@@ -30,16 +31,18 @@ export function resolveRuinsBattle(
   let message: string;
   if (outcome === 'attacker') {
     message = t('ruinsEncounter.defeatMessage', { lossStr });
-    board.gameMessage = t('ruinsEncounter.defeatGameMessage', { playerName: player.name, lossStr });
+    setGameMessage(board, t('ruinsEncounter.defeatGameMessage', { playerName: player.name, lossStr }));
   } else {
     message =
       outcome === 'defender'
         ? t('ruinsEncounter.victoryMessage', { lossStr })
         : t('ruinsEncounter.tieMessage', { lossStr });
-    board.gameMessage =
+    setGameMessage(
+      board,
       outcome === 'defender'
         ? t('ruinsEncounter.victoryGameMessage', { playerName: player.name, lossStr })
-        : t('ruinsEncounter.tieGameMessage', { playerName: player.name, lossStr });
+        : t('ruinsEncounter.tieGameMessage', { playerName: player.name, lossStr })
+    );
 
     if (Math.random() < ARTIFACT_FIND_CHANCE) {
       const artifact = pickRandomUnownedArtifact(board, player);

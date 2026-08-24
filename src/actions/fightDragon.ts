@@ -5,13 +5,12 @@ import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { t } from '../i18n';
 
 // Army power (see Player.armyPower) at which a player is even OFFERED the
-// challenge -- was a flat 50, disconnected from the Dragon's actual
-// strength on the same scale (48 units, see DRAGON_UNITS). Recalibrated to
-// the minimal squad that can genuinely contest it: 9 riders ~= 7 dragons,
-// so 48 dragons ~= 62 riders, converted to armyPower via the game's own
-// RIDER_DUEL_MULTIPLIER (2.2) -- 62 * 2.2 ~= 136. If either constant moves
-// again, recheck this against that same 62-rider minimum.
-export const DRAGON_UNITS_THRESHOLD = 136;
+// challenge. The Dragon's true strength on the same scale is far higher
+// than any army can reach -- the hard slot cap (5 slots x 12 units, see
+// ARMY_SLOT_CAPACITY/MAX_ARMY_SLOTS) limits armyPower to at most 60 riders
+// x RIDER_DUEL_MULTIPLIER (2.2) = 132. Set just under that ceiling so a
+// near-maxed army can still get the offer.
+export const DRAGON_UNITS_THRESHOLD = 120;
 
 export function fightDragon(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;

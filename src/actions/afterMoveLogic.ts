@@ -17,6 +17,7 @@ import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
 import { getCharacterConfig, pickGuardsAction, pickHeroHourTarget } from '../ai/decisions';
 import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
+import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
 export function afterMoveLogic(
@@ -274,6 +275,7 @@ function resolveGuardsHeadless(
   // An empty garrison is a free takeover, not a fight -- same shortcut the
   // real guards screen takes above (see the defence === 0 branch).
   if (opts.defence === 0) {
+    announce(player, 'botController.takeUndefendedTile');
     claimUndefendedTile(board, updateGameState);
     return;
   }
@@ -307,21 +309,27 @@ function resolveGuardsHeadless(
     const decision = pickWizardGuardsAction(board, player, tile, opts);
     switch (decision.kind) {
       case 'pay':
+        announce(player, 'botController.payTheFee');
         payFee(board, updateGameState);
         return;
       case 'fight':
+        announce(player, 'botController.fight');
         fightTile(board, updateGameState);
         return;
       case 'sell-one-then-fight':
+        announce(player, 'botController.sellTilesToFight');
         sellThenResolve(false, decision.tile);
         return;
       case 'sell-one-then-pay':
+        announce(player, 'botController.sellTilesToPayFee');
         sellThenResolve(true, decision.tile);
         return;
       case 'sell-multiple-then-pay':
+        announce(player, 'botController.sellTilesToPayFee');
         sellThenResolve(true, undefined, sortTilesBySacrifice(board, player));
         return;
       case 'accept-loss':
+        announce(player, 'botController.acceptTheLoss');
         acceptLoss();
         return;
     }
@@ -329,8 +337,17 @@ function resolveGuardsHeadless(
   }
 
   const decision = pickGuardsAction(player, opts);
-  if (decision === 'sell-then-resolve') sellThenResolve(opts.canSellForFee);
-  else if (decision === 'pay') payFee(board, updateGameState);
-  else if (decision === 'fight') fightTile(board, updateGameState);
-  else acceptLoss();
+  if (decision === 'sell-then-resolve') {
+    announce(player, opts.canSellForFee ? 'botController.sellTilesToPayFee' : 'botController.sellTilesToFight');
+    sellThenResolve(opts.canSellForFee);
+  } else if (decision === 'pay') {
+    announce(player, 'botController.payTheFee');
+    payFee(board, updateGameState);
+  } else if (decision === 'fight') {
+    announce(player, 'botController.fight');
+    fightTile(board, updateGameState);
+  } else {
+    announce(player, 'botController.acceptTheLoss');
+    acceptLoss();
+  }
 }

@@ -500,7 +500,7 @@
     "turnIncome": "{playerName} получает {summary} со своих клеток"
   },
   "buyUnits": {
-    "bought": "{playerName} купил {amount} ({tier}) за {gold}🟡.",
+    "bought": "{playerName} купил {amount} ({tier}) за {gold}🟡, теперь у него {army}.",
     "notEnoughGold": "Недостаточно золота, чтобы купить юнитов."
   },
   "payFee": {

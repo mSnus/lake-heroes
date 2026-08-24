@@ -3,6 +3,7 @@ import { say } from '../utils/say';
 import { Player } from '../game/Player';
 import { MONEY_START, UNITS_START } from '../components/board/common';
 import { gameEvent } from '../utils/events';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 export function gameStart(
@@ -20,7 +21,7 @@ export function gameStart(
 
   gameState.turns = 0;
   gameState.gameStarted = true;
-  gameState.gameMessage = t('gameStart.message');
+  setGameMessage(gameState, t('gameStart.message'));
 
   updateGameState(gameState);
 

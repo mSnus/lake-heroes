@@ -507,7 +507,7 @@
     "turnIncome": "{playerName} recoge {summary} de sus casillas"
   },
   "buyUnits": {
-    "bought": "{playerName} compró {amount} {tier} por {gold}🟡.",
+    "bought": "{playerName} compró {amount} {tier} por {gold}🟡, y ahora tiene {army}.",
     "notEnoughGold": "No hay suficiente oro para comprar unidades."
   },
   "payFee": {

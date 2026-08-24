@@ -10,6 +10,7 @@ import { changeFame } from '../utils/fame';
 import { checkArtifactProtection } from '../game/artifacts';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldChallengeDragon } from '../ai/decisions';
+import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
 const ENCOUNTER_CHANCE = 1 / 12;
@@ -74,8 +75,10 @@ export function checkDragonEncounter(
     // Fight-or-flee is a real 2-way decision (showDragonChallengeScreen's
     // 2 buttons aren't auto-resolvable) -- same call BotController makes.
     updateGameState(board);
-    if (shouldChallengeDragon(player)) fightDragon(board, updateGameState);
-    else onContinue();
+    if (shouldChallengeDragon(player)) {
+      announce(player, 'botController.fightTheDragon');
+      fightDragon(board, updateGameState);
+    } else onContinue();
   } else {
     updateGameState(board);
     showDragonChallengeScreen(

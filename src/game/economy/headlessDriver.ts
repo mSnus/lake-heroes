@@ -8,6 +8,7 @@ import { setTileGarrison } from '../../actions/garrisonTile';
 import { setHeadlessRun } from '../../utils/headlessStore';
 import { resetEndTurn } from '../../utils/endTurnStore';
 import { setSimLogBoard, resetSimLog } from '../../utils/simLogStore';
+import { announce } from '../../utils/announce';
 import {
   getCharacterConfig,
   shouldClaimTile,
@@ -50,11 +51,18 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
     const cfg = getCharacterConfig(player);
     if (cfg?.buildsSyndicates && tile.requiredFame <= player.fame) {
       const saleCandidate = findSyndicateSaleCandidate(board, player, tile);
-      if (saleCandidate) sellTile(board, player, saleCandidate);
+      if (saleCandidate) {
+        announce(player, 'botController.sellForSyndicate', { saleName: saleCandidate.name, tileName: tile.name });
+        sellTile(board, player, saleCandidate);
+      }
     }
 
     player.hasConsideredClaimThisTurn = true;
-    if (shouldClaimTile(player, tile, board)) claimTile(board, updateGameState);
+    if (shouldClaimTile(player, tile, board)) {
+      announce(player, 'botController.claimTile', { tileName: tile.name });
+      claimTile(board, updateGameState);
+    }
+
     updateGameState(board);
   }
 
@@ -76,6 +84,7 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
 
   let garrisonPick = pickGarrisonAction(board, player);
   while (garrisonPick) {
+    announce(player, 'botController.garrisonTile', { amount: garrisonPick.amount, tileName: garrisonPick.tile.name });
     setTileGarrison(board, player, garrisonPick.tile, garrisonPick.tile.garrisonMilitia + garrisonPick.amount);
     updateGameState(board);
     garrisonPick = pickGarrisonAction(board, player);

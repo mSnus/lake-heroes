@@ -1,6 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
+import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
 /**
@@ -33,16 +34,17 @@ export function resolveCaravanBattle(
   const unitLossMsgScreen = lostUnits ? t('resolveCaravanBattle.whileUnitsLostScreen', { units: attackerUnitsKilled }) : '';
 
   let message = '';
+  let gameMessage = '';
   let victoryBg = false;
 
   if (outcome === 'attacker') {
     if (slaves) {
       attacker.units += prize;
-      board.gameMessage = t('resolveCaravanBattle.freedGameMessage', { attackerName: attacker.name, prize });
+      gameMessage = t('resolveCaravanBattle.freedGameMessage', { attackerName: attacker.name, prize });
       message = t('resolveCaravanBattle.freedMessage', { prize });
     } else {
       attacker.gold += prize;
-      board.gameMessage = t('resolveCaravanBattle.pillagedGameMessage', { attackerName: attacker.name, prize });
+      gameMessage = t('resolveCaravanBattle.pillagedGameMessage', { attackerName: attacker.name, prize });
       message = t('resolveCaravanBattle.pillagedMessage', { prize });
     }
     victoryBg = true;
@@ -54,19 +56,19 @@ export function resolveCaravanBattle(
 
     if (slaves) {
       attacker.units += quarterPrize;
-      board.gameMessage = t('resolveCaravanBattle.freedOnlyGameMessage', { attackerName: attacker.name, prize: quarterPrize, lossStr: tieLossStr });
+      gameMessage = t('resolveCaravanBattle.freedOnlyGameMessage', { attackerName: attacker.name, prize: quarterPrize, lossStr: tieLossStr });
       message = t('resolveCaravanBattle.freedOnlyMessage', { prize: quarterPrize, lossStr: tieLossStr });
     } else {
       attacker.gold += quarterPrize;
-      board.gameMessage = t('resolveCaravanBattle.pillagedOnlyGameMessage', { attackerName: attacker.name, prize: quarterPrize, lossStr: tieLossStr });
+      gameMessage = t('resolveCaravanBattle.pillagedOnlyGameMessage', { attackerName: attacker.name, prize: quarterPrize, lossStr: tieLossStr });
       message = t('resolveCaravanBattle.pillagedOnlyMessage', { prize: quarterPrize, lossStr: tieLossStr });
     }
   } else {
-    board.gameMessage = t('resolveCaravanBattle.failedGameMessage', { attackerName: attacker.name });
+    gameMessage = t('resolveCaravanBattle.failedGameMessage', { attackerName: attacker.name });
     message = t('resolveCaravanBattle.gotAway');
   }
 
-  board.gameMessage += unitLossMsgGame;
+  setGameMessage(board, gameMessage + unitLossMsgGame);
   message += unitLossMsgScreen;
 
   logBattleSummary(attacker, t('resolveCaravanBattle.caravanGuards'), outcome, null, unitsBefore, goldBefore);

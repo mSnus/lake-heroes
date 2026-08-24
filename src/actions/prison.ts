@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { showPrisonScreen } from '../utils/screenStore';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
+import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
 export function handlePrison(board: GameState | null, updateGameState: (board: GameState) => void) {
@@ -18,7 +19,7 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
   const artifact = getPrisonProtectionArtifact(player);
   if (artifact) {
     message = t('prison.savedByArtifact', { playerName: player.name, artifactName: artifact.name, emoji: artifact.emoji });
-    board.gameMessage = message;
+    setGameMessage(board, message);
   } else {
     player.turnsToSkip = 1;
   }
