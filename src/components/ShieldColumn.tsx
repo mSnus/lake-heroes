@@ -127,22 +127,8 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               </div>
             </div>
 
-            {/* Left column: reload, cheat, statistics, map edit */}
+            {/* Left column: cheat, statistics, map edit */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div className="shield-button-container" title={t('shieldColumn.reload')}>
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigator.serviceWorker
-                      ?.getRegistrations()
-                      .then((regs) => Promise.all(regs.map((r) => r.update())))
-                      .finally(() => window.location.reload());
-                  }}
-                  className="shield-button"
-                >
-                  ♻️
-                </button>
-              </div>
               <div className="shield-button-container" title={t('shieldColumn.cheat')}>
                 <button
                   onClick={() => {
