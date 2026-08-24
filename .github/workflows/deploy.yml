@@ -46,6 +46,11 @@ jobs:
         run: npm run build
         working-directory: ${{ github.workspace }}
         timeout-minutes: 6
+        env:
+          # Baked into the client bundle (see src/registerServiceWorker.ts)
+          # so the service worker's own registration URL changes on every
+          # deploy, regardless of any HTTP caching in between.
+          VITE_APP_VERSION: ${{ steps.version.outputs.tag }}
 
       - name: Write version file
         run: echo "${{ steps.version.outputs.tag }}" > ${{ github.workspace }}/dist/version.txt

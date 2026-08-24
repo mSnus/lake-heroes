@@ -11,6 +11,11 @@ export default defineConfig({
     VitePWA({
       // Auto-update the service worker in the background and reload on activate.
       registerType: 'autoUpdate',
+      // Registered manually (src/registerServiceWorker.ts) instead of the
+      // plugin's auto-injected script, so the registration URL can carry a
+      // build-version query string and a real update can force one reload
+      // instead of leaving the user to notice and reload repeatedly.
+      injectRegister: false,
       // Keep the existing public/manifest.json instead of generating one.
       manifest: false,
       workbox: {
