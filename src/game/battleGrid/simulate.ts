@@ -1,4 +1,3 @@
-import { DRAGON_UNITS } from '../constants';
 import { createBattle, isBattleOver, stepTurn, planBrawlSide, applyBrawlMoves, resolveBrawlCombat } from './engine';
 import { sizeArmyForGrid } from './scale';
 import { battleBoardFor, squadGroupCount } from './layout';
@@ -50,9 +49,9 @@ export function simulateOneBattle(
 ): SimResult {
   const atk = sizeArmyForGrid(attacker.militia, attacker.riders);
   const isDragon = defender.kind === 'dragon';
-  // A dragon always fields its fixed DRAGON_UNITS silhouette, same as the
-  // real encounter -- the amount field doesn't apply (see formations.ts).
-  const defenderRaw = isDragon ? DRAGON_UNITS : defender.amount;
+  // Dragons line up in a normal grouped formation now, not the old fixed
+  // 50-cell silhouette, so any headcount works -- take it from the input.
+  const defenderRaw = defender.amount;
   const def = sizeArmyForGrid(isDragon ? 0 : defenderRaw, isDragon ? defenderRaw : 0);
   const attackerTotal = atk.militiaCount + atk.ridersCount;
   const defenderTotal = def.militiaCount + def.ridersCount;

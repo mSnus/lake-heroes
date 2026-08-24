@@ -130,9 +130,8 @@ const BattleSimScreen: React.FC = () => {
   const handleDefenderKindChange = (kind: SimDefenderKind) => {
     setDefenderKind(kind);
     setDefenderStats(defaultDefenderStats(kind, militiaHp, militiaDmgMin, militiaDmgMax));
-    // A dragon always fights at its full fixed headcount, same as the real
-    // encounter -- both the simulation and "Run battle" force it anyway, so
-    // show the number that will actually be used.
+    // Start a dragon fight at the real encounter's headcount -- just a
+    // starting point now, the field is editable and is what actually fights.
     if (kind === 'dragon') setDefenderAmount(DRAGON_UNITS);
   };
 
@@ -194,12 +193,10 @@ const BattleSimScreen: React.FC = () => {
     const atkPlayer = new Player({ name: t('battleSimScreen.attacker'), color: 'blue', gold: 0, units: attackerMilitia, position: -1, image: 'blue', isComputer: true });
     atkPlayer.riders = attackerRiders;
     const defPlayer = new Player({ name: t('battleSimScreen.defender'), color: 'red', gold: 0, units: 0, position: -1, image: 'red', isComputer: true });
-    // The dragon's fixed 50-unit coiled-dragon silhouette formation only
-    // ever lays out DRAGON_UNITS cells (see formations.ts) -- any other
-    // count either leaves cells empty or drops units with nowhere to go, so
-    // a dragon test battle always fights the real DRAGON_UNITS headcount,
-    // same as the actual dragon encounter, regardless of the amount field.
-    if (defenderKind === 'dragon') defPlayer.riders = DRAGON_UNITS;
+    // Dragons occupy the rider slot (that's how createBattle builds them as
+    // their own kind), at whatever headcount the amount field says -- they
+    // line up in a normal grouped formation now, so any count works.
+    if (defenderKind === 'dragon') defPlayer.riders = defenderAmount;
     else defPlayer.militia = defenderAmount;
     const battleGameState = new GameState([], [atkPlayer, defPlayer]);
 

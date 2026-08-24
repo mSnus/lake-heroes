@@ -126,7 +126,7 @@ export const SMALL_BATTLEFIELD_ROWS = 15;
 // a maxed-out ~39-a-side symmetric fight from overlapping at the standard
 // BATTLEFIELD_ROWS, and the tighter width closes the approach.
 export const HUGE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
-export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 9;
+export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 11;
 // Landing on an abandoned (zombie-guarded) tile has this chance to trigger a
 // zombie ambush — same mechanics as a regular Ambush, but the attackers are
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).
