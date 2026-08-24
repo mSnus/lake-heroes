@@ -229,6 +229,7 @@ function App() {
                   screenType: 'caravan',
                   background: 'assets/screens/caravan.jpg',
                   caravanDefence: savedScreen.caravanDefence,
+                  caravanDefenceRiders: savedScreen.caravanDefenceRiders,
                   caravanPrize: savedScreen.caravanPrize,
                   message: savedScreen.message,
                   buttons: [
@@ -238,6 +239,7 @@ function App() {
                         showScreen({
                           screenType: 'caravan-battle',
                           caravanDefence: savedScreen.caravanDefence,
+                  caravanDefenceRiders: savedScreen.caravanDefenceRiders,
                           caravanPrize: savedScreen.caravanPrize,
                           content: (
                             <BattleScreen
@@ -246,6 +248,7 @@ function App() {
                               gameState={restored}
                               updateGameState={updateGameState}
                               caravanDefence={savedScreen.caravanDefence!}
+                              caravanDefenceRiders={savedScreen.caravanDefenceRiders}
                               caravanPrize={savedScreen.caravanPrize!}
                               onClose={() => gameEvent('showDice', null)}
                             />
@@ -266,6 +269,7 @@ function App() {
                 showScreen({
                   screenType: 'caravan-battle',
                   caravanDefence: savedScreen.caravanDefence,
+                  caravanDefenceRiders: savedScreen.caravanDefenceRiders,
                   caravanPrize: savedScreen.caravanPrize,
                   content: (
                     <BattleScreen
@@ -274,6 +278,7 @@ function App() {
                       gameState={restored}
                       updateGameState={updateGameState}
                       caravanDefence={savedScreen.caravanDefence!}
+                              caravanDefenceRiders={savedScreen.caravanDefenceRiders}
                       caravanPrize={savedScreen.caravanPrize!}
                       onClose={() => gameEvent('showDice', null)}
                     />
@@ -370,11 +375,13 @@ function App() {
                 showScreen({
                   screenType: 'ambush-battle',
                   ambushAttackerUnits: savedScreen.ambushAttackerUnits,
+                  ambushAttackerRiders: savedScreen.ambushAttackerRiders,
                   content: (
                     <BattleScreen
                       mode="ambush"
                       attacker={restored.activePlayer}
                       ambushAttackerUnits={savedScreen.ambushAttackerUnits ?? 1}
+                      ambushAttackerRiders={savedScreen.ambushAttackerRiders}
                       gameState={restored}
                       updateGameState={updateGameState}
                       onClose={() => gameEvent('showDice', null)}
@@ -528,11 +535,13 @@ function App() {
         htmlMessage: screen.htmlMessage,
         title: screen.title,
         caravanDefence: screen.caravanDefence,
+        caravanDefenceRiders: screen.caravanDefenceRiders,
         caravanPrize: screen.caravanPrize,
         tileIndex: screen.tileIndex,
         defenderId: screen.defenderId,
         battlefieldUnits: screen.battlefieldUnits,
         ambushAttackerUnits: screen.ambushAttackerUnits,
+        ambushAttackerRiders: screen.ambushAttackerRiders,
         hordeUnits: screen.hordeUnits,
       });
     } else {

@@ -19,6 +19,7 @@ export interface SavedScreen {
   htmlMessage?: string;
   title?: string;
   caravanDefence?: number;
+  caravanDefenceRiders?: number;
   caravanPrize?: number;
   // Battle-resume identifiers only — enough to reconstruct who's fighting
   // whom and over what, not the fight's in-progress state. A restored
@@ -27,6 +28,7 @@ export interface SavedScreen {
   defenderId?: number;
   battlefieldUnits?: number;
   ambushAttackerUnits?: number;
+  ambushAttackerRiders?: number;
   hordeUnits?: number;
 }
 
@@ -53,6 +55,7 @@ export interface ScreenConfig {
   message?: string;
   htmlMessage?: string;
   caravanDefence?: number;
+  caravanDefenceRiders?: number;
   caravanPrize?: number;
   buttons?: ScreenButton[];
   sellMode?: boolean;
@@ -66,6 +69,7 @@ export interface ScreenConfig {
   defenderId?: number;
   battlefieldUnits?: number;
   ambushAttackerUnits?: number;
+  ambushAttackerRiders?: number;
   hordeUnits?: number;
 }
 

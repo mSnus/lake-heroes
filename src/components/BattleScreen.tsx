@@ -59,7 +59,11 @@ export type BattleScreenProps =
       gameState: GameState;
       updateGameState: (gs: GameState) => void;
       mode: 'caravan';
+      /** Total guard headcount. */
       caravanDefence: number;
+      /** How many of caravanDefence ride camels rather than march. Absent on
+       * screens saved before caravans had riders, which reads as none. */
+      caravanDefenceRiders?: number;
       caravanPrize: number;
       caravanSlaves?: boolean;
       onClose: () => void;
@@ -87,6 +91,7 @@ export type BattleScreenProps =
       onClose: () => void;
       tile?: never;
       caravanDefence?: never;
+      caravanDefenceRiders?: never;
       caravanPrize?: never;
       caravanSlaves?: never;
       /** Set only by the battle simulator's "Run battle" button — fights this
@@ -111,7 +116,11 @@ export type BattleScreenProps =
       gameState: GameState;
       updateGameState: (gs: GameState) => void;
       mode: 'ambush';
+      /** Total ambusher headcount. */
       ambushAttackerUnits: number;
+      /** How many of ambushAttackerUnits are mounted. Absent on screens saved
+       * before ambushes had riders, which reads as none. */
+      ambushAttackerRiders?: number;
       /** True when the ambushers are an abandoned tile's zombie garrison
        * rather than regular NPC ambushers (see zombieAmbushEncounter.tsx) —
        * reskins the attacker-role grid units, field icon, and label. */
@@ -126,6 +135,7 @@ export type BattleScreenProps =
       defender?: never;
       tile?: never;
       caravanDefence?: never;
+      caravanDefenceRiders?: never;
       caravanPrize?: never;
       caravanSlaves?: never;
       battlefieldUnits?: never;
@@ -145,10 +155,12 @@ export type BattleScreenProps =
       tile: Tile;
       onClose: () => void;
       caravanDefence?: never;
+      caravanDefenceRiders?: never;
       caravanPrize?: never;
       caravanSlaves?: never;
       battlefieldUnits?: never;
       ambushAttackerUnits?: never;
+      ambushAttackerRiders?: never;
       statOverrides?: never;
     };
 
@@ -271,7 +283,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
   // Dragon and caravan guards occupy the defender role.
   const attackerFieldIcon = isZombieAmbush ? '🧟‍♀️' : isAmbush || isRogue ? '👹' : undefined;
-  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? '🥷' : undefined;
+  // Caravan guards keep 🥷 on foot but ride 🐫 -- a mounted guard is a plain
+  // rider under the hood (same hp/damage), only its emoji differs.
+  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? { militia: '🥷', rider: '🐫' } : undefined;
 
   // ── Initial log ──
   const loggedRef = useRef(false);

@@ -806,7 +806,7 @@
   },
   "ambushEncounter": {
     "title": "Засада",
-    "message": "{playerSpan} попадает в засаду!<br />Отряд из {units}🥷 внезапно атакует. Сражайтесь за свою жизнь!",
+    "message": "{playerSpan} попадает в засаду!<br />Отряд из {squad} внезапно атакует. Сражайтесь за свою жизнь!",
     "defend": "Защищаться"
   },
   "zombieAmbush": {
@@ -830,7 +830,7 @@
   "caravanEncounter": {
     "bringingChains": "везущий {prize}🧍 в цепях",
     "ofGoodsWorth": "товаров на {prize}🟡",
-    "message": "{playerSpan} <br />{gold}🟡 {army}<br /> встречает караван<br /> под охраной {defendingUnits}🥷\n    <br /> {caravanDesc}<br /> Атаковать?",
+    "message": "{playerSpan} <br />{gold}🟡 {army}<br /> встречает караван<br /> под охраной {guards}\n    <br /> {caravanDesc}<br /> Атаковать?",
     "letThemPass": "✖️ Пусть проходят..",
     "attack": "⚔️ Атаковать!"
   },

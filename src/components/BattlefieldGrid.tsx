@@ -1,10 +1,13 @@
 import React, { useRef, useState, useEffect, useId } from 'react';
-import { GridBattleState, TurnEvent, BattleSide, GridUnit } from '../game/battleGrid/types';
+import { GridBattleState, TurnEvent, BattleSide, GridUnit, UnitKind } from '../game/battleGrid/types';
 import { BrawlPlan, adjacentCells } from '../game/battleGrid/engine';
 import { useT } from '../i18n';
 import '../styles/BattlefieldGrid.css';
 
 type AnimPhase = 'idle' | 'attack-defend' | 'impact' | 'outcome';
+
+/** A whole-side emoji override, or one per unit kind. */
+export type SideIcon = string | Partial<Record<UnitKind, string>>;
 
 interface BattlefieldGridProps {
   battle: GridBattleState;
@@ -17,9 +20,11 @@ interface BattlefieldGridProps {
   /** Mode-specific icon override for a whole side (🐉 dragon, 👹 ambushers/
    * rogue horde, etc) in place of the normal rider/militia emoji — mirrors
    * the old duel screen's per-mode grid icons (BattleScreen decides which
-   * mode maps to which side; this component just renders it). */
-  attackerIcon?: string;
-  defenderIcon?: string;
+   * mode maps to which side; this component just renders it). Pass a
+   * per-kind map instead of a string to re-skin only some tiers — caravan
+   * guards are 🥷 on foot but 🐫 mounted. */
+  attackerIcon?: SideIcon;
+  defenderIcon?: SideIcon;
   /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells
    * and units at 180% of the normal height. */
   brawl?: boolean;
@@ -334,8 +339,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     }
   }
 
-  const emojiFor = (u: GridUnit) =>
-    (u.side === 'attacker' ? attackerIcon : defenderIcon) ?? UNIT_EMOJI[`${u.side}-${u.kind}`];
+  const emojiFor = (u: GridUnit) => {
+    const icon = u.side === 'attacker' ? attackerIcon : defenderIcon;
+    const override = typeof icon === 'string' ? icon : icon?.[u.kind];
+    return override ?? UNIT_EMOJI[`${u.side}-${u.kind}`];
+  };
 
   // Original-unit opacity while its own side is being manually controlled: a
   // unit that's moved is gone from its old cell (0); one that's staying to

@@ -815,7 +815,7 @@
   },
   "ambushEncounter": {
     "title": "Ambush",
-    "message": "{playerSpan} is ambushed!<br />A squad of {units}🥷 suddenly attacks. Fight for your lifes!",
+    "message": "{playerSpan} is ambushed!<br />A squad of {squad} suddenly attacks. Fight for your lifes!",
     "defend": "Defend"
   },
   "zombieAmbush": {
@@ -839,7 +839,7 @@
   "caravanEncounter": {
     "bringingChains": "bringing {prize}🧍 in chains",
     "ofGoodsWorth": "of goods worth {prize}🟡",
-    "message": "{playerSpan} <br />{gold}🟡 {army}<br /> encounters a caravan<br /> guarded by {defendingUnits}🥷\n    <br /> {caravanDesc}<br /> Would you attack?",
+    "message": "{playerSpan} <br />{gold}🟡 {army}<br /> encounters a caravan<br /> guarded by {guards}\n    <br /> {caravanDesc}<br /> Would you attack?",
     "letThemPass": "✖️ Let 'em pass..",
     "attack": "⚔️ Attack!"
   },

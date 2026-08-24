@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { showScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
+import { formatArmy, AMBUSH_EMOJI } from '../utils/formatArmy';
 import { KNIGHT_FAME } from '../game/constants';
 import { t } from '../i18n';
 
@@ -26,13 +27,30 @@ export function checkAmbushEncounter(
   player.ambushEncounters = (player.ambushEncounters ?? 0) + 1;
   updateGameState(board);
 
-  // The ambushers field 50–70% of the player's units.
-  const attackerUnits = Math.max(1, Math.round((0.5 + Math.random() * 0.2) * player.units));
+  // The ambushers field 50–70% of the player's units, tier by tier -- the
+  // same roll the total used to get, so a mounted player is waylaid by
+  // mounted bandits.
+  const scale = () => 0.5 + Math.random() * 0.2;
+  const attackerRiders = Math.round(scale() * player.riders);
+  const attackerMilitia = Math.max(attackerRiders > 0 ? 0 : 1, Math.round(scale() * player.militia));
+  const attackerUnits = attackerMilitia + attackerRiders;
 
   const startBattle = () => {
     showBattleScreen(
-      { mode: 'ambush', attacker: player, ambushAttackerUnits: attackerUnits, gameState: board, updateGameState, onClose: onContinue },
-      { screenType: 'ambush-battle', ambushAttackerUnits: attackerUnits }
+      {
+        mode: 'ambush',
+        attacker: player,
+        ambushAttackerUnits: attackerUnits,
+        ambushAttackerRiders: attackerRiders,
+        gameState: board,
+        updateGameState,
+        onClose: onContinue,
+      },
+      {
+        screenType: 'ambush-battle',
+        ambushAttackerUnits: attackerUnits,
+        ambushAttackerRiders: attackerRiders,
+      }
     );
   };
 
@@ -51,7 +69,7 @@ export function checkAmbushEncounter(
     spriteImage: 'assets/figures/npc-saracen.png',
     htmlMessage: t('ambushEncounter.message', {
       playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
-      units: attackerUnits,
+      squad: formatArmy(attackerMilitia, attackerRiders, AMBUSH_EMOJI),
     }),
     buttons: [{ label: t('ambushEncounter.defend'), onClick: startBattle }],
   });

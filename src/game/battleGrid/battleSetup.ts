@@ -27,6 +27,9 @@ export interface BattleSetup {
   caravanSlaves: boolean;
   battlefieldUnits: number | undefined;
   ambushAttackerUnits: number | undefined;
+  /** Mounted share of the NPC force -- part of the total above, not extra. */
+  caravanDefenceRiders: number;
+  ambushAttackerRiders: number;
   isZombieAmbush: boolean;
   isRuins: boolean;
   attackerSized: SizedArmy;
@@ -70,11 +73,14 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   let caravanSlaves = false;
   let battlefieldUnits: number | undefined;
   let ambushAttackerUnits: number | undefined;
+  let caravanDefenceRiders = 0;
+  let ambushAttackerRiders = 0;
   let isZombieAmbush = false;
   let isRuins = false;
 
   if (props.mode === 'caravan') {
     defence = props.caravanDefence;
+    caravanDefenceRiders = Math.min(props.caravanDefenceRiders ?? 0, defence);
     caravanPrize = props.caravanPrize;
     caravanSlaves = props.caravanSlaves ?? false;
   } else if (props.mode === 'dragon') {
@@ -86,6 +92,7 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   } else if (props.mode === 'ambush') {
     defence = props.ambushAttackerUnits;
     ambushAttackerUnits = props.ambushAttackerUnits;
+    ambushAttackerRiders = Math.min(props.ambushAttackerRiders ?? 0, ambushAttackerUnits);
     isZombieAmbush = !!props.isZombieAmbush;
     isRuins = !!props.isRuins;
   } else {
@@ -95,7 +102,7 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   }
 
   const attackerCompRaw = isAmbush
-    ? { militia: ambushAttackerUnits!, riders: 0 }
+    ? { militia: ambushAttackerUnits! - ambushAttackerRiders, riders: ambushAttackerRiders }
     : { militia: attacker.militia, riders: attacker.riders };
   const defenderCompRaw = (isTile || isRogue) && defender
     ? { militia: tile!.garrisonMilitia, riders: tile!.garrisonRiders }
@@ -105,7 +112,8 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
         ? { militia: 0, riders: DRAGON_UNITS }
         : isAmbush
           ? { militia: attacker.militia, riders: attacker.riders }
-          : { militia: defence, riders: 0 };
+          // Caravan: its mounted guards are part of the same total headcount.
+          : { militia: defence - caravanDefenceRiders, riders: caravanDefenceRiders };
 
   const attackerSized = sizeArmyForGrid(attackerCompRaw.militia, attackerCompRaw.riders);
   const defenderSized = sizeArmyForGrid(defenderCompRaw.militia, defenderCompRaw.riders);
@@ -170,6 +178,8 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     caravanSlaves,
     battlefieldUnits,
     ambushAttackerUnits,
+    caravanDefenceRiders,
+    ambushAttackerRiders,
     isZombieAmbush,
     isRuins,
     attackerSized,

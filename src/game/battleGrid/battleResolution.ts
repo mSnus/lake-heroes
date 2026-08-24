@@ -110,8 +110,10 @@ export function showBattleScreen(
     | 'defenderId'
     | 'battlefieldUnits'
     | 'ambushAttackerUnits'
+    | 'ambushAttackerRiders'
     | 'hordeUnits'
     | 'caravanDefence'
+    | 'caravanDefenceRiders'
     | 'caravanPrize'
   >
 ): void {
