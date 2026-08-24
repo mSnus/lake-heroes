@@ -8,10 +8,10 @@ import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
 import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
-import { pickKingsCastleHireAmount, pickKingsCastleHireTier } from '../ai/decisions';
 import { KingsContract } from '../game/kingsContracts';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
+import { planUnitHire } from '../ai/botPlans';
 
 interface BuyUnitsModalProps {
   gameState: GameState;
@@ -75,13 +75,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const botTier = pickKingsCastleHireTier(player);
-    const botUnitPrice = botTier === 'riders' ? getOverrides().riderPrice : getOverrides().militiaPrice;
-    const botMaxAmount = Math.min(
-      Math.floor(player.gold / botUnitPrice),
-      player.remainingCapacity(botTier)
-    );
-    const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, botUnitPrice);
+    const { tier: botTier, amount: hireAmount } = planUnitHire(player);
     const timer = setTimeout(() => {
       if (hireAmount > 0) onBuy(hireAmount, botTier);
       onSkip();

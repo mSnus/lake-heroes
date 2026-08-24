@@ -17,12 +17,12 @@ import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { tileTurnIncome } from '../game/income';
 import { TOWER_LEVEL_UNIT_BONUS } from '../game/constants';
-import { getCharacterConfig } from '../ai/decisions';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
 import '../styles/TileCard.css';
 import '../styles/TileClaim.css';
 import '../styles/GameMenu.css';
+import { planClaimGarrison } from '../ai/botPlans';
 
 interface TileInfoScreenProps {
   tile: Tile;
@@ -114,8 +114,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
   useEffect(() => {
     if (variant !== 'claimed' || !player.isComputer) return;
-    const fraction = getCharacterConfig(player)?.claimGarrisonFraction ?? 0;
-    const amount = Math.min(maxGarrison, Math.floor(fraction * totalMilitiaPool));
+    const amount = planClaimGarrison(player, maxGarrison, totalMilitiaPool);
     const timer = setTimeout(() => {
       if (amount > 0) {
         setTileGarrison(gameState, player, tile, amount);

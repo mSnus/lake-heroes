@@ -7,8 +7,8 @@ import { getOverrides } from '../utils/overridesStore';
 import { DecoratedButton } from './DecoratedButton';
 import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
-import { pickKingsCastleHireAmount } from '../ai/decisions';
 import { useT } from '../i18n';
+import { planUnitHire } from '../ai/botPlans';
 
 interface TavernModalProps {
   gameState: GameState;
@@ -48,11 +48,7 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onBuy,
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const botMaxAmount = Math.min(
-      Math.floor(player.gold / getOverrides().militiaPrice),
-      player.remainingCapacity('militia')
-    );
-    const hireAmount = pickKingsCastleHireAmount(player, botMaxAmount, getOverrides().militiaPrice);
+    const { amount: hireAmount } = planUnitHire(player, 'militia');
     const timer = setTimeout(() => {
       if (hireAmount > 0) onBuy(hireAmount, 'militia');
       onSkip();
