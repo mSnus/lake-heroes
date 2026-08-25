@@ -1,13 +1,14 @@
 import en from './locales/en.json';
 import ru from './locales/ru.json';
 import es from './locales/es.json';
+import sim from './locales/sim.json';
 import { getLanguage, useLanguage, Language } from './languageStore';
 
 export { LANGUAGES, getLanguage, setLanguage, cycleLanguage, useLanguage } from './languageStore';
 export type { Language, LanguageOption } from './languageStore';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LOCALES: Record<Language, any> = { en, ru, es };
+const LOCALES: Record<Language, any> = { en, ru, es, sim };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function lookup(locale: any, key: string): unknown {

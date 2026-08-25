@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { buildTilesFromTemplates } from '../game/TileSet';
@@ -13,7 +13,7 @@ import { getSimLog, getSimIncome, getSimTileVisits, getSimCircleSnapshot } from 
 import { formatUnits, formatCellStats } from '../utils/formatPlayerCell';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
-import { useT } from '../i18n';
+import { useT, getLanguage, setLanguage } from '../i18n';
 import GameModal from './GameModal';
 import '../styles/modal.css';
 import '../styles/CheatScreen.css';
@@ -137,7 +137,20 @@ const EconomySimScreen: React.FC = () => {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<RunResult | null>(null);
 
+  // Safety net: if this screen ever disappears some other way than the
+  // Close button below (e.g. a new screen replaces it outright), don't
+  // leave the app stuck in the sim's pseudo-language. Only reverts if
+  // still on 'sim' -- a manual language switch mid-run isn't clobbered.
+  useEffect(() => {
+    return () => {
+      if (getLanguage() === 'sim') setLanguage('en');
+    };
+  }, []);
+
   const handleRun = () => {
+    // Sim-tuned message text (sim.json), without touching en.json -- reverted
+    // to 'en' when the screen closes (see the Close button below).
+    setLanguage('sim');
     setRunning(true);
     // Deferred so "Simulating…" actually paints before the run blocks the thread.
     setTimeout(async () => {
@@ -289,7 +302,14 @@ const EconomySimScreen: React.FC = () => {
             {running ? t('economySimScreen.simulating') : t('economySimScreen.simulate')}
           </DecoratedButton>
           {result && <DecoratedButton onClick={() => setResult(null)}>{t('battleSimScreen.clear')}</DecoratedButton>}
-          <DecoratedButton onClick={clearScreen}>{t('common.close')}</DecoratedButton>
+          <DecoratedButton
+            onClick={() => {
+              setLanguage('en');
+              clearScreen();
+            }}
+          >
+            {t('common.close')}
+          </DecoratedButton>
         </div>
 
         {result && (

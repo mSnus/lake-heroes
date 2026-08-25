@@ -1,6 +1,12 @@
 import { useSyncExternalStore } from 'react';
 
-export type Language = 'en' | 'ru' | 'es';
+/** 'sim' is a pseudo-language, not a real user-facing choice -- it backs
+ * sim.json, switched to only while the economy simulator runs (see
+ * EconomySimScreen.tsx), so its tuned message text doesn't have to live in
+ * en.json. Deliberately excluded from LANGUAGES below, so it never appears
+ * in the language cycle button and loadInitialLanguage's LANGUAGES check
+ * rejects it if it's ever somehow still in localStorage on a fresh load. */
+export type Language = 'en' | 'ru' | 'es' | 'sim';
 
 export interface LanguageOption {
   code: Language;
