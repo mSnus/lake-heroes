@@ -9,7 +9,7 @@ import { runHeadlessGame, HeadlessStopReason } from '../game/economy/headlessDri
 import { getOverrides, setHeadlessOverrides } from '../utils/overridesStore';
 import { totalWealth } from '../game/wealth';
 import { getArtifact } from '../game/artifacts';
-import { getSimLog, getSimIncome } from '../utils/simLogStore';
+import { getSimLog, getSimIncome, getSimTileVisits } from '../utils/simLogStore';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { useT } from '../i18n';
@@ -39,6 +39,9 @@ interface PlayerSnapshot {
   /** Tile income collected across every turn this circle -- filled in after
    * the run from the sim income accumulator, alongside log. */
   dailyIncome: { gold: number; units: number };
+  /** Short names of every tile stepped onto this circle, in order -- filled
+   * in after the run from the sim tile-visit accumulator, alongside log. */
+  tileSequence: string[];
 }
 
 interface CircleRow {
@@ -94,6 +97,7 @@ function snapshotPlayer(board: GameState, player: Player): PlayerSnapshot {
     isPOW: player.isPrisonerOfWar,
     log: [],
     dailyIncome: { gold: 0, units: 0 },
+    tileSequence: [],
   };
 }
 
@@ -209,6 +213,7 @@ const EconomySimScreen: React.FC = () => {
         row.players.forEach((snapshot, i) => {
           snapshot.log = getSimLog(players[i].id, row.circle);
           snapshot.dailyIncome = getSimIncome(players[i].id, row.circle);
+          snapshot.tileSequence = getSimTileVisits(players[i].id, row.circle);
         });
       }
 
@@ -329,6 +334,11 @@ const EconomySimScreen: React.FC = () => {
                             {p.tileNames.length > 0 && (
                               <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
                                 🧩 {p.tileNames.join(', ')}
+                              </div>
+                            )}
+                            {p.tileSequence.length > 0 && (
+                              <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
+                                🚶 {p.tileSequence.join(' -> ')}
                               </div>
                             )}
                             {p.log.length > 0 && (

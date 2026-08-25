@@ -20,6 +20,7 @@ import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { setGameMessage } from '../utils/gameMessage';
+import { recordSimTileVisit } from '../utils/simLogStore';
 import { showTreasureScreen, showTavernScreen, showSphynxScreen } from '../utils/screenStore';
 import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
@@ -99,6 +100,12 @@ export async function rollAndMove(
         // (see passStart's isLanding param).
         passStart(board, updateGameState, step === roll);
       }
+
+      // Read AFTER the possible passStart above, so a step that wraps onto
+      // King's Castle (which bumps player.circles inside passStart) logs
+      // that tile -- and everything visited after it this same move -- under
+      // the NEW circle rather than the one this move started in.
+      if (isHeadlessRun()) recordSimTileVisit(board.tiles[nextPos].shortName);
 
       if (!isHeadlessRun()) {
         await new Promise((res) => setTimeout(res, 300));

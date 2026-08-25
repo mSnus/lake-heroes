@@ -19,6 +19,7 @@ interface SimLogBoard {
 let board: SimLogBoard | null = null;
 let entries = new Map<string, string[]>();
 let income = new Map<string, { gold: number; units: number }>();
+let tileVisits = new Map<string, string[]>();
 
 const key = (playerId: number, circle: number) => `${playerId}:${circle}`;
 
@@ -29,6 +30,7 @@ export function setSimLogBoard(next: SimLogBoard | null): void {
 export function resetSimLog(): void {
   entries = new Map();
   income = new Map();
+  tileVisits = new Map();
 }
 
 /**
@@ -87,4 +89,24 @@ export function recordSimIncome(gold: number, units: number): void {
 
 export function getSimIncome(playerId: number, circle: number): { gold: number; units: number } {
   return income.get(key(playerId, circle)) ?? { gold: 0, units: 0 };
+}
+
+/** One tile stepped onto during a move, in order -- read live off
+ * board.activePlayer.circles at call time, same as recordSimLog/
+ * recordSimIncome, so a step that crosses King's Castle (which bumps
+ * circles before this fires, see rollAndMove.ts) automatically lands in the
+ * NEXT circle's sequence rather than the one the move started in. */
+export function recordSimTileVisit(tileName: string): void {
+  if (!board) return;
+  const player = board.activePlayer;
+  if (!player) return;
+
+  const k = key(player.id, player.circles);
+  const list = tileVisits.get(k);
+  if (list) list.push(tileName);
+  else tileVisits.set(k, [tileName]);
+}
+
+export function getSimTileVisits(playerId: number, circle: number): string[] {
+  return tileVisits.get(key(playerId, circle)) ?? [];
 }
