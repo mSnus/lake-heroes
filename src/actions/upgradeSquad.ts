@@ -5,10 +5,13 @@ import { t } from '../i18n';
 
 /** Gold cost to upgrade `count` militia into riders — the difference
  * between a rider's price and a militia's, since the militia being
- * converted are already-owned units, not a fresh hire. */
-export function upgradeSquadCost(count: number): number {
+ * converted are already-owned units, not a fresh hire. `pricePerUnit`
+ * overrides that difference outright (the Tavern charges its own premium
+ * per-unit rate for both tiers -- see tavern.ts's tavernUpgradePricePerUnit). */
+export function upgradeSquadCost(count: number, pricePerUnit?: number): number {
   const ov = getOverrides();
-  return Math.max(0, count * (ov.riderPrice - ov.militiaPrice));
+  const perUnit = pricePerUnit ?? ov.riderPrice - ov.militiaPrice;
+  return Math.max(0, count * perUnit);
 }
 
 /**
@@ -21,13 +24,14 @@ export function upgradeSquadCost(count: number): number {
 export function upgradeSquad(
   board: GameState | null,
   count: number,
-  updateGameState: (board: GameState) => void
+  updateGameState: (board: GameState) => void,
+  pricePerUnit?: number
 ) {
   if (!board || count <= 0) return;
 
   const player = board.activePlayer;
   const upgraded = Math.min(count, player.militia);
-  const cost = upgradeSquadCost(upgraded);
+  const cost = upgradeSquadCost(upgraded, pricePerUnit);
 
   if (upgraded <= 0 || player.gold < cost) return;
 

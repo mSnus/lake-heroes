@@ -7,7 +7,7 @@ import { DecoratedButton } from './DecoratedButton';
 import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
 import { useT } from '../i18n';
-import { planUnitHire } from '../ai/botPlans';
+import { planArmyPurchase } from '../ai/botPlans';
 
 interface TavernModalProps {
   gameState: GameState;
@@ -15,22 +15,33 @@ interface TavernModalProps {
    * Omitted when reopening the tile's hire dialogue without a fresh roll
    * (see tavern.ts's openTavernHireOnly). */
   joinedHtml?: string;
-  /** The Tavern's own (premium) militia price -- passed in rather than
-   * computed here to avoid a components/ <-> actions/ import cycle with
-   * tavern.ts, which already imports this component. See tavern.ts's
-   * tavernMilitiaPrice, the single source of truth both call sites use. */
+  /** The Tavern's own (premium) prices -- passed in rather than computed
+   * here to avoid a components/ <-> actions/ import cycle with tavern.ts,
+   * which already imports this component. See tavern.ts's
+   * tavernMilitiaPrice/tavernRiderPrice, the single source of truth every
+   * call site uses. */
   militiaPrice: number;
+  riderPrice: number;
   onBuy: (amount: number, tier: UnitTier) => void;
   onSell: (tier: UnitTier, amount: number) => void;
+  onUpgrade: (count: number) => void;
   onSkip: () => void;
 }
 
 /** Tavern's post-roll screen: shows the free militia the roll won, then lets
- * the player recruit more with gold — same mechanics as King's Castle, but
- * militia only (the tavern doesn't train knights, so `showRiders` is always
- * false regardless of the player's rank), and at a premium over the King's
- * Castle's own price (see militiaPrice). */
-const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, militiaPrice, onBuy, onSell, onSkip }) => {
+ * the player recruit more with gold — same mechanics as King's Castle
+ * (including Riders/squad upgrades for Knights), just at a premium over the
+ * King's Castle's own prices (see militiaPrice/riderPrice). */
+const TavernModal: React.FC<TavernModalProps> = ({
+  gameState,
+  joinedHtml,
+  militiaPrice,
+  riderPrice,
+  onBuy,
+  onSell,
+  onUpgrade,
+  onSkip,
+}) => {
   const t = useT();
   const player = gameState.activePlayer;
 
@@ -49,14 +60,29 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, militi
     forceRerender((v) => v + 1);
   };
 
+  const handleUpgrade = (count: number) => {
+    onUpgrade(count);
+    forceRerender((v) => v + 1);
+  };
+
+  const canRecruitRiders = player.isKnight;
+
   const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.remainingCapacity('militia'));
-  const atMax = militiaMax <= 0;
+  const ridersMax = canRecruitRiders
+    ? Math.min(Math.floor(player.gold / riderPrice), player.remainingCapacity('riders'))
+    : 0;
+  const atMax = militiaMax <= 0 && ridersMax <= 0;
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const { amount: hireAmount } = planUnitHire(player, 'militia', militiaPrice);
+    const plan = planArmyPurchase(player, { militiaPrice, riderPrice });
     const timer = setTimeout(() => {
-      if (hireAmount > 0) onBuy(hireAmount, 'militia');
+      for (const step of plan) {
+        if (step.kind === 'sell') onSell(step.tier, step.count);
+        else if (step.kind === 'upgrade') onUpgrade(step.count);
+        else onBuy(step.count, step.tier);
+      }
+
       onSkip();
     }, 600);
     return () => clearTimeout(timer);
@@ -83,13 +109,23 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, militi
           riders={player.riders}
           totalSlots={player.armySlots}
           onSellSquad={handleSell}
+          onUpgradeSquad={handleUpgrade}
+          canUpgradeToRiders={canRecruitRiders}
+          playerGold={player.gold}
+          upgradePricePerUnit={riderPrice - militiaPrice}
           className="squad-display-large"
         />
 
         {atMax ? (
           <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
         ) : (
-          <SquadHirePanel player={player} showRiders={false} onBuy={handleBuy} militiaPrice={militiaPrice} />
+          <SquadHirePanel
+            player={player}
+            showRiders={canRecruitRiders}
+            onBuy={handleBuy}
+            militiaPrice={militiaPrice}
+            riderPrice={riderPrice}
+          />
         )}
 
         <div

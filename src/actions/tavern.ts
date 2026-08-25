@@ -5,11 +5,12 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
+import { upgradeSquad } from './upgradeSquad';
 import TavernModal from '../components/TavernModal';
 import { computeSlotsUsed } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
-import { planUnitHire } from '../ai/botPlans';
-import { TAVERN_MILITIA_PRICE_MULT } from '../game/constants';
+import { planArmyPurchase } from '../ai/botPlans';
+import { TAVERN_PRICE_MULT } from '../game/constants';
 import { t } from '../i18n';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
@@ -17,11 +18,22 @@ import { t } from '../i18n';
 // militia.
 const KNIGHT_HORSE_CHANCE = 0.2;
 
-/** The Tavern's militia hire price -- a premium over the King's Castle's own
- * price, shared by the human hire panel, the bot decision, and the actual
- * charge so all three can never drift apart. */
+/** The Tavern's militia/rider hire prices -- a premium over the King's
+ * Castle's own prices, shared by the human hire panel, the bot decision,
+ * and the actual charge so none of them can ever drift apart. */
 export function tavernMilitiaPrice(): number {
-  return getOverrides().militiaPrice * TAVERN_MILITIA_PRICE_MULT;
+  return getOverrides().militiaPrice * TAVERN_PRICE_MULT;
+}
+
+export function tavernRiderPrice(): number {
+  return getOverrides().riderPrice * TAVERN_PRICE_MULT;
+}
+
+/** Per-unit cost to upgrade militia into riders at the Tavern's premium
+ * rates -- both tiers scale by the same multiplier, so this is just the
+ * normal upgrade delta times TAVERN_PRICE_MULT. */
+export function tavernUpgradePricePerUnit(): number {
+  return tavernRiderPrice() - tavernMilitiaPrice();
 }
 
 export function handleTavern(
@@ -86,8 +98,13 @@ export function handleTavern(
 
   // Same decision TavernModal's own self-drive effect makes.
   if (isHeadlessRun()) {
-    const { amount: hireAmount } = planUnitHire(player, 'militia', tavernMilitiaPrice());
-    if (hireAmount > 0) buyUnits(board, hireAmount, updateGameState, 'militia', tavernMilitiaPrice());
+    const steps = planArmyPurchase(player, { militiaPrice: tavernMilitiaPrice(), riderPrice: tavernRiderPrice() });
+    for (const step of steps) {
+      if (step.kind === 'sell') sellUnits(board, step.count, updateGameState, step.tier);
+      else if (step.kind === 'upgrade') upgradeSquad(board, step.count, updateGameState, tavernUpgradePricePerUnit());
+      else buyUnits(board, step.count, updateGameState, step.tier, step.tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice());
+    }
+
     setEndTurn();
     return;
   }
@@ -98,11 +115,15 @@ export function handleTavern(
       gameState: board,
       joinedHtml: `${joinedMsg}${fullNote}`,
       militiaPrice: tavernMilitiaPrice(),
+      riderPrice: tavernRiderPrice(),
       onBuy: (amount, tier) => {
-        buyUnits(board, amount, updateGameState, tier, tavernMilitiaPrice());
+        buyUnits(board, amount, updateGameState, tier, tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice());
       },
       onSell: (tier, amount) => {
         sellUnits(board, amount, updateGameState, tier);
+      },
+      onUpgrade: (count) => {
+        upgradeSquad(board, count, updateGameState, tavernUpgradePricePerUnit());
       },
       onSkip: () => {
         clearScreen();
@@ -130,11 +151,15 @@ export function openTavernHireOnly(
     content: React.createElement(TavernModal, {
       gameState: board,
       militiaPrice: tavernMilitiaPrice(),
+      riderPrice: tavernRiderPrice(),
       onBuy: (amount, tier) => {
-        buyUnits(board, amount, updateGameState, tier, tavernMilitiaPrice());
+        buyUnits(board, amount, updateGameState, tier, tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice());
       },
       onSell: (tier, amount) => {
         sellUnits(board, amount, updateGameState, tier);
+      },
+      onUpgrade: (count) => {
+        upgradeSquad(board, count, updateGameState, tavernUpgradePricePerUnit());
       },
       onSkip: () => {
         clearScreen();

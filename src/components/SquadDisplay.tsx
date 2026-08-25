@@ -19,6 +19,9 @@ interface SquadDisplayProps {
   onUpgradeSquad?: (count: number) => void;
   canUpgradeToRiders?: boolean;
   playerGold?: number;
+  /** Overrides the per-unit upgrade price -- the Tavern charges its own
+   * premium rate (see tavern.ts's tavernUpgradePricePerUnit). */
+  upgradePricePerUnit?: number;
   className?: string;
 }
 
@@ -30,6 +33,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
   onUpgradeSquad,
   canUpgradeToRiders = false,
   playerGold = 0,
+  upgradePricePerUnit,
   className,
 }) => {
   const t = useT();
@@ -38,7 +42,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
   return (
     <div className={['squad-display', className].filter(Boolean).join(' ')}>
       {chunks.map((chunk, i) => {
-        const upgradeCost = upgradeSquadCost(chunk.count);
+        const upgradeCost = upgradeSquadCost(chunk.count, upgradePricePerUnit);
         const canSell = !!onSellSquad && chunk.count > 0;
         const canUpgrade =
           !!onUpgradeSquad &&

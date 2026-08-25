@@ -7,9 +7,9 @@ import { t } from '../i18n';
 /**
  * @param isLanding Whether this player's move actually ENDS on King's
  * Castle, rather than just wrapping past it partway through a longer roll.
- * Gold (and every other unit source folded into this payout -- tile income,
- * catch-up support) still pays out on every pass, same as always; only the
- * direct per-fame King's Grace units require landing exactly on the tile.
+ * Gold still pays out on every pass, same as always; every King's Grace
+ * unit reward (tile trickle, catch-up support, and the direct per-fame
+ * grant) requires landing exactly on the tile.
  */
 export function passStart(
   board: GameState | null,
@@ -20,7 +20,7 @@ export function passStart(
 
   const player = board.activePlayer;
   const { totalGold, tileUnits, catchUpUnits, kingsUnits } = computeAnnualReward(board, player);
-  const unitsGranted = tileUnits + catchUpUnits + (isLanding ? kingsUnits : 0);
+  const unitsGranted = isLanding ? tileUnits + catchUpUnits + kingsUnits : 0;
 
   player.circles = (player.circles ?? 0) + 1;
   player.dragonEncounters = 0;

@@ -26,11 +26,20 @@ export function planUnitHire(
   return { tier, amount: pickKingsCastleHireAmount(player, maxAmount, price) };
 }
 
-/** One move in a bot's shopping trip at the King's Castle. */
+/** One move in a bot's shopping trip at the King's Castle (or the Tavern,
+ * with its own premium prices -- see PriceOverrides). */
 export type ArmyStep =
   | { kind: 'sell'; tier: UnitTier; count: number }
   | { kind: 'hire'; tier: UnitTier; count: number }
   | { kind: 'upgrade'; count: number };
+
+/** Overrides both unit prices at once -- the Tavern charges its own premium
+ * rate for militia AND riders (see tavern.ts's tavernMilitiaPrice/
+ * tavernRiderPrice), unlike planUnitHire's single-tier priceOverride. */
+export interface PriceOverrides {
+  militiaPrice: number;
+  riderPrice: number;
+}
 
 // Every step either spends gold or disbands a squad, so the loop below can't
 // run away -- but overrides can set a 0 unit price, which makes "how many can
@@ -54,12 +63,11 @@ const MAX_ARMY_STEPS = 24;
  * Same for every character -- there's no rider-shy personality. Non-Knights
  * can't recruit riders at all, so they fall through to militia.
  */
-function planRiderBuildUp(player: Player): ArmyStep[] {
+function planRiderBuildUp(player: Player, prices: PriceOverrides): ArmyStep[] {
   if (!player.isKnight) return [];
+  if (prices.riderPrice <= 0) return [];
 
   const ov = getOverrides();
-  if (ov.riderPrice <= 0) return [];
-
   const slots = player.armySlots;
   const cap = ov.armySlotCapacity;
   let gold = player.gold;
@@ -68,13 +76,13 @@ function planRiderBuildUp(player: Player): ArmyStep[] {
   const steps: ArmyStep[] = [];
 
   for (let guard = 0; guard < MAX_ARMY_STEPS; guard++) {
-    const affordable = Math.floor(gold / ov.riderPrice);
+    const affordable = Math.floor(gold / prices.riderPrice);
     if (affordable >= 1) {
       const room = remainingCapacity(militia, riders, slots, 'riders', cap);
       if (room > 0) {
         const count = Math.min(affordable, room);
         steps.push({ kind: 'hire', tier: 'riders', count });
-        gold -= count * ov.riderPrice;
+        gold -= count * prices.riderPrice;
         riders += count;
         continue;
       }
@@ -83,7 +91,7 @@ function planRiderBuildUp(player: Player): ArmyStep[] {
     const chunks = slotChunks(militia, cap);
     if (chunks.length === 0) break;
     const smallest = Math.min(...chunks);
-    const upgradeCost = upgradeSquadCost(smallest);
+    const upgradeCost = upgradeSquadCost(smallest, prices.riderPrice - prices.militiaPrice);
     if (gold < upgradeCost) break;
 
     steps.push({ kind: 'upgrade', count: smallest });
@@ -96,15 +104,18 @@ function planRiderBuildUp(player: Player): ArmyStep[] {
 }
 
 /**
- * The bot's whole King's Castle shopping trip, in order. Riders first (see
- * planRiderBuildUp); a bot that can't or shouldn't buy riders tops up
- * militia the way it always did.
+ * The bot's whole shopping trip at the King's Castle (or the Tavern, passing
+ * its own premium prices), in order. Riders first (see planRiderBuildUp); a
+ * bot that can't or shouldn't buy riders tops up militia the way it always
+ * did. `prices` defaults to the normal King's Castle prices.
  */
-export function planArmyPurchase(player: Player): ArmyStep[] {
-  const riderSteps = planRiderBuildUp(player);
+export function planArmyPurchase(player: Player, prices?: PriceOverrides): ArmyStep[] {
+  const ov = getOverrides();
+  const resolvedPrices = prices ?? { militiaPrice: ov.militiaPrice, riderPrice: ov.riderPrice };
+  const riderSteps = planRiderBuildUp(player, resolvedPrices);
   if (riderSteps.length > 0) return riderSteps;
 
-  const { tier, amount } = planUnitHire(player, 'militia');
+  const { tier, amount } = planUnitHire(player, 'militia', resolvedPrices.militiaPrice);
   return amount > 0 ? [{ kind: 'hire', tier, count: amount }] : [];
 }
 
