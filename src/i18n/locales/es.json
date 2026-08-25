@@ -466,7 +466,6 @@
   },
   "sphynx": {
     "pipeSavedMessage": "Calmas a la Esfinge gruñona con tu Flauta 🪈 y te alejas rápidamente.",
-    "pipeSavedScreen": "Calmas a la Esfinge gruñona con tu Flauta 🪈 y te alejas rápidamente",
     "lostGoldMessage": "Perdiste la mitad de tu oro: -{gold}🟡",
     "lostGoldScreen": "Escapas de la Esfinge perdiendo {gold}🟡",
     "povertyMessage": "Ve tu pobreza y te deja ir.",

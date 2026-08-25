@@ -30,7 +30,7 @@ export function handleSphynx(
   // Pipe of Hamelin charms the Sphynx, negating any negative outcome (rolls 1–4).
   if (pipeSaved) {
     message = t('sphynx.pipeSavedMessage');
-    screenMessage = t('sphynx.pipeSavedScreen');
+    screenMessage = message;
   } else if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 50, capped by available gold
     if (player.gold > 0) {

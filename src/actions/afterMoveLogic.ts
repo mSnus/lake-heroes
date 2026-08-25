@@ -313,7 +313,7 @@ function resolveGuardsHeadless(
         payFee(board, updateGameState);
         return;
       case 'fight':
-        announce(player, 'botController.fight');
+        announce(player, 'botController.fight', {'tile': tile.shortName});
         fightTile(board, updateGameState);
         return;
       case 'sell-one-then-fight':

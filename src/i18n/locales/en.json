@@ -312,7 +312,7 @@
     "decided": "{name} decided to {decision}",
     "takeUndefendedTile": "take the undefended tile",
     "payTheFee": "pay the fee",
-    "fight": "fight",
+    "fight": "fight with guards of {tile}",
     "sellTilesToFight": "sell tiles to fight",
     "sellTilesToPayFee": "sell tiles to pay the fee",
     "acceptTheLoss": "accept the loss",
@@ -467,19 +467,18 @@
     "tileDamaged": "{playerName}'s {tileName} was damaged by the Dragon (now level {level})!"
   },
   "sphynx": {
-    "pipeSavedMessage": "You calm the growling Sphynx with your Pipe 🪈 and hastily leave.",
-    "pipeSavedScreen": "You calm growling Sphynx with your Pipe 🪈 and hastily leave",
+    "pipeSavedMessage": "You calm the growling Sphynx with your Pipe 🪈 and hastily leave",
     "lostGoldMessage": "Lost half of gold: -{gold}🟡",
-    "lostGoldScreen": "You escape the Sphynx losing {gold}🟡",
-    "povertyMessage": "He sees your poverty and lets you go.",
-    "povertyScreen": "The Sphinx refuses to deal with beggars",
+    "lostGoldScreen": "You escape the Sphynx losing -{gold}🟡",
+    "povertyMessage": "He sees your poverty and lets you go",
+    "povertyScreen": "The Sphynx refuses to deal with beggars",
     "ateUnitsMessage": "Sphynx ate {units}🧍",
-    "ateUnitsScreen": "Sphynx eats {units}🧍, but you escape.",
+    "ateUnitsScreen": "Sphynx eats {units}🧍, but you escape",
     "nothingMessage": "Nothing happens.",
     "nothingScreen": "Sphynx remained silent.",
-    "gainGoldMessage": "Received {gold}🟡 (20%).",
+    "gainGoldMessage": "Sphynx gits you {gold}🟡",
     "gainGoldScreen": "Sphynx rewarded you with {gold}🟡 for your wisdom!",
-    "fameSuffix": "Fame +1🏆 for the adventure."
+    "fameSuffix": "Fame +1🏆 for the adventure"
   },
   "king": {
     "aTile": "a tile",
