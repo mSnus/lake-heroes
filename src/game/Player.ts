@@ -57,6 +57,13 @@ export class Player {
    * actually be recruited, even if fame already meets KNIGHT_FAME. */
   isKnight: boolean;
   upgradesThisTurn: number;
+  /** How much militia this player's bot has already committed to garrisons
+   * THIS turn -- lets pickGarrisonAction reconstruct a stable per-turn
+   * budget (garrisonFraction × militia as it stood at the turn's start)
+   * instead of re-deriving the fraction from the live, ever-shrinking
+   * militia count on every call, which used to make the AI dribble
+   * reinforcements onto a tile 1 unit at a time. See ai/decisions.ts. */
+  garrisonSpentThisTurn: number;
   isComputer: boolean;
   character?: CharacterId;
   artifacts: string[];
@@ -88,6 +95,7 @@ export class Player {
     this.hasBeenOfferedDragonChallenge = false;
     this.isKnight = false;
     this.upgradesThisTurn = 0;
+    this.garrisonSpentThisTurn = 0;
     this.isComputer = params.isComputer ?? false;
     this.character = params.character;
     this.artifacts = [];

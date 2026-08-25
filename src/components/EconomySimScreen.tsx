@@ -9,7 +9,8 @@ import { runHeadlessGame, HeadlessStopReason } from '../game/economy/headlessDri
 import { getOverrides, setHeadlessOverrides } from '../utils/overridesStore';
 import { totalWealth } from '../game/wealth';
 import { getArtifact } from '../game/artifacts';
-import { getSimLog, getSimIncome, getSimTileVisits } from '../utils/simLogStore';
+import { getSimLog, getSimIncome, getSimTileVisits, getSimCircleSnapshot } from '../utils/simLogStore';
+import { formatUnits, formatCellStats } from '../utils/formatPlayerCell';
 import { clearScreen } from '../utils/screenStore';
 import { DecoratedButton } from './DecoratedButton';
 import { useT } from '../i18n';
@@ -42,6 +43,13 @@ interface PlayerSnapshot {
   /** Short names of every tile stepped onto this circle, in order -- filled
    * in after the run from the sim tile-visit accumulator, alongside log. */
   tileSequence: string[];
+  /** Stat line (see formatCellStats) at the moment this circle began/ended
+   * -- filled in after the run from the sim circle-snapshot accumulator,
+   * falling back to this row's own live snapshot when the player never
+   * actually crossed into (or out of) this circle within the run (e.g. the
+   * very last, incomplete circle). */
+  beginCell: string;
+  endCell: string;
 }
 
 interface CircleRow {
@@ -98,21 +106,9 @@ function snapshotPlayer(board: GameState, player: Player): PlayerSnapshot {
     log: [],
     dailyIncome: { gold: 0, units: 0 },
     tileSequence: [],
+    beginCell: '',
+    endCell: '',
   };
-}
-
-/** 🧍/🐎, each shown only when that tier actually has units -- a wiped-out
- * tier disappears instead of showing a bare "0". */
-function formatUnits(militia: number, riders: number): string {
-  const parts: string[] = [];
-  if (militia > 0) parts.push(`🧍${militia}`);
-  if (riders > 0) parts.push(`🐎${riders}`);
-  return parts.length > 0 ? parts.join(' ') : '0';
-}
-
-function formatCell(s: PlayerSnapshot): string {
-  const pow = s.isPOW ? ' ⛓️' : '';
-  return `${s.fame}🏆 ${s.gold}🟡 ${formatUnits(s.militia, s.riders)} ${s.tilesOwned}🧩 🧮${s.wealth}${s.artifactsEmoji}${pow}`;
 }
 
 /** "X🧍X🟡" for the daily-income summary -- null when there's nothing to
@@ -134,6 +130,8 @@ const EconomySimScreen: React.FC = () => {
   const [tileUpgradeMult, setTileUpgradeMult] = useState(ov.tileUpgradeMult);
   const [passStartGold, setPassStartGold] = useState(ov.moneyPassStart);
   const [passStartUnits, setPassStartUnits] = useState(ov.unitsPassStart);
+  const [militiaPrice, setMilitiaPrice] = useState(ov.militiaPrice);
+  const [riderPrice, setRiderPrice] = useState(ov.riderPrice);
   const [playerCount, setPlayerCount] = useState(2);
 
   const [running, setRunning] = useState(false);
@@ -149,6 +147,8 @@ const EconomySimScreen: React.FC = () => {
         tileUpgradeMult,
         passStartGold,
         passStartUnits,
+        militiaPrice,
+        riderPrice,
         playerCount,
       });
 
@@ -158,6 +158,8 @@ const EconomySimScreen: React.FC = () => {
         tileUpgradeMult,
         moneyPassStart: passStartGold,
         unitsPassStart: passStartUnits,
+        militiaPrice,
+        riderPrice,
       });
 
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
@@ -214,6 +216,9 @@ const EconomySimScreen: React.FC = () => {
           snapshot.log = getSimLog(players[i].id, row.circle);
           snapshot.dailyIncome = getSimIncome(players[i].id, row.circle);
           snapshot.tileSequence = getSimTileVisits(players[i].id, row.circle);
+          const fallback = formatCellStats(snapshot);
+          snapshot.beginCell = getSimCircleSnapshot(players[i].id, row.circle) ?? fallback;
+          snapshot.endCell = getSimCircleSnapshot(players[i].id, row.circle + 1) ?? fallback;
         });
       }
 
@@ -264,6 +269,11 @@ const EconomySimScreen: React.FC = () => {
           <label>{t('economySimScreen.passStart')}</label>
           🟡 {numInput(passStartGold, setPassStartGold, '4rem', 10)}
           🧍 {numInput(passStartUnits, setPassStartUnits, '4rem')}
+        </div>
+        <div className="cheat-row">
+          <label>{t('economySimScreen.unitPrices')}</label>
+          🧍 {numInput(militiaPrice, setMilitiaPrice, '4rem', 10)}
+          🐎 {numInput(riderPrice, setRiderPrice, '4rem', 10)}
         </div>
         <div className="cheat-row">
           <label>{t('economySimScreen.playerCount')}</label>
@@ -330,7 +340,8 @@ const EconomySimScreen: React.FC = () => {
 
                         return (
                           <td key={j} className="player-stats-cell" style={{ verticalAlign: 'top' }}>
-                            <div style={{ whiteSpace: 'nowrap' }}>{formatCell(p)}</div>
+                            <div style={{ whiteSpace: 'nowrap' }}>▶️ {p.beginCell}</div>
+                            <div style={{ whiteSpace: 'nowrap' }}>⏹️ {p.endCell}</div>
                             {p.tileNames.length > 0 && (
                               <div style={{ fontSize: '0.75em', opacity: 0.75, marginTop: '4px', maxWidth: '22rem' }}>
                                 🧩 {p.tileNames.join(', ')}

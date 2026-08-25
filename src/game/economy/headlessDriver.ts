@@ -86,6 +86,7 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
   while (garrisonPick) {
     announce(player, 'botController.garrisonTile', { amount: garrisonPick.amount, tileName: garrisonPick.tile.name });
     setTileGarrison(board, player, garrisonPick.tile, garrisonPick.tile.garrisonMilitia + garrisonPick.amount);
+    player.garrisonSpentThisTurn = (player.garrisonSpentThisTurn ?? 0) + garrisonPick.amount;
     updateGameState(board);
     garrisonPick = pickGarrisonAction(board, player);
   }

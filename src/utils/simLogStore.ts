@@ -20,6 +20,7 @@ let board: SimLogBoard | null = null;
 let entries = new Map<string, string[]>();
 let income = new Map<string, { gold: number; units: number }>();
 let tileVisits = new Map<string, string[]>();
+let circleSnapshots = new Map<string, string>();
 
 const key = (playerId: number, circle: number) => `${playerId}:${circle}`;
 
@@ -31,6 +32,7 @@ export function resetSimLog(): void {
   entries = new Map();
   income = new Map();
   tileVisits = new Map();
+  circleSnapshots = new Map();
 }
 
 /**
@@ -109,4 +111,20 @@ export function recordSimTileVisit(tileName: string): void {
 
 export function getSimTileVisits(playerId: number, circle: number): string[] {
   return tileVisits.get(key(playerId, circle)) ?? [];
+}
+
+/**
+ * A player's stat line (see formatPlayerCell) captured the instant they
+ * cross King's Castle -- i.e. player.circles has JUST become `circle` (see
+ * passStart.ts). That single moment doubles as both "circle `circle`
+ * begins" AND "circle `circle - 1` ends", so the results table derives both
+ * from this one map (getSimCircleSnapshot(id, N) for the begin of row N,
+ * getSimCircleSnapshot(id, N + 1) for its end) instead of keeping two.
+ */
+export function recordSimCircleSnapshot(playerId: number, circle: number, cell: string): void {
+  circleSnapshots.set(key(playerId, circle), cell);
+}
+
+export function getSimCircleSnapshot(playerId: number, circle: number): string | null {
+  return circleSnapshots.get(key(playerId, circle)) ?? null;
 }

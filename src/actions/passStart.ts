@@ -2,6 +2,9 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { computeAnnualReward } from '../game/kingsGrace';
 import { recordStatEvent } from '../game/statistics';
+import { isHeadlessRun } from '../utils/headlessStore';
+import { recordSimCircleSnapshot } from '../utils/simLogStore';
+import { formatPlayerCell } from '../utils/formatPlayerCell';
 import { t } from '../i18n';
 
 /**
@@ -52,6 +55,13 @@ export function passStart(
     player.circles < 3 ? t('passStart.aYear') : t('passStart.years', { count: player.circles - 1 });
   const rewardMessage = t('passStart.kingRewardsYou', { years });
   board.kingRewardMessage = rewardMessage;
+
+  // This crossing is simultaneously "circle player.circles begins" and
+  // "circle player.circles - 1 ends" -- one snapshot serves both (see
+  // recordSimCircleSnapshot).
+  if (isHeadlessRun()) {
+    recordSimCircleSnapshot(player.id, player.circles, formatPlayerCell(board, player));
+  }
 
   updateGameState(board);
   return rewardMessage;

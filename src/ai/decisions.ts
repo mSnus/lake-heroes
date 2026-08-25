@@ -188,7 +188,18 @@ export function pickGarrisonAction(
 
   const target = candidates.sort((a, b) => a.garrisonMilitia - b.garrisonMilitia)[0];
   const desired = target.baseGarrison - target.garrisonMilitia;
-  const affordable = Math.floor(cfg.garrisonFraction * player.militia);
+  // A fixed budget for the whole turn (garrisonFraction of the militia the
+  // player had BEFORE any of this turn's garrisoning), reconstructed from
+  // what's already been spent -- garrisonSpentThisTurn -- rather than
+  // re-deriving the fraction from the live, ever-shrinking militia count on
+  // every call. That used to make bots dribble reinforcements onto a tile
+  // (or across several tiles) 1-2 at a time, since floor-rounding a fraction
+  // of a slowly-shrinking pool can plateau at the same tiny value call after
+  // call instead of committing the full amount a tile needs in one go.
+  const spent = player.garrisonSpentThisTurn ?? 0;
+  const turnStartMilitia = player.militia + spent;
+  const totalBudget = Math.floor(cfg.garrisonFraction * turnStartMilitia);
+  const remainingBudget = Math.max(0, totalBudget - spent);
   const cap = remainingCapacity(
     target.garrisonMilitia,
     target.garrisonRiders,
@@ -196,7 +207,7 @@ export function pickGarrisonAction(
     'militia',
     garrisonSlotCapacity()
   );
-  const amount = Math.min(desired, affordable, cap);
+  const amount = Math.min(desired, remainingBudget, cap);
 
   return amount > 0 ? { tile: target, amount } : null;
 }

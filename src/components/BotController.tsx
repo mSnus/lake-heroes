@@ -245,6 +245,7 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
         garrisonPick.tile,
         garrisonPick.tile.garrisonMilitia + garrisonPick.amount
       );
+      player.garrisonSpentThisTurn = (player.garrisonSpentThisTurn ?? 0) + garrisonPick.amount;
       updateGameState(board);
     });
   }
