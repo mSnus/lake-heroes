@@ -185,15 +185,14 @@ export class Tile implements TileJSON {
 
   /** Per-level income, paid out every turn (see game/income.ts's
    * collectTileTurnIncome), computed from coefficients and the live income
-   * multiplier. Gold-type tiles pay gold (× base price, then cut by
+   * multiplier. Gold-type tiles pay gold (× base × mult, then cut by
    * BONUS_GOLD_RATIO and TURN_INCOME_RATIO, rounded to the nearest 50) --
-   * the income multiplier does NOT apply here; unit-type tiles (Camps/
-   * Towers) pay a raw unit headcount × the income multiplier -- that's the
-   * only thing it scales. */
+   * that's the only thing the income multiplier scales; unit-type tiles
+   * (Camps/Towers) pay a raw unit headcount, unscaled by it. */
   get bonuses(): { [level: number]: number } {
     const ov = getOverrides();
     const isGold = this.bonusType === 'gold';
-    const incomeBase = isGold ? ov.tileBasePrice : ov.tileIncomeMult;
+    const incomeBase = isGold ? ov.tileBasePrice * ov.tileIncomeMult : 1;
     const out: { [level: number]: number } = {};
     for (const key of Object.keys(this._bonusCoeffs)) {
       const lvl = Number(key);

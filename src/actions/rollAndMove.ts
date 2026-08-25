@@ -101,11 +101,14 @@ export async function rollAndMove(
         passStart(board, updateGameState, step === roll);
       }
 
-      // Read AFTER the possible passStart above, so a step that wraps onto
-      // King's Castle (which bumps player.circles inside passStart) logs
-      // that tile -- and everything visited after it this same move -- under
-      // the NEW circle rather than the one this move started in.
-      if (isHeadlessRun()) recordSimTileVisit(board.tiles[nextPos].shortName);
+      // Only the tile the move actually ENDS on counts as "landed on" --
+      // tiles merely stepped over mid-roll (including a King's Castle
+      // crossing that isn't also this move's last step) don't get logged.
+      // Read AFTER the possible passStart above, so a landing that IS the
+      // King's Castle crossing (which bumps player.circles inside
+      // passStart) logs under the NEW circle it just started, not the one
+      // this move began in.
+      if (isHeadlessRun() && step === roll) recordSimTileVisit(board.tiles[nextPos].shortName);
 
       if (!isHeadlessRun()) {
         await new Promise((res) => setTimeout(res, 300));
