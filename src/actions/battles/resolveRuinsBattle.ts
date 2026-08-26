@@ -28,21 +28,29 @@ export function resolveRuinsBattle(
   const lossStr = playerUnitsKilled > 0 ? t('ruinsEncounter.lostSuffix', { units: playerUnitsKilled }) : '';
 
   // BattleOutcome 'defender' means the real player (grid defender role) won.
+  // Every other battle resolver reports its outcome via say() (directly, or
+  // through logBattleSummary) as well as the banner -- this one only ever
+  // set the banner, so nothing was shown at all in the headless-combats
+  // real-game path, which skips BattleScreen's own result UI entirely and
+  // relies on exactly that toast (see battleResolution.ts's showBattleScreen).
   let message: string;
+  let gameMessage: string;
   if (outcome === 'attacker') {
     message = t('ruinsEncounter.defeatMessage', { lossStr });
-    setGameMessage(board, t('ruinsEncounter.defeatGameMessage', { playerName: player.name, lossStr }));
+    gameMessage = t('ruinsEncounter.defeatGameMessage', { playerName: player.name, lossStr });
+    setGameMessage(board, gameMessage);
+    say(gameMessage, 'error');
   } else {
     message =
       outcome === 'defender'
         ? t('ruinsEncounter.victoryMessage', { lossStr })
         : t('ruinsEncounter.tieMessage', { lossStr });
-    setGameMessage(
-      board,
+    gameMessage =
       outcome === 'defender'
         ? t('ruinsEncounter.victoryGameMessage', { playerName: player.name, lossStr })
-        : t('ruinsEncounter.tieGameMessage', { playerName: player.name, lossStr })
-    );
+        : t('ruinsEncounter.tieGameMessage', { playerName: player.name, lossStr });
+    setGameMessage(board, gameMessage);
+    say(gameMessage, outcome === 'defender' ? 'success' : 'info');
 
     if (Math.random() < ARTIFACT_FIND_CHANCE) {
       const artifact = pickRandomUnownedArtifact(board, player);

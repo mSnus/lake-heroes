@@ -131,6 +131,11 @@ export function showBattleScreen(
   if (isHeadlessRun() || getOverrides().headlessCombats) {
     clearScreen();
     const { setup, resolution } = runHeadlessBattle(props);
+    // A real BattleScreen refreshes state as the animation plays out --
+    // without a screen to do that here, the fight's own mutations (gold,
+    // units, tile ownership) would otherwise sit un-rendered until whatever
+    // the continuation below does next happens to trigger one.
+    props.updateGameState(props.gameState);
     handleBattleClose(props, setup, resolution.outcome);
     return;
   }
