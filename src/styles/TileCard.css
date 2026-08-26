@@ -122,6 +122,14 @@
   padding: 4px;
 }
 
+/* Same banner shape as the upgradable row, but a plain status -- nothing to
+   click, since a yielded tile can't be upgraded (see TileCard's canUpgrade). */
+.tile-card-upgradable.yielded-row {
+  cursor: default;
+  font-style: italic;
+  opacity: 0.85;
+}
+
 .tile-sprite-box {
   margin-left: -8px;
   margin-top: -8px;

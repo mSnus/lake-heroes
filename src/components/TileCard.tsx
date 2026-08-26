@@ -350,6 +350,31 @@ export const TileCard: React.FC<TileCardProps> = ({
 
       {tile.isOwnable && (
         <div className="tile-card-ownable">
+          {/* Status banner, directly under the tile's image. A yielded tile
+              can't be upgraded at all (see canUpgrade), so these two are
+              mutually exclusive by construction. */}
+          {mode === 'owned' && tile.isYielded && (
+            <div className="upgrade-row">
+              <div
+                className="tile-card-upgradable yielded-row"
+                style={{ backgroundColor: tile.groupColor + '4f' }}
+              >
+                {t('tileCard.yielded')}
+              </div>
+            </div>
+          )}
+          {((mode === 'owned' && canUpgrade) || demoMode) && (
+            <div className="upgrade-row">
+              <div
+                className="tile-card-upgradable"
+                style={{ backgroundColor: tile.groupColor + '4f' }}
+                onClick={openUpgradesScreen}
+              >
+                {t('tileCard.upgradable')}
+              </div>
+            </div>
+          )}
+
           <div className="tile-card-body">
             <div
               className="tile-card-base-level"
@@ -590,17 +615,6 @@ export const TileCard: React.FC<TileCardProps> = ({
             )}
           </div>
 
-          <div className="upgrade-row">
-            {((mode === 'owned' && canUpgrade) || demoMode) && (
-              <div
-                className="tile-card-upgradable"
-                style={{ backgroundColor: tile.groupColor + '4f' }}
-                onClick={openUpgradesScreen}
-              >
-                {t('tileCard.upgradable')}
-              </div>
-            )}
-          </div>
         </div>
       )}
 

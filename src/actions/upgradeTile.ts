@@ -13,6 +13,9 @@ export function upgradeTile(
   const tile = board.tiles[tileIdx];
 
   if (tile.owner !== player.id) return;
+  // Yielded tiles are with the King and earn nothing -- not upgradable,
+  // same rule the UI (TileCard/TileClaimScreen) and the bots enforce.
+  if (tile.isYielded) return;
 
   const currentlevel = tile.level;
 

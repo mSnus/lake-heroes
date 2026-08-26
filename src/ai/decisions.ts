@@ -92,7 +92,10 @@ export function pickUpgradeCandidate(board: GameState, player: Player): Tile | n
 
   for (const idx of player.ownedTiles) {
     const tile = board.tiles[idx];
-    if (!tile || tile.owner !== player.id || tile.level >= 3) continue;
+    // A yielded tile earns nothing while it's with the King, so pouring an
+    // upgrade into it is pure waste -- and the human path refuses it too
+    // (TileClaimScreen's canUpgradeToLevel).
+    if (!tile || tile.owner !== player.id || tile.isYielded || tile.level >= 3) continue;
 
     const nextLevel = tile.level + 1;
     const price = tile.prices[nextLevel];
