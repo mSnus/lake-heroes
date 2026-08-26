@@ -29,8 +29,8 @@ export const HURRICANE_WEALTH_RATIO = 1.5;
 // (level-1 gold), TILE_BASE_UPGRADE its upgrade costs (level-2/3 gold), and
 // TILE_BASE_INCOME its per-turn gold income (bonuses on gold-type tiles).
 export const TILE_BASE_PRICE = 200;
-export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 1;
-export const TILE_BASE_INCOME = TILE_BASE_PRICE * 1;
+export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 2;
+export const TILE_BASE_INCOME = TILE_BASE_PRICE * 2;
 // The final upgrade (to level 3) costs extra on top of TILE_BASE_UPGRADE's
 // normal rate -- level 2 is unaffected, only level 3's gold price doubles.
 export const LEVEL_3_UPGRADE_MULT = 2;
