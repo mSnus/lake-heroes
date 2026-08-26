@@ -538,7 +538,7 @@
     "defencelessItsMine": "Беззащитно? Теперь моё",
     "goWithPeace": "🕊️ Уйти с миром",
     "revenge": "🔥Месть",
-    "becomePOW": "🏳️ Сдаться и отправиться в темницу",
+    "becomePOW": "⛓️ Сдаться и уйти в цепях",
     "sellToPayOrPOW": "Продайте или уступите постройки, чтобы заплатить {amount}🟡, иначе — в темницу, с позором!",
     "tollShortfall": "{playerName} отдаёт всё, что у него есть ({paid}🟡), в счёт пошлины за «{tileName}», но всё ещё должен {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} с удовольствием посещает «{tileName}», пока та передана королю"
