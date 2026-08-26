@@ -546,7 +546,7 @@
     "goWithPeace": "🕊️ Ir en paz",
     "revenge": "🔥Venganza",
     "becomePOW": "🏳️ Rendirse e ir a prisión",
-    "sellToPayOrPOW": "Vende casillas para pagar, o conviértete en prisionero de guerra",
+    "sellToPayOrPOW": "¡Vende o cede casillas para pagar {amount}🟡, o acabarás en prisión, avergonzado!",
     "tollShortfall": "{playerName} entrega todo lo que tiene ({paid}🟡) para el peaje de {tileName}, pero aún debe {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} disfruta visitando {tileName} mientras está cedida"
   },

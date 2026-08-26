@@ -237,7 +237,8 @@ function showSellToPayOrPOWScreen(
   updateGameState: (board: GameState) => void,
   tile: Tile,
   owner: Player | undefined,
-  fee: number
+  fee: number,
+  remaining: number
 ): void {
   const player = board.activePlayer;
   const encounter = {
@@ -260,7 +261,11 @@ function showSellToPayOrPOWScreen(
     spriteImage: tile.spriteImage,
     encounter,
     sellMode: true,
-    sellHeader: t('afterMoveLogic.sellToPayOrPOW'),
+    // Rebuilt from the live shortfall every time this screen re-opens --
+    // each sale re-runs afterMoveLogic (ScreenRenderer's sellAndRecheck),
+    // which re-charges the toll from the new gold before landing back here,
+    // so the figure counts down as tiles are sold.
+    sellHeader: t('afterMoveLogic.sellToPayOrPOW', { amount: remaining }),
     buttons: [
       {
         label: t('afterMoveLogic.becomePOW'),
@@ -348,7 +353,7 @@ export function showTileEncounterScreen(
   }
 
   if (hasSellableTiles && sellable.gold >= remaining) {
-    showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee);
+    showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee, remaining);
   } else {
     triggerPrisonerOfWar(board, updateGameState);
   }

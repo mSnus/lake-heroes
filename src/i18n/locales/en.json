@@ -548,7 +548,7 @@
     "goWithPeace": "🕊️ Go with peace",
     "revenge": "🔥Revenge",
     "becomePOW": "🏳️ Give up and go to prison",
-    "sellToPayOrPOW": "Sell tiles to pay or become the prisoner of war",
+    "sellToPayOrPOW": "Sell or yield tiles to pay {amount}🟡 or end up in jail, ashamed!",
     "tollShortfall": "{playerName} hands over everything they have ({paid}🟡) toward {tileName}'s toll, but still owes {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} enjoys visiting {tileName} while it's yielded"
   },
