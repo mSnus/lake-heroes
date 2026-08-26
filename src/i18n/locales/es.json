@@ -263,6 +263,7 @@
     "encounters": "se encuentra con",
     "belongsTo": "que pertenece a",
     "andIsGuarded": "y está defendida por {amount}🧍",
+    "forcedToPay": "y se ve obligado a pagarle {amount}🟡",
     "riskOrPay": "¿Buscar venganza y arrasarla, o ir en paz?",
     "razedSmokeCaveat": "Las casillas arrasadas no pertenecen a nadie hasta que se disipe el humo"
   },
@@ -543,7 +544,7 @@
     "defencelessItsMine": "¿Indefensa? es mía",
     "goWithPeace": "🕊️ Ir en paz",
     "revenge": "🔥Venganza",
-    "becomePOW": "🏳️ Convertirse en prisionero de guerra",
+    "becomePOW": "🏳️ Rendirse e ir a prisión",
     "sellToPayOrPOW": "Vende casillas para pagar, o conviértete en prisionero de guerra",
     "tollShortfall": "{playerName} entrega todo lo que tiene ({paid}🟡) para el peaje de {tileName}, pero aún debe {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} disfruta visitando {tileName} mientras está cedida"

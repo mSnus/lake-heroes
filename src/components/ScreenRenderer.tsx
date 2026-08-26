@@ -104,6 +104,12 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   bold
                 />
                 {guardedByNode}
+                {!!config.encounter.fee && (
+                  <>
+                    <br />
+                    {t('screenRenderer.forcedToPay', { amount: config.encounter.fee })}
+                  </>
+                )}
                 {config.encounter.canFight && config.encounter.tile && (
                   <>
                     <br />

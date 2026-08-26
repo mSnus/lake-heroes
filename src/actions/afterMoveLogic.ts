@@ -180,7 +180,8 @@ function showPeaceOrRevengeScreen(
   updateGameState: (board: GameState) => void,
   tile: Tile,
   owner: Player | undefined,
-  canFight: boolean
+  canFight: boolean,
+  fee: number
 ): void {
   const player = board.activePlayer;
   player.hasSettledTollThisTurn = true;
@@ -192,6 +193,7 @@ function showPeaceOrRevengeScreen(
     ownerName: owner?.name ?? undefined,
     ownerColor: owner?.color,
     canFight,
+    fee,
     outcomeText: undefined,
     gold: player.gold,
     militia: player.militia,
@@ -234,7 +236,8 @@ function showSellToPayOrPOWScreen(
   board: GameState,
   updateGameState: (board: GameState) => void,
   tile: Tile,
-  owner: Player | undefined
+  owner: Player | undefined,
+  fee: number
 ): void {
   const player = board.activePlayer;
   const encounter = {
@@ -244,6 +247,7 @@ function showSellToPayOrPOWScreen(
     ownerName: owner?.name ?? undefined,
     ownerColor: owner?.color,
     canFight: false,
+    fee,
     outcomeText: undefined,
     gold: player.gold,
     militia: player.militia,
@@ -331,7 +335,7 @@ export function showTileEncounterScreen(
   // revenge attack re-shows this encounter) -- go straight back to the
   // peace/revenge choice without charging anything again.
   if (player.hasSettledTollThisTurn) {
-    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight);
+    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight, fee);
     return;
   }
 
@@ -339,12 +343,12 @@ export function showTileEncounterScreen(
   updateGameState(board);
 
   if (remaining <= 0) {
-    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight);
+    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight, fee);
     return;
   }
 
   if (hasSellableTiles && sellable.gold >= remaining) {
-    showSellToPayOrPOWScreen(board, updateGameState, tile, owner);
+    showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee);
   } else {
     triggerPrisonerOfWar(board, updateGameState);
   }

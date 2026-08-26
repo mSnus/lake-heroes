@@ -256,6 +256,7 @@
     "encounters": "встречает",
     "belongsTo": "принадлежащую",
     "andIsGuarded": "и охраняемую {amount}🧍",
+    "forcedToPay": "и вынужден заплатить ему {amount}🟡",
     "riskOrPay": "Отомстить и сжечь дотла, или уйти с миром?",
     "razedSmokeCaveat": "Разорённые земли дымятся и не принадлежат никому"
   },
@@ -536,7 +537,7 @@
     "defencelessItsMine": "Беззащитно? Теперь моё",
     "goWithPeace": "🕊️ Уйти с миром",
     "revenge": "🔥Месть",
-    "becomePOW": "🏳️ Стать военнопленным",
+    "becomePOW": "🏳️ Сдаться и отправиться в темницу",
     "sellToPayOrPOW": "Продайте постройки, чтобы заплатить, или станьте военнопленным",
     "tollShortfall": "{playerName} отдаёт всё, что у него есть ({paid}🟡), в счёт пошлины за «{tileName}», но всё ещё должен {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} с удовольствием посещает «{tileName}», пока та передана королю"

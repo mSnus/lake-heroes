@@ -263,6 +263,7 @@
     "encounters": "encounters",
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by {amount}🧍",
+    "forcedToPay": "and is forced to pay him {amount}🟡",
     "riskOrPay": "Seek revenge and raze it, or go with peace?",
     "razedSmokeCaveat": "Razed tiles belong to no one until the smoke is gone"
   },
@@ -545,7 +546,7 @@
     "defencelessItsMine": "Defenceless? it's mine",
     "goWithPeace": "🕊️ Go with peace",
     "revenge": "🔥Revenge",
-    "becomePOW": "🏳️ Become the prisoner of war",
+    "becomePOW": "🏳️ Give up and go to prison",
     "sellToPayOrPOW": "Sell tiles to pay or become the prisoner of war",
     "tollShortfall": "{playerName} hands over everything they have ({paid}🟡) toward {tileName}'s toll, but still owes {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} enjoys visiting {tileName} while it's yielded"
