@@ -10,7 +10,7 @@ import { resolveRuinsBattle } from '../../actions/battles/resolveRuinsBattle';
 import { showTileEncounterScreen } from '../../actions/afterMoveLogic';
 import { showTileClaimScreen } from '../../actions/showTileClaimScreen';
 import { setEndTurn } from '../../utils/endTurnStore';
-import { showScreen, ScreenConfig } from '../../utils/screenStore';
+import { showScreen, clearScreen, ScreenConfig } from '../../utils/screenStore';
 import { isHeadlessRun } from '../../utils/headlessStore';
 import { getOverrides } from '../../utils/overridesStore';
 import { BattleScreen, type BattleScreenProps } from '../../components/BattleScreen';
@@ -102,9 +102,13 @@ export function handleBattleClose(props: BattleScreenProps, setup: BattleSetup, 
  *
  * Also goes headless for a real, on-screen game when the ⚖️ "headless
  * combats" override is on -- unlike isHeadlessRun(), that doesn't touch
- * toasts/game-log/screenStore, so everything except the battle animation
- * itself still behaves normally (result toasts, the claim/garrison screen
- * after a win, etc).
+ * toasts/game-log, so everything except the battle animation itself still
+ * behaves normally (result toasts, the claim/garrison screen after a win,
+ * etc). It does still need to dismiss whatever encounter screen (caravan,
+ * ambush, rogue, guards) the attack/defend button was clicked from, since
+ * the normal path's showScreen(BattleScreen) call below would otherwise
+ * have replaced it -- clearScreen() is a no-op during isHeadlessRun(), so
+ * this is safe to call unconditionally here.
  */
 export function showBattleScreen(
   props: BattleScreenProps,
@@ -125,6 +129,7 @@ export function showBattleScreen(
   >
 ): void {
   if (isHeadlessRun() || getOverrides().headlessCombats) {
+    clearScreen();
     const { setup, resolution } = runHeadlessBattle(props);
     handleBattleClose(props, setup, resolution.outcome);
     return;
