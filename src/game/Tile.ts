@@ -369,7 +369,7 @@ export class Tile implements TileJSON {
    * number below, so a fortified tile fights tougher without pretending to
    * have more defenders than it really does. */
   getGarrisonBonusPct(level: number): number {
-    return level >= 3 ? 0.2 : level === 2 ? 0.1 : 0;
+    return level >= 3 ? 0.1 : level === 2 ? 0.08 : 0.06;
   }
 
   /**
