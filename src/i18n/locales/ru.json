@@ -603,7 +603,7 @@
     "savedByArtifact": "{playerName} спасён благодаря {artifactName} {emoji}",
     "plagueMessage": "Все игроки теряют половину юнитов.",
     "playerLosesTile": "{playerName} теряет «{tileName}»",
-    "hurricaneNoEffect": "Небо спокойно — никто не богат настолько, чтобы навлечь на себя гнев урагана.",
+    "hurricaneNoEffect": "Мощный ураган проносится над королевством! К счастью, он не причиняет вреда",
     "blessingMessage": "Все принадлежащие постройки повышаются на один уровень.",
     "earthquakeDestroys": "Землетрясение разрушает: {list}",
     "earthquakeMessage": "Все улучшенные постройки теряют уровень, некоторые разрушены",

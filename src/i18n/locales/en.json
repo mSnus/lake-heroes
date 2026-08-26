@@ -612,7 +612,7 @@
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
     "plagueMessage": "All players lose half of their units.",
     "playerLosesTile": "{playerName} loses {tileName}",
-    "hurricaneNoEffect": "The skies stay calm — no player is wealthy enough to draw the hurricane's wrath.",
+    "hurricaneNoEffect": "Huge hurricane passes through the kingdom! luckily, it does no damage",
     "blessingMessage": "All owned tiles are upgraded one level.",
     "earthquakeDestroys": "Earthquake destroys: {list}",
     "earthquakeMessage": "All upgraded tiles lose a level, some are destroyed",

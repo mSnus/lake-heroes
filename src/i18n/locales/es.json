@@ -610,7 +610,7 @@
     "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
     "plagueMessage": "Todos los jugadores pierden la mitad de sus unidades.",
     "playerLosesTile": "{playerName} pierde {tileName}",
-    "hurricaneNoEffect": "El cielo permanece calmo — ningún jugador es lo bastante rico para atraer la ira del huracán.",
+    "hurricaneNoEffect": "¡Un enorme huracán atraviesa el reino! Por suerte, no causa daños",
     "blessingMessage": "Todas las casillas en propiedad suben un nivel.",
     "earthquakeDestroys": "El terremoto destruye: {list}",
     "earthquakeMessage": "Todas las casillas mejoradas pierden un nivel, algunas son destruidas",
