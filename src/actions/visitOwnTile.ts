@@ -26,19 +26,22 @@ export function handleVisitOwnTile(
   const mult = syndicateMultiplier(board, player, tile.group);
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
 
-  // Visiting your own tile only earns half its current bonus -- the full
-  // amount is reserved for passing King's Castle (passStart.ts).
-  const VISIT_BONUS_SHARE = 0.5;
+  // Calling in on your own gold-producing land pays double its daily income
+  // -- the reward for spending the turn there rather than moving on. A
+  // units-type tile (Camps/Towers) still only musters half its daily levy,
+  // with the full amount reserved for passing King's Castle (passStart.ts).
+  const VISIT_GOLD_MULT = 2;
+  const VISIT_UNITS_SHARE = 0.5;
 
   const rewards = [];
   if (tile.bonusType === 'gold') {
-    const goldReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_BONUS_SHARE);
+    const goldReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_GOLD_MULT);
     rewards.push(`${goldReward}🟡`);
     player.gold += goldReward;
   }
 
   if (tile.bonusType === 'units') {
-    const unitsReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_BONUS_SHARE);
+    const unitsReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_UNITS_SHARE);
     rewards.push(`${unitsReward}🧍`);
     player.units += unitsReward;
   }
