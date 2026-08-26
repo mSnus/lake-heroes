@@ -33,11 +33,13 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
       const detail = (e as CustomEvent).detail as Player | null;
       setPlayer(detail && detail.name ? detail : null);
     }
+
     // Showing a tile hides the player card (the two cards are mutually exclusive).
     function onDisplayTile(e: Event) {
       const detail = (e as CustomEvent).detail as { name?: string } | null;
       if (detail && detail.name) setPlayer(null);
     }
+
     window.addEventListener('displayPlayer', onDisplayPlayer as EventListener);
     window.addEventListener('displayTile', onDisplayTile as EventListener);
     return () => {

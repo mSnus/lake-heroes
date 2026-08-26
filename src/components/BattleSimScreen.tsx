@@ -80,6 +80,7 @@ function defaultDefenderStats(
       dmgMax: ov.zombieDmgMax,
     };
   }
+
   return { hp: militiaHp, dmgMin: militiaDmgMin, dmgMax: militiaDmgMax };
 }
 
@@ -159,6 +160,7 @@ const BattleSimScreen: React.FC = () => {
     if (defenderKind !== 'normal') {
       lines.push(`${KIND_EMOJI[defenderKind]}${defenderStats.hp}/${defenderStats.dmgMin}-${defenderStats.dmgMax}`);
     }
+
     if (artifactCount > 0) lines.push(`${'🗡️'.repeat(artifactCount)}+${artifactFlatBonus(artifactCount, defenderKind === 'dragon')}`);
     return lines.map((line, i) => (
       <React.Fragment key={i}>

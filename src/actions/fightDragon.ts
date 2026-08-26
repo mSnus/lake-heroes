@@ -55,5 +55,6 @@ export function challengeDragonFromBoard(
     );
     return;
   }
+
   offerDragonChallenge(board, updateGameState, () => clearScreen(), t('fightDragon.notNow'));
 }

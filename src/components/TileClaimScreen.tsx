@@ -103,6 +103,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       say(t('tileCard.garrisonWarning'), 'warning');
       return;
     }
+
     setGarrisonAmount(clamped);
   };
 
@@ -120,6 +121,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         setTileGarrison(gameState, player, tile, amount);
         updateGameState(gameState);
       }
+
       clearScreen();
     }, 800);
     return () => clearTimeout(timer);
@@ -219,6 +221,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         say(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
         return;
       }
+
       if (!window.confirm(t('tileCard.confirmTakeBack', { tileName: tile.name, gold: cost })))
         return;
       takeTileBack(gameState, player, tile);
@@ -228,6 +231,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         return;
       yieldTile(gameState, player, tile);
     }
+
     updateGameState(gameState);
     forceRerender((v) => v + 1);
   };

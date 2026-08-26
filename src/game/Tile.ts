@@ -117,11 +117,13 @@ export class Tile implements TileJSON {
       const p = data.prices![lvl];
       this._priceCoeffs[lvl] = { gold: p?.gold || 0, units: p?.units || 0 };
     }
+
     this._bonusCoeffs = {};
     for (const key of Object.keys(data.bonuses || {})) {
       const lvl = Number(key);
       this._bonusCoeffs[lvl] = data.bonuses![lvl] || 0;
     }
+
     this.defences = Object.assign({}, data.defences || {});
     this._annualGoldMult = data.annualGoldMult;
     this.annualUnits = Object.assign({}, data.annualUnits || {});
@@ -144,6 +146,7 @@ export class Tile implements TileJSON {
       this.garrisonMilitia = data.garrisonMilitia ?? 0;
       this.garrisonRiders = data.garrisonRiders ?? 0;
     }
+
     this.unclaimedSinceTurn = data.unclaimedSinceTurn;
     this.razedInRound = data.razedInRound;
     this.abandoned = data.abandoned ?? false;
@@ -180,6 +183,7 @@ export class Tile implements TileJSON {
       const goldBase = lvl <= 1 ? ov.tileBasePrice : lvl >= 3 ? upgradeBase * LEVEL_3_UPGRADE_MULT : upgradeBase;
       out[lvl] = { gold: p.gold * goldBase, units: p.units };
     }
+
     return out;
   }
 
@@ -199,6 +203,7 @@ export class Tile implements TileJSON {
       const raw = this._bonusCoeffs[lvl] * incomeBase;
       out[lvl] = isGold ? Math.round((raw * BONUS_GOLD_RATIO * TURN_INCOME_RATIO) / 50) * 50 : raw;
     }
+
     return out;
   }
 
@@ -238,6 +243,7 @@ export class Tile implements TileJSON {
       this._garrison = Math.max(0, Math.floor(value));
       return;
     }
+
     const delta = value - this.garrison;
     if (delta >= 0) {
       const cap = remainingCapacity(

@@ -68,6 +68,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
       const target = targets[idx] ?? tile.garrisonMilitia;
       if (target !== tile.garrisonMilitia) setTileGarrison(gameState, player, tile, target);
     }
+
     updateGameState(gameState);
     clearScreen();
   };

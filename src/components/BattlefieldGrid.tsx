@@ -106,6 +106,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     placementsRef.current = next;
     setPlacements(next);
   };
+
   const [drag, setDrag] = useState<{ unitId: string; x: number; y: number } | null>(null);
   // Where a drag started, to tell a real drag from a plain click on release
   // (see the swap gesture below) -- pointermove already updates `drag`
@@ -130,6 +131,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     setHpRevealId(unitId);
     hpRevealTimerRef.current = setTimeout(() => setHpRevealId(null), 1000);
   };
+
   useEffect(() => () => clearTimeout(hpRevealTimerRef.current), []);
   // One batch per user action, so Undo can step back through one action at a
   // time — a plain placement is a 1-entry batch, a swap is 2 (both halves
@@ -163,6 +165,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       plan[u.id] = { col: pl.col, row: pl.row };
       if (pl.attackTargetId) attacks[u.id] = pl.attackTargetId;
     }
+
     onManualComplete?.(plan, attacks);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, manualSide]);
@@ -182,6 +185,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       const pl = placementsRef.current[u.id];
       if (pl) return { col: pl.col, row: pl.row };
     }
+
     return { col: u.col, row: u.row };
   };
 
@@ -287,6 +291,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       if (entry.prev) next[entry.unitId] = entry.prev;
       else delete next[entry.unitId];
     }
+
     commitPlacements(next);
     setUndoStack((s) => s.slice(0, -1));
     completedRef.current = false;
@@ -304,6 +309,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       plan[u.id] = pl ? { col: pl.col, row: pl.row } : { col: u.col, row: u.row };
       if (pl?.attackTargetId) attacks[u.id] = pl.attackTargetId;
     }
+
     onManualComplete?.(plan, attacks);
   };
 
@@ -331,9 +337,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     for (const e of lastEvents) {
       if (e.type === 'attack' && e.targetId) overrideEmoji.set(e.targetId, '🩸');
     }
+
     for (const e of lastEvents) {
       if (e.type === 'block') overrideEmoji.set(e.unitId, '🛡️');
     }
+
     for (const e of lastEvents) {
       if (e.type === 'death') overrideEmoji.set(e.unitId, '☠️');
     }
@@ -507,6 +515,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                         setSelectedForSwap(null); // clicked the same unit again — deselect
                         return;
                       }
+
                       if (selectedForSwap) {
                         const other = sideUnits.find((s) => s.id === selectedForSwap);
                         if (other && !placementsRef.current[other.id] && isHexAdjacent(u, other)) {
@@ -515,6 +524,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                           return;
                         }
                       }
+
                       setSelectedForSwap(u.id); // select this one, awaiting an adjacent partner click
                       return;
                     }

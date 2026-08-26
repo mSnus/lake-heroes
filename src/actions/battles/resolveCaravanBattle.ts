@@ -47,6 +47,7 @@ export function resolveCaravanBattle(
       gameMessage = t('resolveCaravanBattle.pillagedGameMessage', { attackerName: attacker.name, prize });
       message = t('resolveCaravanBattle.pillagedMessage', { prize });
     }
+
     victoryBg = true;
   } else if (outcome === 'tie') {
     const quarterPrize = Math.floor(prize / 4);

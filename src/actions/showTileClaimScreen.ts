@@ -40,7 +40,9 @@ export function showTileClaimScreen(params: TileClaimScreenParams): void {
       setTileGarrison(gameState, player, tile, amount);
       updateGameState(gameState);
     }
+
     return;
   }
+
   showScreen({ content: React.createElement(TileClaimScreen, params) });
 }

@@ -83,6 +83,7 @@ export function mapEditDragTile(index: number, xPct: number, yPct: number) {
   if (state.target?.kind !== 'tile' || state.target.index !== index) {
     state = { ...state, target: { kind: 'tile', index } };
   }
+
   slot.xPct = xPct;
   slot.yPct = yPct;
   scheduleAnnounce();
@@ -109,14 +110,17 @@ function handleKeyDown(e: KeyboardEvent) {
       slot.xPct -= 1;
       moved = true;
     }
+
     if (e.key === 'ArrowRight') {
       slot.xPct += 1;
       moved = true;
     }
+
     if (e.key === 'ArrowUp') {
       slot.yPct -= 1;
       moved = true;
     }
+
     if (e.key === 'ArrowDown') {
       slot.yPct += 1;
       moved = true;
@@ -126,6 +130,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.preventDefault();
       scheduleAnnounce();
     }
+
     return;
   }
 
@@ -134,22 +139,27 @@ function handleKeyDown(e: KeyboardEvent) {
     playerIconOffset.anchorXPct -= 0.5;
     moved = true;
   }
+
   if (e.key === 'ArrowRight') {
     playerIconOffset.anchorXPct += 0.5;
     moved = true;
   }
+
   if (e.key === 'ArrowUp') {
     playerIconOffset.anchorYPct -= 0.5;
     moved = true;
   }
+
   if (e.key === 'ArrowDown') {
     playerIconOffset.anchorYPct += 0.5;
     moved = true;
   }
+
   if (e.key === '=' || e.key === '+') {
     playerIconOffset.clusterStepPct += 0.5;
     moved = true;
   }
+
   if (e.key === '-' || e.key === '_') {
     playerIconOffset.clusterStepPct -= 0.5;
     moved = true;

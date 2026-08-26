@@ -408,6 +408,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       const p = start.get(u.id);
       if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
     }
+
     // The human-controlled side attacks the enemy it explicitly pointed at, or
     // auto-targets like the bot otherwise — so a unit that simply moved into
     // contact (or was left untouched while already adjacent) always fights,
@@ -428,27 +429,33 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         intent.set(u.id, u.side === manualS ? (atk[u.id] ?? 'auto') : 'auto');
       }
     }
+
     const { state, events } = resolveBrawlCombat(s, brawlOpts(), movedIds, intent);
     animateCombat(state, events);
   };
+
   const brawlAttackerPhase = (s: GridBattleState) => {
     if (attackerManual && !autoResolveBrawl) {
       manualBaseRef.current = s;
       setBrawlManualSide('attacker');
       return;
     }
+
     const moved = applyBrawlMoves(s, planBrawlSide(s, 'attacker', Math.random));
     animateBrawlMove(moved, () => brawlResolve(moved));
   };
+
   const brawlDefenderPhase = (s: GridBattleState) => {
     if (defenderManual && !autoResolveBrawl) {
       manualBaseRef.current = s;
       setBrawlManualSide('defender');
       return;
     }
+
     const moved = applyBrawlMoves(s, planBrawlSide(s, 'defender', Math.random));
     animateBrawlMove(moved, () => brawlAttackerPhase(moved));
   };
+
   const startBrawlRound = () => {
     if (phase !== 'ongoing' || roundActiveRef.current || animatingRef.current || isBattleOver(battle)) return;
     roundActiveRef.current = true;
@@ -456,6 +463,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     manualAttacksRef.current = {};
     brawlDefenderPhase(battle);
   };
+
   const handleManualComplete = (plan: BrawlPlan, attacks: Record<string, string>) => {
     const side = brawlManualSide;
     const base = manualBaseRef.current;
@@ -478,6 +486,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       else brawlResolve(moved);
     }, BRAWL_SNAP_HOLD_MS);
   };
+
   const startBrawlRoundRef = useRef(startBrawlRound);
   startBrawlRoundRef.current = startBrawlRound;
   const handleManualCompleteRef = useRef(handleManualComplete);
@@ -489,6 +498,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       startBrawlRoundRef.current();
       return;
     }
+
     const { state, events } = stepTurn(battle, {
       rng: Math.random,
       attackerFlatBonus: attackerRollBonus,
@@ -506,6 +516,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       animateCombat(state, combatEvents);
       return;
     }
+
     const movedTo = new Map(moveEvents.map((e) => [e.unitId, e.to!]));
     const afterMove: GridBattleState = {
       ...battle,
@@ -581,8 +592,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         const moved = applyBrawlMoves(base, planBrawlSide(base, side, Math.random));
         animateBrawlMove(moved, () => (side === 'defender' ? brawlAttackerPhase(moved) : brawlResolve(moved)));
       }
+
       return;
     }
+
     setManualMode(true);
     handleNextTurn();
   };

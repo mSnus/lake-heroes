@@ -50,10 +50,12 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
       const legacyId = legacyIdByName.get(t.name);
       if (legacyId) t = { ...t, id: legacyId };
     }
+
     const fresh = tileTemplatesById.get(t.id);
     if (t.garrison === undefined && fresh?.garrison !== undefined) {
       t = { ...t, garrison: fresh.garrison, baseGarrison: fresh.garrison };
     }
+
     // Balance data (prices/bonuses/defences/annual reward) is authored in
     // tiles.json, not player progress — always pull the current values
     // instead of trusting whatever was baked into the save when the tile
@@ -69,6 +71,7 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
         annualUnits: fresh.annualUnits,
       };
     }
+
     return new Tile(t) as Tile;
   });
 }

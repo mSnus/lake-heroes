@@ -65,6 +65,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
           savedMsgs.push(t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji }));
           continue;
         }
+
         if (p.units > 0) p.units = Math.max(1, Math.round(p.units / 2));
       }
 
@@ -98,6 +99,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
               targetIdx = idx;
             }
           }
+
           const tile = board.tiles[targetIdx];
           tile.owner = null;
           tile._level = 1;
@@ -109,6 +111,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       } else {
         message = t('joker.hurricaneNoEffect');
       }
+
       break;
     }
 

@@ -195,6 +195,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         handleKingCastle(board, updateGameState);
         return;
       }
+
       if (isActivePlayerTile && tile.id === 'tavern') {
         openTavernHireOnly(board, updateGameState);
         return;
@@ -224,6 +225,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         startYPct: pos.y,
       };
     };
+
     const handleTilePointerMove = (e: React.PointerEvent) => {
       const drag = tileDragRef.current;
       if (!drag || drag.index !== i) return;
@@ -233,6 +235,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       const dyPct = ((e.clientY - drag.startClientY) / rect.height) * 100;
       mapEditDragTile(i, drag.startXPct + dxPct, drag.startYPct + dyPct);
     };
+
     const handleTilePointerUp = (e: React.PointerEvent) => {
       if (tileDragRef.current?.index !== i) return;
       tileDragRef.current = null;
@@ -393,6 +396,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
             mapEditSelectPlayerIcon();
             return;
           }
+
           gameEvent('displayPlayer', player);
         }}
       >

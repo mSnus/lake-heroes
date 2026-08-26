@@ -38,6 +38,7 @@ function computeUnitsHeadcount(board: GameState, player: Player): number {
     if (!tile) continue;
     units += tile.garrisonMilitia + tile.garrisonRiders;
   }
+
   return units;
 }
 

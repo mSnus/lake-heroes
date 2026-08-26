@@ -94,6 +94,7 @@ export function showScreen(config: ScreenConfig): void {
     if (config.buttons?.length === 1) config.buttons[0].onClick();
     return;
   }
+
   state = config;
   console.log('showing screen', state);
   emit();

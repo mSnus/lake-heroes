@@ -253,6 +253,7 @@ export const TileCard: React.FC<TileCardProps> = ({
         say(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
         return;
       }
+
       if (!window.confirm(t('tileCard.confirmTakeBack', { tileName: tile.name, gold: cost })))
         return;
       takeTileBack(gameState, activePlayer, tile);

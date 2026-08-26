@@ -35,5 +35,6 @@ export function advanceBoardPosition(
     pos = nextBoardPosition(pos, forkChoice);
     if (pos === 0) crossedStart = true;
   }
+
   return { finalIndex: pos, crossedStart };
 }

@@ -24,6 +24,7 @@ export function sellUnits(
   } else {
     player.militia -= sold;
   }
+
   player.gold += sold * unitPrice;
 
   const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');

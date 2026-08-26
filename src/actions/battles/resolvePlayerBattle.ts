@@ -54,6 +54,7 @@ export function resolvePlayerBattle(
       attacker.units = Math.max(0, attacker.units - quarterLoss);
       defender.units = Math.max(0, defender.units - quarterLoss);
     }
+
     setGameMessage(
       board,
       t('resolvePlayerBattle.tieGameMessage', {

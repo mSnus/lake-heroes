@@ -75,6 +75,7 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
     const r = row + off.row;
     if (c >= 0 && c < cols && r >= 0 && r < rows) out.push({ col: c, row: r });
   }
+
   return out;
 }
 
@@ -123,6 +124,7 @@ function rollDamage(u: GridUnit, pctBonus: number, flatBonus: number, rng: () =>
     min = ov.militiaDmgMin;
     max = ov.militiaDmgMax;
   }
+
   const base = rollInRange(min, max, rng) * mult;
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
 }
@@ -193,6 +195,7 @@ export function createBattle(
         swapCooldown: 0,
       });
     }
+
     const riderKind: UnitKind = isDragonSide ? 'dragon' : 'rider';
     const riderHp = comp.riderHp ?? hpFor(riderKind);
     for (let i = 0; i < comp.riders; i++) {
@@ -212,11 +215,13 @@ export function createBattle(
         swapCooldown: 0,
       });
     }
+
     if (comp.formation && comp.formation.kind !== 'square') {
       placeFormation(sideUnits, side, cols, rows, comp.formation, comp.militia, comp.riders);
     } else {
       placeArmy(sideUnits, side, cols, rows);
     }
+
     units.push(...sideUnits);
   };
 
@@ -241,6 +246,7 @@ function nearestEnemyDistance(u: GridUnit, living: GridUnit[]): number {
     const d = hexDistance(u, v);
     if (d < best) best = d;
   }
+
   return best;
 }
 
@@ -316,6 +322,7 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
       bestEuclidSq = euclidSq;
       bestFirstStep = firstStep;
     }
+
     return undefined;
   };
 
@@ -345,6 +352,7 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
         nextLevel.push({ cell: c, firstStep: actualFirstStep });
       }
     }
+
     // Stop at the shallowest ring that found any real improvement — see
     // the function comment for why continuing deeper would be wrong here.
     if (bestFirstStep !== undefined) return bestFirstStep;
@@ -394,6 +402,7 @@ function hasOpenAdjacentCell(u: GridUnit, living: GridUnit[], cols: number, rows
     if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
     if (!occupied.has(`${c.col},${c.row}`)) return true;
   }
+
   return false;
 }
 
@@ -427,6 +436,7 @@ function safeAdjacentCell(
       best = c;
     }
   }
+
   return best;
 }
 
@@ -456,6 +466,7 @@ function firstStepAwayFrom(start: Cell, awayFrom: Cell, cols: number, rows: numb
       best = c;
     }
   }
+
   return best;
 }
 
@@ -478,6 +489,7 @@ function nearestLivingEnemy(u: GridUnit, living: GridUnit[]): GridUnit | undefin
       best = v;
     }
   }
+
   return best;
 }
 
@@ -503,6 +515,7 @@ function nearestLivingFriend(u: GridUnit, living: GridUnit[]): GridUnit | undefi
       best = v;
     }
   }
+
   return best;
 }
 
@@ -711,6 +724,7 @@ export function planBrawlSide(
           plan[reserve.id] = { col: u.col, row: u.row };
           continue;
         }
+
         // No ally to swap with -- pull back alone, but only when truly
         // alone (any ally at all, even a busy one, means safety in numbers:
         // stay and fight instead). Capped 2 in a row via retreatStreak.
@@ -724,9 +738,11 @@ export function planBrawlSide(
           }
         }
       }
+
       plan[u.id] = { col: u.col, row: u.row }; // adjacent: stay and fight
       continue;
     }
+
     const target = nearestLivingEnemy(u, living);
     const dest = target ? firstStepToward(u, target, state.cols, state.rows, blocked) : undefined;
     if (dest) {
@@ -738,6 +754,7 @@ export function planBrawlSide(
       plan[u.id] = { col: u.col, row: u.row }; // boxed in: stay
     }
   }
+
   return plan;
 }
 
@@ -761,6 +778,7 @@ export function applyBrawlMoves(state: GridBattleState, plan: BrawlPlan): GridBa
     const otherDest = other && other.id !== u.id ? plan[other.id] : undefined;
     if (otherDest && otherDest.col === u.col && otherDest.row === u.row) swapped.add(u.id);
   }
+
   const units = state.units.map((u) => {
     const dest = plan[u.id];
     if (!dest) return { ...u };
@@ -961,6 +979,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   for (const u of alive) {
     if (!moverIds.has(u.id)) staticOccupancy.set(`${u.col},${u.row}`, u.id);
   }
+
   // A swap pair's two cells are spoken for by the other half of the pair
   // the instant either vacates -- never actually free for a third unit to
   // path into, even though both members are technically movers.
@@ -1015,6 +1034,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
         stuck.add(unit.id);
       }
     }
+
     return { plannedMove, stuck };
   };
 
@@ -1040,6 +1060,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
       const u = alive.find((a) => a.id === id)!;
       roundBlocked.add(`${u.col},${u.row}`);
     }
+
     const result = planMoves(roundBlocked);
     plannedMove = result.plannedMove;
     const newlyStuck = Array.from(result.stuck).filter((id) => !stuckIds.has(id));
@@ -1139,6 +1160,7 @@ export function runGridBattleToCompletion(
         const p = startPos.get(u.id);
         if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
       }
+
       state = resolveBrawlCombat(atkMoved, opts, movedIds, undefined).state;
     }
   } else {
@@ -1147,5 +1169,6 @@ export function runGridBattleToCompletion(
       state = stepTurn(state, opts).state;
     }
   }
+
   return state;
 }

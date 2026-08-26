@@ -49,6 +49,7 @@ export function dispatchBattleResolution(
     // In ambush shape: attacker(grid)=monsters, defender(grid)=real player.
     return resolveRuinsBattle(gameState, attacker, defKilled, battleOutcome);
   }
+
   if (isAmbush) {
     // In ambush: attacker(grid)=NPC, defender(grid)=real player.
     // BattleOutcome 'defender' means the player wins the ambush.
@@ -62,6 +63,7 @@ export function dispatchBattleResolution(
       lostBg: ambushOutcome !== 'win',
     };
   }
+
   if (isRogue) return resolveRogueAttack(gameState, defender!, tile!, defKilled, battleOutcome);
   return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome);
 }
@@ -139,5 +141,6 @@ export function showBattleScreen(
     handleBattleClose(props, setup, resolution.outcome);
     return;
   }
+
   showScreen({ ...screenExtras, content: React.createElement(BattleScreen, props) });
 }

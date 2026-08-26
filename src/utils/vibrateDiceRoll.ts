@@ -14,6 +14,7 @@ export function vibrateDiceRoll(): void {
     console.debug('[vibrate] disabled via DICE_VIBRATION_ENABLED');
     return;
   }
+
   if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') {
     console.debug('[vibrate] navigator.vibrate is not available in this browser');
     return;

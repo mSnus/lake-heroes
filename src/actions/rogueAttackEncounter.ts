@@ -38,6 +38,7 @@ export function checkRogueAttackEncounter(
     // relevant precondition.
     if (player.fame < 3) return false;
   }
+
   // Yielded tiles are under the King's protection -- not a valid target.
   const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
   if (eligibleTiles.length < 1) return false;

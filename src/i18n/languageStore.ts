@@ -30,6 +30,7 @@ function loadInitialLanguage(): Language {
   } catch {
     // ignore
   }
+
   return 'en';
 }
 
@@ -52,6 +53,7 @@ export function setLanguage(lang: Language): void {
   } catch {
     // ignore
   }
+
   emit();
 }
 

@@ -50,6 +50,7 @@ export function placeArmy(units: GridUnit[], side: 'attacker' | 'defender', cols
       colOffset = 1 + Math.floor(j / blockRows);
       row = j % blockRows;
     }
+
     const col = startCol + step * colOffset;
     unit.col = Math.max(0, Math.min(cols - 1, col));
     unit.row = Math.max(0, Math.min(rows - 1, startRow + row));

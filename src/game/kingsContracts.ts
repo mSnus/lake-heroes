@@ -53,5 +53,6 @@ export function resolveKingsContractOnClaim(
   if (contract.playerId === claimedBy.id) {
     return { fulfilled: true, award: contract.award };
   }
+
   return { fulfilled: false };
 }

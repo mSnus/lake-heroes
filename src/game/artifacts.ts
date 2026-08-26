@@ -65,6 +65,7 @@ export function pickRandomUnownedArtifact(board: GameState, receiver: Player): A
       available = available.filter((a) => !group.includes(a.id));
     }
   }
+
   if (available.length === 0) return null;
   return translate(available[Math.floor(Math.random() * available.length)]);
 }
@@ -83,10 +84,12 @@ export function getArtifactRollBonus(
     bonus += 1;
     if (opts.isDragon) bonus += 2;
   }
+
   if (hasArtifact(player, 'dwemer-axe')) {
     bonus += 1;
     if (opts.isDragon) bonus += 2;
   }
+
   return bonus;
 }
 
@@ -108,11 +111,13 @@ export function getArtifactRollBonusBreakdown(
     const artifact = getArtifact('broken-blade');
     if (artifact) breakdown.push({ artifact, bonus });
   }
+
   if (hasArtifact(player, 'dwemer-axe')) {
     const bonus = 1 + (opts.isDragon ? 2 : 0);
     const artifact = getArtifact('dwemer-axe');
     if (artifact) breakdown.push({ artifact, bonus });
   }
+
   return breakdown;
 }
 
@@ -153,11 +158,14 @@ export function checkArtifactProtection(
   ) {
     return { saved: true, artifact: getArtifact('indestructible-umbrella') };
   }
+
   if (event === 'plague' && hasArtifact(player, 'pipe-of-hamelin')) {
     return { saved: true, artifact: getArtifact('pipe-of-hamelin') };
   }
+
   if (hasArtifact(player, 'divine-beads') && Math.random() < 0.5) {
     return { saved: true, artifact: getArtifact('divine-beads') };
   }
+
   return { saved: false };
 }

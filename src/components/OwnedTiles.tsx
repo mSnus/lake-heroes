@@ -61,8 +61,10 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disabl
         };
         buckets.push(bucket);
       }
+
       bucket.items.push(entry);
     }
+
     return buckets;
   }, [gameState, activePlayer.name]);
 

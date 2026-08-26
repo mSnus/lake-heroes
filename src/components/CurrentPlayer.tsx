@@ -104,9 +104,11 @@ function useRevealedStats(player: Player): RevealedStats {
           snapshotsRef.current.set(player.id, to);
         }
       };
+
       if (rafRef.current !== undefined) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(tick);
     }
+
     window.addEventListener('turnAnnouncementGone', onGone as EventListener);
     return () => window.removeEventListener('turnAnnouncementGone', onGone as EventListener);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -265,6 +267,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 ].filter(Boolean);
                 return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
               };
+
               const parts = [
                 fmt(
                   kingsGold,

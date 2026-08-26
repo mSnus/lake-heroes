@@ -115,6 +115,7 @@ function brawlBlock(n: number): LocalCell[] {
   for (let r = 0; r < back; r++) cells.push({ col: 1, row: r });
   return cells;
 }
+
 const BRAWL_SHAPES: Record<number, LocalCell[]> = Object.fromEntries(
   Array.from({ length: 12 }, (_, i) => [i + 1, brawlBlock(i + 1)])
 );
@@ -223,6 +224,7 @@ function splitEvenlyCenterHeavy(total: number, count: number): number[] {
     sizes[idx] += take;
     remainder -= take;
   }
+
   // Every share may already be at/over the cap with remainder still left
   // (same scenario as above) — there's no "room" left to target, but the
   // remainder must still land somewhere so the total stays exact. Spread
@@ -231,6 +233,7 @@ function splitEvenlyCenterHeavy(total: number, count: number): number[] {
     sizes[order[i % order.length]] += 1;
     remainder--;
   }
+
   return sizes;
 }
 
@@ -292,6 +295,7 @@ function outsideInOrder(count: number): number[] {
     lo++;
     hi--;
   }
+
   if (lo === hi) order.push(lo);
   return order;
 }
@@ -304,6 +308,7 @@ function boundingBox(cells: LocalCell[]): { width: number; height: number } {
     if (c.col > maxCol) maxCol = c.col;
     if (c.row > maxRow) maxRow = c.row;
   }
+
   return { width: maxCol + 1, height: maxRow + 1 };
 }
 
@@ -330,6 +335,7 @@ function stackColumnLocal(groups: PlacedCell[][]): { cells: PlacedCell[]; height
     rowCursor += box.height + GROUP_GAP;
     maxWidth = Math.max(maxWidth, box.width);
   }
+
   return { cells, height: Math.max(0, rowCursor - GROUP_GAP), width: maxWidth };
 }
 
@@ -401,6 +407,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
       overflow += riderShares[i] - capped;
       riderShares[i] = capped;
     }
+
     for (const idx of centerOutwardOrder(groupCount)) {
       if (overflow <= 0) break;
       const room = sizes[idx] - riderShares[idx];
@@ -408,6 +415,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
       riderShares[idx] += take;
       overflow -= take;
     }
+
     riderSizes = riderShares;
     militiaSizes = sizes.map((s, i) => s - riderShares[i]);
   } else {
@@ -419,6 +427,7 @@ function layoutGroup(comp: { militia: number; riders: number }, forcedGroupCount
     militiaSizes = splitEvenlyCenterHeavy(comp.militia, groupCount);
     riderSizes = splitEvenlyCenterHeavy(comp.riders, groupCount);
   }
+
   const subGroups = militiaSizes.map((m, i) => layoutGroup({ militia: m, riders: riderSizes[i] }));
   return arrangeGroups(subGroups);
 }
@@ -481,6 +490,7 @@ function columnsLayout(comp: { militia: number; riders: number }, maxRows: numbe
     remaining -= count;
     col++;
   }
+
   // Riders fill from local col 0 onward -- the front-most column(s), by
   // the same "col 0 = the edge closest to the enemy" convention every
   // formation here shares (see placeFormation's per-side mirroring).

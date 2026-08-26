@@ -41,6 +41,7 @@ export function useShakeToRoll(enabled: boolean, onShake: () => void): void {
           onShakeRef.current();
         }
       }
+
       lastMagnitude.current = magnitude;
     };
 

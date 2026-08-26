@@ -13,6 +13,7 @@ export function playerWealth(board: GameState, player: Player): { gold: number; 
     gold += t.currentPrice.gold;
     units += t.currentPrice.units;
   }
+
   return { gold, units };
 }
 
@@ -40,6 +41,7 @@ export function richestPlayer(board: GameState): Player | null {
       best = p;
     }
   }
+
   return best;
 }
 
@@ -54,5 +56,6 @@ export function poorestPlayer(board: GameState): Player | null {
       worst = p;
     }
   }
+
   return worst;
 }

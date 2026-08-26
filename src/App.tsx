@@ -350,6 +350,7 @@ function App() {
                 });
                 break;
               }
+
               case 'player-battle': {
                 const opponent = restored.players.find((p) => p.id === savedScreen.defenderId);
                 if (opponent) {
@@ -370,8 +371,10 @@ function App() {
                     ),
                   });
                 }
+
                 break;
               }
+
               case 'ambush-battle':
                 showScreen({
                   screenType: 'ambush-battle',
@@ -422,8 +425,10 @@ function App() {
                     ),
                   });
                 }
+
                 break;
               }
+
               case 'sphynx':
                 showSphynxScreen((roll) => handleSphynx(restored, updateGameState, roll));
                 break;

@@ -53,6 +53,7 @@ export function t(key: string, params?: Record<string, string | number>): string
     //console.warn(`Missing i18n key: ${key}`);
     return key;
   }
+
   return value;
 }
 
