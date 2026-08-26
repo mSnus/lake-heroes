@@ -114,7 +114,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, ZOOM_TRANSITION_MS + ZOOM_OUT_PAUSE_MS);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePlayerId]);
 
   // Recomputed every render (cheap arithmetic) so the camera keeps tracking
@@ -150,7 +149,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     dy = scaledH > wrapperH ? Math.min(0, Math.max(wrapperH - scaledH, dy)) : Math.min(0, dy);
 
     return `translate(${dx}px, ${dy}px) scale(${ZOOM_SCALE})`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoomLevel, board.activePlayer.position, resizeTick, mapReady]);
 
   // Manual zoom-out: double-clicking the map itself (not a tile or the

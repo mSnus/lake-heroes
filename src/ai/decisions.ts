@@ -216,6 +216,11 @@ export function pickGarrisonAction(
   const target = candidates.sort((a, b) => a.garrisonMilitia - b.garrisonMilitia)[0];
   const desired = target.baseGarrison - target.garrisonMilitia;
 
+  // minMilitia is a reserve the bot keeps travelling with, not just an entry
+  // trigger -- it garrisons only what it holds ABOVE that floor, so topping
+  // up a tile can never strip its own army bare.
+  const spendable = Math.max(0, player.militia - (rule.minMilitia ?? 0));
+
   // A fixed budget for the whole turn (budgetFraction of the militia the
   // player had BEFORE any of this turn's garrisoning), reconstructed from
   // what's already been spent -- garrisonSpentThisTurn -- rather than
@@ -224,13 +229,13 @@ export function pickGarrisonAction(
   // (or across several tiles) 1-2 at a time, since floor-rounding a fraction
   // of a slowly-shrinking pool can plateau at the same tiny value call after
   // call instead of committing the full amount a tile needs in one go.
-  // No fraction means "fill to the top" -- bounded only by the militia
-  // actually on hand and the tile's own capacity.
+  // No fraction means "fill to the top", bounded only by the reserve above
+  // and the tile's own capacity.
   const spent = player.garrisonSpentThisTurn ?? 0;
   const budget =
     rule.budgetFraction === undefined
-      ? player.militia
-      : Math.max(0, Math.floor(rule.budgetFraction * (player.militia + spent)) - spent);
+      ? spendable
+      : Math.min(spendable, Math.max(0, Math.floor(rule.budgetFraction * (player.militia + spent)) - spent));
 
   const cap = remainingCapacity(
     target.garrisonMilitia,
@@ -239,7 +244,7 @@ export function pickGarrisonAction(
     'militia',
     garrisonSlotCapacity()
   );
-  const amount = Math.min(desired, budget, cap, player.militia);
+  const amount = Math.min(desired, budget, cap);
 
   return amount > 0 ? { tile: target, amount } : null;
 }

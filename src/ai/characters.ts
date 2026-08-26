@@ -23,7 +23,8 @@ export interface CharacterConfig {
    * turn's starting militia may go into it, and omitting it means "fill to
    * the top", limited only by tile capacity and militia on hand. */
   garrison: {
-    /** Requires MORE than this many traveling militia. */
+    /** Requires MORE than this many traveling militia, and doubles as a
+     * reserve: only militia held above this floor is ever committed. */
     minMilitia?: number;
     /** Requires at least this many units of per-turn tile income (uncapped
      * by squad room -- see game/income.ts's playerRawTurnIncome). */

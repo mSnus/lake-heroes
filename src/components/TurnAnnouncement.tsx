@@ -76,12 +76,10 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
     // (see choosePath) instead of disappearing on its own.
     if (!atFork) hideTimerRef.current = setTimeout(hide, VISIBLE_MS);
     return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.id]);
 
   useEffect(() => {
     if (rolling) hide();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling]);
 
   useEffect(() => () => {

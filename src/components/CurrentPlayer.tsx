@@ -68,7 +68,6 @@ function useRevealedStats(player: Player): RevealedStats {
       snapshotsRef.current.set(player.id, real);
       pendingRef.current = false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.id]);
 
   // Same-turn changes track live -- skipped while a turn-start reveal is
@@ -79,7 +78,6 @@ function useRevealedStats(player: Player): RevealedStats {
     const real = { gold: player.gold, militia: player.militia, riders: player.riders };
     setDisplay(real);
     snapshotsRef.current.set(player.id, real);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.gold, player.militia, player.riders, player.id]);
 
   useEffect(() => {
@@ -111,7 +109,6 @@ function useRevealedStats(player: Player): RevealedStats {
 
     window.addEventListener('turnAnnouncementGone', onGone as EventListener);
     return () => window.removeEventListener('turnAnnouncementGone', onGone as EventListener);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.id, player.gold, player.militia, player.riders]);
 
   useEffect(

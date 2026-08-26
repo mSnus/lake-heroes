@@ -167,7 +167,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     }
 
     onManualComplete?.(plan, attacks);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, manualSide]);
 
   const cellAndRect = () => {

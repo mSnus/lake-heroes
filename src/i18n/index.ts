@@ -7,10 +7,8 @@ import { getLanguage, useLanguage, Language } from './languageStore';
 export { LANGUAGES, getLanguage, setLanguage, cycleLanguage, useLanguage } from './languageStore';
 export type { Language, LanguageOption } from './languageStore';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LOCALES: Record<Language, any> = { en, ru, es, sim };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function lookup(locale: any, key: string): unknown {
   return key
     .split('.')

@@ -86,7 +86,6 @@ const TavernModal: React.FC<TavernModalProps> = ({
       onSkip();
     }, 600);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

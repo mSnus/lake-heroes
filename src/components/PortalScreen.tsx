@@ -32,7 +32,6 @@ export const PortalScreen: React.FC<PortalScreenProps> = ({ player, landedTile, 
     if (!player.isComputer) return;
     const timer = setTimeout(() => onContinue(), BOT_CONTINUE_DELAY_MS);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

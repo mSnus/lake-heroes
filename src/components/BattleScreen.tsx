@@ -300,14 +300,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           : 'battleScreen.ambushedMessage';
       say(t(key, { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Resolve result (fed by the grid battle's final casualty tally) ──
   const resolveResult = useCallback(
     (battleOutcome: BattleOutcome, atkKilled: number, defKilled: number): BattleResolution =>
       dispatchBattleResolution(props, setupRef.current, battleOutcome, atkKilled, defKilled),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -326,7 +324,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         setPhase('result');
       }, 400);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -526,7 +523,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       }),
     };
     animateBrawlMove(afterMove, () => animateCombat(state, combatEvents));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, battle, isBrawl, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus, animateCombat]);
 
   // Trigger resolution exactly once, the moment the grid battle ends —
@@ -544,7 +540,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     const battleOutcome: BattleOutcome =
       battle.status === 'attacker-win' ? 'attacker' : battle.status === 'defender-win' ? 'defender' : 'tie';
     finishBattle(battleOutcome, atkGridKilled, defGridKilled);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [battle, phase]);
 
   // What happens once the fight is over and the player (or bot) moves on --
@@ -571,7 +566,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (phase !== 'ongoing' || manualMode) return;
     const timer = setTimeout(() => handleNextTurn(), AUTO_TURN_DELAY_MS);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, battle.turn, manualMode]);
 
   const handleVsIconClick = () => {
@@ -618,7 +612,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (phase !== 'result' || showBattlefield || !bothSidesAutomated) return;
     const t = setTimeout(() => handleClose(), 800);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, showBattlefield, bothSidesAutomated]);
 
   return (

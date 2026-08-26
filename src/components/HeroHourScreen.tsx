@@ -69,7 +69,6 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
       }
     }, 600);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const greetLabel = tileOwner

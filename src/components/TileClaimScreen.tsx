@@ -125,7 +125,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       clearScreen();
     }, 800);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player]);
 
   const handleSetGarrison = () => {
