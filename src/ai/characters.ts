@@ -17,9 +17,19 @@ export interface CharacterConfig {
   dragonThreshold: number;
   kingsCastleHireFraction: number; // unused by 'wizard' strategy, see pickKingsCastleHireAmount
   buildsSyndicates: boolean;
-  // Fraction of the bot's traveling army it's willing to commit, per turn,
-  // toward topping up an under-garrisoned owned tile — see pickGarrisonAction.
-  garrisonFraction: number;
+  /** When (and how hard) the bot tops up its under-garrisoned owned tiles
+   * each turn -- see pickGarrisonAction. Garrisoning only starts once the
+   * character's trigger is met; `budgetFraction` then caps how much of the
+   * turn's starting militia may go into it, and omitting it means "fill to
+   * the top", limited only by tile capacity and militia on hand. */
+  garrison: {
+    /** Requires MORE than this many traveling militia. */
+    minMilitia?: number;
+    /** Requires at least this many units of per-turn tile income (uncapped
+     * by squad room -- see game/income.ts's playerRawTurnIncome). */
+    minUnitIncome?: number;
+    budgetFraction?: number;
+  };
   // Fraction of Militia left behind (capped by the tile's slot capacity) the
   // moment a bot claims a tile — see TileClaimScreen's bot auto-dismiss effect.
   claimGarrisonFraction: number;
@@ -51,7 +61,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: false,
-    garrisonFraction: 0.2,
+    garrison: { minMilitia: 3 },
     claimGarrisonFraction: 0.7,
   },
   warrior: {
@@ -65,7 +75,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
     skipBuyingNearDragonGoal: true,
-    garrisonFraction: 0.15,
+    garrison: { minMilitia: 8, budgetFraction: 2 / 3 },
     claimGarrisonFraction: 0.3,
   },
   wizard: {
@@ -79,7 +89,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: true,
-    garrisonFraction: 0.25,
+    garrison: { minUnitIncome: 2 },
     claimGarrisonFraction: 0.5,
   },
 };

@@ -44,6 +44,18 @@ export function tileTurnIncome(
  * than promising units the squad limit will silently swallow.
  */
 export function playerTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
+  const raw = playerRawTurnIncome(board, player);
+  return { gold: raw.gold, units: Math.min(raw.units, player.remainingCapacity('militia')) };
+}
+
+/**
+ * What the player's tiles actually produce per turn, BEFORE the squad-
+ * capacity clamp playerTurnIncome applies. Use this to judge how productive
+ * an estate is (see ai/decisions.ts's garrison rules) -- the clamped figure
+ * reads 0 for a full army, which would say "produces nothing" exactly when
+ * the estate is at its most productive.
+ */
+export function playerRawTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
   let gold = 0;
   let units = 0;
   for (const tile of board.tiles) {
@@ -56,8 +68,7 @@ export function playerTurnIncome(board: GameState, player: Player): { gold: numb
   // Rounded down to a clean 50 -- both the real per-turn grant and every
   // preview reading this (CurrentPlayer.tsx, TurnAnnouncement.tsx, etc.)
   // share this function, so they stay in sync automatically.
-  gold = Math.floor(gold / 50) * 50;
-  return { gold, units: Math.min(units, player.remainingCapacity('militia')) };
+  return { gold: Math.floor(gold / 50) * 50, units };
 }
 
 /**

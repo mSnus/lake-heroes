@@ -5,6 +5,7 @@ import { CHARACTERS, CharacterConfig, CharacterId } from './characters';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeAnnualReward } from '../game/kingsGrace';
+import { playerRawTurnIncome } from '../game/income';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { ForkChoice } from '../utils/forkChoiceStore';
 import { syndicateMultiplier } from '../game/syndicate';
@@ -187,8 +188,12 @@ export function shouldChallengeDragon(player: Player): boolean {
 
 /**
  * Top up the weakest-defended owned tile (lowest garrison first) with
- * traveling units, up to the character's garrisonFraction of the bot's
- * current army — so bot-owned tiles aren't free razes for a human/bot rival.
+ * traveling militia, so bot-owned tiles aren't free razes for a rival.
+ * Whether the bot garrisons at all -- and how much of its army it will
+ * commit -- is the character's own `garrison` rule (see characters.ts).
+ * Called in a loop until it returns null, so the triggers below are
+ * re-checked after every top-up and a bot naturally stops the moment it
+ * drops back under its own threshold.
  */
 export function pickGarrisonAction(
   board: GameState,
@@ -197,6 +202,12 @@ export function pickGarrisonAction(
   const cfg = getCharacterConfig(player);
   if (!cfg) return null;
 
+  const rule = cfg.garrison;
+  if (rule.minMilitia !== undefined && player.militia <= rule.minMilitia) return null;
+  if (rule.minUnitIncome !== undefined && playerRawTurnIncome(board, player).units < rule.minUnitIncome) {
+    return null;
+  }
+
   const candidates = player.ownedTiles
     .map((idx) => board.tiles[idx])
     .filter((t): t is Tile => !!t && t.owner === player.id && t.garrisonMilitia < t.baseGarrison);
@@ -204,7 +215,8 @@ export function pickGarrisonAction(
 
   const target = candidates.sort((a, b) => a.garrisonMilitia - b.garrisonMilitia)[0];
   const desired = target.baseGarrison - target.garrisonMilitia;
-  // A fixed budget for the whole turn (garrisonFraction of the militia the
+
+  // A fixed budget for the whole turn (budgetFraction of the militia the
   // player had BEFORE any of this turn's garrisoning), reconstructed from
   // what's already been spent -- garrisonSpentThisTurn -- rather than
   // re-deriving the fraction from the live, ever-shrinking militia count on
@@ -212,10 +224,14 @@ export function pickGarrisonAction(
   // (or across several tiles) 1-2 at a time, since floor-rounding a fraction
   // of a slowly-shrinking pool can plateau at the same tiny value call after
   // call instead of committing the full amount a tile needs in one go.
+  // No fraction means "fill to the top" -- bounded only by the militia
+  // actually on hand and the tile's own capacity.
   const spent = player.garrisonSpentThisTurn ?? 0;
-  const turnStartMilitia = player.militia + spent;
-  const totalBudget = Math.floor(cfg.garrisonFraction * turnStartMilitia);
-  const remainingBudget = Math.max(0, totalBudget - spent);
+  const budget =
+    rule.budgetFraction === undefined
+      ? player.militia
+      : Math.max(0, Math.floor(rule.budgetFraction * (player.militia + spent)) - spent);
+
   const cap = remainingCapacity(
     target.garrisonMilitia,
     target.garrisonRiders,
@@ -223,7 +239,7 @@ export function pickGarrisonAction(
     'militia',
     garrisonSlotCapacity()
   );
-  const amount = Math.min(desired, remainingBudget, cap);
+  const amount = Math.min(desired, budget, cap, player.militia);
 
   return amount > 0 ? { tile: target, amount } : null;
 }
