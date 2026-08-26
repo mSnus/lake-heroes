@@ -315,6 +315,7 @@
     "payTheFee": "pay the fee",
     "fight": "fight with guards of {tile}",
     "goWithPeace": "go with peace",
+    "noRevenge": "forgo revenge",
     "sellTilesToFight": "sell tiles to fight",
     "sellTilesToPayFee": "sell tiles to pay the fee",
     "acceptTheLoss": "accept the loss",

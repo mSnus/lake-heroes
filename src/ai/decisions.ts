@@ -161,24 +161,21 @@ export function sortTilesBySacrifice(board: GameState, player: Player): Tile[] {
 
 /**
  * Whether a bot seeks revenge (a banzai attack) on a tile whose toll it has
- * already paid in full -- fighting is now purely optional payback, not an
+ * already paid in full -- fighting is purely optional payback, not an
  * alternative to paying (see afterMoveLogic.ts), so this only asks "is it
- * worth the risk", not "can I afford not to pay". Warriors always take the
- * shot with any army at all; explorers never pick a fight they don't have
- * to; wizards weigh the odds (or a chance to complete a group/syndicate),
- * the same heuristic this strategy always used to decide fight vs. pay.
+ * worth the risk", never "can I afford not to pay". Both of the character's
+ * revenge conditions must hold (see characters.ts): a big enough power edge
+ * over the garrison, and a minimum absolute army size so a tiny force never
+ * throws itself at a tiny garrison just because the ratio happens to work.
  */
-export function shouldSeekRevenge(board: GameState, player: Player, tile: Tile, defence: number): boolean {
+export function shouldSeekRevenge(player: Player, defence: number): boolean {
   const cfg = getCharacterConfig(player);
-  if (!cfg || player.armyPower <= 0) return false;
-  if (cfg.guards.strategy === 'prefer-fight') return true;
-  if (cfg.guards.strategy === 'last-resort-fight') return false;
+  if (!cfg) return false;
 
-  if (player.armyPower >= 1.5 * defence) return true;
-  return player.ownedTiles.some((idx) => {
-    const t = board.tiles[idx];
-    return t && t.owner === player.id && t.group === tile.group;
-  });
+  const { powerRatio, minPower } = cfg.revenge;
+  if (player.armyPower <= minPower) return false;
+
+  return player.armyPower >= powerRatio * defence;
 }
 
 /** Dragon: same threshold for both the proactive challenge and a random ambush. */

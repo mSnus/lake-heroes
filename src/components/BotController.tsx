@@ -96,9 +96,9 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
     }
 
     // Peace or revenge -- the toll is already settled by now.
-    const revenge = shouldSeekRevenge(board, player, tile, tile.defence);
+    const revenge = shouldSeekRevenge(player, tile.defence);
     if (revenge) announce(player, 'botController.fight', { tile: tile.shortName });
-    else announce(player, 'botController.goWithPeace');
+    else announce(player, 'botController.noRevenge');
     const button = buttons.find((b) => b.action === (revenge ? 'fight-tile' : 'go-with-peace'));
     return button ? action(button.onClick) : null;
   }

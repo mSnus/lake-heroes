@@ -9,10 +9,11 @@ export interface CharacterConfig {
     | { type: 'afford-no-banzai' };
   upgrade: { goldFraction: number; unitsFraction: number; maxPerTurn: number };
   fightThreshold: { heroHour: number; caravan: number };
-  guards:
-    | { strategy: 'last-resort-fight' } // explorer: fight only as a last resort
-    | { strategy: 'prefer-fight' } // warrior: always fight when able
-    | { strategy: 'wizard' }; // wizard: odds/opportunity heuristic, see ai/decisions.ts's shouldSeekRevenge
+  /** When to take optional payback on a tile whose toll has already been
+   * paid (see ai/decisions.ts's shouldSeekRevenge). Both conditions must
+   * hold: the army must be `powerRatio` times the tile's defence, AND its
+   * armyPower must exceed `minPower` -- otherwise the bot walks away. */
+  revenge: { powerRatio: number; minPower: number };
   dragonThreshold: number;
   kingsCastleHireFraction: number; // unused by 'wizard' strategy, see pickKingsCastleHireAmount
   buildsSyndicates: boolean;
@@ -42,7 +43,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     claim: { type: 'threshold', armyFraction: 2 / 3, goldFraction: 2 / 3 },
     upgrade: { goldFraction: 1 / 2, unitsFraction: 1 / 2, maxPerTurn: 1 },
     fightThreshold: { heroHour: 2, caravan: 2 },
-    guards: { strategy: 'last-resort-fight' },
+    revenge: { powerRatio: 2, minPower: 0 },
     // Same flat threshold as DRAGON_UNITS_THRESHOLD (see fightDragon.ts) --
     // the 60-unit army slot cap leaves no room for a per-character spread,
     // since anything above ~120 armyPower is already unreachable.
@@ -59,7 +60,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     claim: { type: 'chance', chance: 0.85 },
     upgrade: { goldFraction: 1 / 3, unitsFraction: 1 / 3, maxPerTurn: 1 },
     fightThreshold: { heroHour: 1.5, caravan: 1.5 },
-    guards: { strategy: 'prefer-fight' },
+    revenge: { powerRatio: 1.5, minPower: 20 },
     dragonThreshold: 120,
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
@@ -73,7 +74,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     claim: { type: 'afford-no-banzai' },
     upgrade: { goldFraction: 1 / 3, unitsFraction: 1 / 3, maxPerTurn: 2 },
     fightThreshold: { heroHour: 1.7, caravan: 1.7 },
-    guards: { strategy: 'wizard' },
+    revenge: { powerRatio: 2.2, minPower: 20 },
     dragonThreshold: 120,
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,

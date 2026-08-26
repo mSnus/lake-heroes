@@ -399,11 +399,11 @@ function resolveGuardsHeadless(
   }
 
   player.hasSettledTollThisTurn = true;
-  if (shouldSeekRevenge(board, player, tile, opts.defence)) {
+  if (shouldSeekRevenge(player, opts.defence)) {
     announce(player, 'botController.fight', { tile: tile.shortName });
     fightTile(board, updateGameState);
   } else {
-    announce(player, 'botController.goWithPeace');
+    announce(player, 'botController.noRevenge');
     player.hasResolvedTileEncounterThisTurn = true;
     setEndTurn();
   }
