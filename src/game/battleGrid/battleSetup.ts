@@ -152,7 +152,10 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
               ? { kind: 'grouped', groupCount: Math.max(1, tile.level) }
               : undefined;
 
-  const garrisonRollBonusPct = (isTile || isRogue) && tile
+  // The level-based fortification bonus is earned by an actual garrison
+  // defending its owner's land -- a wild/unclaimed tile's default guards
+  // (claimTile.ts, no defender) get none of it.
+  const garrisonRollBonusPct = (isTile || isRogue) && tile && tile.isOwned()
     ? tile.getGarrisonBonusPct(tile.level)
     : (statOverrides?.defenderPctBonus ?? 0);
 
