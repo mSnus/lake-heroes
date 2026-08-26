@@ -54,6 +54,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
       try {
         localStorage.removeItem('game-state');
         localStorage.removeItem('game-screen');
+        localStorage.removeItem('game-log');
         // Cheated parameters shouldn't leak into a fresh game.
         resetOverrides();
       } catch {

@@ -63,9 +63,18 @@ import { ScreenRenderer } from './components/ScreenRenderer';
 import { DecoratedButton } from './components/DecoratedButton';
 import StatsScreen from './components/StatsScreen';
 
+/** Most recent game-log entries kept (and persisted). A full game produces
+ * thousands of messages, which would eventually blow localStorage's quota. */
+const MAX_LOG_MESSAGES = 500;
+
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [gameLog, setGameLog] = useState<LogMessage[]>([]);
+  // Restored up front (rather than in loadGameData's effect) so no message
+  // logged during startup can land before the saved history is in place and
+  // get overwritten by it.
+  const [gameLog, setGameLog] = useState<LogMessage[]>(() =>
+    loadFromStorage<LogMessage[]>('game-log', [])
+  );
   const [showLogModal, setShowLogModal] = useState(false);
   const screen = useScreen();
 
@@ -118,12 +127,21 @@ function App() {
   useEffect(() => {
     const handleLogMessage = (e: Event) => {
       const detail = (e as CustomEvent).detail as LogMessage;
-      setGameLog((prev) => [...prev, detail]);
+      // Capped so a long game can't grow the log past what localStorage will
+      // hold -- the oldest entries fall off the front.
+      setGameLog((prev) => [...prev, detail].slice(-MAX_LOG_MESSAGES));
     };
 
     window.addEventListener('logMessage', handleLogMessage);
     return () => window.removeEventListener('logMessage', handleLogMessage);
   }, []);
+
+  // Persisted alongside game-state/game-screen so the history survives a
+  // reload; cleared by New Game together with them.
+  useEffect(() => {
+    if (isHalted()) return;
+    saveToStorage('game-log', gameLog);
+  }, [gameLog]);
 
   // Dev tool: reload tile definitions from tiles.json without resetting the game.
   // Usage from browser console: await __reloadTiles()
@@ -518,6 +536,8 @@ function App() {
         } catch (e) {
           console.error('Failed to restore saved game, starting fresh:', e);
           localStorage.removeItem('game-state');
+          localStorage.removeItem('game-log');
+          setGameLog([]);
         }
       }
 
@@ -665,7 +685,9 @@ function App() {
                     halt();
                     localStorage.removeItem('game-state');
                     localStorage.removeItem('game-screen');
+                    localStorage.removeItem('game-log');
                     setGameState(null);
+                    setGameLog([]);
                     showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
                   }}
                 >

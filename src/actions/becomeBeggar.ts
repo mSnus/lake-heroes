@@ -33,9 +33,13 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   say(t('becomeBeggar.unitsLeave', { units: loss, playerName: player.name }), 'warning');
   changeFame(player, -1);
 
-  // 4. Moved to prison
-  // Prison index is 13.
-  player.position = 13;
+  // 4. Moved to prison -- found by id, never a hardcoded index. The board
+  // order is built by buildTileLayoutFromTemplates, which places tiles
+  // rather than preserving tiles.json's order, so a literal index silently
+  // points at whatever tile happens to land there (it used to say 13, which
+  // is the Sphynx).
+  const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
+  if (prisonIdx >= 0) player.position = prisonIdx;
   player.turnsToSkip = 1;
 
   say(t('becomeBeggar.capturedAndMoved', { playerName: player.name }), 'warning');

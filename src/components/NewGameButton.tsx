@@ -14,6 +14,8 @@ const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick: _onClick }) => {
     ) {
       try {
         localStorage.removeItem('game-state');
+        localStorage.removeItem('game-screen');
+        localStorage.removeItem('game-log');
       } catch (e) {
         // ignore storage errors
       } finally {
