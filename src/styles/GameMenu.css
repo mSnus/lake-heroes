@@ -24,6 +24,14 @@
    grid instead of a single row -- 2 buttons -> 2x1, 3 -> 3x1, 4 -> 2x2
    (--pay-or-fight-cols is set to 2 for the 4-button case, wrapping to two
    rows automatically). */
+/* The pay-or-fight encounter packs several stacked lines (owner, guards,
+   the toll and its before -> after) into one block, so it reads tighter at
+   a flat line height than the 1.8 .text-message uses elsewhere. */
+.guards-fee-screen,
+.guards-fee-screen * {
+  line-height: 1;
+}
+
 .game-menu.pay-or-fight-grid {
   display: grid;
   grid-template-columns: repeat(var(--pay-or-fight-cols, 2), 1fr);

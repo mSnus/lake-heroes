@@ -263,7 +263,9 @@
     "encounters": "se encuentra con",
     "belongsTo": "que pertenece a",
     "andIsGuarded": "y está defendida por {amount}🧍",
-    "forcedToPay": "y se ve obligado a pagarle {amount}🟡",
+    "forcedToPay": "y se ve obligado a pagarle",
+    "forcedToPayAmount": "{amount}🟡",
+    "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
     "riskOrPay": "¿Buscar venganza y arrasarla, o ir en paz?",
     "razedSmokeCaveat": "Las casillas arrasadas no pertenecen a nadie hasta que se disipe el humo"
   },

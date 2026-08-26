@@ -256,7 +256,9 @@
     "encounters": "встречает",
     "belongsTo": "принадлежащую",
     "andIsGuarded": "и охраняемую {amount}🧍",
-    "forcedToPay": "и вынужден заплатить ему {amount}🟡",
+    "forcedToPay": "и вынужден заплатить ему",
+    "forcedToPayAmount": "{amount}🟡",
+    "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
     "riskOrPay": "Отомстить и сжечь дотла, или уйти с миром?",
     "razedSmokeCaveat": "Разорённые земли дымятся и не принадлежат никому"
   },

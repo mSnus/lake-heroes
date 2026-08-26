@@ -46,6 +46,11 @@ export interface ScreenConfig {
     ownerColor?: string;
     canFight?: boolean;
     fee?: number;
+    /** Gold the payer held immediately BEFORE the toll was charged, so the
+     * screen can show the before -> after transition. Omitted when nothing
+     * was charged just now (e.g. re-entering an already-settled encounter),
+     * in which case only the amount is shown. */
+    goldBefore?: number;
     outcomeText?: string;
     subMessage?: string;
     gold?: number;

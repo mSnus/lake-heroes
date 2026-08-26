@@ -63,12 +63,12 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   }
 
   return (
-    <div style={hiddenStyle}>
+    <div style={hiddenStyle} className={isGuardsFee ? 'guards-fee-screen' : undefined}>
       <ScreenBackground
         image={config.background!}
         style={
           config.screenType === 'ambush'
-            ? { paddingTop: '2rem' }            
+            ? { paddingTop: '2rem' }
             : undefined
         }
       >
@@ -107,7 +107,15 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 {!!config.encounter.fee && (
                   <>
                     <br />
-                    {t('screenRenderer.forcedToPay', { amount: config.encounter.fee })}
+                    {t('screenRenderer.forcedToPay')}
+                    <br />
+                    {config.encounter.goldBefore === undefined
+                      ? t('screenRenderer.forcedToPayAmount', { amount: config.encounter.fee })
+                      : t('screenRenderer.forcedToPayAmountFrom', {
+                          amount: config.encounter.fee,
+                          before: config.encounter.goldBefore,
+                          after: config.encounter.gold ?? 0,
+                        })}
                   </>
                 )}
                 {config.encounter.canFight && config.encounter.tile && (

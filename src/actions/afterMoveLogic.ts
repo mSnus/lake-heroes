@@ -181,7 +181,8 @@ function showPeaceOrRevengeScreen(
   tile: Tile,
   owner: Player | undefined,
   canFight: boolean,
-  fee: number
+  fee: number,
+  goldBefore?: number
 ): void {
   const player = board.activePlayer;
   player.hasSettledTollThisTurn = true;
@@ -194,6 +195,7 @@ function showPeaceOrRevengeScreen(
     ownerColor: owner?.color,
     canFight,
     fee,
+    goldBefore,
     outcomeText: undefined,
     gold: player.gold,
     militia: player.militia,
@@ -238,7 +240,8 @@ function showSellToPayOrPOWScreen(
   tile: Tile,
   owner: Player | undefined,
   fee: number,
-  remaining: number
+  remaining: number,
+  goldBefore?: number
 ): void {
   const player = board.activePlayer;
   const encounter = {
@@ -249,6 +252,7 @@ function showSellToPayOrPOWScreen(
     ownerColor: owner?.color,
     canFight: false,
     fee,
+    goldBefore,
     outcomeText: undefined,
     gold: player.gold,
     militia: player.militia,
@@ -344,16 +348,17 @@ export function showTileEncounterScreen(
     return;
   }
 
+  const goldBefore = player.gold;
   const remaining = chargeToll(player, owner, tile, fee);
   updateGameState(board);
 
   if (remaining <= 0) {
-    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight, fee);
+    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight, fee, goldBefore);
     return;
   }
 
   if (hasSellableTiles && sellable.gold >= remaining) {
-    showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee, remaining);
+    showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee, remaining, goldBefore);
   } else {
     triggerPrisonerOfWar(board, updateGameState);
   }

@@ -263,7 +263,9 @@
     "encounters": "encounters",
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by {amount}🧍",
-    "forcedToPay": "and is forced to pay him {amount}🟡",
+    "forcedToPay": "and is forced to pay him",
+    "forcedToPayAmount": "{amount}🟡",
+    "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
     "riskOrPay": "Seek revenge and raze it, or go with peace?",
     "razedSmokeCaveat": "Razed tiles belong to no one until the smoke is gone"
   },
