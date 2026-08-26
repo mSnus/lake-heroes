@@ -185,6 +185,12 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   const unitCapacity = player.remainingCapacity('militia') - (tileUnits + kingsUnits);
   const catchUp = computeCatchUp(board, player, unitCapacity, ranking);
 
+  // Rounded down to a clean 50, same as the per-turn tile income (see
+  // game/income.ts's playerTurnIncome) -- every consumer reads this field
+  // rather than re-summing the parts, so the real payout and every preview
+  // stay in sync (see CurrentPlayer.tsx/CurrentPlayerCard.tsx).
+  const totalGold = Math.floor((tileGold + kingsGold + arifactGold + catchUp.gold) / 50) * 50;
+
   return {
     tileGold,
     tileUnits,
@@ -195,7 +201,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     kingsHandicap,
     catchUpGold: catchUp.gold,
     catchUpUnits: catchUp.units,
-    totalGold: tileGold + kingsGold + arifactGold + catchUp.gold,
+    totalGold,
     totalUnits: tileUnits + kingsUnits + catchUp.units,
   };
 }

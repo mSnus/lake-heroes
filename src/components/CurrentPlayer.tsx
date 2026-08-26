@@ -139,7 +139,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits, kingsHandicap } =
+  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits, kingsHandicap, totalGold, totalUnits } =
     computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   const ownedTileCount = gameState.tiles.filter(
@@ -290,12 +290,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               🏰
             </div>
             <div>
-              {kingsGold + arifactGold + tileGold + catchUpGold > 0 && (
-                <strong>+{kingsGold + arifactGold + tileGold + catchUpGold}🟡</strong>
-              )}
-              {kingsUnits + tileUnits + catchUpUnits > 0 && (
-                <strong>+{kingsUnits + tileUnits + catchUpUnits} 👬</strong>
-              )}
+              {totalGold > 0 && <strong>+{totalGold}🟡</strong>}
+              {totalUnits > 0 && <strong>+{totalUnits} 👬</strong>}
             </div>
           </div>
         </div>
