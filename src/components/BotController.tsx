@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
-import { Tile } from '../game/Tile';
 import { ScreenConfig, useScreen } from '../utils/screenStore';
 import { useModal, startDiceRoll } from '../utils/diceStore';
 import { isHalted } from '../utils/haltStore';
@@ -11,9 +10,7 @@ import { announce } from '../utils/announce';
 import { endTurn } from '../actions/endTurn';
 import { claimTile } from '../actions/claimTile';
 import { sellTile } from '../actions/sellTile';
-import { payFee } from '../actions/payFee';
-import { fightTile } from '../actions/fightTile';
-import { computeFeeOptions } from '../actions/feeOptions';
+import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { setTileGarrison } from '../actions/garrisonTile';
 import {
   getCharacterConfig,
@@ -21,12 +18,12 @@ import {
   pickUpgradeCandidate,
   shouldAttackCaravan,
   shouldChallengeDragon,
-  pickGuardsAction,
+  shouldSeekRevenge,
+  sortTilesBySacrifice,
   pickGarrisonAction,
   pickForkChoice,
 } from '../ai/decisions';
 import { findSyndicateSaleCandidate } from '../ai/syndicate';
-import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
 import { FORK_START_INDEX } from '../game/constants';
 import { setForkChoice } from '../utils/forkChoiceStore';
 
@@ -72,70 +69,37 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
     return action(claimUndefended.onClick);
   }
 
-  // Guards / fee encounter — identified by the `encounter` payload.
+  // Guards / toll encounter — identified by the `encounter` payload. By the
+  // time any such screen shows, the toll itself has already been auto-paid
+  // (or the player already sent to prison) inside showTileEncounterScreen --
+  // all that's left for a bot to decide is whether to sell toward a
+  // shortfall, or seek revenge once the toll is settled.
   if (screen!.encounter && screen!.encounter.canFight !== undefined) {
     const tile = board.activeTile;
-    const opts = computeFeeOptions(board, player, tile);
-    const cfg = getCharacterConfig(player);
 
-    const cheapestFirst = () =>
-      player.ownedTiles
-        .map((idx) => board.tiles[idx])
-        .filter((t): t is Tile => !!t && t.owner === player.id)
-        .sort((a, b) => a.currentPrice.gold - b.currentPrice.gold);
-
-    const sellThenResolve = (wantsToPay: boolean, only?: Tile, order: Tile[] = cheapestFirst()) => () => {
-      // Bots skip the human-oriented sell-mode sub-screen and resolve directly.
-      const candidates = only ? [only] : order;
-      for (const t of candidates) {
-        const satisfied = wantsToPay ? player.gold >= opts.fee : player.armyPower >= opts.defence;
-        if (satisfied) break;
-        sellTile(board, player, t);
+    // Sell-to-pay-or-POW: keep selling the least valuable tile until the
+    // toll is covered -- guaranteed to succeed, since this screen only ever
+    // shows when selling everything would be enough (see
+    // afterMoveLogic.ts's showTileEncounterScreen). One sale per tick,
+    // re-checking afterward exactly like a human's sell-mode UI does.
+    if (screen!.sellMode) {
+      const target = sortTilesBySacrifice(board, player)[0];
+      if (!target) {
+        return action(buttons.find((b) => b.action === 'accept-loss')?.onClick ?? (() => {}));
       }
-      ctx.updateGameState(board);
-      if (wantsToPay) payFee(board, ctx.updateGameState);
-      else fightTile(board, ctx.updateGameState);
-    };
 
-    if (cfg?.guards.strategy === 'wizard') {
-      const decision = pickWizardGuardsAction(board, player, tile, opts);
-      switch (decision.kind) {
-        case 'pay':
-          announce(player, 'botController.payTheFee');
-          return action(buttons.find((b) => b.action === 'pay-fee')?.onClick ?? (() => {}));
-        case 'fight':
-          announce(player, 'botController.fight');
-          return action(buttons.find((b) => b.action === 'fight-tile')?.onClick ?? (() => {}));
-        case 'sell-one-then-fight':
-          announce(player, 'botController.sellTilesToFight');
-          return action(sellThenResolve(false, decision.tile));
-        case 'sell-one-then-pay':
-          announce(player, 'botController.sellTilesToPayFee');
-          return action(sellThenResolve(true, decision.tile));
-        case 'sell-multiple-then-pay':
-          announce(player, 'botController.sellTilesToPayFee');
-          return action(sellThenResolve(true, undefined, sortTilesBySacrifice(board, player)));
-        case 'accept-loss':
-          announce(player, 'botController.acceptTheLoss');
-          return action(buttons.find((b) => b.action === 'accept-loss')?.onClick ?? (() => {}));
-      }
+      announce(player, 'botController.sellTilesToPayFee');
+      return action(() => {
+        sellTile(board, player, target);
+        afterMoveLogic(board, ctx.updateGameState);
+      });
     }
 
-    const decision = pickGuardsAction(player, opts);
-    if (decision === 'sell-then-resolve') {
-      announce(player, opts.canSellForFee ? 'botController.sellTilesToPayFee' : 'botController.sellTilesToFight');
-      return action(sellThenResolve(opts.canSellForFee));
-    }
-
-    const actionByDecision: Record<string, string> = {
-      pay: 'pay-fee',
-      fight: 'fight-tile',
-      'accept-loss': 'accept-loss',
-    };
-    if (decision === 'pay') announce(player, 'botController.payTheFee');
-    if (decision === 'fight') announce(player, 'botController.fight');
-    if (decision === 'accept-loss') announce(player, 'botController.acceptTheLoss');
-    const button = buttons.find((b) => b.action === actionByDecision[decision]);
+    // Peace or revenge -- the toll is already settled by now.
+    const revenge = shouldSeekRevenge(board, player, tile, tile.defence);
+    if (revenge) announce(player, 'botController.fight', { tile: tile.shortName });
+    else announce(player, 'botController.goWithPeace');
+    const button = buttons.find((b) => b.action === (revenge ? 'fight-tile' : 'go-with-peace'));
     return button ? action(button.onClick) : null;
   }
 
@@ -182,9 +146,11 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
       if (board.turnPhase === 'before-move' && player.position === FORK_START_INDEX) {
         setForkChoice(pickForkChoice(player.character));
       }
+
       startDiceRoll();
     });
   }
+
   if (diceActive && rolling) return null; // mid-animation, wait
   if (screen) return null; // some other screen we don't recognize is up
 
@@ -208,11 +174,13 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
           sellTile(board, player, saleCandidate);
         }
       }
+
       player.hasConsideredClaimThisTurn = true;
       if (shouldClaimTile(player, tile, board)) {
         announce(player, 'botController.claimTile', { tileName: tile.name });
         claimTile(board, updateGameState);
       }
+
       updateGameState(board);
     });
   }

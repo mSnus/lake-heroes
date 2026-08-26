@@ -11,13 +11,13 @@ export function getEffectiveFee(tile: Tile, payer: Player): number {
 export interface FeeOptions {
   fee: number;
   defence: number;
-  canPay: boolean;
+  /** A banzai attack is always on the table as long as there's an army to
+   * send in, regardless of how it stacks up against the defence -- this is
+   * now a purely optional "seek revenge" action, not an alternative to
+   * paying the toll (see afterMoveLogic.ts). */
   canFight: boolean;
-  canSellForFee: boolean;
-  canSellForFight: boolean;
-  canSell: boolean;
-  showAcceptLoss: boolean;
   sellable: { gold: number; units: number };
+  hasSellableTiles: boolean;
 }
 
 /** Shared by the Guards-encounter UI and the bot's guards decision. */
@@ -38,28 +38,7 @@ export function computeFeeOptions(board: GameState, player: Player, tile: Tile):
     { gold: 0, units: 0 }
   );
 
-  const canPay = player.gold >= fee;
-  // A banzai attack is always on the table as long as there's an army to
-  // send in, regardless of how it stacks up against the defence.
   const canFight = player.armyPower > 0;
-  const canSellForFee = !canPay && player.gold + sellable.gold >= fee;
-  const canSellForFight = !canFight && player.armyPower + sellable.units >= defence;
-  // Even if selling everything wouldn't fully cover the fee, offer the option
-  // when fighting is available — the player may still prefer to sell first.
-  // Never offered with nothing left to sell, even if the "sell before
-  // fighting" clause below would otherwise apply.
-  const canSell = hasSellableTiles && (canSellForFee || canSellForFight || (canFight && !canPay));
-  const showAcceptLoss = !canPay && !canFight && !canSell;
 
-  return {
-    fee,
-    defence,
-    canPay,
-    canFight,
-    canSellForFee,
-    canSellForFight,
-    canSell,
-    showAcceptLoss,
-    sellable,
-  };
+  return { fee, defence, canFight, sellable, hasSellableTiles };
 }

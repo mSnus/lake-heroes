@@ -263,7 +263,7 @@
     "encounters": "encounters",
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by {amount}🧍",
-    "riskOrPay": "Fight to raze it or pay and go?",
+    "riskOrPay": "Seek revenge and raze it, or go with peace?",
     "razedSmokeCaveat": "Razed tiles belong to no one until the smoke is gone"
   },
   "newGameModal": {
@@ -313,6 +313,7 @@
     "takeUndefendedTile": "take the undefended tile",
     "payTheFee": "pay the fee",
     "fight": "fight with guards of {tile}",
+    "goWithPeace": "go with peace",
     "sellTilesToFight": "sell tiles to fight",
     "sellTilesToPayFee": "sell tiles to pay the fee",
     "acceptTheLoss": "accept the loss",
@@ -542,11 +543,11 @@
   "afterMoveLogic": {
     "ownerInPrison": "{ownerName} is in prison, so others just send him the flowers 🌹 while visiting his property",
     "defencelessItsMine": "Defenceless? it's mine",
-    "payFee": "🕊️ Pay {fee}🟡",
-    "battle": "🔥 Fight to raze",
-    "acceptLoss": "Accept loss 😢",
-    "sellHeader": "Sell tiles to pay the {fee}🟡 fee, raise an army, or temporary yield to King for half a price",
-    "sellTiles": "Sell tiles 💰",
+    "goWithPeace": "🕊️ Go with peace",
+    "revenge": "🔥Revenge",
+    "becomePOW": "🏳️ Become the prisoner of war",
+    "sellToPayOrPOW": "Sell tiles to pay or become the prisoner of war",
+    "tollShortfall": "{playerName} hands over everything they have ({paid}🟡) toward {tileName}'s toll, but still owes {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} enjoys visiting {tileName} while it's yielded"
   },
   "fightDragon": {

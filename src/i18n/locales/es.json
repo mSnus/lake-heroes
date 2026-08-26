@@ -263,7 +263,7 @@
     "encounters": "se encuentra con",
     "belongsTo": "que pertenece a",
     "andIsGuarded": "y está defendida por {amount}🧍",
-    "riskOrPay": "¿Luchar para arrasarla o pagar y seguir?",
+    "riskOrPay": "¿Buscar venganza y arrasarla, o ir en paz?",
     "razedSmokeCaveat": "Las casillas arrasadas no pertenecen a nadie hasta que se disipe el humo"
   },
   "newGameModal": {
@@ -311,6 +311,7 @@
     "takeUndefendedTile": "tomar la casilla indefensa",
     "payTheFee": "pagar la tarifa",
     "fight": "luchar",
+    "goWithPeace": "ir en paz",
     "sellTilesToFight": "vender casillas para luchar",
     "sellTilesToPayFee": "vender casillas para pagar la tarifa",
     "acceptTheLoss": "aceptar la pérdida",
@@ -540,11 +541,11 @@
   "afterMoveLogic": {
     "ownerInPrison": "{ownerName} está en prisión, así que otros solo le envían flores 🌹 al visitar su propiedad",
     "defencelessItsMine": "¿Indefensa? es mía",
-    "payFee": "🕊️ Pagar {fee}🟡",
-    "battle": "🔥 Luchar para arrasarla",
-    "acceptLoss": "Aceptar la pérdida 😢",
-    "sellHeader": "Vende casillas para pagar la tarifa de {fee}🟡, reúne un ejército, o cédela temporalmente al Rey por la mitad del precio",
-    "sellTiles": "Vender casillas 💰",
+    "goWithPeace": "🕊️ Ir en paz",
+    "revenge": "🔥Venganza",
+    "becomePOW": "🏳️ Convertirse en prisionero de guerra",
+    "sellToPayOrPOW": "Vende casillas para pagar, o conviértete en prisionero de guerra",
+    "tollShortfall": "{playerName} entrega todo lo que tiene ({paid}🟡) para el peaje de {tileName}, pero aún debe {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} disfruta visitando {tileName} mientras está cedida"
   },
   "fightDragon": {

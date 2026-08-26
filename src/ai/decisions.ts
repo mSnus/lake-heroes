@@ -2,12 +2,12 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { CHARACTERS, CharacterConfig, CharacterId } from './characters';
-import { FeeOptions } from '../actions/feeOptions';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeAnnualReward } from '../game/kingsGrace';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { ForkChoice } from '../utils/forkChoiceStore';
+import { syndicateMultiplier } from '../game/syndicate';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
@@ -139,27 +139,46 @@ export function shouldAttackCaravan(player: Player, defendingUnits: number): boo
   return player.armyPower >= cfg.fightThreshold.caravan * defendingUnits;
 }
 
-export type GuardsAction = 'pay' | 'sell-then-resolve' | 'fight' | 'accept-loss';
+/** Owned tiles ordered "cheapest to give up first" when forced to sell to
+ * cover a toll shortfall -- tiles that aren't part of a completed syndicate
+ * (so selling them doesn't break an active 2x bonus) come first, sorted by
+ * ascending current bonus value within each group. Syndicate tiles are sold
+ * only as a last resort. */
+export function sortTilesBySacrifice(board: GameState, player: Player): Tile[] {
+  const owned = player.ownedTiles
+    .map((idx) => board.tiles[idx])
+    .filter((t): t is Tile => !!t && t.owner === player.id);
+
+  const isSyndicateTile = (t: Tile) => syndicateMultiplier(board, player, t.group) > 1;
+
+  return [...owned].sort((a, b) => {
+    const aSyn = isSyndicateTile(a) ? 1 : 0;
+    const bSyn = isSyndicateTile(b) ? 1 : 0;
+    if (aSyn !== bSyn) return aSyn - bSyn;
+    return a.getBonus(a.level) - b.getBonus(b.level);
+  });
+}
 
 /**
- * Guards encounter for the two simple strategies. The 'wizard' strategy has
- * its own richer decision function — see ai/wizardGuards.ts.
+ * Whether a bot seeks revenge (a banzai attack) on a tile whose toll it has
+ * already paid in full -- fighting is now purely optional payback, not an
+ * alternative to paying (see afterMoveLogic.ts), so this only asks "is it
+ * worth the risk", not "can I afford not to pay". Warriors always take the
+ * shot with any army at all; explorers never pick a fight they don't have
+ * to; wizards weigh the odds (or a chance to complete a group/syndicate),
+ * the same heuristic this strategy always used to decide fight vs. pay.
  */
-export function pickGuardsAction(player: Player, opts: FeeOptions): GuardsAction {
+export function shouldSeekRevenge(board: GameState, player: Player, tile: Tile, defence: number): boolean {
   const cfg = getCharacterConfig(player);
-  if (!cfg || cfg.guards.strategy === 'wizard') return 'accept-loss';
+  if (!cfg || player.armyPower <= 0) return false;
+  if (cfg.guards.strategy === 'prefer-fight') return true;
+  if (cfg.guards.strategy === 'last-resort-fight') return false;
 
-  if (cfg.guards.strategy === 'prefer-fight') {
-    if (opts.canFight) return 'fight';
-    if (opts.canPay) return 'pay';
-    if (opts.canSell) return 'sell-then-resolve';
-    return 'accept-loss';
-  }
-
-  if (opts.canPay) return 'pay';
-  if (opts.canSellForFee) return 'sell-then-resolve';
-  if (opts.canFight) return 'fight';
-  return 'accept-loss';
+  if (player.armyPower >= 1.5 * defence) return true;
+  return player.ownedTiles.some((idx) => {
+    const t = board.tiles[idx];
+    return t && t.owner === player.id && t.group === tile.group;
+  });
 }
 
 /** Dragon: same threshold for both the proactive challenge and a random ambush. */
@@ -239,6 +258,7 @@ export function pickKingsCastleHireAmount(
       if (amount === 1) return 0;
       amount = Math.max(1, Math.floor(amount * (2 / 3)));
     }
+
     return 0;
   }
 

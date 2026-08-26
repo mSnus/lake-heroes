@@ -64,6 +64,16 @@ export class Player {
    * militia count on every call, which used to make the AI dribble
    * reinforcements onto a tile 1 unit at a time. See ai/decisions.ts. */
   garrisonSpentThisTurn: number;
+  /** Remaining amount still owed toward the current tile's toll (see
+   * afterMoveLogic.ts's chargeToll) -- nonzero only while short of funds
+   * and partway through selling tiles to cover the rest. */
+  owedToll: number;
+  /** Set once this turn's toll has been fully settled, whether paid
+   * outright or via selling -- lets a later re-entry into the same
+   * encounter (e.g. after a lost revenge attack, which re-shows the
+   * screen) go straight back to the peace/revenge choice instead of
+   * charging the toll a second time. */
+  hasSettledTollThisTurn: boolean;
   isComputer: boolean;
   character?: CharacterId;
   artifacts: string[];
@@ -96,6 +106,8 @@ export class Player {
     this.isKnight = false;
     this.upgradesThisTurn = 0;
     this.garrisonSpentThisTurn = 0;
+    this.owedToll = 0;
+    this.hasSettledTollThisTurn = false;
     this.isComputer = params.isComputer ?? false;
     this.character = params.character;
     this.artifacts = [];

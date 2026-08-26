@@ -12,7 +12,7 @@ export interface CharacterConfig {
   guards:
     | { strategy: 'last-resort-fight' } // explorer: fight only as a last resort
     | { strategy: 'prefer-fight' } // warrior: always fight when able
-    | { strategy: 'wizard' }; // wizard: weighted priority list, see ai/wizardGuards.ts
+    | { strategy: 'wizard' }; // wizard: odds/opportunity heuristic, see ai/decisions.ts's shouldSeekRevenge
   dragonThreshold: number;
   kingsCastleHireFraction: number; // unused by 'wizard' strategy, see pickKingsCastleHireAmount
   buildsSyndicates: boolean;

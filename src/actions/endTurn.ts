@@ -44,6 +44,8 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   board.activePlayer.hasCheckedKingsContractThisTurn = false;
   board.activePlayer.upgradesThisTurn = 0;
   board.activePlayer.garrisonSpentThisTurn = 0;
+  board.activePlayer.owedToll = 0;
+  board.activePlayer.hasSettledTollThisTurn = false;
 
   // Tiles pay their owner at the start of every turn now, not once a lap --
   // applies even to a player about to skip their turn in prison, since it's

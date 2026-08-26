@@ -1,21 +1,20 @@
 import React from 'react';
 import { Tile } from '../game/Tile';
+import { Player } from '../game/Player';
 import { GameState } from '../game/GameState';
 import { gameEvent } from '../utils/events';
 import { becomeBeggar } from './becomeBeggar';
-import { showScreen, showPrisonScreen, clearScreen, ScreenButton } from '../utils/screenStore';
+import { showScreen, showPrisonScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { say } from '../utils/say';
-import { payFee } from './payFee';
 import { fightTile } from './fightTile';
 import { sellTile } from './sellTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
 import { HeroHourScreen } from '../components/HeroHourScreen';
 import { computeFeeOptions, FeeOptions } from './feeOptions';
 import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
-import { getCharacterConfig, pickGuardsAction, pickHeroHourTarget } from '../ai/decisions';
-import { pickWizardGuardsAction, sortTilesBySacrifice } from '../ai/wizardGuards';
+import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget } from '../ai/decisions';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { announce } from '../utils/announce';
 import { t } from '../i18n';
@@ -74,6 +73,7 @@ export function afterMoveLogic(
       } else {
         setEndTurn();
       }
+
       return;
     }
 
@@ -105,6 +105,7 @@ export function afterMoveLogic(
       setEndTurn();
       return;
     }
+
     // Already paid/fought/accepted the loss this turn -- a reload before End
     // Turn was clicked would otherwise re-derive and re-show the same
     // encounter from scratch, since turnPhase is still 'after-move' and
@@ -113,6 +114,7 @@ export function afterMoveLogic(
       setEndTurn();
       return;
     }
+
     showTileEncounterScreen(board, updateGameState);
     return;
   }
@@ -127,7 +129,145 @@ export function afterMoveLogic(
   setEndTurn();
 }
 
-/** Show the guards / pay-fee / fight encounter for the active tile. */
+/**
+ * Auto-charges as much of the tile's toll as the player can currently
+ * afford, transferring gold to the owner immediately -- paying is no
+ * longer a choice, only whether to also seek revenge afterward is (see
+ * showTileEncounterScreen). `player.owedToll` remembers what's still due
+ * across repeated calls this encounter (e.g. after selling a tile to help
+ * cover it), so re-entering never charges the same toll twice. Returns the
+ * amount still owed after this charge -- 0 means it's fully settled.
+ */
+function chargeToll(player: Player, owner: Player | undefined, tile: Tile, fee: number): number {
+  const owed = player.owedToll > 0 ? player.owedToll : fee;
+  const payNow = Math.min(player.gold, owed);
+  if (payNow > 0) {
+    player.gold -= payNow;
+    if (owner) owner.gold += payNow;
+    say(t('payFee.paid', { playerName: player.name, fee: payNow, ownerName: owner?.name ?? '', tileName: tile.name }), 'info');
+  }
+
+  const remaining = owed - payNow;
+  player.owedToll = remaining;
+  if (remaining > 0) {
+    say(
+      t('afterMoveLogic.tollShortfall', { playerName: player.name, paid: payNow, remaining, tileName: tile.name }),
+      'warning'
+    );
+  }
+
+  return remaining;
+}
+
+/** Ends the encounter as a prisoner of war -- the toll couldn't be fully
+ * covered even after selling everything sellable (or there was nothing to
+ * sell at all). Mirrors the old "accept loss" button's consequences
+ * exactly, just triggered automatically instead of by manual choice. */
+function triggerPrisonerOfWar(board: GameState, updateGameState: (board: GameState) => void): void {
+  const player = board.activePlayer;
+  player.owedToll = 0;
+  player.isPrisonerOfWar = true;
+  becomeBeggar(board, updateGameState);
+  if (isHeadlessRun()) setEndTurn();
+  else showPrisonScreen(board.gameMessage);
+}
+
+/** The toll is fully paid -- show the peace/revenge choice. Revenge (a
+ * banzai attack) is now purely optional payback, never a way to dodge the
+ * toll itself, which has already changed hands by the time this shows. */
+function showPeaceOrRevengeScreen(
+  board: GameState,
+  updateGameState: (board: GameState) => void,
+  tile: Tile,
+  owner: Player | undefined,
+  canFight: boolean
+): void {
+  const player = board.activePlayer;
+  player.hasSettledTollThisTurn = true;
+
+  const encounter = {
+    playerName: player.name,
+    playerColor: player.color,
+    tile,
+    ownerName: owner?.name ?? undefined,
+    ownerColor: owner?.color,
+    canFight,
+    outcomeText: undefined,
+    gold: player.gold,
+    militia: player.militia,
+    riders: player.riders,
+  };
+
+  showScreen({
+    background: 'assets/screens/guards.jpg',
+    fade: true,
+    spriteImage: tile.spriteImage,
+    encounter,
+    buttons: [
+      {
+        label: t('afterMoveLogic.goWithPeace'),
+        action: 'go-with-peace',
+        onClick: () => {
+          player.hasResolvedTileEncounterThisTurn = true;
+          clearScreen();
+          setEndTurn();
+        },
+      },
+      {
+        label: t('afterMoveLogic.revenge'),
+        action: 'fight-tile',
+        onClick: () => fightTile(board, updateGameState),
+        disabled: !canFight,
+      },
+    ],
+  });
+}
+
+/** Short of funds even after handing over everything -- offer to sell
+ * tiles to make up the difference, since doing so is guaranteed to cover
+ * it (that's exactly the condition that routes here; see
+ * showTileEncounterScreen). Selling re-triggers afterMoveLogic (see
+ * ScreenRenderer's sellAndRecheck), which re-enters this same encounter and
+ * automatically advances to the peace/revenge screen the moment enough has
+ * been raised -- the only button here is for giving up early instead. */
+function showSellToPayOrPOWScreen(
+  board: GameState,
+  updateGameState: (board: GameState) => void,
+  tile: Tile,
+  owner: Player | undefined
+): void {
+  const player = board.activePlayer;
+  const encounter = {
+    playerName: player.name,
+    playerColor: player.color,
+    tile,
+    ownerName: owner?.name ?? undefined,
+    ownerColor: owner?.color,
+    canFight: false,
+    outcomeText: undefined,
+    gold: player.gold,
+    militia: player.militia,
+    riders: player.riders,
+  };
+
+  showScreen({
+    background: 'assets/screens/guards.jpg',
+    fade: true,
+    spriteImage: tile.spriteImage,
+    encounter,
+    sellMode: true,
+    sellHeader: t('afterMoveLogic.sellToPayOrPOW'),
+    buttons: [
+      {
+        label: t('afterMoveLogic.becomePOW'),
+        action: 'accept-loss',
+        onClick: () => triggerPrisonerOfWar(board, updateGameState),
+      },
+    ],
+  });
+}
+
+/** Show the guards / toll / revenge encounter for the active tile. */
 export function showTileEncounterScreen(
   board: GameState,
   updateGameState: (board: GameState) => void
@@ -147,27 +287,24 @@ export function showTileEncounterScreen(
     return;
   }
 
-  const ownerColor = owner?.color;
-
   const feeOptions = computeFeeOptions(board, player, tile);
-  const { fee, defence, canPay, canFight, canSell, showAcceptLoss } = feeOptions;
+  const { fee, defence, canFight, sellable, hasSellableTiles } = feeOptions;
 
   if (isHeadlessRun()) {
     resolveGuardsHeadless(board, updateGameState, tile, feeOptions);
     return;
   }
 
-  // An empty garrison means nothing to fight — skip straight to a free,
-  // no-battle takeover instead of the usual pay/fight/sell/accept-loss choice.
+  // An empty garrison means nothing to fight and no one to collect a toll —
+  // skip straight to a free, no-battle takeover.
   if (defence === 0) {
     const encounter = {
       playerName: player.name,
       playerColor: player.color,
       tile,
       ownerName: owner?.name ?? undefined,
-      ownerColor,
+      ownerColor: owner?.color,
       canFight: false,
-      fee,
       outcomeText: undefined,
       gold: player.gold,
       militia: player.militia,
@@ -190,79 +327,33 @@ export function showTileEncounterScreen(
     return;
   }
 
-  const encounter = {
-    playerName: player.name,
-    playerColor: player.color,
-    tile,
-    ownerName: owner?.name ?? undefined,
-    ownerColor,
-    canFight,
-    fee,
-    outcomeText: undefined,
-    gold: player.gold,
-    militia: player.militia,
-    riders: player.riders,
-  };
-
-  const baseConfig = {
-    background: 'assets/screens/guards.jpg',
-    fade: true as const,
-    spriteImage: tile.spriteImage,
-    encounter,
-  };
-
-  const feeButton: ScreenButton = {
-    label: t('afterMoveLogic.payFee', { fee }),
-    action: 'pay-fee',
-    onClick: () => payFee(board, updateGameState),
-    disabled: player.gold < fee,
-  };
-
-  const baseButtons: ScreenButton[] = [
-    feeButton,
-    {
-      label: t('afterMoveLogic.battle', { defence }),
-      action: 'fight-tile',
-      onClick: () => fightTile(board, updateGameState),
-      disabled: !canFight,
-    },
-  ];
-
-  const acceptLossButton: ScreenButton = {
-    label: t('afterMoveLogic.acceptLoss'),
-    action: 'accept-loss',
-    onClick: () => {
-      player.isPrisonerOfWar = true;
-      becomeBeggar(board, updateGameState);
-      showPrisonScreen(board.gameMessage);
-    },
-  };
-
-  const extraButtons: ScreenButton[] = [];
-  if (canSell) {
-    const sellModeConfig = {
-      ...baseConfig,
-      sellMode: true,
-      sellHeader: t('afterMoveLogic.sellHeader', { fee }),
-      buttons: baseButtons,
-    };
-    extraButtons.push({
-      label: t('afterMoveLogic.sellTiles'),
-      action: 'sell-tiles',
-      onClick: () => showScreen(sellModeConfig),
-    });
+  // A re-entry after the toll was already settled this turn (e.g. a lost
+  // revenge attack re-shows this encounter) -- go straight back to the
+  // peace/revenge choice without charging anything again.
+  if (player.hasSettledTollThisTurn) {
+    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight);
+    return;
   }
 
-  if (showAcceptLoss) extraButtons.push(acceptLossButton);
-  showScreen({ ...baseConfig, buttons: [...baseButtons, ...extraButtons] });
+  const remaining = chargeToll(player, owner, tile, fee);
+  updateGameState(board);
+
+  if (remaining <= 0) {
+    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight);
+    return;
+  }
+
+  if (hasSellableTiles && sellable.gold >= remaining) {
+    showSellToPayOrPOWScreen(board, updateGameState, tile, owner);
+  } else {
+    triggerPrisonerOfWar(board, updateGameState);
+  }
 }
 
 /**
- * The guards encounter's pay/fight/sell/accept-loss decision, headless --
- * the exact same decision BotController's pickGenericScreenAction makes
- * (wizard strategy via pickWizardGuardsAction, otherwise pickGuardsAction),
- * just calling the target action directly instead of finding it by button
- * tag on a screen that was never shown.
+ * The guards encounter, headless -- the same auto-charge/sell/revenge flow
+ * showTileEncounterScreen drives for a real game, just calling the target
+ * action directly instead of a button that was never shown.
  */
 function resolveGuardsHeadless(
   board: GameState,
@@ -271,6 +362,7 @@ function resolveGuardsHeadless(
   opts: FeeOptions
 ): void {
   const player = board.activePlayer;
+  const owner = board.players.find((p) => p.id === tile.owner);
 
   // An empty garrison is a free takeover, not a fight -- same shortcut the
   // real guards screen takes above (see the defence === 0 branch).
@@ -280,74 +372,35 @@ function resolveGuardsHeadless(
     return;
   }
 
-  const cheapestFirst = () =>
-    player.ownedTiles
-      .map((idx) => board.tiles[idx])
-      .filter((t): t is Tile => !!t && t.owner === player.id)
-      .sort((a, b) => a.currentPrice.gold - b.currentPrice.gold);
+  let remaining = player.hasSettledTollThisTurn ? 0 : chargeToll(player, owner, tile, opts.fee);
+  updateGameState(board);
 
-  const sellThenResolve = (wantsToPay: boolean, only?: Tile, order: Tile[] = cheapestFirst()) => {
-    const candidates = only ? [only] : order;
-    for (const t of candidates) {
-      const satisfied = wantsToPay ? player.gold >= opts.fee : player.armyPower >= opts.defence;
-      if (satisfied) break;
-      sellTile(board, player, t);
+  if (remaining > 0) {
+    if (opts.hasSellableTiles && opts.sellable.gold >= remaining) {
+      announce(player, 'botController.sellTilesToPayFee');
+      for (const t of sortTilesBySacrifice(board, player)) {
+        if (remaining <= 0) break;
+        sellTile(board, player, t);
+        remaining = chargeToll(player, owner, tile, opts.fee);
+      }
+
+      updateGameState(board);
     }
-    updateGameState(board);
-    if (wantsToPay) payFee(board, updateGameState);
-    else fightTile(board, updateGameState);
-  };
+  }
 
-  const acceptLoss = () => {
-    player.isPrisonerOfWar = true;
-    becomeBeggar(board, updateGameState);
-    setEndTurn();
-  };
-
-  const cfg = getCharacterConfig(player);
-  if (cfg?.guards.strategy === 'wizard') {
-    const decision = pickWizardGuardsAction(board, player, tile, opts);
-    switch (decision.kind) {
-      case 'pay':
-        announce(player, 'botController.payTheFee');
-        payFee(board, updateGameState);
-        return;
-      case 'fight':
-        announce(player, 'botController.fight', {'tile': tile.shortName});
-        fightTile(board, updateGameState);
-        return;
-      case 'sell-one-then-fight':
-        announce(player, 'botController.sellTilesToFight');
-        sellThenResolve(false, decision.tile);
-        return;
-      case 'sell-one-then-pay':
-        announce(player, 'botController.sellTilesToPayFee');
-        sellThenResolve(true, decision.tile);
-        return;
-      case 'sell-multiple-then-pay':
-        announce(player, 'botController.sellTilesToPayFee');
-        sellThenResolve(true, undefined, sortTilesBySacrifice(board, player));
-        return;
-      case 'accept-loss':
-        announce(player, 'botController.acceptTheLoss');
-        acceptLoss();
-        return;
-    }
+  if (remaining > 0) {
+    announce(player, 'botController.acceptTheLoss');
+    triggerPrisonerOfWar(board, updateGameState);
     return;
   }
 
-  const decision = pickGuardsAction(player, opts);
-  if (decision === 'sell-then-resolve') {
-    announce(player, opts.canSellForFee ? 'botController.sellTilesToPayFee' : 'botController.sellTilesToFight');
-    sellThenResolve(opts.canSellForFee);
-  } else if (decision === 'pay') {
-    announce(player, 'botController.payTheFee');
-    payFee(board, updateGameState);
-  } else if (decision === 'fight') {
-    announce(player, 'botController.fight');
+  player.hasSettledTollThisTurn = true;
+  if (shouldSeekRevenge(board, player, tile, opts.defence)) {
+    announce(player, 'botController.fight', { tile: tile.shortName });
     fightTile(board, updateGameState);
   } else {
-    announce(player, 'botController.acceptTheLoss');
-    acceptLoss();
+    announce(player, 'botController.goWithPeace');
+    player.hasResolvedTileEncounterThisTurn = true;
+    setEndTurn();
   }
 }
