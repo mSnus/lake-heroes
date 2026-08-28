@@ -30,32 +30,6 @@ export function totalWealth(board: GameState, player: Player): number {
   return w.gold + armyValue + tileUnitsValue;
 }
 
-/** The wealthiest player by totalWealth. Returns null only when there are no players. */
-export function richestPlayer(board: GameState): Player | null {
-  let best: Player | null = null;
-  let bestTotal = -1;
-  for (const p of board.players) {
-    const total = totalWealth(board, p);
-    if (total > bestTotal) {
-      bestTotal = total;
-      best = p;
-    }
-  }
-
-  return best;
-}
-
-/** The poorest player by totalWealth. Returns null only when there are no players. */
-export function poorestPlayer(board: GameState): Player | null {
-  let worst: Player | null = null;
-  let worstTotal = Infinity;
-  for (const p of board.players) {
-    const total = totalWealth(board, p);
-    if (total < worstTotal) {
-      worstTotal = total;
-      worst = p;
-    }
-  }
-
-  return worst;
-}
+/* Ranking players is done on power score now, not gold -- see
+ * game/score.ts's strongestPlayer/weakestPlayer. totalWealth above survives
+ * purely as a displayed figure (the 🧮 line on the realm overview). */

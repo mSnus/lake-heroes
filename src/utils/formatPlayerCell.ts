@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
-import { totalWealth } from '../game/wealth';
+import { playerScore } from '../game/score';
 import { getArtifact } from '../game/artifacts';
 
 /** 🧍/🐎, each shown only when that tier actually has units -- a wiped-out
@@ -18,17 +18,17 @@ export interface CellStats {
   militia: number;
   riders: number;
   tilesOwned: number;
-  wealth: number;
+  score: number;
   artifactsEmoji: string;
   isPOW: boolean;
 }
 
-/** "2🏆 2692🟡 🧍8 1🧩 🧮5892" -- a player's stat line, shared by the
+/** "2🏆 2692🟡 🧍8 1🧩 ⭐5892" -- a player's stat line, shared by the
  * economy sim's per-row cell and its begin/end-of-circle snapshots (see
  * formatPlayerCell for the live-board variant that computes these fields). */
 export function formatCellStats(s: CellStats): string {
   const pow = s.isPOW ? ' ⛓️' : '';
-  return `${s.fame}🏆 ${s.gold}🟡 ${formatUnits(s.militia, s.riders)} ${s.tilesOwned}🧩 🧮${s.wealth}${s.artifactsEmoji}${pow}`;
+  return `${s.fame}🏆 ${s.gold}🟡 ${formatUnits(s.militia, s.riders)} ${s.tilesOwned}🧩 ⭐${s.score}${s.artifactsEmoji}${pow}`;
 }
 
 /** Same line as formatCellStats, computed directly off a live board/player
@@ -43,7 +43,7 @@ export function formatPlayerCell(board: GameState, player: Player): string {
     militia: player.militia,
     riders: player.riders,
     tilesOwned,
-    wealth: totalWealth(board, player),
+    score: playerScore(board, player),
     artifactsEmoji,
     isPOW: player.isPrisonerOfWar,
   });

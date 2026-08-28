@@ -3,7 +3,7 @@ import { say } from '../utils/say';
 import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { changeFame } from '../utils/fame';
-import { richestPlayer, poorestPlayer, totalWealth } from '../game/wealth';
+import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
 import { checkArtifactProtection } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO } from '../game/constants';
@@ -75,15 +75,15 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     }
 
     case 'Hurricane': {
-      // Only the richest player is ever at risk, and only while they're
-      // truly dominant -- at least HURRICANE_WEALTH_RATIO times wealthier
-      // than whoever ranks second. Ties for richest don't count as dominant
-      // (ratio can't clear 1x against an equally-wealthy second).
-      const ranked = [...board.players].sort((a, b) => totalWealth(board, b) - totalWealth(board, a));
+      // Only the strongest player is ever at risk, and only while they're
+      // truly dominant -- at least HURRICANE_WEALTH_RATIO times the power
+      // score of whoever ranks second. Ties for strongest don't count as
+      // dominant (ratio can't clear 1x against an equal second).
+      const ranked = [...board.players].sort((a, b) => playerScore(board, b) - playerScore(board, a));
       const richest = ranked[0];
       const second = ranked[1];
       const dominant =
-        !!richest && !!second && totalWealth(board, richest) >= totalWealth(board, second) * HURRICANE_WEALTH_RATIO;
+        !!richest && !!second && playerScore(board, richest) >= playerScore(board, second) * HURRICANE_WEALTH_RATIO;
 
       if (dominant && richest.ownedTiles.length > 0) {
         const protection = checkArtifactProtection(richest, 'hurricane');
@@ -126,7 +126,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     case 'Earthquake': {
       const lostMsgs: string[] = [];
       const savedMsgs: string[] = [];
-      const poorest = poorestPlayer(board);
+      const poorest = weakestPlayer(board);
       for (const p of board.players) {
         if (p === poorest) continue;
         if (!p.ownedTiles.length) continue;
@@ -176,11 +176,11 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
     }
 
     case 'Meteor': {
-      // A meteor strikes one of the richest player's tiles, razing it --
-      // never the poorest player's, even if wealth is tied and they'd
-      // otherwise also rank as "richest".
-      const richest = richestPlayer(board);
-      const poorest = poorestPlayer(board);
+      // A meteor strikes one of the strongest player's tiles, razing it --
+      // never the weakest player's, even if scores are tied and they'd
+      // otherwise also rank as "strongest".
+      const richest = strongestPlayer(board);
+      const poorest = weakestPlayer(board);
       if (richest && richest !== poorest && richest.ownedTiles.length > 0) {
         const protection = checkArtifactProtection(richest, 'meteor');
         if (protection.saved) {

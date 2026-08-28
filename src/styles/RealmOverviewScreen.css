@@ -48,6 +48,12 @@
   margin-bottom: 4px;
 }
 
+.realm-artifacts {
+  margin-left: 6px;
+  font-size: 0.95em;
+  cursor: help;
+}
+
 .realm-stats {
   display: flex;
   flex-wrap: wrap;

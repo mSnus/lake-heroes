@@ -18,6 +18,8 @@ export const SCORE_PER_UPGRADE = 50;
 /** Camps and Towers (bonusType 'units') instead of SCORE_PER_TILE -- they
  * raise troops rather than gold, which is worth more than a plain estate. */
 export const SCORE_PER_UNIT_TILE = 200;
+/** Any artifact, whatever it does -- they are all hard to come by. */
+export const SCORE_PER_ARTIFACT = 300;
 /** Gold is divided by this, rounded down. */
 export const SCORE_GOLD_PER_POINT = 20;
 
@@ -29,7 +31,7 @@ export function tileScore(tile: { bonusType?: 'gold' | 'units'; level: number })
 
 /**
  * Fame, army (travelling AND garrisoned), owned tiles with their upgrades,
- * and gold on hand -- summed into one comparable figure.
+ * artifacts, and gold on hand -- summed into one comparable figure.
  *
  * Tile ownership is derived from `tile.owner` rather than
  * `player.ownedTiles`, which can be stale after a reload (the same reason
@@ -54,6 +56,23 @@ export function playerScore(board: GameState, player: Player): number {
     militia * SCORE_PER_MILITIA +
     riders * SCORE_PER_RIDER +
     tiles +
+    player.artifacts.length * SCORE_PER_ARTIFACT +
     Math.floor(player.gold / SCORE_GOLD_PER_POINT)
+  );
+}
+
+/** The strongest player by score. Null only when there are no players. */
+export function strongestPlayer(board: GameState): Player | null {
+  return board.players.reduce<Player | null>(
+    (best, p) => (best === null || playerScore(board, p) > playerScore(board, best) ? p : best),
+    null
+  );
+}
+
+/** The weakest player by score. Null only when there are no players. */
+export function weakestPlayer(board: GameState): Player | null {
+  return board.players.reduce<Player | null>(
+    (worst, p) => (worst === null || playerScore(board, p) < playerScore(board, worst) ? p : worst),
+    null
   );
 }

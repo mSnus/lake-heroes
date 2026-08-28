@@ -7,7 +7,7 @@ import { TileJSON } from '../game/Tile';
 import { gameStart } from '../actions/gameStart';
 import { runHeadlessGame, HeadlessStopReason } from '../game/economy/headlessDriver';
 import { getOverrides, setHeadlessOverrides } from '../utils/overridesStore';
-import { totalWealth } from '../game/wealth';
+import { playerScore } from '../game/score';
 import { getArtifact } from '../game/artifacts';
 import { getSimLog, getSimIncome, getSimTileVisits, getSimCircleSnapshot } from '../utils/simLogStore';
 import { formatUnits, formatCellStats } from '../utils/formatPlayerCell';
@@ -31,7 +31,7 @@ interface PlayerSnapshot {
   /** Compact names of every tile owned at this snapshot, shown under the
    * stats line. */
   tileNames: string[];
-  wealth: number;
+  score: number;
   artifactsEmoji: string;
   isPOW: boolean;
   /** What happened to this player during this circle -- filled in after the
@@ -100,7 +100,7 @@ function snapshotPlayer(board: GameState, player: Player): PlayerSnapshot {
     riders: player.riders,
     tilesOwned: owned.length,
     tileNames: owned.map((t) => t.shortName),
-    wealth: totalWealth(board, player),
+    score: playerScore(board, player),
     artifactsEmoji: player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join(''),
     isPOW: player.isPrisonerOfWar,
     log: [],
@@ -242,11 +242,14 @@ const EconomySimScreen: React.FC = () => {
         winnerIndex = board.players.findIndex((p) => p.id === board.activePlayer.id);
         if (winnerIndex < 0) winnerIndex = 0;
       } else {
-        let bestWealth = -1;
+        // Strongest by power score -- the same metric the King's Grace and
+        // the Joker now rank on, so the sim's winner agrees with what the
+        // game itself treats as "ahead".
+        let bestScore = -1;
         board.players.forEach((p, i) => {
-          const w = totalWealth(board, p);
-          if (w > bestWealth) {
-            bestWealth = w;
+          const s = playerScore(board, p);
+          if (s > bestScore) {
+            bestScore = s;
             winnerIndex = i;
           }
         });

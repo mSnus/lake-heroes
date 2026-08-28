@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { clearScreen } from '../utils/screenStore';
 import { playerScore } from '../game/score';
+import { getArtifact } from '../game/artifacts';
 import { totalWealth } from '../game/wealth';
 import { playerTurnIncome } from '../game/income';
 import { PlayerLabel } from './PlayerLabel';
@@ -17,6 +18,11 @@ interface RealmOverviewScreenProps {
  * "(+0)" on every line is noise. Riders never show one: no tile produces
  * them (see game/income.ts's tileTurnIncome, whose units land on militia). */
 const delta = (n: number) => (n > 0 ? <span className="realm-delta">+{n}</span> : null);
+
+/** Emoji alone are unreadable to anyone who hasn't memorised them -- the
+ * names ride along as a tooltip. */
+const artifactNames = (player: Player) =>
+  player.artifacts.map((id) => getArtifact(id)?.name ?? id).join(', ');
 
 /**
  * Read-only survey of every player in the realm -- holdings, per-turn income,
@@ -51,6 +57,11 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
             <div key={player.id} className="realm-player">
               <div className="realm-player-name">
                 <PlayerLabel player={player} showImage bold />
+                {player.artifacts.length > 0 && (
+                  <span className="realm-artifacts" title={artifactNames(player)}>
+                    {player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join('')}
+                  </span>
+                )}
               </div>
 
               <div className="realm-stats">
