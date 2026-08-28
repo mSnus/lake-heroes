@@ -933,6 +933,9 @@
     "clear": "Borrar resultados",
     "setting": "Configuración"
   },
+  "realmOverview": {
+    "noTiles": "aún sin tierras"
+  },
   "statsScreen": {
     "title": "Estadísticas",
     "wealth": "Riqueza",

@@ -9,6 +9,8 @@ import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
+import { showScreen } from '../utils/screenStore';
+import RealmOverviewScreen from './RealmOverviewScreen';
 import { handleKingCastle } from '../actions/king';
 import { openTavernHireOnly } from '../actions/tavern';
 import { challengeDragonFromBoard } from '../actions/fightDragon';
@@ -189,8 +191,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       }
 
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
-      if (isActivePlayerTile && tile.id === 'king-castle') {
-        handleKingCastle(board, updateGameState);
+      if (tile.id === 'king-castle') {
+        // Standing on it opens the Castle itself; from anywhere else the
+        // King's Castle is just where you go to survey the realm.
+        if (isActivePlayerTile) handleKingCastle(board, updateGameState);
+        else showScreen({ content: <RealmOverviewScreen gameState={board} /> });
         return;
       }
 

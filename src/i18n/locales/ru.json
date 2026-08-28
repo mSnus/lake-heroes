@@ -926,6 +926,9 @@
     "clear": "Очистить результаты",
     "setting": "Настройка"
   },
+  "realmOverview": {
+    "noTiles": "земель пока нет"
+  },
   "statsScreen": {
     "title": "Статистика",
     "wealth": "Богатство",

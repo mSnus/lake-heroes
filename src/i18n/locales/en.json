@@ -960,6 +960,9 @@
       "game-over": "a player slew the Dragon"
     }
   },
+  "realmOverview": {
+    "noTiles": "no land yet"
+  },
   "statsScreen": {
     "title": "Statistics",
     "wealth": "Wealth",

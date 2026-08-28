@@ -1,0 +1,96 @@
+import React from 'react';
+import { GameState } from '../game/GameState';
+import { Player } from '../game/Player';
+import { clearScreen } from '../utils/screenStore';
+import { playerScore } from '../game/score';
+import { totalWealth } from '../game/wealth';
+import { playerTurnIncome } from '../game/income';
+import { PlayerLabel } from './PlayerLabel';
+import { useT } from '../i18n';
+import '../styles/RealmOverviewScreen.css';
+
+interface RealmOverviewScreenProps {
+  gameState: GameState;
+}
+
+/** "+N" only when there is actually something coming in -- a permanent
+ * "(+0)" on every line is noise. Riders never show one: no tile produces
+ * them (see game/income.ts's tileTurnIncome, whose units land on militia). */
+const delta = (n: number) => (n > 0 ? <span className="realm-delta">+{n}</span> : null);
+
+/**
+ * Read-only survey of every player in the realm -- holdings, per-turn income,
+ * estate and standing. Opened from the King's Castle tile when the active
+ * player isn't standing on it (see BoardCanvas), so it never competes with
+ * the Castle's own recruiting screen.
+ */
+const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) => {
+  const t = useT();
+
+  // Strongest first -- the screen leads with the power score, so it reads as
+  // a standings table rather than an arbitrary turn-order list.
+  const ranked = [...gameState.players].sort(
+    (a, b) => playerScore(gameState, b) - playerScore(gameState, a)
+  );
+
+  const tilesOf = (player: Player) =>
+    gameState.tiles.filter((tile) => tile && tile.owner === player.id);
+
+  return (
+    <div className="realm-screen">
+      <button onClick={clearScreen} className="realm-close" aria-label={t('common.close')}>
+        ✕
+      </button>
+
+      <div className="realm-inner">
+        {ranked.map((player) => {
+          const income = playerTurnIncome(gameState, player);
+          const tiles = tilesOf(player);
+
+          return (
+            <div key={player.id} className="realm-player">
+              <div className="realm-player-name">
+                <PlayerLabel player={player} showImage bold />
+              </div>
+
+              <div className="realm-stats">
+                <span>{player.fame}🏆</span>
+                <span>
+                  {player.gold}🟡{delta(income.gold)}
+                </span>
+                <span>
+                  {player.militia}🧍{delta(income.units)}
+                </span>
+                <span>{player.riders}🐎</span>
+              </div>
+
+              {tiles.length > 0 ? (
+                <ul className="realm-tiles">
+                  {tiles.map((tile) => (
+                    <li key={tile.id} className={tile.isYielded ? 'realm-tile yielded' : 'realm-tile'}>
+                      <span style={{ color: tile.groupTextColor }}>{tile.name}</span>
+                      <span className="realm-tile-meta">
+                        🏯{tile.level}
+                        {tile.garrison > 0 && <> · {tile.garrison}🛡️</>}
+                        {tile.isYielded && <> · 👑</>}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="realm-no-tiles">{t('realmOverview.noTiles')}</div>
+              )}
+
+              <div className="realm-totals">
+                <span>{playerScore(gameState, player)}⭐</span>
+                <span>{totalWealth(gameState, player)}🧮</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default RealmOverviewScreen;
