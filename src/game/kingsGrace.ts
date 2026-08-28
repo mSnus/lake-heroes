@@ -3,7 +3,7 @@ import { Player } from './Player';
 import { MONEY_PASS_START_FAME, FAME_STEP, ANNUAL_DEFAULT_UNITS } from './constants';
 import { getArtifactGoldBonus } from './artifacts';
 import { getOverrides } from '../utils/overridesStore';
-import { totalWealth } from './wealth';
+import { playerScore } from './score';
 
 export interface KingsGraceReward {
   tileGold: number;
@@ -31,7 +31,7 @@ export interface KingsGraceReward {
   totalUnits: number;
 }
 
-// The leader has to be more than this far ahead in total wealth (1 = 100%,
+// The leader has to be more than this far ahead in power score (1 = 100%,
 // i.e. more than double) before the King steps in to level the field.
 const CATCH_UP_GAP_RATIO = 1;
 // Share of the leader's real estate handed to the poorest player, and to
@@ -39,56 +39,57 @@ const CATCH_UP_GAP_RATIO = 1;
 const CATCH_UP_SHARE_POOREST = 1 / 3;
 const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
 
-// What the fame grace is scaled by at each end of the wealth spread, once
-// the gate below is satisfied.
+// What the fame grace is scaled by at each end of the score spread, once
+// the gate below is satisfied. The poorest keeps their grace whole.
 const FAME_HANDICAP_RICHEST = 0.2;
-const FAME_HANDICAP_POOREST = 0.8;
+const FAME_HANDICAP_POOREST = 1;
 // The handicap curve only applies at all once the richest player is at
-// least this many times wealthier than the poorest -- below that, nobody's
+// least this many times stronger than the poorest -- below that, nobody's
 // grace is touched.
 const FAME_HANDICAP_GAP_MULT = 2;
 
-/** Players sorted poorest-first, with each player's rank and total wealth. */
-function rankByWealth(board: GameState): {
+/** Players sorted weakest-first, with each player's rank and power score. */
+function rankByScore(board: GameState): {
   ranked: Player[];
   rankOf: Map<number, number>;
-  wealthOf: Map<number, number>;
+  scoreOf: Map<number, number>;
 } {
-  const wealthOf = new Map(board.players.map((p) => [p.id, totalWealth(board, p)]));
-  const ranked = [...board.players].sort((a, b) => wealthOf.get(a.id)! - wealthOf.get(b.id)!);
+  const scoreOf = new Map(board.players.map((p) => [p.id, playerScore(board, p)]));
+  const ranked = [...board.players].sort((a, b) => scoreOf.get(a.id)! - scoreOf.get(b.id)!);
   const rankOf = new Map(ranked.map((p, i) => [p.id, i]));
-  return { ranked, rankOf, wealthOf };
+  return { ranked, rankOf, scoreOf };
 }
 
 /**
  * Scales the King's fame grace by how well the player is already doing --
- * relative to the actual wealth spread in this game, not pure rank, so a
+ * relative to the actual score spread in this game, not pure rank, so a
  * near-even game leaves everyone's grace untouched. Only kicks in once the
- * richest player is at least FAME_HANDICAP_GAP_MULT times wealthier than
- * the poorest; below that this returns 1 (no handicap) for everyone,
- * richest included. Once it kicks in, a player's own wealth POSITION
- * between the poorest and richest (not their ordinal rank) linearly sets
- * their share, from FAME_HANDICAP_POOREST down to FAME_HANDICAP_RICHEST --
- * the richest player's own position is 1, which already lands exactly on
- * FAME_HANDICAP_RICHEST, no separate case needed. Fame still sets the size
- * of the grace -- this only decides how much of it a player keeps.
+ * strongest player is at least FAME_HANDICAP_GAP_MULT times the weakest;
+ * below that this returns 1 (no handicap) for everyone. Once it kicks in, a
+ * player's own POSITION between weakest and strongest (not their ordinal
+ * rank) linearly sets their share, from FAME_HANDICAP_POOREST down to
+ * FAME_HANDICAP_RICHEST -- the weakest sits at position 0 and the strongest
+ * at 1, so both ends land on their constant without a special case. Being
+ * position-based, the second-weakest gets 80% only when they happen to sit
+ * a quarter of the way up the spread, not as a fixed tier. Fame still sets
+ * the size of the grace -- this only decides how much of it a player keeps.
  */
-function fameHandicap(playerWealth: number, poorestWealth: number, richestWealth: number): number {
-  if (richestWealth < FAME_HANDICAP_GAP_MULT * poorestWealth) return 1;
-  // Only reachable when poorestWealth <= 0 and richestWealth === poorestWealth
+function fameHandicap(playerScoreValue: number, poorestScore: number, richestScore: number): number {
+  if (richestScore < FAME_HANDICAP_GAP_MULT * poorestScore) return 1;
+  // Only reachable when poorestScore <= 0 and richestScore === poorestScore
   // (every player at exactly zero) -- the gate above can't otherwise pass
   // with an empty spread.
-  if (richestWealth === poorestWealth) return FAME_HANDICAP_POOREST;
+  if (richestScore === poorestScore) return FAME_HANDICAP_POOREST;
 
-  const position = (playerWealth - poorestWealth) / (richestWealth - poorestWealth);
+  const position = (playerScoreValue - poorestScore) / (richestScore - poorestScore);
   return FAME_HANDICAP_POOREST - position * (FAME_HANDICAP_POOREST - FAME_HANDICAP_RICHEST);
 }
 
 /**
  * Support for a player who has fallen so far behind the leader that normal
- * play can't realistically close the gap: only the two poorest qualify, and
- * only while the leader is more than CATCH_UP_GAP_RATIO ahead in total
- * wealth. The payout is a share of the LEADER's real estate -- the gold
+ * play can't realistically close the gap: only the two weakest qualify, and
+ * only while the leader is more than CATCH_UP_GAP_RATIO ahead on power
+ * score. The payout is a share of the LEADER's real estate -- the gold
  * they've sunk into their tiles and upgrades, and those tiles' base-level
  * defence as units -- so the richer the runaway leader, the harder the King
  * pushes back. Nothing is taken from the leader; this is minted.
@@ -97,20 +98,20 @@ function computeCatchUp(
   board: GameState,
   player: Player,
   unitCapacity: number,
-  ranking: ReturnType<typeof rankByWealth>
+  ranking: ReturnType<typeof rankByScore>
 ): { gold: number; units: number } {
   const none = { gold: 0, units: 0 };
   if (board.players.length < 2) return none;
 
-  const { ranked, rankOf, wealthOf } = ranking;
+  const { ranked, rankOf, scoreOf } = ranking;
   const leader = ranked[ranked.length - 1];
   if (leader.id === player.id) return none;
 
   const rank = rankOf.get(player.id)!;
   if (rank > 1) return none;
 
-  const playerTotal = wealthOf.get(player.id)!;
-  const leaderTotal = wealthOf.get(leader.id)!;
+  const playerTotal = scoreOf.get(player.id)!;
+  const leaderTotal = scoreOf.get(leader.id)!;
   if (leaderTotal <= playerTotal) return none;
   // A player with nothing at all is always unreachably behind -- the ratio
   // would divide by zero.
@@ -144,14 +145,14 @@ function computeCatchUp(
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
   const ov = getOverrides();
-  const ranking = rankByWealth(board);
+  const ranking = rankByScore(board);
   const kingsHandicap =
     board.players.length < 2
       ? 1
       : fameHandicap(
-          ranking.wealthOf.get(player.id)!,
-          ranking.wealthOf.get(ranking.ranked[0].id)!,
-          ranking.wealthOf.get(ranking.ranked[ranking.ranked.length - 1].id)!
+          ranking.scoreOf.get(player.id)!,
+          ranking.scoreOf.get(ranking.ranked[0].id)!,
+          ranking.scoreOf.get(ranking.ranked[ranking.ranked.length - 1].id)!
         );
 
   const fame = player.fame || 1;
