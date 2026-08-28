@@ -853,7 +853,7 @@
   "prison": {
     "title": "The prison is cold and dark",
     "flavorText": "Flies of green and buzzing 🪰 fill this dungeon of despair",
-    "savedByArtifact": "{playerName} is sent to Prison, but the {artifactName} {emoji} keeps them free — no turn skipped!"
+    "savedByArtifact": "Prisoner guards bow to the bearer of {artifactName} {emoji}"
   },
   "tavern": {
     "joined": "{units}🧍 joined the mighty army<br />of {playerSpan}",

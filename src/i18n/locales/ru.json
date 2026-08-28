@@ -847,7 +847,7 @@
   "prison": {
     "title": "Тюрьма холодна и темна",
     "flavorText": "Зелёные мухи 🪰 с жужжанием заполняют эту темницу отчаяния",
-    "savedByArtifact": "{playerName} отправлен в темницу, но {artifactName} {emoji} хранит его свободу — ход не пропущен!"
+    "savedByArtifact": "Тюремная стража кланяется обладателю: {artifactName} {emoji}"
   },
   "tavern": {
     "joined": "{units}🧍 присоединились к могучей армии<br />игрока {playerSpan}",

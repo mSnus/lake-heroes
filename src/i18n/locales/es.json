@@ -854,7 +854,7 @@
   "prison": {
     "title": "La prisión está fría y oscura",
     "flavorText": "Moscas verdes y zumbantes 🪰 llenan este calabozo de desesperación",
-    "savedByArtifact": "{playerName} es enviado a Prisión, pero el {artifactName} {emoji} le mantiene libre — ¡ningún turno perdido!"
+    "savedByArtifact": "Los guardias de la prisión se inclinan ante el portador de {artifactName} {emoji}"
   },
   "tavern": {
     "joined": "{units}🧍 se unieron al poderoso ejército<br />de {playerSpan}",

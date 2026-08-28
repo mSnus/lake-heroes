@@ -18,7 +18,7 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
   let message = '';
   const artifact = getPrisonProtectionArtifact(player);
   if (artifact) {
-    message = t('prison.savedByArtifact', { playerName: player.name, artifactName: artifact.name, emoji: artifact.emoji });
+    message = t('prison.savedByArtifact', { artifactName: artifact.name, emoji: artifact.emoji });
     setGameMessage(board, message);
   } else {
     player.turnsToSkip = 1;
