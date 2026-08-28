@@ -1,5 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
+import { syndicateMultiplier } from './syndicate';
 
 /**
  * A player's potential power as a single number, used to rank players
@@ -22,11 +23,19 @@ export const SCORE_PER_UNIT_TILE = 200;
 export const SCORE_PER_ARTIFACT = 300;
 /** Gold is divided by this, rounded down. */
 export const SCORE_GOLD_PER_POINT = 20;
+/** Every tile of a completed syndicate is worth this much more -- holding a
+ * whole group is worth more than the same tiles scattered. */
+export const SCORE_SYNDICATE_MULT = 1.5;
 
-/** What one owned tile contributes, before its owner's other holdings. */
-export function tileScore(tile: { bonusType?: 'gold' | 'units'; level: number }): number {
+/** What one owned tile contributes, before its owner's other holdings.
+ * `inSyndicate` scales the whole figure, upgrades included. */
+export function tileScore(
+  tile: { bonusType?: 'gold' | 'units'; level: number },
+  inSyndicate = false
+): number {
   const base = tile.bonusType === 'units' ? SCORE_PER_UNIT_TILE : SCORE_PER_TILE;
-  return base + Math.max(0, tile.level - 1) * SCORE_PER_UPGRADE;
+  const raw = base + Math.max(0, tile.level - 1) * SCORE_PER_UPGRADE;
+  return Math.round(inSyndicate ? raw * SCORE_SYNDICATE_MULT : raw);
 }
 
 /**
@@ -44,9 +53,23 @@ export function playerScore(board: GameState, player: Player): number {
   let riders = player.riders;
   let tiles = 0;
 
+  // Memoised per group (there are only a handful) rather than re-derived per
+  // tile -- and asked of syndicateMultiplier rather than re-implemented, so
+  // "is this a syndicate" can't drift from what the rest of the game means.
+  const syndicated = new Map<string, boolean>();
+  const inSyndicate = (group: string): boolean => {
+    let known = syndicated.get(group);
+    if (known === undefined) {
+      known = syndicateMultiplier(board, player, group) > 1;
+      syndicated.set(group, known);
+    }
+
+    return known;
+  };
+
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id) continue;
-    tiles += tileScore(tile);
+    tiles += tileScore(tile, inSyndicate(tile.group));
     militia += tile.garrisonMilitia;
     riders += tile.garrisonRiders;
   }
