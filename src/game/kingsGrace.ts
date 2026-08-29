@@ -1,8 +1,8 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { MONEY_PASS_START_FAME, FAME_STEP, ANNUAL_DEFAULT_UNITS } from './constants';
+import { ANNUAL_DEFAULT_UNITS } from './constants';
+import { remainingCapacity } from './army';
 import { getArtifactGoldBonus } from './artifacts';
-import { getOverrides } from '../utils/overridesStore';
 import { playerScore } from './score';
 
 export interface KingsGraceReward {
@@ -16,12 +16,19 @@ export interface KingsGraceReward {
    * name ("from your Towers"). */
   towerUnits: number;
   kingsGold: number;
+  /** Grace units as headcount (kingsMilitia + kingsRiders). */
   kingsUnits: number;
+  kingsMilitia: number;
+  kingsRiders: number;
+  /** The grace as measured out, before the army-slot fit trimmed it. */
+  graceMilitiaOffered: number;
+  graceRidersOffered: number;
+  /** The same offer in militia-equivalents (a rider is 2). Above kingsUnits'
+   * weighted worth when the army had no room left. */
+  graceUnitsOffered: number;
   arifactGold: number;
-  /** Share of the full fame grace this player actually got -- 1 (untouched)
-   * unless the richest player is at least FAME_HANDICAP_GAP_MULT times
-   * wealthier than the poorest, in which case 0.2-0.8 by wealth position.
-   * See fameHandicap. */
+  /** Share of the full grace this player actually got, by how far their
+   * power score sits above the weakest player's -- see graceHandicap. */
   kingsHandicap: number;
   /** Extra support for a player the leader has left unreachably far behind
    * -- see computeCatchUp. Zero for everyone else. */
@@ -39,14 +46,24 @@ const CATCH_UP_GAP_RATIO = 1;
 const CATCH_UP_SHARE_POOREST = 1 / 3;
 const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
 
-// What the fame grace is scaled by at each end of the score spread, once
-// the gate below is satisfied. The poorest keeps their grace whole.
-const FAME_HANDICAP_RICHEST = 0.2;
-const FAME_HANDICAP_POOREST = 1;
-// The handicap curve only applies at all once the richest player is at
-// least this many times stronger than the poorest -- below that, nobody's
-// grace is touched.
-const FAME_HANDICAP_GAP_MULT = 1.5;
+// The grace is scaled by how far ahead of the WEAKEST player this one is,
+// on power score. Anchors are (score ratio, share of grace); between them
+// the share interpolates linearly, so there is no cliff at a bracket edge.
+// At or below parity the grace is whole; at 1.8x and beyond it is gone.
+const GRACE_HANDICAP_ANCHORS: [ratio: number, share: number][] = [
+  [1.0, 1.0],
+  [1.2, 0.6],
+  [1.3, 0.5],
+  [1.4, 0.4],
+  [1.5, 0.3],
+  [1.6, 0.2],
+  [1.7, 0.1],
+  [1.8, 0],
+];
+
+/** A rider counts as this many militia when the grace is measured out and
+ * then fitted back into army slots. */
+const GRACE_RIDER_IN_MILITIA = 2;
 
 /** Players sorted weakest-first, with each player's rank and power score. */
 function rankByScore(board: GameState): {
@@ -61,28 +78,104 @@ function rankByScore(board: GameState): {
 }
 
 /**
- * Scales the King's fame grace by how well the player is already doing --
- * relative to the actual score spread in this game, not pure rank, so a
- * near-even game leaves everyone's grace untouched. Only kicks in once the
- * strongest player is at least FAME_HANDICAP_GAP_MULT times the weakest;
- * below that this returns 1 (no handicap) for everyone. Once it kicks in, a
- * player's own POSITION between weakest and strongest (not their ordinal
- * rank) linearly sets their share, from FAME_HANDICAP_POOREST down to
- * FAME_HANDICAP_RICHEST -- the weakest sits at position 0 and the strongest
- * at 1, so both ends land on their constant without a special case. Being
- * position-based, the second-weakest gets 80% only when they happen to sit
- * a quarter of the way up the spread, not as a fixed tier. Fame still sets
- * the size of the grace -- this only decides how much of it a player keeps.
+ * The share of the grace a player keeps, from their power score relative to
+ * the weakest player's. The weakest sits at ratio 1 and keeps all of it;
+ * everyone else is scaled down along GRACE_HANDICAP_ANCHORS.
  */
-function fameHandicap(playerScoreValue: number, poorestScore: number, richestScore: number): number {
-  if (richestScore < FAME_HANDICAP_GAP_MULT * poorestScore) return 1;
-  // Only reachable when poorestScore <= 0 and richestScore === poorestScore
-  // (every player at exactly zero) -- the gate above can't otherwise pass
-  // with an empty spread.
-  if (richestScore === poorestScore) return FAME_HANDICAP_POOREST;
+function graceHandicap(score: number, weakestScore: number): number {
+  // Everyone at zero is a flat field, not an infinite gap; anyone above a
+  // zero-score weakest is unreachably ahead by ratio.
+  if (weakestScore <= 0) return score <= 0 ? 1 : 0;
 
-  const position = (playerScoreValue - poorestScore) / (richestScore - poorestScore);
-  return FAME_HANDICAP_POOREST - position * (FAME_HANDICAP_POOREST - FAME_HANDICAP_RICHEST);
+  const ratio = score / weakestScore;
+  const first = GRACE_HANDICAP_ANCHORS[0];
+  const last = GRACE_HANDICAP_ANCHORS[GRACE_HANDICAP_ANCHORS.length - 1];
+  if (ratio <= first[0]) return first[1];
+  if (ratio >= last[0]) return last[1];
+
+  for (let i = 1; i < GRACE_HANDICAP_ANCHORS.length; i++) {
+    const [hiRatio, hiShare] = GRACE_HANDICAP_ANCHORS[i];
+    if (ratio > hiRatio) continue;
+    const [loRatio, loShare] = GRACE_HANDICAP_ANCHORS[i - 1];
+    return loShare + ((ratio - loRatio) / (hiRatio - loRatio)) * (hiShare - loShare);
+  }
+
+  return last[1];
+}
+
+/**
+ * The full grace before any handicap: the average gold, militia and riders
+ * across all players, garrisoned units included. Averaging is what makes
+ * this a balancer -- the grace tracks the table's own wealth, so it grows
+ * with the game instead of being a fixed authored payout.
+ */
+function graceBase(board: GameState): { gold: number; militia: number; riders: number } {
+  const count = board.players.length;
+  if (count === 0) return { gold: 0, militia: 0, riders: 0 };
+
+  let gold = 0;
+  let militia = 0;
+  let riders = 0;
+  for (const p of board.players) {
+    gold += p.gold;
+    militia += p.militia;
+    riders += p.riders;
+  }
+
+  const playerIds = new Set(board.players.map((p) => p.id));
+  for (const tile of board.tiles) {
+    if (!tile || tile.owner == null || !playerIds.has(tile.owner)) continue;
+    militia += tile.garrisonMilitia ?? 0;
+    riders += tile.garrisonRiders ?? 0;
+  }
+
+  return { gold: gold / count, militia: militia / count, riders: riders / count };
+}
+
+/**
+ * Fit the grace's own militia/rider mix into the player's army slots.
+ *
+ * A Knight keeps grace riders as riders, up to the room his free and
+ * rider-held slots allow; whatever doesn't fit falls back to militia at
+ * GRACE_RIDER_IN_MILITIA each. A grace that is all militia spills the other
+ * way -- militia first, then the remainder converted up into riders. A
+ * player who is not a Knight cannot hold riders at all, so his whole grace
+ * is converted down to militia.
+ *
+ * @param committedMilitia militia this same payout already spends slots on
+ * (the per-tile trickle), which land before the grace does.
+ */
+function fitGraceUnits(
+  player: Player,
+  graceMilitia: number,
+  graceRiders: number,
+  committedMilitia: number
+): { militia: number; riders: number } {
+  const slots = player.armySlots;
+  const heldMilitia = player.militia + committedMilitia;
+  const militiaRoom = (addedRiders: number) =>
+    remainingCapacity(heldMilitia, player.riders + addedRiders, slots, 'militia');
+  const riderRoom = (addedMilitia: number) =>
+    remainingCapacity(heldMilitia + addedMilitia, player.riders, slots, 'riders');
+
+  if (player.isKnight && graceRiders > 0) {
+    const riders = Math.max(0, Math.min(graceRiders, riderRoom(0)));
+    const asMilitia = graceMilitia + (graceRiders - riders) * GRACE_RIDER_IN_MILITIA;
+    return { militia: Math.max(0, Math.min(asMilitia, militiaRoom(riders))), riders };
+  }
+
+  const asMilitia = player.isKnight
+    ? graceMilitia
+    : graceMilitia + graceRiders * GRACE_RIDER_IN_MILITIA;
+  const militia = Math.max(0, Math.min(asMilitia, militiaRoom(0)));
+  if (!player.isKnight) return { militia, riders: 0 };
+
+  const leftover = asMilitia - militia;
+  const riders = Math.max(
+    0,
+    Math.min(Math.floor(leftover / GRACE_RIDER_IN_MILITIA), riderRoom(militia))
+  );
+  return { militia, riders };
 }
 
 /**
@@ -133,8 +226,8 @@ function computeCatchUp(
 }
 
 /**
- * The reward for passing (or about to pass) the King's Castle: a per-fame
- * grace from the King, a flat per-tile trickle from every tile the player
+ * The reward for passing (or about to pass) the King's Castle: the King's
+ * grace, plus a flat per-tile trickle from every tile the player
  * owns -- in whichever resource its own bonus ISN'T, since that own resource
  * already pays out every turn instead (see game/income.ts's
  * collectTileTurnIncome). A units-type tile's (Camps/Towers) own
@@ -144,21 +237,20 @@ function computeCatchUp(
  * (CurrentPlayer.tsx) so they can't drift apart.
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
-  const ov = getOverrides();
   const ranking = rankByScore(board);
   const kingsHandicap =
     board.players.length < 2
       ? 1
-      : fameHandicap(
+      : graceHandicap(
           ranking.scoreOf.get(player.id)!,
-          ranking.scoreOf.get(ranking.ranked[0].id)!,
-          ranking.scoreOf.get(ranking.ranked[ranking.ranked.length - 1].id)!
+          ranking.scoreOf.get(ranking.ranked[0].id)!
         );
 
-  const fame = player.fame || 1;
-  const fameMultiplier = Math.floor(fame / FAME_STEP);
-  const kingsGold = Math.round((ov.moneyPassStart + MONEY_PASS_START_FAME * fameMultiplier) * kingsHandicap);
-  const kingsUnits = Math.round(ov.unitsPassStart * fameMultiplier * kingsHandicap);
+  const base = graceBase(board);
+  const kingsGold = Math.round(base.gold * kingsHandicap);
+  const graceMilitia = Math.round(base.militia * kingsHandicap);
+  const graceRiders = Math.round(base.riders * kingsHandicap);
+  const graceUnitsOffered = graceMilitia + graceRiders * GRACE_RIDER_IN_MILITIA;
 
   let tileGold = 0;
   let tileUnits = 0;
@@ -180,10 +272,16 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
 
   const arifactGold = getArtifactGoldBonus(player);
 
+  // The tile trickle lands first, so the grace is fitted into whatever slot
+  // room is left after it.
+  const grace = fitGraceUnits(player, graceMilitia, graceRiders, tileUnits);
+  const kingsUnits = grace.militia + grace.riders;
+
   // Whatever slot room is left once this payout's other units land -- the
   // catch-up share is capped to it rather than being silently dropped by
   // Player.gainMilitia later.
-  const unitCapacity = player.remainingCapacity('militia') - (tileUnits + kingsUnits);
+  const unitCapacity =
+    player.remainingCapacity('militia') - (tileUnits + grace.militia) - grace.riders;
   const catchUp = computeCatchUp(board, player, unitCapacity, ranking);
 
   // Rounded down to a clean 50, same as the per-turn tile income (see
@@ -198,6 +296,11 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     towerUnits,
     kingsGold,
     kingsUnits,
+    kingsMilitia: grace.militia,
+    kingsRiders: grace.riders,
+    graceMilitiaOffered: graceMilitia,
+    graceRidersOffered: graceRiders,
+    graceUnitsOffered,
     arifactGold,
     kingsHandicap,
     catchUpGold: catchUp.gold,

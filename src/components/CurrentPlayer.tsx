@@ -5,6 +5,7 @@ import '../styles/CurrentPlayer.css';
 import { say } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
 import { computeAnnualReward } from '../game/kingsGrace';
+import { formatArmy } from '../utils/formatArmy';
 import { playerTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
@@ -138,7 +139,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     }
   };
 
-  const { kingsGold, kingsUnits, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits, kingsHandicap, totalGold, totalUnits } =
+  const { kingsGold, kingsMilitia, kingsRiders, arifactGold, towerUnits, tileGold, tileUnits, catchUpGold, catchUpUnits, kingsHandicap, totalGold, totalUnits } =
     computeAnnualReward(gameState, activePlayer);
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   const ownedTileCount = gameState.tiles.filter(
@@ -265,16 +266,23 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
               };
 
+              // The grace is the one source that can pay riders, so it
+              // spells out the tiers instead of a single 👬 headcount.
+              const graceLabel =
+                kingsHandicap < 1
+                  ? t('currentPlayer.asKingsGraceHandicapped', {
+                      pct: Math.round(kingsHandicap * 100),
+                    })
+                  : t('currentPlayer.asKingsGrace');
+              const graceItems = [
+                kingsGold > 0 ? `${kingsGold}🟡` : null,
+                kingsMilitia + kingsRiders > 0 ? formatArmy(kingsMilitia, kingsRiders) : null,
+              ].filter(Boolean);
+
               const parts = [
-                fmt(
-                  kingsGold,
-                  kingsUnits,
-                  kingsHandicap < 1
-                    ? t('currentPlayer.asKingsGraceHandicapped', {
-                        pct: Math.round(kingsHandicap * 100),
-                      })
-                    : t('currentPlayer.asKingsGrace')
-                ),
+                graceItems.length > 0
+                  ? `${graceItems.join(` ${t('common.and')} `)} ${graceLabel}`
+                  : null,
                 fmt(catchUpGold, catchUpUnits, t('currentPlayer.asKingsSupport')),
                 fmt(tileGold, tileUnits - towerUnits, t('currentPlayer.fromYourTiles')),
                 fmt(0, towerUnits, t('currentPlayer.fromYourTowers')),
