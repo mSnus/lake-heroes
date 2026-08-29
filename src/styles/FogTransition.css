@@ -6,6 +6,7 @@
   inset: 0;
   z-index: 20000;
   background: #000;
+  opacity: 0;
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -14,7 +15,7 @@
 
 /* Animations, not transitions: these mount already in their start phase. */
 .fog-transition.fog-in {
-  animation: fog-wipe-in 300ms ease forwards;
+  animation: fog-wipe-in 500ms linear forwards;
 }
 
 .fog-transition.fog-hold {
