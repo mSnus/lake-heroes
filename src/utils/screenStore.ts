@@ -3,6 +3,7 @@ import React from 'react';
 import { setEndTurn } from './endTurnStore';
 import { showDice, startDiceRoll } from './diceStore';
 import { isHeadlessRun } from './headlessStore';
+import { playFogTransition } from './transitionStore';
 import { Tile } from '../game/Tile';
 import { t } from '../i18n';
 
@@ -112,6 +113,11 @@ export function showScreen(config: ScreenConfig): void {
   document.body.classList.add('screen-open');
 }
 
+/** showScreen fronted by the fog wipe, for an event interrupting a move. */
+export function showScreenWithFog(config: ScreenConfig): void {
+  playFogTransition(() => showScreen(config));
+}
+
 export function markScreenResolved(): void {
   if (isHeadlessRun()) return;
   if (state) {
@@ -200,7 +206,7 @@ export function showDragonSkyScreen(
   const who = playerName
     ? `<span style="color:${playerColor ?? 'inherit'}">${playerName}</span>`
     : t('screenStore.you');
-  showScreen({
+  showScreenWithFog({
     screenType: 'dragon-sky',
     background: 'assets/screens/dragon-sky.jpg',
     htmlMessage: t('screenStore.dragonInSky', { who }),
@@ -218,7 +224,7 @@ export function showDragonSkyScreen(
 }
 
 export function showDragonAttackScreen(message: string, onContinue: () => void): void {
-  showScreen({
+  showScreenWithFog({
     screenType: 'dragon-attack',
     background: 'assets/screens/dragon-attack.jpg',
     message,

@@ -13,6 +13,7 @@ import { PlayerLabel } from './components/PlayerLabel';
 import { CurrentPlayerCard } from './components/CurrentPlayerCard';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { halt, isHalted, resumeAfterHalt } from './utils/haltStore';
+import { resetFogTransition } from './utils/transitionStore';
 import { say } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
 import tilesData from './settings/tiles.json';
@@ -59,6 +60,7 @@ import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
 import VersionMismatchBanner from './components/VersionMismatchBanner';
+import FogTransition from './components/FogTransition';
 import { ScreenRenderer } from './components/ScreenRenderer';
 import { DecoratedButton } from './components/DecoratedButton';
 import StatsScreen from './components/StatsScreen';
@@ -606,6 +608,7 @@ function App() {
   return (
     <div className="App">
       <VersionMismatchBanner />
+      <FogTransition />
 
       <ToastContainer
         position={isMobileLayout() ? 'top-center' : 'top-right'}
@@ -683,6 +686,7 @@ function App() {
                 <DecoratedButton
                   onClick={() => {
                     halt();
+      resetFogTransition();
                     localStorage.removeItem('game-state');
                     localStorage.removeItem('game-screen');
                     localStorage.removeItem('game-log');

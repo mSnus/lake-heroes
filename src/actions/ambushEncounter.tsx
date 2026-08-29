@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { showScreen } from '../utils/screenStore';
+import { showScreenWithFog } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { formatArmy, AMBUSH_EMOJI } from '../utils/formatArmy';
@@ -61,7 +61,7 @@ export function checkAmbushEncounter(
     return true;
   }
 
-  showScreen({
+  showScreenWithFog({
     screenType: 'ambush',
     background: 'assets/screens/ambush.jpg',
     title: t('ambushEncounter.title'),

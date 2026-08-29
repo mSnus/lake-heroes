@@ -46,7 +46,7 @@ const FAME_HANDICAP_POOREST = 1;
 // The handicap curve only applies at all once the richest player is at
 // least this many times stronger than the poorest -- below that, nobody's
 // grace is touched.
-const FAME_HANDICAP_GAP_MULT = 2;
+const FAME_HANDICAP_GAP_MULT = 1.5;
 
 /** Players sorted weakest-first, with each player's rank and power score. */
 function rankByScore(board: GameState): {

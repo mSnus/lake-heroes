@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { showScreen, clearScreen } from '../utils/screenStore';
+import { showScreenWithFog, clearScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { formatArmy, CARAVAN_EMOJI } from '../utils/formatArmy';
@@ -93,7 +93,7 @@ export function checkCaravanEncounter(
     ? t('caravanEncounter.bringingChains', { prize })
     : t('caravanEncounter.ofGoodsWorth', { prize });
 
-  showScreen({
+  showScreenWithFog({
     screenType: 'caravan',
     background: 'assets/screens/caravan.jpg',
     spriteImage: getPlayerImageSrc(player.image, player.isKnight),

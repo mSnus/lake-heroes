@@ -13,6 +13,7 @@ import StatsScreen from './StatsScreen';
 import BattleSimScreen from './BattleSimScreen';
 import EconomySimScreen from './EconomySimScreen';
 import { halt } from '../utils/haltStore';
+import { resetFogTransition } from '../utils/transitionStore';
 import { forceFreshReload } from '../utils/forceReload';
 import { resetOverrides } from '../utils/overridesStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
@@ -51,6 +52,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
       // confirm dialog blocked would otherwise fire, re-persist the old game
       // over the removal below, and have it restored after the reload.
       halt();
+      resetFogTransition();
       try {
         localStorage.removeItem('game-state');
         localStorage.removeItem('game-screen');

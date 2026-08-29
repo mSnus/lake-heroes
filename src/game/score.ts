@@ -14,11 +14,14 @@ export const SCORE_PER_MILITIA = 5;
 export const SCORE_PER_RIDER = 50;
 /** Every owned tile, whatever it produces. */
 export const SCORE_PER_TILE = 100;
-/** Each level above the first, on any tile. */
+/** Each level above the first, on a gold-producing tile. */
 export const SCORE_PER_UPGRADE = 50;
 /** Camps and Towers (bonusType 'units') instead of SCORE_PER_TILE -- they
  * raise troops rather than gold, which is worth more than a plain estate. */
 export const SCORE_PER_UNIT_TILE = 200;
+/** Each level above the first on a Camp/Tower -- upgrading one compounds
+ * the troops it raises, so it is worth more than a gold tile's upgrade. */
+export const SCORE_PER_UNIT_UPGRADE = 100;
 /** Any artifact, whatever it does -- they are all hard to come by. */
 export const SCORE_PER_ARTIFACT = 300;
 /** Gold is divided by this, rounded down. */
@@ -33,8 +36,10 @@ export function tileScore(
   tile: { bonusType?: 'gold' | 'units'; level: number },
   inSyndicate = false
 ): number {
-  const base = tile.bonusType === 'units' ? SCORE_PER_UNIT_TILE : SCORE_PER_TILE;
-  const raw = base + Math.max(0, tile.level - 1) * SCORE_PER_UPGRADE;
+  const isUnitTile = tile.bonusType === 'units';
+  const base = isUnitTile ? SCORE_PER_UNIT_TILE : SCORE_PER_TILE;
+  const perUpgrade = isUnitTile ? SCORE_PER_UNIT_UPGRADE : SCORE_PER_UPGRADE;
+  const raw = base + Math.max(0, tile.level - 1) * perUpgrade;
   return Math.round(inSyndicate ? raw * SCORE_SYNDICATE_MULT : raw);
 }
 

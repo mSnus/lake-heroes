@@ -1,0 +1,65 @@
+/* Durations must stay in step with transitionStore's FOG_IN/HOLD/OUT_MS.
+   z-index clears every screen (realm overview is 10000). pointer-events
+   stays none so a stuck overlay could never deaden the UI. */
+.fog-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: #000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animations, not transitions: these mount already in their start phase. */
+.fog-transition.fog-in {
+  animation: fog-wipe-in 300ms ease forwards;
+}
+
+.fog-transition.fog-hold {
+  opacity: 1;
+}
+
+.fog-transition.fog-out {
+  animation: fog-wipe-out 300ms ease forwards;
+}
+
+@keyframes fog-wipe-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fog-wipe-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fog-transition-symbol {
+  width: min(38vmin, 320px);
+  height: min(38vmin, 320px);
+  background: url(/assets/fog.png) center / contain no-repeat;
+  border-radius: 50%;
+  filter: brightness(1);
+}
+
+.fog-transition.fog-hold .fog-transition-symbol {
+  animation: fog-symbol-dim 200ms linear forwards;
+}
+
+.fog-transition.fog-out .fog-transition-symbol {
+  filter: brightness(0);
+}
+
+@keyframes fog-symbol-dim {
+  from { filter: brightness(1); }
+  to { filter: brightness(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog-transition.fog-in,
+  .fog-transition.fog-out,
+  .fog-transition.fog-hold .fog-transition-symbol {
+    animation-duration: 1ms;
+  }
+}

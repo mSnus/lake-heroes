@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
-import { showScreen, clearScreen } from '../utils/screenStore';
+import { showScreenWithFog, clearScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { changeFame } from '../utils/fame';
@@ -73,7 +73,7 @@ export function checkRogueAttackEncounter(
       return true;
     }
 
-    showScreen({
+    showScreenWithFog({
       screenType: 'rogue-attack-razed',
       background: 'assets/screens/raid.jpeg',
       title: t('rogueAttack.title'),
@@ -124,7 +124,7 @@ export function checkRogueAttackEncounter(
   // Announce the raid before it happens -- same background as an ambush
   // (both are "a hostile force appears" beats), with a button to move on to
   // the actual battle.
-  showScreen({
+  showScreenWithFog({
     screenType: 'rogue-attack-incoming',
     background: 'assets/screens/raid.jpeg',
     title: t('rogueAttack.title'),
