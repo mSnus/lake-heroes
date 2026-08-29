@@ -6,7 +6,6 @@ import {
 } from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
-import { changeFame } from '../utils/fame';
 import { checkArtifactProtection } from '../game/artifacts';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldChallengeDragon } from '../ai/decisions';
@@ -121,8 +120,6 @@ function handleWeakPlayerAttack(
     return;
   }
 
-  changeFame(player, -1, 0);
-
   let mostExpensiveIdx: number | null = null;
   let maxGold = -1;
   for (const idx of player.ownedTiles) {
@@ -139,7 +136,7 @@ function handleWeakPlayerAttack(
 
   if (mostExpensiveIdx === null) {
     message = t('dragonEncounter.attacksYou');
-    say(t('dragonEncounter.attackedFameLost', { playerName: player.name }), 'error');
+    say(t('dragonEncounter.attackedNothingToBurn', { playerName: player.name }), 'error');
   } else {
     const tile = board.tiles[mostExpensiveIdx];
     const tileName = tile.name;
