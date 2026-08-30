@@ -107,7 +107,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 {t('screenRenderer.forThe')}{' '}
                 <strong style={{ color: config.encounter.tile?.groupTextColor }}>
                   {config.encounter.tile?.name}
-                </strong>{' '}
+                </strong><br/>
                 {t('screenRenderer.guardedByShort', { amount: config.encounter.tile?.defence ?? 0 })}
               </>
             ) : (
@@ -214,7 +214,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         </div>
       )}
       </ScreenBackground>
-      
+
       {config.sellMode && (
         <div
           style={{

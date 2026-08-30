@@ -329,6 +329,8 @@ export const TileCard: React.FC<TileCardProps> = ({
             {tile.name}
             <br />
             {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
+            {tile.isOwned() &&
+            (<span className="tile-base-price">{tile.prices[1]?.gold ? tile.prices[1]?.gold + '🟡' : ''}</span>)}
           </div>
         </div>
       )}
@@ -504,10 +506,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                                   {defence(1)}
                                   {tile.abandoned ? '🧟‍♀️' : '⚔️'}
                                 </div>
-                              ) : cantAfford ? (<div >
+                              ) : cantAfford ? (
+                                <div>
                                   {defence(1)}
                                   {tile.abandoned ? '🧟‍♀️' : '⚔️'}
-                                </div>) : (
+                                </div>
+                              ) : (
                                 <div
                                   style={{
                                     display: 'flex',
@@ -611,7 +615,6 @@ export const TileCard: React.FC<TileCardProps> = ({
               </div>
             )}
           </div>
-
         </div>
       )}
 

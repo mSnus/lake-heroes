@@ -255,7 +255,7 @@
   "screenRenderer": {
     "encounters": "встречает",
     "belongsTo": "принадлежащую",
-    "andIsGuarded": "и охраняемую {amount}🧍",
+    "andIsGuarded": "и охраняемую 🧍{amount}",
     "forcedToPay": "и вынужден заплатить ему",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
@@ -264,7 +264,7 @@
     "forcedWhom": "вынудил",
     "toPay": "заплатить",
     "forThe": "за",
-    "guardedByShort": "под охраной {amount}🧍"
+    "guardedByShort": "под охраной 🧍{amount}"
   },
   "newGameModal": {
     "heroes": "Герои:",

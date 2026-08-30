@@ -262,13 +262,13 @@
   "screenRenderer": {
     "encounters": "encounters",
     "belongsTo": "that belongs to",
-    "andIsGuarded": "and is guarded by {amount}🧍",
+    "andIsGuarded": "and is guarded by 🧍{amount}",
     "riskOrPay": "Seek revenge with {army} and raze it?",
     "razedSmokeCaveat": "Razed tiles become abandoned",
     "forcedWhom": "forced",
     "toPay": "to pay",
     "forThe": "for the",
-    "guardedByShort": "guarded by {amount}🧍"
+    "guardedByShort": "guarded by 🧍{amount}"
   },
   "newGameModal": {
     "heroes": "Heroes:",

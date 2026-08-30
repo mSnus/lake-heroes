@@ -262,7 +262,7 @@
   "screenRenderer": {
     "encounters": "se encuentra con",
     "belongsTo": "que pertenece a",
-    "andIsGuarded": "y está defendida por {amount}🧍",
+    "andIsGuarded": "y está defendida por 🧍{amount}",
     "forcedToPay": "y se ve obligado a pagarle",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
@@ -271,7 +271,7 @@
     "forcedWhom": "obligó a",
     "toPay": "a pagar",
     "forThe": "por",
-    "guardedByShort": "defendida por {amount}🧍"
+    "guardedByShort": "defendida por 🧍{amount}"
   },
   "newGameModal": {
     "heroes": "Héroes:",
