@@ -7,7 +7,7 @@ import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
-import { BANZAI_THRESHOLD } from '../game/constants';
+import { isBanzaiAttack } from '../game/army';
 import { UNIT_POWER } from '../game/army';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
@@ -160,10 +160,7 @@ export const TileCard: React.FC<TileCardProps> = ({
       : `${activePlayer.riders}`;
   const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
 
-  const isBanzai =
-    !!activePlayer &&
-    attackerPower >= lvl1Defence * BANZAI_THRESHOLD &&
-    attackerPower < lvl1Defence;
+  const isBanzai = !!activePlayer && isBanzaiAttack(lvl1Defence, attackerPower);
 
   const attackEmoji = (isBrawlTile ? '👊' : '⚔️') + (isBanzai ? '🩸' : '');
 

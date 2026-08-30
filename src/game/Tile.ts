@@ -1,7 +1,7 @@
-import { FEE_MULTIPLIER, BRAWL_THRESHOLD, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT } from './constants';
+import { FEE_MULTIPLIER, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
-import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER } from './army';
+import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER, isBanzaiAttack } from './army';
 import { t, tOptional } from '../i18n';
 
 export interface TileJSON {
@@ -322,15 +322,9 @@ export class Tile implements TileJSON {
     // more than their number, and the attacker's own power is weighted the
     // same way, so the two sides are compared on one scale.
     const lvl1Defence = this.getDefence(1) * (this.abandoned ? UNIT_POWER.zombies : 1);
-    // Brawl tiles (low defence) always require enough units to win the
-    // winner-take-all round. Above the brawl threshold, an attacker with
-    // more than that many units may "banzai" — attack a tougher tile than
-    // their army could normally win — as a deliberate gamble.
-    const isBrawlTile = lvl1Defence <= BRAWL_THRESHOLD;
-    const canBanzai = !isBrawlTile && playerUnits > BRAWL_THRESHOLD;
     return (
       playerGold >= this.prices['1'].gold &&
-      (canBanzai || playerUnits >= lvl1Defence) &&
+      (playerUnits >= lvl1Defence || isBanzaiAttack(lvl1Defence, playerUnits)) &&
       playerFame >= this.requiredFame
     );
   }

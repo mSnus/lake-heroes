@@ -5,6 +5,7 @@ import {
   ZOMBIE_POWER_WEIGHT,
   DRAGON_POWER_WEIGHT,
   DRAGON_UNITS,
+  BANZAI_THRESHOLD,
 } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 
@@ -62,6 +63,16 @@ export function forcePower(force: {
 
 /** What the Dragon's whole host is worth on the same scale. */
 export const DRAGON_FORCE_POWER = forcePower({ dragons: DRAGON_UNITS });
+
+/**
+ * A banzai attack: too weak to win outright, but close enough to the tile's
+ * defence to be worth the gamble. The single definition -- the tile card's
+ * 🩸 badge, its button, and Tile.isAffordable all read it, so the badge can
+ * never advertise an attack the button then refuses.
+ */
+export function isBanzaiAttack(lvl1Defence: number, attackerPower: number): boolean {
+  return attackerPower >= lvl1Defence * BANZAI_THRESHOLD && attackerPower < lvl1Defence;
+}
 
 /** How many army slots a given fame grants — see ARMY_SLOT_FAME_THRESHOLDS. */
 export function slotCountForFame(fame: number): number {
