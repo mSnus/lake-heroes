@@ -177,11 +177,11 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   const ov = getOverrides();
   const base = graceBase(board);
   // The grace never drops below a fame-scaled base income, so a table whose
-  // averages are still tiny is not left with nothing.
-  const fameScale = Math.log10(Math.max(1, player.fame || 1));
-  const kingsGold = Math.round(
-    Math.max(base.gold, fameScale * ov.moneyPassStart) * kingsHandicap
-  );
+  // averages are still tiny is not left with nothing. lg(fame + 1) rather
+  // than lg(fame) so the floor is already worth something at fame 1.
+  const fameScale = Math.log10(Math.max(0, player.fame || 0) + 1);
+  const baseGold = Math.floor((fameScale * ov.moneyPassStart) / 100) * 100;
+  const kingsGold = Math.round(Math.max(base.gold, baseGold) * kingsHandicap);
 
   // The base income is a floor on the grace's total worth, not on either
   // tier -- when it wins, it keeps the averages' militia:rider mix (all

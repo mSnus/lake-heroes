@@ -1,5 +1,6 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
+import { changeFame } from '../utils/fame';
 import { computeAnnualReward } from '../game/kingsGrace';
 import { recordStatEvent } from '../game/statistics';
 import { isHeadlessRun } from '../utils/headlessStore';
@@ -28,6 +29,8 @@ export function passStart(
   const unitsGranted = militiaGranted + ridersGranted;
 
   player.circles = (player.circles ?? 0) + 1;
+  // Surviving the first lap is itself worth a point of fame.
+  if (player.circles === 1) changeFame(player, 1);
   player.dragonEncounters = 0;
   player.caravanEncounters = 0;
   player.ambushEncounters = 0;
