@@ -266,8 +266,12 @@
     "forcedToPay": "y se ve obligado a pagarle",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
-    "riskOrPay": "¿Buscar venganza y arrasarla, o ir en paz?",
-    "razedSmokeCaveat": "Las casillas arrasadas no pertenecen a nadie hasta que se disipe el humo"
+    "riskOrPay": "¿Buscar venganza con {army} y arrasarla?",
+    "razedSmokeCaveat": "Las casillas arrasadas quedan abandonadas",
+    "forcedWhom": "obligó a",
+    "toPay": "a pagar",
+    "forThe": "por",
+    "guardedByShort": "defendida por {amount}🧍"
   },
   "newGameModal": {
     "heroes": "Héroes:",

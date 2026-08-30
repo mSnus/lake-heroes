@@ -263,8 +263,12 @@
     "encounters": "encounters",
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by {amount}🧍",
-    "riskOrPay": "Fight to raze it or pay and go?",
-    "razedSmokeCaveat": "Razed tiles belong to no one until the smoke is gone"
+    "riskOrPay": "Seek revenge with {army} and raze it?",
+    "razedSmokeCaveat": "Razed tiles become abandoned",
+    "forcedWhom": "forced",
+    "toPay": "to pay",
+    "forThe": "for the",
+    "guardedByShort": "guarded by {amount}🧍"
   },
   "newGameModal": {
     "heroes": "Heroes:",

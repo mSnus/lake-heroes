@@ -55,6 +55,10 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
     <> {t('screenRenderer.andIsGuarded', { amount: config.encounter.tile.defence })}</>
   );
 
+  // The toll screen reads as the owner acting on the visitor, so it drops
+  // the visitor's own stat line and the "encounters ... belongs to" build-up.
+  const isToll = !!config.encounter?.ownerName && !!config.encounter?.fee;
+
   function handleButtonClick(onClick: () => void, action?: string) {
     if (action === 'end-turn') gameEvent('setPhase', 'before-move');
     try {
@@ -77,58 +81,79 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         {config.spriteImage && <SpriteCircleIcon src={config.spriteImage} />}
         {config.encounter && (
           <div className="text-message">
-            <PlayerLabel
-              name={config.encounter.playerName}
-              color={config.encounter.playerColor}
-              bold
-            /><br/>
-            {config.encounter?.gold !== undefined && (
+            {isToll ? (
               <>
-                <strong>{config.encounter.gold}🟡</strong>
-                <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
-              </>
-            )}
-            <br />
-            {t('screenRenderer.encounters')}{' '}
-            <strong style={{ color: config.encounter.tile?.groupTextColor }}>
-              {config.encounter.tile?.name}
-            </strong>
-            {!config.encounter.ownerName && guardedByNode}
-            {config.encounter.ownerName && (
-              <>
-                <br />
-                {t('screenRenderer.belongsTo')}{' '}
                 <PlayerLabel
-                  name={config.encounter.ownerName}
+                  name={config.encounter.ownerName!}
                   color={config.encounter.ownerColor}
                   bold
+                />{' '}
+                {t('screenRenderer.forcedWhom')}{' '}
+                <PlayerLabel
+                  name={config.encounter.playerName}
+                  color={config.encounter.playerColor}
+                  bold
                 />
-                {guardedByNode}
-                {!!config.encounter.fee && (
+                <br />
+                {t('screenRenderer.toPay')}{' '}
+                {config.encounter.goldBefore === undefined
+                  ? t('screenRenderer.forcedToPayAmount', { amount: config.encounter.fee ?? 0 })
+                  : t('screenRenderer.forcedToPayAmountFrom', {
+                      amount: config.encounter.fee ?? 0,
+                      before: config.encounter.goldBefore,
+                      after: config.encounter.gold ?? 0,
+                    })}
+                <br />
+                {t('screenRenderer.forThe')}{' '}
+                <strong style={{ color: config.encounter.tile?.groupTextColor }}>
+                  {config.encounter.tile?.name}
+                </strong>{' '}
+                {t('screenRenderer.guardedByShort', { amount: config.encounter.tile?.defence ?? 0 })}
+              </>
+            ) : (
+              <>
+                <PlayerLabel
+                  name={config.encounter.playerName}
+                  color={config.encounter.playerColor}
+                  bold
+                /><br/>
+                {config.encounter?.gold !== undefined && (
                   <>
-                    <br />
-                    {t('screenRenderer.forcedToPay')}
-                    <br />
-                    {config.encounter.goldBefore === undefined
-                      ? t('screenRenderer.forcedToPayAmount', { amount: config.encounter.fee })
-                      : t('screenRenderer.forcedToPayAmountFrom', {
-                          amount: config.encounter.fee,
-                          before: config.encounter.goldBefore,
-                          after: config.encounter.gold ?? 0,
-                        })}
+                    <strong>{config.encounter.gold}🟡</strong>
+                    <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
                   </>
                 )}
-                {config.encounter.canFight && config.encounter.tile && (
+                <br />
+                {t('screenRenderer.encounters')}{' '}
+                <strong style={{ color: config.encounter.tile?.groupTextColor }}>
+                  {config.encounter.tile?.name}
+                </strong>
+                {!config.encounter.ownerName && guardedByNode}
+                {config.encounter.ownerName && (
                   <>
                     <br />
-                    <br />
-                    {t('screenRenderer.riskOrPay')}
-                    <br />
-                    <span style={{ fontSize: '1rem', lineHeight: '1', color: 'wheat' ,opacity: 0.85 }}>
-                      {t('screenRenderer.razedSmokeCaveat')}
-                    </span>
+                    {t('screenRenderer.belongsTo')}{' '}
+                    <PlayerLabel
+                      name={config.encounter.ownerName}
+                      color={config.encounter.ownerColor}
+                      bold
+                    />
+                    {guardedByNode}
                   </>
                 )}
+              </>
+            )}
+            {config.encounter.ownerName && config.encounter.canFight && config.encounter.tile && (
+              <>
+                <br />
+                <br />
+                {t('screenRenderer.riskOrPay', {
+                  army: formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0),
+                })}
+                <br />
+                <span style={{ fontSize: '1rem', lineHeight: '1', color: 'wheat' ,opacity: 0.85 }}>
+                  {t('screenRenderer.razedSmokeCaveat')}
+                </span>
               </>
             )}
             {config.encounter.outcomeText && (

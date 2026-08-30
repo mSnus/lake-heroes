@@ -259,8 +259,12 @@
     "forcedToPay": "и вынужден заплатить ему",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
-    "riskOrPay": "Отомстить и сжечь дотла, или уйти с миром?",
-    "razedSmokeCaveat": "Разорённые земли дымятся и не принадлежат никому"
+    "riskOrPay": "Отомстить силами {army} и сжечь дотла?",
+    "razedSmokeCaveat": "Разорённые земли становятся заброшенными",
+    "forcedWhom": "вынудил",
+    "toPay": "заплатить",
+    "forThe": "за",
+    "guardedByShort": "под охраной {amount}🧍"
   },
   "newGameModal": {
     "heroes": "Герои:",
