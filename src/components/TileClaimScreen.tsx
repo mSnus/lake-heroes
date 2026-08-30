@@ -51,6 +51,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     return (
       <>
         {income.gold > 0 && <>+{income.gold}🟡 </>}
+        <br/>
         {income.units > 0 && <>+{income.units}🧍</>}
       </>
     );
@@ -173,7 +174,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         className={'upgrade-price-badge' + (clickable ? ' clickable' : '')}
         onClick={clickable ? () => handleUpgradeToLevel(level) : undefined}
       >
-        {lacksGold ? '❌' : '👛'}{' '}
+        {clickable ? '👛' : ' '}{' '}
         <span style={lacksGold ? { color: '#ff4444', fontWeight: 'bold' } : undefined}>
           {lacksGold && '🔻'}
           {gold}🟡
@@ -301,7 +302,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               }
             >
               <div className="big-icon-hint">
-                <span className="value">1🏯</span> 
+                <span className="value">1🏯</span>
               </div>
 
               <div className="big-icon-hint">

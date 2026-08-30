@@ -427,6 +427,11 @@
   margin-right: auto;
 }
 
+.screen-common .tile-card-sell {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
 .tile-card-sell-item {
   background: linear-gradient(1deg, #68613ec7, #41382894);
   text-shadow: #736c5eaf 0 0 6px;
