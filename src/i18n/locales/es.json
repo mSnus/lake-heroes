@@ -844,7 +844,7 @@
   },
   "caravanEncounter": {
     "bringingChains": "trayendo a {prize}🧍 encadenados",
-    "ofGoodsWorth": "de bienes por valor de {prize}🟡",
+    "ofGoodsWorth": "con bienes por valor de {prize}🟡",
     "message": "{playerSpan} <br />{gold}🟡 {army}<br /> se encuentra con una caravana<br /> custodiada por {guards}\n    <br /> {caravanDesc}<br /> ¿Atacarías?",
     "letThemPass": "✖️ Dejarles pasar..",
     "attack": "⚔️ ¡Atacar!"

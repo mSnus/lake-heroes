@@ -1,6 +1,10 @@
+:root {
+  --current-tile-width: 250px;
+}
+
 .current-tile-card-wrapper {
   position: absolute;
-  left: calc(50vw - (230px / 2));
+  left: calc(50vw - var(--current-tile-width) / 2);
   top: calc(50vw * 1vw / 1vh - 40px);
 
   display: flex;
@@ -30,8 +34,8 @@
   background: transparent;
   border-radius: 10px;
   padding: 0;
-  min-width: 230px;
-  width: 230px;
+  min-width: var(--current-tile-width);
+  width: var(--current-tile-width);
   text-align: left;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
 }
@@ -49,7 +53,7 @@
 }
 
 .current-tile.special {
-  height: 230px;
+  height: var(--current-tile-width);
   border-radius: 50%;
 }
 
@@ -68,7 +72,7 @@
 
 .current-tile.special .tile-card-bg {
   background-color: transparent;
-  height: 230px;
+  height: var(--current-tile-width);
   border-bottom: none !important;
   backdrop-filter: blur(8px);
   background-size: 80%;
@@ -497,7 +501,7 @@
 
 @media (min-width: 769px) {
   .current-tile-card-wrapper {
-    left: calc(50vh * var(--board-aspect-ratio) - (230px / 2));
+    left: calc(50vh * var(--board-aspect-ratio) - var(--current-tile-width) / 2);
     top: calc(40vh * var(--board-aspect-ratio) - 40px);
     scale: 0.4;
   }

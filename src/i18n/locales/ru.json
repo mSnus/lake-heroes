@@ -837,7 +837,7 @@
   },
   "caravanEncounter": {
     "bringingChains": "везущий {prize}🧍 в цепях",
-    "ofGoodsWorth": "товаров на {prize}🟡",
+    "ofGoodsWorth": "с товарами на {prize}🟡",
     "message": "{playerSpan} <br />{gold}🟡 {army}<br /> встречает караван<br /> под охраной {guards}\n    <br /> {caravanDesc}<br /> Атаковать?",
     "letThemPass": "✖️ Пусть проходят..",
     "attack": "⚔️ Атаковать!"
