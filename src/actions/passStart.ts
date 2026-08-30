@@ -22,11 +22,8 @@ export function passStart(
   if (!board) return '';
 
   const player = board.activePlayer;
-  const { totalGold, tileUnits, catchUpUnits, kingsMilitia, kingsRiders } = computeAnnualReward(
-    board,
-    player
-  );
-  const militiaGranted = isLanding ? tileUnits + catchUpUnits + kingsMilitia : 0;
+  const { totalGold, tileUnits, kingsMilitia, kingsRiders } = computeAnnualReward(board, player);
+  const militiaGranted = isLanding ? tileUnits + kingsMilitia : 0;
   const ridersGranted = isLanding ? kingsRiders : 0;
   const unitsGranted = militiaGranted + ridersGranted;
 

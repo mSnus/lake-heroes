@@ -1,6 +1,7 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
 import { ANNUAL_DEFAULT_UNITS } from './constants';
+import { getOverrides } from '../utils/overridesStore';
 import { remainingCapacity } from './army';
 import { getArtifactGoldBonus } from './artifacts';
 import { playerScore } from './score';
@@ -30,21 +31,9 @@ export interface KingsGraceReward {
   /** Share of the full grace this player actually got, by how far their
    * power score sits above the weakest player's -- see graceHandicap. */
   kingsHandicap: number;
-  /** Extra support for a player the leader has left unreachably far behind
-   * -- see computeCatchUp. Zero for everyone else. */
-  catchUpGold: number;
-  catchUpUnits: number;
   totalGold: number;
   totalUnits: number;
 }
-
-// The leader has to be more than this far ahead in power score (1 = 100%,
-// i.e. more than double) before the King steps in to level the field.
-const CATCH_UP_GAP_RATIO = 1;
-// Share of the leader's real estate handed to the poorest player, and to
-// the one just above them.
-const CATCH_UP_SHARE_POOREST = 1 / 3;
-const CATCH_UP_SHARE_RUNNER_UP = 1 / 4;
 
 // The grace is scaled by how far ahead of the WEAKEST player this one is,
 // on power score. Anchors are (score ratio, share of grace); between them
@@ -65,16 +54,11 @@ const GRACE_HANDICAP_ANCHORS: [ratio: number, share: number][] = [
  * then fitted back into army slots. */
 const GRACE_RIDER_IN_MILITIA = 2;
 
-/** Players sorted weakest-first, with each player's rank and power score. */
-function rankByScore(board: GameState): {
-  ranked: Player[];
-  rankOf: Map<number, number>;
-  scoreOf: Map<number, number>;
-} {
+/** Players sorted weakest-first, with each player's power score. */
+function rankByScore(board: GameState): { ranked: Player[]; scoreOf: Map<number, number> } {
   const scoreOf = new Map(board.players.map((p) => [p.id, playerScore(board, p)]));
   const ranked = [...board.players].sort((a, b) => scoreOf.get(a.id)! - scoreOf.get(b.id)!);
-  const rankOf = new Map(ranked.map((p, i) => [p.id, i]));
-  return { ranked, rankOf, scoreOf };
+  return { ranked, scoreOf };
 }
 
 /**
@@ -137,8 +121,7 @@ function graceBase(board: GameState): { gold: number; militia: number; riders: n
  *
  * A Knight keeps grace riders as riders, up to the room his free and
  * rider-held slots allow; whatever doesn't fit falls back to militia at
- * GRACE_RIDER_IN_MILITIA each. A grace that is all militia spills the other
- * way -- militia first, then the remainder converted up into riders. A
+ * GRACE_RIDER_IN_MILITIA each. Militia never convert up into riders -- a
  * player who is not a Knight cannot hold riders at all, so his whole grace
  * is converted down to militia.
  *
@@ -167,62 +150,7 @@ function fitGraceUnits(
   const asMilitia = player.isKnight
     ? graceMilitia
     : graceMilitia + graceRiders * GRACE_RIDER_IN_MILITIA;
-  const militia = Math.max(0, Math.min(asMilitia, militiaRoom(0)));
-  if (!player.isKnight) return { militia, riders: 0 };
-
-  const leftover = asMilitia - militia;
-  const riders = Math.max(
-    0,
-    Math.min(Math.floor(leftover / GRACE_RIDER_IN_MILITIA), riderRoom(militia))
-  );
-  return { militia, riders };
-}
-
-/**
- * Support for a player who has fallen so far behind the leader that normal
- * play can't realistically close the gap: only the two weakest qualify, and
- * only while the leader is more than CATCH_UP_GAP_RATIO ahead on power
- * score. The payout is a share of the LEADER's real estate -- the gold
- * they've sunk into their tiles and upgrades, and those tiles' base-level
- * defence as units -- so the richer the runaway leader, the harder the King
- * pushes back. Nothing is taken from the leader; this is minted.
- */
-function computeCatchUp(
-  board: GameState,
-  player: Player,
-  unitCapacity: number,
-  ranking: ReturnType<typeof rankByScore>
-): { gold: number; units: number } {
-  const none = { gold: 0, units: 0 };
-  if (board.players.length < 2) return none;
-
-  const { ranked, rankOf, scoreOf } = ranking;
-  const leader = ranked[ranked.length - 1];
-  if (leader.id === player.id) return none;
-
-  const rank = rankOf.get(player.id)!;
-  if (rank > 1) return none;
-
-  const playerTotal = scoreOf.get(player.id)!;
-  const leaderTotal = scoreOf.get(leader.id)!;
-  if (leaderTotal <= playerTotal) return none;
-  // A player with nothing at all is always unreachably behind -- the ratio
-  // would divide by zero.
-  if (playerTotal > 0 && (leaderTotal - playerTotal) / playerTotal <= CATCH_UP_GAP_RATIO) return none;
-
-  let realEstateGold = 0;
-  let realEstateUnits = 0;
-  for (const tile of board.tiles) {
-    if (!tile || tile.owner !== leader.id) continue;
-    realEstateGold += tile.currentPrice.gold;
-    realEstateUnits += tile.defences[1] ?? 0;
-  }
-
-  const share = rank === 0 ? CATCH_UP_SHARE_POOREST : CATCH_UP_SHARE_RUNNER_UP;
-  return {
-    gold: Math.round(realEstateGold * share),
-    units: Math.min(Math.round(realEstateUnits * share), Math.max(0, unitCapacity)),
-  };
+  return { militia: Math.max(0, Math.min(asMilitia, militiaRoom(0))), riders: 0 };
 }
 
 /**
@@ -246,10 +174,25 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
           ranking.scoreOf.get(ranking.ranked[0].id)!
         );
 
+  const ov = getOverrides();
   const base = graceBase(board);
-  const kingsGold = Math.round(base.gold * kingsHandicap);
-  const graceMilitia = Math.round(base.militia * kingsHandicap);
-  const graceRiders = Math.round(base.riders * kingsHandicap);
+  // The grace never drops below a fame-scaled base income, so a table whose
+  // averages are still tiny is not left with nothing.
+  const fameScale = Math.log10(Math.max(1, player.fame || 1));
+  const kingsGold = Math.round(
+    Math.max(base.gold, fameScale * ov.moneyPassStart) * kingsHandicap
+  );
+
+  // The base income is a floor on the grace's total worth, not on either
+  // tier -- when it wins, it keeps the averages' militia:rider mix (all
+  // militia when nobody fields riders yet).
+  const averageUnits = base.militia + base.riders * GRACE_RIDER_IN_MILITIA;
+  const graceUnits = Math.max(averageUnits, fameScale * ov.unitsPassStart);
+  const unitScale = averageUnits > 0 ? graceUnits / averageUnits : 0;
+  const graceMilitia = Math.round(
+    (averageUnits > 0 ? base.militia * unitScale : graceUnits) * kingsHandicap
+  );
+  const graceRiders = Math.round(base.riders * unitScale * kingsHandicap);
   const graceUnitsOffered = graceMilitia + graceRiders * GRACE_RIDER_IN_MILITIA;
 
   let tileGold = 0;
@@ -277,18 +220,11 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   const grace = fitGraceUnits(player, graceMilitia, graceRiders, tileUnits);
   const kingsUnits = grace.militia + grace.riders;
 
-  // Whatever slot room is left once this payout's other units land -- the
-  // catch-up share is capped to it rather than being silently dropped by
-  // Player.gainMilitia later.
-  const unitCapacity =
-    player.remainingCapacity('militia') - (tileUnits + grace.militia) - grace.riders;
-  const catchUp = computeCatchUp(board, player, unitCapacity, ranking);
-
   // Rounded down to a clean 50, same as the per-turn tile income (see
   // game/income.ts's playerTurnIncome) -- every consumer reads this field
   // rather than re-summing the parts, so the real payout and every preview
   // stay in sync (see CurrentPlayer.tsx/CurrentPlayerCard.tsx).
-  const totalGold = Math.floor((tileGold + kingsGold + arifactGold + catchUp.gold) / 50) * 50;
+  const totalGold = Math.floor((tileGold + kingsGold + arifactGold) / 50) * 50;
 
   return {
     tileGold,
@@ -303,9 +239,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     graceUnitsOffered,
     arifactGold,
     kingsHandicap,
-    catchUpGold: catchUp.gold,
-    catchUpUnits: catchUp.units,
     totalGold,
-    totalUnits: tileUnits + kingsUnits + catchUp.units,
+    totalUnits: tileUnits + kingsUnits,
   };
 }
