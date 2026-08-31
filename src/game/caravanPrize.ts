@@ -20,6 +20,15 @@ export const CARAVAN_SLAVES_CHANCE = 0.35;
 export const CARAVAN_HORSES_CHANCE = 0.2;
 export const CARAVAN_HORSES_MAX = 12;
 
+/** Slaves carried, as a fraction of the escort's own headcount. Kept in
+ * rough parity with what the gold branch buys (a caravan's gold runs to
+ * 1-3x 100 per escort head, i.e. a fifth to two-fifths of that many
+ * militia at UNIT_PRICE) so neither kind of cargo dominates the other.
+ * Note the freed slaves still have to fit the victor's army slots -- a
+ * full army absorbs only what it has room for, and the rest are lost. */
+export const CARAVAN_SLAVES_MIN_SHARE = 0.4;
+export const CARAVAN_SLAVES_MAX_SHARE = 0.8;
+
 /** Chance that some of a beaten escort throws in with the victor, and the
  * most of each tier that ever does. */
 export const CARAVAN_RECRUIT_CHANCE = 0.25;
@@ -42,7 +51,16 @@ export function rollCaravanPrize(prizeUnits: number, forKnight: boolean): Carava
 
   return {
     gold: hasGold ? 100 * prizeUnits * (Math.floor(Math.random() * 2.3) + 1) : 0,
-    slaves: hasSlaves ? Math.max(1, Math.ceil(prizeUnits * (1.3 + Math.random() * 0.3))) : 0,
+    slaves: hasSlaves
+      ? Math.max(
+          1,
+          Math.ceil(
+            prizeUnits *
+              (CARAVAN_SLAVES_MIN_SHARE +
+                Math.random() * (CARAVAN_SLAVES_MAX_SHARE - CARAVAN_SLAVES_MIN_SHARE))
+          )
+        )
+      : 0,
     horses: hasHorses ? 1 + Math.floor(Math.random() * CARAVAN_HORSES_MAX) : 0,
   };
 }
