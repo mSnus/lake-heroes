@@ -216,6 +216,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
           <select value={forcedEnc} onChange={(e) => setForcedEnc(e.target.value as ForcedEncounter)}>
             <option value="caravan-gold">{t('cheatScreen.encCaravanGold')}</option>
             <option value="caravan-slaves">{t('cheatScreen.encCaravanSlaves')}</option>
+            <option value="caravan-horses">{t('cheatScreen.encCaravanHorses')}</option>
             <option value="rogue">{t('cheatScreen.encRogue')}</option>
             <option value="dragon">{t('cheatScreen.encDragon')}</option>
           </select>

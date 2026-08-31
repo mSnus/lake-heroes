@@ -5,6 +5,7 @@ import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { formatArmy, CARAVAN_EMOJI } from '../utils/formatArmy';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldAttackCaravan } from '../ai/decisions';
+import { rollCaravanPrize, CaravanPrize } from '../game/caravanPrize';
 import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
@@ -15,9 +16,9 @@ export function checkCaravanEncounter(
   board: GameState,
   updateGameState: (board: GameState) => void,
   onContinue: () => void,
-  // Cheat: force a caravan, choosing its prize kind and skipping the usual
-  // odds/eligibility gates.
-  force?: 'gold' | 'slaves'
+  // Cheat: force a caravan, guaranteeing one prize kind is present and
+  // skipping the usual odds/eligibility gates.
+  force?: 'gold' | 'slaves' | 'horses'
 ): boolean {
   const player = board.activePlayer;
   const ENCOUNTER_CHANCE = 1 / 12;
@@ -66,11 +67,16 @@ export function checkCaravanEncounter(
     Math.floor(rawMilitia * CARAVAN_GUARD_RATIO)
   );
   const defendingUnits = defendingMilitia + defendingRiders;
-  const isSlaves = force ? force === 'slaves' : Math.random() < 0.4;
-  
-  const prize = isSlaves
-    ? Math.max(1, Math.ceil(prizeUnits * (1.3 + Math.random() * 0.3)))
-    : 100 * prizeUnits * (Math.floor(Math.random() * 2.3) + 1);
+  // A caravan's cargo is a mix -- gold, slaves and (for a Knight) horses,
+  // each rolled on its own odds. The cheat guarantees its named kind is
+  // present without suppressing the others.
+  const prize: CaravanPrize = rollCaravanPrize(prizeUnits, player.isKnight);
+  if (force) {
+    const forced = rollCaravanPrize(prizeUnits, true);
+    if (force === 'gold' && prize.gold <= 0) prize.gold = forced.gold || 100 * prizeUnits;
+    if (force === 'slaves' && prize.slaves <= 0) prize.slaves = forced.slaves || 1;
+    if (force === 'horses' && prize.horses <= 0) prize.horses = forced.horses || 1;
+  }
 
   const startBattle = () => {
     showBattleScreen(
@@ -82,7 +88,6 @@ export function checkCaravanEncounter(
         caravanDefence: defendingUnits,
         caravanDefenceRiders: defendingRiders,
         caravanPrize: prize,
-        caravanSlaves: isSlaves,
         onClose: onContinue,
       },
       {
@@ -102,9 +107,7 @@ export function checkCaravanEncounter(
     return true;
   }
 
-  const caravanDesc = isSlaves
-    ? t('caravanEncounter.bringingChains', { prize })
-    : t('caravanEncounter.ofGoodsWorth', { prize });
+  const caravanDesc = describeCaravanCargo(prize);
 
   showScreenWithFog({
     screenType: 'caravan',
@@ -134,4 +137,14 @@ export function checkCaravanEncounter(
   });
 
   return true;
+}
+
+/** The cargo line on the encounter screen -- zero components are left out
+ * entirely, so a gold-only caravan reads exactly as it always did. */
+export function describeCaravanCargo(prize: CaravanPrize): string {
+  const parts: string[] = [];
+  if (prize.gold > 0) parts.push(t('caravanEncounter.ofGoodsWorth', { prize: prize.gold }));
+  if (prize.slaves > 0) parts.push(t('caravanEncounter.bringingChains', { prize: prize.slaves }));
+  if (prize.horses > 0) parts.push(t('caravanEncounter.drivingHorses', { prize: prize.horses }));
+  return parts.join(t('caravanEncounter.cargoJoin'));
 }

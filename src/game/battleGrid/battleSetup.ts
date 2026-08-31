@@ -1,4 +1,5 @@
 import { Player } from '../Player';
+import { CaravanPrize } from '../caravanPrize';
 import { Tile } from '../Tile';
 import { DRAGON_UNITS } from '../constants';
 import { getArtifactRollBonus } from '../artifacts';
@@ -23,8 +24,7 @@ export interface BattleSetup {
   defence: number;
   defender: Player | undefined;
   tile: Tile | undefined;
-  caravanPrize: number | undefined;
-  caravanSlaves: boolean;
+  caravanPrize: CaravanPrize | undefined;
   battlefieldUnits: number | undefined;
   ambushAttackerUnits: number | undefined;
   /** Mounted share of the NPC force -- part of the total above, not extra. */
@@ -69,8 +69,7 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   let defence: number;
   let defender: Player | undefined;
   let tile: Tile | undefined;
-  let caravanPrize: number | undefined;
-  let caravanSlaves = false;
+  let caravanPrize: CaravanPrize | undefined;
   let battlefieldUnits: number | undefined;
   let ambushAttackerUnits: number | undefined;
   let caravanDefenceRiders = 0;
@@ -82,7 +81,6 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     defence = props.caravanDefence;
     caravanDefenceRiders = Math.min(props.caravanDefenceRiders ?? 0, defence);
     caravanPrize = props.caravanPrize;
-    caravanSlaves = props.caravanSlaves ?? false;
   } else if (props.mode === 'dragon') {
     defence = DRAGON_UNITS;
   } else if (props.mode === 'player') {
@@ -178,7 +176,6 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     defender,
     tile,
     caravanPrize,
-    caravanSlaves,
     battlefieldUnits,
     ambushAttackerUnits,
     caravanDefenceRiders,

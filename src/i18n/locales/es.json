@@ -659,18 +659,21 @@
   "resolveCaravanBattle": {
     "whileUnitsLostGame": " mientras se perdían {units}🧍",
     "whileUnitsLostScreen": " mientras se perdían {units}🧍 luchando por ella",
-    "freedGameMessage": "¡{attackerName} liberó a {prize}🧍!",
-    "freedMessage": "¡{prize}🧍 fueron liberados y se unen a tu ejército!",
-    "pillagedGameMessage": "¡{attackerName} asaltó la caravana y saqueó {prize}🟡!",
-    "pillagedMessage": "Saqueados {prize}🟡",
     "losingSuffix": ", perdiendo {units}🧍",
-    "freedOnlyGameMessage": "{attackerName} solo liberó a {prize}🧍 de la caravana{lossStr}",
-    "freedOnlyMessage": "¡Solo se liberaron {prize}🧍{lossStr}!",
-    "pillagedOnlyGameMessage": "{attackerName} solo saqueó {prize}🟡{lossStr}",
-    "pillagedOnlyMessage": "Los guardias de la caravana resistieron, solo se saquearon {prize}🟡{lossStr}",
     "failedGameMessage": "¡{attackerName} no logró asaltar la caravana!",
     "gotAway": "¡La caravana escapó!",
-    "caravanGuards": "Guardias de la Caravana"
+    "caravanGuards": "Guardias de la Caravana",
+    "haulGold": "{gold}🟡",
+    "haulSlaves": "{units}🧍 liberados",
+    "haulHorses": "{units}🧍 montados como 🐎",
+    "haulRecruits": "{units} guardias se te unieron",
+    "haulJoin": ", ",
+    "haulNothing": "nada",
+    "raidedGameMessage": "¡{attackerName} asaltó la caravana y se llevó {haul}!",
+    "raidedMessage": "Caravana asaltada: {haul}",
+    "raidedOnlyGameMessage": "{attackerName} solo se llevó {haul}{lossStr}",
+    "raidedOnlyMessage": "Los guardias resistieron, solo se llevó {haul}{lossStr}",
+    "guardsJoined": "¡{units} guardias de la caravana se unen a {playerName}!"
   },
   "resolveDragonBattle": {
     "slaysGameMessage": "¡{attackerName} mata al Dragón! 🐉 ¡VICTORIA!",
@@ -848,7 +851,9 @@
     "ofGoodsWorth": "con bienes por valor de {prize}🟡",
     "message": "{playerSpan} <br />{gold}🟡 {army}<br /> se encuentra con una caravana<br /> custodiada por {guards}\n    <br /> {caravanDesc}<br /> ¿Atacarías?",
     "letThemPass": "✖️ Dejarles pasar..",
-    "attack": "⚔️ ¡Atacar!"
+    "attack": "⚔️ ¡Atacar!",
+    "drivingHorses": "arreando {prize}🐎",
+    "cargoJoin": ", "
   },
   "gameStart": {
     "message": "¡Nueva partida iniciada! Buena suerte a todos los jugadores."
@@ -909,7 +914,8 @@
     "encDragon": "Ataque de dragón",
     "forcedEncounterSet": "Encuentro forzado — se activará en la próxima tirada.",
     "forceRoll": "Forzar próxima tirada",
-    "forcedRollSet": "Próxima tirada de dado forzada a {value}."
+    "forcedRollSet": "Próxima tirada de dado forzada a {value}.",
+    "encCaravanHorses": "🐫 Caravana (caballos)"
   },
   "overridesScreen": {
     "title": "Ajustes",

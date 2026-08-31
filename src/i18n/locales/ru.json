@@ -652,18 +652,21 @@
   "resolveCaravanBattle": {
     "whileUnitsLostGame": ", потеряв {units}🧍",
     "whileUnitsLostScreen": ", потеряв {units}🧍 в бою за него",
-    "freedGameMessage": "{attackerName} освобождает {prize}🧍!",
-    "freedMessage": "{prize}🧍 освобождены и присоединяются к вашей армии!",
-    "pillagedGameMessage": "{attackerName} совершает набег на караван и грабит {prize}🟡!",
-    "pillagedMessage": "Награблено {prize}🟡",
     "losingSuffix": ", потеряв {units}🧍",
-    "freedOnlyGameMessage": "{attackerName} освобождает лишь {prize}🧍 из каравана{lossStr}",
-    "freedOnlyMessage": "Освобождено лишь {prize}🧍{lossStr}!",
-    "pillagedOnlyGameMessage": "{attackerName} грабит лишь {prize}🟡{lossStr}",
-    "pillagedOnlyMessage": "Стража каравана устояла, награблено лишь {prize}🟡{lossStr}",
     "failedGameMessage": "{attackerName} не смог совершить набег на караван!",
     "gotAway": "Каравану удалось скрыться!",
-    "caravanGuards": "Стража каравана"
+    "caravanGuards": "Стража каравана",
+    "haulGold": "{gold}🟡",
+    "haulSlaves": "{units}🧍 освобождено",
+    "haulHorses": "{units}🧍 пересели на 🐎",
+    "haulRecruits": "{units} охранников примкнули к вам",
+    "haulJoin": ", ",
+    "haulNothing": "ничего",
+    "raidedGameMessage": "{attackerName} разграбил караван и забрал {haul}!",
+    "raidedMessage": "Караван разграблен: {haul}",
+    "raidedOnlyGameMessage": "{attackerName} унёс лишь {haul}{lossStr}",
+    "raidedOnlyMessage": "Охрана каравана выстояла, досталось лишь {haul}{lossStr}",
+    "guardsJoined": "К {playerName} присоединились {units} охранников каравана!"
   },
   "resolveDragonBattle": {
     "slaysGameMessage": "{attackerName} убивает Дракона! 🐉 ПОБЕДА!",
@@ -841,7 +844,9 @@
     "ofGoodsWorth": "с товарами на {prize}🟡",
     "message": "{playerSpan} <br />{gold}🟡 {army}<br /> встречает караван<br /> под охраной {guards}\n    <br /> {caravanDesc}<br /> Атаковать?",
     "letThemPass": "✖️ Пусть проходят..",
-    "attack": "⚔️ Атаковать!"
+    "attack": "⚔️ Атаковать!",
+    "drivingHorses": "с табуном в {prize}🐎",
+    "cargoJoin": ", "
   },
   "gameStart": {
     "message": "Новая игра началась! Удачи всем игрокам."
@@ -902,7 +907,8 @@
     "encDragon": "Атака дракона",
     "forcedEncounterSet": "Событие форсировано — произойдёт при следующем броске.",
     "forceRoll": "Форсировать бросок кубика",
-    "forcedRollSet": "Следующий бросок кубика форсирован на {value}."
+    "forcedRollSet": "Следующий бросок кубика форсирован на {value}.",
+    "encCaravanHorses": "🐫 Караван (кони)"
   },
   "overridesScreen": {
     "title": "Параметры",

@@ -32,14 +32,19 @@ export function dispatchBattleResolution(
   defKilled: number
 ): BattleResolution {
   const { attacker, gameState } = props;
-  const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, defender, tile, caravanPrize, caravanSlaves, defence, battlefieldUnits, ambushAttackerUnits } = setup;
+  const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, defender, tile, caravanPrize, caravanDefenceRiders, defence, battlefieldUnits, ambushAttackerUnits } = setup;
 
   if (isDragon) return resolveDragonBattle(gameState, attacker, atkKilled, battleOutcome);
   if (isCaravan)
     return resolveCaravanBattle(
       gameState,
       attacker,
-      { prize: caravanPrize!, slaves: caravanSlaves, defence },
+      {
+        prize: caravanPrize!,
+        defence,
+        guardMilitia: defence - caravanDefenceRiders,
+        guardRiders: caravanDefenceRiders,
+      },
       atkKilled,
       battleOutcome
     );

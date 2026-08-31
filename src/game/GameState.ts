@@ -1,7 +1,7 @@
 export type TurnPhase = 'before-move' | 'rolling' | 'moving' | 'after-move';
 
 /** Cheat-forced random encounter (see GameState.forcedEncounter). */
-export type ForcedEncounter = 'dragon' | 'caravan-gold' | 'caravan-slaves' | 'rogue';
+export type ForcedEncounter = 'dragon' | 'caravan-gold' | 'caravan-slaves' | 'caravan-horses' | 'rogue';
 
 import { Player } from './Player';
 import { Tile } from './Tile';

@@ -13,6 +13,7 @@ import { PlayerCard } from './PlayerCard';
 import { DecoratedButton } from './DecoratedButton';
 import { BattlefieldGrid } from './BattlefieldGrid';
 import { CARAVAN_EMOJI, HORDE_EMOJI, toSideIcon } from '../utils/formatArmy';
+import { CaravanPrize } from '../game/caravanPrize';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { useT } from '../i18n';
 import { getArtifactRollBonusBreakdown } from '../game/artifacts';
@@ -65,8 +66,7 @@ export type BattleScreenProps =
       /** How many of caravanDefence ride camels rather than march. Absent on
        * screens saved before caravans had riders, which reads as none. */
       caravanDefenceRiders?: number;
-      caravanPrize: number;
-      caravanSlaves?: boolean;
+      caravanPrize: CaravanPrize;
       onClose: () => void;
       defender?: never;
       tile?: never;
@@ -94,7 +94,6 @@ export type BattleScreenProps =
       caravanDefence?: never;
       caravanDefenceRiders?: never;
       caravanPrize?: never;
-      caravanSlaves?: never;
       /** Set only by the battle simulator's "Run battle" button — fights this
        * one-off test battle with custom hp/dmg instead of the live
        * overridesStore values (see BattleSimScreen.tsx). */
@@ -138,7 +137,6 @@ export type BattleScreenProps =
       caravanDefence?: never;
       caravanDefenceRiders?: never;
       caravanPrize?: never;
-      caravanSlaves?: never;
       battlefieldUnits?: never;
       statOverrides?: never;
     }
@@ -158,7 +156,6 @@ export type BattleScreenProps =
       caravanDefence?: never;
       caravanDefenceRiders?: never;
       caravanPrize?: never;
-      caravanSlaves?: never;
       battlefieldUnits?: never;
       ambushAttackerUnits?: never;
       ambushAttackerRiders?: never;
@@ -188,7 +185,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defender,
     tile,
     caravanPrize,
-    caravanSlaves,
     battlefieldUnits,
     ambushAttackerUnits,
     isZombieAmbush,

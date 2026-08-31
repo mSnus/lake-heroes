@@ -1,3 +1,4 @@
+import type { CaravanPrize } from '../game/caravanPrize';
 import { useSyncExternalStore } from 'react';
 import React from 'react';
 import { setEndTurn } from './endTurnStore';
@@ -21,7 +22,7 @@ export interface SavedScreen {
   title?: string;
   caravanDefence?: number;
   caravanDefenceRiders?: number;
-  caravanPrize?: number;
+  caravanPrize?: CaravanPrize;
   // Battle-resume identifiers only — enough to reconstruct who's fighting
   // whom and over what, not the fight's in-progress state. A restored
   // battle always restarts fresh from turn 0.
@@ -62,7 +63,7 @@ export interface ScreenConfig {
   htmlMessage?: string;
   caravanDefence?: number;
   caravanDefenceRiders?: number;
-  caravanPrize?: number;
+  caravanPrize?: CaravanPrize;
   buttons?: ScreenButton[];
   sellMode?: boolean;
   sellHeader?: string;

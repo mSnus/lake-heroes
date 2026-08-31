@@ -660,18 +660,21 @@
   "resolveCaravanBattle": {
     "whileUnitsLostGame": " while {units}🧍 were lost",
     "whileUnitsLostScreen": " while {units}🧍 were lost fighting for it",
-    "freedGameMessage": "{attackerName} freed {prize}🧍!",
-    "freedMessage": "{prize}🧍 were freed and join your army!",
-    "pillagedGameMessage": "{attackerName} raided the caravan and pillaged {prize}🟡!",
-    "pillagedMessage": "Pillaged {prize}🟡",
     "losingSuffix": ", losing {units}🧍",
-    "freedOnlyGameMessage": "{attackerName} freed only {prize}🧍 from the caravan{lossStr}",
-    "freedOnlyMessage": "Freed only {prize}🧍{lossStr}!",
-    "pillagedOnlyGameMessage": "{attackerName} pillaged only {prize}🟡{lossStr}",
-    "pillagedOnlyMessage": "Caravan guards held, pillaged only {prize}🟡{lossStr}",
     "failedGameMessage": "{attackerName} failed to raid the caravan!",
     "gotAway": "The caravan got away!",
-    "caravanGuards": "Caravan Guards"
+    "caravanGuards": "Caravan Guards",
+    "haulGold": "{gold}🟡",
+    "haulSlaves": "{units}🧍 freed",
+    "haulHorses": "{units}🧍 mounted as 🐎",
+    "haulRecruits": "{units} guards joined you",
+    "haulJoin": ", ",
+    "haulNothing": "nothing",
+    "raidedGameMessage": "{attackerName} raided the caravan and took {haul}!",
+    "raidedMessage": "Raided the caravan: {haul}",
+    "raidedOnlyGameMessage": "{attackerName} came away with only {haul}{lossStr}",
+    "raidedOnlyMessage": "Caravan guards held, came away with only {haul}{lossStr}",
+    "guardsJoined": "{playerName} is joined by {units} caravan guards!"
   },
   "resolveDragonBattle": {
     "slaysGameMessage": "{attackerName} slays the Dragon! 🐉 VICTORY!",
@@ -849,7 +852,9 @@
     "ofGoodsWorth": "with goods worth {prize}🟡",
     "message": "{playerSpan} <br />{gold}🟡 {army}<br /> encounters a caravan<br /> guarded by {guards}\n    <br /> {caravanDesc}<br /> Would you attack?",
     "letThemPass": "✖️ Let 'em pass..",
-    "attack": "⚔️ Attack!"
+    "attack": "⚔️ Attack!",
+    "drivingHorses": "driving {prize}🐎",
+    "cargoJoin": ", "
   },
   "gameStart": {
     "message": "New game started! Good luck to all players."
@@ -910,7 +915,8 @@
     "encDragon": "Dragon attack",
     "forcedEncounterSet": "Encounter forced — it will fire on the next roll.",
     "forceRoll": "Force next roll",
-    "forcedRollSet": "Next dice roll forced to {value}."
+    "forcedRollSet": "Next dice roll forced to {value}.",
+    "encCaravanHorses": "🐫 Caravan (horses)"
   },
   "overridesScreen": {
     "title": "Overrides",

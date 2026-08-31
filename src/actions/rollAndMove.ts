@@ -232,6 +232,8 @@ export async function rollAndMove(
     if (checkCaravanEncounter(board, updateGameState, continueFn, 'gold')) return;
   } else if (forced === 'caravan-slaves') {
     if (checkCaravanEncounter(board, updateGameState, continueFn, 'slaves')) return;
+  } else if (forced === 'caravan-horses') {
+    if (checkCaravanEncounter(board, updateGameState, continueFn, 'horses')) return;
   } else if (forced === 'rogue') {
     if (checkRogueAttackEncounter(board, updateGameState, continueFn, true)) return;
   }
