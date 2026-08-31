@@ -1,6 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
+import { razeTile } from '../../game/raze';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome } from './common';
 import { t } from '../../i18n';
@@ -35,17 +36,7 @@ export function resolveRogueAttack(
   let lostBg = false;
 
   if (outcome === 'attacker') {
-    const tileIdx = board.tiles.indexOf(tile);
-    board.players.forEach((p) => {
-      p.ownedTiles = p.ownedTiles.filter((i) => i !== tileIdx);
-    });
-    tile.owner = null;
-    tile._level = 1;
-    tile.isYielded = false;
-    tile.garrison = tile.baseGarrison;
-    tile.unclaimedSinceTurn = board.turns;
-    tile.razedInRound = board.round;
-    tile.abandoned = true;
+    razeTile(board, tile);
     changeFame(player, -1);
 
     message = t('rogueAttack.razed', { tileName });

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { TileCard } from './TileCard';
 import { Tile } from '../game/Tile';
-import { PlayerLabel } from './PlayerLabel';
 import { gameEvent } from '../utils/events';
 
 interface CurrentTileProps {
@@ -89,13 +88,6 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
 
   return (
     <div className={shownTile ? `current-tile-card-wrapper ${ownerPlayer ? ' owned' : ''}` : 'current-tile-card-wrapper-empty'}>
-      {ownerPlayer && ownerColor && (
-        <div className="tile-card-owner-info">
-          <div className="tile-owner">
-            🚩<PlayerLabel player={ownerPlayer} />
-          </div>
-        </div>
-      )}
       <div
         className={"current-tile" + (shownTile?.isOwnable ? ' ownable' : ' special')}
         style={

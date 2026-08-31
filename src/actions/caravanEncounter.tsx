@@ -8,6 +8,9 @@ import { shouldAttackCaravan } from '../ai/decisions';
 import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
+/** Share of the escort its cargo is worth that actually stands and fights. */
+const CARAVAN_GUARD_RATIO = 0.9;
+
 export function checkCaravanEncounter(
   board: GameState,
   updateGameState: (board: GameState) => void,
@@ -43,21 +46,31 @@ export function checkCaravanEncounter(
   player.caravanEncounteredLastTurn = true;
   updateGameState(board);
 
-  // The guard force mirrors the player's own army tier by tier -- the same
+  // The escort mirrors the player's own army tier by tier -- the same
   // 70-100% roll the total used to get, drawn once per tier so a mounted
-  // player meets mounted guards.
+  // player meets mounted guards. The cargo is priced off that full escort,
+  // but only CARAVAN_GUARD_RATIO of it actually turns out to fight.
   const scale = () => 0.7 + Math.random() * 0.3;
-  const defendingRiders = Math.floor(scale() * player.riders);
+  const rawRiders = scale() * player.riders;
+  const rawMilitia = scale() * player.militia;
+
+  const escortRiders = Math.floor(rawRiders);
+  const escortMilitia = Math.max(escortRiders > 0 ? 0 : 1, Math.floor(rawMilitia));
+  const prizeUnits = escortMilitia + escortRiders;
+
+  // Rounded off the raw figure, not off the escort -- flooring twice would
+  // compound into a bigger cut than CARAVAN_GUARD_RATIO asks for.
+  const defendingRiders = Math.floor(rawRiders * CARAVAN_GUARD_RATIO);
   const defendingMilitia = Math.max(
     defendingRiders > 0 ? 0 : 1,
-    Math.floor(scale() * player.militia)
+    Math.floor(rawMilitia * CARAVAN_GUARD_RATIO)
   );
   const defendingUnits = defendingMilitia + defendingRiders;
   const isSlaves = force ? force === 'slaves' : Math.random() < 0.4;
   
   const prize = isSlaves
-    ? Math.max(1, Math.ceil(defendingUnits * (1.3 + Math.random() * 0.3)))
-    : 100 * defendingUnits * (Math.floor(Math.random() * 2.3) + 1);
+    ? Math.max(1, Math.ceil(prizeUnits * (1.3 + Math.random() * 0.3)))
+    : 100 * prizeUnits * (Math.floor(Math.random() * 2.3) + 1);
 
   const startBattle = () => {
     showBattleScreen(

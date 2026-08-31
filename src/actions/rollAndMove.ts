@@ -13,8 +13,9 @@ import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
 import { say } from '../utils/say';
-import { advanceBoardPosition, nextBoardPosition } from '../game/boardPath';
-import { getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
+import { advanceBoardPosition, nextBoardPosition, stepsToFork } from '../game/boardPath';
+import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
+import { FORK_START_INDEX, FORK_ROLL_RANGE } from '../game/constants';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
@@ -41,11 +42,17 @@ export async function rollAndMove(
   const roll = preRolledValue !== undefined ? preRolledValue : rollDice();
   const player = board.activePlayer;
 
-  // Locked in once, right before this roll's movement is simulated/applied
-  // -- the arrow picker on the fork's start tile (BoardCanvas.tsx) hides
-  // itself the moment a roll begins, so nothing later here should re-read a
-  // choice that might already be stale for some future visit to the fork.
-  const forkChoice = getForkChoice();
+  // Standing ON the fork tile, the branch is the player's (or bot's) own
+  // pick -- the arrow picker in BoardCanvas.tsx, read once here since it
+  // hides itself the moment a roll begins. Approaching it, nobody chooses:
+  // the branch is a hidden coin flip, re-rolled every turn the fork is
+  // still within a single die's reach.
+  const forkChoice: ForkChoice =
+    player.position === FORK_START_INDEX
+      ? getForkChoice()
+      : stepsToFork(player.position) <= FORK_ROLL_RANGE && Math.random() < 0.5
+        ? 'long'
+        : 'short';
   resetForkChoice();
 
   const { finalIndex: nextTileIdx, crossedStart: willCrossStart } = advanceBoardPosition(
@@ -93,13 +100,7 @@ export async function rollAndMove(
       player.position = nextPos;
       updateGameState(board);
 
-      if (willWrap) {
-        // The King's Grace fame-units grant needs the move to actually END
-        // here, not just wrap through King's Castle on the way to a later
-        // tile -- gold and every other unit source still pay out either way
-        // (see passStart's isLanding param).
-        passStart(board, updateGameState, step === roll);
-      }
+      if (willWrap) passStart(board, updateGameState);
 
       // Only the tile the move actually ENDS on counts as "landed on" --
       // tiles merely stepped over mid-roll (including a King's Castle

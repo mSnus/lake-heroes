@@ -32,7 +32,7 @@ export function dispatchBattleResolution(
   defKilled: number
 ): BattleResolution {
   const { attacker, gameState } = props;
-  const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, defender, tile, caravanPrize, caravanSlaves, defence, battlefieldUnits, ambushAttackerUnits, isZombieAmbush } = setup;
+  const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, defender, tile, caravanPrize, caravanSlaves, defence, battlefieldUnits, ambushAttackerUnits } = setup;
 
   if (isDragon) return resolveDragonBattle(gameState, attacker, atkKilled, battleOutcome);
   if (isCaravan)
@@ -55,7 +55,7 @@ export function dispatchBattleResolution(
     // BattleOutcome 'defender' means the player wins the ambush.
     const ambushOutcome: AmbushOutcome =
       battleOutcome === 'defender' ? 'win' : battleOutcome === 'attacker' ? 'defeat' : 'tie';
-    const res = resolveAmbush(gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome, isZombieAmbush);
+    const res = resolveAmbush(gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome);
     return {
       outcome: battleOutcome,
       message: res.message,

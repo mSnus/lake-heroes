@@ -414,8 +414,8 @@
     "spriteImage": "assets/sprites/bows.png",
     "isOwnable": true,
     "bonusType": "units",
-    "requiredFame": 2,
-    "garrison": 10,
+    "requiredFame": 3,
+    "garrison": 24,
     "prices": {
       "1": {
         "gold": 8,
@@ -454,8 +454,8 @@
     "spriteImage": "assets/sprites/swords.png",
     "isOwnable": true,
     "bonusType": "units",
-    "requiredFame": 2,
-    "garrison": 4,
+    "requiredFame": 3,
+    "garrison": 24,
     "prices": {
       "1": {
         "gold": 12,
@@ -494,8 +494,8 @@
     "spriteImage": "assets/sprites/archer_tower.png",
     "isOwnable": true,
     "bonusType": "units",
-    "requiredFame": 3,
-    "garrison": 10,
+    "requiredFame": 6,
+    "garrison": 32,
     "prices": {
       "1": {
         "gold": 12,
@@ -534,8 +534,8 @@
     "spriteImage": "assets/sprites/arquebus_tower.png",
     "isOwnable": true,
     "bonusType": "units",
-    "requiredFame": 5,
-    "garrison": 10,
+    "requiredFame": 6,
+    "garrison": 32,
     "prices": {
       "1": {
         "gold": 16,
@@ -574,8 +574,8 @@
     "spriteImage": "assets/sprites/cannon_tower.png",
     "isOwnable": true,
     "bonusType": "units",
-    "requiredFame": 4,
-    "garrison": 10,
+    "requiredFame": 6,
+    "garrison": 32,
     "prices": {
       "1": {
         "gold": 20,

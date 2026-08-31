@@ -1,6 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
+import { razeTile } from '../../game/raze';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
@@ -77,22 +78,18 @@ export function resolveTileBattle(
 
       victoryBg = true;
     } else {
-      board.players.forEach((p) => {
-        p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-      });
-      tile.owner = null;
-      tile._level = 1;
-      tile.isYielded = false;
-      tile.garrison = tile.baseGarrison;
-      tile.unclaimedSinceTurn = board.turns;
-      tile.razedInRound = board.round;
-      tile.abandoned = true;
+      // Read before the raze resets the level -- what the owner sank into
+      // the tile is what there is to loot.
+      const plunder = Math.floor(tile.currentPrice.gold / 2 / 50) * 50;
+      razeTile(board, tile);
+      attacker.gold += plunder;
 
       changeFame(attacker, 1);
       if (defender) changeFame(defender, -1);
 
-      setGameMessage(board, t('resolveTileBattle.razedGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr }));
-      message = t('resolveTileBattle.razes', { attackerName: attacker.name, tileName: tile.name, lossStr });
+      const plunderStr = plunder > 0 ? t('resolveTileBattle.plunderSuffix', { gold: plunder }) : '';
+      setGameMessage(board, t('resolveTileBattle.razedGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr, plunderStr }));
+      message = t('resolveTileBattle.razes', { attackerName: attacker.name, tileName: tile.name, lossStr, plunderStr });
       victoryBg = true;
     }
   } else if (outcome === 'defender') {

@@ -8,24 +8,18 @@ import { recordSimCircleSnapshot } from '../utils/simLogStore';
 import { formatPlayerCell } from '../utils/formatPlayerCell';
 import { t } from '../i18n';
 
-/**
- * @param isLanding Whether this player's move actually ENDS on King's
- * Castle, rather than just wrapping past it partway through a longer roll.
- * Gold still pays out on every pass, same as always; every King's Grace
- * unit reward (tile trickle, catch-up support, and the direct per-fame
- * grant) requires landing exactly on the tile.
- */
+/** Gold and every King's Grace unit reward pay out on every crossing of
+ * King's Castle -- passing through mid-roll counts the same as landing. */
 export function passStart(
   board: GameState | null,
-  updateGameState: (board: GameState) => void,
-  isLanding: boolean
+  updateGameState: (board: GameState) => void
 ): string {
   if (!board) return '';
 
   const player = board.activePlayer;
   const { totalGold, tileUnits, kingsMilitia, kingsRiders } = computeAnnualReward(board, player);
-  const militiaGranted = isLanding ? tileUnits + kingsMilitia : 0;
-  const ridersGranted = isLanding ? kingsRiders : 0;
+  const militiaGranted = tileUnits + kingsMilitia;
+  const ridersGranted = kingsRiders;
   const unitsGranted = militiaGranted + ridersGranted;
 
   player.circles = (player.circles ?? 0) + 1;

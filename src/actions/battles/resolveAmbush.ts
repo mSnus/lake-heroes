@@ -2,7 +2,6 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
 import { lossStr } from './common';
-import { ZOMBIE_GARRISON_REPEL_RATIO } from '../../game/constants';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
@@ -17,8 +16,7 @@ const GOLD_PER_KILL = 200;
 
 /**
  * Apply the outcome of an ambush (the game attacks the player).
- * - Win (ambush fails): player loses killed units; earns 200🟡 per ambusher killed;
- *   a repelled zombie ambush also thins the tile's own wild garrison.
+ * - Win (ambush fails): player loses killed units; earns 200🟡 per ambusher killed.
  * - Tie: player loses 1/4 of involved units and 1/2 gold.
  * - Defeat: player loses killed units; loses 1/4 gold.
  */
@@ -28,8 +26,7 @@ export function resolveAmbush(
   attackerUnits: number,
   playerUnitsKilled: number,
   ambusherUnitsKilled: number,
-  outcome: AmbushOutcome,
-  isZombieAmbush: boolean = false
+  outcome: AmbushOutcome
 ): AmbushResolution {
   const goldBefore = player.gold;
   const unitsBefore = player.units;
@@ -44,14 +41,6 @@ export function resolveAmbush(
     const reward = ambushersDefeated * GOLD_PER_KILL;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold += reward;
-
-    // Repelling a zombie ambush thins out the abandoned tile's own wild
-    // garrison -- it's still the same tile the player's standing on, since
-    // battles don't move anyone.
-    if (isZombieAmbush && board.activeTile.abandoned) {
-      const tile = board.activeTile;
-      tile.garrison = Math.max(1, Math.round(tile.garrison * ZOMBIE_GARRISON_REPEL_RATIO));
-    }
 
     const rewardStr = reward > 0 ? t('resolveAmbush.receivingGold', { reward }) : '';
     const killLossStr = playerUnitsKilled > 0 ? t('resolveAmbush.unitsLostSuffix', { units: playerUnitsKilled }) : '';

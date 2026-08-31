@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { showScreenWithFog, clearScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
+import { razeTile } from '../game/raze';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
 
@@ -54,16 +55,7 @@ export function checkRogueAttackEncounter(
   // unit on the defending side, so this is an automatic raze, no battle.
   if (garrison <= 0) {
     const tileName = tile.name;
-    board.players.forEach((p) => {
-      p.ownedTiles = p.ownedTiles.filter((i) => i !== tileIdx);
-    });
-    tile.owner = null;
-    tile._level = 1;
-    tile.isYielded = false;
-    tile.garrison = tile.baseGarrison;
-    tile.unclaimedSinceTurn = board.turns;
-    tile.razedInRound = board.round;
-    tile.abandoned = true;
+    razeTile(board, tile);
     changeFame(player, -1);
     updateGameState(board);
 

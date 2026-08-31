@@ -85,14 +85,6 @@
   display: none;
 }
 
-.tile-card-owner-info {
-  margin-bottom: -40px;
-}
-
-.tile-owner {
-  text-shadow: 1px 1px 3px #000000;
-}
-
 .tile-card.syndicate {
   background: #fdd06669;
 }
@@ -356,18 +348,6 @@
 .tc-td .value {
   font-weight: 600;
   color: #fff;
-}
-
-.tile-owner {
-  font-weight: 600;
-  padding-left: 12px;
-  text-align: center;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  align-items: center;
-  font-size: 14px;
 }
 
 .level-highlighted {

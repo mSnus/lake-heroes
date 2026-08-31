@@ -19,6 +19,23 @@ export function nextBoardPosition(from: number, forkChoice: ForkChoice): number 
 }
 
 /**
+ * How many steps of nextBoardPosition it takes to reach the fork's start
+ * tile from `from` -- 0 when already standing on it. Either branch reaches
+ * it identically (the fork start sits on the loop's common trunk), so the
+ * walk arbitrarily takes the short one. Returns TILE_COUNT if it somehow
+ * never arrives, which no reachable position does.
+ */
+export function stepsToFork(from: number): number {
+  let pos = from;
+  for (let steps = 0; steps < TILE_COUNT; steps++) {
+    if (pos === FORK_START_INDEX) return steps;
+    pos = nextBoardPosition(pos, 'short');
+  }
+
+  return TILE_COUNT;
+}
+
+/**
  * Simulates `roll` steps of nextBoardPosition from `from`, returning the
  * final landing tile and whether King's Castle (index 0) was passed or
  * landed on along the way -- the fork-aware generalization of the old

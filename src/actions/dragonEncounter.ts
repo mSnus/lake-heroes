@@ -1,4 +1,7 @@
 import { GameState } from '../game/GameState';
+import { Player } from '../game/Player';
+import { playerScore } from '../game/score';
+import { DRAGON_MERCY_SCORE_RATIO } from '../game/constants';
 import {
   showDragonSkyScreen,
   showDragonAttackScreen,
@@ -6,6 +9,7 @@ import {
 } from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
+import { razeTile } from '../game/raze';
 import { checkArtifactProtection } from '../game/artifacts';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldChallengeDragon } from '../ai/decisions';
@@ -69,6 +73,15 @@ export function checkDragonEncounter(
 
   // Dragon attacks!
   if (player.armyPower < DRAGON_UNITS_THRESHOLD) {
+    // The dragon spares the table's weakest while the strongest is far
+    // enough ahead -- burning the poorest player's last tile only widens a
+    // gap the King's Grace is already trying to close.
+    if (!force && underDragonMercy(board, player)) {
+      updateGameState(board);
+      dragonSkyWithSay(board, onContinue);
+      return true;
+    }
+
     handleWeakPlayerAttack(board, updateGameState, onContinue);
   } else if (isHeadlessRun()) {
     // Fight-or-flee is a real 2-way decision (showDragonChallengeScreen's
@@ -91,6 +104,22 @@ export function checkDragonEncounter(
   }
 
   return true;
+}
+
+/** True when `player` is the weakest by power score and the strongest is at
+ * least DRAGON_MERCY_SCORE_RATIO times their score. */
+function underDragonMercy(board: GameState, player: Player): boolean {
+  if (board.players.length < 2) return false;
+
+  const scores = board.players.map((p) => playerScore(board, p));
+  const weakest = Math.min(...scores);
+  const strongest = Math.max(...scores);
+  if (weakest <= 0) return false;
+
+  return (
+    playerScore(board, player) === weakest &&
+    strongest >= weakest * DRAGON_MERCY_SCORE_RATIO
+  );
 }
 
 function dragonSkyWithSay(board: GameState, onContinue: () => void) {
@@ -143,10 +172,14 @@ function handleWeakPlayerAttack(
     message = t('dragonEncounter.burnsYourTile', { tileName });
 
     if (tile.level === 1) {
-      tile.owner = null;
-      player.ownedTiles = player.ownedTiles.filter((i) => i !== mostExpensiveIdx);
+      // Nothing left to downgrade: the tile burns down to wilderness, same
+      // as a raze -- its own garrison dies with it.
+      razeTile(board, tile);
       say(t('dragonEncounter.tileDestroyed', { playerName: player.name, tileName }), 'error');
     } else {
+      // Half the garrison burns with the level. Set while the tile is still
+      // owned, so the setter splits the loss across militia and riders.
+      tile.garrison = Math.floor(tile.garrison / 2);
       tile._level = tile.level - 1;
       say(
         t('dragonEncounter.tileDamaged', { playerName: player.name, tileName, level: tile._level }),

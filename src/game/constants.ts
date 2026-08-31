@@ -15,6 +15,11 @@ export const FORK_START_INDEX = 5;
 export const FORK_MERGE_INDEX = 12;
 export const FORK_SHORT_PATH = [6, 7];
 export const FORK_LONG_PATH = [8, 9, 10, 11];
+// Approaching the fork, the branch is a hidden coin flip rather than a
+// choice -- rolled in rollAndMove.ts whenever the fork start is this many
+// steps away or fewer, i.e. whenever a single die could still reach it. A
+// player standing exactly ON the fork tile picks by hand instead.
+export const FORK_ROLL_RANGE = 6;
 // Joker's Hurricane only strikes the richest player, and only when they're
 // this many times wealthier than whoever ranks second -- a check on a
 // runaway leader, not a routine hazard for everyone (see actions/joker.ts).
@@ -29,9 +34,9 @@ export const HURRICANE_WEALTH_RATIO = 1.5;
 export const TILE_BASE_PRICE = 200;
 export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 2;
 export const TILE_BASE_INCOME = TILE_BASE_PRICE * 2;
-// The final upgrade (to level 3) costs extra on top of TILE_BASE_UPGRADE's
-// normal rate -- level 2 is unaffected, only level 3's gold price doubles.
-export const LEVEL_3_UPGRADE_MULT = 2;
+// Multiplier on TILE_BASE_UPGRADE's normal rate for the final upgrade (to
+// level 3). At 1 the last upgrade costs the same rate as level 2.
+export const LEVEL_3_UPGRADE_MULT = 1;
 // Gold-type tile bonuses (Mills/Farms/Fields/Traders income) are cut by 35%
 // off their raw TILE_BASE_INCOME-scaled value -- a deliberate income nerf
 // independent of TILE_BASE_PRICE, which stays at its full value for
@@ -67,6 +72,12 @@ export const UNIT_PRICE = 500; // gold per militia unit (King's Castle recruit p
 export const TAVERN_PRICE_MULT = 2;
 export const DRAGON_UNITS = 48; // how many units the Dragon fields
 export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
+// The dragon spares the weakest player's holdings once the strongest is
+// this many times ahead on power score -- the mirror of the Joker's
+// HURRICANE_WEALTH_RATIO, which punishes a runaway leader. Only the
+// tile-burning attack is skipped; a weakest player strong enough to fight
+// is still offered the challenge (see actions/dragonEncounter.ts).
+export const DRAGON_MERCY_SCORE_RATIO = 1.5;
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
 export const BRAWL_THRESHOLD = 12; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 export const BANZAI_THRESHOLD = 0.8; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
@@ -144,10 +155,6 @@ export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 11;
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).
 export const ZOMBIE_AMBUSH_CHANCE = 0.3;
 export const ZOMBIE_AMBUSH_FORCE_RATIO = 2 / 3;
-// Repelling a zombie ambush thins out the tile's own wild garrison by this
-// fraction (rounded, but never down to 0 -- some zombies always survive to
-// guard it) -- see resolveAmbush.ts.
-export const ZOMBIE_GARRISON_REPEL_RATIO = 0.5;
 // Brawl (small skirmish): a compact board with larger cells, used for the
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most

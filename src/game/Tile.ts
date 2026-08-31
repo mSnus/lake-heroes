@@ -1,4 +1,4 @@
-import { FEE_MULTIPLIER, BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT } from './constants';
+import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER, isBanzaiAttack } from './army';
@@ -286,14 +286,10 @@ export class Tile implements TileJSON {
     return this.getDefence(level);
   }
 
+  /** Toll a visitor owes: the current level's own price or the tile's base
+   * price, whichever is larger -- not the two summed. */
   get fee(): number {
-    // Experiment: fee = sum of prices.gold up to the current level.
-    let gold = 0;
-    for (let lvl = 1; lvl <= this.level; lvl++) {
-      gold += this.prices[lvl]?.gold || 0;
-    }
-
-    return gold;
+    return Math.max(this.prices[this.level]?.gold || 0, this.prices[1]?.gold || 0);
   }
 
   isOwned(): boolean {

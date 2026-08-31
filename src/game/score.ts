@@ -26,6 +26,9 @@ export const SCORE_PER_UNIT_UPGRADE = 100;
 export const SCORE_PER_ARTIFACT = 300;
 /** Gold is divided by this, rounded down. */
 export const SCORE_GOLD_PER_POINT = 20;
+/** Garrisoned troops are stationary -- they hold one tile and can't march,
+ * so they rate this fraction of the same unit carried in the field. */
+export const SCORE_GARRISON_RATIO = 0.5;
 /** Every tile of a completed syndicate is worth this much more -- holding a
  * whole group is worth more than the same tiles scattered. */
 export const SCORE_SYNDICATE_MULT = 1.5;
@@ -44,8 +47,9 @@ export function tileScore(
 }
 
 /**
- * Fame, army (travelling AND garrisoned), owned tiles with their upgrades,
- * artifacts, and gold on hand -- summed into one comparable figure.
+ * Fame, army (travelling at full weight, garrisoned at SCORE_GARRISON_RATIO),
+ * owned tiles with their upgrades, artifacts, and gold on hand -- summed into
+ * one comparable figure.
  *
  * Tile ownership is derived from `tile.owner` rather than
  * `player.ownedTiles`, which can be stale after a reload (the same reason
@@ -54,9 +58,9 @@ export function tileScore(
  * property and comes back.
  */
 export function playerScore(board: GameState, player: Player): number {
-  let militia = player.militia;
-  let riders = player.riders;
   let tiles = 0;
+  let garrisonMilitia = 0;
+  let garrisonRiders = 0;
 
   // Memoised per group (there are only a handful) rather than re-derived per
   // tile -- and asked of syndicateMultiplier rather than re-implemented, so
@@ -75,14 +79,20 @@ export function playerScore(board: GameState, player: Player): number {
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id) continue;
     tiles += tileScore(tile, inSyndicate(tile.group));
-    militia += tile.garrisonMilitia;
-    riders += tile.garrisonRiders;
+    garrisonMilitia += tile.garrisonMilitia;
+    garrisonRiders += tile.garrisonRiders;
   }
+
+  const garrison = Math.floor(
+    (garrisonMilitia * SCORE_PER_MILITIA + garrisonRiders * SCORE_PER_RIDER) *
+      SCORE_GARRISON_RATIO
+  );
 
   return (
     player.fame * SCORE_PER_FAME +
-    militia * SCORE_PER_MILITIA +
-    riders * SCORE_PER_RIDER +
+    player.militia * SCORE_PER_MILITIA +
+    player.riders * SCORE_PER_RIDER +
+    garrison +
     tiles +
     player.artifacts.length * SCORE_PER_ARTIFACT +
     Math.floor(player.gold / SCORE_GOLD_PER_POINT)
