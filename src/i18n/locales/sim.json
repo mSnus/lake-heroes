@@ -234,7 +234,7 @@
     "guards": "Guards",
     "garrisonOf": "Garrison of {tileName}",
     "fortification": "Fortification",
-    "ambushedMessage": "{name} is ambushed by {units}🥷!",
+    "ambushedMessage": "{name} is ambushed by {units}👹!",
     "zombieAttackMessage": "{name} is attacked by {units}🧟‍♀️!",
     "ruinsAttackMessage": "{name} is attacked by {units}🧟 among the ruins!",
     "heroHour": "Hero's Hour",
@@ -350,7 +350,7 @@
       "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
       "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
-      "item6": "Units like 🧟👹🥷 are equal or <i>almost</i> equal to 🧍. Dragon 🐉 is equal to 🐎."
+      "item6": "Units like 🧟👹🥷 are equal or <i>almost</i> equal to 🧍, and mounted 🦬🐫 to 🐎. Dragon 🐉 is equal to 🐎."
     },
     "fame": {
       "title": "Fame 🏆",
@@ -886,7 +886,7 @@
     "tie": "Your {tileName}'s garrison barely holds, losing {units}🧍 to the roaming horde",
     "tieToast": "{playerName}'s garrison at {tileName} loses {units}🧍 to a roaming horde",
     "horde": "Roaming Horde",
-    "incoming": "Scouts spot a roaming horde of {units}🧍 closing in on {tileName}!",
+    "incoming": "Scouts spot a roaming horde of {units}👹 closing in on {tileName}!",
     "defend": "Defend the garrison!"
   },
   "cheatScreen": {

@@ -2,7 +2,7 @@ import { GameState } from '../game/GameState';
 import { showScreenWithFog } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
-import { formatArmy, AMBUSH_EMOJI } from '../utils/formatArmy';
+import { formatArmy, HORDE_EMOJI } from '../utils/formatArmy';
 import { KNIGHT_FAME } from '../game/constants';
 import { t } from '../i18n';
 
@@ -69,7 +69,7 @@ export function checkAmbushEncounter(
     spriteImage: 'assets/figures/npc-saracen.png',
     htmlMessage: t('ambushEncounter.message', {
       playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
-      squad: formatArmy(attackerMilitia, attackerRiders, AMBUSH_EMOJI),
+      squad: formatArmy(attackerMilitia, attackerRiders, HORDE_EMOJI),
     }),
     buttons: [{ label: t('ambushEncounter.defend'), onClick: startBattle }],
   });

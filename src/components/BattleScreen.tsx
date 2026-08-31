@@ -12,6 +12,7 @@ import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { PlayerCard } from './PlayerCard';
 import { DecoratedButton } from './DecoratedButton';
 import { BattlefieldGrid } from './BattlefieldGrid';
+import { CARAVAN_EMOJI, HORDE_EMOJI, toSideIcon } from '../utils/formatArmy';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { useT } from '../i18n';
 import { getArtifactRollBonusBreakdown } from '../game/artifacts';
@@ -282,10 +283,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Mode-specific battlefield icons, matching the old duel screen's grid
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
   // Dragon and caravan guards occupy the defender role.
-  const attackerFieldIcon = isZombieAmbush ? '🧟‍♀️' : isAmbush || isRogue ? '👹' : undefined;
-  // Caravan guards keep 🥷 on foot but ride 🐫 -- a mounted guard is a plain
-  // rider under the hood (same hp/damage), only its emoji differs.
-  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? { militia: '🥷', rider: '🐫' } : undefined;
+  // Built from the same constants the announcement screens use, so the
+  // brigands you were warned about are the ones you meet on the grid. A
+  // mounted NPC is a plain rider under the hood (same hp/damage), only its
+  // emoji differs.
+  const attackerFieldIcon = isZombieAmbush
+    ? '🧟‍♀️'
+    : isAmbush || isRogue
+      ? toSideIcon(HORDE_EMOJI)
+      : undefined;
+  const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? toSideIcon(CARAVAN_EMOJI) : undefined;
 
   // ── Initial log ──
   const loggedRef = useRef(false);

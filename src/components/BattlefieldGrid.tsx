@@ -17,12 +17,14 @@ interface BattlefieldGridProps {
    * 🩸 wounded, 🛡️ blocked). Drives a temporary emoji override per unit —
    * see the per-unit lookup below. */
   animPhase?: AnimPhase;
-  /** Mode-specific icon override for a whole side (🐉 dragon, 👹 ambushers/
-   * rogue horde, etc) in place of the normal rider/militia emoji — mirrors
-   * the old duel screen's per-mode grid icons (BattleScreen decides which
-   * mode maps to which side; this component just renders it). Pass a
-   * per-kind map instead of a string to re-skin only some tiers — caravan
-   * guards are 🥷 on foot but 🐫 mounted. */
+  /** Mode-specific icon override for a whole side (🐉 dragon, 🧟‍♀️ zombies,
+   * etc) in place of the normal rider/militia emoji — mirrors the old duel
+   * screen's per-mode grid icons (BattleScreen decides which mode maps to
+   * which side; this component just renders it). Pass a per-kind map
+   * instead of a string to skin each tier separately — ambushers and rogue
+   * hordes are 👹 on foot and 🦬 mounted, caravan guards 🥷 and 🐫 (see
+   * utils/formatArmy's HORDE_EMOJI/CARAVAN_EMOJI, which the announcement
+   * screens share). */
   attackerIcon?: SideIcon;
   defenderIcon?: SideIcon;
   /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells

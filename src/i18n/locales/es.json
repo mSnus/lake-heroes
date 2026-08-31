@@ -234,7 +234,7 @@
     "guards": "Guardias",
     "garrisonOf": "Guarnición de {tileName}",
     "fortification": "Fortificación",
-    "ambushedMessage": "¡{name} cae en una emboscada de {units}🥷!",
+    "ambushedMessage": "¡{name} cae en una emboscada de {units}👹!",
     "zombieAttackMessage": "¡{name} es atacado por {units}🧟‍♀️!",
     "ruinsAttackMessage": "¡{name} es atacado por {units}🧟 entre las ruinas!",
     "heroHour": "La Hora del Héroe",
@@ -352,7 +352,7 @@
       "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
       "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
-      "item6": "Unidades como 🧟👹🥷 equivalen o son <i>casi</i> equivalentes a 🧍. El Dragón 🐉 equivale a 🐎."
+      "item6": "Unidades como 🧟👹🥷 equivalen o son <i>casi</i> equivalentes a 🧍, y las montadas 🦬🐫 a 🐎. El Dragón 🐉 equivale a 🐎."
     },
     "fame": {
       "title": "Fama 🏆",
@@ -888,7 +888,7 @@
     "tie": "La guarnición de tu {tileName} apenas resiste, perdiendo {units}🧍 ante la horda errante",
     "tieToast": "La guarnición de {playerName} en {tileName} pierde {units}🧍 ante una horda errante",
     "horde": "Horda Errante",
-    "incoming": "¡Los exploradores avistan una horda errante de {units}🧍 acercándose a {tileName}!",
+    "incoming": "¡Los exploradores avistan una horda errante de {units}👹 acercándose a {tileName}!",
     "defend": "¡Defender la guarnición!"
   },
   "cheatScreen": {

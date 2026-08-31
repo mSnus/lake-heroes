@@ -6,7 +6,7 @@
  *
  * `emoji` re-skins the pair for NPC forces that field the same two tiers
  * under a different guise — caravan guards and their camels, ambushers and
- * their horses (see caravanEncounter/ambushEncounter).
+ * rogue hordes (see caravanEncounter/ambushEncounter/rogueAttackEncounter).
  */
 export function formatArmy(
   militia: number,
@@ -21,5 +21,16 @@ export function formatArmy(
 
 /** Caravan guards ride camels rather than horses — same rider stats, own look. */
 export const CARAVAN_EMOJI = { militia: '🥷', riders: '🐫' };
-/** Ambushers: bandits on foot and on horseback. */
-export const AMBUSH_EMOJI = { militia: '🥷', riders: '🐎' };
+/** Ambushers and rogue hordes — the same brigands either way, whether they
+ * waylay a travelling army or raid a tile's garrison. */
+export const HORDE_EMOJI = { militia: '👹', riders: '🦬' };
+
+/** Re-keys an announcement emoji pair for BattlefieldGrid's `SideIcon`,
+ * which keys on UnitKind ('rider', singular) rather than 'riders' — so the
+ * grid and the screen announcing it can't drift apart. */
+export function toSideIcon(emoji: { militia: string; riders: string }): {
+  militia: string;
+  rider: string;
+} {
+  return { militia: emoji.militia, rider: emoji.riders };
+}
