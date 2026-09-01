@@ -2,7 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { pickRandomUnownedArtifact } from '../../game/artifacts';
 import { say } from '../../utils/say';
-import { BattleOutcome, BattleResolution } from './common';
+import { BattleOutcome, BattleResolution, tallyArmy, armyLostStr } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
@@ -23,9 +23,11 @@ export function resolveRuinsBattle(
   playerUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
+  const beforeLoss = tallyArmy(player);
   if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
 
-  const lossStr = playerUnitsKilled > 0 ? t('ruinsEncounter.lostSuffix', { units: playerUnitsKilled }) : '';
+  const killed = armyLostStr(beforeLoss, player);
+  const lossStr = killed ? t('ruinsEncounter.lostSuffix', { army: killed }) : '';
 
   // BattleOutcome 'defender' means the real player (grid defender role) won.
   // Every other battle resolver reports its outcome via say() (directly, or

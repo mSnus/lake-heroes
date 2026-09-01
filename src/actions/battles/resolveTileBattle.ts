@@ -3,7 +3,7 @@ import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
 import { razeTile, grantTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
-import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
+import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
 import { recordStatEvent } from '../../game/statistics';
 import { setGameMessage } from '../../utils/gameMessage';
@@ -41,7 +41,7 @@ export function resolveTileBattle(
   defenderUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
-  const unitsBefore = attacker.units;
+  const armyBefore = tallyArmy(attacker);
   const goldBefore = attacker.gold;
   const claiming = !tile.isOwned();
 
@@ -56,8 +56,10 @@ export function resolveTileBattle(
   let lostBg = false;
 
   if (outcome === 'attacker') {
+    const beforeLoss = tallyArmy(attacker);
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
-    const lossStr = attackerUnitsKilled > 0 ? t('resolveTileBattle.losingSuffix', { units: attackerUnitsKilled }) : '';
+    const killed = armyLostStr(beforeLoss, attacker);
+    const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
 
     if (claiming) {
       attacker.gold -= tile.prices['1']?.gold ?? 0;
@@ -89,12 +91,14 @@ export function resolveTileBattle(
       victoryBg = true;
     }
   } else if (outcome === 'defender') {
+    const beforeLoss = tallyArmy(attacker);
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     // Wild guards on an unowned tile aren't a real player's army — a failed
     // claim leaves their numbers untouched. Only a real owner's garrison
     // takes real losses.
     if (!claiming) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
-    const lossStr = attackerUnitsKilled > 0 ? t('resolveTileBattle.losingSuffix', { units: attackerUnitsKilled }) : '';
+    const killed = armyLostStr(beforeLoss, attacker);
+    const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
 
     setGameMessage(board, t('resolveTileBattle.lostBattleGameMessage', { attackerName: attacker.name, tileName: tile.name, lossStr }));
     message = t('resolveTileBattle.retreats', { attackerName: attacker.name, tileName: tile.name, lossStr });
@@ -107,9 +111,11 @@ export function resolveTileBattle(
     // unowned tile aren't a real player's army, so a tied claim attempt
     // keeps the old flat-formula loss and leaves their numbers untouched.
     const unitLoss = claiming ? Math.floor(tile.defence / 4) : attackerUnitsKilled;
+    const beforeLoss = tallyArmy(attacker);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
     if (!claiming) tile.garrison = 0;
-    const lossStr = unitLoss > 0 ? t('resolveTileBattle.losingSuffix', { units: unitLoss }) : '';
+    const killed = armyLostStr(beforeLoss, attacker);
+    const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
     if (tile.level > 1) {
       tile._level = tile.level - 1;
       setGameMessage(
@@ -134,7 +140,7 @@ export function resolveTileBattle(
     recordStatEvent(board, attacker, outcome === 'attacker' ? 'battle-won' : 'battle-lost', opponentName);
   }
 
-  logBattleSummary(attacker, opponentName, outcome, outcome === 'attacker' ? tile.name : null, unitsBefore, goldBefore, claiming);
+  logBattleSummary(attacker, opponentName, outcome, outcome === 'attacker' ? tile.name : null, armyBefore, goldBefore, claiming);
 
   return { outcome, message, victoryBg, lostBg };
 }

@@ -1,7 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
-import { lossStr } from './common';
+import { lossStr, tallyArmy, armyLostStr } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
@@ -29,7 +29,7 @@ export function resolveAmbush(
   outcome: AmbushOutcome
 ): AmbushResolution {
   const goldBefore = player.gold;
-  const unitsBefore = player.units;
+  const armyBefore = tallyArmy(player);
 
   let message = '';
 
@@ -39,11 +39,13 @@ export function resolveAmbush(
     // rather than crediting 0 gold for a decisive victory.
     const ambushersDefeated = ambusherUnitsKilled > 0 ? ambusherUnitsKilled : attackerUnits;
     const reward = ambushersDefeated * GOLD_PER_KILL;
+    const beforeLoss = tallyArmy(player);
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
+    const killed = armyLostStr(beforeLoss, player);
     player.gold += reward;
 
     const rewardStr = reward > 0 ? t('resolveAmbush.receivingGold', { reward }) : '';
-    const killLossStr = playerUnitsKilled > 0 ? t('resolveAmbush.unitsLostSuffix', { units: playerUnitsKilled }) : '';
+    const killLossStr = killed ? t('resolveAmbush.unitsLostSuffix', { army: killed }) : '';
     setGameMessage(board, t('resolveAmbush.repelsGameMessage', { playerName: player.name, rewardStr, lossStr: killLossStr }));
     message =
       reward > 0
@@ -78,9 +80,9 @@ export function resolveAmbush(
     message = loss ? t('resolveAmbush.lost', { loss }) : t('resolveAmbush.overwhelmed');
   }
 
-  const unitDiff = unitsBefore - player.units;
   const goldDiff = player.gold - goldBefore;
-  const unitsPart = unitDiff > 0 ? t('resolveAmbush.lostUnitsPart', { units: unitDiff }) : '';
+  const lostArmy = armyLostStr(armyBefore, player);
+  const unitsPart = lostArmy ? t('resolveAmbush.lostUnitsPart', { army: lostArmy }) : '';
   const goldPart =
     goldDiff > 0
       ? t('resolveAmbush.gainedGoldPart', { gold: goldDiff })

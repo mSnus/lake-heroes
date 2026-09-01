@@ -1,6 +1,6 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
+import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
 import { CaravanPrize, quarterPrize, mountHorses, rollGuardsJoining } from '../../game/caravanPrize';
 import { setGameMessage } from '../../utils/gameMessage';
 import { say } from '../../utils/say';
@@ -23,20 +23,24 @@ export function resolveCaravanBattle(
   attackerUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
-  const unitsBefore = attacker.units;
+  const armyBefore = tallyArmy(attacker);
   const goldBefore = attacker.gold;
   const { prize, defence, guardMilitia, guardRiders } = opts;
 
-  // Win/defeat: attacker loses units killed in battle
+  // Win/defeat: attacker loses units killed in battle. Measured across the
+  // write itself, so the report names the tiers that actually died -- the
+  // haul collected further down would otherwise mask it.
+  let killedStr = '';
   if (outcome !== 'tie' && attackerUnitsKilled > 0) {
+    const beforeLoss = tallyArmy(attacker);
     attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    killedStr = armyLostStr(beforeLoss, attacker);
   }
 
-  const lostUnits = attackerUnitsKilled > 0 && outcome !== 'tie';
   // The screen message keeps the full "fighting for it" phrasing; the game
   // log (board.gameMessage) drops it for a terser one-line log entry.
-  const unitLossMsgGame = lostUnits ? t('resolveCaravanBattle.whileUnitsLostGame', { units: attackerUnitsKilled }) : '';
-  const unitLossMsgScreen = lostUnits ? t('resolveCaravanBattle.whileUnitsLostScreen', { units: attackerUnitsKilled }) : '';
+  const unitLossMsgGame = killedStr ? t('resolveCaravanBattle.whileUnitsLostGame', { army: killedStr }) : '';
+  const unitLossMsgScreen = killedStr ? t('resolveCaravanBattle.whileUnitsLostScreen', { army: killedStr }) : '';
 
   let message = '';
   let gameMessage = '';
@@ -83,8 +87,10 @@ export function resolveCaravanBattle(
     victoryBg = true;
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(defence / 4);
+    const beforeTieLoss = tallyArmy(attacker);
     if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
-    const tieLossStr = unitLoss > 0 ? t('resolveCaravanBattle.losingSuffix', { units: unitLoss }) : '';
+    const lostTie = armyLostStr(beforeTieLoss, attacker);
+    const tieLossStr = lostTie ? t('resolveCaravanBattle.losingSuffix', { army: lostTie }) : '';
 
     const parts = collect(quarterPrize(prize));
     const haul = parts.length > 0 ? parts.join(t('resolveCaravanBattle.haulJoin')) : t('resolveCaravanBattle.haulNothing');
@@ -98,7 +104,7 @@ export function resolveCaravanBattle(
   setGameMessage(board, gameMessage + unitLossMsgGame);
   message += unitLossMsgScreen;
 
-  logBattleSummary(attacker, t('resolveCaravanBattle.caravanGuards'), outcome, null, unitsBefore, goldBefore);
+  logBattleSummary(attacker, t('resolveCaravanBattle.caravanGuards'), outcome, null, armyBefore, goldBefore);
 
   return { outcome, message, victoryBg };
 }

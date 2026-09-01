@@ -1,5 +1,6 @@
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
+import { formatArmy } from '../../utils/formatArmy';
 import { BRAWL_THRESHOLD } from '../../game/constants';
 import { t } from '../../i18n';
 
@@ -31,6 +32,45 @@ export interface BattleResolution {
   lostBg?: boolean;
 }
 
+/** A player's army by tier, for measuring what a battle actually cost them. */
+export interface ArmyTally {
+  militia: number;
+  riders: number;
+}
+
+export function tallyArmy(player: Player): ArmyTally {
+  return { militia: player.militia, riders: player.riders };
+}
+
+/**
+ * What `player` has lost since `before`, formatted by tier ("🧍4 🐎2").
+ * Losses drain militia first and riders only once militia runs out (see
+ * Player's `units` setter), so a headcount alone would report a squad of
+ * dead riders as footmen. Empty string when nothing was lost.
+ */
+export function armyLostStr(before: ArmyTally, player: Player): string {
+  const militia = Math.max(0, before.militia - player.militia);
+  const riders = Math.max(0, before.riders - player.riders);
+  return militia + riders > 0 ? formatArmy(militia, riders) : '';
+}
+
+/** armyLostStr for a tile's garrison, which loses tiers in the same order. */
+export function garrisonLostStr(
+  before: ArmyTally,
+  tile: { garrisonMilitia: number; garrisonRiders: number }
+): string {
+  const militia = Math.max(0, before.militia - tile.garrisonMilitia);
+  const riders = Math.max(0, before.riders - tile.garrisonRiders);
+  return militia + riders > 0 ? formatArmy(militia, riders) : '';
+}
+
+/** The mirror of armyLostStr, for units gained. */
+export function armyGainedStr(before: ArmyTally, player: Player): string {
+  const militia = Math.max(0, player.militia - before.militia);
+  const riders = Math.max(0, player.riders - before.riders);
+  return militia + riders > 0 ? formatArmy(militia, riders) : '';
+}
+
 export function lossStr(gold: number, units: number): string {
   const parts = [...(gold > 0 ? [`${gold}🟡`] : []), ...(units > 0 ? [`${units}🧍`] : [])];
   return parts.join(' and ');
@@ -41,17 +81,22 @@ export function logBattleSummary(
   defenderLabel: string,
   outcome: BattleOutcome,
   capturedTileName: string | null,
-  unitsBefore: number,
+  armyBefore: ArmyTally,
   goldBefore: number,
   claimed: boolean = false
 ): void {
+  const unitsBefore = armyBefore.militia + armyBefore.riders;
   const unitsAfter = attacker.units;
   const goldAfter = attacker.gold;
   const unitDiff = unitsBefore - unitsAfter;
   const goldDiff = goldAfter - goldBefore;
+  // Reported by tier: militia die before riders do, so a headcount alone
+  // would call a lost squad of riders footmen.
+  const lostArmy = armyLostStr(armyBefore, attacker);
+  const gainedArmy = armyGainedStr(armyBefore, attacker);
 
   if (outcome === 'attacker' && claimed && capturedTileName) {
-    const unitsPart = unitDiff > 0 ? t('battleCommon.losingUnitsPart', { units: unitDiff }) : '';
+    const unitsPart = lostArmy ? t('battleCommon.losingUnitsPart', { army: lostArmy }) : '';
     const paidPart = goldDiff < 0 ? t('battleCommon.paidToOwnPart', { gold: -goldDiff }) : '';
     say(
       t('battleCommon.wonBattleForTile', {
@@ -76,9 +121,9 @@ export function logBattleSummary(
     outcome === 'attacker' && capturedTileName ? t('battleCommon.razedPart', { tileName: capturedTileName }) : '';
   const unitsPart =
     unitDiff > 0
-      ? t('battleCommon.lostUnitsPart', { units: unitDiff, before: unitsBefore, after: unitsAfter })
+      ? t('battleCommon.lostUnitsPart', { army: lostArmy, before: unitsBefore, after: unitsAfter })
       : unitDiff < 0
-        ? t('battleCommon.gainedUnitsPart', { units: -unitDiff, before: unitsBefore, after: unitsAfter })
+        ? t('battleCommon.gainedUnitsPart', { army: gainedArmy, before: unitsBefore, after: unitsAfter })
         : '';
   const goldPart =
     goldDiff > 0

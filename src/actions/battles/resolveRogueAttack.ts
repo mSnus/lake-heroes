@@ -3,7 +3,7 @@ import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
 import { razeTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
-import { BattleResolution, BattleOutcome } from './common';
+import { BattleResolution, BattleOutcome, garrisonLostStr } from './common';
 import { t } from '../../i18n';
 
 /**
@@ -42,14 +42,19 @@ export function resolveRogueAttack(
     message = t('rogueAttack.razed', { tileName });
     lostBg = true;
   } else if (outcome === 'defender') {
+    // Measured across the write: a garrison loses militia before riders
+    // (see Tile's `garrison` setter), so a headcount would misreport which
+    // tier actually fell.
+    const garrisonBefore = { militia: tile.garrisonMilitia, riders: tile.garrisonRiders };
     tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    const killed = garrisonLostStr(garrisonBefore, tile);
     const before = tile.garrison;
     tile.garrison = before + Math.round(before * 0.25);
     const gained = tile.garrison - before;
 
     // The attack is repelled: report the garrison's own losses, then the
     // routed attackers who were impressed into joining the defender's garrison.
-    const lossMsg = defenderUnitsKilled > 0 ? t('rogueAttack.garrisonLost', { tileName, units: defenderUnitsKilled }) : '';
+    const lossMsg = killed ? t('rogueAttack.garrisonLost', { tileName, army: killed }) : '';
     const joinMsg =
       gained > 0
         ? t('rogueAttack.attackersJoin', { units: gained, playerName: player.name })
@@ -57,9 +62,9 @@ export function resolveRogueAttack(
     message = [lossMsg, joinMsg].filter(Boolean).join('\n');
     victoryBg = true;
   } else {
-    const loss = defenderUnitsKilled;
-    tile.garrison = Math.max(0, tile.garrison - loss);
-    message = t('rogueAttack.tie', { tileName, units: loss });
+    const garrisonBefore = { militia: tile.garrisonMilitia, riders: tile.garrisonRiders };
+    tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    message = t('rogueAttack.tie', { tileName, army: garrisonLostStr(garrisonBefore, tile) });
   }
 
   return { outcome, message, victoryBg, lostBg };

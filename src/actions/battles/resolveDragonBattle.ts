@@ -1,7 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { DRAGON_UNITS } from '../../game/constants';
-import { BattleResolution, BattleOutcome, logBattleSummary, lossStr } from './common';
+import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
 import { recordStatEvent } from '../../game/statistics';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
@@ -18,7 +18,7 @@ export function resolveDragonBattle(
   _attackerUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
-  const unitsBefore = attacker.units;
+  const armyBefore = tallyArmy(attacker);
   const goldBefore = attacker.gold;
 
   recordStatEvent(board, attacker, 'dragon');
@@ -34,14 +34,16 @@ export function resolveDragonBattle(
     victoryBg = true;
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(DRAGON_UNITS / 4);
+    const beforeLoss = tallyArmy(attacker);
     attacker.units = Math.max(0, attacker.units - unitLoss);
-    setGameMessage(board, t('resolveDragonBattle.woundedGameMessage', { attackerName: attacker.name, units: unitLoss }));
-    message = t('resolveDragonBattle.woundedMessage', { units: unitLoss });
+    const taken = armyLostStr(beforeLoss, attacker);
+    setGameMessage(board, t('resolveDragonBattle.woundedGameMessage', { attackerName: attacker.name, army: taken }));
+    message = t('resolveDragonBattle.woundedMessage', { army: taken });
     lostBg = true;
   } else {
-    const unitLoss = attacker.units;
+    const beforeLoss = tallyArmy(attacker);
     attacker.units = 0;
-    const loss = lossStr(0, unitLoss);
+    const loss = armyLostStr(beforeLoss, attacker);
     setGameMessage(
       board,
       t('resolveDragonBattle.defeatedGameMessage', {
@@ -53,7 +55,7 @@ export function resolveDragonBattle(
     lostBg = true;
   }
 
-  logBattleSummary(attacker, t('resolveDragonBattle.theDragon'), outcome, null, unitsBefore, goldBefore);
+  logBattleSummary(attacker, t('resolveDragonBattle.theDragon'), outcome, null, armyBefore, goldBefore);
 
   return { outcome, message, victoryBg, lostBg };
 }

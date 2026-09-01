@@ -2,7 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { changeFame } from '../../utils/fame';
 import { say } from '../../utils/say';
-import { BattleResolution, BattleOutcome } from './common';
+import { BattleResolution, BattleOutcome, tallyArmy, armyLostStr } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
@@ -31,13 +31,15 @@ export function resolvePlayerBattle(
   let lostBg = false;
 
   if (outcome === 'attacker') {
+    const beforeLoss = tallyArmy(attacker);
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
     defender.position = 0;
     changeFame(attacker, 1);
     changeFame(defender, -1);
 
-    const lossStr = attackerUnitsKilled > 0 ? t('resolvePlayerBattle.losingUnits', { units: attackerUnitsKilled }) : '';
+    const killed = armyLostStr(beforeLoss, attacker);
+    const lossStr = killed ? t('resolvePlayerBattle.losingUnits', { army: killed }) : '';
     setGameMessage(
       board,
       t('resolvePlayerBattle.attackerWinsGameMessage', {
@@ -67,14 +69,15 @@ export function resolvePlayerBattle(
   } else {
     if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     attacker.position = 0;
+    const beforeDefLoss = tallyArmy(defender);
     if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
     changeFame(attacker, -1);
     changeFame(defender, 1);
 
-    const defLossStr =
-      defenderUnitsKilled > 0
-        ? ' ' + t('resolvePlayerBattle.defenderLoses', { defenderName: defender.name, units: defenderUnitsKilled })
-        : '';
+    const defKilled = armyLostStr(beforeDefLoss, defender);
+    const defLossStr = defKilled
+      ? ' ' + t('resolvePlayerBattle.defenderLoses', { defenderName: defender.name, army: defKilled })
+      : '';
     setGameMessage(
       board,
       t('resolvePlayerBattle.defenderWinsGameMessage', {
