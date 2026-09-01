@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GameState, ForcedEncounter } from '../game/GameState';
 import { clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
+import { grantTile } from '../game/tileOwnership';
 import { say } from '../utils/say';
 import { DecoratedButton } from './DecoratedButton';
 import { getOverrides } from '../utils/overridesStore';
@@ -87,11 +88,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   const handleOwn = () => {
     const tile = gameState.tiles[ownIdx];
     if (!tile || !tile.isOwnable) return;
-    gameState.players.forEach((p) => {
-      p.ownedTiles = p.ownedTiles.filter((i) => i !== ownIdx);
-    });
-    tile.owner = player.id;
-    if (!player.ownedTiles.includes(ownIdx)) player.ownedTiles.push(ownIdx);
+    grantTile(gameState, tile, player);
     refresh();
   };
 

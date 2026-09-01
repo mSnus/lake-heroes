@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { showJokerScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
 import { checkArtifactProtection } from '../game/artifacts';
@@ -208,9 +209,8 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         .map((tile, i) => ({ tile, i }))
         .filter(({ tile }) => tile && (tile.group === 'Camps' || tile.group === 'Towers') && !tile.isOwned());
       if (free.length > 0) {
-        const { tile, i } = free[Math.floor(Math.random() * free.length)];
-        tile.owner = player.id;
-        player.ownedTiles.push(i);
+        const { tile } = free[Math.floor(Math.random() * free.length)];
+        grantTile(board, tile, player);
         changeFame(player, 1);
         message = t('joker.queensGiftTile', { playerName: player.name, tileName: tile.name });
       } else {

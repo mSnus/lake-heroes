@@ -1,7 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
-import { razeTile } from '../../game/raze';
+import { razeTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome } from './common';
 import { t } from '../../i18n';

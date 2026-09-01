@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { showScreenWithFog, clearScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
-import { razeTile } from '../game/raze';
+import { razeTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
 

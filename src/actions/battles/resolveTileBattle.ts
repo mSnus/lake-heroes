@@ -1,7 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
-import { razeTile } from '../../game/raze';
+import { razeTile, grantTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
 import { BattleResolution, BattleOutcome, logBattleSummary } from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
@@ -61,11 +61,7 @@ export function resolveTileBattle(
 
     if (claiming) {
       attacker.gold -= tile.prices['1']?.gold ?? 0;
-      tile.owner = attacker.id;
-      tile.garrison = 0;
-      tile.unclaimedSinceTurn = undefined;
-      tile.abandoned = false;
-      attacker.ownedTiles.push(attacker.position);
+      grantTile(board, tile, attacker);
       changeFame(attacker, 1);
 
       message = t('resolveTileBattle.claims', { attackerName: attacker.name, tileName: tile.name, lossStr });

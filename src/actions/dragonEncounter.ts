@@ -9,7 +9,7 @@ import {
 } from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
 import { say } from '../utils/say';
-import { razeTile } from '../game/raze';
+import { razeTile } from '../game/tileOwnership';
 import { checkArtifactProtection } from '../game/artifacts';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldChallengeDragon } from '../ai/decisions';

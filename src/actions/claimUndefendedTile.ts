@@ -1,4 +1,5 @@
 import { GameState } from '../game/GameState';
+import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
@@ -26,16 +27,7 @@ export function claimUndefendedTile(
 
   const defender = board.players.find((p) => p.id === tile.owner);
 
-  board.players.forEach((p) => {
-    p.ownedTiles = p.ownedTiles.filter((idx) => idx !== attacker.position);
-  });
-
-  tile.owner = attacker.id;
-  tile._level = 1;
-  tile.isYielded = false;
-  tile.garrisonMilitia = 0;
-  tile.garrisonRiders = 0;
-  attacker.ownedTiles.push(attacker.position);
+  grantTile(board, tile, attacker);
 
   changeFame(attacker, 1);
   if (defender) changeFame(defender, -1);
