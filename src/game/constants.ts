@@ -182,7 +182,7 @@ export const RIDER_DMG_MIN = 8;
 export const RIDER_DMG_MAX = 18;
 // The dragon fights as its own kind, not a rider — see the 'dragon'
 // formation in game/battleGrid/formations.ts, always exactly DRAGON_UNITS.
-export const DRAGON_HP = 28;
+export const DRAGON_HP = 25;
 export const DRAGON_DMG_MIN = 2;
 export const DRAGON_DMG_MAX = 20;
 // Per-side cap on how many real militia/riders get their own grid unit —

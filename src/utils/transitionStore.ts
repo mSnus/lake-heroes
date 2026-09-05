@@ -5,9 +5,9 @@ import { isHeadlessRun } from './headlessStore';
  * dims to nothing while the screen is revealed underneath, then black lifts. */
 export type TransitionPhase = 'idle' | 'in' | 'hold' | 'out';
 
-export const FOG_IN_MS = 500;
-export const FOG_HOLD_MS = 200;
-export const FOG_OUT_MS = 300;
+export const FOG_IN_MS = 1000;
+export const FOG_HOLD_MS = 600;
+export const FOG_OUT_MS = 600;
 
 let phase: TransitionPhase = 'idle';
 const listeners = new Set<() => void>();

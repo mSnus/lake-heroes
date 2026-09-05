@@ -42,9 +42,8 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
     [11, tower],
     [13, sphynx],
     [15, prison],
-    [18, tavern],
-
-    [22, portal],    
+    [18, portal],
+    [21, tavern],
     [25, treasure],
   ];
   FIXED.forEach(([idx, tpl]) => {
