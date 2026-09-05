@@ -117,7 +117,8 @@
     },
     "stables": {
       "name": "Establos",
-      "description": "Monturas frescas"    }
+      "description": "Monturas frescas"
+    }
   },
   "artifacts": {
     "broken-blade": {
@@ -312,12 +313,12 @@
   "garrisonsScreen": {
     "title": "Guarniciones",
     "message": "Fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot}🧍 cada uno. Ingreso diario: +{units}🧍 de {tiles} casillas",
-    "inArmy": "🚩 en el ejército: {amount}🧍",
     "maxLabel": "máx: {max}",
     "atMax": "Ya al máximo",
     "noTiles": "Todavía no posees ninguna casilla",
     "setGuards": "🛡️ Colocar guarniciones",
-    "neverMind": "✖️ Cancelar"
+    "neverMind": "✖️ Cancelar",
+    "dismount": "🐎→🧍 +{gold}🟡"
   },
   "botController": {
     "decided": "{name} decidió {decision}",
@@ -981,5 +982,8 @@
     "overflow": "{units}🐎 no cabían — vendidos por {gold}🟡",
     "noKnight": "Llegaron {units}🐎 magníficos caballos, pero {playerSpan} no es caballero — vendidos por {gold}🟡",
     "leave": "🐴 ¡A cabalgar!"
+  },
+  "dismountSquad": {
+    "dismounted": "{playerName} desmonta {amount}🐎 a {amount}🧍, vendiendo los caballos por {gold}🟡"
   }
 }

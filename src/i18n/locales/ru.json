@@ -110,7 +110,8 @@
     },
     "stables": {
       "name": "Конюшни",
-      "description": "Свежие скакуны"    }
+      "description": "Свежие скакуны"
+    }
   },
   "artifacts": {
     "broken-blade": {
@@ -305,12 +306,12 @@
   "garrisonsScreen": {
     "title": "Гарнизоны",
     "message": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot}🧍 каждый. Доход за ход: +{units}🧍 с {tiles} клеток",
-    "inArmy": "🚩 в армии: {amount}🧍",
     "maxLabel": "макс: {max}",
     "atMax": "Уже максимум",
     "noTiles": "У вас пока нет клеток",
     "setGuards": "🛡️ Расставить гарнизоны",
-    "neverMind": "✖️ Отмена"
+    "neverMind": "✖️ Отмена",
+    "dismount": "🐎→🧍 +{gold}🟡"
   },
   "botController": {
     "decided": "{name} решил {decision}",
@@ -974,5 +975,8 @@
     "overflow": "{units}🐎 не вместились — проданы за {gold}🟡",
     "noKnight": "Прибыло {units}🐎 великолепных коней, но {playerSpan} — не рыцарь; проданы за {gold}🟡",
     "leave": "🐴 В путь!"
+  },
+  "dismountSquad": {
+    "dismounted": "{playerName} спешивает {amount}🐎 в {amount}🧍, продав коней за {gold}🟡"
   }
 }

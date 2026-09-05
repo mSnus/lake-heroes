@@ -116,7 +116,8 @@
     },
     "stables": {
       "name": "Stables",
-      "description": "Fresh mounts"    }
+      "description": "Fresh mounts"
+    }
   },
   "artifacts": {
     "broken-blade": {
@@ -313,12 +314,12 @@
   "garrisonsScreen": {
     "title": "Garrisons",
     "message": "Fame {fame}🏆 allows to have {slots} squads of {perSlot}🧍 each.\n Daily income: +{units}🧍 from {tiles} tiles",
-    "inArmy": "🚩 in the army: {amount}🧍",
     "maxLabel": "max: {max}",
     "atMax": "At maximum",
     "noTiles": "You don't own any tiles yet",
     "setGuards": "🛡️ Set guards",
-    "neverMind": "✖️ Never mind"
+    "neverMind": "✖️ Never mind",
+    "dismount": "🐎→🧍 +{gold}🟡"
   },
   "botController": {
     "decided": "{name} decided to {decision}",
@@ -1007,5 +1008,8 @@
     "overflow": "{units}🐎 couldn't fit — sold for {gold}🟡",
     "noKnight": "{units}🐎 magnificent horses arrived, but {playerSpan} is no knight — sold for {gold}🟡",
     "leave": "🐴 Ride on!"
+  },
+  "dismountSquad": {
+    "dismounted": "{playerName} dismounts {amount}🐎 into {amount}🧍, selling the horses for {gold}🟡"
   }
 }

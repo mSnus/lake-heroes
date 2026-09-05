@@ -8,6 +8,7 @@ import { DecoratedButton } from './DecoratedButton';
 import { DecoratedSlider } from './DecoratedSlider';
 import { clearScreen } from '../utils/screenStore';
 import { setTileGarrison } from '../actions/garrisonTile';
+import { dismountSquad, dismountRefund, snapDismount } from '../actions/dismountSquad';
 import { playerTurnIncome } from '../game/income';
 import { remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
@@ -50,6 +51,21 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
     return initial;
   });
 
+  // How many riders the dismount slider is currently offering to convert.
+  // dismountSquad mutates `player` in place, so a committed dismount needs a
+  // forced re-render to redraw the army line and every row's headroom.
+  const [dismount, setDismount] = useState(0);
+  const [, forceRerender] = useState(0);
+  // Snapped, because the legal counts have a hole in the middle -- see
+  // dismountSquad.ts's legalDismounts.
+  const dismountPick = snapDismount(player.militia, player.riders, player.armySlots, dismount);
+
+  const handleDismount = () => {
+    dismountSquad(gameState, dismountPick, updateGameState);
+    setDismount(0);
+    forceRerender((v) => v + 1);
+  };
+
   const totalPool = player.militia + rows.reduce((sum, { tile }) => sum + tile.garrisonMilitia, 0);
   const allocated = rows.reduce((sum, { idx, tile }) => sum + (targets[idx] ?? tile.garrisonMilitia), 0);
   const unassigned = totalPool - allocated;
@@ -89,8 +105,30 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         })}
       </div>
 
-      <div className="garrisons-unassigned">
-        {t('garrisonsScreen.inArmy', { amount: unassigned })}
+      <div className="garrisons-army">
+        <div className="garrisons-army-side">{unassigned + dismountPick}🧍</div>
+
+        {player.riders > 0 ? (
+          <>
+            <DecoratedSlider
+              min={0}
+              max={player.riders}
+              value={dismountPick}
+              onPreview={setDismount}
+              onCommit={setDismount}
+            />
+            <div className="garrisons-army-side">{player.riders - dismountPick}🐎</div>
+            <DecoratedButton
+              className="decorated-inline"
+              disabled={dismountPick <= 0}
+              onClick={handleDismount}
+            >
+              {t('garrisonsScreen.dismount', { gold: dismountRefund(dismountPick) })}
+            </DecoratedButton>
+          </>
+        ) : (
+          <div className="garrisons-army-side">{player.riders}🐎</div>
+        )}
       </div>
 
       {rows.length === 0 ? (

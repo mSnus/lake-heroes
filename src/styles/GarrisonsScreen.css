@@ -8,15 +8,40 @@
   font-family: 'Texturina';
 }
 
-.garrisons-unassigned {
+/* The army line: militia and riders on either side of the dismount slider,
+   which only ever runs one way (riders -> militia, see dismountSquad.ts). */
+.garrisons-army {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+  padding: 0 1rem;
+  z-index: 5503;
+}
+
+.garrisons-army-side {
   font-size: 1.5rem;
   font-family: 'Texturina';
   font-weight: bold;
   color: rgb(255, 255, 255);
-  text-align: center;
-  margin-top: 0.4rem;
   text-shadow: 2px 2px 6px black;
-  z-index: 5503;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+.garrisons-army .decorated-slider {
+  flex: 1;
+  max-width: 220px;
+}
+
+/* Small inline variant of button.decorated (modal.css), which is 300px wide
+   and centred by its own auto margins -- neither works in a flex row. */
+button.decorated.decorated-inline {
+  width: 130px;
+  margin: 0;
+  font-size: 0.95rem;
+  flex-shrink: 0;
 }
 
 .towers-max {
