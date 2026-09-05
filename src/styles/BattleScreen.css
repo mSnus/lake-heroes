@@ -97,6 +97,18 @@
   color: #9d9d9d;
 }
 
+.auto-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  margin-top: 6px;
+  color: #e8a54e;
+}
+
 /* ── Inline result ── */
 
 .battle-result-inline {

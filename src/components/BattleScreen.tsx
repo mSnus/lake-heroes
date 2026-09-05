@@ -624,11 +624,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           ? 'assets/screens/ruins.jpg'
           : isRogue
             ? 'assets/screens/raid.jpeg'
-            // Zombie-flavored fight: either the ambush interrupt from an
-            // abandoned tile's garrison, or a normal tile-claim battle
-            // fought directly against one (same zombie: !!tile?.abandoned
-            // grid reskin either way, see buildInitialBattleState).
-            : isZombieAmbush || (isTile && !!tile?.abandoned)
+            : // Zombie-flavored fight: either the ambush interrupt from an
+              // abandoned tile's garrison, or a normal tile-claim battle
+              // fought directly against one (same zombie: !!tile?.abandoned
+              // grid reskin either way, see buildInitialBattleState).
+              isZombieAmbush || (isTile && !!tile?.abandoned)
               ? 'assets/screens/zombies.jpeg'
               : isAmbush
                 ? 'assets/screens/ambush.jpg'
@@ -663,22 +663,34 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         <div className="battle-names-row">
           <div className="bc-attacker">
             {isAmbush ? (
-              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} showArtifacts={false} />
+              <PlayerCard
+                imageSrc={defenderImg}
+                name={defenderLabel}
+                color={defenderColor}
+                showArtifacts={false}
+              />
             ) : isRogue ? (
-              <PlayerCard imageSrc="assets/figures/npc-saracen.png" name={attacker.name} color={attacker.color} showArtifacts={false} />
+              <PlayerCard
+                imageSrc="assets/figures/npc-saracen.png"
+                name={attacker.name}
+                color={attacker.color}
+                showArtifacts={false}
+              />
             ) : (
               <PlayerCard player={attacker} showArtifacts={false} />
             )}
 
             {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
-            <div className="battle-artifacts-row">
+              <div className="battle-artifacts-row">
                 {(isAmbush ? defenderBonusEntries : attackerBonusEntries).map((e) => (
                   <span key={e.key} className="battle-artifact-badge">
-                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}{e.suffix ?? ''}
+                    {e.label}
+                    {e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
+                    {e.suffix ?? ''}
                   </span>
                 ))}
-            </div>
-          )}
+              </div>
+            )}
           </div>
 
           <div className="battle-vs-heading">
@@ -687,10 +699,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                 'vs-icon' +
                 (phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? ' vs-icon-clickable' : '')
               }
-              onClick={phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? handleVsIconClick : undefined}
+              onClick={
+                phase === 'ongoing' && !(isBrawl && autoResolveBrawl)
+                  ? handleVsIconClick
+                  : undefined
+              }
               title={isBrawl ? t('battleScreen.autoResolveBrawl') : undefined}
             >
               ⚔️
+              {phase === 'ongoing' && !(isBrawl && autoResolveBrawl) && (
+                <div className="auto-label">
+                  auto-battle
+                  <br />
+                </div>
+              )}
             </div>
             {/* attackerGridTotal/defenderGridTotal already track whichever
                 side is shown on the left/right respectively -- ambush's
@@ -708,18 +730,26 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             {isAmbush ? (
               <PlayerCard player={attacker} showArtifacts={false} />
             ) : (
-              <PlayerCard imageSrc={defenderImg} name={defenderLabel} color={defenderColor} showArtifacts={false} />
+              <PlayerCard
+                imageSrc={defenderImg}
+                name={defenderLabel}
+                color={defenderColor}
+                showArtifacts={false}
+              />
             )}
 
             {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
-            <div className="battle-artifacts-row">
+              <div className="battle-artifacts-row">
                 {(isAmbush ? attackerBonusEntries : defenderBonusEntries).map((e) => (
                   <span key={e.key} className="battle-artifact-badge">
-                    {e.label}{e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}{e.suffix ?? ''}<br />
+                    {e.label}
+                    {e.emoji ? ` ${e.emoji}` : ''} +{e.bonus}
+                    {e.suffix ?? ''}
+                    <br />
                   </span>
                 ))}
-            </div>
-          )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -743,25 +773,27 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             <div className="battle-result-sequence">
               <span className="battle-result-verdict">
                 {isAmbush
-                  ? (outcome === 'defender'
-                      ? t('battleScreen.ambushRepelled')
+                  ? outcome === 'defender'
+                    ? t('battleScreen.ambushRepelled')
+                    : outcome === 'attacker'
+                      ? t('battleScreen.defeat')
+                      : t('battleScreen.bloodyStalemate')
+                  : isRogue
+                    ? outcome === 'defender'
+                      ? t('battleScreen.attackRepelled')
                       : outcome === 'attacker'
                         ? t('battleScreen.defeat')
-                        : t('battleScreen.bloodyStalemate'))
-                  : isRogue
-                    ? (outcome === 'defender'
-                        ? t('battleScreen.attackRepelled')
-                        : outcome === 'attacker'
-                          ? t('battleScreen.defeat')
-                          : t('battleScreen.bloodyStalemate'))
-                    : (outcome === 'attacker'
-                        ? t('battleScreen.gloriousVictory')
-                        : outcome === 'defender'
-                          ? t('battleScreen.defeat')
-                          : t('battleScreen.aTie'))}
+                        : t('battleScreen.bloodyStalemate')
+                    : outcome === 'attacker'
+                      ? t('battleScreen.gloriousVictory')
+                      : outcome === 'defender'
+                        ? t('battleScreen.defeat')
+                        : t('battleScreen.aTie')}
               </span>
             </div>
-            <p className="battle-result-message" style={{ whiteSpace: 'pre-line' }}>{resultMsg}</p>
+            <p className="battle-result-message" style={{ whiteSpace: 'pre-line' }}>
+              {resultMsg}
+            </p>
             <DecoratedButton onClick={handleClose}>
               {isAmbush ? t('battleScreen.keepCalmCarryOn') : t('battleScreen.wasItWorthIt')}
             </DecoratedButton>

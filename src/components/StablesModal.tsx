@@ -77,7 +77,6 @@ const StablesModal: React.FC<StablesModalProps> = ({
       className="game-modal"
       backgroundImage="assets/screens/stables.jpg"
       noBorder={true}
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
       <div className="modal-content" style={{ color: 'white', fontFamily: 'Texturina' }}>
         <h2 className="game-title">{t('stables.title')}</h2>
