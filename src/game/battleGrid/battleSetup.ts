@@ -122,6 +122,7 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   const board = battleBoardFor(attackerGridTotal, defenderGridTotal, {
     allowBrawl: isTile || isRogue || isPlayerBattle || isCaravan || isAmbush,
     allowSmall: isTile || isRogue || isPlayerBattle,
+    isDragon: isDragonFight,
   });
   const { isBrawl } = board;
 
@@ -130,18 +131,24 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
 
   const squadCountFor = (player: Player): number => squadGroupCount(player.militia, player.riders);
 
-  const attackerFormation: FormationSpec = isBrawl
-    ? { kind: 'compact' }
-    : isAmbush
-      ? { kind: 'triangle' }
-      : { kind: 'grouped', groupCount: squadCountFor(attacker) };
+  // The dragon fight is an encirclement: the player's army huddles at the
+  // centre of the board with its tiers mixed, ringed by the dragons (see
+  // formations.ts). Every other fight still lines the two sides up facing
+  // each other across the board.
+  const attackerFormation: FormationSpec = isDragonFight
+    ? { kind: 'huddle' }
+    : isBrawl
+      ? { kind: 'compact' }
+      : isAmbush
+        ? { kind: 'triangle' }
+        : { kind: 'grouped', groupCount: squadCountFor(attacker) };
 
   const defenderFormation: FormationSpec | undefined = isBrawl
     ? { kind: 'compact' }
     : isCaravan
       ? { kind: 'columns' }
       : isDragonFight
-        ? { kind: 'grouped', groupCount: squadGroupCount(0, defenderGridTotal) }
+        ? { kind: 'encircle' }
         : isPlayerBattle
           ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
           : isAmbush

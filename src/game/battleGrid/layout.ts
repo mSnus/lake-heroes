@@ -5,6 +5,8 @@ import {
   BRAWL_COLS,
   BRAWL_ROWS,
   BRAWL_THRESHOLD,
+  DRAGON_BATTLEFIELD_COLS,
+  DRAGON_BATTLEFIELD_ROWS,
   HUGE_BATTLEFIELD_COLS,
   HUGE_BATTLEFIELD_ROWS,
   SMALL_AUTO_BATTLE_THRESHOLD,
@@ -24,6 +26,8 @@ export interface BattleBoard {
   cols: number;
   rows: number;
   isBrawl: boolean;
+  /** The dragon fight's own square board -- see isEncirclement below. */
+  isDragonBoard: boolean;
   isSmallAutoBattle: boolean;
   isHugeBattle: boolean;
   isLargeAutoBattle: boolean;
@@ -43,9 +47,9 @@ export interface BattleBoard {
 export function battleBoardFor(
   attackerGridTotal: number,
   defenderGridTotal: number,
-  opts: { allowBrawl?: boolean; allowSmall?: boolean } = {}
+  opts: { allowBrawl?: boolean; allowSmall?: boolean; isDragon?: boolean } = {}
 ): BattleBoard {
-  const { allowBrawl = true, allowSmall = true } = opts;
+  const { allowBrawl = true, allowSmall = true, isDragon = false } = opts;
 
   const isBrawl =
     allowBrawl && attackerGridTotal <= BRAWL_THRESHOLD && defenderGridTotal <= BRAWL_THRESHOLD;
@@ -67,7 +71,23 @@ export function battleBoardFor(
     attackerGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD &&
     defenderGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD;
 
+  // The dragon fight is fought as an encirclement in the middle of the
+  // board rather than a face-off across it, so it overrides the size tiers
+  // entirely with its own square board (see DRAGON_BATTLEFIELD_COLS).
+  if (isDragon) {
+    return {
+      cols: DRAGON_BATTLEFIELD_COLS,
+      rows: DRAGON_BATTLEFIELD_ROWS,
+      isDragonBoard: true,
+      isBrawl: false,
+      isSmallAutoBattle: false,
+      isHugeBattle: true,
+      isLargeAutoBattle: false,
+    };
+  }
+
   return {
+    isDragonBoard: false,
     cols: isBrawl
       ? BRAWL_COLS
       : isSmallAutoBattle

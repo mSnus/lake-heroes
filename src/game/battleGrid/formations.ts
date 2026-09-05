@@ -9,7 +9,15 @@ interface PlacedCell extends LocalCell {
   kind: UnitKind;
 }
 
-export type FormationKind = 'square' | 'triangle' | 'columns' | 'grouped' | 'dragon' | 'compact';
+export type FormationKind =
+  | 'square'
+  | 'triangle'
+  | 'columns'
+  | 'grouped'
+  | 'dragon'
+  | 'compact'
+  | 'encircle'
+  | 'huddle';
 
 export interface FormationSpec {
   kind: FormationKind;
@@ -178,6 +186,87 @@ const DRAGON_SHAPE: LocalCell[] = [
   { col: 4, row: 9 },
   { col: 4, row: 10 },
 ];
+
+// ── Dragon fight: a huddle ringed by its besiegers ──
+// Both sides share the middle of the board rather than facing off across
+// it, so these two are placed in absolute board coordinates and skip
+// placeFormation's per-side anchoring and mirroring entirely.
+
+/** Row pitch as a fraction of column pitch (BattlefieldGrid.css's
+ * --bfg-row / --bfg-cell = sqrt(3)/2). Rows sit closer together than
+ * columns, so a ring that should LOOK circular has to be an ellipse in
+ * grid coordinates -- measuring in these visual units gets that for free. */
+const ROW_PITCH = 0.866;
+
+interface RankedCell extends LocalCell {
+  /** Visual distance from the board's centre. */
+  d: number;
+  angle: number;
+}
+
+/**
+ * Every cell inside the largest circle the board can hold, carrying its
+ * visual distance from the centre and its bearing. Even rows are rendered
+ * half a cell right (the hex offset), which is folded in here so the
+ * "circle" is round on screen rather than in raw grid coordinates.
+ */
+function discCells(cols: number, rows: number): RankedCell[] {
+  const cx = (cols - 1) / 2;
+  const cy = (rows - 1) / 2;
+  const radius = Math.min(cx, cy * ROW_PITCH);
+  const out: RankedCell[] = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const x = col + (row % 2 === 0 ? 0.5 : 0) - cx;
+      const y = (row - cy) * ROW_PITCH;
+      const d = Math.hypot(x, y);
+      if (d > radius) continue;
+      out.push({ col, row, d, angle: Math.atan2(y, x) });
+    }
+  }
+
+  return out;
+}
+
+/**
+ * The besieging ring: the `n` cells lying closest to the largest circle the
+ * board can hold. Taking them in order of distance FROM that circle (rather
+ * than from the board's centre) lays a complete one-cell ring first and only
+ * then thickens it, so an encirclement is never dashed no matter how the
+ * headcount divides.
+ */
+function encircleLayout(n: number, cols: number, rows: number): LocalCell[] {
+  const ranked = discCells(cols, rows);
+  if (ranked.length === 0) return [];
+  const radius = Math.max(...ranked.map((c) => c.d));
+  return [...ranked]
+    .sort((a, b) => Math.abs(a.d - radius) - Math.abs(b.d - radius) || a.angle - b.angle)
+    .slice(0, n)
+    .map((c) => ({ col: c.col, row: c.row }));
+}
+
+/** The besieged huddle: the innermost `n` cells, packed around the centre.
+ * Disjoint from encircleLayout's ring as long as the two together fit
+ * inside the disc -- one fills it from the middle out, the other from the
+ * rim in -- with whatever is left over standing as the gap between them. */
+function huddleLayout(n: number, cols: number, rows: number): LocalCell[] {
+  return discCells(cols, rows)
+    .sort((a, b) => a.d - b.d || a.angle - b.angle)
+    .slice(0, n)
+    .map((c) => ({ col: c.col, row: c.row }));
+}
+
+/** Fisher-Yates, so a huddle's militia and riders stand mixed rather than
+ * in the militia-then-riders order the units arrive in. */
+function shuffled<T>(items: T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+
+  return out;
+}
 
 /** Gap (empty rows/cols) left between adjacent sub-formations, whether
  * stacking >10-count chunks or separating tower/squad clusters. */
@@ -519,6 +608,28 @@ export function placeFormation(
   militia: number,
   riders: number
 ): void {
+  // Encirclement places both sides in the SAME part of the board -- the
+  // huddle at the centre, the ring around it -- so it works in absolute
+  // board coordinates and skips the per-side anchoring and mirroring below
+  // entirely. The two sets are disjoint by construction: one fills the
+  // inscribed disc from the inside, the other from the outside.
+  if (formation.kind === 'encircle' || formation.kind === 'huddle') {
+    const cells =
+      formation.kind === 'encircle'
+        ? encircleLayout(units.length, cols, rows)
+        : huddleLayout(units.length, cols, rows);
+    // The huddle is shuffled so its militia and riders stand mixed; the
+    // ring keeps its order, every unit in it being the same kind anyway.
+    const ordered = formation.kind === 'huddle' ? shuffled(units) : units;
+    ordered.forEach((unit, i) => {
+      const c = cells[i];
+      if (!c) return;
+      unit.col = Math.max(0, Math.min(cols - 1, c.col));
+      unit.row = Math.max(0, Math.min(rows - 1, c.row));
+    });
+    return;
+  }
+
   let placed: PlacedCell[];
   switch (formation.kind) {
     case 'triangle':

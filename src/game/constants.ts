@@ -150,6 +150,16 @@ export const SMALL_BATTLEFIELD_ROWS = 15;
 // BATTLEFIELD_ROWS, and the tighter width closes the approach.
 export const HUGE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
 export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 11;
+// The dragon fight is an encirclement, not a face-off: both sides share the
+// middle of the board (see formations.ts's encircle/huddle), so it needs a
+// roughly SQUARE board rather than a tall corridor -- the ring is only as
+// round as the largest circle the board can hold. Rows step down by
+// sqrt(3)/2 of the column pitch, so ~1.15 rows per column comes out square
+// on screen. Sized to seat the ring, the huddle and a gap between them:
+// 48 dragons + up to 60 militia/riders inside an inscribed circle of ~170
+// cells.
+export const DRAGON_BATTLEFIELD_COLS = 15;
+export const DRAGON_BATTLEFIELD_ROWS = 19;
 // Landing on an abandoned (zombie-guarded) tile has this chance to trigger a
 // zombie ambush — same mechanics as a regular Ambush, but the attackers are
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).

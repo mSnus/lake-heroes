@@ -58,13 +58,20 @@ export function simulateOneBattle(
   // Board tier and formations both come from the same helpers the live
   // battle screen uses, so simulated odds match what a real fight of these
   // exact parameters would produce -- see layout.ts.
-  const { isBrawl, cols, rows } = battleBoardFor(attackerTotal, defenderTotal);
-  const attackerFormation: FormationSpec = isBrawl
-    ? { kind: 'compact' }
-    : { kind: 'grouped', groupCount: squadGroupCount(attacker.militia, attacker.riders) };
-  const defenderFormation: FormationSpec = isBrawl
-    ? { kind: 'compact' }
-    : { kind: 'grouped', groupCount: squadGroupCount(isDragon ? 0 : defenderRaw, isDragon ? defenderRaw : 0) };
+  const { isBrawl, cols, rows } = battleBoardFor(attackerTotal, defenderTotal, { isDragon });
+  // A dragon fight is an encirclement on its own square board, everything
+  // else a face-off -- mirrored from battleSetup.ts so simulated odds keep
+  // matching what a real fight of these parameters produces.
+  const attackerFormation: FormationSpec = isDragon
+    ? { kind: 'huddle' }
+    : isBrawl
+      ? { kind: 'compact' }
+      : { kind: 'grouped', groupCount: squadGroupCount(attacker.militia, attacker.riders) };
+  const defenderFormation: FormationSpec = isDragon
+    ? { kind: 'encircle' }
+    : isBrawl
+      ? { kind: 'compact' }
+      : { kind: 'grouped', groupCount: squadGroupCount(defenderRaw, 0) };
 
   let state: GridBattleState = createBattle(
     {
