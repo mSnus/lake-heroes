@@ -448,6 +448,46 @@
     }
   },
   {
+    "id": "knives",
+    "group": "Camps",
+    "icon": "🔪",
+    "spriteImage": "assets/sprites/knives.png",
+    "isOwnable": true,
+    "bonusType": "units",
+    "requiredFame": 3,
+    "garrison": 24,
+    "prices": {
+      "1": {
+        "gold": 10,
+        "units": 5
+      },
+      "2": {
+        "gold": 7.5,
+        "units": 0
+      },
+      "3": {
+        "gold": 15,
+        "units": 0
+      }
+    },
+    "bonuses": {
+      "1": 0,
+      "2": 1,
+      "3": 2
+    },
+    "defences": {
+      "1": 6,
+      "2": 12,
+      "3": 18
+    },
+    "annualGoldMult": 4,
+    "annualUnits": {
+      "1": 1,
+      "2": 3,
+      "3": 5
+    }
+  },
+  {
     "id": "swords",
     "group": "Camps",
     "icon": "🗡️",
@@ -459,7 +499,7 @@
     "prices": {
       "1": {
         "gold": 12,
-        "units": 2
+        "units": 5
       },
       "2": {
         "gold": 7.5,
@@ -718,6 +758,21 @@
     "group": "Special",
     "icon": "🃏",
     "spriteImage": "assets/sprites/ruins.png",
+    "isOwnable": false,
+    "prices": {
+      "1": {
+        "gold": 0,
+        "units": 0
+      }
+    },
+    "bonuses": {},
+    "defences": {}
+  },
+  {
+    "id": "stables",
+    "group": "Special",
+    "icon": "🃏",
+    "spriteImage": "assets/sprites/stables.png",
     "isOwnable": false,
     "prices": {
       "1": {

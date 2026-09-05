@@ -12,8 +12,8 @@ interface MapEditState {
 // place here, then a store emit() forces a re-render that picks up the new
 // values (same live-mutation pattern as `slots` below for tile positions).
 export const playerIconOffset = {
-  anchorXPct: 11.5,
-  anchorYPct: 12.5,
+  anchorXPct: 11.0,
+  anchorYPct: 10.5,
   clusterStepPct: 4,
 };
 

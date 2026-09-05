@@ -68,6 +68,9 @@
     "swords": {
       "name": "Espadas"
     },
+    "knives": {
+      "name": "Dagas"
+    },
     "archer-tower": {
       "name": "Torre de arqueros",
       "shortName": "Arqueros"
@@ -111,6 +114,10 @@
     "ruins": {
       "name": "Ruinas",
       "description": "Antiguos monstruos las custodian"
+    },
+    "stables": {
+      "name": "Establos",
+      "description": "Monturas frescas"
     }
   },
   "artifacts": {

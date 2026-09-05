@@ -61,6 +61,9 @@
     "swords": {
       "name": "Мечи"
     },
+    "knives": {
+      "name": "Кинжалы"
+    },
     "archer-tower": {
       "name": "Башня лучников",
       "shortName": "Лучники"
@@ -104,6 +107,10 @@
     "ruins": {
       "name": "Руины",
       "description": "Древние монстры охраняют их"
+    },
+    "stables": {
+      "name": "Конюшни",
+      "description": "Свежие скакуны"
     }
   },
   "artifacts": {

@@ -67,6 +67,9 @@
     "swords": {
       "name": "Swords"
     },
+    "knives": {
+      "name": "Daggers"
+    },
     "archer-tower": {
       "name": "Archer tower",
       "shortName": "Archers"
@@ -110,6 +113,10 @@
     "ruins": {
       "name": "Ruins",
       "description": "Ancient monsters guard them"
+    },
+    "stables": {
+      "name": "Stables",
+      "description": "Fresh mounts"
     }
   },
   "artifacts": {
