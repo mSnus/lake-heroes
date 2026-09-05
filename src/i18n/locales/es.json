@@ -117,8 +117,7 @@
     },
     "stables": {
       "name": "Establos",
-      "description": "Monturas frescas"
-    }
+      "description": "Monturas frescas"    }
   },
   "artifacts": {
     "broken-blade": {
@@ -393,7 +392,8 @@
       "sphynx": "🦁 <strong>Esfinge</strong>: <br/>Tira el dado 🎲:<br/> <b>1,2</b> - pierdes la mitad de tu 🟡<br/><b>3,4</b> - pierdes 1/3 de tus 🧍<br/> <b>5</b> - nada, exhala 🌬️<br/> <b>6</b> - ganas la mitad de tu 🟡",
       "prison": "⛓️ <strong>Prisión</strong> — pierdes un turno. Mientras estás en prisión, nadie paga por visitar tus casillas",
       "joker": "🃏 <strong>Comodín</strong> — desencadena un evento global aleatorio, ver la lista completa abajo.",
-      "ruins": "🏚️ <strong>Ruinas</strong> — caer aquí siempre desencadena una lucha contra sus ocupantes monstruosos, ver los detalles abajo."
+      "ruins": "🏚️ <strong>Ruinas</strong> — caer aquí siempre desencadena una lucha contra sus ocupantes monstruosos, ver los detalles abajo.",
+      "stables": "🐴 <strong>Establos</strong> — recibe 3–12 jinetes 🐎 gratis (solo caballeros; los demás reciben oro)"
     },
     "joker": {
       "title": "Comodín 🃏",
@@ -973,5 +973,13 @@
       "dragon": "Batalla contra el dragón",
       "kings-castle": "Castillo del Rey"
     }
+  },
+  "stables": {
+    "title": "Los Establos",
+    "ridersJoined": "¡{units}🐎 jinetes se unieron al ejército de {playerSpan}!",
+    "upgradedSlot": "{sold}🧍 milicia vendida por {militiaGold}🟡 — sus monturas llevan ahora {received}🐎 jinetes",
+    "overflow": "{units}🐎 no cabían — vendidos por {gold}🟡",
+    "noKnight": "Llegaron {units}🐎 magníficos caballos, pero {playerSpan} no es caballero — vendidos por {gold}🟡",
+    "leave": "🐴 ¡A cabalgar!"
   }
 }

@@ -27,7 +27,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   // (KingsCastleModal/TavernModal's self-driving effect / BotController), so
   // hide just these rather than flashing them at a human who has nothing to
   // do this turn. Other screens stay visible.
-  const isSelfDrivingModal = config.screenType === 'kings-castle' || config.screenType === 'tavern-result';
+  const isSelfDrivingModal = config.screenType === 'kings-castle' || config.screenType === 'tavern-result' || config.screenType === 'stables-result';
   const isGuardsFee = !!config.encounter && config.encounter.canFight !== undefined;
   const isCaravan = config.screenType === 'caravan';
 

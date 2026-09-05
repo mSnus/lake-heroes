@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { rollDice } from '../game/Dice';
 import { handleTreasureBox } from './treasureBox';
 import { handleTavern } from './tavern';
+import { handleStables } from './stables';
 import { handlePrison } from './prison';
 import { handleSphynx } from './sphynx';
 import { handleKingCastle } from './king';
@@ -161,6 +162,11 @@ export async function rollAndMove(
         }
 
         showTavernScreen(tile.name, (roll) => handleTavern(board, updateGameState, roll));
+        return;
+      }
+
+      if (tile.id === 'stables') {
+        handleStables(board, updateGameState);
         return;
       }
 

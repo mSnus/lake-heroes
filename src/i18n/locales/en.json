@@ -116,8 +116,7 @@
     },
     "stables": {
       "name": "Stables",
-      "description": "Fresh mounts"
-    }
+      "description": "Fresh mounts"    }
   },
   "artifacts": {
     "broken-blade": {
@@ -394,7 +393,8 @@
       "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
       "prison": "⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for visiting your tiles",
       "joker": "🃏 <strong>Joker</strong> — triggers a random global event, see below for the full list.",
-      "ruins": "🏚️ <strong>Ruins</strong> — landing here always triggers a fight against monster occupants, see below for details."
+      "ruins": "🏚️ <strong>Ruins</strong> — landing here always triggers a fight against monster occupants, see below for details.",
+      "stables": "🐴 <strong>Stables</strong> — receive 3–12 free riders 🐎 (knights only; non-knights get gold instead)"
     },
     "joker": {
       "title": "Joker 🃏",
@@ -999,5 +999,13 @@
       "dragon": "Dragon battle",
       "kings-castle": "King's Castle"
     }
+  },
+  "stables": {
+    "title": "The Stables",
+    "ridersJoined": "{units}🐎 galloped to join the army of {playerSpan}!",
+    "upgradedSlot": "{sold}🧍 militia sold for {militiaGold}🟡 — their mounts now carry {received}🐎 riders",
+    "overflow": "{units}🐎 couldn't fit — sold for {gold}🟡",
+    "noKnight": "{units}🐎 magnificent horses arrived, but {playerSpan} is no knight — sold for {gold}🟡",
+    "leave": "🐴 Ride on!"
   }
 }

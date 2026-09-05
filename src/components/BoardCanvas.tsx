@@ -13,6 +13,7 @@ import { showScreen } from '../utils/screenStore';
 import RealmOverviewScreen from './RealmOverviewScreen';
 import { handleKingCastle } from '../actions/king';
 import { openTavernHireOnly } from '../actions/tavern';
+import { openStablesHireOnly } from '../actions/stables';
 import { challengeDragonFromBoard } from '../actions/fightDragon';
 import { useT } from '../i18n';
 
@@ -201,6 +202,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
       if (isActivePlayerTile && tile.id === 'tavern') {
         openTavernHireOnly(board, updateGameState);
+        return;
+      }
+
+      if (isActivePlayerTile && tile.id === 'stables') {
+        openStablesHireOnly(board, updateGameState);
         return;
       }
 

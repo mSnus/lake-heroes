@@ -7,14 +7,14 @@ export const TREASURE_BOX_MULTIPLIER = 200;
 export const TILE_COUNT = 28;
 export const MAX_PLAYERS = 6;
 export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the player's laps around the board
-// Board fork (map13): leaving FORK_START_INDEX branches onto either the
-// short or the long path, which rejoin the main loop at FORK_MERGE_INDEX --
-// see game/boardPath.ts (movement) and utils/forkChoiceStore.ts (the pending
-// per-turn choice) and BoardCanvas.tsx (the on-tile arrow picker).
-export const FORK_START_INDEX = 5;
-export const FORK_MERGE_INDEX = 12;
-export const FORK_SHORT_PATH = [6, 7];
-export const FORK_LONG_PATH = [8, 9, 10, 11];
+// Board fork: leaving FORK_START_INDEX branches onto either the short or the
+// long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
+// game/boardPath.ts (movement), utils/forkChoiceStore.ts (the pending
+// per-turn choice), and BoardCanvas.tsx (the on-tile arrow picker).
+export const FORK_START_INDEX = 4;
+export const FORK_MERGE_INDEX = 13;
+export const FORK_SHORT_PATH = [5, 6, 7];
+export const FORK_LONG_PATH = [8, 9, 10, 11, 12];
 // Approaching the fork, the branch is a hidden coin flip rather than a
 // choice -- rolled in rollAndMove.ts whenever the fork start is this many
 // steps away or fewer, i.e. whenever a single die could still reach it. A

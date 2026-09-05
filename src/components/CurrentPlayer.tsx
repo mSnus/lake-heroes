@@ -14,6 +14,7 @@ import { gameEvent } from '../utils/events';
 import { showScreen } from '../utils/screenStore';
 import { handleKingCastle } from '../actions/king';
 import { openTavernHireOnly } from '../actions/tavern';
+import { openStablesHireOnly } from '../actions/stables';
 import { useT } from '../i18n';
 
 interface CurrentPlayerProps {
@@ -134,6 +135,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
       handleKingCastle(gameState, updateGameState);
     } else if (gameState.activeTile.id === 'tavern') {
       openTavernHireOnly(gameState, updateGameState);
+    } else if (gameState.activeTile.id === 'stables') {
+      openStablesHireOnly(gameState, updateGameState);
     } else {
       gameEvent('displayTile', gameState.activeTile);
     }

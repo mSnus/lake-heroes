@@ -18,6 +18,9 @@ import { t } from '../i18n';
 // militia.
 const KNIGHT_HORSE_CHANCE = 0.2;
 
+const TAVERN_UNITS_MIN = 3;
+const TAVERN_UNITS_MAX = 12;
+
 /** The Tavern's militia/rider hire prices -- a premium over the King's
  * Castle's own prices, shared by the human hire panel, the bot decision,
  * and the actual charge so none of them can ever drift apart. */
@@ -48,7 +51,9 @@ export function handleTavern(
 
   const circles = player.circles ?? 0;
   const circleMultiplier = circles >= 12 ? 2 : circles >= 6 ? 1.5 : 1;
-  const unitsReward = Math.round(roll * circleMultiplier);
+  const baseRoll = Math.floor(Math.random() * (TAVERN_UNITS_MAX - TAVERN_UNITS_MIN + 1)) + TAVERN_UNITS_MIN;
+  const unitsReward = Math.round(baseRoll * circleMultiplier);
+  void roll; // dice animation still plays for atmosphere
   const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
 
   const wantsHorses =
