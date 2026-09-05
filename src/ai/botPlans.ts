@@ -52,8 +52,8 @@ const MAX_ARMY_STEPS = 24;
  *
  * 1. Any rider capacity going spare gets filled, as far as gold allows.
  * 2. Once nothing is spare, convert the smallest militia squad into riders
- *    in place via upgradeSquad -- same total slots either way (see
- *    upgradeSquadCost), so it needs no capacity room and is a guaranteed
+ *    in place via upgradeSquad -- a whole squad moving tiers never needs
+ *    more slots (see maxUpgradable), so it needs no capacity room and is a guaranteed
  *    power gain at any amount the bot can afford, unlike disbanding for a
  *    fresh hire which used to require affording back at least half the
  *    squad given up.
