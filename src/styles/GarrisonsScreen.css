@@ -21,7 +21,7 @@
 }
 
 .garrisons-army-side {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-family: 'Texturina';
   font-weight: bold;
   color: rgb(255, 255, 255);
@@ -48,6 +48,12 @@ button.decorated.decorated-inline {
   margin-right: 1rem;
 }
 
+.garrison-towers {
+  color: white;
+  font-family: 'Texturina';
+  font-size: 1.2rem;
+}
+
 /* Bounded height + its own scroll, distinct from the whole screen's own
    overflow (.screen-common) -- keeps the Apply/Never mind buttons reachable
    without scrolling past a long tile list first.
@@ -61,7 +67,7 @@ button.decorated.decorated-inline {
   padding-right: 1rem;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: auto auto auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   column-gap: 0.5rem;
   row-gap: 1rem;
@@ -83,12 +89,18 @@ button.decorated.decorated-inline {
   width: 100%;
 }
 
+.garrisons-row-name-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
 .garrisons-row-name {
   color: wheat;
   font-family: 'Encode';
   font-weight: bold;
-  font-size: 1rem;
-  text-shadow: 2px 2px 6px black;
+  font-size: 0.8rem;
 }
 
 .tile-icon-title {

@@ -150,19 +150,30 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
 
             return (
               <React.Fragment key={idx}>
-                {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="3rem" style={{ marginBottom: 0 }} />}
-
-                <div className="garrisons-row-name">{tile.shortName}</div>
+                <div className="garrisons-row-name-icon">
+                  {tile.spriteImage && (
+                    <SpriteCircleIcon
+                      src={tile.spriteImage}
+                      size="3rem"
+                      style={{ marginBottom: 0 }}
+                    />
+                  )}
+                  
+                  <div className="garrisons-row-name">{tile.shortName}</div>
+                </div>
 
                 <div className="big-icon-hint towers-max">
-                  <div className="garrison-towers">🏯{tile.garrisonSlots}</div>
-                  <div style={{color: 'wheat'}}>{t('garrisonsScreen.maxLabel', { max })}</div>
+                  <div className="garrison-towers">{tile.garrisonSlots}🏯</div>
+                  <div style={{ color: 'wheat' }}>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
 
                 <div className="garrisons-row-info">
                   {atMax ? (
                     <div className="garrisons-row-atmax">
-                      {t('garrisonsScreen.atMax', { slots: tile.garrisonSlots, units: tile.garrisonMilitia })}
+                      {t('garrisonsScreen.atMax', {
+                        slots: tile.garrisonSlots,
+                        units: tile.garrisonMilitia,
+                      })}
                     </div>
                   ) : (
                     <DecoratedSlider
@@ -192,7 +203,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
 
       <Fade />
     </ScreenBackground>
-    
+
   );
 };
 
