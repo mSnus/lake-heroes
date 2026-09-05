@@ -771,7 +771,7 @@
   {
     "id": "stables",
     "group": "Special",
-    "icon": "🃏",
+    "icon": "🐴 :horse:",
     "spriteImage": "assets/sprites/stables.png",
     "isOwnable": false,
     "prices": {
