@@ -981,7 +981,9 @@
     }
   },
   "realmOverview": {
-    "noTiles": "no land yet"
+    "noTiles": "no land yet",
+    "annual": "🏰 per lap:",
+    "gracePct": "({pct}% grace)"
   },
   "statsScreen": {
     "title": "Statistics",

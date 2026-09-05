@@ -1002,5 +1002,9 @@
   },
   "dismountSquad": {
     "dismounted": "{playerName} dismounts {amount}🐎 → {amount}🧍 (+{gold}🟡)"
+  },
+  "realmOverview": {
+    "annual": "🏰 per lap:",
+    "gracePct": "({pct}% grace)"
   }
 }

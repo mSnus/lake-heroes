@@ -107,3 +107,27 @@
   font-size: 1.05rem;
   color: #ffe066;
 }
+
+/* Yearly income -- what crossing the King's Castle will pay. Moved here
+   from the player pane's 🏰 figure, which could only ever show the active
+   player's; on this screen every player's sits side by side, which is what
+   makes the King's grace handicap legible as a comparison. */
+.realm-annual {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 0.95rem;
+  color: #8fd18f;
+  cursor: help;
+}
+
+.realm-annual-label {
+  opacity: 0.75;
+}
+
+.realm-annual-grace {
+  color: #ffe066;
+  font-size: 0.85em;
+}

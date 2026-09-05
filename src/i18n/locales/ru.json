@@ -951,7 +951,9 @@
     "setting": "Настройка"
   },
   "realmOverview": {
-    "noTiles": "земель пока нет"
+    "noTiles": "земель пока нет",
+    "annual": "🏰 за круг:",
+    "gracePct": "({pct}% милости)"
   },
   "statsScreen": {
     "title": "Статистика",

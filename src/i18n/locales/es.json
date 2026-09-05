@@ -954,7 +954,9 @@
     "setting": "Configuración"
   },
   "realmOverview": {
-    "noTiles": "aún sin tierras"
+    "noTiles": "aún sin tierras",
+    "annual": "🏰 por vuelta:",
+    "gracePct": "({pct}% de gracia)"
   },
   "statsScreen": {
     "title": "Estadísticas",

@@ -6,6 +6,8 @@ import { playerScore } from '../game/score';
 import { getArtifact } from '../game/artifacts';
 import { totalWealth } from '../game/wealth';
 import { playerTurnIncome } from '../game/income';
+import { computeAnnualReward, KingsGraceReward } from '../game/kingsGrace';
+import { formatArmy } from '../utils/formatArmy';
 import { PlayerLabel } from './PlayerLabel';
 import { useT } from '../i18n';
 import '../styles/RealmOverviewScreen.css';
@@ -23,6 +25,37 @@ const delta = (n: number) => (n > 0 ? <span className="realm-delta">+{n}</span> 
  * names ride along as a tooltip. */
 const artifactNames = (player: Player) =>
   player.artifacts.map((id) => getArtifact(id)?.name ?? id).join(', ');
+
+/** Where a lap's pay comes from, as the row's tooltip -- the same breakdown
+ * the player pane used to hide behind a click on its 🏰 figure. The grace is
+ * the one source that can pay riders, so it spells out the tiers instead of
+ * a single 👬 headcount. */
+const annualBreakdown = (t: (k: string, v?: any) => string, a: KingsGraceReward): string => {
+  const part = (gold: number, units: number, label: string) => {
+    const items = [gold > 0 ? `${gold}🟡` : null, units > 0 ? `${units}👬` : null].filter(Boolean);
+    return items.length > 0 ? `${items.join(` ${t('common.and')} `)} ${label}` : null;
+  };
+
+  const grace = [
+    a.kingsGold > 0 ? `${a.kingsGold}🟡` : null,
+    a.kingsMilitia + a.kingsRiders > 0 ? formatArmy(a.kingsMilitia, a.kingsRiders) : null,
+  ].filter(Boolean);
+
+  return [
+    grace.length > 0
+      ? `${grace.join(` ${t('common.and')} `)} ${
+          a.kingsHandicap < 1
+            ? t('currentPlayer.asKingsGraceHandicapped', { pct: Math.round(a.kingsHandicap * 100) })
+            : t('currentPlayer.asKingsGrace')
+        }`
+      : null,
+    part(a.tileGold, a.tileUnits - a.towerUnits, t('currentPlayer.fromYourTiles')),
+    part(0, a.towerUnits, t('currentPlayer.fromYourTowers')),
+    part(a.arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
+  ]
+    .filter(Boolean)
+    .join(', ');
+};
 
 /**
  * Read-only survey of every player in the realm -- holdings, per-turn income,
@@ -52,6 +85,7 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
         {ranked.map((player) => {
           const income = playerTurnIncome(gameState, player);
           const tiles = tilesOf(player);
+          const annual = computeAnnualReward(gameState, player);
 
           return (
             <div key={player.id} className="realm-player">
@@ -73,6 +107,17 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
                   {player.militia}🧍{delta(income.units)}
                 </span>
                 <span>{player.riders}🐎</span>
+              </div>
+
+              <div className="realm-annual" title={annualBreakdown(t, annual)}>
+                <span className="realm-annual-label">{t('realmOverview.annual')}</span>
+                {annual.totalGold > 0 && <span>+{annual.totalGold}🟡</span>}
+                {annual.totalUnits > 0 && <span>+{annual.totalUnits}👬</span>}
+                {annual.kingsHandicap < 1 && (
+                  <span className="realm-annual-grace">
+                    {t('realmOverview.gracePct', { pct: Math.round(annual.kingsHandicap * 100) })}
+                  </span>
+                )}
               </div>
 
               {tiles.length > 0 ? (
