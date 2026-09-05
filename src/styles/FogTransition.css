@@ -1,4 +1,8 @@
-/* Durations must stay in step with transitionStore's FOG_IN/HOLD/OUT_MS.
+/* Durations come in as --fog-in/--fog-hold/--fog-out, set by
+   FogTransition.tsx from transitionStore's FOG_IN/HOLD/OUT_MS -- the same
+   numbers that schedule the phases, so the fade can never run to a
+   different length than the phase containing it. The fallbacks only apply
+   if the element is ever rendered without them.
    z-index clears every screen (realm overview is 10000). pointer-events
    stays none so a stuck overlay could never deaden the UI. */
 .fog-transition {
@@ -15,7 +19,7 @@
 
 /* Animations, not transitions: these mount already in their start phase. */
 .fog-transition.fog-in {
-  animation: fog-wipe-in 500ms linear forwards;
+  animation: fog-wipe-in var(--fog-in, 500ms) linear forwards;
 }
 
 .fog-transition.fog-hold {
@@ -23,7 +27,7 @@
 }
 
 .fog-transition.fog-out {
-  animation: fog-wipe-out 300ms ease forwards;
+  animation: fog-wipe-out var(--fog-out, 300ms) ease forwards;
 }
 
 @keyframes fog-wipe-in {
@@ -45,7 +49,7 @@
 }
 
 .fog-transition.fog-hold .fog-transition-symbol {
-  animation: fog-symbol-dim 200ms linear forwards;
+  animation: fog-symbol-dim var(--fog-hold, 200ms) linear forwards;
 }
 
 .fog-transition.fog-out .fog-transition-symbol {
@@ -57,9 +61,13 @@
   to { filter: brightness(0); }
 }
 
+/* Deliberately NOT shortening the black fade under reduced motion. This
+   overlay exists to cover an abrupt change, and collapsing it to ~0 gives
+   a hard cut to full-screen black -- more jarring than the fade, not less,
+   and the opposite of what the setting is asking for. A cross-fade carries
+   no motion to reduce; only the fog symbol's own animation does, so that
+   is the one that gets cut short here. */
 @media (prefers-reduced-motion: reduce) {
-  .fog-transition.fog-in,
-  .fog-transition.fog-out,
   .fog-transition.fog-hold .fog-transition-symbol {
     animation-duration: 1ms;
   }
