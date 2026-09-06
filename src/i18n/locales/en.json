@@ -480,7 +480,7 @@
     "savedByArtifact": "The Dragon swoops down upon {playerName}, but the {artifactName} {emoji} saves them from harm!",
     "attacksYou": "The Dragon swoops down and attacks you!",
     "attackedNothingToBurn": "{playerName} is attacked by the dragon, but has nothing to burn.",
-    "burnsYourTile": "Dragon burns your {tileName}!",
+    "burnsYourTile": "Dragon burns your {tileName}, tower lost!",
     "tileDestroyed": "{playerName}'s {tileName} was destroyed by the Dragon!",
     "tileDamaged": "{playerName}'s {tileName} was damaged by the Dragon (now level {level})!"
   },

@@ -1,6 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { ANNUAL_DEFAULT_UNITS } from './constants';
+import { ANNUAL_DEFAULT_UNITS, GRACE_TOTAL_UNITS_MULT, GRACE_TOTAL_GOLD_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import { remainingCapacity } from './army';
 import { getArtifactGoldBonus } from './artifacts';
@@ -181,13 +181,14 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   // than lg(fame) so the floor is already worth something at fame 1.
   const fameScale = Math.log10(Math.max(0, player.fame || 0) + 1);
   const baseGold = Math.floor((fameScale * ov.moneyPassStart) / 100) * 100;
-  const kingsGold = Math.round(Math.max(base.gold, baseGold) * kingsHandicap);
+  const kingsGold =
+    Math.round(Math.max(base.gold, baseGold) * kingsHandicap) * GRACE_TOTAL_GOLD_MULT;
 
   // The base income is a floor on the grace's total worth, not on either
   // tier -- when it wins, it keeps the averages' militia:rider mix (all
   // militia when nobody fields riders yet).
   const averageUnits = base.militia + base.riders * GRACE_RIDER_IN_MILITIA;
-  const graceUnits = Math.max(averageUnits, fameScale * ov.unitsPassStart);
+  const graceUnits = Math.max(averageUnits, fameScale * ov.unitsPassStart) * GRACE_TOTAL_UNITS_MULT;
   const unitScale = averageUnits > 0 ? graceUnits / averageUnits : 0;
   const graceMilitia = Math.round(
     (averageUnits > 0 ? base.militia * unitScale : graceUnits) * kingsHandicap

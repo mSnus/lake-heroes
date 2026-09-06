@@ -1,7 +1,7 @@
 export const MONEY_START = 1500;
 export const UNITS_START = 12;
-export const MONEY_PASS_START = 3500;
-export const UNITS_PASS_START = 12;
+export const MONEY_PASS_START = 2000;
+export const UNITS_PASS_START = 6;
 export const FEE_MULTIPLIER = 50;
 export const TREASURE_BOX_MULTIPLIER = 200;
 export const TILE_COUNT = 28;
@@ -60,6 +60,9 @@ export const TURN_INCOME_RATIO = 0.1;
 // (tiles.json's annualUnits, per level) -- see Tile.ts's annualGold getter.
 export const ANNUAL_DEFAULT_UNITS = 0;
 export const ANNUAL_DEFAULT_GOLD_MULT = 2.5;
+//adjustments for the King's grace reward
+export const GRACE_TOTAL_UNITS_MULT = 0.5;
+export const GRACE_TOTAL_GOLD_MULT = 0.5;
 // Every owned tile also brings in a flat militia trickle every turn, on top
 // of whatever its own bonus produces (gold-type tiles) or in addition to it
 // (units-type tiles) -- see game/income.ts's tileTurnIncome.

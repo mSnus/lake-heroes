@@ -30,13 +30,16 @@
       "shortName": "Кирпичи"
     },
     "pigs-farm": {
-      "name": "Свиньи"
+      "name": "Свиноферма",
+      "shortName": "Свиньи"
     },
     "cows-farm": {
-      "name": "Коровы"
+      "name": "Коровья ферма",
+      "shortName": "Коровы"
     },
     "sheep-farm": {
-      "name": "Овцы"
+      "name": "Овечья ферма",
+      "shortName": "Овцы"
     },
     "wheat-field": {
       "name": "Пшеница"
@@ -472,7 +475,7 @@
     "savedByArtifact": "Дракон обрушивается на {playerName}, но {artifactName} {emoji} спасает от беды!",
     "attacksYou": "Дракон обрушивается на вас с атакой!",
     "attackedNothingToBurn": "{playerName} атакован драконом, но жечь нечего.",
-    "burnsYourTile": "Дракон сжигает вашу постройку «{tileName}»!",
+    "burnsYourTile": "Дракон сжигает башню на «{tileName}»!",
     "tileDestroyed": "«{tileName}» игрока {playerName} уничтожена драконом!",
     "tileDamaged": "«{tileName}» игрока {playerName} повреждена драконом (теперь уровень {level})!"
   },

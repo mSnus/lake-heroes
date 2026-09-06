@@ -478,7 +478,7 @@
     "savedByArtifact": "El Dragón se abalanza sobre {playerName}, pero el {artifactName} {emoji} le salva del daño!",
     "attacksYou": "¡El Dragón se abalanza y te ataca!",
     "attackedNothingToBurn": "¡{playerName} es atacado por el dragón, pero no tiene nada que quemar!",
-    "burnsYourTile": "¡El Dragón quema tu {tileName}!",
+    "burnsYourTile": "¡El Dragón quema tu {tileName}, torre perdida!",
     "tileDestroyed": "¡El {tileName} de {playerName} fue destruido por el Dragón!",
     "tileDamaged": "¡El {tileName} de {playerName} fue dañado por el Dragón (ahora nivel {level})!"
   },
