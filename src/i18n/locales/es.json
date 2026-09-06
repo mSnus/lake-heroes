@@ -19,7 +19,7 @@
   "tiles": {
     "water-mill": {
       "name": "Molino de agua",
-      "shortName": "Molino"
+      "shortName": "Rueda"
     },
     "windmill": {
       "name": "Molino de viento",
@@ -312,13 +312,14 @@
   },
   "garrisonsScreen": {
     "title": "Guarniciones",
+    "available": "Disponible",
     "message": "Fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot}🧍 cada uno. Ingreso diario: +{units}🧍 de {tiles} casillas",
     "maxLabel": "máx: {max}",
     "atMax": "Ya al máximo",
     "noTiles": "Todavía no posees ninguna casilla",
     "setGuards": "🛡️ Colocar guarniciones",
     "neverMind": "✖️ Cancelar",
-    "dismount": "🐎→🧍 +{gold}🟡"
+    "dismount": "Desmontar:"
   },
   "botController": {
     "decided": "{name} decidió {decision}",

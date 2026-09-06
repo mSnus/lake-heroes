@@ -90,7 +90,10 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
   };
 
   return (
-    <ScreenBackground image="assets/screens/guards.jpg" style={{ paddingTop: '1rem', justifyContent: 'space-evenly' }}>
+    <ScreenBackground
+      image="assets/screens/guards.jpg"
+      style={{ paddingTop: '1rem', justifyContent: 'space-evenly' }}
+    >
       <div className="text-title" style={{ marginBottom: '0' }}>
         {t('garrisonsScreen.title')}
       </div>
@@ -106,28 +109,50 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
       </div>
 
       <div className="garrisons-army">
-        <div className="garrisons-army-side">{unassigned + dismountPick}🧍</div>
-
         {player.riders > 0 ? (
-          <>
-            <DecoratedSlider
-              min={0}
-              max={player.riders}
-              value={dismountPick}
-              onPreview={setDismount}
-              onCommit={setDismount}
-            />
-            <div className="garrisons-army-side">{player.riders - dismountPick}🐎</div>
-            <DecoratedButton
-              className="decorated-inline"
-              disabled={dismountPick <= 0}
-              onClick={handleDismount}
+          <div className="garrisons-dismount-block">
+            <div className="garrisons-army-side">Dismount:</div>
+            <div className="garrisons-army-dismount">
+              <div className="garrisons-army-side">{player.riders - dismountPick}🐎</div>
+              <DecoratedSlider
+                min={0}
+                max={player.riders}
+                value={dismountPick}
+                onPreview={setDismount}
+                onCommit={setDismount}
+              />
+              <div className="garrisons-army-side">
+                {unassigned + dismountPick}🧍
+                {dismountRefund(dismountPick) > 0 && (
+                  <span>+ {dismountRefund(dismountPick)} 🟡</span>
+                )}
+              </div>
+            </div>
+
+            <div
+              className={
+                'shield-button-container' +
+                (dismountPick > 0 ? '' : ' shield-button-container--disabled')
+              }
             >
-              {t('garrisonsScreen.dismount', { gold: dismountRefund(dismountPick) })}
-            </DecoratedButton>
-          </>
+              <button
+                className="shield-button hire-submit"
+                onClick={handleDismount}
+                disabled={dismountPick <= 0}
+              >
+                <span
+                  className="hire-submit-icon"
+                  style={{ fontSize: '1.2rem', letterSpacing: '-0.3rem' }}
+                >
+                  ➜🧍
+                </span>
+              </button>
+            </div>
+          </div>
         ) : (
-          <div className="garrisons-army-side">{player.riders}🐎</div>
+          <div className="garrisons-army-side">
+            {t('garrisonsScreen.available')}: {unassigned}🧍
+          </div>
         )}
       </div>
 
@@ -158,7 +183,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                       style={{ marginBottom: 0 }}
                     />
                   )}
-                  
+
                   <div className="garrisons-row-name">{tile.shortName}</div>
                 </div>
 
@@ -197,13 +222,14 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
       )}
 
       <div className="game-menu pay-or-fight-grid">
-        <DecoratedButton onClick={() => clearScreen()}>{t('garrisonsScreen.neverMind')}</DecoratedButton>
+        <DecoratedButton onClick={() => clearScreen()}>
+          {t('garrisonsScreen.neverMind')}
+        </DecoratedButton>
         <DecoratedButton onClick={handleApply}>{t('garrisonsScreen.setGuards')}</DecoratedButton>
       </div>
 
       <Fade />
     </ScreenBackground>
-
   );
 };
 

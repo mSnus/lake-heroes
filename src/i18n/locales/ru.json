@@ -26,7 +26,8 @@
       "shortName": "Мельница"
     },
     "brick-factory": {
-      "name": "Кирпич"
+      "name": "Кирпичная фабрика",
+      "shortName": "Кирпичи"
     },
     "pigs-farm": {
       "name": "Свиньи"
@@ -305,13 +306,14 @@
   },
   "garrisonsScreen": {
     "title": "Гарнизоны",
+    "available": "Доступно",
     "message": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot}🧍 каждый. Доход за ход: +{units}🧍 с {tiles} клеток",
     "maxLabel": "макс: {max}",
     "atMax": "Уже максимум",
     "noTiles": "У вас пока нет клеток",
     "setGuards": "🛡️ Расставить гарнизоны",
     "neverMind": "✖️ Отмена",
-    "dismount": "🐎→🧍 +{gold}🟡"
+    "dismount": "Снять с коней:"
   },
   "botController": {
     "decided": "{name} решил {decision}",

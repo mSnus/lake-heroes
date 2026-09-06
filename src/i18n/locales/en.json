@@ -19,10 +19,11 @@
   "tiles": {
     "water-mill": {
       "name": "Water mill",
-      "shortName": "Water"
+      "shortName": "Wheel"
     },
     "windmill": {
-      "name": "Windmill"
+      "name": "Windmill",
+      "shortName": "Mill"
     },
     "brick-factory": {
       "name": "Brick factory",
@@ -313,13 +314,14 @@
   },
   "garrisonsScreen": {
     "title": "Garrisons",
+    "available": "Available",
     "message": "Fame {fame}🏆 allows to have {slots} squads of {perSlot}🧍 each.\n Daily income: +{units}🧍 from {tiles} tiles",
     "maxLabel": "max: {max}",
     "atMax": "At maximum",
     "noTiles": "You don't own any tiles yet",
     "setGuards": "🛡️ Set guards",
     "neverMind": "✖️ Never mind",
-    "dismount": "🐎→🧍 +{gold}🟡"
+    "dismount": "Dismount:"
   },
   "botController": {
     "decided": "{name} decided to {decision}",

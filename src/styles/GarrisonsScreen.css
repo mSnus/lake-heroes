@@ -8,8 +8,6 @@
   font-family: 'Texturina';
 }
 
-/* The army line: militia and riders on either side of the dismount slider,
-   which only ever runs one way (riders -> militia, see dismountSquad.ts). */
 .garrisons-army {
   display: flex;
   align-items: center;
@@ -35,17 +33,10 @@
   max-width: 220px;
 }
 
-/* Small inline variant of button.decorated (modal.css), which is 300px wide
-   and centred by its own auto margins -- neither works in a flex row. */
-button.decorated.decorated-inline {
-  width: 130px;
-  margin: 0;
-  font-size: 0.95rem;
-  flex-shrink: 0;
-}
-
 .towers-max {
-  margin-right: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  scale: 1.2;
 }
 
 .garrison-towers {
@@ -54,13 +45,6 @@ button.decorated.decorated-inline {
   font-size: 1.2rem;
 }
 
-/* Bounded height + its own scroll, distinct from the whole screen's own
-   overflow (.screen-common) -- keeps the Apply/Never mind buttons reachable
-   without scrolling past a long tile list first.
-   A real 5-column grid (icon / name / towers / slider-or-atmax / amount) --
-   each row's 5 cells are direct children (see GarrisonsScreen.tsx, no
-   per-row wrapper div), so the grid's own row-wrapping aligns every row's
-   columns instead of each row laying itself out independently. */
 .garrisons-list {
   width: 100%;
   padding-left: 1rem;
@@ -116,8 +100,7 @@ button.decorated.decorated-inline {
   font-size: 1rem;
 }
 
-/* Status line replacing the slider for a remote tile already at capacity
-   (see GarrisonsScreen.tsx's atMax) -- same slot the slider would occupy. */
+
 .garrisons-row-atmax {
   color: wheat;
   font-family: 'Texturina';
@@ -127,13 +110,24 @@ button.decorated.decorated-inline {
   text-shadow: 2px 2px 6px black;
 }
 
-/* .big-icon-hint (see TileCard.css) supplies the big-value/small-caption
-   layout and font sizes -- this just adds the row's color/shadow/width on
-   top, and keeps it from shrinking when the name column is long. */
 .garrisons-row-value {
   flex: 0 0 auto;
+  margin-left: 0.5rem;
   min-width: 3.2rem;
   color: wheat;
   font-family: 'Texturina';
   text-shadow: 2px 2px 6px black;
+}
+
+.garrisons-dismount-block {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.garrisons-army-dismount {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }

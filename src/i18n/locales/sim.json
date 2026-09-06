@@ -22,7 +22,8 @@
       "shortName": "Water"
     },
     "windmill": {
-      "name": "Windmill"
+      "name": "Windmill",
+      "shortName": "Mill"
     },
     "brick-factory": {
       "name": "Brick factory",
