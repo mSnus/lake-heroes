@@ -7,7 +7,7 @@ export interface CharacterConfig {
     | { type: 'threshold'; armyFraction: number; goldFraction: number }
     | { type: 'chance'; chance: number }
     | { type: 'afford-no-banzai' };
-  upgrade: { goldFraction: number; unitsFraction: number; maxPerTurn: number };
+  upgrade: { goldFraction: number; maxPerTurn: number };
   fightThreshold: { heroHour: number; caravan: number };
   /** When to take optional payback on a tile whose toll has already been
    * paid (see ai/decisions.ts's shouldSeekRevenge). Both conditions must
@@ -52,7 +52,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     id: 'explorer',
     label: '🧭 Explorer',
     claim: { type: 'threshold', armyFraction: 2 / 3, goldFraction: 2 / 3 },
-    upgrade: { goldFraction: 1 / 2, unitsFraction: 1 / 2, maxPerTurn: 1 },
+    upgrade: { goldFraction: 1 / 2, maxPerTurn: 1 },
     fightThreshold: { heroHour: 2, caravan: 2 },
     revenge: { powerRatio: 2, minPower: 0 },
     // Same flat threshold as DRAGON_UNITS_THRESHOLD (see fightDragon.ts) --
@@ -69,7 +69,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     id: 'warrior',
     label: '⚔️ Warrior',
     claim: { type: 'chance', chance: 0.85 },
-    upgrade: { goldFraction: 1 / 3, unitsFraction: 1 / 3, maxPerTurn: 1 },
+    upgrade: { goldFraction: 1 / 3, maxPerTurn: 1 },
     fightThreshold: { heroHour: 1.5, caravan: 1.5 },
     revenge: { powerRatio: 1.5, minPower: 20 },
     dragonThreshold: 120,
@@ -83,7 +83,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     id: 'wizard',
     label: '🧙 Wizard',
     claim: { type: 'afford-no-banzai' },
-    upgrade: { goldFraction: 1 / 3, unitsFraction: 1 / 3, maxPerTurn: 2 },
+    upgrade: { goldFraction: 1 / 3, maxPerTurn: 2 },
     fightThreshold: { heroHour: 1.7, caravan: 1.7 },
     revenge: { powerRatio: 2.2, minPower: 20 },
     dragonThreshold: 120,
