@@ -74,7 +74,7 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
   const lvl1Defence = tile.getDefence(1);
   if (player.armyPower < lvl1Defence) return false;
   const armyOk = lvl1Defence <= cfg.claim.armyFraction * player.armyPower;
-  const goldOk = tile.prices['1'].gold <= cfg.claim.goldFraction * player.gold;
+  const goldOk = tile.prices[1] <= cfg.claim.goldFraction * player.gold;
   return armyOk && goldOk;
 }
 
@@ -101,16 +101,14 @@ export function pickUpgradeCandidate(board: GameState, player: Player): Tile | n
     const price = tile.prices[nextLevel];
     if (!price) continue;
 
-    const goldOk = price.gold <= cfg.upgrade.goldFraction * player.gold;
-    const unitsOk = price.units <= cfg.upgrade.unitsFraction * player.units;
-    if (!goldOk || !unitsOk) continue;
+    if (price > cfg.upgrade.goldFraction * player.gold) continue;
 
     const bonusGain = tile.getBonus(nextLevel) - tile.getBonus(tile.level);
     const better =
       bonusGain > bestBonusGain ||
       (bonusGain === bestBonusGain &&
         best !== null &&
-        price.gold < best.prices[best.level + 1].gold);
+        price < best.prices[best.level + 1]);
 
     if (better || best === null) {
       best = tile;

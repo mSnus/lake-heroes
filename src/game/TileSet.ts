@@ -66,7 +66,6 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
         ...t,
         prices: fresh.prices,
         bonuses: fresh.bonuses,
-        defences: fresh.defences,
         annualGoldMult: fresh.annualGoldMult,
         annualUnits: fresh.annualUnits,
       };

@@ -76,7 +76,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   }
 
   for (const tiles of Array.from(groupMap.values())) {
-    tiles.sort((a, b) => (a.prices?.['1']?.gold ?? 0) - (b.prices?.['1']?.gold ?? 0));
+    tiles.sort((a, b) => (a.prices?.[1] ?? 0) - (b.prices?.[1] ?? 0));
   }
 
   // Build interleaved stacks: stack[i] has the (i+1)th tile from each group

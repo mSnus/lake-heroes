@@ -143,15 +143,15 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     level === nextLevel &&
     currentLevel < maxLevel &&
     !!tile.prices[level] &&
-    (player.gold ?? 0) >= (tile.prices[level].gold || 0);
+    (player.gold ?? 0) >= (tile.prices[level] || 0);
 
   const handleUpgradeToLevel = (level: number) => {
     if (!canUpgradeToLevel(level)) return;
     const price = tile.prices[level];
-    if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: price.gold })))
+    if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: price })))
       return;
 
-    player.gold = (player.gold || 0) - (price.gold || 0);
+    player.gold = (player.gold || 0) - (price || 0);
     tile._level = level;
     say(
       t('tileCard.upgradedMessage', { playerName: player.name, tileName: tile.name, level }),
@@ -162,7 +162,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   };
 
   const priceTag = (level: number) => {
-    const gold = tile.prices[level]?.gold ?? 0;
+    const gold = tile.prices[level] ?? 0;
     const clickable = canUpgradeToLevel(level);
     // The upgrade-target level the player can't afford gets the same "can't
     // pay" treatment as TileCard's upgrade table: ❌ instead of 👛, a 🔻

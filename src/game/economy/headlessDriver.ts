@@ -71,9 +71,7 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
     let candidate =
       player.upgradesThisTurn < upgradeCfg.upgrade.maxPerTurn ? pickUpgradeCandidate(board, player) : null;
     while (candidate) {
-      const price = candidate.prices[candidate.level + 1];
-      player.gold -= price.gold;
-      player.units -= price.units;
+      player.gold -= candidate.prices[candidate.level + 1];
       candidate._level = candidate.level + 1;
       player.upgradesThisTurn += 1;
       updateGameState(board);

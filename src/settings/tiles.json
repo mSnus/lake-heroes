@@ -2,443 +2,248 @@
   {
     "id": "water-mill",
     "group": "Mills",
-    "icon": "💧",
     "spriteImage": "assets/sprites/water.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 2,
     "garrison": 8,
     "prices": {
-      "1": {
-        "gold": 6,
-        "units": 2
-      },
-      "2": {
-        "gold": 6,
-        "units": 0
-      },
-      "3": {
-        "gold": 11,
-        "units": 0
-      }
+      "1": 6,
+      "2": 6,
+      "3": 11
     },
     "bonuses": {
       "1": 4,
       "2": 8,
       "3": 12
-    },
-    "defences": {
-      "1": 10,
-      "2": 15,
-      "3": 30
     }
   },
   {
     "id": "windmill",
     "group": "Mills",
-    "icon": "🌬️",
     "spriteImage": "assets/sprites/windmill.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 3,
     "garrison": 12,
     "prices": {
-      "1": {
-        "gold": 7,
-        "units": 3
-      },
-      "2": {
-        "gold": 7,
-        "units": 0
-      },
-      "3": {
-        "gold": 12,
-        "units": 0
-      }
+      "1": 7,
+      "2": 7,
+      "3": 12
     },
     "bonuses": {
       "1": 5,
       "2": 9,
       "3": 14
-    },
-    "defences": {
-      "1": 12,
-      "2": 18,
-      "3": 36
     }
   },
   {
     "id": "brick-factory",
     "group": "Mills",
-    "icon": "🧱",
     "spriteImage": "assets/sprites/bricks.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 4,
     "garrison":18,
     "prices": {
-      "1": {
-        "gold": 8,
-        "units": 6
-      },
-      "2": {
-        "gold": 8.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 8,
+      "2": 8.5,
+      "3": 15
     },
     "bonuses": {
       "1": 5,
       "2": 9,
       "3": 14
-    },
-    "defences": {
-      "1": 12,
-      "2": 18,
-      "3": 36
     }
   },
   {
     "id": "pigs-farm",
     "group": "Farms",
-    "icon": "🐷",
     "spriteImage": "assets/sprites/pigs.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
     "garrison": 6,
     "prices": {
-      "1": {
-        "gold": 4,
-        "units": 2
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 4,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "cows-farm",
     "group": "Farms",
-    "icon": "🐄",
     "spriteImage": "assets/sprites/cows.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 2,
     "garrison": 8,
     "prices": {
-      "1": {
-        "gold": 6,
-        "units": 3
-      },
-      "2": {
-        "gold": 3.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 7,
-        "units": 0
-      }
+      "1": 6,
+      "2": 3.5,
+      "3": 7
     },
     "bonuses": {
       "1": 4,
       "2": 7,
       "3": 13
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "sheep-farm",
     "group": "Farms",
-    "icon": "🐑",
     "spriteImage": "assets/sprites/sheep.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 4,
     "garrison": 10,
     "prices": {
-      "1": {
-        "gold": 8,
-        "units": 4
-      },
-      "2": {
-        "gold": 4,
-        "units": 0
-      },
-      "3": {
-        "gold": 8,
-        "units": 0
-      }
+      "1": 8,
+      "2": 4,
+      "3": 8
     },
     "bonuses": {
       "1": 4,
       "2": 8,
       "3": 14
-    },
-    "defences": {
-      "1": 7,
-      "2": 13,
-      "3": 20
     }
   },
   {
     "id": "wheat-field",
     "group": "Fields",
-    "icon": "🌾",
     "spriteImage": "assets/sprites/wheat.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
     "garrison": 8,
     "prices": {
-      "1": {
-        "gold": 3,
-        "units": 2
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 3,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "cabbage-field",
     "group": "Fields",
-    "icon": "🥬",
     "spriteImage": "assets/sprites/cabbage.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 2,
     "garrison": 12,
     "prices": {
-      "1": {
-        "gold": 5,
-        "units": 3
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 5,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "fruit-garden",
     "group": "Fields",
-    "icon": "🍎",
     "spriteImage": "assets/sprites/fruit.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 5,
     "garrison": 16,
     "prices": {
-      "1": {
-        "gold": 7,
-        "units": 4
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 7,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "grapes",
     "group": "Traders",
-    "icon": "🍇",
     "spriteImage": "assets/sprites/grapes.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 0,
     "garrison": 10,
     "prices": {
-      "1": {
-        "gold": 5,
-        "units": 3
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 5,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "fish",
     "group": "Traders",
-    "icon": "🐟",
     "spriteImage": "assets/sprites/fish.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 2,
     "garrison": 12,
     "prices": {
-      "1": {
-        "gold": 7,
-        "units": 4
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 7,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "fur",
     "group": "Traders",
-    "icon": "🦫",
     "spriteImage": "assets/sprites/fur.png",
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 6,
     "garrison": 18,
     "prices": {
-      "1": {
-        "gold": 9,
-        "units": 4
-      },
-      "2": {
-        "gold": 3,
-        "units": 0
-      },
-      "3": {
-        "gold": 6,
-        "units": 0
-      }
+      "1": 9,
+      "2": 3,
+      "3": 6
     },
     "bonuses": {
       "1": 3,
       "2": 6,
       "3": 12
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     }
   },
   {
     "id": "bows",
     "group": "Camps",
-    "icon": "🏹",
     "spriteImage": "assets/sprites/bows.png",
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 3,
     "garrison": 24,
     "prices": {
-      "1": {
-        "gold": 8,
-        "units": 5
-      },
-      "2": {
-        "gold": 7.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 8,
+      "2": 7.5,
+      "3": 15
     },
     "bonuses": {
       "1": 0,
       "2": 1,
       "3": 2
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     },
     "annualGoldMult": 3,
     "annualUnits": {
@@ -450,35 +255,20 @@
   {
     "id": "knives",
     "group": "Camps",
-    "icon": "🔪",
     "spriteImage": "assets/sprites/knives.png",
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 5,
     "garrison": 32,
     "prices": {
-      "1": {
-        "gold": 10,
-        "units": 5
-      },
-      "2": {
-        "gold": 7.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 10,
+      "2": 7.5,
+      "3": 15
     },
     "bonuses": {
       "1": 0,
       "2": 1,
       "3": 2
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     },
     "annualGoldMult": 4,
     "annualUnits": {
@@ -490,35 +280,20 @@
   {
     "id": "swords",
     "group": "Camps",
-    "icon": "🗡️",
     "spriteImage": "assets/sprites/swords.png",
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 7,
     "garrison": 40,
     "prices": {
-      "1": {
-        "gold": 12,
-        "units": 5
-      },
-      "2": {
-        "gold": 7.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 12,
+      "2": 7.5,
+      "3": 15
     },
     "bonuses": {
       "1": 0,
       "2": 1,
       "3": 2
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     },
     "annualGoldMult": 4,
     "annualUnits": {
@@ -530,35 +305,20 @@
   {
     "id": "archer-tower",
     "group": "Towers",
-    "icon": "🏹",
     "spriteImage": "assets/sprites/archer_tower.png",
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 6,
     "garrison": 32,
     "prices": {
-      "1": {
-        "gold": 12,
-        "units": 5
-      },
-      "2": {
-        "gold": 7.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 12,
+      "2": 7.5,
+      "3": 15
     },
     "bonuses": {
       "1": 1,
       "2": 1,
       "3": 2
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     },
     "annualGoldMult": 3,
     "annualUnits": {
@@ -570,35 +330,20 @@
   {
     "id": "arquebus-tower",
     "group": "Towers",
-    "icon": "💣",
     "spriteImage": "assets/sprites/arquebus_tower.png",
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 8,
     "garrison": 40,
     "prices": {
-      "1": {
-        "gold": 16,
-        "units": 5
-      },
-      "2": {
-        "gold": 7.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 16,
+      "2": 7.5,
+      "3": 15
     },
     "bonuses": {
       "1": 1,
       "2": 1,
       "3": 2
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     },
     "annualGoldMult": 4,
     "annualUnits": {
@@ -610,35 +355,20 @@
   {
     "id": "cannon-tower",
     "group": "Towers",
-    "icon": "💥",
     "spriteImage": "assets/sprites/cannon_tower.png",
     "isOwnable": true,
     "bonusType": "units",
     "requiredFame": 12,
     "garrison": 42,
     "prices": {
-      "1": {
-        "gold": 20,
-        "units": 5
-      },
-      "2": {
-        "gold": 7.5,
-        "units": 0
-      },
-      "3": {
-        "gold": 15,
-        "units": 0
-      }
+      "1": 20,
+      "2": 7.5,
+      "3": 15
     },
     "bonuses": {
       "1": 1,
       "2": 1,
       "3": 2
-    },
-    "defences": {
-      "1": 6,
-      "2": 12,
-      "3": 18
     },
     "annualGoldMult": 5,
     "annualUnits": {
@@ -650,137 +380,92 @@
   {
     "id": "treasure-chest",
     "group": "Special",
-    "icon": "🪙",
     "spriteImage": "assets/sprites/treasure.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "tavern",
     "group": "Special",
-    "icon": "🏘️",
     "spriteImage": "assets/sprites/tavern.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "king-castle",
     "group": "Special",
-    "icon": "🏰",
     "spriteImage": "assets/sprites/castle.png",
     "isOwnable": false,
     "fog": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "prison",
     "group": "Special",
-    "icon": "🔒",
     "spriteImage": "assets/sprites/prison.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "sphynx",
     "group": "Special",
-    "icon": "🐈",
     "spriteImage": "assets/sprites/sphynx.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "portal",
     "group": "Special",
-    "icon": "🌀",
     "spriteImage": "assets/sprites/portal.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "joker",
     "group": "Special",
-    "icon": "🃏",
     "spriteImage": "assets/sprites/joker.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "ruins",
     "group": "Special",
-    "icon": "🃏",
     "spriteImage": "assets/sprites/ruins.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   },
   {
     "id": "stables",
     "group": "Special",
-    "icon": "🐴 :horse:",
     "spriteImage": "assets/sprites/stables.png",
     "isOwnable": false,
     "prices": {
-      "1": {
-        "gold": 0,
-        "units": 0
-      }
+      "1": 0
     },
-    "bonuses": {},
-    "defences": {}
+    "bonuses": {}
   }
 ]

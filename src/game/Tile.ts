@@ -16,9 +16,10 @@ export interface TileJSON {
   name?: string;
   isOwnable: boolean;
   bonusType?: 'gold' | 'units';
-  prices?: { [level: number]: { gold: number; units: number } };
+  /** Purchase (level 1) and upgrade (2, 3) cost, as a coefficient of the
+   * TILE_BASE_* values -- see the `prices` getter. */
+  prices?: { [level: number]: number };
   bonuses?: { [level: number]: number };
-  defences?: { [level: number]: number };
   /** King's Castle pass reward, units-type tiles only (Camps/Towers) --
    * multiple of TILE_BASE_PRICE, so it rescales with a live tile-price
    * override the same way prices/bonuses do. Falls back to
@@ -75,10 +76,9 @@ export class Tile implements TileJSON {
    * numbers are computed on read by the `prices` / `bonuses` getters using the
    * live TILE_BASE_* overrides, so an economy tweak (⚖️ screen) reprices every
    * tile immediately. */
-  private _priceCoeffs: { [level: number]: { gold: number; units: number } };
+  private _priceCoeffs: { [level: number]: number };
   private _bonusCoeffs: { [level: number]: number };
   private _annualGoldMult?: number;
-  defences: { [level: number]: number };
   /** Extra King's-grace units on top of annualGold, units-type tiles only --
    * see the TileJSON field for why this isn't a TILE_BASE_PRICE multiple. */
   annualUnits: { [level: number]: number };
@@ -114,8 +114,7 @@ export class Tile implements TileJSON {
     this._priceCoeffs = {};
     for (const key of Object.keys(data.prices || {})) {
       const lvl = Number(key);
-      const p = data.prices![lvl];
-      this._priceCoeffs[lvl] = { gold: p?.gold || 0, units: p?.units || 0 };
+      this._priceCoeffs[lvl] = data.prices![lvl] || 0;
     }
 
     this._bonusCoeffs = {};
@@ -124,7 +123,6 @@ export class Tile implements TileJSON {
       this._bonusCoeffs[lvl] = data.bonuses![lvl] || 0;
     }
 
-    this.defences = Object.assign({}, data.defences || {});
     this._annualGoldMult = data.annualGoldMult;
     this.annualUnits = Object.assign({}, data.annualUnits || {});
     this.owner = data.owner ?? null;
@@ -170,18 +168,16 @@ export class Tile implements TileJSON {
 
   /** Purchase/upgrade prices in real gold, computed from the authored
    * coefficients and the live TILE_BASE_PRICE / upgrade-multiplier overrides.
-   * Level-1 gold is the purchase price; higher levels are upgrade costs
-   * (level 3 costs extra on top of the normal upgrade rate, see
-   * LEVEL_3_UPGRADE_MULT); `units` are raw headcounts, never scaled. */
-  get prices(): { [level: number]: { gold: number; units: number } } {
+   * Level 1 is the purchase price; 2 and 3 are upgrade costs, both at the
+   * upgrade rate (LEVEL_3_UPGRADE_MULT is 1, so level 3 costs no premium). */
+  get prices(): { [level: number]: number } {
     const ov = getOverrides();
     const upgradeBase = ov.tileBasePrice * ov.tileUpgradeMult;
-    const out: { [level: number]: { gold: number; units: number } } = {};
+    const out: { [level: number]: number } = {};
     for (const key of Object.keys(this._priceCoeffs)) {
       const lvl = Number(key);
-      const p = this._priceCoeffs[lvl];
       const goldBase = lvl <= 1 ? ov.tileBasePrice : lvl >= 3 ? upgradeBase * LEVEL_3_UPGRADE_MULT : upgradeBase;
-      out[lvl] = { gold: p.gold * goldBase, units: p.units };
+      out[lvl] = this._priceCoeffs[lvl] * goldBase;
     }
 
     return out;
@@ -289,7 +285,7 @@ export class Tile implements TileJSON {
   /** Toll a visitor owes: the current level's own price or the tile's base
    * price, whichever is larger -- not the two summed. */
   get fee(): number {
-    return Math.max(this.prices[this.level]?.gold || 0, this.prices[1]?.gold || 0);
+    return Math.max(this.prices[this.level] || 0, this.prices[1] || 0);
   }
 
   isOwned(): boolean {
@@ -319,26 +315,10 @@ export class Tile implements TileJSON {
     // same way, so the two sides are compared on one scale.
     const lvl1Defence = this.getDefence(1) * (this.abandoned ? UNIT_POWER.zombies : 1);
     return (
-      playerGold >= this.prices['1'].gold &&
+      playerGold >= this.prices[1] &&
       (playerUnits >= lvl1Defence || isBanzaiAttack(lvl1Defence, playerUnits)) &&
       playerFame >= this.requiredFame
     );
-  }
-
-  isUpgradeable(playerGold: number, playerUnits: number): boolean {
-    return !!this.prices && this.level !== undefined && this.prices[this.level + 1] !== undefined
-      ? playerGold >= this.prices[this.level + 1].gold &&
-          playerUnits >= this.prices[this.level + 1].units
-      : false;
-  }
-
-  // level should be 1|2|3 (but kept generic)
-  getPrice(level: number = 1): { gold: number; units: number } {
-    const key = level;
-    if (level === 1)
-      return { gold: this.prices['1'].gold || 0, units: this.prices['1'].units || 0 };
-    const up = this.prices && this.prices[key];
-    return { gold: up?.gold || 0, units: up?.units || 0 };
   }
 
   get currentPrice(): { gold: number; units: number } {
@@ -346,11 +326,12 @@ export class Tile implements TileJSON {
     let priceUnits = 0;
 
     for (let lvl = 1; lvl <= this.level; lvl++) {
-      priceGold += this.prices[lvl].gold || 0;
-      // Base level's units cost mirrors the base-level defence (matches
-      // isAffordable()'s units check); upgrade levels still use their price.
-      priceUnits += lvl === 1 ? this.getDefence(1) : this.prices[lvl].units || 0;
+      priceGold += this.prices[lvl] || 0;
     }
+
+    // The units half of the price is the base level's defence (matching
+    // isAffordable's own units check) -- upgrades cost gold only.
+    priceUnits = this.getDefence(1);
 
     return { gold: priceGold, units: priceUnits };
   }
@@ -398,7 +379,6 @@ export class Tile implements TileJSON {
       bonusType: this.bonusType,
       prices: this.prices,
       bonuses: this.bonuses,
-      defences: this.defences,
       annualGoldMult: this.annualGold,
       annualUnits: this.annualUnits,
       owner: this.owner,

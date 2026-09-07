@@ -191,9 +191,7 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
     const candidate = pickUpgradeCandidate(board, player);
     if (candidate) {
       return action(() => {
-        const price = candidate.prices[candidate.level + 1];
-        player.gold -= price.gold;
-        player.units -= price.units;
+        player.gold -= candidate.prices[candidate.level + 1];
         candidate._level = candidate.level + 1;
         player.upgradesThisTurn += 1;
         updateGameState(board);

@@ -16,7 +16,7 @@ const groupOrder = (group: string): number => {
 const groupColor = (group: string): string =>
   (groups as { name: string; color: string }[]).find((g) => g.name === group)?.color ?? '#888';
 
-const basePrice = (tile: Tile): number => tile.prices?.['1']?.gold ?? 0;
+const basePrice = (tile: Tile): number => tile.prices?.[1] ?? 0;
 
 interface Props {
   gameState: GameState;

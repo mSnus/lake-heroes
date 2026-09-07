@@ -29,7 +29,7 @@ export function findSyndicateSaleCandidate(
   const unownedInGroup = groupTiles.filter((t) => !t.isOwned());
   if (unownedInGroup.length !== 1 || unownedInGroup[0] !== tile) return null; // not last-needed
 
-  const goldShortfall = tile.prices['1'].gold - player.gold;
+  const goldShortfall = tile.prices[1] - player.gold;
   if (goldShortfall <= 0) return null; // already affordable on gold
 
   // Confirm gold is the ONLY blocker.

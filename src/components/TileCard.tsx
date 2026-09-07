@@ -105,7 +105,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // upgrade-target row of an owned tile that the player can't afford, it's
   // shown bold red with a 🔻 prefix (same treatment as the "can't own" case).
   const priceCell = (level: number, useWalletIcon = false) => {
-    const gold = tile.prices[level]?.gold ?? 0;
+    const gold = tile.prices[level] ?? 0;
     const isOwnedByActive = mode === 'owned' && tile.owner === activePlayer?.id;
     const isUpgradeTarget = isOwnedByActive && level === nextLevel && !maxLevelReached;
     const lacksGold = !!isUpgradeTarget && !!activePlayer && (activePlayer.gold ?? 0) < gold;
@@ -185,7 +185,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     currentLevel < maxLevel &&
     tile.prices &&
     tile.prices[currentLevel + 1] &&
-    (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1].gold || 0);
+    (activePlayer.gold ?? 0) >= (tile.prices[currentLevel + 1] || 0);
 
   const upgradeUnreachable = !canUpgrade || currentLevel === 1;
 
@@ -330,7 +330,7 @@ export const TileCard: React.FC<TileCardProps> = ({
             <br />
             {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
             {tile.isOwned() &&
-            (<span className="tile-base-price">{tile.prices[1]?.gold ? tile.prices[1]?.gold + '🟡' : ''}</span>)}
+            (<span className="tile-base-price">{tile.prices[1] ? tile.prices[1] + '🟡' : ''}</span>)}
           </div>
         </div>
       )}

@@ -26,9 +26,8 @@ export function upgradeTile(
   const price = tile.prices[nextlevel];
 
   if (!price) return;
-  if (player.gold >= price.gold && player.units >= price.units) {
-    player.gold -= price.gold;
-    player.units -= price.units;
+  if (player.gold >= price) {
+    player.gold -= price;
     tile._level = nextlevel;
     updateGameState(board);
   }

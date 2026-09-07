@@ -27,7 +27,7 @@ export function issueKingsContract(board: GameState, player: Player): KingsContr
   if (candidates.length === 0) return null;
 
   const { t, i } = candidates[Math.floor(Math.random() * candidates.length)];
-  const price = t.prices['1']?.gold ?? 0;
+  const price = t.prices[1] ?? 0;
   const multiplier = MIN_MULTIPLIER + Math.random() * (MAX_MULTIPLIER - MIN_MULTIPLIER);
   const award = Math.ceil((price * multiplier) / 500) * 500;
 
