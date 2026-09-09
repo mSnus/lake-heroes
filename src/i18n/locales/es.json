@@ -900,7 +900,7 @@
     "razed": "¡Tu {tileName} fue arrasada 🔥por la horda errante!",
     "razedToast": "{tileName} de {playerName} es arrasada por una horda errante",
     "tie": "La guarnición de {tileName} apenas resiste, perdiendo {army} ante la horda",
-    "tieToast": "La guarnición de {playerName} en {tileName} pierde {units}🧍 ante una horda errante",
+    "tieToast": "La guarnición de {playerName} en {tileName} pierde {army} ante una horda errante",
     "horde": "Horda Errante",
     "incoming": "¡Los exploradores avistan una horda errante de {units}👹 acercándose a {tileName}!",
     "defend": "¡Defender la guarnición!"

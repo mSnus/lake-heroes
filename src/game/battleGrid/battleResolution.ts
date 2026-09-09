@@ -69,7 +69,18 @@ export function dispatchBattleResolution(
     };
   }
 
-  if (isRogue) return resolveRogueAttack(gameState, defender!, tile!, defKilled, battleOutcome);
+  // attacker is the synthetic horde Player (see rogueAttackEncounter), so its
+  // headcount is the raiding force and atkKilled is how much of it fell.
+  if (isRogue)
+    return resolveRogueAttack(
+      gameState,
+      defender!,
+      tile!,
+      attacker.units,
+      defKilled,
+      atkKilled,
+      battleOutcome
+    );
   return resolveTileBattle(gameState, attacker, defender, tile!, atkKilled, defKilled, battleOutcome);
 }
 
