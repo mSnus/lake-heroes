@@ -903,7 +903,9 @@
     "tieToast": "La guarnición de {playerName} en {tileName} pierde {army} ante una horda errante",
     "horde": "Horda Errante",
     "incoming": "¡Los exploradores avistan una horda errante de {units}👹 acercándose a {tileName}!",
-    "defend": "¡Defender la guarnición!"
+    "defend": "¡Defender la guarnición!",
+    "pillaged": "{units}👹 más fueron dispersados — les saqueaste armas y armaduras por valor de {gold}🟡",
+    "wonLootToast": "La guarnición de {playerName} en {tileName} repele una horda errante y saquea {gold}🟡 en armas"
   },
   "cheatScreen": {
     "title": "Menú de Trucos",

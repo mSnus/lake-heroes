@@ -5,6 +5,7 @@ import { razeTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
 import { say } from '../../utils/say';
 import { setGameMessage } from '../../utils/gameMessage';
+import { getOverrides } from '../../utils/overridesStore';
 import { BattleResolution, BattleOutcome, garrisonLostStr } from './common';
 import { t } from '../../i18n';
 
@@ -65,21 +66,30 @@ export function resolveRogueAttack(
     // kills are visual-only, so fall back to the whole horde (same reasoning
     // as resolveAmbush's own reward).
     const routed = hordeUnitsKilled > 0 ? hordeUnitsKilled : hordeUnits;
+    const impressed = Math.round(routed * ROGUE_JOIN_RATIO);
     const before = tile.garrison;
-    tile.garrison = before + Math.round(routed * ROGUE_JOIN_RATIO);
+    tile.garrison = before + impressed;
     const gained = tile.garrison - before;
+
+    // Whoever the garrison had no room for is stripped for kit instead, so a
+    // full tile still profits from the win rather than silently getting
+    // nothing (the setter clamps the write above, hence the difference).
+    const pillaged = impressed - gained;
+    const loot = pillaged * getOverrides().militiaPrice;
+    if (loot > 0) player.gold += loot;
 
     // The attack is repelled: report the garrison's own losses, then the
     // routed attackers who were impressed into joining the defender's garrison.
     const lossMsg = killed ? t('rogueAttack.garrisonLost', { tileName, army: killed }) : '';
-    const joinMsg =
-      gained > 0
-        ? t('rogueAttack.attackersJoin', { units: gained, playerName: player.name })
-        : t('rogueAttack.wonFull', { tileName });
-    message = [lossMsg, joinMsg].filter(Boolean).join('\n');
+    const joinMsg = gained > 0 ? t('rogueAttack.attackersJoin', { units: gained, playerName: player.name }) : '';
+    const lootMsg = loot > 0 ? t('rogueAttack.pillaged', { units: pillaged, gold: loot }) : '';
+    const spoils = [joinMsg, lootMsg].filter(Boolean).join('\n');
+    message = [lossMsg, spoils || t('rogueAttack.wonFull', { tileName })].filter(Boolean).join('\n');
     victoryBg = true;
 
-    const toast = t('rogueAttack.wonToast', { playerName: player.name, tileName });
+    const toast = loot > 0
+      ? t('rogueAttack.wonLootToast', { playerName: player.name, tileName, gold: loot })
+      : t('rogueAttack.wonToast', { playerName: player.name, tileName });
     setGameMessage(board, toast);
     say(toast, 'success');
   } else {
