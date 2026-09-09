@@ -44,7 +44,7 @@
     "isOwnable": true,
     "bonusType": "gold",
     "requiredFame": 4,
-    "garrison":18,
+    "garrison": 18,
     "prices": {
       "1": 8,
       "2": 8.5,
@@ -258,7 +258,7 @@
     "spriteImage": "assets/sprites/knives.png",
     "isOwnable": true,
     "bonusType": "units",
-    "requiredFame": 5,
+    "requiredFame": 6,
     "garrison": 32,
     "prices": {
       "1": 10,
