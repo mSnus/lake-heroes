@@ -4,6 +4,7 @@ import { recordTurnStat } from '../game/statistics';
 import { resetForkChoice } from '../utils/forkChoiceStore';
 import { setGameMessage } from '../utils/gameMessage';
 import { beginTurn } from './beginTurn';
+import { pushTurn } from '../online/sync';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -38,5 +39,10 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
     return;
   }
 
+  // The next seat is someone else's. Show the handed-over board locally, then
+  // upload it -- deliberately not awaited: the turn is already complete here,
+  // and pushTurn surfaces its own failure through the online store rather than
+  // leaving an unhandled rejection in a click handler.
   updateGameState(board);
+  void pushTurn(board);
 }
