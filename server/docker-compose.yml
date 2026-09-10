@@ -7,7 +7,9 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
-    ports: [ "8080:80" ]
+    # 8080 is taken by another project on this box; bind to loopback only --
+    # the site's nginx proxies /heroes/api/ here, nothing reaches it directly.
+    ports: [ "127.0.0.1:8091:80" ]
     volumes:
       - ./laravel:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
@@ -21,7 +23,8 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes: [ db_data:/var/lib/mysql ]
-    ports: [ "3306:3306" ]
+    # No host port: the host already runs MySQL on 3306, and only the `app`
+    # service needs the DB -- it reaches it over the compose network.
 
 volumes:
   db_data:

@@ -9,11 +9,25 @@ use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
+    /** `games.state` is longText (4GB); this is just a sanity bound. A long
+     * 6-player game runs to a few hundred KB -- turnStats grows one row per
+     * player per turn -- so the previous 256KB was reachable in real play. */
+    private const MAX_STATE_BYTES = 1048576;
+
+    // GET /api/games/{code}/version
+    // Just the counter, for the clients' poll loop -- see routes/api.php.
+    public function version(string $code)
+    {
+        $game = $this->slot($code)->game;
+
+        return response()->json(['version' => $game->version, 'status' => $game->status]);
+    }
+
     // POST /api/games  { state: "<json string>" }
     // Creates the shared game plus one join code per player slot.
     public function store(Request $req)
     {
-        $data = $req->validate(['state' => 'required|string|max:262144']);
+        $data = $req->validate(['state' => 'required|string|max:' . self::MAX_STATE_BYTES]);
 
         $parsed = json_decode($data['state'], true);
         abort_unless(
@@ -70,7 +84,7 @@ class GameController extends Controller
     public function update(Request $req, string $code)
     {
         $data = $req->validate([
-            'state' => 'required|string|max:262144',
+            'state' => 'required|string|max:' . self::MAX_STATE_BYTES,
             'version' => 'required|integer',
         ]);
 

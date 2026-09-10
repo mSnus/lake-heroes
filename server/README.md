@@ -37,10 +37,12 @@ From `server/`:
 docker compose up -d --build
 
 # 2. Scaffold the Laravel skeleton into the bind mount WITHOUT clobbering
-#    our committed custom files (cp -rn = no-clobber).
+#    our committed custom files. NB: the image is Alpine, so `cp` is BusyBox
+#    and `cp -rn . DEST` silently copies NOTHING -- use tar -k (keep existing)
+#    instead, which is what actually preserves the committed files.
 docker compose exec app sh -c '
-  composer create-project laravel/laravel /tmp/skel &&
-  cp -rn /tmp/skel/. /var/www/html/ &&
+  composer create-project laravel/laravel /tmp/skel --no-interaction &&
+  (cd /tmp/skel && tar -cf - . | tar -xkf - -C /var/www/html) &&
   rm -rf /tmp/skel
 '
 
@@ -52,9 +54,9 @@ docker compose exec app php artisan install:api --no-interaction || true
 docker compose exec app php artisan key:generate
 docker compose exec app php artisan migrate
 
-# 5. (CORS for Vite dev) in laravel/config/cors.php set:
-#       'paths' => ['api/*'],
-#       'allowed_origins' => ['http://localhost:5173'],
+# 5. No CORS setup needed: the Vite dev server proxies /api to this container
+#    (see vite.config.ts), and in production the site's nginx proxies
+#    /heroes/api/ here -- both make the API same-origin.
 docker compose exec app php artisan config:clear
 ```
 
@@ -75,13 +77,13 @@ Codes are uppercase, 8 chars from `A–Z2–9` (no `0/O/1/I`). Case-insensitive
 
 ## Smoke test
 ```bash
-curl -s -X POST localhost:8080/api/games -H 'Content-Type: application/json' \
+curl -s -X POST 127.0.0.1:8091/api/games -H 'Content-Type: application/json' \
   -d '{"state":"{\"players\":[{\"name\":\"A\",\"color\":\"red\"},{\"name\":\"B\",\"color\":\"blue\"}],\"version\":1}"}'
 # → {"codes":[{"code":"...","playerIndex":0,...},{...}],"version":1}
 
-curl -s localhost:8080/api/games/<CODE>
+curl -s 127.0.0.1:8091/api/games/<CODE>
 
-curl -s -X PUT localhost:8080/api/games/<CODE>/state -H 'Content-Type: application/json' \
+curl -s -X PUT 127.0.0.1:8091/api/games/<CODE>/state -H 'Content-Type: application/json' \
   -d '{"state":"{\"players\":[...],\"gameOver\":false}","version":1}'
 # → {"version":2}   (re-PUT with stale version → 409)
 ```

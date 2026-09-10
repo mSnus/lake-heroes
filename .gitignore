@@ -22,3 +22,32 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /dist/
+
+# Laravel skeleton (server/laravel) is scaffolded on first run, not committed --
+# see server/README.md. Ignore everything under it except our own sources.
+# bootstrap/app.php is included because it carries the hand-wired `api:` route
+# registration that `artisan install:api` refuses to add when routes/api.php
+# already exists.
+/server/laravel/*
+!/server/laravel/app
+/server/laravel/app/*
+!/server/laravel/app/Http
+/server/laravel/app/Http/*
+!/server/laravel/app/Http/Controllers
+/server/laravel/app/Http/Controllers/*
+!/server/laravel/app/Http/Controllers/GameController.php
+!/server/laravel/app/Models
+/server/laravel/app/Models/*
+!/server/laravel/app/Models/Game.php
+!/server/laravel/app/Models/GamePlayer.php
+!/server/laravel/bootstrap
+/server/laravel/bootstrap/*
+!/server/laravel/bootstrap/app.php
+!/server/laravel/database
+/server/laravel/database/*
+!/server/laravel/database/migrations
+/server/laravel/database/migrations/*
+!/server/laravel/database/migrations/2026_01_01_000000_create_games_tables.php
+!/server/laravel/routes
+/server/laravel/routes/*
+!/server/laravel/routes/api.php
