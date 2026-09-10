@@ -56,14 +56,18 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
       t = { ...t, garrison: fresh.garrison, baseGarrison: fresh.garrison };
     }
 
-    // Balance data (prices/bonuses/defences/annual reward) is authored in
+    // Balance data (group/prices/bonuses/annual reward) is authored in
     // tiles.json, not player progress — always pull the current values
     // instead of trusting whatever was baked into the save when the tile
     // was first serialized, or a rebalance never reaches a game that's
-    // already in progress.
+    // already in progress. `group` belongs here because it is not just a
+    // label: it decides garrison capacity (Towers carry an extra slot, see
+    // Tile.garrisonSlots), so a save that lost it silently demoted a
+    // level-1 Tower's ceiling from 16 back to 8.
     if (fresh) {
       t = {
         ...t,
+        group: fresh.group,
         prices: fresh.prices,
         bonuses: fresh.bonuses,
         annualGoldMult: fresh.annualGoldMult,
