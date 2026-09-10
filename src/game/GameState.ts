@@ -25,6 +25,11 @@ export class GameState {
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.
   skippingTurn: boolean = false;
+  // Has the current player's turn-start work (flag resets, tile income, prison
+  // tick, dragon offer — see actions/beginTurn.ts) already run? Guards against
+  // running it twice when the same state is applied more than once, which a
+  // reload or a re-synced online turn can do.
+  turnStarted: boolean = false;
   // Per-player-per-turn history for the Statistics screen.
   turnStats: PlayerTurnStat[] = [];
   statEvents: PlayerStatEvent[] = [];
