@@ -19,11 +19,9 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
   const slotCap = player.remainingCapacity(tier);
   const maxAmount = Math.min(goldCap, slotCap);
 
-  // Starts prefilled at the max; after a hire it resets to 0 instead of
-  // re-filling to the (now lower) max, so repeat hires don't need re-zeroing
-  // by hand. Only the mount-time default reacts to maxAmount — a later
-  // change to it (e.g. selling on the other row) doesn't reset the input.
-  const [amount, setAmount] = useState(maxAmount);
+  // Starts at 0, and returns to 0 after a hire: buying is opt-in, so the
+  // panel never opens with a purchase already dialled in.
+  const [amount, setAmount] = useState(0);
 
   // maxAmount can shrink after this row's own render — hiring on the OTHER
   // row spends the same shared gold, or a sale/purchase elsewhere changes
@@ -40,11 +38,16 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
   const displayedAmount = previewAmount ?? amount;
 
   const handleBuy = () => {
-    onBuy(amount, tier);
+    onBuy(displayedAmount, tier);
     setAmount(0);
+    setPreviewAmount(null);
   };
 
-  const canBuy = !!amount && amount > 0 && amount <= maxAmount;
+  // Keyed off the displayed (live) amount, not the committed one, so the
+  // button enables and prices itself as the thumb moves rather than waiting
+  // for release -- it already shows the live total, so gating it on the
+  // committed value made the two disagree mid-drag.
+  const canBuy = displayedAmount > 0 && displayedAmount <= maxAmount;
 
   return (
     <div className="hire-row">
@@ -52,7 +55,6 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
         <div className="hire-row-name">{emoji}</div>
         <div className="hire-row-caption">{unitPrice}🟡</div>
       </div>
-      <div className="hire-row-amount-label">0</div>
       <DecoratedSlider
         min={0}
         max={maxAmount}
