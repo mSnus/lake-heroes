@@ -35,5 +35,11 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    // Keeps the multiplayer API same-origin in dev, exactly as the site's
+    // nginx does in production -- so no CORS config is needed on either side.
+    // The container publishes on loopback 8091 (see server/docker-compose.yml).
+    proxy: {
+      '/api': { target: 'http://127.0.0.1:8091', changeOrigin: true },
+    },
   },
 })

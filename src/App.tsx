@@ -17,7 +17,8 @@ import { resetFogTransition } from './utils/transitionStore';
 import { say } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
 import tilesData from './settings/tiles.json';
-import { buildTilesFromTemplates, rehydrateSavedTiles, SavedGameState } from './game/TileSet';
+import { buildTilesFromTemplates, SavedGameState } from './game/TileSet';
+import { rehydrateGameState } from './game/rehydrate';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
 import { TurnAnnouncement } from './components/TurnAnnouncement';
@@ -211,21 +212,7 @@ function App() {
             say(`Dragon's Bounty v.${version}: restoring saved game`, 'info')
           );
 
-          const savedRaw = saved as SavedGameState;
-          const tiles = rehydrateSavedTiles(savedRaw);
-          // new Player() resets ownedTiles/turnsToSkip/circles/etc; copy the
-          // saved fields back so per-player state survives a reload. The 1-based
-          // id is derived from array order, which is stable across save/load.
-          const players = (savedRaw.players || []).map((p, i) =>
-            Object.assign(new Player(p), p, { id: i + 1 })
-          );
-          const restored = Object.assign(new GameState(tiles, players), {
-            ...savedRaw,
-            tiles,
-            players,
-          });
-
-          if (!restored.turnPhase) restored.turnPhase = 'before-move';
+          const restored = rehydrateGameState(saved as SavedGameState);
 
           setGameState(restored);
 

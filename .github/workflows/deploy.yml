@@ -51,6 +51,9 @@ jobs:
           # so the service worker's own registration URL changes on every
           # deploy, regardless of any HTTP caching in between.
           VITE_APP_VERSION: ${{ steps.version.outputs.tag }}
+          # The site's nginx proxies this path to the multiplayer container
+          # on loopback 8091, so the client stays same-origin (no CORS).
+          VITE_API_BASE: /heroes/api
 
       - name: Write version file
         run: echo "${{ steps.version.outputs.tag }}" > ${{ github.workspace }}/dist/version.txt
