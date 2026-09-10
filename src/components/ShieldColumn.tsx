@@ -1,3 +1,4 @@
+import { isLocalHuman } from '../game/seats';
 import React, { useState } from 'react';
 import { GameState } from '../game/GameState';
 import { endTurn } from '../actions/endTurn';
@@ -34,7 +35,9 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   const { active: diceActive, rolling } = useModal();
   const endTurnReady = useEndTurnReady();
   const canEndTurn = endTurnReady && !diceActive;
-  const isBotTurn = gameState.activePlayer.isComputer;
+  // Covers a remote human's turn as well as a bot's -- both mean "this
+  // browser offers no roll/end-turn controls". Offline this is !isComputer.
+  const isBotTurn = !isLocalHuman(gameState.activePlayer);
   const [menuOpen, setMenuOpen] = useState(false);
   const currentLanguage = useLanguage();
   const currentFlag = LANGUAGES.find((l) => l.code === currentLanguage)?.flag ?? '🏳️';

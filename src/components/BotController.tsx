@@ -1,3 +1,4 @@
+import { isLocallyDriven } from '../game/seats';
 import { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
@@ -237,7 +238,10 @@ export function BotController({ gameState, updateGameState }: Props) {
 
   useEffect(() => {
     const player = gameState?.activePlayer;
-    if (!gameState || !player?.isComputer) return;
+    // isLocallyDriven: online, exactly one client drives each bot (the host),
+    // or every connected player would run the same bot turn independently.
+    // Offline it is always true, so this is unchanged for a local game.
+    if (!gameState || !player?.isComputer || !isLocallyDriven(player, gameState)) return;
 
     const nextAction = computeNextBotAction({
       board: gameState,

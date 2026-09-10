@@ -3,6 +3,7 @@ import { CaravanPrize } from '../caravanPrize';
 import { Tile } from '../Tile';
 import { DRAGON_UNITS } from '../constants';
 import { getArtifactRollBonus } from '../artifacts';
+import { isLocalHuman } from '../seats';
 import { sizeArmyForGrid } from './scale';
 
 type SizedArmy = ReturnType<typeof sizeArmyForGrid>;
@@ -126,8 +127,13 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   });
   const { isBrawl } = board;
 
-  const attackerManual = isBrawl && !isAmbush && !attacker.isComputer;
-  const defenderManual = isBrawl && (isAmbush ? !attacker.isComputer : !!defender && !defender.isComputer);
+  // isLocalHuman, not !isComputer: in an online game the defender is usually
+  // someone else's seat, and a brawl asks its manual side for placement every
+  // round -- input that player is not present to give. Their side is planned by
+  // the AI instead (the same path a bot's is). Offline isLocalHuman(p) is
+  // exactly !p.isComputer, so this is unchanged for a local game.
+  const attackerManual = isBrawl && !isAmbush && isLocalHuman(attacker);
+  const defenderManual = isBrawl && (isAmbush ? isLocalHuman(attacker) : !!defender && isLocalHuman(defender));
 
   const squadCountFor = (player: Player): number => squadGroupCount(player.militia, player.riders);
 
