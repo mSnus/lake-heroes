@@ -1,0 +1,86 @@
+/* Full-viewport click shield shown while another player takes their turn.
+   Below ShieldColumn's own z-index (1010) so the menu stays reachable -- those
+   buttons are gated on the seat directly instead. */
+.online-wait-shield {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /* Barely-there tint: the board underneath is the point -- observers watch it
+     update -- so this marks the screen as inert without hiding it. */
+  background: rgba(10, 10, 20, 0.18);
+  cursor: not-allowed;
+}
+
+.online-wait-plate {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
+  color: wheat;
+  font-family: 'Texturina';
+  font-size: 1.05rem;
+  text-shadow: 1px 1px 4px black;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.online-wait-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+  animation: online-wait-pulse 1.6s ease-in-out infinite;
+}
+
+.online-wait-error {
+  color: #ff9c9c;
+  font-size: 0.85em;
+}
+
+@keyframes online-wait-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .online-wait-dot { animation: none; opacity: 0.9; }
+}
+
+/* Join-code list on the host's share screen. */
+.online-code-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.8rem 0;
+}
+
+.online-code-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.online-code-name { min-width: 8rem; text-align: right; }
+.online-code-name em { opacity: 0.7; font-size: 0.85em; }
+
+.online-code {
+  font-family: monospace;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.online-code-copy {
+  font-size: 1rem;
+  padding: 0.1rem 0.4rem;
+  cursor: pointer;
+}

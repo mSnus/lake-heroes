@@ -17,6 +17,7 @@ import { halt } from '../utils/haltStore';
 import { resetFogTransition } from '../utils/transitionStore';
 import { forceFreshReload } from '../utils/forceReload';
 import { resetOverrides } from '../utils/overridesStore';
+import { clearOnlineSession } from '../online/onlineStore';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 import { isMobileLayout } from './board/common';
@@ -62,6 +63,8 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         localStorage.removeItem('game-log');
         // Cheated parameters shouldn't leak into a fresh game.
         resetOverrides();
+        // Or the next game silently inherits this game's join code.
+        clearOnlineSession();
       } catch {
         // ignore
       } finally {

@@ -1008,5 +1008,16 @@
   "realmOverview": {
     "annual": "🏰 per lap:",
     "gracePct": "({pct}% grace)"
+  },
+  "online": {
+    "shareTitle": "Share codes",
+    "shareHint": "One code per player.",
+    "you": "(you)",
+    "startPlaying": "Begin",
+    "waitingFor": "Waiting for {playerName}",
+    "connectionLost": "connection lost",
+    "hostGame": "Play online",
+    "joinPrompt": "Join code",
+    "join": "Join"
   }
 }

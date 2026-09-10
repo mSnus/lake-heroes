@@ -26,7 +26,8 @@ const CHARACTER_NAME_SUFFIX_KEY: Record<CharacterId, string> = {
 };
 
 interface NewGameModalProps {
-  onStart: (players: PlayerSetup[]) => void;
+  /** `online` publishes the game and mints a join code per seat. */
+  onStart: (players: PlayerSetup[], online?: boolean) => void;
 }
 
 const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
@@ -240,6 +241,7 @@ const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
         ))}
         <div className="button-group">
           <DecoratedButton onClick={() => onStart(players)}>{t('newGameModal.startGame')}</DecoratedButton>
+          <DecoratedButton onClick={() => onStart(players, true)}>{t('online.hostGame')}</DecoratedButton>
         </div>
       </>
     </GameModal>

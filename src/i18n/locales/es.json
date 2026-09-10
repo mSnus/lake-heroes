@@ -990,5 +990,16 @@
   },
   "dismountSquad": {
     "dismounted": "{playerName} desmonta {amount}🐎 a {amount}🧍, vendiendo los caballos por {gold}🟡"
+  },
+  "online": {
+    "shareTitle": "Enviad los cuervos",
+    "shareHint": "Un código por jugador.\nEnvía a cada uno su enlace — lo necesitará toda la partida.",
+    "you": "(tú)",
+    "startPlaying": "⚔️ Comenzar",
+    "waitingFor": "Esperando a {playerName}…",
+    "connectionLost": "conexión perdida",
+    "hostGame": "🌐 Jugar en línea",
+    "joinPrompt": "Introduce tu código",
+    "join": "Unirse"
   }
 }

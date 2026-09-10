@@ -987,5 +987,16 @@
   },
   "dismountSquad": {
     "dismounted": "{playerName} спешивает {amount}🐎 в {amount}🧍, продав коней за {gold}🟡"
+  },
+  "online": {
+    "shareTitle": "Разослать воронов",
+    "shareHint": "По коду на каждого игрока.\nОтправьте каждому его ссылку — она нужна на всю игру.",
+    "you": "(вы)",
+    "startPlaying": "⚔️ Начать",
+    "waitingFor": "Ожидание {playerName}…",
+    "connectionLost": "нет связи",
+    "hostGame": "🌐 Играть по сети",
+    "joinPrompt": "Введите код присоединения",
+    "join": "Присоединиться"
   }
 }

@@ -19,6 +19,12 @@ import { OwnedTiles } from './components/OwnedTiles';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, SavedGameState } from './game/TileSet';
 import { rehydrateGameState } from './game/rehydrate';
+import { isLocalTurn } from './game/seats';
+import { clearOnlineSession } from './online/onlineStore';
+import { hostGame, joinGame } from './online/session';
+import { useOnlineSync } from './online/useOnlineSync';
+import ShareCodesScreen from './components/ShareCodesScreen';
+import OnlineWaitShield from './components/OnlineWaitShield';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
 import { TurnAnnouncement } from './components/TurnAnnouncement';
@@ -204,6 +210,27 @@ function App() {
     function loadGameData() {
       if (didInit.current) return;
       didInit.current = true;
+
+      // A join link wins over whatever is in localStorage: the player followed
+      // it deliberately, and the server's copy is the shared truth.
+      const joinCode = new URLSearchParams(window.location.search).get('code');
+      if (joinCode) {
+        // Drop the code from the address bar so a later reload doesn't re-join
+        // and discard a turn in progress.
+        window.history.replaceState({}, '', window.location.pathname);
+        void joinGame(joinCode).then((board) => {
+          if (!board) {
+            showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
+            return;
+          }
+
+          resumeAfterHalt();
+          setGameState(board);
+          gameEvent('setPhase', board.turnPhase);
+          if (isLocalTurn(board)) startLocalTurn(board);
+        });
+        return;
+      }
 
       const saved = loadFromStorage('game-state', null);
       if (saved) {
@@ -564,8 +591,18 @@ function App() {
     }
   }, [gameState, screen]);
 
+  /** Open the dice — but only for a seat this browser plays. playerOrder is
+   * shuffled at creation, so hosting a game does not mean going first. */
+  const startLocalTurn = useCallback(
+    (board: GameState) => {
+      if (!isLocalTurn(board)) return;
+      showDice(handleDiceRollAndMove);
+    },
+    [handleDiceRollAndMove]
+  );
+
   const handleStartGame = useCallback(
-    (playersSetup: PlayerSetup[]) => {
+    (playersSetup: PlayerSetup[], online?: boolean) => {
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
       const players = playersSetup.map((p, i) => {
         const name =
@@ -584,10 +621,30 @@ function App() {
       clearScreen();
       gameEvent('setPhase', initialGameState.turnPhase);
       say(`${initialGameState.activePlayer.name}, start the game by rolling the dice!`, 'info');
+
+      if (online) {
+        // The creating client's board is canonical: both the tile layout and
+        // the turn order are randomised here, so it has to be uploaded before
+        // anyone can join.
+        void hostGame(initialGameState).then((codes) => {
+          if (codes) showScreen({ content: <ShareCodesScreen codes={codes} />, doNotPersist: true });
+          startLocalTurn(initialGameState);
+        });
+        return;
+      }
+
       showDice(handleDiceRollAndMove);
     },
-    [updateGameState]
+    [updateGameState, startLocalTurn, handleDiceRollAndMove]
   );
+
+  useOnlineSync({
+    gameState,
+    setGameState,
+    setGameLog,
+    updateGameState,
+    startLocalTurn,
+  });
 
   const handleOpenLog = () => setShowLogModal(true);
   const handleCloseLog = () => setShowLogModal(false);
@@ -677,6 +734,8 @@ function App() {
                     localStorage.removeItem('game-state');
                     localStorage.removeItem('game-screen');
                     localStorage.removeItem('game-log');
+                    // Or the next game silently inherits this game's join code.
+                    clearOnlineSession();
                     setGameState(null);
                     setGameLog([]);
                     showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
@@ -695,6 +754,7 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
+          <OnlineWaitShield gameState={gameState} />
           <TurnAnnouncement gameState={gameState} />
 
           <ShieldColumn

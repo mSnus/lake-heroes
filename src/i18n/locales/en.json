@@ -1017,5 +1017,16 @@
   },
   "dismountSquad": {
     "dismounted": "{playerName} dismounts {amount}🐎 into {amount}🧍, selling the horses for {gold}🟡"
+  },
+  "online": {
+    "shareTitle": "Send the ravens",
+    "shareHint": "One code per player.\nSend each of them their link — they keep it for the whole game.",
+    "you": "(you)",
+    "startPlaying": "⚔️ Begin",
+    "waitingFor": "Waiting for {playerName}…",
+    "connectionLost": "connection lost",
+    "hostGame": "🌐 Play online",
+    "joinPrompt": "Enter your join code",
+    "join": "Join"
   }
 }
