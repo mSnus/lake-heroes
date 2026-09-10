@@ -1,4 +1,4 @@
-import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, TOWER_GARRISON_BONUS_SLOTS } from './constants';
+import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, GARRISON_BONUS_SLOTS, TOWER_FORTIFICATION_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER, isBanzaiAttack } from './army';
@@ -217,11 +217,12 @@ export class Tile implements TileJSON {
   }
 
   /** Garrison slots this tile can hold — scales with level, same as a
-   * player's army slots scale with fame (see game/army.ts). Towers are
-   * fortifications first, so they carry TOWER_GARRISON_BONUS_SLOTS extra
-   * at every level: 16/24/32 rather than the usual 8/16/24. */
+   * player's army slots scale with fame (see game/army.ts), plus
+   * GARRISON_BONUS_SLOTS so capacity runs 16/24/32 by level. Uniform across
+   * groups: a Tower's edge is its fortification bonus, not more room (see
+   * getGarrisonBonusPct). */
   get garrisonSlots(): number {
-    return this.level + (this.group === 'Towers' ? TOWER_GARRISON_BONUS_SLOTS : 0);
+    return this.level + GARRISON_BONUS_SLOTS;
   }
 
   get garrisonPower(): number {
@@ -348,7 +349,8 @@ export class Tile implements TileJSON {
    * number below, so a fortified tile fights tougher without pretending to
    * have more defenders than it really does. */
   getGarrisonBonusPct(level: number): number {
-    return level >= 3 ? 0.1 : level === 2 ? 0.08 : 0.06;
+    const base = level >= 3 ? 0.1 : level === 2 ? 0.08 : 0.06;
+    return base * (this.group === 'Towers' ? TOWER_FORTIFICATION_MULT : 1);
   }
 
   /**

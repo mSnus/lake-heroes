@@ -112,10 +112,13 @@ export const ARMY_SLOT_CAPACITY = 12; // max units of one tier per slot
 // A tile garrison's own per-slot cap -- independent of ARMY_SLOT_CAPACITY
 // (see overridesStore.ts's armySlotCapacity/garrisonSlotCapacity split).
 export const GARRISON_SLOT_CAPACITY = 8;
-// Towers hold this many garrison slots beyond their level -- they are
-// fortifications first, so they cap at 16/24/32 by level where every other
-// tile caps at 8/16/24 (see Tile.ts's garrisonSlots).
-export const TOWER_GARRISON_BONUS_SLOTS = 1;
+// Every tile holds this many garrison slots beyond its level, so capacity
+// runs 16/24/32 by level rather than 8/16/24 (see Tile.ts's garrisonSlots).
+export const GARRISON_BONUS_SLOTS = 1;
+// Multiplies a Tower's fortification roll bonus (getGarrisonBonusPct), the
+// lever for making Towers defend better than everything else now that
+// capacity no longer distinguishes them. 1 = no advantage.
+export const TOWER_FORTIFICATION_MULT = 1;
 export const MAX_ARMY_SLOTS = 5;
 // Fame thresholds for army slots: 0-2 fame -> 2 slots, 3-5 -> 3, 6-9 -> 4, 10+ -> 5.
 // Uneven bracket widths, so this is a lookup table, not a uniform step size.
