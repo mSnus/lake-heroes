@@ -1000,6 +1000,7 @@
     "connectionLost": "conexión perdida",
     "hostGame": "🌐 Jugar en línea",
     "joinPrompt": "Introduce tu código",
-    "join": "Unirse"
+    "join": "Unirse",
+    "yourLinkOnly": "Tu puesto y tu enlace.\nSolo el anfitrión tiene los códigos de los demás."
   }
 }

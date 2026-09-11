@@ -1027,6 +1027,7 @@
     "connectionLost": "connection lost",
     "hostGame": "🌐 Play online",
     "joinPrompt": "Enter your join code",
-    "join": "Join"
+    "join": "Join",
+    "yourLinkOnly": "Your seat and link.\nOnly the host holds the other players' codes."
   }
 }

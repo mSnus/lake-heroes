@@ -627,7 +627,13 @@ function App() {
         // the turn order are randomised here, so it has to be uploaded before
         // anyone can join.
         void hostGame(initialGameState).then((codes) => {
-          if (codes) showScreen({ content: <ShareCodesScreen codes={codes} />, doNotPersist: true });
+          if (codes) {
+            showScreen({
+              content: <ShareCodesScreen gameState={initialGameState} />,
+              doNotPersist: true,
+            });
+          }
+
           startLocalTurn(initialGameState);
         });
         return;

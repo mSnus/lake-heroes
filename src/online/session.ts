@@ -32,6 +32,9 @@ export async function hostGame(board: GameState): Promise<SeatCode[] | null> {
     isHost: true,
     version: res.data.version,
     status: 'active',
+    // Kept so the host can re-open the list and hand out links later --
+    // the server will not enumerate them again.
+    codes: res.data.codes,
   });
 
   return res.data.codes;

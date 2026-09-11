@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { setSeatSession } from '../game/seats';
+import { SeatCode } from './api';
 
 const STORAGE_KEY = 'online-game';
 const CLIENT_KEY = 'online-client-id';
@@ -21,6 +22,11 @@ export interface OnlineSession {
   /** Last version we successfully read or wrote. */
   version: number;
   status: 'active' | 'finished';
+  /** Every seat's join code — known only to the host, who received them when
+   * the game was published. A joiner's GET only ever reveals its own seat, so
+   * this stays undefined for them. Persisted because the host needs to hand
+   * the links out over the life of the game, not just at creation. */
+  codes?: SeatCode[];
 }
 
 interface OnlineState extends Partial<OnlineSession> {
@@ -92,8 +98,11 @@ function persist(): void {
       return;
     }
 
-    const { code, seat, isHost, version, status } = current;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, seat, isHost, version, status }));
+    const { code, seat, isHost, version, status, codes } = current;
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ code, seat, isHost, version, status, codes })
+    );
   } catch {
     // Storage unavailable — the session still lives in memory for this load.
   }

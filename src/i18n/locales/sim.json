@@ -1018,6 +1018,7 @@
     "connectionLost": "connection lost",
     "hostGame": "Play online",
     "joinPrompt": "Join code",
-    "join": "Join"
+    "join": "Join",
+    "yourLinkOnly": "Your seat and link."
   }
 }

@@ -17,7 +17,8 @@ import { halt } from '../utils/haltStore';
 import { resetFogTransition } from '../utils/transitionStore';
 import { forceFreshReload } from '../utils/forceReload';
 import { resetOverrides } from '../utils/overridesStore';
-import { clearOnlineSession } from '../online/onlineStore';
+import { clearOnlineSession, isOnlineGame } from '../online/onlineStore';
+import ShareCodesScreen from './ShareCodesScreen';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 import { isMobileLayout } from './board/common';
@@ -146,6 +147,25 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   {currentFlag}
                 </button>
               </div>
+
+              {/* Join links -- only meaningful in a network game, so it is
+                  absent entirely from a local one rather than disabled. */}
+              {isOnlineGame() && (
+                <div className="shield-button-container" title={t('online.shareTitle')}>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      showScreen({
+                        content: <ShareCodesScreen gameState={gameState} />,
+                        doNotPersist: true,
+                      });
+                    }}
+                    className="shield-button"
+                  >
+                    🔗
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Left column: reload, cheat, overrides, sims, map edit */}
