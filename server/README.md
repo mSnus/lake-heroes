@@ -87,3 +87,35 @@ curl -s -X PUT 127.0.0.1:8091/api/games/<CODE>/state -H 'Content-Type: applicati
   -d '{"state":"{\"players\":[...],\"gameOver\":false}","version":1}'
 # → {"version":2}   (re-PUT with stale version → 409)
 ```
+
+## Production wiring
+
+The API is served **same-origin** from the main site, at
+`https://vinetsky.com/heroes/api/` — the client calls that path via
+`VITE_API_BASE` (set in `.github/workflows/deploy.yml`).
+
+The proxy lives in fastpanel's per-site includes file, which survives vhost
+regeneration, as section 8 of:
+
+```
+/etc/nginx/fastpanel2-sites/msnus/vinetsky.com.includes
+  location ^~ /heroes/api/ { proxy_pass http://127.0.0.1:8091/api/; ... }
+```
+
+That file also holds this site's post-compromise hardening, so keep edits
+additive. Backup taken before the change:
+`vinetsky.com.includes.bak-2026-09-11`. To apply an edit:
+`sudo nginx -t && sudo systemctl reload nginx`.
+
+**Why not the `heroes.vinetsky.com` vhost**, which also exists and points at
+`/var/www/msnus/data/www/vinetsky.com/heroes-server`: it listens on `:80` only,
+and the TLS certificate covers just `vinetsky.com` (no wildcard, no SAN for the
+subdomain). An HTTPS page could therefore not call it without a new
+certificate, and it would additionally need CORS, being a different origin. The
+path proxy needs neither. If that subdomain is ever preferred it needs its own
+cert plus a CORS allow-list in Laravel, after which `VITE_API_BASE` becomes the
+full `https://heroes.vinetsky.com/api` and nothing else in the client changes.
+
+The containers run with `restart: unless-stopped`, so the stack returns after a
+reboot; without it the game stays deployed while the API silently stops
+answering.

@@ -1,12 +1,14 @@
 services:
   app:
     build: { context: ., dockerfile: docker/php/Dockerfile }
+    restart: unless-stopped
     volumes: [ ./laravel:/var/www/html ]
     depends_on: [ mysql ]
     env_file: .env
 
   nginx:
     image: nginx:1.27-alpine
+    restart: unless-stopped
     # 8080 is taken by another project on this box; bind to loopback only --
     # the site's nginx proxies /heroes/api/ here, nothing reaches it directly.
     ports: [ "127.0.0.1:8091:80" ]
@@ -17,6 +19,7 @@ services:
 
   mysql:
     image: mysql:8.0
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
