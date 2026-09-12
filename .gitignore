@@ -40,6 +40,7 @@ yarn-error.log*
 /server/laravel/app/Models/*
 !/server/laravel/app/Models/Game.php
 !/server/laravel/app/Models/GamePlayer.php
+!/server/laravel/app/Models/GameEvent.php
 !/server/laravel/bootstrap
 /server/laravel/bootstrap/*
 !/server/laravel/bootstrap/app.php
@@ -48,6 +49,7 @@ yarn-error.log*
 !/server/laravel/database/migrations
 /server/laravel/database/migrations/*
 !/server/laravel/database/migrations/2026_01_01_000000_create_games_tables.php
+!/server/laravel/database/migrations/2026_09_12_000000_create_game_events_table.php
 !/server/laravel/routes
 /server/laravel/routes/*
 !/server/laravel/routes/api.php
