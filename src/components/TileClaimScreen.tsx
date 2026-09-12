@@ -10,7 +10,7 @@ import { DecoratedButton } from './DecoratedButton';
 import { DecoratedSlider } from './DecoratedSlider';
 import { fmtPrice } from './TileCard';
 import { clearScreen } from '../utils/screenStore';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
@@ -101,7 +101,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const applyGarrison = (newValue: number) => {
     const clamped = Math.min(maxGarrison, Math.max(0, newValue));
     if (clamped < tile.garrisonMilitia && !canDecreaseGarrison) {
-      say(t('tileCard.garrisonWarning'), 'warning');
+      sayLocal(t('tileCard.garrisonWarning'), 'warning');
       return;
     }
 
@@ -218,7 +218,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     if (tile.isYielded) {
       const cost = takeBackCost(tile);
       if (player.gold < cost) {
-        say(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
+        sayLocal(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
         return;
       }
 

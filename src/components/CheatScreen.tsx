@@ -3,7 +3,7 @@ import { GameState, ForcedEncounter } from '../game/GameState';
 import { clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
 import { grantTile } from '../game/tileOwnership';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import { DecoratedButton } from './DecoratedButton';
 import { getOverrides } from '../utils/overridesStore';
 import { setForcedRoll } from '../utils/diceStore';
@@ -111,12 +111,12 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   const handleForceEncounter = () => {
     gameState.forcedEncounter = forcedEnc;
     refresh();
-    say(t('cheatScreen.forcedEncounterSet'), 'info');
+    sayLocal(t('cheatScreen.forcedEncounterSet'), 'info');
   };
 
   const handleForceRoll = () => {
     setForcedRoll(forcedRollValue);
-    say(t('cheatScreen.forcedRollSet', { value: forcedRollValue }), 'info');
+    sayLocal(t('cheatScreen.forcedRollSet', { value: forcedRollValue }), 'info');
   };
 
   return (

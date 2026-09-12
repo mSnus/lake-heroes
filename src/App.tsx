@@ -14,13 +14,14 @@ import { CurrentPlayerCard } from './components/CurrentPlayerCard';
 import { loadFromStorage, saveToStorage } from './utils/storage';
 import { halt, isHalted, resumeAfterHalt } from './utils/haltStore';
 import { resetFogTransition } from './utils/transitionStore';
-import { say } from './utils/say';
+import { say, sayLocal } from './utils/say';
 import { OwnedTiles } from './components/OwnedTiles';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, SavedGameState } from './game/TileSet';
 import { rehydrateGameState } from './game/rehydrate';
 import { isLocalTurn } from './game/seats';
 import { clearOnlineSession } from './online/onlineStore';
+import { useLiveFeed, resetLiveFeed } from './online/liveFeedStore';
 import { hostGame, joinGame } from './online/session';
 import { useOnlineSync } from './online/useOnlineSync';
 import ShareCodesScreen from './components/ShareCodesScreen';
@@ -86,6 +87,7 @@ function App() {
   );
   const [showLogModal, setShowLogModal] = useState(false);
   const screen = useScreen();
+  const liveFeed = useLiveFeed();
 
   // Always-current ref so dice/action closures never capture stale state
   const gameStateRef = useRef<GameState | null>(null);
@@ -141,8 +143,14 @@ function App() {
       setGameLog((prev) => [...prev, detail].slice(-MAX_LOG_MESSAGES));
     };
 
+    // Both names: sayLocal() dispatches its own so the online streamer can
+    // ignore it (see utils/say.ts), but it still belongs in the history.
     window.addEventListener('logMessage', handleLogMessage);
-    return () => window.removeEventListener('logMessage', handleLogMessage);
+    window.addEventListener('logMessageLocal', handleLogMessage);
+    return () => {
+      window.removeEventListener('logMessage', handleLogMessage);
+      window.removeEventListener('logMessageLocal', handleLogMessage);
+    };
   }, []);
 
   // Persisted alongside game-state/game-screen so the history survives a
@@ -236,7 +244,7 @@ function App() {
       if (saved) {
         try {
           resolveAppVersion().then((version) =>
-            say(`Dragon's Bounty v.${version}: restoring saved game`, 'info')
+            sayLocal(`Dragon's Bounty v.${version}: restoring saved game`, 'info')
           );
 
           const restored = rehydrateGameState(saved as SavedGameState);
@@ -620,7 +628,7 @@ function App() {
 
       clearScreen();
       gameEvent('setPhase', initialGameState.turnPhase);
-      say(`${initialGameState.activePlayer.name}, start the game by rolling the dice!`, 'info');
+      sayLocal(`${initialGameState.activePlayer.name}, start the game by rolling the dice!`, 'info');
 
       if (online) {
         // The creating client's board is canonical: both the tile layout and
@@ -742,6 +750,7 @@ function App() {
                     localStorage.removeItem('game-log');
                     // Or the next game silently inherits this game's join code.
                     clearOnlineSession();
+                    resetLiveFeed();
                     setGameState(null);
                     setGameLog([]);
                     showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
@@ -772,7 +781,10 @@ function App() {
           <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
           
           <div className="board-section">
-            {!screen && <GameMessage message={gameState.gameMessage} />}
+            {/* liveBanner mirrors whoever is on turn, so an observer sees
+                their banner change as it happens; it retires once the state
+                carrying it has been applied (online/liveFeedStore.ts). */}
+            {!screen && <GameMessage message={liveFeed.banner ?? gameState.gameMessage} />}
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <CurrentPlayerCard gameState={gameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />

@@ -1,7 +1,7 @@
 import { isHeadlessRun } from './headlessStore';
 
 export function gameEvent(event: string, detail: any = null) {
-  if (!['logMessage'].includes(event)) {
+  if (!['logMessage', 'logMessageLocal', 'bannerMessage'].includes(event)) {
     console.debug(`✉️ received ${event}`, detail);
   }
 

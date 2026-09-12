@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tile } from '../game/Tile';
 import '../styles/TileCard.css';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import { GameState } from '../game/GameState';
 import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
@@ -247,7 +247,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     if (tile.isYielded) {
       const cost = takeBackCost(tile);
       if (activePlayer.gold < cost) {
-        say(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
+        sayLocal(t('yieldTile.cannotAfford', { gold: cost, tileName: tile.name }), 'error');
         return;
       }
 

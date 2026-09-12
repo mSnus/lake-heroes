@@ -35,8 +35,14 @@ export interface EnvelopeMeta {
   /** Browser that produced it — distinguishes our own writes from those of
    * someone else holding the same join code (the server has no sessions). */
   _lastWriter: string;
-  /** Log lines produced during the turn just played. */
+  /** Log lines produced during the turn just played. Still sent even though
+   * narration now streams live: this is what keeps the feature a pure
+   * enhancement, arriving intact when the event posts failed. The receiver
+   * skips whatever the stream already delivered (see _eventsThrough). */
   _log: LogMessage[];
+  /** Highest event seq the sender had shipped when this state was pushed, so
+   * the receiver can tell which _log lines it has already seen. */
+  _eventsThrough?: number;
 }
 
 export type Envelope = SavedGameState & EnvelopeMeta;
@@ -49,7 +55,7 @@ export type Envelope = SavedGameState & EnvelopeMeta;
  */
 export function buildEnvelope(
   board: GameState,
-  meta: { senderSeat: number; clientId: string; log: LogMessage[] }
+  meta: { senderSeat: number; clientId: string; log: LogMessage[]; eventsThrough?: number }
 ): string {
   const envelope = {
     ...(JSON.parse(JSON.stringify(board)) as SavedGameState),
@@ -58,6 +64,7 @@ export function buildEnvelope(
     _senderSeat: meta.senderSeat,
     _lastWriter: meta.clientId,
     _log: meta.log.slice(-LOG_DELTA_CAP),
+    _eventsThrough: meta.eventsThrough,
   };
 
   return JSON.stringify(envelope);
@@ -90,6 +97,7 @@ export function parseEnvelope(json: string): ParsedEnvelope | null {
     _senderSeat: typeof obj._senderSeat === 'number' ? obj._senderSeat : undefined,
     _lastWriter: typeof obj._lastWriter === 'string' ? obj._lastWriter : undefined,
     _log: Array.isArray(obj._log) ? (obj._log as LogMessage[]) : [],
+    _eventsThrough: typeof obj._eventsThrough === 'number' ? obj._eventsThrough : undefined,
   };
 
   return { raw: obj as SavedGameState, meta };

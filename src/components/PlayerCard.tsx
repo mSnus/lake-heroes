@@ -3,7 +3,7 @@ import { Player } from '../game/Player';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { PlayerLabel } from './PlayerLabel';
 import { getArtifact } from '../game/artifacts';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import '../styles/PlayerCard.css';
 
 interface PlayerCardProps {
@@ -66,7 +66,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
               <span
                 key={id}
                 className="player-card-artifact-badge"
-                onClick={() => say(`${artifact.name}: ${artifact.description}`, 'info')}
+                onClick={() => sayLocal(`${artifact.name}: ${artifact.description}`, 'info')}
                 style={{ cursor: 'pointer' }}
               >
                 {artifact.emoji}

@@ -13,6 +13,7 @@ import { recordSimIncome } from '../utils/simLogStore';
 import { formatArmy } from '../utils/formatArmy';
 import { announce } from '../utils/announce';
 import { setGameMessage } from '../utils/gameMessage';
+import { openStream } from '../online/stream';
 import { t } from '../i18n';
 
 /**
@@ -32,6 +33,10 @@ import { t } from '../i18n';
 export function beginTurn(board: GameState, updateGameState: (board: GameState) => void) {
   if (board.turnStarted) return;
   board.turnStarted = true;
+
+  // From here until endTurn, this client's narration is streamed to the other
+  // players (online/stream.ts decides whether it is actually ours to narrate).
+  openStream(board);
 
   board.activePlayer.hasClaimedThisTurn = false;
   board.activePlayer.hasConsideredClaimThisTurn = false;

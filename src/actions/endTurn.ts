@@ -4,6 +4,7 @@ import { recordTurnStat } from '../game/statistics';
 import { resetForkChoice } from '../utils/forkChoiceStore';
 import { beginTurn } from './beginTurn';
 import { pushTurn } from '../online/sync';
+import { closeStream } from '../online/stream';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -31,6 +32,10 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   resetForkChoice();
 
   board.turnStarted = false;
+
+  // Stop narrating before the state goes out, so a last line cannot race the
+  // push. Anything unsent travels in the envelope's _log instead.
+  closeStream();
 
   // Offline (and for a seat this browser owns) the next turn starts right here,
   // making endTurn+beginTurn exactly the single function this used to be. When

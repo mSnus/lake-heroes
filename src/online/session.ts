@@ -1,11 +1,12 @@
 import { GameState } from '../game/GameState';
 import { SavedGameState } from '../game/TileSet';
 import { rehydrateGameState } from '../game/rehydrate';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import { createGame, fetchState, SeatCode } from './api';
 import { buildEnvelope, parseEnvelope } from './envelope';
 import { clientId, clearOnlineSession, startOnlineSession, updateOnline } from './onlineStore';
 import { clearLogDelta } from './sync';
+import { resetLiveFeed, setCursor } from './liveFeedStore';
 
 /**
  * Publish a freshly created game and claim seat 0.
@@ -21,7 +22,7 @@ export async function hostGame(board: GameState): Promise<SeatCode[] | null> {
   const payload = buildEnvelope(board, { senderSeat: 0, clientId, log: [] });
   const res = await createGame(payload);
   if (!res.ok) {
-    say('Could not reach the game server — this game stays offline.', 'error');
+    sayLocal('Could not reach the game server — this game stays offline.', 'error');
     return null;
   }
 
@@ -50,7 +51,7 @@ export async function joinGame(code: string): Promise<GameState | null> {
 
   const res = await fetchState(trimmed);
   if (!res.ok) {
-    say(
+    sayLocal(
       res.kind === 'notfound' ? `No game found for code ${trimmed}.` : 'Could not reach the game server.',
       'error'
     );
@@ -59,7 +60,7 @@ export async function joinGame(code: string): Promise<GameState | null> {
 
   const parsed = parseEnvelope(res.data.state);
   if (!parsed) {
-    say('That game could not be read — it may have been saved by a different version.', 'error');
+    sayLocal('That game could not be read — it may have been saved by a different version.', 'error');
     return null;
   }
 
@@ -73,6 +74,10 @@ export async function joinGame(code: string): Promise<GameState | null> {
     status: res.data.status,
   });
 
+  // Start reading narration from here, not from the beginning of the game.
+  resetLiveFeed();
+  setCursor(res.data.lastEvent ?? 0);
+
   const board = rehydrateGameState(parsed.raw as SavedGameState);
   updateOnline({ sync: 'ready' });
   return board;
@@ -82,4 +87,5 @@ export async function joinGame(code: string): Promise<GameState | null> {
 export function leaveOnlineGame(): void {
   clearOnlineSession();
   clearLogDelta();
+  resetLiveFeed();
 }

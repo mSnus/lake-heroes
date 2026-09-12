@@ -3,6 +3,7 @@ import { LogMessage } from '../components/GameLogModal';
 import { buildEnvelope, LOG_DELTA_CAP } from './envelope';
 import { pushState } from './api';
 import { clientId, getOnline, updateOnline } from './onlineStore';
+import { eventsSentThrough } from './stream';
 
 /**
  * Log lines produced since the last successful push, so a turn can carry its
@@ -45,7 +46,12 @@ export async function pushTurn(board: GameState): Promise<PushOutcome> {
   const { code, seat, version } = getOnline();
   if (code === undefined || seat === undefined) return 'offline';
 
-  const payload = buildEnvelope(board, { senderSeat: seat, clientId, log: logDelta });
+  const payload = buildEnvelope(board, {
+    senderSeat: seat,
+    clientId,
+    log: logDelta,
+    eventsThrough: eventsSentThrough(),
+  });
   updateOnline({ sync: 'pushing', error: undefined });
 
   for (let attempt = 0; ; attempt++) {

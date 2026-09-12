@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import '../styles/CurrentPlayer.css';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
 import { playerTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
@@ -153,7 +153,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
         <div
           className="player-stats-data"
           id="statsFame"
-          onClick={() => say(t('currentPlayer.fameTooltip'), 'info')}
+          onClick={() => sayLocal(t('currentPlayer.fameTooltip'), 'info')}
           style={{ cursor: 'pointer' }}
         >
           <div
@@ -194,7 +194,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                     key={c.tilePosition}
                     className="player-contract-badge"
                     onClick={() =>
-                      say(
+                      sayLocal(
                         t('currentPlayer.kingsContractTooltip', {
                           tileName: tile.name,
                           award: c.award,
@@ -216,7 +216,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                   key={`artifact-${id}`}
                   className="player-artifact-badge"
                   onClick={() =>
-                    say(
+                    sayLocal(
                       t('currentPlayer.artifactTooltip', {
                         name: artifact.name,
                         description: artifact.description,
@@ -237,7 +237,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           <div
             className="player-stats-data"
             id="statsOwnedResources"
-            onClick={() => say(t('currentPlayer.goldTooltip'), 'info')}
+            onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
           >
             <div
               className="player-stats-hint"

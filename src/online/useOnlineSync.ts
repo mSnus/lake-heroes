@@ -9,24 +9,24 @@ import { clearScreen } from '../utils/screenStore';
 import { closeModal } from '../utils/diceStore';
 import { resetEndTurn } from '../utils/endTurnStore';
 import { resetForkChoice } from '../utils/forkChoiceStore';
-import { say, showToast } from '../utils/say';
+import { sayLocal, showToast, SayLevel } from '../utils/say';
 import { fetchState, fetchVersion } from './api';
 import { appVersionMismatch, parseEnvelope } from './envelope';
 import { getOnline, isOnlineGame, updateOnline } from './onlineStore';
 import { clearLogDelta } from './sync';
+import {
+  getLiveFeed,
+  resetLiveFeed,
+  retireLiveBanner,
+  setCursor,
+  setLiveBanner,
+} from './liveFeedStore';
+import { RemoteEvent } from './api';
 
 /** How often to ask the server whether anything changed. Only the version
  * counter is fetched at this cadence — the full board is pulled only when it
  * actually moves (see server/routes/api.php). */
 const POLL_MS = 4000;
-
-/**
- * How many of another player's messages to pop as toasts. Observers never watch
- * a turn happen, so these are the only account of it they get — but a big
- * battle can produce a dozen lines, and a wall of toasts is worse than none.
- * The full set always lands in the game log (📜) regardless.
- */
-const REPLAY_TOAST_CAP = 6;
 
 interface Options {
   gameState: GameState | null;
@@ -56,6 +56,33 @@ export function useOnlineSync({
   const pulling = useRef(false);
   const warnedVersion = useRef(false);
 
+  /**
+   * Show narration from whoever is on turn.
+   *
+   * `showToast` and a direct log append — never `say()`. The streamer listens
+   * on the global `logMessage` event, so rendering a received line through
+   * `say()` would push it straight back into our own outbound buffer and
+   * rebroadcast it on our next turn.
+   */
+  const renderEvents = useCallback(
+    (events: RemoteEvent[], appliedVersion: number) => {
+      for (const e of events) {
+        // A straggler from a turn whose state we already have.
+        if (e.version < appliedVersion) continue;
+        if (e.kind === 'banner') setLiveBanner(e.message, e.seq);
+        else {
+          showToast(e.message, e.level as SayLevel);
+          setGameLog((prev) =>
+            [...prev, { message: e.message, level: e.level as SayLevel, timestamp: Date.now() }].slice(-500)
+          );
+        }
+      }
+
+      if (events.length) setCursor(events[events.length - 1].seq);
+    },
+    [setGameLog]
+  );
+
   const pull = useCallback(async () => {
     const { code } = getOnline();
     if (!code || pulling.current) return;
@@ -83,7 +110,7 @@ export function useOnlineSync({
       const other = appVersionMismatch(parsed.meta);
       if (other && !warnedVersion.current) {
         warnedVersion.current = true;
-        say(`Other players are on build ${other} — reload to match.`, 'error');
+        sayLocal(`Other players are on build ${other} — reload to match.`, 'error');
       }
 
       const board = rehydrateGameState(parsed.raw as SavedGameState);
@@ -97,17 +124,15 @@ export function useOnlineSync({
       resetForkChoice();
       clearLogDelta();
 
-      // Everything the other player's turn narrated: into the log in full, and
-      // popped as toasts so it is actually seen rather than only recorded.
-      // 'debug' is per-roll chatter and never toasts (see showToast).
+      // The turn's narration has normally already arrived live, line by line,
+      // via the event stream -- so this only fills the log, and only with what
+      // the stream did NOT deliver (its posts can fail; the envelope's copy
+      // cannot, which is what keeps streaming a pure enhancement).
       const delta = parsed.meta._log ?? [];
-      if (delta.length) {
-        setGameLog((prev) => [...prev, ...delta].slice(-500));
-        delta
-          .filter((m) => m.level !== 'debug')
-          .slice(-REPLAY_TOAST_CAP)
-          .forEach((m) => showToast(m.message, m.level));
-      }
+      if (delta.length) setGameLog((prev) => [...prev, ...delta].slice(-500));
+
+      // The banner in the applied state supersedes any live one up to here.
+      retireLiveBanner(parsed.meta._eventsThrough ?? Number.MAX_SAFE_INTEGER);
 
       updateOnline({
         version: res.data.version,
@@ -141,8 +166,22 @@ export function useOnlineSync({
       if (cancelled) return;
       const { code, version } = getOnline();
       if (!code) return;
-      const res = await fetchVersion(code);
+      const { cursor } = getLiveFeed();
+      const res = await fetchVersion(code, cursor);
       if (cancelled || !res.ok) return;
+
+      // Narration first, so it precedes the board jump rather than trailing it.
+      if (res.data.events?.length) {
+        const oldest = res.data.oldestEvent ?? 0;
+        if (cursor > 0 && oldest > cursor + 1) {
+          // We fell behind retention; skip the gap rather than wait for rows
+          // that no longer exist. The state pull fills the log.
+          setCursor(res.data.lastEvent);
+        } else {
+          renderEvents(res.data.events, version ?? 0);
+        }
+      }
+
       if (res.data.version > (version ?? 0)) await pull();
       else if (res.data.status === 'finished') updateOnline({ status: 'finished' });
     };
@@ -165,5 +204,5 @@ export function useOnlineSync({
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [active, pull]);
+  }, [active, pull, renderEvents]);
 }

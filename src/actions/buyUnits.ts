@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { say } from '../utils/say';
+import { say, sayLocal } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { getOverrides } from '../utils/overridesStore';
 import { UnitTier } from '../game/army';
@@ -38,7 +38,7 @@ export function buyUnits(
     );
     updateGameState(board);
   } else {
-    say(t('buyUnits.notEnoughGold'), 'error');
+    sayLocal(t('buyUnits.notEnoughGold'), 'error');
   }
 
   setEndTurn();

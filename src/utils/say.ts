@@ -85,3 +85,24 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
     gameEvent('logMessage', { message, level, timestamp: Date.now() });
   }
 }
+
+/**
+ * say() for something only THIS player should see: a tooltip they clicked, a
+ * validation error they hit, a connection problem on their own machine.
+ *
+ * Identical to say() locally — same toast, same console, same game log — but
+ * dispatched under a different event name, so the online streamer (which
+ * listens for 'logMessage' and broadcasts what it hears) never picks it up.
+ *
+ * A separate event rather than a `broadcast: false` field on the payload:
+ * LogMessage is persisted to localStorage and shipped inside the turn
+ * envelope, so a flag would leak into both. This way "what gets broadcast" is
+ * answerable with a grep.
+ */
+export function sayLocal(message: ToastContent, level: SayLevel = 'info'): void {
+  if (isHeadlessRun()) return;
+  showToast(message, level);
+  if (typeof message === 'string') {
+    gameEvent('logMessageLocal', { message, level, timestamp: Date.now() });
+  }
+}

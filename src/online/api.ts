@@ -34,11 +34,33 @@ export interface RemoteState {
   status: 'active' | 'finished';
   playerIndex: number;
   color: string;
+  /** Seeds a joiner's cursor at "now", so they don't replay a backlog. */
+  lastEvent: number;
+}
+
+/** One line of narration, as sent and as received. */
+export interface OutboundEvent {
+  kind: 'toast' | 'banner';
+  level: string;
+  message: string;
+}
+
+export interface RemoteEvent extends OutboundEvent {
+  seq: number;
+  seat: number;
+  /** games.version when it was written, so a straggler can be dropped once
+   * the state it described has been superseded. */
+  version: number;
 }
 
 export interface RemoteVersion {
   version: number;
   status: 'active' | 'finished';
+  lastEvent: number;
+  /** Present only when the caller's ?after= cursor is behind. */
+  events?: RemoteEvent[];
+  /** Lowest seq still retained — a cursor below it has to skip ahead. */
+  oldestEvent?: number;
 }
 
 /**
@@ -99,10 +121,23 @@ export function fetchState(code: string): Promise<ApiResult<RemoteState>> {
   return request<RemoteState>(`/games/${encodeURIComponent(code)}`);
 }
 
-/** Just the counter — what the poll loop calls, so a wait costs a few bytes
- * rather than the whole board (see server/routes/api.php). */
-export function fetchVersion(code: string): Promise<ApiResult<RemoteVersion>> {
-  return request<RemoteVersion>(`/games/${encodeURIComponent(code)}/version`);
+/** What the poll loop calls: the counter, plus any narration the caller has
+ * not seen yet. One request per tick — a separate events endpoint at this
+ * cadence would run several players behind one NAT into the IP-keyed throttle
+ * (see server/routes/api.php). Costs a few dozen bytes when nothing happened. */
+export function fetchVersion(code: string, after = 0): Promise<ApiResult<RemoteVersion>> {
+  return request<RemoteVersion>(`/games/${encodeURIComponent(code)}/version?after=${after}`);
+}
+
+/** Ship narration from the player currently on turn. */
+export function postEvents(
+  code: string,
+  events: OutboundEvent[]
+): Promise<ApiResult<{ lastEvent: number }>> {
+  return request<{ lastEvent: number }>(
+    `/games/${encodeURIComponent(code)}/events`,
+    jsonBody({ events })
+  );
 }
 
 /** Hand our finished turn over. `version` is the one we last saw; a mismatch
