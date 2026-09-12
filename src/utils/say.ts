@@ -87,6 +87,19 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
 }
 
 /**
+ * Tell the OTHER players something, without toasting it here.
+ *
+ * For the parts of a turn the acting player is already watching — their token
+ * sliding along the board, their battle animating — where a toast would be
+ * noise locally but is the only account anyone else gets. Emits nothing when
+ * offline, since there is nobody to tell.
+ */
+export function narrate(message: string, level: SayLevel = 'info'): void {
+  if (isHeadlessRun()) return;
+  gameEvent('narrate', { message, level });
+}
+
+/**
  * say() for something only THIS player should see: a tooltip they clicked, a
  * validation error they hit, a connection problem on their own machine.
  *

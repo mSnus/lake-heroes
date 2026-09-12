@@ -252,7 +252,11 @@
     "wasItWorthIt": "🩸 Стоило ли оно того?",
     "brawlUndo": "Отменить последний ход",
     "brawlGo": "Закончить ход",
-    "autoResolveBrawl": "Автоматически завершить остаток битвы"
+    "autoResolveBrawl": "Автоматически завершить остаток битвы",
+    "battleStarted": "⚔️ {attackerName} атакует {target}…",
+    "targetDragon": "Дракона 🐉",
+    "targetCaravan": "караван 🐫",
+    "targetGarrison": "гарнизон «{tileName}»"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} решил атаковать {targetName}",

@@ -253,7 +253,11 @@
     "wasItWorthIt": "🩸 Was it worth it?",
     "brawlUndo": "Undo last move",
     "brawlGo": "Finish turn",
-    "autoResolveBrawl": "Auto-resolve the rest of this battle"
+    "autoResolveBrawl": "Auto-resolve the rest of this battle",
+    "battleStarted": "{attackerName} attacks {target}",
+    "targetDragon": "the Dragon",
+    "targetCaravan": "a caravan",
+    "targetGarrison": "{tileName}'s garrison"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decided to attack {targetName}",

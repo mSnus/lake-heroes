@@ -4,7 +4,7 @@ import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { getOverrides } from '../utils/overridesStore';
-import { say } from '../utils/say';
+import { narrate, say } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
@@ -302,6 +302,24 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           ? 'battleScreen.zombieAttackMessage'
           : 'battleScreen.ambushedMessage';
       say(t(key, { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
+      return;
+    }
+
+    // Everyone else is about to watch a frozen board for 20-45s: the grid
+    // engine narrates nothing, so without this the only line arrives once the
+    // fight is already over. Broadcast-only -- the player who started it is
+    // watching it play out.
+    const target = isDragon
+      ? t('battleScreen.targetDragon')
+      : isCaravan
+        ? t('battleScreen.targetCaravan')
+        : isRogue
+          ? t('battleScreen.targetGarrison', { tileName: tile?.name ?? '' })
+          : tile
+            ? tile.name
+            : (defender?.name ?? '');
+    if (target) {
+      narrate(t('battleScreen.battleStarted', { attackerName: attacker.name, target }), 'warning');
     }
   }, []);
 

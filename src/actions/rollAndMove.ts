@@ -13,7 +13,7 @@ import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
-import { say } from '../utils/say';
+import { say, narrate } from '../utils/say';
 import { advanceBoardPosition, nextBoardPosition, stepsToFork } from '../game/boardPath';
 import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
 import { FORK_START_INDEX, FORK_ROLL_RANGE } from '../game/constants';
@@ -84,6 +84,10 @@ export async function rollAndMove(
   }
 
   say(tileMessage, 'debug');
+  // Level stays 'debug' -- it is chatter to the player who just watched their
+  // own token move, but to everyone else it is the only sign anything is
+  // happening, so it is broadcast explicitly rather than through the level.
+  narrate(tileMessage);
 
   gameEvent('displayTile', {});
 

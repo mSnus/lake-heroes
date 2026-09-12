@@ -255,7 +255,11 @@
     "wasItWorthIt": "🩸 ¿Valió la pena?",
     "brawlUndo": "Deshacer último movimiento",
     "brawlGo": "Terminar turno",
-    "autoResolveBrawl": "Resolver automáticamente el resto de esta batalla"
+    "autoResolveBrawl": "Resolver automáticamente el resto de esta batalla",
+    "battleStarted": "⚔️ {attackerName} ataca {target}…",
+    "targetDragon": "al Dragón 🐉",
+    "targetCaravan": "una caravana 🐫",
+    "targetGarrison": "la guarnición de {tileName}"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decidió atacar a {targetName}",

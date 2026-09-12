@@ -92,6 +92,13 @@ if (typeof window !== 'undefined') {
     }
   });
 
+  // narrate(): broadcast-only lines, for the stretches the acting player
+  // watches happen but everyone else would otherwise see as a frozen board.
+  window.addEventListener('narrate', (e: Event) => {
+    const d = (e as CustomEvent).detail as { message: string; level: string };
+    if (d?.message) queue({ kind: 'toast', level: d.level, message: d.message });
+  });
+
   window.addEventListener('bannerMessage', (e: Event) => {
     const message = (e as CustomEvent).detail as string;
     if (message) queue({ kind: 'banner', level: 'info', message });
