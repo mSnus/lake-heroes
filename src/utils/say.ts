@@ -7,6 +7,41 @@ import { recordSimLog } from './simLogStore';
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
 /**
+ * Pop a toast, without touching the console mirror or the game-log history.
+ *
+ * Split out of say() so a turn's messages can be replayed on the OTHER
+ * players' screens (see online/useOnlineSync): those arrive with their history
+ * already attached, so re-running the logging half would duplicate every line.
+ *
+ * 'debug' deliberately never toasts — it is per-roll chatter.
+ */
+export function showToast(message: ToastContent, level: SayLevel = 'info'): void {
+  // The mute override suppresses only the pop-up; say()'s console mirror and
+  // game-log event still fire, so nothing is lost.
+  if (getOverrides().muteToasts) return;
+  switch (level) {
+    case 'success':
+      toast.success(message);
+      break;
+    case 'warning':
+      toast.warning(message);
+      break;
+    case 'error':
+      toast.error(message);
+      break;
+    case 'info':
+      toast.info(message);
+      break;
+    case 'debug':
+      break;
+    case 'default':
+    default:
+      toast(message);
+      break;
+  }
+}
+
+/**
  * say: unified user notification helper.
  * - Shows a react-toastify toast (unless toasts are muted via the ⚖️ overrides)
  * - Logs the same message to the console with an appropriate severity
@@ -22,31 +57,7 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
     return;
   }
 
-  // Show toast by level. The mute override suppresses only the pop-up — the
-  // console mirror and game-log event below still fire, so nothing is lost.
-  const muted = getOverrides().muteToasts;
-  switch (level) {
-    case 'success':
-      if (!muted) toast.success(message);
-      break;
-    case 'warning':
-      if (!muted) toast.warning(message);
-      break;
-    case 'error':
-      if (!muted) toast.error(message);
-      break;
-    case 'info':
-      if (!muted) toast.info(message);
-      console.info(message);
-      break;
-    case 'debug':
-      console.log(message);
-      break;
-    case 'default':
-    default:
-      if (!muted) toast(message);
-      break;
-  }
+  showToast(message, level);
 
   // Console mirror
   const text = typeof message === 'string' ? message : '[toast message]';

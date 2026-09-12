@@ -9,7 +9,7 @@ import { clearScreen } from '../utils/screenStore';
 import { closeModal } from '../utils/diceStore';
 import { resetEndTurn } from '../utils/endTurnStore';
 import { resetForkChoice } from '../utils/forkChoiceStore';
-import { say } from '../utils/say';
+import { say, showToast } from '../utils/say';
 import { fetchState, fetchVersion } from './api';
 import { appVersionMismatch, parseEnvelope } from './envelope';
 import { getOnline, isOnlineGame, updateOnline } from './onlineStore';
@@ -19,6 +19,14 @@ import { clearLogDelta } from './sync';
  * counter is fetched at this cadence — the full board is pulled only when it
  * actually moves (see server/routes/api.php). */
 const POLL_MS = 4000;
+
+/**
+ * How many of another player's messages to pop as toasts. Observers never watch
+ * a turn happen, so these are the only account of it they get — but a big
+ * battle can produce a dozen lines, and a wall of toasts is worse than none.
+ * The full set always lands in the game log (📜) regardless.
+ */
+const REPLAY_TOAST_CAP = 6;
 
 interface Options {
   gameState: GameState | null;
@@ -89,8 +97,17 @@ export function useOnlineSync({
       resetForkChoice();
       clearLogDelta();
 
+      // Everything the other player's turn narrated: into the log in full, and
+      // popped as toasts so it is actually seen rather than only recorded.
+      // 'debug' is per-roll chatter and never toasts (see showToast).
       const delta = parsed.meta._log ?? [];
-      if (delta.length) setGameLog((prev) => [...prev, ...delta].slice(-500));
+      if (delta.length) {
+        setGameLog((prev) => [...prev, ...delta].slice(-500));
+        delta
+          .filter((m) => m.level !== 'debug')
+          .slice(-REPLAY_TOAST_CAP)
+          .forEach((m) => showToast(m.message, m.level));
+      }
 
       updateOnline({
         version: res.data.version,

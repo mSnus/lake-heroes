@@ -2,7 +2,6 @@ import { GameState } from '../game/GameState';
 import { isLocallyDriven } from '../game/seats';
 import { recordTurnStat } from '../game/statistics';
 import { resetForkChoice } from '../utils/forkChoiceStore';
-import { setGameMessage } from '../utils/gameMessage';
 import { beginTurn } from './beginTurn';
 import { pushTurn } from '../online/sync';
 
@@ -22,7 +21,10 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   }
 
   board.activePlayerIndex = (board.activePlayerIndex + 1) % board.players.length;
-  setGameMessage(board, '');
+  // Deliberately NOT cleared here. rollAndMove already blanks it when the next
+  // player actually rolls, so clearing it now only wiped the description of the
+  // turn that just happened -- which online is the very thing the other players
+  // are handed, and their only account of what we did.
   // Safety net alongside rollAndMove's own reset -- covers a turn that ends
   // without ever rolling (e.g. a skipped prison turn), so a choice made on a
   // prior visit to the fork can never leak into a later one.
