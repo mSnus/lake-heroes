@@ -291,8 +291,22 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
   const targetKey = `${target.col},${target.row}`;
   const visited = new Set<string>([`${start.col},${start.row}`, targetKey]);
 
+  const startDist = hexDistance(start, target);
+  // A route may bend around an obstacle, but its FIRST step must never walk
+  // away from the target. Only the first step is ever taken -- the rest is
+  // rebuilt from scratch next turn against a board that has moved -- so a
+  // path that opens by retreating is rarely followed through. What actually
+  // happened was a unit drifting backwards out of the line, turn after turn,
+  // each step "justified" by a route it never completed, leaving the army
+  // more spread out and weaker. Standing still costs a turn; stepping back
+  // costs that turn AND the turn needed to undo it.
+  //
+  // Lateral steps (same distance) stay allowed -- on a hex grid that is how
+  // a unit rounds a blocked cell without giving ground.
+  const stepIsRetreat = (firstStep: Cell) => hexDistance(firstStep, target) > startDist;
+
   let bestFirstStep: Cell | undefined;
-  let bestDist = hexDistance(start, target);
+  let bestDist = startDist;
   let bestEuclidSq = Infinity;
   const targetPos = visualPos(target);
 
@@ -307,6 +321,7 @@ function firstStepToward(start: Cell, target: Cell, cols: number, rows: number, 
   // (visual, offset-aware) distance among hex-tied candidates makes each
   // unit default to its own straight/row-aligned step.
   const consider = (c: Cell, firstStep: Cell): Cell | undefined => {
+    if (stepIsRetreat(firstStep)) return undefined;
     const d = hexDistance(c, target);
     if (d === 1) return firstStep;
     const cPos = visualPos(c);

@@ -271,13 +271,16 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     if (placementsRef.current[a.id] || placementsRef.current[b.id]) return;
     const plA: Placement = { col: b.col, row: b.row, attackTargetId: null };
     const plB: Placement = { col: a.col, row: a.row, attackTargetId: null };
-    setUndoStack((s) => [
-      ...s,
-      [
-        { unitId: a.id, prev: placementsRef.current[a.id] },
-        { unitId: b.id, prev: placementsRef.current[b.id] },
-      ],
-    ]);
+    // Read the previous placements HERE, not inside the setUndoStack updater:
+    // that updater runs on a later render, by which point commitPlacements
+    // below has already mutated placementsRef synchronously, so it would
+    // record the brand-new placements as the "previous" ones. Undo then
+    // restored the swap it was meant to revert, leaving both units placed and
+    // therefore locked out of any further interaction. Same reason place()
+    // captures `prev` up front.
+    const prevA = placementsRef.current[a.id];
+    const prevB = placementsRef.current[b.id];
+    setUndoStack((s) => [...s, [{ unitId: a.id, prev: prevA }, { unitId: b.id, prev: prevB }]]);
     commitPlacements({ ...placementsRef.current, [a.id]: plA, [b.id]: plB });
     completedRef.current = false;
   };
@@ -295,6 +298,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
 
     commitPlacements(next);
     setUndoStack((s) => s.slice(0, -1));
+    setSelectedForSwap(null);
     completedRef.current = false;
   };
 
