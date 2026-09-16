@@ -25,7 +25,7 @@ import { useLiveFeed, resetLiveFeed } from './online/liveFeedStore';
 import { hostGame, joinGame } from './online/session';
 import { useOnlineSync } from './online/useOnlineSync';
 import ShareCodesScreen from './components/ShareCodesScreen';
-import OnlineWaitShield from './components/OnlineWaitShield';
+import TurnWaitShield from './components/TurnWaitShield';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
 import { TurnAnnouncement } from './components/TurnAnnouncement';
@@ -769,7 +769,7 @@ function App() {
 
       {gameState && (
         <div id="mainContainer">
-          <OnlineWaitShield gameState={gameState} />
+          <TurnWaitShield gameState={gameState} />
           <TurnAnnouncement gameState={gameState} />
 
           <ShieldColumn

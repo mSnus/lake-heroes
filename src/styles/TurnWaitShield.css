@@ -1,0 +1,54 @@
+/* Full-viewport click shield for any turn the human at this screen is not
+   playing -- a bot's or a remote player's. Below ShieldColumn's z-index (1010)
+   so the menu, help and log stay reachable; those buttons are gated on the
+   active player directly instead. */
+.turn-wait-shield {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /* Barely-there tint: the board underneath is the point -- observers watch it
+     update -- so this marks the screen as inert without hiding it. */
+  background: rgba(10, 10, 20, 0.18);
+  cursor: not-allowed;
+}
+
+.turn-wait-plate {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
+  color: wheat;
+  font-family: 'Texturina';
+  font-size: 1.05rem;
+  text-shadow: 1px 1px 4px black;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.turn-wait-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+  animation: turn-wait-pulse 1.6s ease-in-out infinite;
+}
+
+.turn-wait-error {
+  color: #ff9c9c;
+  font-size: 0.85em;
+}
+
+@keyframes turn-wait-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turn-wait-dot { animation: none; opacity: 0.9; }
+}
