@@ -349,7 +349,7 @@
   "helpScreen": {
     "objective": {
       "title": "Objective",
-      "body": "Be the first to amass <strong>50+ warriors 🧍</strong> and slay the Dragon 🐉 to claim victory!"
+      "body": "Build an army of roughly <strong>60 Riders 🐎</strong>, defeat the Dragon 🐉, and claim victory!"
     },
     "turnOrder": {
       "title": "Turn order",
@@ -357,12 +357,12 @@
       "step2": "Take action based on the tile you land on",
       "step3": "Upgrade or sell your tiles if needed",
       "step4": "End your turn ⏳",
-      "step5": "Each circle makes a year — pass the 🏰 King's Castle to receive the rewards"
+      "step5": "Each circle makes a year — pass the 🏰 King's Castle for the King's Grace and property rewards"
     },
     "goldUnits": {
       "title": "Gold 🟡 and units 🧍",
       "item1": "Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final battle",
-      "item2": "Yearly income: more tiles you own, more you get each year",
+      "item2": "Owned tiles pay income at the start of each of your turns. Passing the King's Castle also grants the King's Grace and property rewards.",
       "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
       "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
@@ -379,7 +379,7 @@
       "discoverTitle": "Discover",
       "discoverBody": "new tiles and get rewarded for that",
       "own": "<strong>👛 Own tiles</strong> by spending gold 🟡 and 🧍 units. Visiting own tiles brings you bonus from it",
-      "landingOnOpponent": "<strong>Landing on opponent's tile</strong> — pay a fee 💰 or battle ⚔️ to raze it. Razed 🔥 tile loses all upgrades and becomes unowned, but cannot be claimed by that player after the battle. If you don't have enough gold or units, sell some of your tiles. Battle costs units to the attacker. If you can neither battle, nor pay, you become a prisoner of war: spend 2 turns in a prison, after that receive some starting bonus to continue playing.",
+      "landingOnOpponent": "<strong>Landing on an opponent's tile</strong> — its fee 💰 is collected automatically. Once it is paid, you may leave peacefully or fight ⚔️ for revenge. A razed 🔥 tile loses all upgrades, becomes unowned, and cannot be claimed until the next round. If you cannot cover a fee, sell tiles; if that is still not enough, you become a prisoner of war, skip a turn in prison, then receive the King's ransom to continue.",
       "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: income bonus and fee is <strong>doubled</strong>",
       "sellAnytime": "<strong>Sell</strong> — tiles can be sold at any time for the full price of the tile and its upgrades. Click the tile's heading to reveal the Sell/Yield buttons.",
       "yieldToKing": "<strong>Yield to the King</strong> — yield a tile ('half-sold'): receive half its price immediately, but it produces no income and can't be fought over. Take it back for 60% of the tile's price. Selling a yielded tile refunds 10% less than its remaining value.",
@@ -388,7 +388,7 @@
     "tileUpgrades": {
       "title": "Tile upgrades ⬆️",
       "item1": "<strong>Upgrade tiles</strong> paying 🟡 to increase tile's income and defence. Click the ⬆️ button to upgrade, click the title to display possible upgrades.",
-      "item2": "Each upgrade brings one more garrison tower 🏯 to the tile. Each tower can hold up to 10 defending units and adds a bonus to their defence rolls.",
+      "item2": "A garrison slot holds up to {slotCapacity} defenders. Tile capacity is {level1Capacity}/{level2Capacity}/{level3Capacity} defenders at levels 1/2/3; Towers also improve their defenders' rolls.",
       "item3": "Upgrades can't be sold separately or dismantled, but their price is added to the tile's price value.",
       "item4": "You can send units to garrison a tile at any time, but can only take them back into your army while visiting that tile."
     },
@@ -401,6 +401,7 @@
       "prison": "⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for visiting your tiles",
       "joker": "🃏 <strong>Joker</strong> — triggers a random global event, see below for the full list.",
       "ruins": "🏚️ <strong>Ruins</strong> — landing here always triggers a fight against monster occupants, see below for details.",
+      "portal": "🌀 <strong>Portal</strong> — teleports you to a random other tile, which then resolves as your landing tile.",
       "stables": "🐴 <strong>Stables</strong> — receive 3–12 free riders 🐎 (knights only; non-knights get gold instead)"
     },
     "joker": {
@@ -414,10 +415,25 @@
       "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
       "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it."
     },
+    "travel": {
+      "title": "Travel 🧭",
+      "fork": "<strong>Fork in the road</strong> — when standing on the fork, choose the short or long route before rolling. If you can reach it during a roll, the route is chosen at random.",
+      "portal": "A Portal can send you directly to any other tile, including the King's Castle; that tile's normal effect then applies."
+    },
+    "contracts": {
+      "title": "King's contracts 📜",
+      "item1": "A Castle visit may offer a contract: claim a specified unowned tile for a gold reward. Claim it yourself to collect the reward; if someone else claims it first, the contract ends."
+    },
     "caravan": {
       "title": "Caravan 🐪",
-      "item1": "At the <em>start</em> of your turn you have a chance to encounter a caravan bringing treasures or slaves",
+      "item1": "After rolling, before movement, you may encounter a caravan carrying gold, slaves, or—for a Knight—horses.",
       "item2": "Defeat the caravan guards to free the slaves (they join your army) or pillage the treasures!"
+    },
+    "dangers": {
+      "title": "Road and realm dangers ⚠️",
+      "ambush": "<strong>Ambush</strong> — after your first lap, a famous, strong traveller can be attacked on the road. The ambush must be fought.",
+      "rogue": "<strong>Rogue raid</strong> — after your first lap, a roaming horde may attack one of your non-yielded tiles. An empty garrison is razed immediately; otherwise its garrison defends.",
+      "zombies": "<strong>Abandoned tiles</strong> — razed tiles are zombie-guarded, cannot be claimed until the next round, and their wild garrison grows while unclaimed. Landing on one can trigger a zombie ambush."
     },
     "ruins": {
       "title": "Ancient Ruins 🏚️",
@@ -431,7 +447,7 @@
       "squad": "The attacker's <strong>whole army</strong> marches into battle, risking their lives for some goal: caravan goods or slaves, razing the tile or fighting the Dragon.",
       "razing": "<strong>Razing</strong> means the tile loses all its upgrades and belongs to no one",
       "twoModes": "There are two modes: brawl and normal battle",
-      "brawlMode": "In <strong>Brawl mode:</strong> Simple mode, used when squad is less than 6 units. Attacker and defender roll dice, who rolls more, wins the round.",
+      "brawlMode": "In <strong>Brawl mode:</strong> a small fight, used only when both the attacker and defence have at most 12 units. Attacker and defender roll dice; the higher roll wins the round.",
       "normalMode": "<strong>Normal battle:</strong> Combat is resolved in rounds. Each round both sides roll the dice; the amount rolled is the number of enemy units destroyed. The one to destroy all enemy units first wins.",
       "tie": "If all attacker and defender units are killed, that's a Tie",
       "priceOfVictory": "The victory comes with a price! As a result of a battle, winner loses units killed in battle."
@@ -442,7 +458,7 @@
     },
     "dragon": {
       "title": "Dragon 🐉",
-      "item1": "If you have more than 50 warriors at the <em>start</em> of your turn — choose to challenge the Dragon or roll dice instead.",
+      "item1": "With an army of roughly 60 Riders 🐎 (120 army power) at the <em>start</em> of your turn, choose to challenge the Dragon or roll the dice instead.",
       "item2": "Sometimes while travelling you may see the dragon in the sky. And if you're rich and famous, beware: he could attack you and burn your tiles to the ground!"
     }
   },

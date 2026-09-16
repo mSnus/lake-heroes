@@ -6,6 +6,7 @@ import { TileCard } from './TileCard';
 import { DecoratedButton } from './DecoratedButton';
 import '../styles/HelpScreen.css';
 import { KNIGHT_FAME } from '../utils/fame';
+import { GARRISON_BONUS_SLOTS, GARRISON_SLOT_CAPACITY } from '../game/constants';
 import { useAppVersion } from '../utils/useAppVersion';
 import { getArtifacts } from '../game/artifacts';
 import { useT } from '../i18n';
@@ -17,7 +18,9 @@ const ownableTileData = (tilesData as TileJSON[]).filter((td) => td.isOwnable);
  * safe here since these are static, hand-written translations, never user
  * input, matching the same trust model as the rest of the app's htmlMessage
  * screens). */
-const HtmlLi: React.FC<{ html: string }> = ({ html }) => <li dangerouslySetInnerHTML={{ __html: html }} />;
+const HtmlLi: React.FC<{ html: string }> = ({ html }) => (
+  <li dangerouslySetInnerHTML={{ __html: html }} />
+);
 
 const HelpScreen: React.FC = () => {
   const t = useT();
@@ -33,6 +36,8 @@ const HelpScreen: React.FC = () => {
     return i >= 0 ? i : 0;
   });
   const demoTile = ownableTiles[demoIdx] ?? null;
+  const garrisonCapacity = (level: number) =>
+    (level + GARRISON_BONUS_SLOTS) * GARRISON_SLOT_CAPACITY;
   const stepDemo = (delta: number) =>
     setDemoIdx((i) => (i + delta + ownableTiles.length) % ownableTiles.length);
 
@@ -82,7 +87,8 @@ const HelpScreen: React.FC = () => {
           <h3>{t('helpScreen.tiles.title')}</h3>
           <ul>
             <li>
-              <strong>{t('helpScreen.tiles.discoverTitle')}</strong> {t('helpScreen.tiles.discoverBody')}
+              <strong>{t('helpScreen.tiles.discoverTitle')}</strong>{' '}
+              {t('helpScreen.tiles.discoverBody')}
               <div className="tile-sprite-container">
                 <div className="tile-sprite tile-sprite-unowned"></div>
               </div>
@@ -98,7 +104,14 @@ const HelpScreen: React.FC = () => {
           <h3>{t('helpScreen.tileUpgrades.title')}</h3>
           <ul>
             <HtmlLi html={t('helpScreen.tileUpgrades.item1')} />
-            <HtmlLi html={t('helpScreen.tileUpgrades.item2')} />
+            <HtmlLi
+              html={t('helpScreen.tileUpgrades.item2', {
+                slotCapacity: GARRISON_SLOT_CAPACITY,
+                level1Capacity: garrisonCapacity(1),
+                level2Capacity: garrisonCapacity(2),
+                level3Capacity: garrisonCapacity(3),
+              })}
+            />
             <HtmlLi html={t('helpScreen.tileUpgrades.item3')} />
             <HtmlLi html={t('helpScreen.tileUpgrades.item4')} />
           </ul>
@@ -142,6 +155,19 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.specialTiles.prison')} />
             <HtmlLi html={t('helpScreen.specialTiles.joker')} />
             <HtmlLi html={t('helpScreen.specialTiles.ruins')} />
+            <HtmlLi html={t('helpScreen.specialTiles.portal')} />
+            <HtmlLi html={t('helpScreen.specialTiles.stables')} />
+          </ul>
+
+          <h3>{t('helpScreen.travel.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.travel.fork')} />
+            <HtmlLi html={t('helpScreen.travel.portal')} />
+          </ul>
+
+          <h3>{t('helpScreen.contracts.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.contracts.item1')} />
           </ul>
 
           <h3>{t('helpScreen.joker.title')}</h3>
@@ -160,6 +186,13 @@ const HelpScreen: React.FC = () => {
           <ul>
             <HtmlLi html={t('helpScreen.caravan.item1')} />
             <HtmlLi html={t('helpScreen.caravan.item2')} />
+          </ul>
+
+          <h3>{t('helpScreen.dangers.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.dangers.ambush')} />
+            <HtmlLi html={t('helpScreen.dangers.rogue')} />
+            <HtmlLi html={t('helpScreen.dangers.zombies')} />
           </ul>
 
           <h3>{t('helpScreen.ruins.title')}</h3>

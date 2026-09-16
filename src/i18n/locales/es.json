@@ -347,7 +347,7 @@
   "helpScreen": {
     "objective": {
       "title": "Objetivo",
-      "body": "¡Sé el primero en reunir <strong>50+ guerreros 🧍</strong> y matar al Dragón 🐉 para reclamar la victoria!"
+      "body": "Reúne un ejército de aproximadamente <strong>60 Jinetes 🐎</strong>, derrota al Dragón 🐉 y reclama la victoria."
     },
     "turnOrder": {
       "title": "Orden del turno",
@@ -355,12 +355,12 @@
       "step2": "Actúa según la casilla en la que caigas",
       "step3": "Mejora o vende tus casillas si es necesario",
       "step4": "Termina tu turno ⏳",
-      "step5": "Cada vuelta completa un año — pasa por el 🏰 Castillo del Rey para recibir las recompensas"
+      "step5": "Cada vuelta completa un año — pasa por el 🏰 Castillo del Rey para recibir la Gracia del Rey y las recompensas de propiedades"
     },
     "goldUnits": {
       "title": "Oro 🟡 y unidades 🧍",
       "item1": "El Oro 🟡 y las unidades 🧍 son los recursos básicos para comprar casillas, luchar o iniciar la batalla final",
-      "item2": "Ingreso anual: cuantas más casillas poseas, más recibirás cada año",
+      "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Pasar por el Castillo del Rey también concede la Gracia del Rey y recompensas de propiedades.",
       "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
       "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
@@ -377,7 +377,7 @@
       "discoverTitle": "Descubrir",
       "discoverBody": "nuevas casillas y ser recompensado por ello",
       "own": "<strong>👛 Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Visitar tus propias casillas te aporta un bono",
-      "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — paga una tarifa 💰 o lucha ⚔️ para arrasarla. Una casilla arrasada 🔥 pierde todas sus mejoras y queda sin dueño, pero ese jugador no podrá reclamarla tras la batalla. Si no tienes suficiente oro o unidades, vende algunas de tus casillas. La batalla cuesta unidades al atacante. Si no puedes luchar ni pagar, te conviertes en prisionero de guerra: pasas 2 turnos en prisión, y después recibes un bono inicial para seguir jugando.",
+      "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — la tarifa 💰 se cobra automáticamente. Tras pagarla, puedes marcharte en paz o luchar ⚔️ por venganza. Una casilla arrasada 🔥 pierde sus mejoras, queda sin dueño y no se puede reclamar hasta la siguiente ronda. Si no puedes cubrir una tarifa, vende casillas; si aún no basta, te conviertes en prisionero de guerra, pierdes un turno en prisión y después recibes el rescate del Rey para continuar.",
       "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: el bono de ingresos y la tarifa se <strong>duplican</strong>",
       "sellAnytime": "<strong>Vender</strong> — las casillas pueden venderse en cualquier momento por el precio total de la casilla y sus mejoras. Haz clic en el encabezado de la casilla para ver los botones de Vender/Ceder.",
       "yieldToKing": "<strong>Ceder al Rey</strong> — cede una casilla ('media venta'): recibes la mitad de su precio de inmediato, pero no produce ingresos y no se puede luchar por ella. Recupérala por el 60% del precio de la casilla. Vender una casilla cedida reembolsa un 10% menos de su valor restante.",
@@ -386,7 +386,7 @@
     "tileUpgrades": {
       "title": "Mejoras de casilla ⬆️",
       "item1": "<strong>Mejora las casillas</strong> pagando 🟡 para aumentar sus ingresos y defensa. Haz clic en el botón ⬆️ para mejorar, haz clic en el título para ver las mejoras posibles.",
-      "item2": "Cada mejora añade una torre de guarnición 🏯 más a la casilla. Cada torre puede albergar hasta 10 unidades defensoras y añade un bono a sus tiradas de defensa.",
+      "item2": "Cada espacio de guarnición alberga hasta {slotCapacity} defensores. La capacidad de una casilla es de {level1Capacity}/{level2Capacity}/{level3Capacity} defensores en los niveles 1/2/3; las Torres también mejoran las tiradas de sus defensores.",
       "item3": "Las mejoras no se pueden vender por separado ni desmantelar, pero su precio se suma al valor de la casilla.",
       "item4": "Puedes enviar unidades a guarnecer una casilla en cualquier momento, pero solo puedes recuperarlas en tu ejército mientras visitas esa casilla."
     },
@@ -399,6 +399,7 @@
       "prison": "⛓️ <strong>Prisión</strong> — pierdes un turno. Mientras estás en prisión, nadie paga por visitar tus casillas",
       "joker": "🃏 <strong>Comodín</strong> — desencadena un evento global aleatorio, ver la lista completa abajo.",
       "ruins": "🏚️ <strong>Ruinas</strong> — caer aquí siempre desencadena una lucha contra sus ocupantes monstruosos, ver los detalles abajo.",
+      "portal": "🌀 <strong>Portal</strong> — te teletransporta a otra casilla aleatoria, cuyo efecto se resuelve entonces.",
       "stables": "🐴 <strong>Establos</strong> — recibe 3–12 jinetes 🐎 gratis (solo caballeros; los demás reciben oro)"
     },
     "joker": {
@@ -412,10 +413,25 @@
       "earthquake": "🪨 <strong>Terremoto</strong> — las casillas mejoradas pierden un nivel; los jugadores sin casillas mejoradas pierden su casilla más barata en su lugar.",
       "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola."
     },
+    "travel": {
+      "title": "Viaje 🧭",
+      "fork": "<strong>Bifurcación del camino</strong> — si estás en la bifurcación, elige la ruta corta o larga antes de tirar. Si puedes alcanzarla durante una tirada, la ruta se elige al azar.",
+      "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
+    },
+    "contracts": {
+      "title": "Contratos del Rey 📜",
+      "item1": "Una visita al Castillo puede ofrecerte un contrato: reclama una casilla sin dueño específica a cambio de oro. Obtienes la recompensa si la reclamas tú; si otro jugador lo hace primero, el contrato termina."
+    },
     "caravan": {
       "title": "Caravana 🐪",
-      "item1": "Al <em>inicio</em> de tu turno tienes la posibilidad de encontrarte con una caravana que trae tesoros o esclavos",
+      "item1": "Después de tirar y antes de moverte, puedes encontrar una caravana con oro, esclavos o —si eres Caballero— caballos.",
       "item2": "¡Derrota a los guardias de la caravana para liberar a los esclavos (se unen a tu ejército) o saquear los tesoros!"
+    },
+    "dangers": {
+      "title": "Peligros del camino y del reino ⚠️",
+      "ambush": "<strong>Emboscada</strong> — después de tu primera vuelta, un viajero famoso y fuerte puede ser atacado en el camino. La emboscada debe combatirse.",
+      "rogue": "<strong>Incursión de forajidos</strong> — después de tu primera vuelta, una horda errante puede atacar una de tus casillas no cedidas. Una guarnición vacía queda arrasada de inmediato; de otro modo, la guarnición la defiende.",
+      "zombies": "<strong>Casillas abandonadas</strong> — las casillas arrasadas están custodiadas por zombis, no se pueden reclamar hasta la siguiente ronda y su guarnición salvaje crece mientras siguen sin dueño. Caer en una puede desencadenar una emboscada zombi."
     },
     "ruins": {
       "title": "Ruinas Antiguas 🏚️",
@@ -429,7 +445,7 @@
       "squad": "<strong>Todo el ejército</strong> del atacante marcha a la batalla, arriesgando sus vidas por algún objetivo: bienes o esclavos de una caravana, arrasar la casilla o luchar contra el Dragón.",
       "razing": "<strong>Arrasar</strong> significa que la casilla pierde todas sus mejoras y no pertenece a nadie",
       "twoModes": "Hay dos modos: combate cuerpo a cuerpo y batalla normal",
-      "brawlMode": "En el <strong>modo Combate:</strong> Modo simple, usado cuando el escuadrón tiene menos de 6 unidades. Atacante y defensor tiran el dado, quien saque más gana la ronda.",
+      "brawlMode": "En el <strong>modo Combate:</strong> una lucha pequeña, usada solo cuando tanto el atacante como la defensa tienen como máximo 12 unidades. Atacante y defensor tiran el dado; la tirada más alta gana la ronda.",
       "normalMode": "<strong>Batalla normal:</strong> El combate se resuelve por rondas. En cada ronda ambos bandos tiran el dado; la cantidad obtenida es el número de unidades enemigas destruidas. Quien destruya primero todas las unidades enemigas gana.",
       "tie": "Si mueren todas las unidades del atacante y del defensor, es un Empate",
       "priceOfVictory": "¡La victoria tiene un precio! Como resultado de una batalla, el vencedor pierde las unidades muertas en combate."
@@ -440,7 +456,7 @@
     },
     "dragon": {
       "title": "Dragón 🐉",
-      "item1": "Si tienes más de 50 guerreros al <em>inicio</em> de tu turno — puedes elegir desafiar al Dragón o tirar el dado en su lugar.",
+      "item1": "Con un ejército de aproximadamente 60 Jinetes 🐎 (120 de poder de ejército) al <em>inicio</em> de tu turno, puedes desafiar al Dragón o tirar el dado en su lugar.",
       "item2": "A veces, mientras viajas, puedes ver al dragón en el cielo. Y si eres rico y famoso, ten cuidado: ¡podría atacarte y quemar tus casillas hasta los cimientos!"
     }
   },
