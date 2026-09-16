@@ -846,14 +846,14 @@
     "title": "Древние руины",
     "message": "{playerSpan} обнаруживает руины древнего замка. К сожалению, его заняла группа монстров. И монстры атакуют!",
     "fight": "🧟 Сражайтесь за свою жизнь!",
-    "lostSuffix": ", теряя {army}",
+    "lostSuffix": " Потери: {army}.",
     "victoryMessage": "Руины очищены!{lossStr}",
     "victoryGameMessage": "{playerName} очищает руины от монстров!{lossStr}",
     "tieMessage": "Дорогостоящая ничья среди руин!{lossStr}",
     "tieGameMessage": "{playerName} едва выживает среди руин!{lossStr}",
     "defeatMessage": "Разгром! Руины остаются во владении монстров.{lossStr}",
     "defeatGameMessage": "{playerName} изгнан из руин!{lossStr}",
-    "foundArtifact": " Смотрите, что там! Не может быть... Это {artifact}!",
+    "foundArtifact": "\n\nСмотрите, что там! Не может быть... Это {artifact} {emoji}!",
     "foundArtifactToast": "{playerName} находит {artifactName} {emoji} среди руин!"
   },
   "caravanEncounter": {

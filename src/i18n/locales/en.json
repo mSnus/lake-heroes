@@ -851,14 +851,14 @@
     "title": "Ancient Ruins",
     "message": "{playerSpan} discovers ruins of the ancient castle. Unfortunately, group of monsters occupy it. And the monsters attack!",
     "fight": "🧟 Fight for your life!",
-    "lostSuffix": ", losing {army}",
+    "lostSuffix": " Lost {army}.",
     "victoryMessage": "The ruins are cleared!{lossStr}",
     "victoryGameMessage": "{playerName} clears the ruins of monsters!{lossStr}",
     "tieMessage": "A costly stalemate among the ruins!{lossStr}",
     "tieGameMessage": "{playerName} barely survives the ruins!{lossStr}",
     "defeatMessage": "Routed! The ruins remain monster-held.{lossStr}",
     "defeatGameMessage": "{playerName} is driven out of the ruins!{lossStr}",
-    "foundArtifact": " Look what's in there! No way... It's an {artifact}!",
+    "foundArtifact": "\n\nLook what's in there! No way... It's the {artifact} {emoji}!",
     "foundArtifactToast": "{playerName} found the {artifactName} {emoji} among the ruins!"
   },
   "caravanEncounter": {

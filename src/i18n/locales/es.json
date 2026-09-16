@@ -849,14 +849,14 @@
     "title": "Ruinas Antiguas",
     "message": "{playerSpan} descubre las ruinas de un castillo antiguo. Por desgracia, un grupo de monstruos las ocupa. ¡Y los monstruos atacan!",
     "fight": "🧟 ¡Lucha por tu vida!",
-    "lostSuffix": ", perdiendo {army}",
+    "lostSuffix": " Bajas: {army}.",
     "victoryMessage": "¡Las ruinas han sido despejadas!{lossStr}",
     "victoryGameMessage": "¡{playerName} limpia las ruinas de monstruos!{lossStr}",
     "tieMessage": "¡Un costoso empate entre las ruinas!{lossStr}",
     "tieGameMessage": "¡{playerName} apenas sobrevive a las ruinas!{lossStr}",
     "defeatMessage": "¡Derrotado! Las ruinas siguen en poder de los monstruos.{lossStr}",
     "defeatGameMessage": "¡{playerName} es expulsado de las ruinas!{lossStr}",
-    "foundArtifact": " ¡Mira lo que hay ahí! No puede ser... ¡Es {artifact}!",
+    "foundArtifact": "\n\n¡Mira lo que hay ahí! No puede ser... ¡Es {artifact} {emoji}!",
     "foundArtifactToast": "¡{playerName} encontró {artifactName} {emoji} entre las ruinas!"
   },
   "caravanEncounter": {

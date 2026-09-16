@@ -60,7 +60,13 @@ export function resolveRuinsBattle(
         player.artifacts.push(artifact.id);
         if (artifact.id === 'medal-of-honor') player.fame += 5;
         if (artifact.id === 'medal-of-distinction') player.fame += 3;
-        message += ' ' + t('ruinsEncounter.foundArtifact', { artifact: artifact.name });
+        // No joining space: the string opens its own paragraph (the result
+        // panel renders pre-line), and adding one here used to leave a stray
+        // double space mid-sentence.
+        message += t('ruinsEncounter.foundArtifact', {
+          artifact: artifact.name,
+          emoji: artifact.emoji,
+        });
         say(
           t('ruinsEncounter.foundArtifactToast', {
             playerName: player.name,
