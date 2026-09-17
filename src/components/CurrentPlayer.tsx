@@ -145,6 +145,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
     (tile) => tile && tile.owner === activePlayer.id && !tile.isYielded
   ).length;
   const revealed = useRevealedStats(activePlayer);
+  // Past three, the names stop fitting on one line and wrap into a block that
+  // crowds out the row above -- so they drop away and the icons grow instead,
+  // which keeps them individually identifiable at a glance.
+  const iconOnlyArtifacts = activePlayer.artifacts.length > 3;
 
   return (
     <div className="player-pane-wrapper">
@@ -181,6 +185,61 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
       </div>
 
       <div className="player-pane">
+        {/* Money and army share a row; the badges sit under it. */}
+        <div className="player-stats-main-row">
+          {/* wealth */}
+          <div
+            className="player-stats-data"
+            id="statsOwnedResources"
+            onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
+          >
+            <div
+              className="player-stats-hint"
+              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            >
+              👛
+            </div>
+            <div className="player-stats-inline-row">
+              <strong>{revealed.gold ?? 0}🟡</strong>
+              {turnIncome.gold > 0 && (
+                <span className="player-stats-turn-income">+{turnIncome.gold}🟡</span>
+              )}
+            </div>
+          </div>
+
+          <div
+            className="player-stats-data player-stats-army-cell"
+            id="statsArmy"
+            onClick={() =>
+              showScreen({
+                content: React.createElement(GarrisonsScreen, {
+                  gameState,
+                  player: activePlayer,
+                  updateGameState,
+                }),
+              })
+            }
+          >
+            <div
+              className="player-stats-hint"
+              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
+            >
+              ⚔️
+            </div>
+            <div className="player-stats-inline-row">
+              <SquadDisplay
+                militia={revealed.militia}
+                riders={revealed.riders}
+                totalSlots={activePlayer.armySlots}
+                className="player-stats-army-slots"
+              />
+              {turnIncome.units > 0 && (
+                <span className="player-stats-turn-income">+{turnIncome.units}🧍</span>
+              )}
+            </div>
+          </div>
+        </div>
+
         {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
           activePlayer.artifacts.length > 0) && (
           <div className="player-stats-contracts">
@@ -214,7 +273,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               return (
                 <span
                   key={`artifact-${id}`}
-                  className="player-artifact-badge"
+                  className={
+                    'player-artifact-badge' +
+                    (iconOnlyArtifacts ? ' player-artifact-badge--icon-only' : '')
+                  }
                   onClick={() =>
                     sayLocal(
                       t('currentPlayer.artifactTooltip', {
@@ -226,68 +288,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                   }
                   style={{ cursor: 'pointer' }}
                 >
-                  <span className="icon">{artifact.emoji}</span> {artifact.name}
+                  <span className="icon">{artifact.emoji}</span>
+                  {!iconOnlyArtifacts && <> {artifact.name}</>}
                 </span>
               );
             })}
           </div>
         )}
-        <div className="player-stats-gold">
-          {/* wealth */}
-          <div
-            className="player-stats-data"
-            id="statsOwnedResources"
-            onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
-          >
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              👛
-            </div>
-            <div className="player-stats-inline-row">
-              <strong>{revealed.gold ?? 0}🟡</strong>
-              {turnIncome.gold > 0 && (
-                <span className="player-stats-turn-income">+{turnIncome.gold}🟡</span>
-              )}
-            </div>
-          </div>
-
-        </div>
-
-        <div className="player-stats-army-row">
-          <div
-            className="player-stats-data player-stats-army-cell"
-            id="statsArmy"
-            onClick={() =>
-              showScreen({
-                content: React.createElement(GarrisonsScreen, {
-                  gameState,
-                  player: activePlayer,
-                  updateGameState,
-                }),
-              })
-            }
-          >
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              ⚔️
-            </div>
-            <div className="player-stats-inline-row">
-              <SquadDisplay
-                militia={revealed.militia}
-                riders={revealed.riders}
-                totalSlots={activePlayer.armySlots}
-                className="player-stats-army-slots"
-              />
-              {turnIncome.units > 0 && (
-                <span className="player-stats-turn-income">+{turnIncome.units}🧍</span>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
