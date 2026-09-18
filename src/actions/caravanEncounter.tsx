@@ -9,8 +9,11 @@ import { rollCaravanPrize, CaravanPrize } from '../game/caravanPrize';
 import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
-/** Share of the escort its cargo is worth that actually stands and fights. */
-const CARAVAN_GUARD_RATIO = 0.9;
+/** Share of the escort its cargo is worth that actually stands and fights.
+ * 0.765 is 15% below the 0.9 this started at -- the prize is unaffected,
+ * since it is priced off the full escort, so this makes a caravan a softer
+ * target for the same payout. */
+const CARAVAN_GUARD_RATIO = 0.765;
 
 export function checkCaravanEncounter(
   board: GameState,

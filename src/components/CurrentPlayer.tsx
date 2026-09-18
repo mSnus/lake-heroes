@@ -201,9 +201,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             </div>
             <div className="player-stats-inline-row">
               <strong>{revealed.gold ?? 0}🟡</strong>
-              {turnIncome.gold > 0 && (
-                <span className="player-stats-turn-income">+{turnIncome.gold}🟡</span>
-              )}
             </div>
           </div>
 
@@ -233,12 +230,22 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 totalSlots={activePlayer.armySlots}
                 className="player-stats-army-slots"
               />
-              {turnIncome.units > 0 && (
-                <span className="player-stats-turn-income">+{turnIncome.units}🧍</span>
-              )}
             </div>
           </div>
         </div>
+
+        {(turnIncome.gold > 0 || turnIncome.units > 0) && (
+          /* Same shape as the row above (natural width, then flex) so each
+             figure lines up under the stat it adds to. */
+          <div className="player-stats-main-row player-stats-income-row">
+            <span className="player-stats-turn-income">
+              {turnIncome.gold > 0 ? `+${turnIncome.gold}🟡` : ''}
+            </span>
+            <span className="player-stats-turn-income player-stats-army-cell">
+              {turnIncome.units > 0 ? `+${turnIncome.units}🧍` : ''}
+            </span>
+          </div>
+        )}
 
         {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
           activePlayer.artifacts.length > 0) && (

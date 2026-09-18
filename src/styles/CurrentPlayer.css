@@ -127,6 +127,14 @@
   min-width: 0;
 }
 
+/* Daily income, on its own line under the figures it adds to. The wallet and
+   squads blocks each carry a coloured hint bubble; these do not, so they are
+   indented by its width to stay in the same columns. */
+.player-stats-income-row {
+  padding-left: 28px;
+  margin-top: -2px;
+}
+
 .player-stats-army-slots {
   display: flex;
   flex-wrap: wrap;
