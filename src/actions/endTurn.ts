@@ -43,6 +43,11 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   // state over instead -- they run beginTurn when they receive it.
   if (isLocallyDriven(board.activePlayer, board)) {
     beginTurn(board, updateGameState);
+    // Still published, even though nobody else has to act: the other players
+    // watch the board through these pushes, and without one a hot-seat bundle
+    // or a run of host-driven bots stays invisible until a turn finally leaves
+    // this browser. A no-op offline.
+    void pushTurn(board);
     return;
   }
 

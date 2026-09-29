@@ -42,23 +42,42 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * someone else already wrote, so re-sending would clobber them; the caller has
  * to resync instead.
  */
-export async function pushTurn(board: GameState): Promise<PushOutcome> {
-  const { code, seat, version } = getOnline();
-  if (code === undefined || seat === undefined) return 'offline';
+export function pushTurn(board: GameState): Promise<PushOutcome> {
+  const { code, seat } = getOnline();
+  if (code === undefined || seat === undefined) return Promise.resolve('offline');
 
+  // The snapshot is taken now, while the board is what this handover produced.
   const payload = buildEnvelope(board, {
     senderSeat: seat,
     clientId,
     log: logDelta,
     eventsThrough: eventsSentThrough(),
   });
+
+  // One push at a time. Handovers between seats on this device (hot-seat, host
+  // bots) can follow each other faster than a request returns, and a second
+  // push sent with the version the first has not yet bumped would be refused as
+  // stale -- by our own write. Queued, each one reads the version when it runs.
+  const sentLines = logDelta.length;
+  const run = pushQueue.then(() => send(payload, sentLines));
+  pushQueue = run.then(() => undefined, () => undefined);
+  return run;
+}
+
+let pushQueue: Promise<void> = Promise.resolve();
+
+async function send(payload: string, sentLines: number): Promise<PushOutcome> {
+  const { code, version } = getOnline();
+  if (code === undefined) return 'offline';
   updateOnline({ sync: 'pushing', error: undefined });
 
   for (let attempt = 0; ; attempt++) {
     const res = await pushState(code, payload, version ?? 0);
 
     if (res.ok) {
-      logDelta = [];
+      // Only what this payload carried: lines from the next turn may have
+      // arrived while the request was in flight, and are still owed.
+      logDelta = logDelta.slice(sentLines);
       updateOnline({ version: res.data.version, sync: 'waiting', error: undefined });
       return 'sent';
     }
