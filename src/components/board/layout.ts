@@ -2,7 +2,7 @@ import { shuffle } from './common';
 import { TILE_COUNT } from '../../game/constants';
 
 // Place tiles according to rules:
-// - Fixed placements (0-based): King=0, Treasure=5, Sphynx=7, Portal=9, Prison=13, Tavern=16, Joker=19, Treasure=23
+// - Fixed placements: see FIXED below (the long fork branch 7-12 holds the risky tiles)
 // - Remaining (random) tiles distributed via interleaved group stacks:
 //     1. Group pool tiles by their group, sort each group by level-1 gold price (cheapest first)
 //     2. Build stacks: stack[i] = ith tile from each group (stack 0 = all cheapest, etc.)

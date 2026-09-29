@@ -11,10 +11,10 @@ export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the pl
 // long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
 // game/boardPath.ts (movement), utils/forkChoiceStore.ts (the pending
 // per-turn choice), and BoardCanvas.tsx (the on-tile arrow picker).
-export const FORK_START_INDEX = 4;
+export const FORK_START_INDEX = 3;
 export const FORK_MERGE_INDEX = 13;
-export const FORK_SHORT_PATH = [5, 6, 7];
-export const FORK_LONG_PATH = [8, 9, 10, 11, 12];
+export const FORK_SHORT_PATH = [4, 5, 6];
+export const FORK_LONG_PATH = [7, 8, 9, 10, 11, 12];
 // Approaching the fork, the branch is a hidden coin flip rather than a
 // choice -- rolled in rollAndMove.ts whenever the fork start is this many
 // steps away or fewer, i.e. whenever a single die could still reach it. A
