@@ -15,8 +15,15 @@ export type SyncState =
 export interface OnlineSession {
   /** This browser's join code (identifies the seat to the server). */
   code: string;
-  /** Index into GameState.players — the server's `playerIndex`. */
+  /** Index into GameState.players — the server's `playerIndex` for `code`. */
   seat: number;
+  /** Every seat this browser plays. Just [seat] normally; several when the
+   * game was opened from a bundle link, i.e. hot-seat on one device. */
+  seats: number[];
+  /** Host only: which seats share a link. links[i] means seat i is bundled
+   * with seat i-1. Purely a client-side grouping -- the server still holds one
+   * code per seat, a bundle link just carries several of them. */
+  links?: boolean[];
   /** The client that created the game drives the bot seats. */
   isHost: boolean;
   /** Last version we successfully read or wrote. */
@@ -65,7 +72,8 @@ function loadSession(): OnlineState {
     if (!raw) return { sync: 'idle' };
     const s = JSON.parse(raw) as OnlineSession;
     if (typeof s?.code !== 'string' || typeof s?.seat !== 'number') return { sync: 'idle' };
-    return { ...s, sync: 'ready' };
+    // Saves from before bundles existed have no `seats`.
+    return { ...s, seats: Array.isArray(s.seats) && s.seats.length ? s.seats : [s.seat], sync: 'ready' };
   } catch {
     return { sync: 'idle' };
   }
@@ -83,8 +91,8 @@ function emit(): void {
  * disagree about which seat we are. */
 function syncSeats(): void {
   setSeatSession(
-    current.code !== undefined && current.seat !== undefined
-      ? { seat: current.seat, isHost: !!current.isHost }
+    current.code !== undefined && current.seats?.length
+      ? { seats: current.seats, isHost: !!current.isHost }
       : null
   );
 }
@@ -98,10 +106,10 @@ function persist(): void {
       return;
     }
 
-    const { code, seat, isHost, version, status, codes } = current;
+    const { code, seat, seats, links, isHost, version, status, codes } = current;
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ code, seat, isHost, version, status, codes })
+      JSON.stringify({ code, seat, seats, links, isHost, version, status, codes })
     );
   } catch {
     // Storage unavailable — the session still lives in memory for this load.

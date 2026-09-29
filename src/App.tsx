@@ -226,7 +226,7 @@ function App() {
         // Drop the code from the address bar so a later reload doesn't re-join
         // and discard a turn in progress.
         window.history.replaceState({}, '', window.location.pathname);
-        void joinGame(joinCode).then((board) => {
+        void joinGame(joinCode.split(',')).then((board) => {
           if (!board) {
             showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
             return;

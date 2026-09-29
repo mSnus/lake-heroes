@@ -1048,6 +1048,8 @@
     "hostGame": "🌐 Play online",
     "joinPrompt": "Enter your join code",
     "join": "Join",
-    "yourLinkOnly": "Your seat and link.\nOnly the host holds the other players' codes."
+    "yourLinkOnly": "Your seat and link.\nOnly the host holds the other players' codes.",
+    "bundleWithPrevious": "Share one link with the player above (hot-seat on one device)",
+    "unbundleLast": "Give the last player in this bundle their own link again"
   }
 }

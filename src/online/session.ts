@@ -30,6 +30,8 @@ export async function hostGame(board: GameState): Promise<SeatCode[] | null> {
   startOnlineSession({
     code: res.data.codes[0].code,
     seat: res.data.codes[0].playerIndex,
+    seats: [res.data.codes[0].playerIndex],
+    links: res.data.codes.map(() => false),
     isHost: true,
     version: res.data.version,
     status: 'active',
@@ -42,41 +44,70 @@ export async function hostGame(board: GameState): Promise<SeatCode[] | null> {
 }
 
 /**
- * Join an existing game by code. The seat is whatever the server says the code
- * owns — it is never guessed client-side.
+ * Join an existing game. Several codes at once (a bundle link) claim several
+ * seats for this one browser, which is how players share a device: each seat is
+ * still its own player with its own code on the server, and the ordinary
+ * turn-handover already skips the push between two seats one browser drives.
+ *
+ * Every seat is whatever the server says its code owns — never guessed
+ * client-side.
  */
-export async function joinGame(code: string): Promise<GameState | null> {
-  const trimmed = code.trim().toUpperCase();
-  if (!trimmed) return null;
+export async function joinGame(codes: string[]): Promise<GameState | null> {
+  const wanted = Array.from(new Set(codes.map((c) => c.trim().toUpperCase()).filter(Boolean)));
+  if (!wanted.length) return null;
 
-  const res = await fetchState(trimmed);
-  if (!res.ok) {
-    sayLocal(
-      res.kind === 'notfound' ? `No game found for code ${trimmed}.` : 'Could not reach the game server.',
-      'error'
-    );
-    return null;
+  const results = [];
+  for (const code of wanted) {
+    const res = await fetchState(code);
+    if (!res.ok) {
+      sayLocal(
+        res.kind === 'notfound' ? `No game found for code ${code}.` : 'Could not reach the game server.',
+        'error'
+      );
+      return null;
+    }
+
+    results.push(res.data);
   }
 
-  const parsed = parseEnvelope(res.data.state);
+  const first = results[0];
+  const parsed = parseEnvelope(first.state);
   if (!parsed) {
     sayLocal('That game could not be read — it may have been saved by a different version.', 'error');
     return null;
   }
 
+  const players = (parsed.raw.players ?? []) as { name?: string; color?: string }[];
+  const seats = results.map((r) => r.playerIndex);
+  // A code from some other game would otherwise seat a stranger here. The seat
+  // it claims must exist in THIS board and carry the colour the server has for it.
+  const foreign = results.some((r) => players[r.playerIndex]?.color !== r.color);
+  if (foreign || new Set(seats).size !== seats.length) {
+    sayLocal('Those codes do not belong to the same game.', 'error');
+    return null;
+  }
+
   clearLogDelta();
   startOnlineSession({
-    code: trimmed,
-    seat: res.data.playerIndex,
+    code: wanted[0],
+    seat: first.playerIndex,
+    seats,
     // Only the creator hosts; a joiner never drives the bot seats.
     isHost: false,
-    version: res.data.version,
-    status: res.data.status,
+    version: first.version,
+    status: first.status,
+    // What this device holds, so the 🔗 screen can show the bundle it opened.
+    codes: results.map((r, i) => ({
+      code: wanted[i],
+      playerIndex: r.playerIndex,
+      color: r.color,
+      name: players[r.playerIndex]?.name ?? '',
+    })),
   });
 
   // Start reading narration from here, not from the beginning of the game.
   resetLiveFeed();
-  setCursor(res.data.lastEvent ?? 0);
+  setCursor(first.lastEvent ?? 0);
 
   const board = rehydrateGameState(parsed.raw as SavedGameState);
   updateOnline({ sync: 'ready' });

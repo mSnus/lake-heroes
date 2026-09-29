@@ -17,9 +17,9 @@ import { Player } from './Player';
  */
 
 /** Set by the online layer once a game is joined; null when playing offline. */
-let session: { seat: number; isHost: boolean } | null = null;
+let session: { seats: number[]; isHost: boolean } | null = null;
 
-export function setSeatSession(next: { seat: number; isHost: boolean } | null): void {
+export function setSeatSession(next: { seats: number[]; isHost: boolean } | null): void {
   session = next;
 }
 
@@ -27,8 +27,14 @@ export function isOnline(): boolean {
   return session !== null;
 }
 
-export function mySeat(): number | null {
-  return session?.seat ?? null;
+/** Every seat this browser plays. More than one is a hot-seat bundle: several
+ * players sharing a single device, each still a distinct seat on the server. */
+export function mySeats(): number[] {
+  return session?.seats ?? [];
+}
+
+function isMySeat(seat: number): boolean {
+  return !!session && session.seats.includes(seat);
 }
 
 export function isHost(): boolean {
@@ -47,7 +53,7 @@ export function seatIndex(player: Player): number {
 /** Is the seat currently on turn the one this browser holds? */
 export function isLocalTurn(board: GameState): boolean {
   if (!isOnline()) return true;
-  return board.playerOrder[board.activePlayerIndex] === mySeat();
+  return isMySeat(board.playerOrder[board.activePlayerIndex]);
 }
 
 /**
@@ -62,7 +68,7 @@ export function isLocallyDriven(player: Player, board: GameState): boolean {
   if (!isOnline()) return true;
   const seat = seatIndex(player);
   if (seat < 0) return isLocalTurn(board);
-  return seat === mySeat() || (isHost() && player.isComputer);
+  return isMySeat(seat) || (isHost() && player.isComputer);
 }
 
 /**
@@ -74,5 +80,5 @@ export function isLocallyDriven(player: Player, board: GameState): boolean {
 export function isLocalHuman(player: Player): boolean {
   if (player.isComputer) return false;
   if (!isOnline()) return true;
-  return seatIndex(player) === mySeat();
+  return isMySeat(seatIndex(player));
 }

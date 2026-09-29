@@ -1021,6 +1021,8 @@
     "hostGame": "🌐 Jugar en línea",
     "joinPrompt": "Introduce tu código",
     "join": "Unirse",
-    "yourLinkOnly": "Tu puesto y tu enlace.\nSolo el anfitrión tiene los códigos de los demás."
+    "yourLinkOnly": "Tu puesto y tu enlace.\nSolo el anfitrión tiene los códigos de los demás.",
+    "bundleWithPrevious": "Compartir un enlace con el jugador de arriba (turnos en un mismo dispositivo)",
+    "unbundleLast": "Devolver al último jugador su propio enlace"
   }
 }
