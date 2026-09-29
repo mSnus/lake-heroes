@@ -22,6 +22,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   const ruins = byId('ruins');
   const tower = byId('cannon-tower');
   const stables = byId('stables');
+  const bows = byId('bows');
 
   if (!kingCastle) throw new Error('King Castle tile not found');
   if (!treasure) throw new Error('Treasure tile not found');
@@ -32,16 +33,18 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
   if (!portal) throw new Error('Portal tile not found');
   if (!ruins) throw new Error('Ruins tile not found');
   if (!stables) throw new Error('Stables tile not found');
+  if (!bows) throw new Error('Bows tile not found');
   if (!tower) throw new Error('Cannon Tower tile not found');
 
   const slots: (any | undefined)[] = new Array(TILE_COUNT).fill(undefined);
 
   const FIXED: [number, any][] = [
     [0, kingCastle],
-    [8, joker],
-    [9, treasure],
-    [10, ruins],
-    [11, stables],
+    [7, bows],
+    [8, stables],
+    [9, ruins],
+    [10, treasure],
+    [11, joker],
     [12, tower],
     [13, sphynx],
     [16, prison],
@@ -64,6 +67,7 @@ export function buildTileLayoutFromTemplates(allTemplates: any[]): (any | undefi
     ruins,
     stables,
     tower,
+    bows,
   ]);
   const pool = allTemplates.filter((t) => !fixedSet.has(t));
 
