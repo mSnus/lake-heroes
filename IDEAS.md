@@ -33,3 +33,31 @@ that didn't make the cut, kept here in case they're worth revisiting):
 - 10x unit-count scaling (bigger armies, same ratios). Rejected by both:
   mathematically less dramatic battles (round counts balloon), and
   silently breaks untouched constants like FEE_MULTIPLIER/BRAWL_THRESHOLD.
+
+Shelved (not rejected) -- worth rethinking:
+- **Karma**: a per-player moral-standing stat that goes negative for cruelty
+  and positive for mercy, and biases random events (Joker, Sphynx, Treasure).
+  Shelved after analysis; findings for whoever picks it up:
+  - Razing is not a choice (`resolveTileBattle.ts`: `claiming = !tile.isOwned()`,
+    winning vs an owned tile always razes), and fame already pays +1 for it.
+    Charging karma for it would tax the only available move.
+  - Over a game the counter would land around -8..+3, near-monotonically down:
+    the negative side is fed by razing and caravan gold (in ~89% of caravans),
+    the positive side has ~2 slave-freeing events a game, and those are not
+    opt-in. It would read as a slow curse, not a balance the player steers.
+  - Gold and slaves cannot be separated: 28% of caravans carry both, awarded
+    in one bundle (`resolveCaravanBattle.ts`). Freed slaves are already just
+    militia, clamped to army slots with the excess silently lost -- so mercy
+    would need a new "free / conscript" choice built from scratch.
+  - Joker is the worst target: ~once per player per game (it sits on the long
+    fork branch only), and only Queen's Gift acts on the lander -- the rest hit
+    everyone or the leader. Sphynx (~4.3%/roll) and the treasure chest
+    (~6.6%/roll, always the lander) are the biasable ones. Events are already
+    ~70% bad, so headroom is toward good, not more bad.
+  - Hooks that held up as genuine forks: revenge after the toll is paid
+    (`afterMoveLogic.ts`), and Hero's Hour PvP. Both are optional aggression
+    with a real alternative on screen.
+  - Risk: both-directions biasing can death-spiral a player who falls behind,
+    against King's Grace / the anti-leader Joker events pushing the other way.
+  - Before building: count fork offers and biased draws per player per game in
+    the headless sim; if under ~5, the dial cannot steer behaviour.
