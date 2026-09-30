@@ -28,7 +28,7 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
   Taxes: '🧾',
   Plague: '🦠',
   Hurricane: '🌪️',
-  Blessing: '👑',
+  Blessing: '✨',
   "Queen's Gift": '💍',
   Earthquake: '🪨',
   Meteor: '☄️',

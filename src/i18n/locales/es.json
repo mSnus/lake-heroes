@@ -408,7 +408,7 @@
       "taxes": "🧾 <strong>Impuestos</strong> — todos los jugadores pierden la mitad de su oro.",
       "plague": "🦠 <strong>Peste</strong> — todos los jugadores pierden la mitad de sus unidades.",
       "hurricane": "🌪️ <strong>Huracán</strong> — golpea la casilla más cara del jugador más rico, arrasándola, pero solo si es al menos 1.5 veces más rico que el segundo.",
-      "blessing": "👑 <strong>Bendición</strong> — todas las casillas en propiedad suben un nivel.",
+      "blessing": "✨ <strong>Bendición</strong> — todas las casillas en propiedad suben un nivel.",
       "queensGift": "💍 <strong>Regalo de la Reina</strong> — el jugador que lo obtuvo recibe una casilla de Campamento/Torre gratis, o 2000🟡 y 5🧍 si no hay ninguna libre.",
       "earthquake": "🪨 <strong>Terremoto</strong> — las casillas mejoradas pierden un nivel; los jugadores sin casillas mejoradas pierden su casilla más barata en su lugar.",
       "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola.",
