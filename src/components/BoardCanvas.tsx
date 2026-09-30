@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
 
-import { TILE_COUNT, FORK_START_INDEX } from '../game/constants';
+import { TILE_COUNT, FORK_START_INDEX, TILE_LEVEL_SCALE } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../utils/mapEditStore';
 import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
@@ -320,7 +320,18 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                     </div>
                   )}
                   {(tile.spriteImage || isFogged) && (
-                    <div className={tileSizeClass}>
+                    <div
+                      className={tileSizeClass}
+                      // Only ownable tiles have a level; specials stay full size.
+                      style={
+                        tile.isOwnable
+                          ? {
+                              transform: `scale(${TILE_LEVEL_SCALE[tile.level] ?? 1})`,
+                              transition: 'transform 0.4s ease',
+                            }
+                          : undefined
+                      }
+                    >
                       <div
                         className={`tile-sprite ${ownedClass}`}
                         style={

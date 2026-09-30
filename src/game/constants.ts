@@ -6,6 +6,9 @@ export const FEE_MULTIPLIER = 50;
 export const TREASURE_BOX_MULTIPLIER = 200;
 export const TILE_COUNT = 28;
 export const MAX_PLAYERS = 6;
+// How big an ownable tile is drawn on the map, by level -- so an upgrade is
+// visible at a glance. Purely visual: nothing reads it but BoardCanvas.
+export const TILE_LEVEL_SCALE: Record<number, number> = { 1: 0.9, 2: 1, 3: 1.1 };
 export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the player's laps around the board
 // Board fork: leaving FORK_START_INDEX branches onto either the short or the
 // long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
