@@ -107,13 +107,20 @@ function planRiderBuildUp(player: Player, prices: PriceOverrides): ArmyStep[] {
  * The bot's whole shopping trip at the King's Castle (or the Tavern, passing
  * its own premium prices), in order. Riders first (see planRiderBuildUp); a
  * bot that can't or shouldn't buy riders tops up militia the way it always
- * did. `prices` defaults to the normal King's Castle prices.
+ * did (unless `ridersOnly`). `prices` defaults to the normal King's Castle
+ * prices.
  */
-export function planArmyPurchase(player: Player, prices?: PriceOverrides): ArmyStep[] {
+export function planArmyPurchase(
+  player: Player,
+  prices?: PriceOverrides,
+  opts: { ridersOnly?: boolean } = {}
+): ArmyStep[] {
   const ov = getOverrides();
   const resolvedPrices = prices ?? { militiaPrice: ov.militiaPrice, riderPrice: ov.riderPrice };
   const riderSteps = planRiderBuildUp(player, resolvedPrices);
   if (riderSteps.length > 0) return riderSteps;
+  // The Stables sells riders only, so there is no militia to top up with.
+  if (opts.ridersOnly) return [];
 
   const { tier, amount } = planUnitHire(player, 'militia', resolvedPrices.militiaPrice);
   return amount > 0 ? [{ kind: 'hire', tier, count: amount }] : [];

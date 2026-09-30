@@ -51,15 +51,14 @@ const StablesModal: React.FC<StablesModalProps> = ({
 
   const canRecruitRiders = player.isKnight;
 
-  const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.remainingCapacity('militia'));
   const ridersMax = canRecruitRiders
     ? Math.min(Math.floor(player.gold / riderPrice), player.remainingCapacity('riders'))
     : 0;
-  const atMax = militiaMax <= 0 && ridersMax <= 0;
+  const atMax = ridersMax <= 0;
 
   useEffect(() => {
     if (!player.isComputer) return;
-    const plan = planArmyPurchase(player, { militiaPrice, riderPrice });
+    const plan = planArmyPurchase(player, { militiaPrice, riderPrice }, { ridersOnly: true });
     const timer = setTimeout(() => {
       for (const step of plan) {
         if (step.kind === 'sell') onSell(step.tier, step.count);
@@ -98,17 +97,21 @@ const StablesModal: React.FC<StablesModalProps> = ({
           className="squad-display-large"
         />
 
-        {atMax ? (
-          <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
-        ) : (
+        {/* Riders are all the Stables sells, so a player who is not a Knight
+            has nothing to hire here and sees no dialogue at all. */}
+        {canRecruitRiders &&
+          (atMax ? (
+            <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
+          ) : (
           <SquadHirePanel
             player={player}
-            showRiders={canRecruitRiders}
+            showRiders
+            showMilitia={false}
             onBuy={handleBuy}
             militiaPrice={militiaPrice}
             riderPrice={riderPrice}
           />
-        )}
+          ))}
 
         <div
           className="button-group"

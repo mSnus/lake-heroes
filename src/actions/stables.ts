@@ -76,7 +76,7 @@ export function handleStables(
   updateGameState(board);
 
   if (isHeadlessRun()) {
-    const steps = planArmyPurchase(player, { militiaPrice: tavernMilitiaPrice(), riderPrice: tavernRiderPrice() });
+    const steps = planArmyPurchase(player, { militiaPrice: tavernMilitiaPrice(), riderPrice: tavernRiderPrice() }, { ridersOnly: true });
     for (const step of steps) {
       if (step.kind === 'sell') sellUnits(board, step.count, updateGameState, step.tier);
       else if (step.kind === 'upgrade') upgradeSquad(board, step.count, updateGameState, tavernUpgradePricePerUnit());

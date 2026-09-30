@@ -80,6 +80,8 @@ interface SquadHirePanelProps {
   player: Player;
   /** Whether the Riders/Knights row should appear at all. */
   showRiders: boolean;
+  /** False where only riders are sold (the Stables). Defaults to true. */
+  showMilitia?: boolean;
   onBuy: (amount: number, tier: UnitTier) => void;
   /** Overrides the militia/rider row's price -- the Tavern charges a
    * premium over the King's Castle's own prices (see tavern.ts's
@@ -94,6 +96,7 @@ interface SquadHirePanelProps {
 export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   player,
   showRiders,
+  showMilitia = true,
   onBuy,
   militiaPrice,
   riderPrice,
@@ -104,13 +107,15 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   return (
     <div className="squad-hire-panel">
       <div className="squad-hire-panel-title">{t('squadHirePanel.hireTitle')}</div>
-      <HireRow
-        player={player}
-        tier="militia"
-        emoji="🧍"
-        unitPrice={militiaPrice ?? ov.militiaPrice}
-        onBuy={onBuy}
-      />
+      {showMilitia && (
+        <HireRow
+          player={player}
+          tier="militia"
+          emoji="🧍"
+          unitPrice={militiaPrice ?? ov.militiaPrice}
+          onBuy={onBuy}
+        />
+      )}
       {showRiders && (
         <HireRow
           player={player}
