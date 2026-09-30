@@ -180,6 +180,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.joker.queensGift')} />
             <HtmlLi html={t('helpScreen.joker.earthquake')} />
             <HtmlLi html={t('helpScreen.joker.meteor')} />
+            <HtmlLi html={t('helpScreen.joker.kingsGift')} />
           </ul>
 
           <h3>{t('helpScreen.caravan.title')}</h3>

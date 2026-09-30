@@ -70,6 +70,14 @@ export function pickRandomUnownedArtifact(board: GameState, receiver: Player): A
   return translate(available[Math.floor(Math.random() * available.length)]);
 }
 
+/** Hand `artifact` to `player`. The two medals also raise fame, which is part
+ * of what they are, so every way of receiving one goes through here. */
+export function grantArtifact(player: Player, artifact: Artifact): void {
+  player.artifacts.push(artifact.id);
+  if (artifact.id === 'medal-of-honor') player.fame += 5;
+  if (artifact.id === 'medal-of-distinction') player.fame += 3;
+}
+
 /**
  * Battle dice bonus from owned artifacts, in every battle mode.
  * Broken Blade: +2 vs the Dragon, +1 otherwise (additive with the +2).

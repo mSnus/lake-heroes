@@ -3,7 +3,7 @@ import { say } from '../utils/say';
 import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
-import { pickRandomUnownedArtifact } from '../game/artifacts';
+import { grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
 
@@ -50,9 +50,7 @@ export function handleTreasureBox(
   const sizeLabel = t(`treasureBox.size.${size}`);
 
   if (foundArtifact) {
-    player.artifacts.push(foundArtifact.id);
-    if (foundArtifact.id === 'medal-of-honor') player.fame += 5;
-    if (foundArtifact.id === 'medal-of-distinction') player.fame += 3;
+    grantArtifact(player, foundArtifact);
 
     updateGameState(board);
     say(t('treasureBox.foundArtifact', { playerName: player.name, size: sizeLabel, artifactName: foundArtifact.name }), 'success');

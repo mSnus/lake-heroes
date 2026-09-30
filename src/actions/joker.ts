@@ -5,7 +5,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
-import { checkArtifactProtection } from '../game/artifacts';
+import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO } from '../game/constants';
 import { setGameMessage } from '../utils/gameMessage';
@@ -19,6 +19,7 @@ const EVENTS = [
   "Queen's Gift",
   'Earthquake',
   'Meteor',
+  "King's Gift",
 ] as const;
 type JokerEvent = (typeof EVENTS)[number];
 
@@ -31,6 +32,7 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
   "Queen's Gift": '💍',
   Earthquake: '🪨',
   Meteor: '☄️',
+  "King's Gift": '👑',
 };
 
 // EVENTS values are internal switch keys (never shown directly) — this maps
@@ -43,6 +45,7 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
   "Queen's Gift": 'joker.eventName.queensGift',
   Earthquake: 'joker.eventName.earthquake',
   Meteor: 'joker.eventName.meteor',
+  "King's Gift": 'joker.eventName.kingsGift',
 };
 
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
@@ -217,6 +220,26 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         player.gold += 2000;
         player.units += 5;
         message = t('joker.queensGiftGold', { playerName: player.name });
+      }
+
+      break;
+    }
+
+    case "King's Gift": {
+      const player = board.activePlayer;
+      const artifact = pickRandomUnownedArtifact(board, player);
+      if (artifact) {
+        grantArtifact(player, artifact);
+        message = t('joker.kingsGiftArtifact', {
+          playerName: player.name,
+          artifactName: artifact.name,
+          emoji: artifact.emoji,
+        });
+      } else {
+        // Every artifact is taken (or none this player may hold): the King
+        // sends coin instead, as the Queen does when she has no tile to give.
+        player.gold += 2000;
+        message = t('joker.kingsGiftGold', { playerName: player.name });
       }
 
       break;

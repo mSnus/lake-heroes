@@ -413,7 +413,8 @@
       "blessing": "👑 <strong>Blessing</strong> — all owned tiles are upgraded one level.",
       "queensGift": "💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower tile, or 2000🟡 and 5🧍 if none are free.",
       "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
-      "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it."
+      "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it.",
+      "kingsGift": "👑 <strong>King's Gift</strong> — the player who rolled it receives a random artifact nobody owns yet, or 2000🟡 if none are left."
     },
     "travel": {
       "title": "Travel 🧭",
@@ -641,7 +642,8 @@
       "blessing": "Blessing",
       "queensGift": "Queen's Gift",
       "earthquake": "Earthquake",
-      "meteor": "Meteor"
+      "meteor": "Meteor",
+      "kingsGift": "King's Gift"
     },
     "taxesMessage": "All players lose half of their gold.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
@@ -656,7 +658,9 @@
     "meteorWilderness": "Meteor shower falls on the wilderness, harming no one",
     "queensGiftTile": "{playerName} receives {tileName} for free!",
     "queensGiftGold": "Queen sends 2000🟡 and 5🧍 to {playerName}",
-    "eventLogLine": "{eventName}: {message}"
+    "eventLogLine": "{eventName}: {message}",
+    "kingsGiftArtifact": "{playerName} is given the {artifactName} {emoji} by the King!",
+    "kingsGiftGold": "The treasury holds no more artifacts, so the King sends 2000🟡 to {playerName}"
   },
   "battleCommon": {
     "losingUnitsPart": " losing {army}",

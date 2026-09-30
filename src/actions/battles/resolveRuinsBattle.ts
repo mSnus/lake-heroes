@@ -1,6 +1,6 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import { pickRandomUnownedArtifact } from '../../game/artifacts';
+import { grantArtifact, pickRandomUnownedArtifact } from '../../game/artifacts';
 import { say } from '../../utils/say';
 import { BattleOutcome, BattleResolution, tallyArmy, armyLostStr } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
@@ -57,9 +57,7 @@ export function resolveRuinsBattle(
     if (Math.random() < ARTIFACT_FIND_CHANCE) {
       const artifact = pickRandomUnownedArtifact(board, player);
       if (artifact) {
-        player.artifacts.push(artifact.id);
-        if (artifact.id === 'medal-of-honor') player.fame += 5;
-        if (artifact.id === 'medal-of-distinction') player.fame += 3;
+        grantArtifact(player, artifact);
         // No joining space: the string opens its own paragraph (the result
         // panel renders pre-line), and adding one here used to leave a stray
         // double space mid-sentence.

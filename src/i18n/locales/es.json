@@ -411,7 +411,8 @@
       "blessing": "👑 <strong>Bendición</strong> — todas las casillas en propiedad suben un nivel.",
       "queensGift": "💍 <strong>Regalo de la Reina</strong> — el jugador que lo obtuvo recibe una casilla de Campamento/Torre gratis, o 2000🟡 y 5🧍 si no hay ninguna libre.",
       "earthquake": "🪨 <strong>Terremoto</strong> — las casillas mejoradas pierden un nivel; los jugadores sin casillas mejoradas pierden su casilla más barata en su lugar.",
-      "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola."
+      "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola.",
+      "kingsGift": "👑 <strong>Regalo del Rey</strong> — quien lo saca recibe un artefacto al azar que nadie tenga aún, o 2000🟡 si no queda ninguno."
     },
     "travel": {
       "title": "Viaje 🧭",
@@ -639,7 +640,8 @@
       "blessing": "Bendición",
       "queensGift": "Regalo de la Reina",
       "earthquake": "Terremoto",
-      "meteor": "Meteorito"
+      "meteor": "Meteorito",
+      "kingsGift": "Regalo del Rey"
     },
     "taxesMessage": "Todos los jugadores pierden la mitad de su oro.",
     "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
@@ -654,7 +656,9 @@
     "meteorWilderness": "Una lluvia de meteoritos cae sobre tierras salvajes, sin dañar a nadie",
     "queensGiftTile": "¡{playerName} recibe {tileName} gratis!",
     "queensGiftGold": "La Reina envía 2000🟡 y 5🧍 a {playerName}",
-    "eventLogLine": "{eventName}: {message}"
+    "eventLogLine": "{eventName}: {message}",
+    "kingsGiftArtifact": "¡El Rey concede a {playerName} el artefacto {artifactName} {emoji}!",
+    "kingsGiftGold": "El tesoro ya no guarda artefactos, así que el Rey envía 2000🟡 a {playerName}"
   },
   "battleCommon": {
     "losingUnitsPart": " perdiendo {army}",

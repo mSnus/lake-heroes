@@ -408,7 +408,8 @@
       "blessing": "👑 <strong>Благословение</strong> — все клетки во владении улучшаются на один уровень.",
       "queensGift": "💍 <strong>Дар королевы</strong> — игрок, выбросивший это событие, получает бесплатную клетку Лагеря/Башни, либо 2000🟡 и 5🧍, если свободных нет.",
       "earthquake": "🪨 <strong>Землетрясение</strong> — улучшенные клетки теряют уровень; у игроков без улучшенных клеток отбирается их самая дешёвая клетка.",
-      "meteor": "☄️ <strong>Метеорит</strong> — поражает случайную клетку самого богатого игрока, сжигая её."
+      "meteor": "☄️ <strong>Метеорит</strong> — поражает случайную клетку самого богатого игрока, сжигая её.",
+      "kingsGift": "👑 <strong>Дар короля</strong> — бросивший получает случайный артефакт, которого ещё ни у кого нет, а если их не осталось — 2000🟡."
     },
     "travel": {
       "title": "Путешествие 🧭",
@@ -636,7 +637,8 @@
       "blessing": "Благословение",
       "queensGift": "Дар королевы",
       "earthquake": "Землетрясение",
-      "meteor": "Метеорит"
+      "meteor": "Метеорит",
+      "kingsGift": "Дар короля"
     },
     "taxesMessage": "Все игроки теряют половину золота.",
     "savedByArtifact": "{playerName} спасён благодаря {artifactName} {emoji}",
@@ -651,7 +653,9 @@
     "meteorWilderness": "Метеоритный дождь падает на пустошь, никому не причиняя вреда",
     "queensGiftTile": "{playerName} получает «{tileName}» бесплатно!",
     "queensGiftGold": "Королева посылает 2000🟡 и 5🧍 игроку {playerName}",
-    "eventLogLine": "{eventName}: {message}"
+    "eventLogLine": "{eventName}: {message}",
+    "kingsGiftArtifact": "Король дарует {playerName} артефакт {artifactName} {emoji}!",
+    "kingsGiftGold": "В казне не осталось артефактов, и король посылает {playerName} 2000🟡"
   },
   "battleCommon": {
     "losingUnitsPart": " теряя {army}",
