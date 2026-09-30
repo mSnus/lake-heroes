@@ -188,7 +188,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                 </div>
 
                 <div className="big-icon-hint towers-max">
-                  <div className="garrison-towers">{tile.garrisonSlots}🏯</div>
+                  <div className="garrison-towers">{tile.level}🏯</div>
                   <div style={{ color: 'wheat' }}>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
 

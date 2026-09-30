@@ -381,7 +381,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             <div className="guards-hire-scroll" style={{}}>
               <div className="big-icon-hint">
                 <div>
-                  {tile.garrisonSlots}🏯 {displayedGarrison}🧍
+                  {tile.level}🏯 {displayedGarrison}🧍
                 </div>
                 <div>{t('tileCard.defence')}</div>
               </div>

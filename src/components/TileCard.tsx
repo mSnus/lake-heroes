@@ -420,7 +420,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                     <div className="big-icon-hint">
                       <div>
-                        {tile.garrisonSlots}🏯 {tile.garrison}🛡️
+                        {tile.level}🏯 {tile.garrison}🛡️
                       </div>
                       <div>{t('tileCard.defence')}</div>
                     </div>
