@@ -131,6 +131,7 @@
    squads blocks each carry a coloured hint bubble; these do not, so they are
    indented by its width to stay in the same columns. */
 .player-stats-income-row {
+  box-sizing: border-box;
   padding-left: 28px;
   margin-top: -2px;
 }
