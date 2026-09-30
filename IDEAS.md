@@ -61,3 +61,22 @@ Shelved (not rejected) -- worth rethinking:
     against King's Grace / the anti-leader Joker events pushing the other way.
   - Before building: count fork offers and biased draws per player per game in
     the headless sim; if under ~5, the dial cannot steer behaviour.
+- **Property tax on the tile's base price** (planned, not yet built). Taken
+  once a lap at the King's Castle, as a share of each owned tile's level-1
+  price -- never the upgrade cost. From 40 four-bot sim games, tolls counted as
+  income:
+  - Targets the leader, unlike a tax on cash: the score leader is the biggest
+    payer 56% of the time (chance 25%) and pays ~47% of all tax collected. A
+    tax on cash only managed 35%, because leaders turn cash into land.
+  - Base price, not paid price: taxing upgrades too made half of all L1->L3
+    upgrades gold-negative per lap (every Camp/Tower upgrade -1800, since they
+    add units, not gold), so it would quietly stop players upgrading. Taxing
+    the base price leaves upgrades untaxed.
+  - Size: 20% of base price takes only ~7-9% of gold income; ~50-60% of base
+    price per lap gives a 15-25% bite. (20% of the full paid price took 22-24%.)
+  - Needs: a rule when a player cannot pay (5-8% of cases; reuse the toll
+    sell-tiles/prisoner flow), one net line at the Castle beside the King's
+    Grace, and measuring it together with the grace handicap, which already
+    zeroes the leader's grace at 1.8x -- or success is punished twice.
+  - Bots will not adapt to it; humans will (selling Towers before a lap,
+    hoarding cash instead of buying), so it needs a playtest, not just the sim.
