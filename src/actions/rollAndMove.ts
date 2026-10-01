@@ -16,7 +16,7 @@ import { showRuinsEncounter } from './ruinsEncounter';
 import { say, narrate } from '../utils/say';
 import { advanceBoardPosition, nextBoardPosition, stepsToFork } from '../game/boardPath';
 import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
-import { FORK_START_INDEX, FORK_ROLL_RANGE } from '../game/constants';
+import { FORK_START_INDEX, FORK_ROLL_RANGE, REAL_ADVENTURE_MIN_TURNS } from '../game/constants';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
@@ -47,9 +47,15 @@ export async function rollAndMove(
   // pick -- the arrow picker in BoardCanvas.tsx, read once here since it
   // hides itself the moment a roll begins. Approaching it, nobody chooses:
   // the branch is a hidden coin flip, re-rolled every turn the fork is
-  // still within a single die's reach.
-  const forkChoice: ForkChoice =
-    player.position === FORK_START_INDEX
+  // still within a single die's reach. Either way, early on -- while even
+  // the furthest-along player hasn't finished REAL_ADVENTURE_MIN_TURNS laps
+  // yet -- the long path is off the table altogether (see the constant's
+  // own comment): a brand-new player isn't stranded on the longer route by
+  // a coin flip, nor a bot steered onto it by its own pick.
+  const isEarlyGame = Math.min(...board.players.map((p) => p.circles)) <= REAL_ADVENTURE_MIN_TURNS;
+  const forkChoice: ForkChoice = isEarlyGame
+    ? 'short'
+    : player.position === FORK_START_INDEX
       ? getForkChoice()
       : stepsToFork(player.position) <= FORK_ROLL_RANGE && Math.random() < 0.5
         ? 'long'

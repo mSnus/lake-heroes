@@ -23,6 +23,13 @@ export const FORK_LONG_PATH = [7, 8, 9, 10, 11, 12];
 // steps away or fewer, i.e. whenever a single die could still reach it. A
 // player standing exactly ON the fork tile picks by hand instead.
 export const FORK_ROLL_RANGE = 6;
+// While even the furthest-along player hasn't finished this many laps yet,
+// the game is still a "getting started" phase -- the long path's hidden
+// coin flip (rollAndMove.ts) is forced short rather than risk stranding a
+// brand-new player on the longer route, and Joker's Queen's Gift (joker.ts)
+// falls back to gold instead of a Camp/Tower for the same reason. Reused
+// wherever "is this still early game" needs an answer.
+export const REAL_ADVENTURE_MIN_TURNS = 3;
 // Joker's Hurricane only strikes the richest player, and only when they're
 // this many times wealthier than whoever ranks second -- a check on a
 // runaway leader, not a routine hazard for everyone (see actions/joker.ts).

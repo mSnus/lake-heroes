@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
 
-import { TILE_COUNT, FORK_START_INDEX, TILE_LEVEL_SCALE } from '../game/constants';
+import { TILE_COUNT, FORK_START_INDEX, TILE_LEVEL_SCALE, REAL_ADVENTURE_MIN_TURNS } from '../game/constants';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../utils/mapEditStore';
 import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
@@ -438,10 +438,14 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   // the instant a roll begins (turnPhase leaves 'before-move'), matching the
   // "choose before rolling" requirement. The choice itself lives in
   // forkChoiceStore, read once by rollAndMove.ts right before movement.
+  // Hidden entirely early on (see REAL_ADVENTURE_MIN_TURNS) -- rollAndMove
+  // forces the short path regardless then, so showing a choice that doesn't
+  // do anything would just be confusing.
   const showForkChoice =
     !board.activePlayer.isComputer &&
     board.turnPhase === 'before-move' &&
-    board.activePlayer.position === FORK_START_INDEX;
+    board.activePlayer.position === FORK_START_INDEX &&
+    Math.min(...board.players.map((p) => p.circles)) > REAL_ADVENTURE_MIN_TURNS;
 
   const renderForkChoice = () => {
     const pos = getTilePosition(FORK_START_INDEX);
