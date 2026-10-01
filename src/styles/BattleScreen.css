@@ -109,6 +109,13 @@
   color: #e8a54e;
 }
 
+/* Keeps its layout box (unlike display:none) so hiding it doesn't shrink
+   .battle-vs-heading and shift the battlefield grid below it -- see the
+   comment at this element's JSX. */
+.auto-label--hidden {
+  visibility: hidden;
+}
+
 /* ── Inline result ── */
 
 .battle-result-inline {

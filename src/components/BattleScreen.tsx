@@ -725,12 +725,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               title={isBrawl ? t('battleScreen.autoResolveBrawl') : undefined}
             >
               ⚔️
-              {phase === 'ongoing' && !(isBrawl && autoResolveBrawl) && (
-                <div className="auto-label">
-                  auto-battle
-                  <br />
-                </div>
-              )}
+              {/* Always rendered (space reserved via visibility, not
+                  unmounted) -- removing it outright shrinks .battle-vs-heading
+                  and, since the grid is a later flex sibling, pulls the whole
+                  battlefield up to fill the gap the moment this hides
+                  (clicking auto-battle, or the battle resolving). */}
+              <div
+                className={
+                  'auto-label' +
+                  (phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? '' : ' auto-label--hidden')
+                }
+              >
+                auto-battle
+                <br />
+              </div>
             </div>
             {/* attackerGridTotal/defenderGridTotal already track whichever
                 side is shown on the left/right respectively -- ambush's
