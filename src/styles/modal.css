@@ -62,6 +62,12 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* Half the title's default (UA-stylesheet) top margin -- scoped to the
+   Tavern so it doesn't touch every other modal sharing .game-title. */
+.tavern-screen.modal-content .game-title {
+  margin-top: 1.66rem;
+}
+
 .modal-new-game {
   padding-top: 0;
   overflow: hidden;

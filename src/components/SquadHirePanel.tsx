@@ -106,7 +106,9 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
 
   return (
     <div className="squad-hire-panel">
-      <div className="squad-hire-panel-title">{t('squadHirePanel.hireTitle')}</div>
+      <div className="squad-hire-panel-title">
+        {t('squadHirePanel.hireTitle', { gold: player.gold })}
+      </div>
       {showMilitia && (
         <HireRow
           player={player}

@@ -95,7 +95,7 @@ const TavernModal: React.FC<TavernModalProps> = ({
       noBorder={true}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
-      <div className="modal-content" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content tavern-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
         <h2 className="game-title">{t('tavern.title')}</h2>
         {joinedHtml && (
           <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
@@ -115,17 +115,19 @@ const TavernModal: React.FC<TavernModalProps> = ({
           className="squad-display-large"
         />
 
-        {atMax ? (
-          <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
-        ) : (
-          <SquadHirePanel
-            player={player}
-            showRiders={canRecruitRiders}
-            onBuy={handleBuy}
-            militiaPrice={militiaPrice}
-            riderPrice={riderPrice}
-          />
-        )}
+        <div style={{ marginTop: '1rem' }}>
+          {atMax ? (
+            <h3 style={{ whiteSpace: 'pre-line' }}>{t('tavern.cannotRecruit')}</h3>
+          ) : (
+            <SquadHirePanel
+              player={player}
+              showRiders={canRecruitRiders}
+              onBuy={handleBuy}
+              militiaPrice={militiaPrice}
+              riderPrice={riderPrice}
+            />
+          )}
+        </div>
 
         <div
           className="button-group"

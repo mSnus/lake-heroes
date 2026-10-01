@@ -177,7 +177,7 @@
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Нанять ещё:"
+    "hireTitle": "Нанять ещё (у вас {gold}🟡):"
   },
   "squadDisplay": {
     "sellSquad": "Продать этот отряд",

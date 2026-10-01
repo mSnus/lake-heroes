@@ -180,7 +180,7 @@
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Contratar más:"
+    "hireTitle": "Contratar más (tienes {gold}🟡):"
   },
   "squadDisplay": {
     "sellSquad": "Vender este escuadrón",
