@@ -657,7 +657,7 @@
     "meteorDestroys": "Meteor shower falls on {tileName}, destroying it",
     "meteorWilderness": "Meteor shower falls on the wilderness, harming no one",
     "queensGiftTile": "{playerName} receives {tileName} for free!",
-    "queensGiftGold": "Queen sends 2000🟡 and 5🧍 to {playerName}",
+    "queensGiftGold": "Queen sends 3000🟡 and 5🧍 to {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "{playerName} is given the {artifactName} {emoji} by the King!",
     "kingsGiftGold": "The treasury holds no more artifacts, so the King sends 2000🟡 to {playerName}"

@@ -652,7 +652,7 @@
     "meteorDestroys": "Метеоритный дождь падает на «{tileName}», уничтожая её",
     "meteorWilderness": "Метеоритный дождь падает на пустошь, никому не причиняя вреда",
     "queensGiftTile": "{playerName} получает «{tileName}» бесплатно!",
-    "queensGiftGold": "Королева посылает 2000🟡 и 5🧍 игроку {playerName}",
+    "queensGiftGold": "Королева посылает 3000🟡 и 5🧍 игроку {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "Король дарует {playerName} артефакт {artifactName} {emoji}!",
     "kingsGiftGold": "В казне не осталось артефактов, и король посылает {playerName} 2000🟡"

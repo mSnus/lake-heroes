@@ -655,7 +655,7 @@
     "meteorDestroys": "Una lluvia de meteoritos cae sobre {tileName}, destruyéndola",
     "meteorWilderness": "Una lluvia de meteoritos cae sobre tierras salvajes, sin dañar a nadie",
     "queensGiftTile": "¡{playerName} recibe {tileName} gratis!",
-    "queensGiftGold": "La Reina envía 2000🟡 y 5🧍 a {playerName}",
+    "queensGiftGold": "La Reina envía 3000🟡 y 5🧍 a {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "¡El Rey concede a {playerName} el artefacto {artifactName} {emoji}!",
     "kingsGiftGold": "El tesoro ya no guarda artefactos, así que el Rey envía 2000🟡 a {playerName}"

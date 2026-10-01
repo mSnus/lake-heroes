@@ -208,16 +208,21 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
     case "Queen's Gift": {
       const player = board.activePlayer;
-      const free = board.tiles
-        .map((tile, i) => ({ tile, i }))
-        .filter(({ tile }) => tile && (tile.group === 'Camps' || tile.group === 'Towers') && !tile.isOwned());
+      // Too early for a free Camp/Tower to matter -- while even the
+      // furthest-along player hasn't finished 3 laps yet, gold instead.
+      const earlyGame = Math.min(...board.players.map((p) => p.circles)) <= 3;
+      const free = earlyGame
+        ? []
+        : board.tiles
+            .map((tile, i) => ({ tile, i }))
+            .filter(({ tile }) => tile && (tile.group === 'Camps' || tile.group === 'Towers') && !tile.isOwned());
       if (free.length > 0) {
         const { tile } = free[Math.floor(Math.random() * free.length)];
         grantTile(board, tile, player);
         changeFame(player, 1);
         message = t('joker.queensGiftTile', { playerName: player.name, tileName: tile.name });
       } else {
-        player.gold += 2000;
+        player.gold += 3000;
         player.units += 5;
         message = t('joker.queensGiftGold', { playerName: player.name });
       }
