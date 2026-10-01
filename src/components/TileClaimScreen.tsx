@@ -263,23 +263,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
           ❌
         </button>
       )}
-      {variant === 'upgrades' ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
-          {tile.spriteImage && (
-            <SpriteCircleIcon src={tile.spriteImage} size="5rem" style={{ marginBottom: '0' }} />
-          )}
-          <div className="text-title" style={{ marginBottom: '0' }}>
-            {tile.name}
-          </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+        {tile.spriteImage && (
+          <SpriteCircleIcon src={tile.spriteImage} size="5rem" style={{ marginBottom: '0' }} />
+        )}
+        <div className="text-title" style={{ marginBottom: '0' }}>
+          {tile.name}
         </div>
-      ) : (
-        <>
-          {tile.spriteImage && <SpriteCircleIcon src={tile.spriteImage} size="5rem" />}
-          <div className="text-title" style={{ marginBottom: '0' }}>
-            {tile.name}
-          </div>
-        </>
-      )}
+      </div>
 
       {variant === 'upgrades' && (
         <div

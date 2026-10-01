@@ -1,11 +1,13 @@
 /* Full-viewport click shield for any turn the human at this screen is not
    playing -- a bot's or a remote player's. Below ShieldColumn's z-index (1010)
    so the menu, help and log stay reachable; those buttons are gated on the
-   active player directly instead. */
+   active player directly instead. Above .player-pane's z-index (999,
+   CurrentPlayer.css) -- at 900 it used to lose that stacking fight, so the
+   army stat (and anything else at 999) stayed clickable straight through it. */
 .turn-wait-shield {
   position: fixed;
   inset: 0;
-  z-index: 900;
+  z-index: 1000;
   pointer-events: auto;
   display: flex;
   align-items: flex-start;
