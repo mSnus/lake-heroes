@@ -128,7 +128,7 @@
     },
     "pristine-diamond": {
       "name": "Pristine Diamond",
-      "description": "+1000🟡 every year."
+      "description": "+100🟡 every year."
     },
     "indestructible-umbrella": {
       "name": "Indestructible Umbrella",
@@ -403,10 +403,10 @@
       "plague": "🦠 <strong>Plague</strong> — all players lose half of their units.",
       "hurricane": "🌪️ <strong>Hurricane</strong> — strikes the richest player's most expensive tile, razing it, but only if they're at least 1.5x wealthier than whoever ranks second.",
       "blessing": "✨ <strong>Blessing</strong> — all owned tiles are upgraded one level.",
-      "queensGift": "💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower tile, or 2000🟡 and 5🧍 if none are free.",
+      "queensGift": "💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower tile, or 300🟡 and 5🧍 if none are free.",
       "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
       "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it.",
-      "kingsGift": "King's Gift: a random unowned artifact, or 2000 gold."
+      "kingsGift": "King's Gift: a random unowned artifact, or 200 gold."
     },
     "caravan": {
       "title": "Caravan 🐪",
@@ -634,10 +634,10 @@
     "meteorDestroys": "Meteor shower falls on {tileName}, destroying it",
     "meteorWilderness": "Meteor shower falls on the wilderness, harming no one",
     "queensGiftTile": "{playerName} receives {tileName} for free!",
-    "queensGiftGold": "Queen sends 3000🟡 and 5🧍 to {playerName}",
+    "queensGiftGold": "Queen sends 300🟡 and 5🧍 to {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "{playerName} is given the {artifactName} {emoji}",
-    "kingsGiftGold": "King sends 2000 gold to {playerName}"
+    "kingsGiftGold": "King sends 200 gold to {playerName}"
   },
   "battleCommon": {
     "losingUnitsPart": " losing {army}",

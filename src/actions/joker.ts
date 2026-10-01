@@ -222,7 +222,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         changeFame(player, 1);
         message = t('joker.queensGiftTile', { playerName: player.name, tileName: tile.name });
       } else {
-        player.gold += 3000;
+        player.gold += 300;
         player.units += 5;
         message = t('joker.queensGiftGold', { playerName: player.name });
       }
@@ -243,7 +243,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       } else {
         // Every artifact is taken (or none this player may hold): the King
         // sends coin instead, as the Queen does when she has no tile to give.
-        player.gold += 2000;
+        player.gold += 200;
         message = t('joker.kingsGiftGold', { playerName: player.name });
       }
 

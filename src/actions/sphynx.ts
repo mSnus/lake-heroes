@@ -9,10 +9,10 @@ import { t } from '../i18n';
 /**
  * Handle landing on Sphynx tile.
  * Rules per spec:
- * - Roll 1–2: lose half of current gold, rounded UP to the nearest 50 (cap at current gold).
+ * - Roll 1–2: lose half of current gold, rounded UP to the nearest 5 (cap at current gold).
  * - Roll 3–4: lose 20% of current units, rounded UP to 1 (cap at current units).
  * - Roll 5: nothing happens.
- * - Roll 6: gain 20% of current gold, rounded UP to the nearest 100.
+ * - Roll 6: gain 20% of current gold, rounded UP to the nearest 10.
  * After applying effect, end the turn.
  */
 export function handleSphynx(
@@ -32,11 +32,11 @@ export function handleSphynx(
     message = t('sphynx.pipeSavedMessage');
     screenMessage = message;
   } else if (roll === 1 || roll === 2) {
-    // Lose half gold, rounded up to nearest 50, capped by available gold
+    // Lose half gold, rounded up to nearest 5, capped by available gold
     if (player.gold > 0) {
       const half = player.gold / 2;
-      const roundedUp50 = Math.ceil(half / 50) * 50;
-      const loss = Math.min(player.gold, roundedUp50);
+      const roundedUp5 = Math.ceil(half / 5) * 5;
+      const loss = Math.min(player.gold, roundedUp5);
 
       player.gold -= loss;
       message = t('sphynx.lostGoldMessage', { gold: loss });
@@ -57,9 +57,9 @@ export function handleSphynx(
     message = t('sphynx.nothingMessage');
     screenMessage = t('sphynx.nothingScreen');
   } else if (roll === 6) {
-    // Gain 20% gold, rounded up to nearest 100, with a floor of 800
+    // Gain 20% gold, rounded up to nearest 10, with a floor of 80
     const bonusBase = player.gold * 0.2;
-    const gain = Math.max(800, Math.ceil(bonusBase / 100) * 100);
+    const gain = Math.max(80, Math.ceil(bonusBase / 10) * 10);
     player.gold += gain;
     message = t('sphynx.gainGoldMessage', { gold: gain });
     screenMessage = t('sphynx.gainGoldScreen', { gold: gain });

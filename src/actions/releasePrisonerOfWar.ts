@@ -26,9 +26,9 @@ export function releasePrisonerOfWar(board: GameState): void {
     if (w.units > richestUnits) richestUnits = w.units;
   }
 
-  // Rounded down to a clean 50, same as every other gold payout (see
+  // Rounded down to a clean 5, same as every other gold payout (see
   // game/income.ts and game/kingsGrace.ts).
-  const goldGift = Math.floor(richestGold / 2 / 50) * 50;
+  const goldGift = Math.floor(richestGold / 2 / 5) * 5;
   const unitsGift = Math.floor(richestUnits / 2);
 
   player.gold += goldGift;

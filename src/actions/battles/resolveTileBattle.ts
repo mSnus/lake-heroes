@@ -78,7 +78,7 @@ export function resolveTileBattle(
     } else {
       // Read before the raze resets the level -- what the owner sank into
       // the tile is what there is to loot.
-      const plunder = Math.floor(tile.currentPrice.gold / 2 / 50) * 50;
+      const plunder = Math.floor(tile.currentPrice.gold / 2 / 5) * 5;
       razeTile(board, tile);
       attacker.gold += plunder;
 

@@ -1,15 +1,15 @@
-export const MONEY_START = 1500;
+export const MONEY_START = 150;
 export const UNITS_START = 12;
-export const MONEY_PASS_START = 2000;
+export const MONEY_PASS_START = 200;
 export const UNITS_PASS_START = 6;
-export const FEE_MULTIPLIER = 50;
-export const TREASURE_BOX_MULTIPLIER = 200;
+export const FEE_MULTIPLIER = 5;
+export const TREASURE_BOX_MULTIPLIER = 20;
 export const TILE_COUNT = 28;
 export const MAX_PLAYERS = 6;
 // How big an ownable tile is drawn on the map, by level -- so an upgrade is
 // visible at a glance. Purely visual: nothing reads it but BoardCanvas.
 export const TILE_LEVEL_SCALE: Record<number, number> = { 1: 0.9, 2: 1, 3: 1.1 };
-export const REVEAL_GOLD_PER_CIRCLE = 250; // discovery bonus scales with the player's laps around the board
+export const REVEAL_GOLD_PER_CIRCLE = 25; // discovery bonus scales with the player's laps around the board
 // Board fork: leaving FORK_START_INDEX branches onto either the short or the
 // long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
 // game/boardPath.ts (movement), utils/forkChoiceStore.ts (the pending
@@ -34,7 +34,7 @@ export const HURRICANE_WEALTH_RATIO = 1.5;
 // to rescale the whole economy. TILE_BASE_PRICE scales a tile's purchase price
 // (level-1 gold), TILE_BASE_UPGRADE its upgrade costs (level-2/3 gold), and
 // TILE_BASE_INCOME its per-turn gold income (bonuses on gold-type tiles).
-export const TILE_BASE_PRICE = 200;
+export const TILE_BASE_PRICE = 20;
 export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 2;
 export const TILE_BASE_INCOME = TILE_BASE_PRICE * 2;
 // Multiplier on TILE_BASE_UPGRADE's normal rate for the final upgrade (to
@@ -71,13 +71,13 @@ export const GRACE_TOTAL_GOLD_MULT = 0.5;
 // (units-type tiles) -- see game/income.ts's tileTurnIncome.
 export const FLAT_TILE_UNIT_INCOME = 1;
 
-export const UNIT_PRICE = 500; // gold per militia unit (King's Castle recruit price)
+export const UNIT_PRICE = 50; // gold per militia unit (King's Castle recruit price)
 // The Tavern charges a premium over the King's Castle's own prices, for both
 // hiring and squad upgrades -- a night of drinking recruits costs more than
 // the crown's standing offer.
 export const TAVERN_PRICE_MULT = 2;
 export const DRAGON_UNITS = 48; // how many units the Dragon fields
-export const DRAGON_GOLD = 100000; // dragon's hoard, awarded on victory
+export const DRAGON_GOLD = 10000; // dragon's hoard, awarded on victory
 // The dragon spares the weakest player's holdings once the strongest is
 // this many times ahead on power score -- the mirror of the Joker's
 // HURRICANE_WEALTH_RATIO, which punishes a runaway leader. Only the
@@ -89,7 +89,7 @@ export const BRAWL_THRESHOLD = 12; // defence at or below this triggers brawl mo
 export const BANZAI_THRESHOLD = 0.8; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
-export const RIDER_UNIT_PRICE = 1000; // gold per rider
+export const RIDER_UNIT_PRICE = 100; // gold per rider
 // How much one unit of each kind is worth on a single strength scale, in
 // militia. Everything that rates a force -- AI decisions, the Banzai
 // threshold, the tile-card strength readout -- measures with these, so the

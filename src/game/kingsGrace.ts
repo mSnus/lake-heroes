@@ -180,7 +180,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   // averages are still tiny is not left with nothing. lg(fame + 1) rather
   // than lg(fame) so the floor is already worth something at fame 1.
   const fameScale = Math.log10(Math.max(0, player.fame || 0) + 1);
-  const baseGold = Math.floor((fameScale * ov.moneyPassStart) / 100) * 100;
+  const baseGold = Math.floor((fameScale * ov.moneyPassStart) / 10) * 10;
   const kingsGold =
     Math.round(Math.max(base.gold, baseGold) * kingsHandicap) * GRACE_TOTAL_GOLD_MULT;
 
@@ -221,11 +221,11 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   const grace = fitGraceUnits(player, graceMilitia, graceRiders, tileUnits);
   const kingsUnits = grace.militia + grace.riders;
 
-  // Rounded down to a clean 50, same as the per-turn tile income (see
+  // Rounded down to a clean 5, same as the per-turn tile income (see
   // game/income.ts's playerTurnIncome) -- every consumer reads this field
   // rather than re-summing the parts, so the real payout and every preview
   // stay in sync (see CurrentPlayer.tsx/CurrentPlayerCard.tsx).
-  const totalGold = Math.floor((tileGold + kingsGold + arifactGold) / 50) * 50;
+  const totalGold = Math.floor((tileGold + kingsGold + arifactGold) / 5) * 5;
 
   return {
     tileGold,

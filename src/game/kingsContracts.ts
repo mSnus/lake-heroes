@@ -29,7 +29,7 @@ export function issueKingsContract(board: GameState, player: Player): KingsContr
   const { t, i } = candidates[Math.floor(Math.random() * candidates.length)];
   const price = t.prices[1] ?? 0;
   const multiplier = MIN_MULTIPLIER + Math.random() * (MAX_MULTIPLIER - MIN_MULTIPLIER);
-  const award = Math.ceil((price * multiplier) / 500) * 500;
+  const award = Math.ceil((price * multiplier) / 50) * 50;
 
   const contract: KingsContract = { playerId: player.id, tilePosition: i, award };
   board.kingsContracts.push(contract);

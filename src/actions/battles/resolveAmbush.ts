@@ -12,11 +12,11 @@ export interface AmbushResolution {
   message: string;
 }
 
-const GOLD_PER_KILL = 200;
+const GOLD_PER_KILL = 20;
 
 /**
  * Apply the outcome of an ambush (the game attacks the player).
- * - Win (ambush fails): player loses killed units; earns 200🟡 per ambusher killed.
+ * - Win (ambush fails): player loses killed units; earns 20🟡 per ambusher killed.
  * - Tie: player loses 1/4 of involved units and 1/2 gold.
  * - Defeat: player loses killed units; loses 1/4 gold.
  */
@@ -53,7 +53,7 @@ export function resolveAmbush(
         : t('resolveAmbush.repelled', { lossStr: killLossStr });
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(attackerUnits / 4);
-    const goldLoss = Math.floor(player.gold / 2 / 100) * 100;
+    const goldLoss = Math.floor(player.gold / 2 / 10) * 10;
     if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, unitLoss);
@@ -66,7 +66,7 @@ export function resolveAmbush(
     );
     message = t('resolveAmbush.bloodyStalemate', { lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '' });
   } else {
-    const goldLoss = Math.floor(player.gold / 4 / 100) * 100;
+    const goldLoss = Math.floor(player.gold / 4 / 10) * 10;
     if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
     const loss = lossStr(goldLoss, playerUnitsKilled);

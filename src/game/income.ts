@@ -65,10 +65,10 @@ export function playerRawTurnIncome(board: GameState, player: Player): { gold: n
     units += income.units;
   }
 
-  // Rounded down to a clean 50 -- both the real per-turn grant and every
+  // Rounded down to a clean 5 -- both the real per-turn grant and every
   // preview reading this (CurrentPlayer.tsx, TurnAnnouncement.tsx, etc.)
   // share this function, so they stay in sync automatically.
-  return { gold: Math.floor(gold / 50) * 50, units };
+  return { gold: Math.floor(gold / 5) * 5, units };
 }
 
 /**

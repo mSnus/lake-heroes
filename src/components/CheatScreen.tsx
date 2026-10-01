@@ -14,7 +14,7 @@ import '../styles/CheatScreen.css';
 
 // Generous safety ceilings for values with no real in-game maximum, so the
 // number inputs still have a sane bound.
-const GOLD_CAP = 999999;
+const GOLD_CAP = 99999;
 const FAME_CAP = 99;
 
 /** Clamp a number input's value to [0, max], and write the clamped text

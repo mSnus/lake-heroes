@@ -92,12 +92,12 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
           })
         );
         say(t('endTurn.prisonFineWaivedToast', { playerName: player.name, artifactName: prisonArtifact.name }), 'info');
-      } else if (player.gold < 100) {
+      } else if (player.gold < 10) {
         changeFame(player, -1, player.isKnight ? KNIGHT_FAME : 1);
         setGameMessage(board, t('endTurn.prisonFameFine', { playerSpan }));
         say(t('endTurn.prisonFameFineToast', { playerName: player.name }), 'info');
       } else {
-        const fine = Math.round(player.gold / 4 / 100) * 100;
+        const fine = Math.round(player.gold / 4 / 10) * 10;
         player.gold -= fine;
         setGameMessage(board, t('endTurn.prisonGoldFine', { playerSpan, fine }));
         say(t('endTurn.prisonGoldFineToast', { playerName: player.name, fine }), 'info');

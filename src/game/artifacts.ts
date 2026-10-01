@@ -129,9 +129,9 @@ export function getArtifactRollBonusBreakdown(
   return breakdown;
 }
 
-/** Pristine Diamond: +1000 gold added to the King's-grace reward each lap. */
+/** Pristine Diamond: +100 gold added to the King's-grace reward each lap. */
 export function getArtifactGoldBonus(player: Player): number {
-  return hasArtifact(player, 'pristine-diamond') ? 1000 : 0;
+  return hasArtifact(player, 'pristine-diamond') ? 100 : 0;
 }
 
 /** Pipe of Hamelin: halves fees owed to other players' tiles. */
