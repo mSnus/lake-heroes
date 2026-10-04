@@ -5,7 +5,7 @@ import { BattleObstacle, GridUnit } from './types';
 export const OBSTACLE_EMOJIS = ['⛰️', '🌲', '🌳', '🌵', '🕳️'];
 
 // Share of the grid's cells that become obstacles.
-export const OBSTACLE_RATIO = 0.1;
+export const OBSTACLE_RATIO = 0.07;
 
 /**
  * Scatter obstacles across the grid before either army is placed, so their
