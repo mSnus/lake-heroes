@@ -26,8 +26,9 @@ export function passStart(
   player.circles = (player.circles ?? 0) + 1;
   // Surviving the first lap is itself worth a point of fame.
   if (player.circles === 1) changeFame(player, 1);
-  // A new year quietly chips away at a bad reputation.
+  // A new year quietly erodes karma back toward neutral, from either side.
   if (player.karma < 0) changeKarma(player, 1);
+  else if (player.karma > 0) changeKarma(player, -1);
   player.dragonEncounters = 0;
   player.caravanEncounters = 0;
   player.ambushEncounters = 0;
