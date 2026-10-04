@@ -7,7 +7,7 @@ import {
   DRAGON_DMG_MAX,
 } from '../constants';
 import { getOverrides } from '../../utils/overridesStore';
-import { placeArmy } from './placement';
+import { generateObstacles, placeArmy, relocateUnitsOffObstacles } from './placement';
 import { FormationSpec, placeFormation } from './formations';
 import { BattleSide, GridBattleState, GridUnit, StepTurnOptions, TurnEvent, TurnResult, UnitKind } from './types';
 
@@ -79,6 +79,13 @@ export function adjacentCells(col: number, row: number, cols: number, rows: numb
   return out;
 }
 
+// Obstacle cells as a "col,row" key set, for seeding into every blocked-set
+// a movement/pathfinding helper below is given -- the single thing that
+// makes an obstacle cell actually impassable everywhere.
+function obstacleKeySet(state: GridBattleState): Set<string> {
+  return new Set(state.obstacles.map((o) => `${o.col},${o.row}`));
+}
+
 // A unit that's actively defending (mitigating incoming damage rather than
 // dealing it) rolls with this bonus on top of whatever side bonuses
 // (artifacts, garrison) already apply. Negative: defence rolls 10% weaker
@@ -88,6 +95,13 @@ const DEFENSE_ROLL_BONUS = -0.1;
 // A unit that moved this turn defends less effectively -- it hasn't set its
 // footing to brace for the hit.
 const MOVED_DEFENSE_PENALTY = 0.1;
+
+// Chance that a connecting hit against an already-wounded target is a
+// critical hit, killing it outright regardless of remaining HP. Only ever
+// considered for a target below its max HP -- a full-health unit can't be
+// critted. This is what lets a battle go the "wrong" way even at favourable
+// odds (e.g. 14 vs 12 militia can still be lost).
+const CRITICAL_HIT_CHANCE = 0.25;
 
 // Lifetime cap on wounded-pullback moves per unit — after this many total
 // break-offs to safety, a wounded unit commits to fighting instead, which
@@ -164,6 +178,10 @@ export function createBattle(
 ): GridBattleState {
   let stableIndex = 0;
   const units: GridUnit[] = [];
+  // Obstacles are scattered *before* either army is placed, so they can
+  // affect where units end up (see relocateUnitsOffObstacles below) --
+  // never the other way around.
+  const obstacles = generateObstacles(cols, rows);
 
   // Militia fill first (placeArmy fills columns outward from the edge, so
   // earlier-pushed units land in the back rows) and riders fill last, so
@@ -221,6 +239,9 @@ export function createBattle(
     } else {
       placeArmy(sideUnits, side, cols, rows);
     }
+    // Neither placement function above knows about obstacles -- bump
+    // anyone who landed on one back instead.
+    relocateUnitsOffObstacles(sideUnits, side, cols, rows, obstacles);
 
     units.push(...sideUnits);
   };
@@ -228,7 +249,7 @@ export function createBattle(
   buildSide('attacker', attacker);
   buildSide('defender', defender);
 
-  return { cols, rows, units, turn: 0, status: 'ongoing' };
+  return { cols, rows, units, obstacles, turn: 0, status: 'ongoing' };
 }
 
 export function isBattleOver(state: GridBattleState): boolean {
@@ -410,12 +431,13 @@ function isLastAlive(u: GridUnit, living: GridUnit[]): boolean {
 // have claimed cells) is worked out later, same as any other mover; this
 // only gates whether a surrounded unit should attempt to flee at all instead
 // of fighting.
-function hasOpenAdjacentCell(u: GridUnit, living: GridUnit[], cols: number, rows: number): boolean {
+function hasOpenAdjacentCell(u: GridUnit, living: GridUnit[], cols: number, rows: number, obstacles: Set<string>): boolean {
   const occupied = new Set(living.filter((v) => v.id !== u.id).map((v) => `${v.col},${v.row}`));
   for (const off of neighborOffsetsFor(u.row)) {
     const c = { col: u.col + off.col, row: u.row + off.row };
     if (c.col < 0 || c.col >= cols || c.row < 0 || c.row >= rows) continue;
-    if (!occupied.has(`${c.col},${c.row}`)) return true;
+    const key = `${c.col},${c.row}`;
+    if (!occupied.has(key) && !obstacles.has(key)) return true;
   }
 
   return false;
@@ -639,18 +661,37 @@ function resolveCombat(
     );
     let total = 0;
     let defenceTotal = 0;
+    let critical = false;
+    const wasWounded = u.hp < u.maxHp;
     attackers.forEach((atk, idx) => {
       const roll = rollFor(atk, false);
       const guard = Math.round(rollFor(u, true) * defenceFactor(idx + 1));
       defenceTotal += guard;
-      total += Math.max(0, roll - guard);
-      events.push({ type: 'attack', unitId: atk.id, side: atk.side, kind: atk.kind, targetId: u.id, roll, damage: roll });
+      const hit = Math.max(0, roll - guard);
+      total += hit;
+      // Only a landed hit (not fully blocked) against an already-wounded
+      // target can crit -- a full-health unit, or a fully-soaked attack,
+      // never triggers one.
+      const isCritical = hit > 0 && wasWounded && !critical && rng() < CRITICAL_HIT_CHANCE;
+      if (isCritical) critical = true;
+      events.push({
+        type: 'attack',
+        unitId: atk.id,
+        side: atk.side,
+        kind: atk.kind,
+        targetId: u.id,
+        roll,
+        damage: roll,
+        ...(isCritical ? { critical: true } : {}),
+      });
     });
     // Every engaged unit shows as defending, attacking or not -- an unattacked
     // one just has nothing to soak.
     events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll: defenceTotal });
     if (attackers.length === 0) continue;
-    applyDamage(u.id, total);
+    // A critical hit kills regardless of remaining HP -- bump total up to at
+    // least the target's current HP so the hp-= below always zeroes it out.
+    applyDamage(u.id, critical ? Math.max(total, u.hp) : total);
     // Soaked the whole volley -- purely cosmetic (see TurnEventType), flashes
     // 🛡️ on it in the battle replay.
     if (total === 0) {
@@ -697,7 +738,8 @@ export function planBrawlSide(
 
   // Every occupied cell is blocked up front (both sides), so movers only ever
   // step into a cell that was empty at the start of this side's turn.
-  const blocked = new Set<string>();
+  // Obstacle cells are blocked the same way, permanently.
+  const blocked = obstacleKeySet(state);
   for (const u of living) blocked.add(`${u.col},${u.row}`);
 
   const plan: BrawlPlan = {};
@@ -861,6 +903,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   if (isBattleOver(state)) return { state, events };
 
   const living = state.units.map((u) => ({ ...u }));
+  const obstacles = obstacleKeySet(state);
 
   // ── Step 1: turn order — closest-to-enemy units decide first (both for
   // combat targeting below and for movement planning further down), so
@@ -895,7 +938,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     if (livingAdjacentEnemies(u, living).length < 3) continue;
     if (livingAdjacentFriends(u, living).length > 0) continue;
     if (u.retreatStreak >= 2) continue;
-    if (!hasOpenAdjacentCell(u, living, state.cols, state.rows)) continue;
+    if (!hasOpenAdjacentCell(u, living, state.cols, state.rows, obstacles)) continue;
     retreating.add(u.id);
   }
 
@@ -915,7 +958,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     if (livingAdjacentEnemies(u, living).length < 1) continue; // not in contact
     if (livingAdjacentFriends(u, living).length > 0) continue; // has a friend beside it — stays and fights
     if (u.safetyMoves >= SAFETY_MOVE_CAP) continue; // used up its pullbacks
-    if (!safeAdjacentCell(u, living, state.cols, state.rows, new Set())) continue; // nowhere safe
+    if (!safeAdjacentCell(u, living, state.cols, state.rows, obstacles)) continue; // nowhere safe
     seekingSafety.add(u.id);
   }
 
@@ -994,6 +1037,9 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   for (const u of alive) {
     if (!moverIds.has(u.id)) staticOccupancy.set(`${u.col},${u.row}`, u.id);
   }
+  // Obstacle cells are permanently "occupied" too -- no mover may ever plan
+  // a step onto one.
+  for (const key of Array.from(obstacles)) staticOccupancy.set(key, 'obstacle');
 
   // A swap pair's two cells are spoken for by the other half of the pair
   // the instant either vacates -- never actually free for a third unit to

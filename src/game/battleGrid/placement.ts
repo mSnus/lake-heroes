@@ -1,4 +1,88 @@
-import { GridUnit } from './types';
+import { BattleObstacle, GridUnit } from './types';
+
+// Random cosmetic battlefield terrain -- impassable, unattackable, purely a
+// movement obstacle. Picked per-cell at random from this set.
+export const OBSTACLE_EMOJIS = ['⛰️', '🌲', '🌳', '🌵', '🕳️'];
+
+// Share of the grid's cells that become obstacles.
+export const OBSTACLE_RATIO = 0.1;
+
+/**
+ * Scatter obstacles across the grid before either army is placed, so their
+ * presence can affect where units end up (see relocateUnitsOffObstacles).
+ * Picks OBSTACLE_RATIO of all cells uniformly at random, each a random
+ * emoji from OBSTACLE_EMOJIS.
+ */
+export function generateObstacles(cols: number, rows: number, rng: () => number = Math.random): BattleObstacle[] {
+  const cells: { col: number; row: number }[] = [];
+  for (let col = 0; col < cols; col++) {
+    for (let row = 0; row < rows; row++) cells.push({ col, row });
+  }
+
+  // Fisher-Yates, same pattern as components/board/common.ts's shuffle.
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+
+  const count = Math.round(cells.length * OBSTACLE_RATIO);
+  return cells.slice(0, count).map((c) => ({
+    ...c,
+    emoji: OBSTACLE_EMOJIS[Math.floor(rng() * OBSTACLE_EMOJIS.length)],
+  }));
+}
+
+/**
+ * After a side's units are placed (placeArmy or placeFormation, both purely
+ * geometric and unaware of obstacles), move any unit that landed on an
+ * obstacle cell to the back of its own army instead -- the first free,
+ * non-obstacle cell found scanning outward from that side's home edge
+ * (col 0 for the attacker, the last col for the defender), column by
+ * column. Mutates `col`/`row` in place, same as the placement functions.
+ */
+export function relocateUnitsOffObstacles(
+  units: GridUnit[],
+  side: 'attacker' | 'defender',
+  cols: number,
+  rows: number,
+  obstacles: BattleObstacle[]
+): void {
+  const obstacleKeys = new Set(obstacles.map((o) => `${o.col},${o.row}`));
+  const onObstacle = units.filter((u) => obstacleKeys.has(`${u.col},${u.row}`));
+  if (onObstacle.length === 0) return;
+
+  const occupied = new Set(units.map((u) => `${u.col},${u.row}`));
+  const homeCol = side === 'attacker' ? 0 : cols - 1;
+  const step = side === 'attacker' ? 1 : -1;
+
+  const findBackCell = (): { col: number; row: number } | undefined => {
+    for (let offset = 0; offset < cols; offset++) {
+      const col = homeCol + step * offset;
+      if (col < 0 || col >= cols) break;
+      for (let row = 0; row < rows; row++) {
+        const key = `${col},${row}`;
+        if (obstacleKeys.has(key) || occupied.has(key)) continue;
+        return { col, row };
+      }
+    }
+    return undefined;
+  };
+
+  for (const unit of onObstacle) {
+    const key = `${unit.col},${unit.row}`;
+    occupied.delete(key);
+    const dest = findBackCell();
+    if (dest) {
+      unit.col = dest.col;
+      unit.row = dest.row;
+      occupied.add(`${dest.col},${dest.row}`);
+    } else {
+      // Board fully packed -- shouldn't happen at a 10% obstacle density,
+      // but leave the unit where it is rather than lose it.
+      occupied.add(key);
+    }
+  }
+}
 
 /**
  * Fill a side's starting position: a square block (or, when the count isn't

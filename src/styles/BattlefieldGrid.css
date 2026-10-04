@@ -129,6 +129,28 @@
   transform: translateX(50%);
 }
 
+/* Rendered between .bfg-grid and .bfg-units -- below every unit, same
+   positioned box as .bfg-units so cellStyle()'s coordinates line up on the
+   same cells. */
+.bfg-obstacles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bfg-obstacle {
+  position: absolute;
+  width: var(--bfg-cell);
+  height: var(--bfg-cell-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--bfg-cell) * 0.55);
+  line-height: 1;
+  text-shadow: 1px 1px 3px #000;
+  opacity: 0.85;
+}
+
 .bfg-units {
   position: absolute;
   inset: 0;

@@ -33,10 +33,22 @@ export interface GridUnit {
   dmgMax?: number;
 }
 
+export interface BattleObstacle {
+  col: number;
+  row: number;
+  /** One of OBSTACLE_EMOJIS (engine.ts) -- purely cosmetic, picked at
+   * random per obstacle when the battle is created. */
+  emoji: string;
+}
+
 export interface GridBattleState {
   cols: number;
   rows: number;
   units: GridUnit[];
+  /** Impassable terrain cells, generated once up front (before either army
+   * is placed) and fixed for the rest of the battle -- no unit may ever
+   * move onto one. See OBSTACLE_RATIO in engine.ts. */
+  obstacles: BattleObstacle[];
   turn: number;
   status: 'ongoing' | 'attacker-win' | 'defender-win' | 'tie';
 }
@@ -56,6 +68,10 @@ export interface TurnEvent {
   to?: { col: number; row: number };
   roll?: number;
   damage?: number;
+  /** True on the 'attack' event whose hit landed as a critical -- killed its
+   * (wounded) target outright regardless of remaining HP. See
+   * CRITICAL_HIT_CHANCE in engine.ts. */
+  critical?: boolean;
 }
 
 export interface TurnResult {

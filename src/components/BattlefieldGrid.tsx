@@ -331,9 +331,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       if (e.type === 'attack') overrideEmoji.set(e.unitId, '🗡️');
     }
   } else if (animPhase === 'impact') {
-    // Who's under attack this round, regardless of outcome yet.
+    // Who's under attack this round, regardless of outcome yet. A critical
+    // hit flashes ❣️ instead of the normal 💥 -- it'll still end up showing
+    // ☠️ in the outcome phase below since a crit always kills.
     for (const e of lastEvents) {
-      if (e.type === 'attack' && e.targetId) overrideEmoji.set(e.targetId, '💥');
+      if (e.type === 'attack' && e.targetId) {
+        overrideEmoji.set(e.targetId, e.critical ? '❣️' : '💥');
+      }
     }
   } else if (animPhase === 'outcome') {
     // Every unit's own result flashes together: wounded (🩸), blocked (🛡️),
@@ -421,6 +425,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
               </svg>
             );
           })}
+        </div>
+        <div className="bfg-obstacles">
+          {battle.obstacles.map((o) => (
+            <div key={`obs-${o.col}-${o.row}`} className="bfg-obstacle" style={cellStyle(o.col, o.row)}>
+              {o.emoji}
+            </div>
+          ))}
         </div>
         <div className="bfg-units">
           {units.map((u) => {

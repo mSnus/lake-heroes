@@ -579,7 +579,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // becoming true re-runs this effect, which cleans up the old timer) and
   // performs its own manual step, and every click after it just advances
   // one turn the same way.
-  const bothSidesAutomated = attacker.isComputer && (!defender || defender.isComputer);
   // The ⚖️ override makes battles start paused in step-by-step mode (advance
   // one turn per ⚔️ click) instead of auto-playing to the end.
   const [manualMode, setManualMode] = useState(getOverrides().stepByStepCombat);
@@ -625,15 +624,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     return () => clearTimeout(timer);
   }, [phase]);
 
-  // Auto-close the result screen when every real participant is a bot
-  // (a human-vs-NPC battle still has a real human to click "Continue").
-  // Waits for the battlefield to actually be gone (the result panel isn't
-  // shown before then), so there's still time to read the outcome.
+  // Auto-close the result screen whenever a bot initiated the fight (bot vs
+  // bot, or bot vs the human's own tile) — the human didn't choose to
+  // fight, so there's nothing for them to confirm. Only a battle the human
+  // *attacked* themselves waits for a manual click, since they're the one
+  // who wanted to see how it went. Waits for the battlefield to actually be
+  // gone (the result panel isn't shown before then), so there's still time
+  // to read the outcome.
+  const resultAutoCloses = attacker.isComputer;
   useEffect(() => {
-    if (phase !== 'result' || showBattlefield || !bothSidesAutomated) return;
+    if (phase !== 'result' || showBattlefield || !resultAutoCloses) return;
     const t = setTimeout(() => handleClose(), 800);
     return () => clearTimeout(t);
-  }, [phase, showBattlefield, bothSidesAutomated]);
+  }, [phase, showBattlefield, resultAutoCloses]);
 
   return (
     <ScreenBackground
