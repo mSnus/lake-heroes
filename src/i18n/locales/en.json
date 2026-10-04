@@ -920,7 +920,6 @@
   "rogueAttack": {
     "title": "Rogue Attack",
     "garrisonLost": "Your {tileName}'s garrison lost {army} repelling them",
-    "attackersJoin": "{units}🧍 of attackers impressed by the might of {playerName} joined his garrison",
     "wonFull": "Battle won, and your garrison is full again",
     "wonToast": "{playerName}'s garrison at {tileName} repels a roaming horde",
     "razed": "Your {tileName} was razed 🔥by the roaming horde!",
@@ -929,9 +928,7 @@
     "tieToast": "{playerName}'s garrison at {tileName} loses {army} to a roaming horde",
     "horde": "Roaming Horde",
     "incoming": "Scouts spot a roaming horde of {units}👹 closing in on {tileName}!",
-    "defend": "Defend the garrison!",
-    "pillaged": "{units}👹 more were routed — you pillaged armor and arms from them worth {gold}🟡",
-    "wonLootToast": "{playerName}'s garrison at {tileName} repels a roaming horde, pillaging {gold}🟡 of arms"
+    "defend": "Defend the garrison!"
   },
   "cheatScreen": {
     "title": "Cheat Menu",
