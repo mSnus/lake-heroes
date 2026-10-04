@@ -164,12 +164,22 @@ export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
 export const SMALL_AUTO_BATTLE_THRESHOLD = 30;
 export const SMALL_BATTLEFIELD_COLS = 10;
 export const SMALL_BATTLEFIELD_ROWS = 15;
-// Above this on BOTH sides (the same threshold as the small board, mirrored),
-// the board gets much taller and a little narrower -- the extra height keeps
-// a maxed-out ~39-a-side symmetric fight from overlapping at the standard
-// BATTLEFIELD_ROWS, and the tighter width closes the approach.
+// Above this on EITHER side, the board gets taller and a little narrower --
+// the extra height keeps a big grouped formation (towers/squads, see
+// formations.ts's layoutGroup) from overlapping at the standard
+// BATTLEFIELD_ROWS, and the tighter width closes the approach. Sized for up
+// to AUTO_BATTLE_LARGE_THRESHOLD a side: the worst real split there (as
+// lopsided as a Knight's army gets, e.g. 1 militia + 39 riders) measures 16
+// rows, so 20 leaves a real margin without the excess scroll a flat 27 would
+// cost a fight barely over SMALL_AUTO_BATTLE_THRESHOLD.
 export const HUGE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
-export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 11;
+export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 4;
+// Above AUTO_BATTLE_LARGE_THRESHOLD a side -- a maxed-out army (5 slots x
+// ARMY_SLOT_CAPACITY each) tops out around 23 rows in its worst (most
+// lopsided) split, so 27 keeps the same margin HUGE_BATTLEFIELD_ROWS does at
+// its own ceiling.
+export const MASSIVE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
+export const MASSIVE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 11;
 // The dragon fight is an encirclement, not a face-off: both sides share the
 // middle of the board (see formations.ts's encircle/huddle), so it needs a
 // roughly SQUARE board rather than a tall corridor -- the ring is only as

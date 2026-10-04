@@ -9,6 +9,8 @@ import {
   DRAGON_BATTLEFIELD_ROWS,
   HUGE_BATTLEFIELD_COLS,
   HUGE_BATTLEFIELD_ROWS,
+  MASSIVE_BATTLEFIELD_COLS,
+  MASSIVE_BATTLEFIELD_ROWS,
   SMALL_AUTO_BATTLE_THRESHOLD,
   SMALL_BATTLEFIELD_COLS,
   SMALL_BATTLEFIELD_ROWS,
@@ -30,6 +32,11 @@ export interface BattleBoard {
   isDragonBoard: boolean;
   isSmallAutoBattle: boolean;
   isHugeBattle: boolean;
+  /** The huge tier's own top band (see MASSIVE_BATTLEFIELD_ROWS) -- both
+   * sides' totals already made it past AUTO_BATTLE_LARGE_THRESHOLD, so this
+   * is the tallest board there is. BattleScreen hides the tile icon here:
+   * at this height it's the one easy thing to give back. */
+  isMassiveBattle: boolean;
   isLargeAutoBattle: boolean;
 }
 
@@ -66,6 +73,11 @@ export function battleBoardFor(
     !isSmallAutoBattle &&
     (attackerGridTotal > SMALL_AUTO_BATTLE_THRESHOLD ||
       defenderGridTotal > SMALL_AUTO_BATTLE_THRESHOLD);
+  // The huge tier's own top band -- see MASSIVE_BATTLEFIELD_ROWS.
+  const isMassiveBattle =
+    isHugeBattle &&
+    (attackerGridTotal > AUTO_BATTLE_LARGE_THRESHOLD ||
+      defenderGridTotal > AUTO_BATTLE_LARGE_THRESHOLD);
   const isLargeAutoBattle =
     !isBrawl &&
     attackerGridTotal <= AUTO_BATTLE_LARGE_THRESHOLD &&
@@ -82,6 +94,7 @@ export function battleBoardFor(
       isBrawl: false,
       isSmallAutoBattle: false,
       isHugeBattle: true,
+      isMassiveBattle: false,
       isLargeAutoBattle: false,
     };
   }
@@ -92,19 +105,24 @@ export function battleBoardFor(
       ? BRAWL_COLS
       : isSmallAutoBattle
         ? SMALL_BATTLEFIELD_COLS
-        : isHugeBattle
-          ? HUGE_BATTLEFIELD_COLS
-          : BATTLEFIELD_COLS,
+        : isMassiveBattle
+          ? MASSIVE_BATTLEFIELD_COLS
+          : isHugeBattle
+            ? HUGE_BATTLEFIELD_COLS
+            : BATTLEFIELD_COLS,
     rows: isBrawl
       ? BRAWL_ROWS
       : isSmallAutoBattle
         ? SMALL_BATTLEFIELD_ROWS
-        : isHugeBattle
-          ? HUGE_BATTLEFIELD_ROWS
-          : BATTLEFIELD_ROWS,
+        : isMassiveBattle
+          ? MASSIVE_BATTLEFIELD_ROWS
+          : isHugeBattle
+            ? HUGE_BATTLEFIELD_ROWS
+            : BATTLEFIELD_ROWS,
     isBrawl,
     isSmallAutoBattle,
     isHugeBattle,
+    isMassiveBattle,
     isLargeAutoBattle,
   };
 }

@@ -201,7 +201,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     attackerManual,
     defenderManual,
   } = setupRef.current;
-  const { isBrawl, isLargeAutoBattle, cols: gridCols, rows: gridRows } = setupRef.current.board;
+  const { isBrawl, isLargeAutoBattle, isMassiveBattle, cols: gridCols, rows: gridRows } = setupRef.current.board;
 
   type BonusEntry = { key: string; label: string; emoji?: string; bonus: number; suffix?: string };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
@@ -274,7 +274,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // fight, nothing otherwise — dragon/caravan/ambush modes have no third
   // icon to show, since defenderImg is already one of the two side portraits
   // (the NPC's, or the real player's for ambush's reversed roles).
-  const modeIconSrc = (isTile || isRogue) && tile?.spriteImage ? tile.spriteImage : undefined;
+  // The tallest board there is (see MASSIVE_BATTLEFIELD_ROWS) -- the icon is
+  // the one easy thing to give back at that height.
+  const modeIconSrc =
+    !isMassiveBattle && (isTile || isRogue) && tile?.spriteImage ? tile.spriteImage : undefined;
 
   // Mode-specific battlefield icons, matching the old duel screen's grid
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
