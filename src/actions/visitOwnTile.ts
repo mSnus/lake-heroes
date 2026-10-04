@@ -28,10 +28,12 @@ export function handleVisitOwnTile(
 
   // Calling in on your own gold-producing land pays double its daily income
   // -- the reward for spending the turn there rather than moving on. A
-  // units-type tile (Camps/Towers) still only musters half its daily levy,
-  // with the full amount reserved for passing King's Castle (passStart.ts).
+  // units-type tile (Camps/Towers) musters 5x its daily levy -- the bigger
+  // multiplier is what makes a personal visit worth detouring for at all,
+  // since passing King's Castle (passStart.ts) already pays the full amount
+  // for every owned tile at once.
   const VISIT_GOLD_MULT = 2;
-  const VISIT_UNITS_SHARE = 0.5;
+  const VISIT_UNITS_SHARE = 5;
 
   const rewards = [];
   if (tile.bonusType === 'gold') {
