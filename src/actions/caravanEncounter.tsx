@@ -7,6 +7,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldAttackCaravan } from '../ai/decisions';
 import { rollCaravanPrize, CaravanPrize } from '../game/caravanPrize';
 import { announce } from '../utils/announce';
+import { getOverrides } from '../utils/overridesStore';
 import { t } from '../i18n';
 
 /** Share of the escort its cargo is worth that actually stands and fights.
@@ -30,8 +31,10 @@ export function checkCaravanEncounter(
     // No caravans during the first lap around the board
     if ((player.circles ?? 0) < 1) return false;
 
-    // Not enough units to threaten a caravan
-    if (player.units < 3) return false;
+    // Not enough units to threaten a caravan -- needs at least half the
+    // army's own slot capacity filled, not just some flat minimum.
+    const totalCapacity = player.armySlots * getOverrides().armySlotCapacity;
+    if (player.units < totalCapacity / 2) return false;
 
     // No back-to-back
     if (player.caravanEncounteredLastTurn) {
