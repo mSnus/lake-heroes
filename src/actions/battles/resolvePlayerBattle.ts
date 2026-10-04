@@ -1,7 +1,6 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { changeFame } from '../../utils/fame';
-import { changeKarma } from '../../utils/karma';
 import { say } from '../../utils/say';
 import { BattleResolution, BattleOutcome, tallyArmy, armyLostStr } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
@@ -38,7 +37,6 @@ export function resolvePlayerBattle(
     defender.position = 0;
     changeFame(attacker, 1);
     changeFame(defender, -1);
-    changeKarma(attacker, -1);
 
     const killed = armyLostStr(beforeLoss, attacker);
     const lossStr = killed ? t('resolvePlayerBattle.losingUnits', { army: killed }) : '';

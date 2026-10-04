@@ -8,6 +8,7 @@ import { Fade } from './Fade';
 import { BattleScreen } from './BattleScreen';
 import { PlayerLabel } from './PlayerLabel';
 import { pickHeroHourTarget } from '../ai/decisions';
+import { changeKarma } from '../utils/karma';
 import { say } from '../utils/say';
 import { formatArmy } from '../utils/formatArmy';
 import { useT } from '../i18n';
@@ -36,6 +37,8 @@ export const HeroHourScreen: React.FC<HeroHourScreenProps> = ({
 }) => {
   const t = useT();
   const handleFight = (opponent: Player) => {
+    // Karma judges the choice to attack, not whether it pays off.
+    changeKarma(activePlayer, -1);
     const battlefieldUnits = Math.min(activePlayer.units, opponent.units);
     showScreen({
       screenType: 'player-battle',

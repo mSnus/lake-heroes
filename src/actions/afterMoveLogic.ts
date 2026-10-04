@@ -8,6 +8,7 @@ import { showScreen, showPrisonScreen, clearScreen } from '../utils/screenStore'
 import { setEndTurn } from '../utils/endTurnStore';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { say } from '../utils/say';
+import { changeKarma } from '../utils/karma';
 import { fightTile } from './fightTile';
 import { sellTile } from './sellTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
@@ -63,6 +64,8 @@ export function afterMoveLogic(
     if (isHeadlessRun()) {
       const target = pickHeroHourTarget(player, playersHere);
       if (target) {
+        // Karma judges the choice to attack, not whether it pays off.
+        changeKarma(player, -1);
         const battlefieldUnits = Math.min(player.units, target.units);
         showBattleScreen(
           { mode: 'player', attacker: player, defender: target, battlefieldUnits, gameState: board, updateGameState, onClose: () => setEndTurn() },
