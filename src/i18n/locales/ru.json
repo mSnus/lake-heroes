@@ -849,8 +849,7 @@
     "black": "Чёрный"
   },
   "visitOwnTile": {
-    "provides": "«{tileName}» приносит {playerName} {rewards}{syndicateTag}",
-    "yourTileProvides": "Ваша «{tileName}» приносит {rewards}{syndicateTag}",
+    "provides": "«{tileName}» приносит {rewards}{syndicateTag} гостю {playerName}",
     "yourTileYielded": "Ваша «{tileName}» передана королю — бонуса нет, пока она передана"
   },
   "ambushEncounter": {

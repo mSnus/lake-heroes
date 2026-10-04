@@ -852,8 +852,7 @@
     "black": "Negro"
   },
   "visitOwnTile": {
-    "provides": "{tileName} le proporciona a {playerName} {rewards}{syndicateTag}",
-    "yourTileProvides": "Tu {tileName} proporciona {rewards}{syndicateTag}",
+    "provides": "{tileName} proporciona {rewards}{syndicateTag} a {playerName}, de visita",
     "yourTileYielded": "Tu {tileName} está cedida al Rey — sin bono mientras esté cedida"
   },
   "ambushEncounter": {

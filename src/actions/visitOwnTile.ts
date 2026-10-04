@@ -47,8 +47,7 @@ export function handleVisitOwnTile(
   }
 
   const rewardsStr = rewards.join(` ${t('common.and')} `);
-  say(t('visitOwnTile.provides', { tileName: tile.name, playerName: player.name, rewards: rewardsStr, syndicateTag }), 'debug');
-  setGameMessage(board, t('visitOwnTile.yourTileProvides', { tileName: tile.name, rewards: rewardsStr, syndicateTag }));
+  say(t('visitOwnTile.provides', { tileName: tile.name, playerName: player.name, rewards: rewardsStr, syndicateTag }), 'info');
 
   updateGameState(board);
   setEndTurn();

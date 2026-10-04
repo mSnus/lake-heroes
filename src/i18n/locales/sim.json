@@ -831,8 +831,7 @@
     "black": "Black"
   },
   "visitOwnTile": {
-    "provides": "{tileName} provides {playerName} with {rewards}{syndicateTag}",
-    "yourTileProvides": "Your {tileName} provides {rewards}{syndicateTag}",
+    "provides": "{tileName} provides {rewards}{syndicateTag} to visiting {playerName}",
     "yourTileYielded": "Your {tileName} is yielded to the King — no bonus while yielded"
   },
   "ambushEncounter": {
