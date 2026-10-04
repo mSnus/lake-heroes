@@ -975,7 +975,6 @@
   },
   "realmOverview": {
     "noTiles": "земель пока нет",
-    "annual": "🏰 за круг:",
     "gracePct": "({pct}% милости)"
   },
   "statsScreen": {

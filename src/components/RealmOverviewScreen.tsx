@@ -26,6 +26,14 @@ const delta = (n: number) => (n > 0 ? <span className="realm-delta">+{n}</span> 
 const artifactNames = (player: Player) =>
   player.artifacts.map((id) => getArtifact(id)?.name ?? id).join(', ');
 
+/** The grace's unit payout before the army-slot fit clamps it down to
+ * whatever room the player actually has (see kingsGrace.ts's
+ * fitGraceUnits) -- what they'd get with empty slots, not what they're
+ * really about to get. Watching for a full army and freeing room before
+ * passing the King is the player's own lookout; this is a forecast, not a
+ * promise. */
+const hypotheticalUnits = (a: KingsGraceReward) => a.tileUnits + a.graceMilitiaOffered + a.graceRidersOffered;
+
 /** Where a lap's pay comes from, as the row's tooltip -- the same breakdown
  * the player pane used to hide behind a click on its 🏰 figure. The grace is
  * the one source that can pay riders, so it spells out the tiers instead of
@@ -38,7 +46,9 @@ const annualBreakdown = (t: (k: string, v?: any) => string, a: KingsGraceReward)
 
   const grace = [
     a.kingsGold > 0 ? `${a.kingsGold}🟡` : null,
-    a.kingsMilitia + a.kingsRiders > 0 ? formatArmy(a.kingsMilitia, a.kingsRiders) : null,
+    a.graceMilitiaOffered + a.graceRidersOffered > 0
+      ? formatArmy(a.graceMilitiaOffered, a.graceRidersOffered)
+      : null,
   ].filter(Boolean);
 
   return [
@@ -91,12 +101,12 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
             <div key={player.id} className="realm-player">
               <div className="realm-player-name">
                 <PlayerLabel player={player} showImage bold />
-                {player.artifacts.length > 0 && (
-                  <span className="realm-artifacts" title={artifactNames(player)}>
-                    {player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join('')}
-                  </span>
-                )}
               </div>
+              {player.artifacts.length > 0 && (
+                <div className="realm-artifacts" title={artifactNames(player)}>
+                  {player.artifacts.map((id) => getArtifact(id)?.emoji ?? '').join('')}
+                </div>
+              )}
 
               <div className="realm-stats">
                 <span>{player.fame}🏆</span>
@@ -110,9 +120,9 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
               </div>
 
               <div className="realm-annual" title={annualBreakdown(t, annual)}>
-                <span className="realm-annual-label">{t('realmOverview.annual')}</span>
+                <span className="realm-annual-label">🏰 {t('tileCard.perYear')}:</span>
                 {annual.totalGold > 0 && <span>+{annual.totalGold}🟡</span>}
-                {annual.totalUnits > 0 && <span>+{annual.totalUnits}👬</span>}
+                {hypotheticalUnits(annual) > 0 && <span>+{hypotheticalUnits(annual)}👬</span>}
                 {annual.kingsHandicap < 1 && (
                   <span className="realm-annual-grace">
                     {t('realmOverview.gracePct', { pct: Math.round(annual.kingsHandicap * 100) })}

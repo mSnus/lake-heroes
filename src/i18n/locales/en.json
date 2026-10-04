@@ -1005,7 +1005,6 @@
   },
   "realmOverview": {
     "noTiles": "no land yet",
-    "annual": "🏰 per lap:",
     "gracePct": "({pct}% grace)"
   },
   "statsScreen": {
