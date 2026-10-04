@@ -420,6 +420,12 @@
       "fork": "<strong>Bifurcación del camino</strong> — si estás en la bifurcación, elige la ruta corta o larga antes de tirar. Si puedes alcanzarla durante una tirada, la ruta se elige al azar.",
       "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
     },
+    "overviewControls": {
+      "title": "Controles de vista general 🔍",
+      "kingdom": "🏰 <strong>Vista del Reino</strong> — toca el Castillo del Rey cuando no lo estés visitando para ver a todos los jugadores con su rango de poder ⭐ y riqueza total 🧮.",
+      "garrison": "⚔️ <strong>Vista de Guarniciones</strong> — toca tus escuadrones para ver todas tus casillas y repartir tu ejército en sus guarniciones. ¡Recuerda que no podrás recuperarlos de la casilla hasta que la visites!",
+      "player": "👤 <strong>Vista de Jugador</strong> — toca el icono de un jugador en el mapa para ver rápidamente sus posesiones."
+    },
     "contracts": {
       "title": "Contratos del Rey 📜",
       "item1": "Una visita al Castillo puede ofrecerte un contrato: reclama una casilla sin dueño específica a cambio de oro. Obtienes la recompensa si la reclamas tú; si otro jugador lo hace primero, el contrato termina."

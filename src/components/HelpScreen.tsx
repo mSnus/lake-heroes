@@ -165,6 +165,13 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.travel.portal')} />
           </ul>
 
+          <h3>{t('helpScreen.overviewControls.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.overviewControls.kingdom')} />
+            <HtmlLi html={t('helpScreen.overviewControls.garrison')} />
+            <HtmlLi html={t('helpScreen.overviewControls.player')} />
+          </ul>
+
           <h3>{t('helpScreen.contracts.title')}</h3>
           <ul>
             <HtmlLi html={t('helpScreen.contracts.item1')} />

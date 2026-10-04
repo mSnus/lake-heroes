@@ -422,6 +422,12 @@
       "fork": "<strong>Fork in the road</strong> — when standing on the fork, choose the short or long route before rolling. If you can reach it during a roll, the route is chosen at random.",
       "portal": "A Portal can send you directly to any other tile, including the King's Castle; that tile's normal effect then applies."
     },
+    "overviewControls": {
+      "title": "Overview controls 🔍",
+      "kingdom": "🏰 <strong>Kingdom Overview</strong> — tap King's Castle when not visiting it to display all players with their power rank ⭐ and total wealth 🧮.",
+      "garrison": "⚔️ <strong>Garrison Overview</strong> — tap army slots to display all your tiles and distribute army to garrisons. Remember you couldn't take them back from the tile until you visit it!",
+      "player": "👤 <strong>Player Overview</strong> — tap the player icon on the map to quickly observe his possessions."
+    },
     "contracts": {
       "title": "King's contracts 📜",
       "item1": "A Castle visit may offer a contract: claim a specified unowned tile for a gold reward. Claim it yourself to collect the reward; if someone else claims it first, the contract ends."
