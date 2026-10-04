@@ -4,7 +4,7 @@ import { Player } from '../game/Player';
 import '../styles/CurrentPlayer.css';
 import { say, sayLocal } from '../utils/say';
 import { PlayerLabel } from './PlayerLabel';
-import { playerTurnIncome } from '../game/income';
+import { playerTurnIncome, playerRawTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
 import { GarrisonsScreen } from './GarrisonsScreen';
@@ -141,6 +141,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   };
 
   const turnIncome = playerTurnIncome(gameState, activePlayer);
+  // playerTurnIncome clamps units to remaining militia capacity (income
+  // always lands on militia), so a full army reads as 0 units income --
+  // indistinguishable from genuinely producing none. Tell those apart with
+  // the unclamped figure: only a full army that WOULD be earning units gets
+  // the "max capacity" message instead of a silently blank income line.
+  const atUnitCapacity =
+    playerRawTurnIncome(gameState, activePlayer).units > 0 &&
+    activePlayer.remainingCapacity('militia') <= 0;
   const ownedTileCount = gameState.tiles.filter(
     (tile) => tile && tile.owner === activePlayer.id && !tile.isYielded
   ).length;
@@ -234,7 +242,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           </div>
         </div>
 
-        {(turnIncome.gold > 0 || turnIncome.units > 0) && (
+        {(turnIncome.gold > 0 || turnIncome.units > 0 || atUnitCapacity) && (
           /* Same shape as the row above (natural width, then flex) so each
              figure lines up under the stat it adds to. */
           <div className="player-stats-main-row player-stats-income-row">
@@ -242,7 +250,11 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               {turnIncome.gold > 0 ? `+${turnIncome.gold}🟡` : ''}
             </span>
             <span className="player-stats-turn-income player-stats-army-cell">
-              {turnIncome.units > 0 ? `+${turnIncome.units}🧍` : ''}
+              {atUnitCapacity
+                ? t('currentPlayer.maxCapacityReached', { fame: activePlayer.fame })
+                : turnIncome.units > 0
+                  ? `+${turnIncome.units}🧍`
+                  : ''}
             </span>
           </div>
         )}

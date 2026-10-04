@@ -304,6 +304,7 @@
     "isAt": "на клетке",
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",
     "goldTooltip": "Ваше текущее золото",
+    "maxCapacityReached": "достигнут предел вместимости при славе {fame}🏆",
     "asKingsGrace": "в качестве королевской милости",
     "fromYourTiles": "с ваших клеток",
     "fromYourTowers": "как дань с ваших башен",
