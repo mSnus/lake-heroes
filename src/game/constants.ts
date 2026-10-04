@@ -150,8 +150,13 @@ export const GARRISON_BONUS_SLOTS = 1;
 // capacity no longer distinguishes them. 1 = no advantage.
 export const TOWER_FORTIFICATION_MULT = 1;
 export const MAX_ARMY_SLOTS = 5;
-// Fame thresholds for army slots: 0-2 fame -> 2 slots, 3-5 -> 3, 6-9 -> 4, 10+ -> 5.
+// Fame thresholds for army slots: 0-2 fame -> 1 slot, 3-5 -> 2, 6-9 -> 3, 10+ -> 5
+// (the jump from 3 to 5 at the top bracket is deliberate, not a typo).
 // Uneven bracket widths, so this is a lookup table, not a uniform step size.
+// Slots cap future growth (gainMilitia/gainRiders) only -- a fame drop after
+// units were already raised under a higher bracket does NOT claw them back,
+// so a player can legitimately be seen holding more units than their
+// current fame's cap would allow.
 export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
   { minFame: 10, slots: MAX_ARMY_SLOTS },
   { minFame: 6, slots: 3 },
