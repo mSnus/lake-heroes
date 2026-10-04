@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { playerScore } from '../game/score';
-import { DRAGON_MERCY_SCORE_RATIO } from '../game/constants';
+import { DRAGON_MERCY_SCORE_RATIO, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
 import {
   showDragonSkyScreen,
   showDragonAttackScreen,
@@ -32,7 +32,11 @@ export function checkDragonEncounter(
 ): boolean {
   const player = board.activePlayer;
 
-  const ATTACK_CHANCE = player.fame > FAME_THRESHOLD_ATTACK ? 1 / 2 : 1 / 3;
+  // Cursed (negative-karma) players get the same +125% hostility bump every
+  // other roaming-threat odds reuses, clamped since this one starts higher.
+  const baseAttackChance = player.fame > FAME_THRESHOLD_ATTACK ? 1 / 2 : 1 / 3;
+  const ATTACK_CHANCE =
+    player.karma < 0 ? Math.min(1, baseAttackChance * KARMA_HOSTILE_ENCOUNTER_MULTIPLIER) : baseAttackChance;
 
   if (!force) {
     if ((player.circles ?? 0) <= 2) {
