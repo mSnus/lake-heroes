@@ -30,6 +30,9 @@ export class Player {
   image: string;
   turnsToSkip: number;
   fame: number;
+  /** Clandestine moral-standing counter -- see utils/karma.ts. Signed, 0 at
+   * start, never shown directly (only a 🕷️ marker once it goes negative). */
+  karma: number;
   circles: number;
   dragonEncounters: number;
   dragonEncounteredLastTurn: boolean;
@@ -91,6 +94,7 @@ export class Player {
     this.ownedTiles = [];
     this.turnsToSkip = 0;
     this.fame = params.fame ?? 1;
+    this.karma = 0;
     this.circles = 0;
     this.dragonEncounters = 0;
     this.dragonEncounteredLastTurn = false;

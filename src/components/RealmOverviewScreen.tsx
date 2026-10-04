@@ -100,6 +100,7 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
           return (
             <div key={player.id} className="realm-player">
               <div className="realm-player-name">
+                {player.karma < 0 && '🕷️'}
                 <PlayerLabel player={player} showImage bold />
               </div>
               {player.artifacts.length > 0 && (

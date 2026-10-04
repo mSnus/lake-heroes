@@ -35,6 +35,26 @@ export const REAL_ADVENTURE_MIN_TURNS = 3;
 // runaway leader, not a routine hazard for everyone (see actions/joker.ts).
 export const HURRICANE_WEALTH_RATIO = 1.5;
 
+// ── Karma ──
+// A clandestine per-player moral-standing counter (see utils/karma.ts) --
+// never announced, shown only as a 🕷️ marker beside a player's name once it
+// goes negative. Only negative karma biases anything; these are the shared
+// knobs every biasing site reads.
+// Chance the Portal drops a cursed player straight into Prison instead of a
+// random tile, and the same chance a die roll within Prison's reach is
+// quietly overridden to land exactly on it (see portal.ts, rollAndMove.ts).
+export const KARMA_PRISON_CHANCE = 0.05;
+// A cursed player's Joker draw is this likely to come from the bad half of
+// the event table instead of the normal 50/50 (see joker.ts).
+export const KARMA_JOKER_BAD_CHANCE = 0.8;
+// A cursed player's hidden fork coin flip favours the long path at this
+// rate instead of the normal 50/50 (see rollAndMove.ts).
+export const KARMA_LONG_PATH_CHANCE = 0.75;
+// A cursed player's chance of a roaming-horde (rogue) attack or an ambush is
+// multiplied by this -- a +125% increase over the normal odds (see
+// rogueAttackEncounter.ts, ambushEncounter.tsx).
+export const KARMA_HOSTILE_ENCOUNTER_MULTIPLIER = 2.25;
+
 // ── Tile economy scale ──
 // tiles.json authors prices and income as small coefficients of these bases,
 // materialised into real gold in the Tile constructor. Change one number here

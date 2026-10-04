@@ -4,6 +4,7 @@ import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostS
 import { CaravanPrize, quarterPrize, mountHorses, rollGuardsJoining } from '../../game/caravanPrize';
 import { setGameMessage } from '../../utils/gameMessage';
 import { say } from '../../utils/say';
+import { changeKarma } from '../../utils/karma';
 import { t } from '../../i18n';
 
 /**
@@ -67,6 +68,12 @@ export function resolveCaravanBattle(
   };
 
   if (outcome === 'attacker') {
+    // Karma only judges the two unambiguous cases -- a caravan carrying
+    // nothing but gold (pure robbery) or nothing but slaves (pure rescue).
+    // A mixed cargo is left unjudged.
+    if (prize.gold > 0 && prize.slaves <= 0 && prize.horses <= 0) changeKarma(attacker, -1);
+    else if (prize.slaves > 0 && prize.gold <= 0 && prize.horses <= 0) changeKarma(attacker, 1);
+
     const parts = collect(prize);
 
     // Only a decisive win impresses the survivors.

@@ -7,7 +7,7 @@ import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
 import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
-import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS } from '../game/constants';
+import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS, KARMA_JOKER_BAD_CHANCE } from '../game/constants';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
@@ -48,8 +48,16 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
   "King's Gift": 'joker.eventName.kingsGift',
 };
 
+// Which half of the table a draw comes from, before the specific event is
+// picked within that half -- karma (if negative) skews which half, never
+// which event, so the within-half odds stay exactly as they are today.
+const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor'];
+const GOOD_EVENTS: JokerEvent[] = ['Blessing', "Queen's Gift", "King's Gift"];
+
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
-  const event: JokerEvent = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+  const badChance = board.activePlayer.karma < 0 ? KARMA_JOKER_BAD_CHANCE : 0.5;
+  const pool = Math.random() < badChance ? BAD_EVENTS : GOOD_EVENTS;
+  const event: JokerEvent = pool[Math.floor(Math.random() * pool.length)];
   let message = '';
 
   switch (event) {

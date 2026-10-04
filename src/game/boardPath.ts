@@ -36,6 +36,22 @@ export function stepsToFork(from: number): number {
 }
 
 /**
+ * Generic form of stepsToFork -- how many steps of nextBoardPosition it
+ * takes to reach `targetIdx` from `from` along the given fork branch (0 when
+ * already standing on it). Returns TILE_COUNT if it somehow never arrives
+ * within a full lap, which no reachable target does.
+ */
+export function stepsToTile(from: number, targetIdx: number, forkChoice: ForkChoice): number {
+  let pos = from;
+  for (let steps = 0; steps < TILE_COUNT; steps++) {
+    if (pos === targetIdx) return steps;
+    pos = nextBoardPosition(pos, forkChoice);
+  }
+
+  return TILE_COUNT;
+}
+
+/**
  * Simulates `roll` steps of nextBoardPosition from `from`, returning the
  * final landing tile and whether King's Castle (index 0) was passed or
  * landed on along the way -- the fork-aware generalization of the old

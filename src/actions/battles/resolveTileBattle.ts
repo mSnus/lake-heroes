@@ -3,6 +3,7 @@ import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
 import { razeTile, grantTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
+import { changeKarma } from '../../utils/karma';
 import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
 import { recordStatEvent } from '../../game/statistics';
@@ -83,6 +84,7 @@ export function resolveTileBattle(
       attacker.gold += plunder;
 
       changeFame(attacker, 1);
+      changeKarma(attacker, -1);
       if (defender) changeFame(defender, -1);
 
       const plunderStr = plunder > 0 ? t('resolveTileBattle.plunderSuffix', { gold: plunder }) : '';

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BattleOutcome, BattleResolution } from '../../actions/battles/common';
+import { changeKarma } from '../../utils/karma';
 import { resolveTileBattle } from '../../actions/battles/resolveTileBattle';
 import { resolveRogueAttack } from '../../actions/battles/resolveRogueAttack';
 import { resolveCaravanBattle } from '../../actions/battles/resolveCaravanBattle';
@@ -32,7 +33,7 @@ export function dispatchBattleResolution(
   defKilled: number
 ): BattleResolution {
   const { attacker, gameState } = props;
-  const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, defender, tile, caravanPrize, caravanDefenceRiders, defence, battlefieldUnits, ambushAttackerUnits } = setup;
+  const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, isZombieAmbush, defender, tile, caravanPrize, caravanDefenceRiders, defence, battlefieldUnits, ambushAttackerUnits } = setup;
 
   if (isDragon) return resolveDragonBattle(gameState, attacker, atkKilled, battleOutcome);
   if (isCaravan)
@@ -61,6 +62,9 @@ export function dispatchBattleResolution(
     const ambushOutcome: AmbushOutcome =
       battleOutcome === 'defender' ? 'win' : battleOutcome === 'attacker' ? 'defeat' : 'tie';
     const res = resolveAmbush(gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome);
+    // "Defeating the zombies" -- a won ambush specifically against an
+    // abandoned tile's zombie guard, not an ordinary bandit ambush.
+    if (isZombieAmbush && ambushOutcome === 'win') changeKarma(attacker, 1);
     return {
       outcome: battleOutcome,
       message: res.message,

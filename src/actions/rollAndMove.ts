@@ -14,9 +14,15 @@ import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
 import { say, narrate } from '../utils/say';
-import { advanceBoardPosition, nextBoardPosition, stepsToFork } from '../game/boardPath';
+import { advanceBoardPosition, nextBoardPosition, stepsToFork, stepsToTile } from '../game/boardPath';
 import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
-import { FORK_START_INDEX, FORK_ROLL_RANGE, REAL_ADVENTURE_MIN_TURNS } from '../game/constants';
+import {
+  FORK_START_INDEX,
+  FORK_ROLL_RANGE,
+  REAL_ADVENTURE_MIN_TURNS,
+  KARMA_LONG_PATH_CHANCE,
+  KARMA_PRISON_CHANCE,
+} from '../game/constants';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
@@ -40,27 +46,44 @@ export async function rollAndMove(
     if (!board) return;
 
   // Use the value already rolled by the dice widget (avoids re-triggering the animation)
-  const roll = preRolledValue !== undefined ? preRolledValue : rollDice();
+  let roll = preRolledValue !== undefined ? preRolledValue : rollDice();
   const player = board.activePlayer;
 
   // Standing ON the fork tile, the branch is the player's (or bot's) own
   // pick -- the arrow picker in BoardCanvas.tsx, read once here since it
   // hides itself the moment a roll begins. Approaching it, nobody chooses:
   // the branch is a hidden coin flip, re-rolled every turn the fork is
-  // still within a single die's reach. Either way, early on -- while even
-  // the furthest-along player hasn't finished REAL_ADVENTURE_MIN_TURNS laps
-  // yet -- the long path is off the table altogether (see the constant's
-  // own comment): a brand-new player isn't stranded on the longer route by
-  // a coin flip, nor a bot steered onto it by its own pick.
+  // still within a single die's reach -- cursed (negative-karma) players get
+  // a coin weighted toward the long path instead of a fair one. Either way,
+  // early on -- while even the furthest-along player hasn't finished
+  // REAL_ADVENTURE_MIN_TURNS laps yet -- the long path is off the table
+  // altogether (see the constant's own comment): a brand-new player isn't
+  // stranded on the longer route by a coin flip, nor a bot steered onto it
+  // by its own pick.
   const isEarlyGame = Math.min(...board.players.map((p) => p.circles)) <= REAL_ADVENTURE_MIN_TURNS;
+  const longPathChance = player.karma < 0 ? KARMA_LONG_PATH_CHANCE : 0.5;
   const forkChoice: ForkChoice = isEarlyGame
     ? 'short'
     : player.position === FORK_START_INDEX
       ? getForkChoice()
-      : stepsToFork(player.position) <= FORK_ROLL_RANGE && Math.random() < 0.5
+      : stepsToFork(player.position) <= FORK_ROLL_RANGE && Math.random() < longPathChance
         ? 'long'
         : 'short';
   resetForkChoice();
+
+  // A cursed player's die is quietly loaded whenever Prison sits within a
+  // single roll -- reusing the Portal's own prison-pull chance rather than
+  // inventing a second knob. This deliberately overrides whatever face the
+  // dice widget already showed: karma is meant to be felt, never explained.
+  if (player.karma < 0) {
+    const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
+    if (prisonIdx >= 0) {
+      const distance = stepsToTile(player.position, prisonIdx, forkChoice);
+      if (distance >= 1 && distance <= 6 && Math.random() < KARMA_PRISON_CHANCE) {
+        roll = distance;
+      }
+    }
+  }
 
   const { finalIndex: nextTileIdx, crossedStart: willCrossStart } = advanceBoardPosition(
     player.position,

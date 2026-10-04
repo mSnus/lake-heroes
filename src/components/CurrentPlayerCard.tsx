@@ -60,7 +60,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
   return (
     <div className="current-player-card-wrapper game-modal-border" onClick={() => setPlayer(null)}>
       <div className="current-player-card">
-        <PlayerCard player={player} />
+        <PlayerCard player={player} prefix={player.karma < 0 ? '🕷️' : undefined} />
         {currentTile && (
           <div className="cpc-is-at">
             {t('currentPlayer.isAt')}{' '}

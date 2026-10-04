@@ -1,6 +1,6 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
-import { TILE_COUNT } from '../game/constants';
+import { TILE_COUNT, KARMA_PRISON_CHANCE } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
 import { isHeadlessRun } from '../utils/headlessStore';
@@ -16,11 +16,17 @@ export function handlePortal(
   const player = board.activePlayer;
   const portalPos = player.position;
 
-  // Teleport to any random tile except the portal itself
+  // Teleport to any random tile except the portal itself -- a cursed player
+  // has a small clandestine chance of landing squarely on Prison instead.
+  const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
   let newPos: number;
-  do {
-    newPos = Math.floor(Math.random() * TILE_COUNT);
-  } while (newPos === portalPos);
+  if (player.karma < 0 && prisonIdx >= 0 && prisonIdx !== portalPos && Math.random() < KARMA_PRISON_CHANCE) {
+    newPos = prisonIdx;
+  } else {
+    do {
+      newPos = Math.floor(Math.random() * TILE_COUNT);
+    } while (newPos === portalPos);
+  }
 
   player.position = newPos;
 

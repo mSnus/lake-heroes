@@ -5,9 +5,10 @@ import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { razeTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
+import { KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
 import { t } from '../i18n';
 
-const ENCOUNTER_CHANCE = 1 / 14;
+const BASE_ENCOUNTER_CHANCE = 1 / 14;
 
 /**
  * Rogue Attack: a roaming horde raids one of the player's own tiles.
@@ -43,7 +44,9 @@ export function checkRogueAttackEncounter(
   // Yielded tiles are under the King's protection -- not a valid target.
   const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
   if (eligibleTiles.length < 1) return false;
-  if (!force && Math.random() >= ENCOUNTER_CHANCE) return false;
+  const encounterChance =
+    BASE_ENCOUNTER_CHANCE * (player.karma < 0 ? KARMA_HOSTILE_ENCOUNTER_MULTIPLIER : 1);
+  if (!force && Math.random() >= encounterChance) return false;
 
   const tileIdx = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];
   const tile = board.tiles[tileIdx];
