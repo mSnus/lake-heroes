@@ -86,7 +86,7 @@ All emojis used across the game UI, grouped by purpose.
 | Emoji | Meaning |
 |-------|---------|
 | 🏰 | King's Castle |
-| 📦 | Treasure Box |
+| 🪎 | Treasure Box |
 | 🍺 | Tavern |
 | 🦁 | Sphynx |
 | ⛓️ | Prison |

@@ -396,7 +396,7 @@
     "specialTiles": {
       "title": "Special tiles 🃏",
       "kingsCastle": "🏰 <strong>King's Castle</strong> — visit to recruit 🧍 units for gold, the amount is limited by your fame. Passing the King's Castle grants base income plus bonuses from all your properties.",
-      "treasureChest": "📦 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.",
+      "treasureChest": "🪎 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.",
       "tavern": "🍺 <strong>Tavern</strong> — recruit units",
       "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
       "prison": "⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for visiting your tiles",
@@ -462,7 +462,7 @@
     },
     "artifacts": {
       "title": "Artifacts",
-      "intro": "Found inside Treasure Chests 📦 — each artifact grants its owner a permanent bonus for the rest of the game."
+      "intro": "Found inside Treasure Chests 🪎 — each artifact grants its owner a permanent bonus for the rest of the game."
     },
     "dragon": {
       "title": "Dragon 🐉",

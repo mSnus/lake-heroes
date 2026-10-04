@@ -394,7 +394,7 @@
     "specialTiles": {
       "title": "Casillas especiales 🃏",
       "kingsCastle": "🏰 <strong>Castillo del Rey</strong> — visítalo para reclutar unidades 🧍 con oro; la cantidad está limitada por tu fama. Pasar por el Castillo del Rey otorga ingresos base más bonos de todas tus propiedades.",
-      "treasureChest": "📦 <strong>Cofre del Tesoro</strong> — recompensa en oro, de tamaño pequeño/mediano/grande.",
+      "treasureChest": "🪎 <strong>Cofre del Tesoro</strong> — recompensa en oro, de tamaño pequeño/mediano/grande.",
       "tavern": "🍺 <strong>Taberna</strong> — recluta unidades",
       "sphynx": "🦁 <strong>Esfinge</strong>: <br/>Tira el dado 🎲:<br/> <b>1,2</b> - pierdes la mitad de tu 🟡<br/><b>3,4</b> - pierdes 1/3 de tus 🧍<br/> <b>5</b> - nada, exhala 🌬️<br/> <b>6</b> - ganas la mitad de tu 🟡",
       "prison": "⛓️ <strong>Prisión</strong> — pierdes un turno. Mientras estás en prisión, nadie paga por visitar tus casillas",
@@ -460,7 +460,7 @@
     },
     "artifacts": {
       "title": "Artefactos",
-      "intro": "Se encuentran dentro de los Cofres del Tesoro 📦 — cada artefacto otorga a su dueño un bono permanente para el resto de la partida."
+      "intro": "Se encuentran dentro de los Cofres del Tesoro 🪎 — cada artefacto otorga a su dueño un bono permanente para el resto de la partida."
     },
     "dragon": {
       "title": "Dragón 🐉",
