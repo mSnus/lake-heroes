@@ -302,7 +302,7 @@
     "isAt": "is at",
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
     "goldTooltip": "Current gold you own",
-    "maxCapacityReached": "max capacity for fame {fame}🏆 reached",
+    "maxCapacityReached": "max capacity for {fame}🏆 reached",
     "asKingsGrace": "as the King's grace",
     "asKingsGraceHandicapped": "as the King's grace ({pct}% — the King favours those behind)",
     "fromYourTiles": "from your tiles",
