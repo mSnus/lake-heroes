@@ -658,6 +658,7 @@
     "blessingMessage": "Todas las casillas en propiedad suben un nivel.",
     "earthquakeDestroys": "El terremoto destruye: {list}",
     "earthquakeMessage": "Todas las casillas mejoradas pierden un nivel, algunas son destruidas",
+    "earthquakeLucky": ", pero {playerName} tiene suerte",
     "meteorSaved": "¡Una lluvia de meteoritos cae sobre las tierras de {playerName}, pero el {artifactName} {emoji} las salva del daño!",
     "meteorDestroys": "Una lluvia de meteoritos cae sobre {tileName}, destruyéndola",
     "meteorWilderness": "Una lluvia de meteoritos cae sobre tierras salvajes, sin dañar a nadie",

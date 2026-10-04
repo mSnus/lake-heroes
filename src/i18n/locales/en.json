@@ -660,6 +660,7 @@
     "blessingMessage": "All owned tiles are upgraded one level.",
     "earthquakeDestroys": "Earthquake destroys: {list}",
     "earthquakeMessage": "All upgraded tiles lose a level, some are destroyed",
+    "earthquakeLucky": ", but {playerName} is lucky",
     "meteorSaved": "Meteor shower falls on {playerName}'s land, but the {artifactName} {emoji} saves it from harm!",
     "meteorDestroys": "Meteor shower falls on {tileName}, destroying it",
     "meteorWilderness": "Meteor shower falls on the wilderness, harming no one",

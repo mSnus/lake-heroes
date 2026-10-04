@@ -184,6 +184,7 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       if (lostMsgs.length) say(t('joker.earthquakeDestroys', { list: lostMsgs.join(', ') }), 'debug');
       message = t('joker.earthquakeMessage');
       if (savedMsgs.length) message += `. ${savedMsgs.join('; ')}`;
+      if (poorest) message += t('joker.earthquakeLucky', { playerName: poorest.name });
       break;
     }
 

@@ -655,6 +655,7 @@
     "blessingMessage": "Все принадлежащие постройки повышаются на один уровень.",
     "earthquakeDestroys": "Землетрясение разрушает: {list}",
     "earthquakeMessage": "Все улучшенные постройки теряют уровень, некоторые разрушены",
+    "earthquakeLucky": ", но {playerName} повезло",
     "meteorSaved": "Метеоритный дождь падает на владения {playerName}, но {artifactName} {emoji} спасает их от беды!",
     "meteorDestroys": "Метеоритный дождь падает на «{tileName}», уничтожая её",
     "meteorWilderness": "Метеоритный дождь падает на пустошь, никому не причиняя вреда",
