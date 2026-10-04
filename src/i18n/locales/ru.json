@@ -274,7 +274,7 @@
     "forcedToPay": "и вынужден заплатить ему",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
-    "riskOrPay": "Отомстить силами {army} и сжечь дотла?",
+    "riskOrPay": "Отомстить силами {army} против 🧍{defence} и сжечь дотла?",
     "razedSmokeCaveat": "Разорённые земли становятся заброшенными",
     "forcedWhom": "вынудил",
     "toPay": "заплатить",

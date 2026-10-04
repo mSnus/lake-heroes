@@ -277,7 +277,7 @@
     "forcedToPay": "y se ve obligado a pagarle",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
-    "riskOrPay": "¿Buscar venganza con {army} y arrasarla?",
+    "riskOrPay": "¿Buscar venganza con {army} vs🧍{defence} y arrasarla?",
     "razedSmokeCaveat": "Las casillas arrasadas quedan abandonadas",
     "forcedWhom": "obligó a",
     "toPay": "a pagar",

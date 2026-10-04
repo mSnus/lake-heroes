@@ -272,7 +272,7 @@
     "encounters": "encounters",
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by 🧍{amount}",
-    "riskOrPay": "Seek revenge with {army} and raze it?",
+    "riskOrPay": "Seek revenge with {army} vs🧍{defence} and raze it?",
     "razedSmokeCaveat": "Razed tiles become abandoned",
     "forcedWhom": "forced",
     "toPay": "to pay",

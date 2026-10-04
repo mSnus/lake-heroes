@@ -278,7 +278,7 @@
     "forcedToPay": "and is forced to pay him",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
-    "riskOrPay": "Seek revenge with {army} and raze it?",
+    "riskOrPay": "Seek revenge with {army} vs🧍{defence} and raze it?",
     "razedSmokeCaveat": "Razed tiles become abandoned",
     "forcedWhom": "forced",
     "toPay": "to pay",

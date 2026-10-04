@@ -59,6 +59,11 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   // the visitor's own stat line and the "encounters ... belongs to" build-up.
   const isToll = !!config.encounter?.ownerName && !!config.encounter?.fee;
 
+  // When a revenge prompt is about to show, its own "vs🧍{defence}" already
+  // states the garrison's strength -- showing the standalone "guarded by"
+  // line first would just say the same number twice.
+  const showsRevengePrompt = !!(config.encounter?.ownerName && config.encounter?.canFight && config.encounter?.tile);
+
   function handleButtonClick(onClick: () => void, action?: string) {
     if (action === 'end-turn') gameEvent('setPhase', 'before-move');
     try {
@@ -138,17 +143,18 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                       color={config.encounter.ownerColor}
                       bold
                     />
-                    {guardedByNode}
+                    {!showsRevengePrompt && guardedByNode}
                   </>
                 )}
               </>
             )}
-            {config.encounter.ownerName && config.encounter.canFight && config.encounter.tile && (
+            {showsRevengePrompt && (
               <>
                 <br />
                 <br />
                 {t('screenRenderer.riskOrPay', {
                   army: formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0),
+                  defence: config.encounter.tile!.defence,
                 })}
                 <br />
                 <span style={{ fontSize: '1rem', lineHeight: '1', color: 'wheat' ,opacity: 0.85 }}>
