@@ -29,7 +29,7 @@
   width: 100%;
   border-collapse: collapse;
   display: flex;
-  align-items: normal;
+  align-items: flex-start;
   justify-content: center;
 
   font-size: 1.1rem;
@@ -54,7 +54,8 @@
   font-size: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 .upgrade-level+.upgrade-level {
@@ -66,7 +67,7 @@
 .upgrade-level.current-level {
   background-color: #ffffff20;
   border-radius: 8px;
-  padding: 8px;
+  padding: 0 8px 0 8px;
 }
 
 .upgrade-level.upgrade-unreachable {

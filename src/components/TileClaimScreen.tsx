@@ -52,7 +52,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       <>
         {income.gold > 0 && <>+{income.gold}🟡 </>}
         <br/>
-        {income.units > 0 && <>+{income.units}🧍</>}
+        {income.units > 1 && <>+{income.units}🧍</>}
       </>
     );
   };
@@ -183,6 +183,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     );
   };
 
+  const currently = (level: number, currentLevel: number) => {
+    return (
+      <span className={'upgrade-price-badge'}>{level === currentLevel ? t('tileClaimScreen.now') : ''}</span>
+    );
+  };
+
   // The garrison itself always comes back in full on sale, yielded or not --
   // only the gold refund takes the yield penalty (see sellTile.ts).
   const sellPrice = tile.isYielded
@@ -244,7 +250,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         : 'tileClaimScreen.belongsTo';
 
   return (
-    <ScreenBackground image={variant === 'upgrades' ? "assets/screens/guards.jpg" : "assets/screens/victory.jpg"} style={{ paddingTop: '1rem' }}>
+    <ScreenBackground
+      image={variant === 'upgrades' ? 'assets/screens/guards.jpg' : 'assets/screens/victory.jpg'}
+      style={{ paddingTop: '1rem' }}
+    >
       <Fade />
       {variant === 'upgrades' && (
         <button
@@ -263,7 +272,9 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
           ❌
         </button>
       )}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+      >
         {tile.spriteImage && (
           <SpriteCircleIcon src={tile.spriteImage} size="5rem" style={{ marginBottom: '0' }} />
         )}
@@ -291,10 +302,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
       <div className="text-message" style={{ lineHeight: '1.2', whiteSpace: 'pre-line' }}>
         {tJsx(ownerTag, {
-              player: <PlayerLabel player={player} bold />,
-              fame: <>🏆{player.fame}</>,
-              gold: <>🟡{player.gold}</>,
-            })}
+          player: <PlayerLabel player={player} bold />,
+          fame: <>🏆{player.fame}</>,
+          gold: <>🟡{player.gold}</>,
+        })}
       </div>
 
       {!tile.isYielded && (
@@ -321,9 +332,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 </div>
               )}
 
-              <div className={'upgrade-price-badge'}>
-                {currentLevel === 1 ? t('tileClaimScreen.now') : ''}
-              </div>
+              {currently(currentLevel, 1)}
             </div>
           )}
 
@@ -345,7 +354,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 </div>
               )}
 
-              {currentLevel === 2 ? t('tileClaimScreen.now') : priceTag(2)}
+              {currentLevel === 2 ? currently(currentLevel, 2) : priceTag(2)}
             </div>
           )}
           {currentLevel <= 3 && (
@@ -372,7 +381,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 </div>
               )}
 
-              {currentLevel === 3 ? t('tileClaimScreen.now') : priceTag(3)}
+              {currentLevel === 3 ? currently(currentLevel, 3) : priceTag(3)}
             </div>
           )}
         </div>
