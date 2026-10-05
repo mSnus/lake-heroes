@@ -3,6 +3,7 @@ import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { syndicateMultiplier } from '../game/syndicate';
 import { setGameMessage } from '../utils/gameMessage';
+import { VISIT_GOLD_MULT, VISIT_UNITS_SHARE } from '../game/constants';
 import { t } from '../i18n';
 export function handleVisitOwnTile(
   board: GameState | null,
@@ -25,15 +26,6 @@ export function handleVisitOwnTile(
 
   const mult = syndicateMultiplier(board, player, tile.group);
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
-
-  // Calling in on your own gold-producing land pays double its daily income
-  // -- the reward for spending the turn there rather than moving on. A
-  // units-type tile (Camps/Towers) musters 5x its daily levy -- the bigger
-  // multiplier is what makes a personal visit worth detouring for at all,
-  // since passing King's Castle (passStart.ts) already pays the full amount
-  // for every owned tile at once.
-  const VISIT_GOLD_MULT = 2;
-  const VISIT_UNITS_SHARE = 5;
 
   const rewards = [];
   if (tile.bonusType === 'gold') {

@@ -97,6 +97,13 @@ export const GRACE_TOTAL_GOLD_MULT = 0.5;
 // of whatever its own bonus produces (gold-type tiles) or in addition to it
 // (units-type tiles) -- see game/income.ts's tileTurnIncome.
 export const FLAT_TILE_UNIT_INCOME = 1;
+// Calling in on your own tile pays a multiple of its daily bonus -- the
+// reward for spending the turn there rather than moving on (see
+// actions/visitOwnTile.ts). Units get the bigger multiple since passing
+// King's Castle (passStart.ts) already pays every owned tile's full gold
+// income at once, but units only ever come from a personal visit or Grace.
+export const VISIT_GOLD_MULT = 2;
+export const VISIT_UNITS_SHARE = 5;
 
 export const UNIT_PRICE = 50; // gold per militia unit (King's Castle recruit price)
 // The Tavern charges a premium over the King's Castle's own prices, for both

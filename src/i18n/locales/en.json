@@ -380,7 +380,7 @@
       "title": "Tiles 🧩",
       "discoverTitle": "Discover",
       "discoverBody": "new tiles and get rewarded for that",
-      "own": "<strong>👛 Own tiles</strong> by spending gold 🟡 and 🧍 units. Visiting own tiles brings you bonus from it",
+      "own": "<strong>👛 Own tiles</strong> by spending gold 🟡 and 🧍 units. Each owned tile provides you at least +{flatUnitIncome}🧍 each day. Visiting own tiles brings you {visitGoldMult}x 🟡 or {visitUnitsShare}x🧍🏻 bonus from it",
       "landingOnOpponent": "<strong>Landing on an opponent's tile</strong> — its fee 💰 is collected automatically. Once it is paid, you may leave peacefully or fight ⚔️ for revenge. A razed 🔥 tile loses all upgrades, becomes unowned, and cannot be claimed until the next round. If you cannot cover a fee, sell tiles; if that is still not enough, you become a prisoner of war, skip a turn in prison, then receive the King's ransom to continue.",
       "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: income bonus and fee is <strong>doubled</strong>",
       "sellAnytime": "<strong>Sell</strong> — tiles can be sold at any time for the full price of the tile and its upgrades. Click the tile's heading to reveal the Sell/Yield buttons.",

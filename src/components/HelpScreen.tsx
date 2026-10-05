@@ -6,7 +6,14 @@ import { TileCard } from './TileCard';
 import { DecoratedButton } from './DecoratedButton';
 import '../styles/HelpScreen.css';
 import { KNIGHT_FAME } from '../utils/fame';
-import { GARRISON_BONUS_SLOTS, GARRISON_SLOT_CAPACITY, GARRISON_LEVEL_BONUS_PCT } from '../game/constants';
+import {
+  GARRISON_BONUS_SLOTS,
+  GARRISON_SLOT_CAPACITY,
+  GARRISON_LEVEL_BONUS_PCT,
+  FLAT_TILE_UNIT_INCOME,
+  VISIT_GOLD_MULT,
+  VISIT_UNITS_SHARE,
+} from '../game/constants';
 import { useAppVersion } from '../utils/useAppVersion';
 import { getArtifacts } from '../game/artifacts';
 import { useT } from '../i18n';
@@ -99,7 +106,13 @@ const HelpScreen: React.FC = () => {
                 <div className="tile-sprite tile-sprite-unowned"></div>
               </div>
             </li>
-            <HtmlLi html={t('helpScreen.tiles.own')} />
+            <HtmlLi
+              html={t('helpScreen.tiles.own', {
+                flatUnitIncome: FLAT_TILE_UNIT_INCOME,
+                visitGoldMult: VISIT_GOLD_MULT,
+                visitUnitsShare: VISIT_UNITS_SHARE,
+              })}
+            />
             <HtmlLi html={t('helpScreen.tiles.landingOnOpponent')} />
             <HtmlLi html={t('helpScreen.tiles.syndicates')} />
             <HtmlLi html={t('helpScreen.tiles.sellAnytime')} />
