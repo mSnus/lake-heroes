@@ -224,7 +224,7 @@
     "yieldedBelongsTo": "Pertenece a 👑 El Rey\n cedida con {player}\n{fame} {gold}",
     "tower": "torre",
     "towers": "torres",
-    "now": "actualmente",
+    "now": "✔",
     "upgradeLine": "{priceTag} {bonusBlock} {slots}",
     "onGuard": "De guardia:",
     "army": "ejército",

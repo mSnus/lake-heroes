@@ -225,7 +225,7 @@
     "yieldedBelongsTo": "Belongs to the 👑 King\n yielded by {player}\n{fame} {gold}",
     "tower": "tower",
     "towers": "towers",
-    "now": "currently",
+    "now": "✔",
     "upgradeLine": "{priceTag} {bonusBlock} {slots}",
     "onGuard": "On guard:",
     "army": "army",

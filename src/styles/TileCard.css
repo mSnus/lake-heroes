@@ -424,12 +424,12 @@
   padding: 8px 12px;
   border-radius: 5px;
   white-space: nowrap;
-  border: 1px solid #ffde2c;
+  border: 1px solid #ffb32c;
 }
 
 .tile-card-ownable .tile-card-sell-item {
   background: #f8dc9b;
-  border: 1px outset #ffde2c7a;
+  border: 1px outset #ffb32c7a;
   text-shadow: none;
   padding: 6px;
   border-radius: 5px;

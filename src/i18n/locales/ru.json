@@ -221,7 +221,7 @@
     "yieldedBelongsTo": "Принадлежит 👑 Королю\n после передачи {player}\n{fame} {gold}",
     "tower": "башня",
     "towers": "башни",
-    "now": "сейчас",
+    "now": "✔",
     "upgradeLine": "{priceTag} {bonusBlock} {slots}",
     "onGuard": "В гарнизоне:",
     "army": "армия",

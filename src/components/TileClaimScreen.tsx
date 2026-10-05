@@ -112,6 +112,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // labels fall back to the real committed garrisonAmount.
   const [previewGarrison, setPreviewGarrison] = useState<number | null>(null);
   const displayedGarrison = previewGarrison ?? garrisonAmount;
+  const defenceCapacity = (level: number) => garrisonSlotCapacity() * level;
 
   useEffect(() => {
     if (variant !== 'claimed' || !player.isComputer) return;
@@ -254,6 +255,8 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       style={{ paddingTop: '1rem' }}
     >
       <Fade />
+      <Fade amount={0.3} />
+
       {variant === 'upgrades' && (
         <button
           onClick={() => clearScreen()}
@@ -316,8 +319,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               }
             >
               <div className="big-icon-hint">
-                <span className="value">1🏯</span>
+                <span className="value">🏯</span>
               </div>
+
+              {currently(currentLevel, 1)}
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(1)}</div>
@@ -330,16 +335,16 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   <div>{t('tileCard.perYear')}</div>
                 </div>
               )}
-
-              {currently(currentLevel, 1)}
             </div>
           )}
 
           {currentLevel < 3 && (
             <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
               <div className="big-icon-hint">
-                <span className="value">2🏯</span>
+                <span className="value">🏯🏯</span>
               </div>
+
+              {currentLevel === 2 ? currently(currentLevel, 2) : priceTag(2)}
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(2)}</div>
@@ -352,8 +357,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   <div>{t('tileCard.perYear')}</div>
                 </div>
               )}
-
-              {currentLevel === 2 ? currently(currentLevel, 2) : priceTag(2)}
             </div>
           )}
           {currentLevel <= 3 && (
@@ -365,8 +368,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               }
             >
               <div className="big-icon-hint">
-                <span className="value">3🏯</span>
+                <span className="value">🏯🏯🏯</span>
               </div>
+
+              {currentLevel === 3 ? currently(currentLevel, 3) : priceTag(3)}
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(3)}</div>
@@ -379,8 +384,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   <div>{t('tileCard.perYear')}</div>
                 </div>
               )}
-
-              {currentLevel === 3 ? currently(currentLevel, 3) : priceTag(3)}
             </div>
           )}
         </div>
@@ -392,11 +395,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             {t('tileClaimScreen.onGuard')}
             <div className="guards-hire-scroll" style={{}}>
               <div className="big-icon-hint">
-                <div>
-                  {tile.level}🏯 {displayedGarrison}🧍
-                </div>
-                <div>{t('tileCard.defence')}</div>
+                <div>{totalMilitiaPool - displayedGarrison}🧍🚩</div>
+                <div>{t('tileClaimScreen.army')}</div>
               </div>
+
               <DecoratedSlider
                 min={0}
                 max={maxGarrison}
@@ -407,9 +409,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   setPreviewGarrison(null);
                 }}
               />
+
               <div className="big-icon-hint">
-                <div>{totalMilitiaPool - displayedGarrison}🧍🚩</div>
-                <div>{t('tileClaimScreen.army')}</div>
+                <div>{displayedGarrison}🧍</div>
+                <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>
               </div>
             </div>
             <div className="garrisonVisitCaveat">{t('tileClaimScreen.garrisonVisitCaveat')}</div>
