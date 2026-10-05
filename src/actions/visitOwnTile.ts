@@ -10,7 +10,6 @@ export function handleVisitOwnTile(
   updateGameState: (board: GameState) => void
 ) {
   if (!board) return;
-  if ((board.activePlayer.circles ?? 0) === 0) return;
 
   const tile = board.activeTile;
   const player = board.activePlayer;

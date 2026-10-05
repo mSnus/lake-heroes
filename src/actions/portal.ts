@@ -43,8 +43,9 @@ export function handlePortal(
   // player.circles normally increments (passStart). Teleporting straight
   // onto it skips that loop entirely -- without this, a player whose first
   // King's Castle visit ever happens to be via Portal would have circles
-  // stuck at 0, silently losing every own-tile bonus (handleVisitOwnTile
-  // requires circles > 0) until they eventually wrap around for real.
+  // stuck at 0, silently gating every first-lap check (caravan/ambush/
+  // rogue encounters, the dragon, Tavern's circleMultiplier) until they
+  // eventually wrap around for real.
   if (landedTile.id === 'king-castle') {
     passStart(board, updateGameState);
   }
