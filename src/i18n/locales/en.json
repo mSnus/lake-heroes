@@ -373,7 +373,8 @@
       "title": "Fame 🏆",
       "item1": "It's your reputation. It depends on each battle won or lost and tiles owned.",
       "item2": "Fame {knightFame} or more makes you eligible for promotion — the King knights you (unlocking Rider recruiting) next time you cross his Castle. It also makes you more visible for a dragon - beware, it could attack!",
-      "item3": "More fame allows to recruit more units at the King's Castle, increases your stable units 🧍 income and allows to own the best tiles"
+      "item3": "Knights are eligible to hire riders 🐎, more powerful and better suited to fight dragons or zombies",
+      "item4": "Higher fame gives more slots to your army and allows to own better tiles"
     },
     "tiles": {
       "title": "Tiles 🧩",
@@ -391,7 +392,8 @@
       "item1": "<strong>Upgrade tiles</strong> paying 🟡 to increase tile's income and defence. Click the ⬆️ button to upgrade, click the title to display possible upgrades.",
       "item2": "A garrison slot holds up to {slotCapacity} defenders. Tile capacity is {level1Capacity}/{level2Capacity}/{level3Capacity} defenders at levels 1/2/3; Towers also improve their defenders' rolls.",
       "item3": "Upgrades can't be sold separately or dismantled, but their price is added to the tile's price value.",
-      "item4": "You can send units to garrison a tile at any time, but can only take them back into your army while visiting that tile."
+      "item4": "You can send units to garrison a tile at any time, but can only take them back into your army while visiting that tile.",
+      "item5": "Upgraded tiles allow bigger garrisons and provide additional bonus to defending units: 🏯 - +{level1Pct}%, 🏯🏯 - +{level2Pct}%, 🏯🏯🏯 - +{level3Pct}%"
     },
     "specialTiles": {
       "title": "Special tiles 🃏",

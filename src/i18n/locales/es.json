@@ -371,7 +371,8 @@
       "title": "Fama 🏆",
       "item1": "Es tu reputación. Depende de cada batalla ganada o perdida y de las casillas que posees.",
       "item2": "Una fama de {knightFame} o más te hace apto para el ascenso — el Rey te nombra caballero (desbloqueando el reclutamiento de Jinetes) la próxima vez que cruces su Castillo. También te hace más visible para un dragón - ¡cuidado, podría atacar!",
-      "item3": "Más fama te permite reclutar más unidades en el Castillo del Rey, aumenta tu ingreso estable de unidades 🧍 y te permite poseer las mejores casillas"
+      "item3": "Los caballeros pueden contratar jinetes 🐎, más poderosos y mejor preparados para luchar contra dragones o zombis",
+      "item4": "Una fama más alta otorga más espacios a tu ejército y permite poseer mejores casillas"
     },
     "tiles": {
       "title": "Casillas 🧩",
@@ -389,7 +390,8 @@
       "item1": "<strong>Mejora las casillas</strong> pagando 🟡 para aumentar sus ingresos y defensa. Haz clic en el botón ⬆️ para mejorar, haz clic en el título para ver las mejoras posibles.",
       "item2": "Cada espacio de guarnición alberga hasta {slotCapacity} defensores. La capacidad de una casilla es de {level1Capacity}/{level2Capacity}/{level3Capacity} defensores en los niveles 1/2/3; las Torres también mejoran las tiradas de sus defensores.",
       "item3": "Las mejoras no se pueden vender por separado ni desmantelar, pero su precio se suma al valor de la casilla.",
-      "item4": "Puedes enviar unidades a guarnecer una casilla en cualquier momento, pero solo puedes recuperarlas en tu ejército mientras visitas esa casilla."
+      "item4": "Puedes enviar unidades a guarnecer una casilla en cualquier momento, pero solo puedes recuperarlas en tu ejército mientras visitas esa casilla.",
+      "item5": "Las casillas mejoradas permiten guarniciones más grandes y otorgan una bonificación adicional a las unidades defensoras: 🏯 - +{level1Pct}%, 🏯🏯 - +{level2Pct}%, 🏯🏯🏯 - +{level3Pct}%"
     },
     "specialTiles": {
       "title": "Casillas especiales 🃏",

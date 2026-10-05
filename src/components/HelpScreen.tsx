@@ -6,7 +6,7 @@ import { TileCard } from './TileCard';
 import { DecoratedButton } from './DecoratedButton';
 import '../styles/HelpScreen.css';
 import { KNIGHT_FAME } from '../utils/fame';
-import { GARRISON_BONUS_SLOTS, GARRISON_SLOT_CAPACITY } from '../game/constants';
+import { GARRISON_BONUS_SLOTS, GARRISON_SLOT_CAPACITY, GARRISON_LEVEL_BONUS_PCT } from '../game/constants';
 import { useAppVersion } from '../utils/useAppVersion';
 import { getArtifacts } from '../game/artifacts';
 import { useT } from '../i18n';
@@ -81,7 +81,13 @@ const HelpScreen: React.FC = () => {
           <ul>
             <HtmlLi html={t('helpScreen.fame.item1')} />
             <HtmlLi html={t('helpScreen.fame.item2', { knightFame: KNIGHT_FAME })} />
+            <li className="help-fame-promotion">
+              <img src="assets/figures/footman-red.png" alt="Footman" />
+              <span>➡️</span>
+              <img src="assets/figures/rider-red.png" alt="Knight" />
+            </li>
             <HtmlLi html={t('helpScreen.fame.item3')} />
+            <HtmlLi html={t('helpScreen.fame.item4')} />
           </ul>
 
           <h3>{t('helpScreen.tiles.title')}</h3>
@@ -114,6 +120,13 @@ const HelpScreen: React.FC = () => {
             />
             <HtmlLi html={t('helpScreen.tileUpgrades.item3')} />
             <HtmlLi html={t('helpScreen.tileUpgrades.item4')} />
+            <HtmlLi
+              html={t('helpScreen.tileUpgrades.item5', {
+                level1Pct: Math.round(GARRISON_LEVEL_BONUS_PCT[1] * 100),
+                level2Pct: Math.round(GARRISON_LEVEL_BONUS_PCT[2] * 100),
+                level3Pct: Math.round(GARRISON_LEVEL_BONUS_PCT[3] * 100),
+              })}
+            />
           </ul>
 
           {demoTile && (

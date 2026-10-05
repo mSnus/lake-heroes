@@ -149,6 +149,10 @@ export const GARRISON_BONUS_SLOTS = 1;
 // lever for making Towers defend better than everything else now that
 // capacity no longer distinguishes them. 1 = no advantage.
 export const TOWER_FORTIFICATION_MULT = 1;
+// % bonus a garrison's rolls get from being stationed on an upgraded tile,
+// by level -- see Tile.getGarrisonBonusPct, which applies this additively
+// to the roll itself during an actual battle.
+export const GARRISON_LEVEL_BONUS_PCT: Record<1 | 2 | 3, number> = { 1: 0.06, 2: 0.08, 3: 0.1 };
 export const MAX_ARMY_SLOTS = 5;
 // Fame thresholds for army slots: 0-2 fame -> 1 slot, 3-5 -> 2, 6-9 -> 3, 10+ -> 5
 // (the jump from 3 to 5 at the top bracket is deliberate, not a typo).

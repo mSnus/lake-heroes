@@ -60,6 +60,25 @@
   font-family: 'Texturina';
 }
 
+.help-fame-promotion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  list-style: none;
+  margin: 0.5rem 0;
+}
+
+.help-fame-promotion img {
+  /* ~3 lines of the help screen's own body text (1.3rem * 1.6 line-height). */
+  height: 6.2rem;
+  width: auto;
+}
+
+.help-fame-promotion span {
+  font-size: 2rem;
+}
+
 .help-screen-card {
   display: flex;
   justify-content: center;

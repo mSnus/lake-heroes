@@ -1,4 +1,4 @@
-import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, GARRISON_BONUS_SLOTS, TOWER_FORTIFICATION_MULT } from './constants';
+import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, GARRISON_BONUS_SLOTS, TOWER_FORTIFICATION_MULT, GARRISON_LEVEL_BONUS_PCT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER, isBanzaiAttack } from './army';
@@ -349,7 +349,7 @@ export class Tile implements TileJSON {
    * number below, so a fortified tile fights tougher without pretending to
    * have more defenders than it really does. */
   getGarrisonBonusPct(level: number): number {
-    const base = level >= 3 ? 0.1 : level === 2 ? 0.08 : 0.06;
+    const base = GARRISON_LEVEL_BONUS_PCT[level >= 3 ? 3 : level === 2 ? 2 : 1];
     return base * (this.group === 'Towers' ? TOWER_FORTIFICATION_MULT : 1);
   }
 
