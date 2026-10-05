@@ -5,7 +5,6 @@ import { GameState } from '../game/GameState';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
-import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
 import { DecoratedSlider } from './DecoratedSlider';
 import { fmtPrice } from './TileCard';
@@ -300,9 +299,24 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       )}
 
-      <div className="text-message" style={{ lineHeight: '1.2', whiteSpace: 'pre-line' }}>
+      <div
+        style={{
+          lineHeight: 1.2,
+          whiteSpace: 'pre-line',
+          position: 'absolute',
+          top: 0,
+          backgroundColor: 'red',
+          width: '100%',
+          padding: '0.8rem',
+          color: 'white',
+          fontSize: '1rem',
+          textAlign: 'center',
+          fontFamily: 'Encode',
+          fontWeight: 600,
+        }}
+      >
         {tJsx(ownerTag, {
-          player: <PlayerLabel player={player} bold />,
+          player: player.name,
           fame: <>🏆{player.fame}</>,
           gold: <>🟡{player.gold}</>,
         })}
