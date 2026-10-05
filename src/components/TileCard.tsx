@@ -7,7 +7,7 @@ import { sellTile } from '../actions/sellTile';
 import { claimTile } from '../actions/claimTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
-import { isBanzaiAttack } from '../game/army';
+import { garrisonSlotCapacity, isBanzaiAttack } from '../game/army';
 import { UNIT_POWER } from '../game/army';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
@@ -87,7 +87,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const turnIncomeLabel = (
     <>
       {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
-      {turnIncome.units > 0 && <>+{turnIncome.units}🧍</>}
+      {turnIncome.units > 1 && <>+{turnIncome.units}🧍</>}
     </>
   );
 
@@ -129,6 +129,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
   const defence = (level: number) => tile.getDefence(level);
+  const defenceCapacity = (level: number) => garrisonSlotCapacity() * level;
 
   const bonusTypeIcon = bonusType === 'gold' ? '🟡' : '🧍';
 
@@ -176,7 +177,6 @@ export const TileCard: React.FC<TileCardProps> = ({
   const currentLevel = tile.level || 1;
   const maxLevel = 3;
   const nextLevel = Math.min(currentLevel + 1, maxLevel);
-  const nextLevelBonus = bonus(nextLevel);
   const maxLevelReached = currentLevel >= maxLevel;
 
   const canUpgrade =
@@ -329,8 +329,16 @@ export const TileCard: React.FC<TileCardProps> = ({
             {tile.name}
             <br />
             {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
-            {tile.isOwned() &&
-            (<span className="tile-base-price">{tile.prices[1] ? tile.prices[1] + '🟡' : ''}</span>)}
+            {tile.isOwned() && (
+              <div>
+                <div className="tile-base-price">{tile.prices[1] ? tile.prices[1] + '🟡' : ''}</div>
+                <div className="tile-defence">
+                  {Array.from({ length: tile.level }, (_, i) => (
+                    <span key={i}>🏯</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -419,10 +427,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                     <div></div>
 
                     <div className="big-icon-hint">
+                      <div>{tile.garrison}🛡️</div>
                       <div>
-                        {tile.level}🏯 {tile.garrison}🛡️
+                        {t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}
                       </div>
-                      <div>{t('tileCard.defence')}</div>
                     </div>
                   </div>
                 </div>
