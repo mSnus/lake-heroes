@@ -217,9 +217,9 @@
     "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
-    "claimedBy": "was claimed by {player}\nwho is now {fame} {gold}",
-    "belongsTo": "belongs to {player}\n{fame} {gold}",
-    "yieldedBelongsTo": "belongs to the 👑 King\n yielded by {player}\n{fame} {gold}",
+    "claimedBy": "Was claimed by {player}\nwho is now {fame} {gold}",
+    "belongsTo": "Belongs to {player}\n{fame} {gold}",
+    "yieldedBelongsTo": "Belongs to the 👑 King\n yielded by {player}\n{fame} {gold}",
     "tower": "tower",
     "towers": "towers",
     "now": "currently",

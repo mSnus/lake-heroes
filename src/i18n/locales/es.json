@@ -219,9 +219,9 @@
     "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
-    "claimedBy": "fue reclamada por {player}\nque ahora es {fame} {gold}",
-    "belongsTo": "pertenece a {player} que es\n{fame} {gold}",
-    "yieldedBelongsTo": "pertenece a 👑 El Rey\n cedida con {player}\n{fame} {gold}",
+    "claimedBy": "Fue reclamada por {player}\nque ahora es {fame} {gold}",
+    "belongsTo": "Pertenece a {player} que es\n{fame} {gold}",
+    "yieldedBelongsTo": "Pertenece a 👑 El Rey\n cedida con {player}\n{fame} {gold}",
     "tower": "torre",
     "towers": "torres",
     "now": "actualmente",

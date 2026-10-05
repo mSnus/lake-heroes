@@ -299,22 +299,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       )}
 
-      <div
-        style={{
-          lineHeight: 1.2,
-          whiteSpace: 'pre-line',
-          position: 'absolute',
-          top: 0,
-          backgroundColor: 'red',
-          width: '100%',
-          padding: '0.8rem',
-          color: 'white',
-          fontSize: '1rem',
-          textAlign: 'center',
-          fontFamily: 'Encode',
-          fontWeight: 600,
-        }}
-      >
+      <div className="tile-claim-owner-banner">
         {tJsx(ownerTag, {
           player: player.name,
           fame: <>🏆{player.fame}</>,
