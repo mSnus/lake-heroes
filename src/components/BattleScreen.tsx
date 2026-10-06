@@ -731,15 +731,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               title={isBrawl ? t('battleScreen.autoResolveBrawl') : undefined}
             >
               ⚔️
-              {/* Always rendered (space reserved via visibility, not
-                  unmounted) -- removing it outright shrinks .battle-vs-heading
-                  and, since the grid is a later flex sibling, pulls the whole
-                  battlefield up to fill the gap the moment this hides
-                  (clicking auto-battle, or the battle resolving). */}
+              {/* Brawl-only -- a non-brawl fight is already auto-playing by
+                  default, so a label advertising "auto-battle" there would
+                  be both redundant and actively misleading (clicking it
+                  switches OUT of auto-play into step-by-step, the opposite
+                  of what the label implies). Always rendered (space reserved
+                  via visibility, not unmounted) -- removing it outright
+                  shrinks .battle-vs-heading and, since the grid is a later
+                  flex sibling, pulls the whole battlefield up to fill the
+                  gap the moment this hides (clicking auto-battle, or the
+                  battle resolving). */}
               <div
                 className={
                   'auto-label' +
-                  (phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? '' : ' auto-label--hidden')
+                  (phase === 'ongoing' && isBrawl && !autoResolveBrawl ? '' : ' auto-label--hidden')
                 }
               >
                 auto-battle
