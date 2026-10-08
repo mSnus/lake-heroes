@@ -119,7 +119,7 @@ export const DRAGON_GOLD = 10000; // dragon's hoard, awarded on victory
 // is still offered the challenge (see actions/dragonEncounter.ts).
 export const DRAGON_MERCY_SCORE_RATIO = 1.5;
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
-export const BRAWL_THRESHOLD = 10; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
+export const BRAWL_THRESHOLD = 12; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
