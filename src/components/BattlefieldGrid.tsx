@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useId } from 'react';
 import { GridBattleState, TurnEvent, BattleSide, GridUnit, UnitKind } from '../game/battleGrid/types';
-import { BrawlPlan, adjacentCells } from '../game/battleGrid/engine';
+import { BrawlPlan, adjacentCells, energyFor } from '../game/battleGrid/engine';
 import { useT } from '../i18n';
 import '../styles/BattlefieldGrid.css';
 
@@ -436,18 +436,22 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         <div className="bfg-units">
           {units.map((u) => {
             const hpPct = Math.max(0, Math.round((u.hp / u.maxHp) * 100));
+            const energyPct = Math.max(0, Math.round((u.energy / energyFor(u.kind)) * 100));
             const op = originalOpacity(u);
             return (
               <div
                 key={u.id}
                 className={'bfg-unit bfg-unit-' + u.side + (actedIds.has(u.id) ? ' bfg-unit-acted' : '')}
                 style={{ ...cellStyle(u.col, u.row), ...(op !== undefined ? { opacity: op } : {}) }}
-                title={`${u.kind} ${u.hp}/${u.maxHp} hp`}
+                title={`${u.kind} ${u.hp}/${u.maxHp} hp, ${u.energy}/${energyFor(u.kind)} energy`}
                 onClick={brawl ? () => revealHp(u.id) : undefined}
               >
                 <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? emojiFor(u)}</span>
                 <span className="bfg-unit-hp">
                   <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
+                </span>
+                <span className="bfg-unit-energy">
+                  <span className="bfg-unit-energy-fill" style={{ width: `${energyPct}%` }} />
                 </span>
                 {hpRevealId === u.id && (
                   <span className="bfg-unit-hp-label">{Math.max(0, u.hp)}/{u.maxHp}</span>

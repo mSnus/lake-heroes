@@ -25,6 +25,10 @@ export function runHeadlessBattle(props: BattleScreenProps): { setup: BattleSetu
     attackerFlatBonus: setup.attackerRollBonus,
     defenderPctBonus: setup.garrisonRollBonusPct,
     defenderFlatBonus: setup.defenderRollBonus,
+    // Same brawl-only scoping as BattleScreen's own brawlOpts() -- a
+    // headless/auto-resolved fight must match what an interactive one of
+    // the same mode would do.
+    applyEnergyPenalty: setup.board.isBrawl,
   };
   const finalState = runGridBattleToCompletion(initialState, setup.board.isBrawl, opts);
 

@@ -247,6 +247,22 @@
   background: #ff8a6f;
 }
 
+.bfg-unit-energy {
+  display: block;
+  width: 70%;
+  height: 2px;
+  background: #00000080;
+  border-radius: 1px;
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.bfg-unit-energy-fill {
+  display: block;
+  height: 100%;
+  background: #39d353;
+}
+
 /* ── Manual (drag) control overlay ── */
 .bfg-shadow {
   position: absolute;

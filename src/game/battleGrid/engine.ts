@@ -115,6 +115,16 @@ function hpFor(kind: UnitKind): number {
   return kind === 'rider' ? ov.riderHp : ov.militiaHp;
 }
 
+/** A unit's energy at battle start, and what it's fully restored to (see
+ * GridUnit.energy) -- militia get less stamina than every other kind
+ * (riders, zombies, dragons alike). */
+export function energyFor(kind: UnitKind): number {
+  return kind === 'militia' ? 3 : 5;
+}
+
+// What a 0-energy unit's attack roll is cut to (see GridUnit.energy).
+const ENERGY_DEPLETED_DAMAGE_MULT = 0.3;
+
 /** Damage roll for one unit. A per-unit dmgMin/dmgMax (see GridUnit --
  * battle simulator only) takes over the range entirely, used as-is; every
  * real-game unit has neither set, so this is the same kind+getOverrides()
@@ -211,6 +221,7 @@ export function createBattle(
         retreatStreak: 0,
         safetyMoves: 0,
         swapCooldown: 0,
+        energy: energyFor(militiaKind),
       });
     }
 
@@ -231,6 +242,7 @@ export function createBattle(
         retreatStreak: 0,
         safetyMoves: 0,
         swapCooldown: 0,
+        energy: energyFor(riderKind),
       });
     }
 
@@ -664,7 +676,16 @@ function resolveCombat(
     let critical = false;
     const wasWounded = u.hp < u.maxHp;
     attackers.forEach((atk, idx) => {
-      const roll = rollFor(atk, false);
+      let roll = rollFor(atk, false);
+      // A spent attacker still swings, just much weaker -- gated behind
+      // applyEnergyPenalty so this doesn't change auto-battle's numbers yet
+      // (see StepTurnOptions.applyEnergyPenalty). Energy itself is always
+      // spent below regardless of the flag.
+      if (opts.applyEnergyPenalty && atk.energy === 0) {
+        roll = Math.round(roll * ENERGY_DEPLETED_DAMAGE_MULT);
+      }
+
+      atk.energy = Math.max(0, atk.energy - 1);
       const guard = Math.round(rollFor(u, true) * defenceFactor(idx + 1));
       defenceTotal += guard;
       const hit = Math.max(0, roll - guard);
@@ -875,8 +896,14 @@ export function resolveBrawlCombat(
   for (const u of dead) events.push({ type: 'death', unitId: u.id, side: u.side, kind: u.kind });
   const alive = living.filter((u) => u.hp > 0);
 
-  // End of round: tick every swap cooldown down one (see applyBrawlMoves).
-  for (const u of alive) if (u.swapCooldown > 0) u.swapCooldown -= 1;
+  // End of round: tick every swap cooldown down one (see applyBrawlMoves),
+  // and fully restore a truly idle unit's energy (see the identical check
+  // in stepTurn).
+  const attackedIds = new Set(events.filter((e) => e.type === 'attack').map((e) => e.unitId));
+  for (const u of alive) {
+    if (u.swapCooldown > 0) u.swapCooldown -= 1;
+    if (!movedIds.has(u.id) && !attackedIds.has(u.id)) u.energy = energyFor(u.kind);
+  }
 
   const attackerAlive = alive.some((u) => u.side === 'attacker');
   const defenderAlive = alive.some((u) => u.side === 'defender');
@@ -1170,6 +1197,7 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
   // marked as retreating *and* found somewhere to go) — anything else
   // (fighting, moving normally, or being stuck with nowhere to flee) resets
   // it, so only genuinely consecutive retreats count toward the cap.
+  const attackedIds = new Set(events.filter((e) => e.type === 'attack').map((e) => e.unitId));
   for (const u of alive) {
     u.retreatStreak = retreating.has(u.id) && plannedMove.has(u.id) ? u.retreatStreak + 1 : 0;
     if (seekingSafety.has(u.id) && plannedMove.has(u.id)) u.safetyMoves += 1;
@@ -1178,6 +1206,10 @@ export function stepTurn(state: GridBattleState, opts: StepTurnOptions = {}): Tu
     // unconditionally after the move -- see applyBrawlMoves.)
     if (swapPartner.has(u.id)) u.swapCooldown = 1;
     else if (u.swapCooldown > 0) u.swapCooldown -= 1;
+    // A truly idle unit (didn't move, didn't attack) catches its breath
+    // fully -- a unit that only moved, or only fought, just keeps whatever
+    // it had (see GridUnit.energy).
+    if (!movedIds.has(u.id) && !attackedIds.has(u.id)) u.energy = energyFor(u.kind);
   }
 
   const attackerAlive = alive.some((u) => u.side === 'attacker');
