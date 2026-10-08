@@ -677,11 +677,8 @@ function resolveCombat(
     const wasWounded = u.hp < u.maxHp;
     attackers.forEach((atk, idx) => {
       let roll = rollFor(atk, false);
-      // A spent attacker still swings, just much weaker -- gated behind
-      // applyEnergyPenalty so this doesn't change auto-battle's numbers yet
-      // (see StepTurnOptions.applyEnergyPenalty). Energy itself is always
-      // spent below regardless of the flag.
-      if (opts.applyEnergyPenalty && atk.energy === 0) {
+      // A spent attacker still swings, just much weaker.
+      if (atk.energy === 0) {
         roll = Math.round(roll * ENERGY_DEPLETED_DAMAGE_MULT);
       }
 

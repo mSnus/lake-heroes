@@ -400,7 +400,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     attackerFlatBonus: attackerRollBonus,
     defenderPctBonus: garrisonRollBonusPct,
     defenderFlatBonus: defenderRollBonus,
-    applyEnergyPenalty: true,
   });
 
   // Slide the units to a moved state (CSS transitions the positions), then run

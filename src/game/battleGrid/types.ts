@@ -28,10 +28,10 @@ export interface GridUnit {
   /** Stamina for attacking -- set to its kind's max at battle start (see
    * energyFor in engine.ts), spent -1 per attack this unit makes, floored
    * at 0. At 0, this unit's attack roll is cut to
-   * ENERGY_DEPLETED_DAMAGE_MULT of what it would otherwise be (only where
-   * StepTurnOptions.applyEnergyPenalty is on -- see that flag's own
-   * comment). Fully restored at the end of any turn this unit neither
-   * moved nor attacked. */
+   * ENERGY_DEPLETED_DAMAGE_MULT of what it would otherwise be. Fully
+   * restored at the end of any turn this unit neither moved nor
+   * attacked. Nothing else (AI decisions, retreat/swap thresholds, etc.)
+   * reacts to energy yet -- only the attack roll itself. */
   energy: number;
   /** Per-unit damage-roll override, set only by the battle simulator (see
    * simulate.ts) to give one side a custom range independent of the live
@@ -97,11 +97,4 @@ export interface StepTurnOptions {
   attackerFlatBonus?: number;
   defenderPctBonus?: number;
   defenderFlatBonus?: number;
-  /** Whether a 0-energy unit's attack actually gets cut down (see
-   * GridUnit.energy). Energy is always tracked (spent and recovered)
-   * regardless of this flag -- it only gates whether that state has a real
-   * combat effect yet. On for brawl, off for the plain auto-battle engine
-   * for now, so turning this on later only needs one call site flipped per
-   * mode rather than a behavior change buried in the math itself. */
-  applyEnergyPenalty?: boolean;
 }

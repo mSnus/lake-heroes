@@ -108,11 +108,7 @@ export function simulateOneBattle(
     rows
   );
 
-  const opts: StepTurnOptions = {
-    defenderPctBonus,
-    attackerFlatBonus: attacker.flatBonus ?? 0,
-    applyEnergyPenalty: isBrawl,
-  };
+  const opts: StepTurnOptions = { defenderPctBonus, attackerFlatBonus: attacker.flatBonus ?? 0 };
   state = runGridBattleToCompletion(state, isBrawl, opts);
 
   const attackerLeft = state.units.filter((u) => u.side === 'attacker').length;
