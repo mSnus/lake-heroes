@@ -84,6 +84,10 @@ export const TileCard: React.FC<TileCardProps> = ({
   // tileTurnIncome) -- exactly one of gold/units is nonzero, depending on
   // the tile's own bonus type.
   const turnIncome = tileTurnIncome(tile, syndicateMult);
+  // Units below this are hidden entirely (not just rounded away) -- a
+  // trickle of 1 isn't worth a line, but that means the "per turn" caption
+  // below must stay hidden right along with it, not dangle on its own.
+  const hasTurnIncome = turnIncome.gold > 0 || turnIncome.units > 1;
   const turnIncomeLabel = (
     <>
       {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
@@ -409,10 +413,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                           </div>
                         ) : (
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <div className="big-icon-hint">
-                              <div>{turnIncomeLabel}</div>
-                              <div>{t('tileCard.perTurn')}</div>
-                            </div>
+                            {hasTurnIncome && (
+                              <div className="big-icon-hint">
+                                <div>{turnIncomeLabel}</div>
+                                <div>{t('tileCard.perTurn')}</div>
+                              </div>
+                            )}
                             {isTower && (
                               <div className="big-icon-hint">
                                 <div>{towerYearlyLabel}</div>
@@ -442,10 +448,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                     className="tile-card-base-row"
                     style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}
                   >
-                    <div className="big-icon-hint">
-                      {turnIncomeLabel}
-                      <div>{t('tileCard.perTurn')}</div>
-                    </div>
+                    {hasTurnIncome && (
+                      <div className="big-icon-hint">
+                        {turnIncomeLabel}
+                        <div>{t('tileCard.perTurn')}</div>
+                      </div>
+                    )}
                     {isTower && (
                       <div className="big-icon-hint">
                         <div>{towerYearlyLabel}</div>
