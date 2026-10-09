@@ -78,6 +78,15 @@ export function checkDragonEncounter(
 
   // Dragon attacks!
   if (player.armyPower < DRAGON_UNITS_THRESHOLD) {
+    // Nothing to burn -- an attack on a player who owns no tiles would be
+    // pure flavor text with no real consequence, so it doesn't happen at
+    // all rather than interrupt the turn for nothing.
+    if (player.ownedTiles.length === 0) {
+      updateGameState(board);
+      dragonSkyWithSay(board, onContinue);
+      return true;
+    }
+
     // The dragon spares the table's weakest while the strongest is far
     // enough ahead -- burning the poorest player's last tile only widens a
     // gap the King's Grace is already trying to close.
@@ -168,6 +177,10 @@ function handleWeakPlayerAttack(
 
   let message: string;
 
+  // Defensive only -- the real "owns nothing" case is caught before this
+  // function is ever called (see checkDragonEncounter). This only still
+  // fires if ownedTiles held a stale/invalid index (a tile gone, or no
+  // longer this player's), which the loop above skips over.
   if (mostExpensiveIdx === null) {
     message = t('dragonEncounter.attacksYou');
     say(t('dragonEncounter.attackedNothingToBurn', { playerName: player.name }), 'error');
