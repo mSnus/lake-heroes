@@ -579,9 +579,8 @@
     "contractOffered": "📜 The King hands you a contract: claim {tileName} for {award}🟡!"
   },
   "becomeBeggar": {
-    "becomesBeggar": "{playerName} becomes a beggar!",
-    "unitsLeave": "{units} units leave {playerName} as his reputation vanishes",
-    "capturedAndMoved": "{playerName} is captured and moved to Prison",
+    "captured": "{playerName} was captured and moved to Prison, their reputation vanishes, units scatter. They are now {fame}🏆{unitsPart}",
+    "hasOnly": " and have only {units}",
     "lostTileSingular": "Lost {count} tile and ",
     "lostTilesPlural": "Lost {count} tiles and ",
     "unitDesertedSingular": "{count} unit deserted",

@@ -8,7 +8,6 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   const player = board.activePlayer;
 
   player.hasResolvedTileEncounterThisTurn = true;
-  say(t('becomeBeggar.becomesBeggar', { playerName: player.name }), 'error');
 
   // 1. If player has any tiles, they are set unowned, level 1 (and all upgrades are removed)
   let lostTilesCount = 0;
@@ -30,8 +29,9 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   // 3. Player looses all gold
   player.gold = 0;
 
-  say(t('becomeBeggar.unitsLeave', { units: loss, playerName: player.name }), 'warning');
-  changeFame(player, -1);
+  // Silent -- folded into the single combined toast below instead of its
+  // own "is now of fame" line.
+  changeFame(player, -1, 1, true);
 
   // 4. Moved to prison -- found by id, never a hardcoded index. The board
   // order is built by buildTileLayoutFromTemplates, which places tiles
@@ -42,7 +42,18 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   if (prisonIdx >= 0) player.position = prisonIdx;
   player.turnsToSkip = 1;
 
-  say(t('becomeBeggar.capturedAndMoved', { playerName: player.name }), 'warning');
+  // One combined toast rather than four separate ones (capture, fame,
+  // units-leave, becomes-a-beggar) -- the unit tally reports what's
+  // actually left (post-loss), each tier omitted if it's zero.
+  const remaining: string[] = [];
+  if (player.militia > 0) remaining.push(`${player.militia}🧍`);
+  if (player.riders > 0) remaining.push(`${player.riders}🐎`);
+  const unitsPart =
+    remaining.length > 0 ? t('becomeBeggar.hasOnly', { units: remaining.join(' ') }) : '';
+  say(
+    t('becomeBeggar.captured', { playerName: player.name, fame: player.fame, unitsPart }),
+    'error'
+  );
 
   const tilesMsg =
     lostTilesCount > 0

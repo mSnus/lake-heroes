@@ -574,9 +574,8 @@
     "contractOffered": "📜 Король вручает вам контракт: захватите «{tileName}» за {award}🟡!"
   },
   "becomeBeggar": {
-    "becomesBeggar": "{playerName} становится нищим!",
-    "unitsLeave": "{units} юнитов покидают {playerName}, пока его репутация рушится",
-    "capturedAndMoved": "{playerName} схвачен и отправлен в темницу",
+    "captured": "{playerName} схвачен и отправлен в темницу, репутация рушится, воины разбегаются. Теперь слава {fame}🏆{unitsPart}",
+    "hasOnly": ", и в строю остаётся лишь {units}",
     "lostTileSingular": "Потеряна {count} постройка и ",
     "lostTilesPlural": "Потеряно построек: {count} и ",
     "unitDesertedSingular": "{count} юнит дезертировал",

@@ -577,9 +577,8 @@
     "contractOffered": "📜 ¡El Rey te entrega un contrato: reclama {tileName} por {award}🟡!"
   },
   "becomeBeggar": {
-    "becomesBeggar": "¡{playerName} se convierte en un mendigo!",
-    "unitsLeave": "{units} unidades abandonan a {playerName} mientras su reputación se desvanece",
-    "capturedAndMoved": "{playerName} es capturado y trasladado a Prisión",
+    "captured": "{playerName} fue capturado y trasladado a Prisión, su reputación se desvanece, sus unidades se dispersan. Ahora tiene {fame}🏆{unitsPart}",
+    "hasOnly": " y solo le quedan {units}",
     "lostTileSingular": "Perdió {count} casilla y ",
     "lostTilesPlural": "Perdió {count} casillas y ",
     "unitDesertedSingular": "{count} unidad desertó",
