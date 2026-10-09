@@ -82,6 +82,7 @@ export function startNewYear(board: GameState): void {
     player.dragonEncounters = 0;
     player.caravanEncounters = 0;
     player.ambushEncounters = 0;
+    player.workersEncounters = 0;
     if (player.karma < 0) changeKarma(player, 1);
     else if (player.karma > 0) changeKarma(player, -1);
   }

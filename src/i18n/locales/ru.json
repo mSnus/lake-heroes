@@ -337,7 +337,8 @@
     "attackTheCaravan": "напасть на караван",
     "sellForSyndicate": "продать «{saleName}», чтобы собрать синдикат с «{tileName}»",
     "claimTile": "захватить «{tileName}»",
-    "garrisonTile": "разместить {amount}🧍 в гарнизоне «{tileName}»"
+    "garrisonTile": "разместить {amount}🧍 в гарнизоне «{tileName}»",
+    "hireWorkers": "нанять рабочих"
   },
   "boardCanvas": {
     "challengeDragon": "Бросить вызов Дракону"
@@ -953,7 +954,8 @@
     "forcedEncounterSet": "Событие форсировано — произойдёт при следующем броске.",
     "forceRoll": "Форсировать бросок кубика",
     "forcedRollSet": "Следующий бросок кубика форсирован на {value}.",
-    "encCaravanHorses": "🐫 Караван (кони)"
+    "encCaravanHorses": "🐫 Караван (кони)",
+    "encWorkers": "Рабочие"
   },
   "overridesScreen": {
     "title": "Параметры",
@@ -1030,5 +1032,11 @@
     "yourLinkOnly": "Ваше место и ссылка.\nКоды других игроков есть только у хозяина игры.",
     "bundleWithPrevious": "Одна ссылка с игроком выше (игра по очереди на одном устройстве)",
     "unbundleLast": "Снова выдать последнему игроку отдельную ссылку"
+  },
+  "workersEncounter": {
+    "title": "Рабочие",
+    "message": "{playerSpan} встречает группу людей, ищущих любую хорошо оплачиваемую работу. Возможно, вы захотите их нанять.",
+    "hireButton": "Нанять {army}",
+    "passByButton": "⚜️ Гордо пройти мимо"
   }
 }

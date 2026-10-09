@@ -342,7 +342,8 @@
     "attackTheCaravan": "attack the caravan",
     "sellForSyndicate": "sell {saleName} to complete a syndicate with {tileName}",
     "claimTile": "claim {tileName}",
-    "garrisonTile": "garrison {amount}🧍 at {tileName}"
+    "garrisonTile": "garrison {amount}🧍 at {tileName}",
+    "hireWorkers": "hire the workers"
   },
   "boardCanvas": {
     "challengeDragon": "Challenge the Dragon"
@@ -958,7 +959,8 @@
     "forcedEncounterSet": "Encounter forced — it will fire on the next roll.",
     "forceRoll": "Force next roll",
     "forcedRollSet": "Next dice roll forced to {value}.",
-    "encCaravanHorses": "🐫 Caravan (horses)"
+    "encCaravanHorses": "🐫 Caravan (horses)",
+    "encWorkers": "Workers"
   },
   "overridesScreen": {
     "title": "Overrides",
@@ -1060,5 +1062,11 @@
     "yourLinkOnly": "Your seat and link.\nOnly the host holds the other players' codes.",
     "bundleWithPrevious": "Share one link with the player above (hot-seat on one device)",
     "unbundleLast": "Give the last player in this bundle their own link again"
+  },
+  "workersEncounter": {
+    "title": "Workers",
+    "message": "{playerSpan} encounters a group of men looking for any well-paid job. You may want to hire them.",
+    "hireButton": "Hire {army}",
+    "passByButton": "⚜️ Pass by, proudly"
   }
 }

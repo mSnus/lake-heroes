@@ -35,6 +35,7 @@ import { checkDragonEncounter } from './dragonEncounter';
 import { checkCaravanEncounter } from './caravanEncounter';
 import { checkAmbushEncounter } from './ambushEncounter';
 import { checkRogueAttackEncounter } from './rogueAttackEncounter';
+import { checkWorkersEncounter } from './workersEncounter';
 import { checkKnightPromotion } from './knightPromotion';
 import { tickWildGarrisons } from '../game/wildGarrison';
 import { t } from '../i18n';
@@ -275,12 +276,15 @@ export async function rollAndMove(
     if (checkCaravanEncounter(board, updateGameState, continueFn, 'horses')) return;
   } else if (forced === 'rogue') {
     if (checkRogueAttackEncounter(board, updateGameState, continueFn, true)) return;
+  } else if (forced === 'workers') {
+    if (checkWorkersEncounter(board, updateGameState, continueFn, true)) return;
   }
 
   if (checkDragonEncounter(board, updateGameState, continueFn)) return;
   if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
   if (checkAmbushEncounter(board, updateGameState, continueFn)) return;
   if (checkRogueAttackEncounter(board, updateGameState, continueFn)) return;
+  if (checkWorkersEncounter(board, updateGameState, continueFn)) return;
 
   await proceedWithMove();
 }

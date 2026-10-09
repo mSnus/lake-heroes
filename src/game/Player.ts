@@ -39,6 +39,14 @@ export class Player {
   caravanEncounters: number;
   caravanEncounteredLastTurn: boolean;
   ambushEncounters: number;
+  workersEncounters: number;
+  /** The year this player's units first dropped to (and have stayed at) 0,
+   * or undefined while they hold any -- see actions/workersEncounter.tsx,
+   * which sets/clears it on every check and doubles its own odds once a
+   * full year has passed since. Not reset at year rollover; only clearing
+   * to undefined (units > 0) or being overwritten (a fresh drop to 0) ever
+   * changes it. */
+  zeroUnitsSinceYear?: number;
   isPrisonerOfWar: boolean;
   hasClaimedThisTurn: boolean;
   hasConsideredClaimThisTurn: boolean;
@@ -101,6 +109,7 @@ export class Player {
     this.caravanEncounters = 0;
     this.caravanEncounteredLastTurn = false;
     this.ambushEncounters = 0;
+    this.workersEncounters = 0;
     this.isPrisonerOfWar = false;
     this.hasClaimedThisTurn = false;
     this.hasConsideredClaimThisTurn = false;
