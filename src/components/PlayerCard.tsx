@@ -22,6 +22,10 @@ interface PlayerCardProps {
   artifactIds?: string[];
   /** Set to false to hide the artifacts row entirely (e.g. when it's shown elsewhere already). Defaults to true. */
   showArtifacts?: boolean;
+  /** Rendered ahead of the artifacts, sharing their row -- the King's
+   * contracts on the player card (see CurrentPlayerCard). The row appears
+   * for these even when there are no artifacts to put beside them. */
+  extraBadges?: React.ReactNode;
   className?: string;
 }
 
@@ -38,6 +42,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   suffix,
   artifactIds,
   showArtifacts = true,
+  extraBadges,
   className,
 }) => {
   const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.isKnight) : undefined);
@@ -57,8 +62,12 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         <PlayerLabel player={player ?? undefined} name={name} color={color} bold />
         {suffix ? <span className="player-card-suffix">{suffix}</span> : null}
       </div>
-      {visibleArtifacts.length > 0 && (
+      {/* Children.count, not a plain truthiness check: an empty array is
+          truthy, which would leave a blank badge row (and the card's gap
+          with it) on every player who has none. */}
+      {(visibleArtifacts.length > 0 || React.Children.count(extraBadges) > 0) && (
         <div className="player-card-artifacts">
+          {extraBadges}
           {visibleArtifacts.map((id) => {
             const artifact = getArtifact(id);
             if (!artifact) return null;

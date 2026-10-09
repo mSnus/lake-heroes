@@ -7,6 +7,7 @@ import { PlayerCard } from './PlayerCard';
 import { PlayerStats } from './PlayerStats';
 import { TILE_COUNT } from '../game/constants';
 import { gameEvent } from '../utils/events';
+import { sayLocal } from '../utils/say';
 import { useT } from '../i18n';
 import '../styles/CurrentPlayerCard.css';
 
@@ -56,11 +57,34 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
 
   const currentTile = gameState.tiles[player.position % TILE_COUNT];
   const { totalGold, totalUnits } = computeAnnualReward(gameState, player);
+  const contracts = gameState.kingsContracts.filter((c) => c.playerId === player.id);
 
   return (
     <div className="current-player-card-wrapper game-modal-border" onClick={() => setPlayer(null)}>
       <div className="current-player-card">
-        <PlayerCard player={player} prefix={player.karma < 0 ? '🕷️' : undefined} />
+        <PlayerCard
+          player={player}
+          prefix={player.karma < 0 ? '🕷️' : undefined}
+          extraBadges={contracts.map((c) => {
+            const tile = gameState.tiles[c.tilePosition];
+            if (!tile) return null;
+            return (
+              <span
+                key={`contract-${c.tilePosition}`}
+                className="cpc-contract-badge"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  sayLocal(
+                    t('currentPlayer.kingsContractTooltip', { tileName: tile.name, award: c.award }),
+                    'info'
+                  );
+                }}
+              >
+                📜 {tile.shortName}
+              </span>
+            );
+          })}
+        />
         {currentTile && (
           <div className="cpc-is-at">
             {t('currentPlayer.isAt')}{' '}

@@ -25,6 +25,19 @@
   height: 40px;
 }
 
+/* A King's contract, shown beside the artifacts (see PlayerCard's
+   extraBadges). Short tile name only -- the card is narrow, and the full
+   name is in the tooltip a tap brings up. */
+.cpc-contract-badge {
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: dotted 1px #c8b9a1;
+  border-radius: 4px;
+  padding: 2px 5px;
+  cursor: pointer;
+}
+
 .cpc-owned-tiles {
   display: flex;
   flex-wrap: wrap;
