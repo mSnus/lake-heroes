@@ -231,7 +231,17 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   // on yourself is a no-op now (see the click threshold), and leaving it in
   // the running would win any drop released near the middle, since it's
   // always closer to home than to a neighbour.
-  const resolveDrop = (clientX: number, clientY: number, unit: GridUnit): DropResult | null => {
+  // `maxDist` (px) bounds how far the pointer may sit from the chosen
+  // neighbour's centre. A drag leaves it unset -- a release anywhere is a
+  // deliberate drop, so the nearest neighbour always wins. A click passes
+  // one, since clicking blank space across the board must not teleport the
+  // selected unit to whichever neighbour happened to be least far away.
+  const resolveDrop = (
+    clientX: number,
+    clientY: number,
+    unit: GridUnit,
+    maxDist?: number
+  ): DropResult | null => {
     const cr = cellAndRect();
     if (!cr) return null;
     const { rect, cell, rowStep, cellH } = cr;
@@ -251,6 +261,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         target = c;
       }
     }
+
+    if (maxDist !== undefined && bestD > maxDist * maxDist) return null;
 
     const enemyAt = enemies.find((e) => e.col === target.col && e.row === target.row);
     if (enemyAt) return { kind: 'placement', pl: { col: origin.col, row: origin.row, attackTargetId: enemyAt.id } }; // attack
@@ -303,6 +315,33 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     setUndoStack((s) => [...s, [{ unitId: a.id, prev: prevA }, { unitId: b.id, prev: prevB }]]);
     commitPlacements({ ...placementsRef.current, [a.id]: plA, [b.id]: plB });
     completedRef.current = false;
+  };
+
+  /**
+   * Click-to-move, the drag-free alternative: with a unit selected (the
+   * same single click that arms a swap), clicking one of its empty
+   * neighbours walks it there.
+   *
+   * Only empty cells are handled here. A click that lands on a unit or on a
+   * twin belongs to that element's own handler -- the twin's click-to-swap,
+   * or a real unit's HP reveal -- so this bails out rather than racing them
+   * for the same gesture.
+   */
+  const handleArenaClick = (e: React.MouseEvent) => {
+    if (!manualSide || !selectedForSwap) return;
+    if ((e.target as Element).closest?.('.bfg-twin, .bfg-unit')) return;
+
+    const unit = sideUnits.find((u) => u.id === selectedForSwap);
+    if (!unit || placementsRef.current[unit.id]) return;
+
+    const cr = cellAndRect();
+    if (!cr) return;
+    // Within a cell's own footprint of the neighbour's centre -- a little
+    // past its edge, so a slightly-off tap still lands.
+    const result = resolveDrop(e.clientX, e.clientY, unit, cr.cell * 0.6);
+    if (result?.kind !== 'placement' || result.pl.attackTargetId) return;
+
+    place(unit, result.pl);
   };
 
   // Undo only the most recent action — restore every unit in that batch to
@@ -423,7 +462,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
       </defs>
     </svg>
     <div className={'bfg-battlefield' + (brawl ? ' bfg-brawl' : large ? ' bfg-large' : '') + (instant ? ' bfg-instant' : '')}>
-      <div className="bfg-arena" ref={arenaRef}>
+      <div className="bfg-arena" ref={arenaRef} onClick={handleArenaClick}>
         <div
           className="bfg-grid"
           style={{ gridTemplateColumns: `repeat(${cols}, var(--bfg-cell))`, gridTemplateRows: `repeat(${rows}, var(--bfg-row))` }}

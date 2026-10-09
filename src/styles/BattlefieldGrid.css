@@ -251,7 +251,9 @@
   display: block;
   width: 70%;
   height: 2px;
-  background: #00000080;
+  /* The spent part reads as solid dark grey rather than see-through black,
+     so a drained bar is legible against the battlefield art behind it. */
+  background: #3f3f3f;
   border-radius: 1px;
   overflow: hidden;
   margin-top: 1px;
