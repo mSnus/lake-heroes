@@ -11,6 +11,7 @@ import { startDiceRoll } from '../utils/diceStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
+import { sayLocal } from '../utils/say';
 import { showScreen } from '../utils/screenStore';
 import RealmOverviewScreen from './RealmOverviewScreen';
 import { handleKingCastle } from '../actions/king';
@@ -209,6 +210,20 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
       if (isActivePlayerTile && tile.id === 'stables') {
         openStablesHireOnly(board, updateGameState);
+        return;
+      }
+
+      // Special (non-ownable) tiles have nothing to own/garrison/upgrade --
+      // the card would just be an empty frame around the sprite. A local
+      // toast of its flavor text instead, and close the card if one was
+      // already open from clicking a different tile. Local only: nobody
+      // else cares that this browser is inspecting a tile.
+      if (!tile.isOwnable) {
+        if (!tile.fogged() && tile.description) {
+          sayLocal(tile.description, 'info');
+        }
+
+        gameEvent('displayTile', {});
         return;
       }
 
