@@ -15,20 +15,21 @@ import { changeKarma } from '../utils/karma';
  * other.
  */
 
-/** Go-rounds actually started. board.round initialises to 1 and is bumped
- * at the top of every go-round including the game's very first, so it
- * always reads one ahead of the number of go-rounds played. */
-function roundsStarted(round: number): number {
-  return Math.max(1, round - 1);
+/** board.round IS the go-round's own number, counting from 1. Nothing
+ * calls beginTurn for the game's very first turn (it only ever runs from
+ * endTurn, for the turn after), so round sits at its initial 1 for the
+ * whole opening go-round and is bumped at the top of each one after. */
+function goRound(round: number): number {
+  return Math.max(1, round);
 }
 
 export function yearForRound(round: number): number {
-  return Math.floor((roundsStarted(round) - 1) / TURNS_PER_YEAR) + 1;
+  return Math.floor((goRound(round) - 1) / TURNS_PER_YEAR) + 1;
 }
 
 /** Which turn of its year a round falls on, 1..TURNS_PER_YEAR. */
 export function yearTurnForRound(round: number): number {
-  return ((roundsStarted(round) - 1) % TURNS_PER_YEAR) + 1;
+  return ((goRound(round) - 1) % TURNS_PER_YEAR) + 1;
 }
 
 export function currentYear(board: GameState): number {
