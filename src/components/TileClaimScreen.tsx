@@ -302,7 +302,19 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         </div>
       )}
 
-      <div className="tile-claim-owner-banner">
+      <div
+        className="tile-claim-owner-banner"
+        style={{
+          background:
+            'url("/assets/shade.jpg") center / cover no-repeat,\
+            linear-gradient(' +
+            player.color +
+            ', ' +
+            player.color +
+            ')',
+          backgroundBlendMode: 'hard-light',
+        }}
+      >
         {tJsx(ownerTag, {
           player: player.name,
           fame: <>🏆{player.fame}</>,

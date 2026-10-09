@@ -1,7 +1,6 @@
 .tile-claim-owner-banner {
   position: absolute;
   top: 0;
-  background-color: red;
   width: 100%;
   padding: 0.8rem;
   color: white;
@@ -10,6 +9,7 @@
   font-family: 'Encode';
   font-weight: 600;
   z-index: 5502;
+  opacity: 0.8;
 }
 
 .tile-guards-dialogue {

@@ -146,6 +146,8 @@
   background: none;
   background-color: transparent;
   opacity: 1;
+
+  mix-blend-mode: luminosity;
 }
 
 .owned .tile-card-close {
