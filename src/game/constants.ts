@@ -167,6 +167,12 @@ export const FORTIFIED_TILE_GROUPS = ['Camps', 'Towers'];
 // soaks ABSORB_PER_ROLL_POINT * r + ABSORB_BASE of the damage.
 export const ABSORB_PER_ROLL_POINT = 0.1;
 export const ABSORB_BASE = 0.2;
+// Energy: a unit's attack stamina (see GridUnit.energy, engine.ts's
+// energyFor) -- militia tire faster than every other kind, and a unit with
+// none left still swings, just cut to this fraction of its usual roll.
+export const MILITIA_ENERGY = 3;
+export const OTHER_KIND_ENERGY = 5;
+export const ENERGY_DEPLETED_DAMAGE_MULT = 0.3;
 export const MAX_ARMY_SLOTS = 5;
 // Fame thresholds for army slots: 0-2 fame -> 1 slot, 3-5 -> 2, 6-9 -> 3, 10+ -> 5
 // (the jump from 3 to 5 at the top bracket is deliberate, not a typo).

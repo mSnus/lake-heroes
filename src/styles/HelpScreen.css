@@ -117,3 +117,46 @@
   justify-content: center;
   margin-top: 24px;
 }
+
+/* The per-kind HP/damage/energy lines under Battle's stats paragraph --
+   nested inside that <li>, so a tighter list than the section's own. */
+.help-battle-stats {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+  font-family: 'Texturina';
+}
+
+.help-battle-stats li {
+  margin-bottom: 0.2rem;
+}
+
+.help-battle-phases-title {
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+  color: #dec27c;
+  font-size: 1.1rem;
+  font-family: 'Encode';
+}
+
+.help-battle-phases {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Texturina';
+  font-size: 1rem;
+}
+
+.help-battle-phases td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #ebe5d530;
+  vertical-align: top;
+}
+
+.help-battle-phases td:first-child {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.help-battle-phases td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}

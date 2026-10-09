@@ -7,6 +7,9 @@ import {
   DRAGON_DMG_MAX,
   ABSORB_BASE,
   ABSORB_PER_ROLL_POINT,
+  MILITIA_ENERGY,
+  OTHER_KIND_ENERGY,
+  ENERGY_DEPLETED_DAMAGE_MULT,
 } from '../constants';
 import { getOverrides } from '../../utils/overridesStore';
 import { generateObstacles, placeArmy, relocateUnitsOffObstacles } from './placement';
@@ -116,11 +119,8 @@ function hpFor(kind: UnitKind): number {
  * GridUnit.energy) -- militia get less stamina than every other kind
  * (riders, zombies, dragons alike). */
 export function energyFor(kind: UnitKind): number {
-  return kind === 'militia' ? 3 : 5;
+  return kind === 'militia' ? MILITIA_ENERGY : OTHER_KIND_ENERGY;
 }
-
-// What a 0-energy unit's attack roll is cut to (see GridUnit.energy).
-const ENERGY_DEPLETED_DAMAGE_MULT = 0.3;
 
 /** Damage roll for one unit. A per-unit dmgMin/dmgMax (see GridUnit --
  * battle simulator only) takes over the range entirely, used as-is; every

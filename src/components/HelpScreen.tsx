@@ -10,10 +10,27 @@ import {
   GARRISON_BONUS_SLOTS,
   GARRISON_SLOT_CAPACITY,
   ABSORB_PER_ROLL_POINT,
+  ABSORB_BASE,
   FORTIFIED_TILE_GROUPS,
   FLAT_TILE_UNIT_INCOME,
   VISIT_GOLD_MULT,
   VISIT_UNITS_SHARE,
+  MILITIA_HP,
+  MILITIA_DMG_MIN,
+  MILITIA_DMG_MAX,
+  RIDER_HP,
+  RIDER_DMG_MIN,
+  RIDER_DMG_MAX,
+  ZOMBIE_HP,
+  ZOMBIE_DMG_MIN,
+  ZOMBIE_DMG_MAX,
+  DRAGON_HP,
+  DRAGON_DMG_MIN,
+  DRAGON_DMG_MAX,
+  MILITIA_ENERGY,
+  OTHER_KIND_ENERGY,
+  ENERGY_DEPLETED_DAMAGE_MULT,
+  BRAWL_THRESHOLD,
 } from '../game/constants';
 import { useAppVersion } from '../utils/useAppVersion';
 import { getArtifacts } from '../game/artifacts';
@@ -88,7 +105,6 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.goldUnits.item3')} />
             <HtmlLi html={t('helpScreen.goldUnits.item4', { knightFame: KNIGHT_FAME })} />
             <HtmlLi html={t('helpScreen.goldUnits.item5')} />
-            <HtmlLi html={t('helpScreen.goldUnits.item6')} />
           </ul>
 
           <h3>{t('helpScreen.fame.title')}</h3>
@@ -247,14 +263,76 @@ const HelpScreen: React.FC = () => {
 
           <h3>{t('helpScreen.battle.title')}</h3>
           <ul>
-            <HtmlLi html={t('helpScreen.battle.squad')} />
-            <HtmlLi html={t('helpScreen.battle.razing')} />
-            <HtmlLi html={t('helpScreen.battle.twoModes')} />
-            <HtmlLi html={t('helpScreen.battle.brawlMode')} />
-            <HtmlLi html={t('helpScreen.battle.normalMode')} />
-            <HtmlLi html={t('helpScreen.battle.tie')} />
-            <HtmlLi html={t('helpScreen.battle.priceOfVictory')} />
+            <HtmlLi html={t('helpScreen.battle.occurs')} />
+            <li>
+              <span dangerouslySetInnerHTML={{ __html: t('helpScreen.battle.statsIntro') }} />
+              <ul className="help-battle-stats">
+                <li>
+                  {t('helpScreen.battle.unitStatLine', {
+                    icon: '🧍',
+                    hp: MILITIA_HP,
+                    dmgMin: MILITIA_DMG_MIN,
+                    dmgMax: MILITIA_DMG_MAX,
+                    energy: MILITIA_ENERGY,
+                  })}
+                </li>
+                <li>
+                  {t('helpScreen.battle.unitStatLine', {
+                    icon: '🐎',
+                    hp: RIDER_HP,
+                    dmgMin: RIDER_DMG_MIN,
+                    dmgMax: RIDER_DMG_MAX,
+                    energy: OTHER_KIND_ENERGY,
+                  })}
+                </li>
+                <li>
+                  {t('helpScreen.battle.unitStatLine', {
+                    icon: '🧟',
+                    hp: ZOMBIE_HP,
+                    dmgMin: ZOMBIE_DMG_MIN,
+                    dmgMax: ZOMBIE_DMG_MAX,
+                    energy: OTHER_KIND_ENERGY,
+                  })}
+                </li>
+                <li>
+                  {t('helpScreen.battle.unitStatLine', {
+                    icon: '🐉',
+                    hp: DRAGON_HP,
+                    dmgMin: DRAGON_DMG_MIN,
+                    dmgMax: DRAGON_DMG_MAX,
+                    energy: OTHER_KIND_ENERGY,
+                  })}
+                </li>
+              </ul>
+            </li>
+            <HtmlLi
+              html={t('helpScreen.battle.absorption', {
+                min: Math.round((ABSORB_BASE + ABSORB_PER_ROLL_POINT) * 100),
+                max: Math.round((ABSORB_BASE + ABSORB_PER_ROLL_POINT * 6) * 100),
+              })}
+            />
+            <HtmlLi html={t('helpScreen.battle.modifiers')} />
+            <HtmlLi html={t('helpScreen.battle.energy', { pct: Math.round(ENERGY_DEPLETED_DAMAGE_MULT * 100) })} />
+            <HtmlLi html={t('helpScreen.battle.unitsEquivalence')} />
+            <HtmlLi html={t('helpScreen.battle.twoModes', { brawlThreshold: BRAWL_THRESHOLD })} />
+            <HtmlLi html={t('helpScreen.battle.controls')} />
+            <HtmlLi html={t('helpScreen.battle.heroHour')} />
           </ul>
+
+          <h4 className="help-battle-phases-title">{t('helpScreen.battle.phasesTitle')}</h4>
+          <table className="help-battle-phases">
+            <tbody>
+              {(
+                ['tactics', 'attackDefend', 'impact', 'outcome', 'autoToggle', 'undo', 'finishTurn', 'result'] as const
+              ).map((key) => (
+                <tr key={key}>
+                  <td>{t(`helpScreen.battle.phase.${key}.name`)}</td>
+                  <td>{t(`helpScreen.battle.phase.${key}.desc`)}</td>
+                  <td>{t(`helpScreen.battle.phase.${key}.icon`)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           <h3>{t('helpScreen.artifacts.title')}</h3>
           <ul>

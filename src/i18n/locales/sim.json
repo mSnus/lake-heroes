@@ -360,8 +360,7 @@
       "item2": "Yearly income: more tiles you own, more you get each year",
       "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
-      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
-      "item6": "Units like 🧟👹🥷 are equal or <i>almost</i> equal to 🧍, and mounted 🦬🐫 to 🐎. Dragon 🐉 is equal to 🐎."
+      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle."
     },
     "fame": {
       "title": "Fame 🏆",
@@ -426,13 +425,59 @@
     },
     "battle": {
       "title": "Battle ⚔️",
-      "squad": "The attacker's <strong>whole army</strong> marches into battle, risking their lives for some goal: caravan goods or slaves, razing the tile or fighting the Dragon.",
-      "razing": "<strong>Razing</strong> means the tile loses all its upgrades and belongs to no one",
-      "twoModes": "There are two modes: brawl and normal battle",
-      "brawlMode": "In <strong>Brawl mode:</strong> Simple mode, used when squad is less than 6 units. Attacker and defender roll dice, who rolls more, wins the round.",
-      "normalMode": "<strong>Normal battle:</strong> Combat is resolved in rounds. Each round both sides roll the dice; the amount rolled is the number of enemy units destroyed. The one to destroy all enemy units first wins.",
-      "tie": "If all attacker and defender units are killed, that's a Tie",
-      "priceOfVictory": "The victory comes with a price! As a result of a battle, winner loses units killed in battle."
+      "occurs": "Battles occur when a player claims a tile, or during some random encounters (caravans, ambushes, etc).",
+      "statsIntro": "Use your units to wipe out enemies. Each unit has its strength (HP🩸), damage range 🗡️ and energy 💪:",
+      "unitStatLine": "{icon} - {hp}🩸 / {dmgMin}-{dmgMax}🗡️ / {energy}💪",
+      "absorption": "Damage 🎲 is absorbed by defence (also 🎲). Defence usually absorbs {min}-{max}% of the damage, rare lucky ones can reach 100%, unlucky ones 0%.",
+      "modifiers": "Attack can also be altered by artifacts 🪓, defence — by tile upgrades 🏯",
+      "energy": "Energy is consumed by each attack. A completely tired unit's attack is weak (only {pct}%!), but it recovers fully if it doesn't move or attack for a turn. Swapping it out for a fresh reserve is a good strategy.",
+      "unitsEquivalence": "Units like 👹🥷 are equal to 🧍, and mounted 🦬🐫 to 🐎",
+      "twoModes": "There are two modes: <strong>Brawl</strong> — manually controlled, for squads under {brawlThreshold} units — or <strong>automatic</strong>, for bigger armies",
+      "controls": "A manual (Brawl) battle can be switched to automatic with the Auto ⚔️ button atop the battlefield. There are also Undo ⬅️ and Finish turn 🚩 buttons.",
+      "heroHour": "Hero's Hour is a friendly brawl between two heroes and doesn't result in heavy casualties",
+      "phasesTitle": "Battle phases",
+      "phase": {
+        "tactics": {
+          "name": "Tactics",
+          "desc": "Move your own units to adjacent empty cells, swap with an adjacent unit, or target a nearby enemy for attack",
+          "icon": "🗡️"
+        },
+        "attackDefend": {
+          "name": "Attack",
+          "desc": "Every engaged unit with a target attacks it",
+          "icon": "🗡️"
+        },
+        "impact": {
+          "name": "Impact",
+          "desc": "Marks who's under attack this round, before the result is known (a critical hit flashes ❣️ instead)",
+          "icon": "💥"
+        },
+        "outcome": {
+          "name": "Outcome",
+          "desc": "Each unit's own result flashes: wounded, blocked, or killed",
+          "icon": "🩸🛡️☠️"
+        },
+        "autoToggle": {
+          "name": "Auto-battle",
+          "desc": "Hands the fight over to be resolved automatically",
+          "icon": "⚔️"
+        },
+        "undo": {
+          "name": "Undo",
+          "desc": "Reverts your most recent placement or swap",
+          "icon": "⬅️"
+        },
+        "finishTurn": {
+          "name": "Finish turn",
+          "desc": "Commits this round's moves and resolves combat",
+          "icon": "🚩"
+        },
+        "result": {
+          "name": "Result",
+          "desc": "The battle ends: victory, defeat, or a tie",
+          "icon": "—"
+        }
+      }
     },
     "artifacts": {
       "title": "Artifacts",

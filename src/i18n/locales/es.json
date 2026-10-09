@@ -365,8 +365,7 @@
       "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Pasar por el Castillo del Rey también concede la Gracia del Rey y recompensas de propiedades.",
       "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
-      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
-      "item6": "Unidades como 🧟👹🥷 equivalen o son <i>casi</i> equivalentes a 🧍, y las montadas 🦬🐫 a 🐎. El Dragón 🐉 equivale a 🐎."
+      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey."
     },
     "fame": {
       "title": "Fama 🏆",
@@ -453,13 +452,59 @@
     },
     "battle": {
       "title": "Batalla ⚔️",
-      "squad": "<strong>Todo el ejército</strong> del atacante marcha a la batalla, arriesgando sus vidas por algún objetivo: bienes o esclavos de una caravana, arrasar la casilla o luchar contra el Dragón.",
-      "razing": "<strong>Arrasar</strong> significa que la casilla pierde todas sus mejoras y no pertenece a nadie",
-      "twoModes": "Hay dos modos: combate cuerpo a cuerpo y batalla normal",
-      "brawlMode": "En el <strong>modo Combate:</strong> una lucha pequeña, usada solo cuando tanto el atacante como la defensa tienen como máximo 12 unidades. Atacante y defensor tiran el dado; la tirada más alta gana la ronda.",
-      "normalMode": "<strong>Batalla normal:</strong> El combate se resuelve por rondas. En cada ronda ambos bandos tiran el dado; la cantidad obtenida es el número de unidades enemigas destruidas. Quien destruya primero todas las unidades enemigas gana.",
-      "tie": "Si mueren todas las unidades del atacante y del defensor, es un Empate",
-      "priceOfVictory": "¡La victoria tiene un precio! Como resultado de una batalla, el vencedor pierde las unidades muertas en combate."
+      "occurs": "Las batallas ocurren cuando un jugador reclama una casilla, o durante algunos encuentros aleatorios (caravanas, emboscadas, etc).",
+      "statsIntro": "Usa tus unidades para aniquilar a los enemigos. Cada unidad tiene su fuerza (HP🩸), rango de daño 🗡️ y energía 💪:",
+      "unitStatLine": "{icon} - {hp}🩸 / {dmgMin}-{dmgMax}🗡️ / {energy}💪",
+      "absorption": "El daño 🎲 es absorbido por la defensa (también 🎲). La defensa suele absorber entre {min}-{max}% del daño, los afortunados pueden llegar al 100%, los desafortunados al 0%.",
+      "modifiers": "El ataque también puede verse alterado por artefactos 🪓, la defensa — por mejoras de la casilla 🏯",
+      "energy": "La energía se consume con cada ataque. Una unidad completamente agotada ataca débilmente (¡solo un {pct}%!), pero se recupera por completo si no se mueve ni ataca durante un turno. Intercambiarla por una reserva fresca es una buena estrategia.",
+      "unitsEquivalence": "Unidades como 👹🥷 equivalen a 🧍, y las montadas 🦬🐫 a 🐎",
+      "twoModes": "Hay dos modos: <strong>Combate</strong> — controlado manualmente, para escuadras de menos de {brawlThreshold} unidades — o <strong>automático</strong>, para ejércitos más grandes",
+      "controls": "Una batalla manual (Combate) puede cambiarse a automática con el botón Auto ⚔️ sobre el campo de batalla. También hay botones de Deshacer ⬅️ y Terminar turno 🚩.",
+      "heroHour": "La Hora del Héroe es un combate amistoso entre dos héroes y no provoca grandes bajas",
+      "phasesTitle": "Fases de la batalla",
+      "phase": {
+        "tactics": {
+          "name": "Táctica",
+          "desc": "Mueve tus unidades a casillas adyacentes vacías, intercámbialas con una unidad propia adyacente, o marca como objetivo a un enemigo cercano para atacar",
+          "icon": "🗡️"
+        },
+        "attackDefend": {
+          "name": "Ataque",
+          "desc": "Cada unidad implicada con un objetivo lo ataca",
+          "icon": "🗡️"
+        },
+        "impact": {
+          "name": "Impacto",
+          "desc": "Marca quién está siendo atacado esta ronda, antes de conocerse el resultado (un golpe crítico destella como ❣️)",
+          "icon": "💥"
+        },
+        "outcome": {
+          "name": "Resultado",
+          "desc": "El resultado de cada unidad destella: herida, bloqueado, o muerta",
+          "icon": "🩸🛡️☠️"
+        },
+        "autoToggle": {
+          "name": "Combate automático",
+          "desc": "Entrega la lucha para resolverse automáticamente",
+          "icon": "⚔️"
+        },
+        "undo": {
+          "name": "Deshacer",
+          "desc": "Revierte tu última colocación o intercambio",
+          "icon": "⬅️"
+        },
+        "finishTurn": {
+          "name": "Terminar turno",
+          "desc": "Confirma los movimientos de esta ronda y resuelve el combate",
+          "icon": "🚩"
+        },
+        "result": {
+          "name": "Resultado final",
+          "desc": "La batalla termina: victoria, derrota o empate",
+          "icon": "—"
+        }
+      }
     },
     "artifacts": {
       "title": "Artefactos",
