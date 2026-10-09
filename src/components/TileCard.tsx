@@ -170,11 +170,11 @@ export const TileCard: React.FC<TileCardProps> = ({
   const attackEmoji = (isBrawlTile ? '👊' : '⚔️') + (isBanzai ? '🩸' : '');
 
   const unitsInsufficient = !isBanzai && !!activePlayer && attackerPower < lvl1Defence;
+  const goldLacking = !!activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0);
+  const fameLacking =
+    tile.requiredFame > 0 && !!activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame;
 
-  const cantAfford =
-    (activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)) ||
-    unitsInsufficient ||
-    (tile.requiredFame > 0 && activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame);
+  const cantAfford = goldLacking || unitsInsufficient || fameLacking;
 
   const isOnFire = tile.isOnFire(gameState?.round ?? 0);
 
@@ -477,53 +477,47 @@ export const TileCard: React.FC<TileCardProps> = ({
                         )}
 
                         <div className="tile-card-claim-requirements">
-                          {tile.requiredFame > 0 && (
+                          {/* While the tile is unaffordable, a requirement the
+                              player already meets is just noise -- only the
+                              ones actually blocking the claim are shown. */}
+                          {tile.requiredFame > 0 && (!cantAfford || fameLacking) && (
                             <>
                               <span
                                 style={
-                                  activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame
+                                  fameLacking
                                     ? { color: '#ff4444', marginRight: '8px' }
                                     : { marginRight: '8px' }
                                 }
                               >
-                                {activePlayer &&
-                                  (activePlayer.fame ?? 1) < tile.requiredFame &&
-                                  '🔻'}
+                                {fameLacking && '🔻'}
                                 🏆{tile.requiredFame}
                               </span>
                               {'  '}
                             </>
                           )}
 
-                          <span
-                            style={
-                              activePlayer &&
-                              (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                                ? { color: '#ff4444', paddingRight: '8px' }
-                                : { paddingRight: '8px' }
-                            }
-                          >
-                            {activePlayer &&
-                            (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0)
-                              ? '🔻'
-                              : '👛 '}
-                            {tile.currentPrice.gold ?? 0}🟡{' '}
-                          </span>
+                          {(!cantAfford || goldLacking) && (
+                            <span
+                              style={
+                                goldLacking
+                                  ? { color: '#ff4444', paddingRight: '8px' }
+                                  : { paddingRight: '8px' }
+                              }
+                            >
+                              {goldLacking ? '🔻' : '👛 '}
+                              {tile.currentPrice.gold ?? 0}🟡{' '}
+                            </span>
+                          )}
                           {/* The help screen's static sample card skips the unit
                               requirement line — misleading there since a battle now
                               sends the whole army, not a squad sized to Defence. */}
-                          {!demoMode && (
+                          {!demoMode && (!cantAfford || unitsInsufficient) && (
                             <>
                               {'  '}
 
                               {unitsInsufficient ? (
                                 <div style={{ color: '#ff4444' }}>
                                   {'🔻'}
-                                  {defence(1)}
-                                  {tile.abandoned ? '🧟‍♀️' : '⚔️'}
-                                </div>
-                              ) : cantAfford ? (
-                                <div>
                                   {defence(1)}
                                   {tile.abandoned ? '🧟‍♀️' : '⚔️'}
                                 </div>
