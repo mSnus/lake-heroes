@@ -46,7 +46,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // one -- levels 2/3 preview an upgrade not yet taken), same combined
   // gold+units format as TileCard's own preview.
   const turnIncomeLabel = (level: number) => {
-    const income = tileTurnIncome(tile, 1, level);
+    const income = tileTurnIncome(tile, 1, level, gameState);
     return (
       <>
         {income.gold > 0 && <>+{income.gold}🟡 </>}

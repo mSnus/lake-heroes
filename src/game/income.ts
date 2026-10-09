@@ -3,6 +3,7 @@ import { Player } from './Player';
 import { Tile } from './Tile';
 import { FLAT_TILE_UNIT_INCOME } from './constants';
 import { syndicateMultiplier } from './syndicate';
+import { hasYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
 
 /**
  * A single owned tile's per-turn income: its own bonus (gold for Mills/
@@ -18,17 +19,32 @@ import { syndicateMultiplier } from './syndicate';
  * they can't drift apart. `level` defaults to the tile's current level, but
  * can be overridden to preview a not-yet-reached upgrade level (see
  * TileClaimScreen's level-2/3 preview rows).
+ *
+ * `board`, when given, folds in the shared calendar (see game/year.ts):
+ * this year's lucky groups double the tile's own bonus (not the flat
+ * trickle -- that's not the "profit" the bonus is about), and a live
+ * Joker Taxes/Plague zeroes gold/units outright, overriding everything
+ * else including the double. Omitted entirely by the one caller with no
+ * live game to check (HelpScreen's static demo tile card), which then
+ * behaves exactly as if no year effect were ever in force.
  */
 export function tileTurnIncome(
   tile: Tile,
   mult: number = 1,
-  level: number = tile.level
+  level: number = tile.level,
+  board?: GameState
 ): { gold: number; units: number } {
   if (tile.isYielded) return { gold: 0, units: 0 };
-  const own = (tile.bonuses[level] ?? 0) * mult;
-  return tile.bonusType === 'units'
-    ? { gold: 0, units: own + FLAT_TILE_UNIT_INCOME }
-    : { gold: own, units: FLAT_TILE_UNIT_INCOME };
+  const groupBoost = board && hasYearEffect(board, DOUBLE_INCOME_EFFECT, tile.group) ? 2 : 1;
+  const own = (tile.bonuses[level] ?? 0) * mult * groupBoost;
+  const result =
+    tile.bonusType === 'units'
+      ? { gold: 0, units: own + FLAT_TILE_UNIT_INCOME }
+      : { gold: own, units: FLAT_TILE_UNIT_INCOME };
+
+  if (board && hasYearEffect(board, NO_GOLD_INCOME_EFFECT)) result.gold = 0;
+  if (board && hasYearEffect(board, NO_UNIT_INCOME_EFFECT)) result.units = 0;
+  return result;
 }
 
 /**
@@ -60,7 +76,7 @@ export function playerRawTurnIncome(board: GameState, player: Player): { gold: n
   let units = 0;
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id) continue;
-    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group));
+    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group), undefined, board);
     gold += income.gold;
     units += income.units;
   }

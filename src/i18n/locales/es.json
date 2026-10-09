@@ -697,9 +697,9 @@
       "meteor": "Meteorito",
       "kingsGift": "Regalo del Rey"
     },
-    "taxesMessage": "Todos los jugadores pierden la mitad de su oro.",
+    "taxesMessage": "Sin ingresos de oro durante 1 año.",
     "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
-    "plagueMessage": "Todos los jugadores pierden la mitad de sus unidades.",
+    "plagueMessage": "Sin ingresos de unidades durante 1 año.",
     "playerLosesTile": "{playerName} pierde {tileName}",
     "hurricaneNoEffect": "¡Un enorme huracán atraviesa el reino! Por suerte, no causa daños",
     "blessingMessage": "Todas las casillas en propiedad suben un nivel.",
@@ -1087,6 +1087,12 @@
     "passByButton": "⚜️ Seguir de largo, con orgullo"
   },
   "year": {
-    "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas"
+    "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas",
+    "doubleIncomeAnnounce": "Este año se presenta prometedor: {groups} darán el doble de ingresos.",
+    "groupName": {
+      "Mills": "los Molinos",
+      "Farms": "las Granjas",
+      "Fields": "los Campos"
+    }
   }
 }

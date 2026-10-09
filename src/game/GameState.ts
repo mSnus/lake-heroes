@@ -6,7 +6,7 @@ export type ForcedEncounter = 'dragon' | 'caravan-gold' | 'caravan-slaves' | 'ca
 import { Player } from './Player';
 import { Tile } from './Tile';
 import { KingsContract } from './kingsContracts';
-import type { YearEffect } from './year';
+import type { YearEffect } from './yearCore';
 import type { PlayerTurnStat, PlayerStatEvent } from './statistics';
 
 export class GameState {

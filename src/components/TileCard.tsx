@@ -83,7 +83,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // Per-turn payout at the tile's current level (see game/income.ts's
   // tileTurnIncome) -- exactly one of gold/units is nonzero, depending on
   // the tile's own bonus type.
-  const turnIncome = tileTurnIncome(tile, syndicateMult);
+  const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState);
   // Units below this are hidden entirely (not just rounded away) -- a
   // trickle of 1 isn't worth a line, but that means the "per turn" caption
   // below must stay hidden right along with it, not dangle on its own.

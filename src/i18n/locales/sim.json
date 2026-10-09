@@ -670,9 +670,9 @@
       "meteor": "Meteor",
       "kingsGift": "King's Gift"
     },
-    "taxesMessage": "All players lose half of their gold.",
+    "taxesMessage": "No gold income for 1 year.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
-    "plagueMessage": "All players lose half of their units.",
+    "plagueMessage": "No unit income for 1 year.",
     "playerLosesTile": "{playerName} loses {tileName}",
     "hurricaneNoEffect": "Huge hurricane passes through the kingdom! luckily, it does no damage",
     "blessingMessage": "All owned tiles are upgraded one level.",
@@ -1083,6 +1083,12 @@
     "passByButton": "⚜️ Pass by, proudly"
   },
   "year": {
-    "yearlyBonus": "All players collect yearly bonus from their tiles"
+    "yearlyBonus": "All players collect yearly bonus from their tiles",
+    "doubleIncomeAnnounce": "This year is promising, {groups} will provide double income!",
+    "groupName": {
+      "Mills": "Mills",
+      "Farms": "Farms",
+      "Fields": "Fields"
+    }
   }
 }

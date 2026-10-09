@@ -28,6 +28,13 @@ export const FORK_ROLL_RANGE = 6;
 // once the last player's turn ends) rather than laps of the board, so a
 // turn spent in prison still passes the time. See game/year.ts.
 export const TURNS_PER_YEAR = 8;
+// This year's lucky groups: each rolled independently at DOUBLE_INCOME_CHANCE
+// in startNewYear, capped at DOUBLE_INCOME_MAX_GROUPS. Only gold-producing
+// groups -- doubling a Camp/Tower's unit income isn't the same kind of
+// windfall and would need its own balance pass.
+export const DOUBLE_INCOME_GROUPS = ['Mills', 'Farms', 'Fields'];
+export const DOUBLE_INCOME_CHANCE = 0.25;
+export const DOUBLE_INCOME_MAX_GROUPS = 2;
 // While the game is still in its first this many years, it counts as a
 // "getting started" phase -- the long path's hidden coin flip
 // (rollAndMove.ts) is forced short rather than risk stranding a brand-new

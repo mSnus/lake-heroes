@@ -1,9 +1,22 @@
 import { GameState } from './GameState';
-import { TURNS_PER_YEAR } from './constants';
 import { changeKarma } from '../utils/karma';
 import { collectTileTurnIncome } from './income';
 import { say } from '../utils/say';
 import { t } from '../i18n';
+import {
+  currentYear,
+  currentYearTurn,
+  yearForRound,
+  yearTurnForRound,
+  addYearEffect,
+  hasYearEffect,
+  expireYearEffects,
+  YearEffect,
+  NO_GOLD_INCOME_EFFECT,
+  NO_UNIT_INCOME_EFFECT,
+  DOUBLE_INCOME_EFFECT,
+} from './yearCore';
+import { DOUBLE_INCOME_GROUPS, DOUBLE_INCOME_CHANCE, DOUBLE_INCOME_MAX_GROUPS } from './constants';
 
 /**
  * The shared calendar. Unlike a player's own `circles` (laps of the board,
@@ -16,62 +29,29 @@ import { t } from '../i18n';
  * in beginTurn the moment the last player's turn ends -- before the
  * prison-skip check, so a turn spent in jail passes the time like any
  * other.
+ *
+ * The arithmetic and the YearEffect query primitives actually live in
+ * yearCore.ts (see its own doc comment for why) -- re-exported here so
+ * every existing `from '../game/year'` import is unaffected.
  */
+export {
+  currentYear,
+  currentYearTurn,
+  yearForRound,
+  yearTurnForRound,
+  addYearEffect,
+  hasYearEffect,
+  expireYearEffects,
+  NO_GOLD_INCOME_EFFECT,
+  NO_UNIT_INCOME_EFFECT,
+  DOUBLE_INCOME_EFFECT,
+};
+export type { YearEffect };
 
-/** board.round IS the go-round's own number, counting from 1. Nothing
- * calls beginTurn for the game's very first turn (it only ever runs from
- * endTurn, for the turn after), so round sits at its initial 1 for the
- * whole opening go-round and is bumped at the top of each one after. */
-function goRound(round: number): number {
-  return Math.max(1, round);
-}
-
-export function yearForRound(round: number): number {
-  return Math.floor((goRound(round) - 1) / TURNS_PER_YEAR) + 1;
-}
-
-/** Which turn of its year a round falls on, 1..TURNS_PER_YEAR. */
-export function yearTurnForRound(round: number): number {
-  return ((goRound(round) - 1) % TURNS_PER_YEAR) + 1;
-}
-
-export function currentYear(board: GameState): number {
-  return yearForRound(board.round);
-}
-
-export function currentYearTurn(board: GameState): number {
-  return yearTurnForRound(board.round);
-}
-
-/** Something in force for a stretch of the calendar rather than instantly
- * -- a royal decree, a plague that suppresses income for the rest of the
- * year. Plain data so it rides through the save and the multiplayer
- * envelope untouched, exactly like GameState.kingsContracts. */
-export interface YearEffect {
-  /** What this effect is -- the key consumers check for. */
-  id: string;
-  /** Last year it applies to, inclusive. */
-  untilYear: number;
-  /** Optional target, e.g. the tile group a decree singles out. */
-  group?: string;
-}
-
-export function addYearEffect(board: GameState, effect: YearEffect): void {
-  board.yearEffects.push(effect);
-}
-
-export function hasYearEffect(board: GameState, id: string): boolean {
-  const year = currentYear(board);
-  return board.yearEffects.some((e) => e.id === id && e.untilYear >= year);
-}
-
-/** Drop what the new year has outlived. Reads stay correct without this
- * (they check untilYear themselves) -- this just stops the list growing
- * forever. */
-export function expireYearEffects(board: GameState): void {
-  const year = currentYear(board);
-  board.yearEffects = board.yearEffects.filter((e) => e.untilYear >= year);
-}
+// This year's lucky groups (if any) flash a 🟨/🟪/🟩 badge, chosen per
+// group here so income.ts's tileTurnIncome and this announcement can't
+// name a group differently.
+const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪', Fields: '🟩' };
 
 /**
  * Year rollover: everything that used to ride on each player's own Castle
@@ -104,5 +84,26 @@ export function startNewYear(board: GameState): void {
 
   if (anyBonus) {
     say(t('year.yearlyBonus'), 'info');
+  }
+
+  // This year's lucky groups: each of Mills/Farms/Fields independently
+  // rolls DOUBLE_INCOME_CHANCE, capped at DOUBLE_INCOME_MAX_GROUPS -- a
+  // random one of the extras is dropped rather than the roll order always
+  // favoring Mills first. Just expired (above), so this is always a fresh
+  // pick, never a holdover from last year.
+  let promoted = DOUBLE_INCOME_GROUPS.filter(() => Math.random() < DOUBLE_INCOME_CHANCE);
+  while (promoted.length > DOUBLE_INCOME_MAX_GROUPS) {
+    promoted = promoted.filter((_, i) => i !== Math.floor(Math.random() * promoted.length));
+  }
+
+  for (const group of promoted) {
+    addYearEffect(board, { id: DOUBLE_INCOME_EFFECT, untilYear: currentYear(board), group });
+  }
+
+  if (promoted.length > 0) {
+    const groups = promoted
+      .map((g) => `${GROUP_EMOJI[g]} ${t(`year.groupName.${g}`)}`)
+      .join(` ${t('common.and')} `);
+    say(t('year.doubleIncomeAnnounce', { groups }), 'info');
   }
 }
