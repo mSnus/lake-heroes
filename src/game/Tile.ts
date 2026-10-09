@@ -131,9 +131,8 @@ export class Tile implements TileJSON {
     this.spriteImage = data.spriteImage;
     this.requiredFame = data.requiredFame ?? 0;
 
-    //DEBUG: disabled fog
-    this.fog = false;//data.fog !== false && this.isOwnable;
-    
+    this.fog = data.fog !== false && this.isOwnable;
+
     this._garrison = data.garrison ?? 0;
     this.baseGarrison = data.baseGarrison ?? data.garrison ?? 0;
     if (this.owner && data.garrisonMilitia === undefined && data.garrisonRiders === undefined) {
