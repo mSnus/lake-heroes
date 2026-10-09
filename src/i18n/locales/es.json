@@ -1085,5 +1085,8 @@
     "message": "{playerSpan} se encuentra con un grupo de hombres buscando cualquier trabajo bien pagado. Puede que quieras contratarlos.",
     "hireButton": "Contratar {army}",
     "passByButton": "⚜️ Seguir de largo, con orgullo"
+  },
+  "year": {
+    "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas"
   }
 }

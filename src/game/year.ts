@@ -1,6 +1,9 @@
 import { GameState } from './GameState';
 import { TURNS_PER_YEAR } from './constants';
 import { changeKarma } from '../utils/karma';
+import { collectTileTurnIncome } from './income';
+import { say } from '../utils/say';
+import { t } from '../i18n';
 
 /**
  * The shared calendar. Unlike a player's own `circles` (laps of the board,
@@ -78,6 +81,15 @@ export function expireYearEffects(board: GameState): void {
  */
 export function startNewYear(board: GameState): void {
   expireYearEffects(board);
+
+  // A one-time bonus from every tile each player owns, on top of whatever
+  // they already collected this turn -- same formula as the regular
+  // per-turn payout (collectTileTurnIncome), just granted once more for
+  // the whole table at once. Silent per player; one shared toast covers
+  // the lot, and only if it actually paid out anything (a tileless player,
+  // or a table with nobody owning anything yet, pays out nothing to
+  // announce).
+  let anyBonus = false;
   for (const player of board.players) {
     player.dragonEncounters = 0;
     player.caravanEncounters = 0;
@@ -85,5 +97,12 @@ export function startNewYear(board: GameState): void {
     player.workersEncounters = 0;
     if (player.karma < 0) changeKarma(player, 1);
     else if (player.karma > 0) changeKarma(player, -1);
+
+    const bonus = collectTileTurnIncome(board, player);
+    if (bonus.gold > 0 || bonus.units > 0) anyBonus = true;
+  }
+
+  if (anyBonus) {
+    say(t('year.yearlyBonus'), 'info');
   }
 }

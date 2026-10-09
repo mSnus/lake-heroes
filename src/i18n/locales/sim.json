@@ -1081,5 +1081,8 @@
     "message": "{playerSpan} encounters a group of men looking for any well-paid job. You may want to hire them.",
     "hireButton": "Hire {army}",
     "passByButton": "⚜️ Pass by, proudly"
+  },
+  "year": {
+    "yearlyBonus": "All players collect yearly bonus from their tiles"
   }
 }
