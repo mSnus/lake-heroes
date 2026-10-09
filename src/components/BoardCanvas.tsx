@@ -7,6 +7,7 @@ import { currentYear } from '../game/year';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../utils/mapEditStore';
 import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
+import { startDiceRoll } from '../utils/diceStore';
 import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
@@ -466,6 +467,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           onClick={(e) => {
             e.stopPropagation();
             setForkChoice('short');
+            // Picking a path is also the roll -- startDiceRoll is a no-op
+            // if the dice modal isn't already open and waiting (it always
+            // is here: showForkChoice itself requires 'before-move'), so
+            // this is safe to call unconditionally.
+            startDiceRoll();
           }}
         >
           ➜
@@ -476,6 +482,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           onClick={(e) => {
             e.stopPropagation();
             setForkChoice('long');
+            startDiceRoll();
           }}
         >
           ➜
