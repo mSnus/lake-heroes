@@ -48,9 +48,10 @@ export function passStart(
   if (totalGold > 0) parts.push(`${totalGold}🟡`);
   if (unitsGranted > 0) parts.push(`${unitsGranted}👬`);
 
-  const summary = parts.join(` ${t('common.and')} `);
-
-  say(t('passStart.receives', { playerName: player.name, summary }), 'success');
+  if (parts.length > 0) {
+    const summary = parts.join(` ${t('common.and')} `);
+    say(t('passStart.receives', { playerName: player.name, summary }), 'success');
+  }
 
   const years =
     player.circles < 3 ? t('passStart.aYear') : t('passStart.years', { count: player.circles - 1 });
