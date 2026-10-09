@@ -79,6 +79,26 @@ const HEX_ROW_FACTOR = 0.866; // row vertical pitch / --bfg-cell (√3/2)
 // swap) rather than a drag (resolve as a drop) -- see the twin's onPointerUp.
 const CLICK_MOVE_THRESHOLD_PX = 8;
 
+/** The HP and energy pair under a unit's emoji. Shared by the real units
+ * and by their drag twins: a twin stands in for a unit that has been moved
+ * out of its own cell, so without these it would show no bars at all --
+ * and with only some of them it would sit at a different height than the
+ * units around it. */
+const UnitBars: React.FC<{ unit: GridUnit }> = ({ unit }) => {
+  const hpPct = Math.max(0, Math.round((unit.hp / unit.maxHp) * 100));
+  const energyPct = Math.max(0, Math.round((unit.energy / energyFor(unit.kind)) * 100));
+  return (
+    <>
+      <span className="bfg-unit-hp">
+        <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
+      </span>
+      <span className="bfg-unit-energy">
+        <span className="bfg-unit-energy-fill" style={{ width: `${energyPct}%` }} />
+      </span>
+    </>
+  );
+};
+
 export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   battle,
   lastEvents,
@@ -435,8 +455,6 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         </div>
         <div className="bfg-units">
           {units.map((u) => {
-            const hpPct = Math.max(0, Math.round((u.hp / u.maxHp) * 100));
-            const energyPct = Math.max(0, Math.round((u.energy / energyFor(u.kind)) * 100));
             const op = originalOpacity(u);
             return (
               <div
@@ -447,12 +465,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                 onClick={brawl ? () => revealHp(u.id) : undefined}
               >
                 <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? emojiFor(u)}</span>
-                <span className="bfg-unit-hp">
-                  <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
-                </span>
-                <span className="bfg-unit-energy">
-                  <span className="bfg-unit-energy-fill" style={{ width: `${energyPct}%` }} />
-                </span>
+                <UnitBars unit={u} />
                 {hpRevealId === u.id && (
                   <span className="bfg-unit-hp-label">{Math.max(0, u.hp)}/{u.maxHp}</span>
                 )}
@@ -560,12 +573,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   }}
                 >
                   <span className="bfg-unit-emoji">{emojiFor(u)}</span>
-                  {/* Invisible HP bar so the twin's emoji sits exactly where the
-                      real unit's does (same column layout) — no vertical jump
-                      when the real units snap in and the twins hide. */}
-                  <span className="bfg-unit-hp" style={{ opacity: 0 }}>
-                    <span className="bfg-unit-hp-fill" />
-                  </span>
+                  {/* Real bars, not a blank spacer: a twin standing at a
+                      destination cell IS the only thing drawn for that unit
+                      (its real self stays faded on the cell it left), so a
+                      hidden bar left moved units looking bar-less. Keeps the
+                      emoji at the same height as every other unit too. */}
+                  <UnitBars unit={u} />
                 </div>
               );
             })}
