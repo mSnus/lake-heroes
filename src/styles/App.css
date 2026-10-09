@@ -133,6 +133,23 @@ body.screen-open {
   position: relative;
 }
 
+/* Which turn of the year the realm is living through, as a season emoji
+   (see components/YearIndicator.tsx). Sits over the map's top-left corner,
+   deliberately faded back so it reads as part of the art rather than a
+   control -- and never catches a click meant for the tile beneath it. */
+.year-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-top: 0.5rem;
+  padding-left: 0.5rem;
+  font-size: 1.2rem;
+  opacity: 0.8;
+  filter: sepia(0.5);
+  z-index: 90;
+  pointer-events: none;
+}
+
 @media screen and (max-width: 768px) {
   .board-section {
     width: 100vw;

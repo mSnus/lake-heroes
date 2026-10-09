@@ -15,6 +15,7 @@ import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
 import { say, narrate } from '../utils/say';
 import { advanceBoardPosition, nextBoardPosition, stepsToFork, stepsToTile } from '../game/boardPath';
+import { currentYear } from '../game/year';
 import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
 import {
   FORK_START_INDEX,
@@ -55,12 +56,11 @@ export async function rollAndMove(
   // the branch is a hidden coin flip, re-rolled every turn the fork is
   // still within a single die's reach -- cursed (negative-karma) players get
   // a coin weighted toward the long path instead of a fair one. Either way,
-  // early on -- while even the furthest-along player hasn't finished
-  // REAL_ADVENTURE_MIN_TURNS laps yet -- the long path is off the table
-  // altogether (see the constant's own comment): a brand-new player isn't
-  // stranded on the longer route by a coin flip, nor a bot steered onto it
-  // by its own pick.
-  const isEarlyGame = Math.min(...board.players.map((p) => p.circles)) <= REAL_ADVENTURE_MIN_TURNS;
+  // early on -- the game's first REAL_ADVENTURE_MIN_TURNS years -- the long
+  // path is off the table altogether (see the constant's own comment): a
+  // brand-new player isn't stranded on the longer route by a coin flip, nor
+  // a bot steered onto it by its own pick.
+  const isEarlyGame = currentYear(board) <= REAL_ADVENTURE_MIN_TURNS;
   const longPathChance = player.karma < 0 ? KARMA_LONG_PATH_CHANCE : 0.5;
   const forkChoice: ForkChoice = isEarlyGame
     ? 'short'

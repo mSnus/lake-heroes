@@ -8,6 +8,7 @@ import { showScreen, showPrisonScreen, clearScreen } from '../utils/screenStore'
 import { setEndTurn } from '../utils/endTurnStore';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { say } from '../utils/say';
+import { currentYear } from '../game/year';
 import { changeKarma } from '../utils/karma';
 import { fightTile } from './fightTile';
 import { sellTile } from './sellTile';
@@ -39,19 +40,17 @@ export function afterMoveLogic(
 
   // Hero's Hour: other players at the same tile with enough units to fight
   // (not at King's Castle — it's neutral ground). Players with 0 units can
-  // neither attack nor be attacked. Heroes who've circled the board 2 times
-  // or fewer are too green for Hero's Hour, on either side of the encounter.
+  // neither attack nor be attacked. Nobody duels at all before the game's
+  // third year -- everyone is too green for it, so it's one check on the
+  // shared calendar rather than one per hero.
+  const heroHourOpen = currentYear(board) > 2;
   const playersHere = board.players.filter(
-    (p) =>
-      p.id !== player.id &&
-      p.position === player.position &&
-      p.units > 0 &&
-      (p.circles ?? 0) > 2
+    (p) => p.id !== player.id && p.position === player.position && p.units > 0
   );
   if (
+    heroHourOpen &&
     playersHere.length > 0 &&
     player.units > 0 &&
-    (player.circles ?? 0) > 2 &&
     tile.id !== 'king-castle'
   ) {
     const tileOwner =

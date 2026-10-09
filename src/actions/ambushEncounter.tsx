@@ -4,6 +4,7 @@ import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { formatArmy, HORDE_EMOJI } from '../utils/formatArmy';
 import { KNIGHT_FAME, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { currentYear } from '../game/year';
 import { t } from '../i18n';
 
 export function checkAmbushEncounter(
@@ -15,8 +16,8 @@ export function checkAmbushEncounter(
   const ENCOUNTER_CHANCE =
     (1 / 14) * (player.karma < 0 ? KARMA_HOSTILE_ENCOUNTER_MULTIPLIER : 1);
 
-  // No ambushes during the first lap around the board
-  if ((player.circles ?? 0) < 1) return false;
+  // No ambushes during the game's first year
+  if (currentYear(board) <= 1) return false;
 
   if (player.fame <= KNIGHT_FAME) return false;
   if (player.armyPower <= 15) return false;

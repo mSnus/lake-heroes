@@ -8,6 +8,7 @@ import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
 import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS, KARMA_JOKER_BAD_CHANCE } from '../game/constants';
+import { currentYear } from '../game/year';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
@@ -217,9 +218,9 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
 
     case "Queen's Gift": {
       const player = board.activePlayer;
-      // Too early for a free Camp/Tower to matter -- while even the
-      // furthest-along player hasn't finished 3 laps yet, gold instead.
-      const earlyGame = Math.min(...board.players.map((p) => p.circles)) <= REAL_ADVENTURE_MIN_TURNS;
+      // Too early for a free Camp/Tower to matter -- gold instead for the
+      // game's first few years.
+      const earlyGame = currentYear(board) <= REAL_ADVENTURE_MIN_TURNS;
       const free = earlyGame
         ? []
         : board.tiles

@@ -3,7 +3,6 @@ import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
 import { computeAnnualReward } from '../game/kingsGrace';
 import { recordStatEvent } from '../game/statistics';
-import { changeKarma } from '../utils/karma';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { recordSimCircleSnapshot } from '../utils/simLogStore';
 import { formatPlayerCell } from '../utils/formatPlayerCell';
@@ -23,15 +22,13 @@ export function passStart(
   const ridersGranted = kingsRiders;
   const unitsGranted = militiaGranted + ridersGranted;
 
+  // A lap of the board, which is what the King pays for -- not a year.
+  // The calendar (and with it the per-year encounter quotas and karma's
+  // drift back toward neutral) runs on its own shared clock now, see
+  // game/year.ts.
   player.circles = (player.circles ?? 0) + 1;
   // Surviving the first lap is itself worth a point of fame.
   if (player.circles === 1) changeFame(player, 1);
-  // A new year quietly erodes karma back toward neutral, from either side.
-  if (player.karma < 0) changeKarma(player, 1);
-  else if (player.karma > 0) changeKarma(player, -1);
-  player.dragonEncounters = 0;
-  player.caravanEncounters = 0;
-  player.ambushEncounters = 0;
   recordStatEvent(board, player, 'kings-castle');
   console.log('Action: pass start for', player.name);
 

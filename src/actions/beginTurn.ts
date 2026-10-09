@@ -9,6 +9,7 @@ import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { collectTileTurnIncome } from '../game/income';
+import { startNewYear, yearForRound } from '../game/year';
 import { recordSimIncome } from '../utils/simLogStore';
 import { formatArmy } from '../utils/formatArmy';
 import { announce } from '../utils/announce';
@@ -66,8 +67,13 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   }
 
   if (board.activePlayerIndex === 0) {
+    // The last player's turn just ended, so this is also where the shared
+    // calendar ticks over -- ahead of the prison-skip check below, which is
+    // what makes a turn spent in jail still pass the time.
+    const yearBefore = yearForRound(board.round);
     board.round++;
     console.debug(`Round ${board.round}`, board.players);
+    if (yearForRound(board.round) > yearBefore) startNewYear(board);
   }
 
   if (board.activePlayer.turnsToSkip > 0) {

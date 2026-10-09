@@ -11,6 +11,7 @@ import { computeSlotsUsed } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { planArmyPurchase } from '../ai/botPlans';
 import { TAVERN_PRICE_MULT } from '../game/constants';
+import { currentYear } from '../game/year';
 import { t } from '../i18n';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
@@ -49,10 +50,10 @@ export function handleTavern(
 
   const player = board.activePlayer;
 
-  const circles = player.circles ?? 0;
-  const circleMultiplier = circles >= 12 ? 2 : circles >= 6 ? 1.5 : 1;
+  const years = currentYear(board);
+  const yearMultiplier = years >= 12 ? 2 : years >= 6 ? 1.5 : 1;
   const baseRoll = Math.floor(Math.random() * (TAVERN_UNITS_MAX - TAVERN_UNITS_MIN + 1)) + TAVERN_UNITS_MIN;
-  const unitsReward = Math.round(baseRoll * circleMultiplier);
+  const unitsReward = Math.round(baseRoll * yearMultiplier);
   void roll; // dice animation still plays for atmosphere
   const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
 

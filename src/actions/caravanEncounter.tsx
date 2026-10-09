@@ -8,6 +8,7 @@ import { shouldAttackCaravan } from '../ai/decisions';
 import { rollCaravanPrize, CaravanPrize } from '../game/caravanPrize';
 import { announce } from '../utils/announce';
 import { getOverrides } from '../utils/overridesStore';
+import { currentYear } from '../game/year';
 import { t } from '../i18n';
 
 /** Share of the escort its cargo is worth that actually stands and fights.
@@ -28,8 +29,8 @@ export function checkCaravanEncounter(
   const ENCOUNTER_CHANCE = 1 / 12;
 
   if (!force) {
-    // No caravans during the first lap around the board
-    if ((player.circles ?? 0) < 1) return false;
+    // No caravans during the game's first year
+    if (currentYear(board) <= 1) return false;
 
     // Not enough units to threaten a caravan -- needs at least half the
     // army's own slot capacity filled, not just some flat minimum.

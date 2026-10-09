@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import groupsData from '../settings/groups.json';
 
 import { TILE_COUNT, FORK_START_INDEX, TILE_LEVEL_SCALE, REAL_ADVENTURE_MIN_TURNS } from '../game/constants';
+import { currentYear } from '../game/year';
 import { getTilePosition, isMobileLayout, parseTileName } from './board/common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../utils/mapEditStore';
 import { useForkChoice, setForkChoice } from '../utils/forkChoiceStore';
@@ -445,7 +446,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     !board.activePlayer.isComputer &&
     board.turnPhase === 'before-move' &&
     board.activePlayer.position === FORK_START_INDEX &&
-    Math.min(...board.players.map((p) => p.circles)) > REAL_ADVENTURE_MIN_TURNS;
+    currentYear(board) > REAL_ADVENTURE_MIN_TURNS;
 
   const renderForkChoice = () => {
     const pos = getTilePosition(FORK_START_INDEX);

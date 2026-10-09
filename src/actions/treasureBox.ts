@@ -1,6 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
+import { currentYear } from '../game/year';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
@@ -80,20 +81,22 @@ export function handleTreasureBox(
     return;
   }
 
-  const MULTIPLIER_CIRCLES_START = 1;
-  const MULTIPLIER_CIRCLES_6 = 2;
-  const MULTIPLIER_CIRCLES_12 = 2.5;
+  const MULTIPLIER_YEARS_START = 1;
+  const MULTIPLIER_YEARS_6 = 2;
+  const MULTIPLIER_YEARS_12 = 2.5;
 
-  const circles = player.circles ?? 0;
-  const circleMultiplier =
-    circles >= 12
-      ? MULTIPLIER_CIRCLES_12
-      : circles >= 6
-        ? MULTIPLIER_CIRCLES_6
-        : MULTIPLIER_CIRCLES_START;
+  // Scales with the shared calendar, so a trailing player's haul is worth
+  // the same as the leader's at any given moment.
+  const years = currentYear(board);
+  const yearMultiplier =
+    years >= 12
+      ? MULTIPLIER_YEARS_12
+      : years >= 6
+        ? MULTIPLIER_YEARS_6
+        : MULTIPLIER_YEARS_START;
 
   const sizeMultiplier = TREASURE_SIZE_MULTIPLIERS[size];
-  const goldReward = Math.round(effectiveRoll * TREASURE_BOX_MULTIPLIER * circleMultiplier * sizeMultiplier);
+  const goldReward = Math.round(effectiveRoll * TREASURE_BOX_MULTIPLIER * yearMultiplier * sizeMultiplier);
 
   player.gold += goldReward;
 

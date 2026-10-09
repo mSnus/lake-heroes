@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { playerScore } from '../game/score';
 import { DRAGON_MERCY_SCORE_RATIO, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { currentYear } from '../game/year';
 import {
   showDragonSkyScreen,
   showDragonAttackScreen,
@@ -17,10 +18,10 @@ import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
 const ENCOUNTER_CHANCE = 1 / 12;
-const MAX_ENCOUNTERS_PER_CIRCLE = 2;
+const MAX_ENCOUNTERS_PER_YEAR = 2;
 const FAME_THRESHOLD_ENCOUNTER = 4;
 const FAME_THRESHOLD_ATTACK = 5;
-const CIRCLE_THRESHOLD = 3;
+const YEAR_THRESHOLD = 3;
 
 export function checkDragonEncounter(
   board: GameState,
@@ -39,7 +40,7 @@ export function checkDragonEncounter(
     player.karma < 0 ? Math.min(1, baseAttackChance * KARMA_HOSTILE_ENCOUNTER_MULTIPLIER) : baseAttackChance;
 
   if (!force) {
-    if ((player.circles ?? 0) <= 2) {
+    if (currentYear(board) <= 2) {
       return false;
     }
 
@@ -48,7 +49,7 @@ export function checkDragonEncounter(
       return false;
     }
 
-    if ((player.dragonEncounters ?? 0) >= MAX_ENCOUNTERS_PER_CIRCLE) {
+    if ((player.dragonEncounters ?? 0) >= MAX_ENCOUNTERS_PER_YEAR) {
       return false;
     }
 
@@ -62,7 +63,7 @@ export function checkDragonEncounter(
   player.dragonEncounteredLastTurn = true;
 
   if (!force) {
-    if (player.fame < FAME_THRESHOLD_ENCOUNTER || (player.circles ?? 0) <= CIRCLE_THRESHOLD) {
+    if (player.fame < FAME_THRESHOLD_ENCOUNTER || currentYear(board) <= YEAR_THRESHOLD) {
       updateGameState(board);
       dragonSkyWithSay(board, onContinue);
       return true;

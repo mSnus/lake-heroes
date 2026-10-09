@@ -6,6 +6,7 @@ export type ForcedEncounter = 'dragon' | 'caravan-gold' | 'caravan-slaves' | 'ca
 import { Player } from './Player';
 import { Tile } from './Tile';
 import { KingsContract } from './kingsContracts';
+import type { YearEffect } from './year';
 import type { PlayerTurnStat, PlayerStatEvent } from './statistics';
 
 export class GameState {
@@ -21,6 +22,10 @@ export class GameState {
   gameMessage: string = '';
   kingRewardMessage: string = '';
   kingsContracts: KingsContract[] = [];
+  // Decrees and other calendar-scoped effects currently in force -- see
+  // game/year.ts. Empty for a save written before the calendar existed,
+  // which is exactly "nothing in force".
+  yearEffects: YearEffect[] = [];
   gameOver: boolean = false;
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.

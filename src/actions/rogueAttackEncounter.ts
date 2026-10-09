@@ -6,6 +6,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { razeTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { currentYear } from '../game/year';
 import { t } from '../i18n';
 
 const BASE_ENCOUNTER_CHANCE = 1 / 14;
@@ -32,8 +33,8 @@ export function checkRogueAttackEncounter(
   const player = board.activePlayer;
 
   if (!force) {
-    // No rogue attacks during the first lap around the board.
-    if ((player.circles ?? 0) < 1) return false;
+    // No rogue attacks during the game's first year.
+    if (currentYear(board) <= 1) return false;
 
     // Gated on fame alone -- this raids the tile's own garrison, not the
     // player's personal army, so the player's own armyPower/units aren't a

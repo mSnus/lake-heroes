@@ -9,7 +9,7 @@ export const MAX_PLAYERS = 6;
 // How big an ownable tile is drawn on the map, by level -- so an upgrade is
 // visible at a glance. Purely visual: nothing reads it but BoardCanvas.
 export const TILE_LEVEL_SCALE: Record<number, number> = { 1: 0.9, 2: 1, 3: 1.1 };
-export const REVEAL_GOLD_PER_CIRCLE = 25; // discovery bonus scales with the player's laps around the board
+export const REVEAL_GOLD_PER_YEAR = 25; // discovery bonus scales with how many years the game has run
 // Board fork: leaving FORK_START_INDEX branches onto either the short or the
 // long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
 // game/boardPath.ts (movement), utils/forkChoiceStore.ts (the pending
@@ -23,11 +23,16 @@ export const FORK_LONG_PATH = [7, 8, 9, 10, 11, 12];
 // steps away or fewer, i.e. whenever a single die could still reach it. A
 // player standing exactly ON the fork tile picks by hand instead.
 export const FORK_ROLL_RANGE = 6;
-// While even the furthest-along player hasn't finished this many laps yet,
-// the game is still a "getting started" phase -- the long path's hidden
-// coin flip (rollAndMove.ts) is forced short rather than risk stranding a
-// brand-new player on the longer route, and Joker's Queen's Gift (joker.ts)
-// falls back to gold instead of a Camp/Tower for the same reason. Reused
+// A year is this many turns per player -- the shared clock every player
+// moves along at the same rate, counted in go-rounds (board.round, bumped
+// once the last player's turn ends) rather than laps of the board, so a
+// turn spent in prison still passes the time. See game/year.ts.
+export const TURNS_PER_YEAR = 8;
+// While the game is still in its first this many years, it counts as a
+// "getting started" phase -- the long path's hidden coin flip
+// (rollAndMove.ts) is forced short rather than risk stranding a brand-new
+// player on the longer route, and Joker's Queen's Gift (joker.ts) falls
+// back to gold instead of a Camp/Tower for the same reason. Reused
 // wherever "is this still early game" needs an answer.
 export const REAL_ADVENTURE_MIN_TURNS = 3;
 // Joker's Hurricane only strikes the richest player, and only when they're
