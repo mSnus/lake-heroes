@@ -216,7 +216,7 @@
     "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
-    "claimedBy": "Занята {player}\n теперь у него {fame} {gold}",
+    "claimedBy": "{player} теперь {fame} {gold}",
     "belongsTo": "Принадлежит {player}\n{fame} {gold}",
     "yieldedBelongsTo": "Принадлежит 👑 Королю\n после передачи {player}\n{fame} {gold}",
     "tower": "башня",

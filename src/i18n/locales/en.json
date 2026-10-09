@@ -220,7 +220,7 @@
     "abandoned": "🏚️🧟‍♀️"
   },
   "tileClaimScreen": {
-    "claimedBy": "Was claimed by {player}\nwho is now {fame} {gold}",
+    "claimedBy": "{player} is now {fame} {gold}",
     "belongsTo": "Belongs to {player}\n{fame} {gold}",
     "yieldedBelongsTo": "Belongs to the 👑 King\n yielded by {player}\n{fame} {gold}",
     "tower": "tower",
