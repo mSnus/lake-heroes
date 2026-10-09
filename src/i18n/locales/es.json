@@ -391,7 +391,7 @@
       "item2": "Cada espacio de guarnición alberga hasta {slotCapacity} defensores. La capacidad de una casilla es de {level1Capacity}/{level2Capacity}/{level3Capacity} defensores en los niveles 1/2/3; las Torres también mejoran las tiradas de sus defensores.",
       "item3": "Las mejoras no se pueden vender por separado ni desmantelar, pero su precio se suma al valor de la casilla.",
       "item4": "Puedes enviar unidades a guarnecer una casilla en cualquier momento, pero solo puedes recuperarlas en tu ejército mientras visitas esa casilla.",
-      "item5": "Las casillas mejoradas permiten guarniciones más grandes y otorgan una bonificación adicional a las unidades defensoras: 🏯 - +{level1Pct}%, 🏯🏯 - +{level2Pct}%, 🏯🏯🏯 - +{level3Pct}%"
+      "item5": "Las casillas mejoradas permiten guarniciones más grandes y las ayudan a encajar los golpes: una guarnición absorbe parte de cada impacto, y el nivel de la casilla se suma — 🏯 +{level1Pct}%, 🏯🏯 +{level2Pct}%, 🏯🏯🏯 +{level3Pct}% absorbido. Los Campamentos y las Torres absorben un {fortifiedPct}% adicional."
     },
     "specialTiles": {
       "title": "Casillas especiales 🃏",

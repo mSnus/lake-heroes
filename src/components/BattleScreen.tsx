@@ -17,6 +17,7 @@ import { CaravanPrize } from '../game/caravanPrize';
 import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { useT } from '../i18n';
 import { getArtifactRollBonusBreakdown } from '../game/artifacts';
+import { ABSORB_PER_ROLL_POINT } from '../game/constants';
 import { stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
 import { realLossFromGridLoss } from '../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../game/battleGrid/battleSetup';
@@ -195,7 +196,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defenderGridTotal,
     attackerFormation,
     defenderFormation,
-    garrisonRollBonusPct,
+    garrisonAbsorbBonus,
     attackerRollBonus,
     defenderRollBonus,
     attackerManual,
@@ -217,13 +218,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // Shown as its own badge alongside (or instead of) artifact badges, same
   // spot under the garrison's name -- a fortified tile's level bonus.
   const garrisonBonusEntries: BonusEntry[] =
-    garrisonRollBonusPct > 0
+    garrisonAbsorbBonus > 0
       ? [
           {
             key: 'garrison-fortification',
             label: t('battleScreen.fortification'),
             emoji: '🏯',
-            bonus: Math.round(garrisonRollBonusPct * 100),
+            // Shown as the share of each hit the level is worth soaking,
+            // which is what a player can actually reason about.
+            bonus: Math.round(garrisonAbsorbBonus * ABSORB_PER_ROLL_POINT * 100),
             suffix: '%',
           },
         ]
@@ -398,7 +401,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   const brawlOpts = () => ({
     rng: Math.random,
     attackerFlatBonus: attackerRollBonus,
-    defenderPctBonus: garrisonRollBonusPct,
+    defenderAbsorbBonus: garrisonAbsorbBonus,
     defenderFlatBonus: defenderRollBonus,
   });
 
@@ -523,7 +526,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     const { state, events } = stepTurn(battle, {
       rng: Math.random,
       attackerFlatBonus: attackerRollBonus,
-      defenderPctBonus: garrisonRollBonusPct,
+      defenderAbsorbBonus: garrisonAbsorbBonus,
       defenderFlatBonus: defenderRollBonus,
     });
     // stepTurn now moves first and fights afterwards (same order as a brawl
@@ -547,7 +550,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       }),
     };
     animateBrawlMove(afterMove, () => animateCombat(state, combatEvents));
-  }, [phase, battle, isBrawl, attackerRollBonus, garrisonRollBonusPct, defenderRollBonus, animateCombat]);
+  }, [phase, battle, isBrawl, attackerRollBonus, garrisonAbsorbBonus, defenderRollBonus, animateCombat]);
 
   // Trigger resolution exactly once, the moment the grid battle ends —
   // watching `battle` rather than resolving inline inside the setBattle

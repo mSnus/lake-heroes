@@ -157,14 +157,16 @@ export const GARRISON_SLOT_CAPACITY = 8;
 // Every tile holds this many garrison slots beyond its level, so capacity
 // runs 16/24/32 by level rather than 8/16/24 (see Tile.ts's garrisonSlots).
 export const GARRISON_BONUS_SLOTS = 1;
-// Multiplies a Tower's fortification roll bonus (getGarrisonBonusPct), the
-// lever for making Towers defend better than everything else now that
-// capacity no longer distinguishes them. 1 = no advantage.
-export const TOWER_FORTIFICATION_MULT = 1;
-// % bonus a garrison's rolls get from being stationed on an upgraded tile,
-// by level -- see Tile.getGarrisonBonusPct, which applies this additively
-// to the roll itself during an actual battle.
-export const GARRISON_LEVEL_BONUS_PCT: Record<1 | 2 | 3, number> = { 1: 0.06, 2: 0.08, 3: 0.1 };
+// Defence is absorption rather than a counter-roll: the defender rolls for
+// what share of an incoming hit it soaks (see engine.ts's rollAbsorption).
+// A garrison stationed on a tile adds that tile's level to the roll, and
+// these groups -- the ones built to hold soldiers -- add one more on top.
+// Each point is worth 10% more of every hit absorbed.
+export const FORTIFIED_TILE_GROUPS = ['Camps', 'Towers'];
+// Absorbed share for each point of the second-stage roll: a roll of r
+// soaks ABSORB_PER_ROLL_POINT * r + ABSORB_BASE of the damage.
+export const ABSORB_PER_ROLL_POINT = 0.1;
+export const ABSORB_BASE = 0.2;
 export const MAX_ARMY_SLOTS = 5;
 // Fame thresholds for army slots: 0-2 fame -> 1 slot, 3-5 -> 2, 6-9 -> 3, 10+ -> 5
 // (the jump from 3 to 5 at the top bracket is deliberate, not a typo).

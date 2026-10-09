@@ -9,7 +9,8 @@ import { KNIGHT_FAME } from '../utils/fame';
 import {
   GARRISON_BONUS_SLOTS,
   GARRISON_SLOT_CAPACITY,
-  GARRISON_LEVEL_BONUS_PCT,
+  ABSORB_PER_ROLL_POINT,
+  FORTIFIED_TILE_GROUPS,
   FLAT_TILE_UNIT_INCOME,
   VISIT_GOLD_MULT,
   VISIT_UNITS_SHARE,
@@ -45,6 +46,12 @@ const HelpScreen: React.FC = () => {
   const demoTile = ownableTiles[demoIdx] ?? null;
   const garrisonCapacity = (level: number) =>
     (level + GARRISON_BONUS_SLOTS) * GARRISON_SLOT_CAPACITY;
+  // Read off a real tile rather than restating the rule, so the help can't
+  // drift from Tile.getGarrisonAbsorbBonus. Camps/Towers add one more point
+  // on top, quoted separately in the text.
+  const plainTile = ownableTiles.find((tl) => !FORTIFIED_TILE_GROUPS.includes(tl.group));
+  const absorbPct = (level: number) =>
+    Math.round((plainTile?.getGarrisonAbsorbBonus(level) ?? level) * ABSORB_PER_ROLL_POINT * 100);
   const stepDemo = (delta: number) =>
     setDemoIdx((i) => (i + delta + ownableTiles.length) % ownableTiles.length);
 
@@ -135,9 +142,10 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.tileUpgrades.item4')} />
             <HtmlLi
               html={t('helpScreen.tileUpgrades.item5', {
-                level1Pct: Math.round(GARRISON_LEVEL_BONUS_PCT[1] * 100),
-                level2Pct: Math.round(GARRISON_LEVEL_BONUS_PCT[2] * 100),
-                level3Pct: Math.round(GARRISON_LEVEL_BONUS_PCT[3] * 100),
+                level1Pct: absorbPct(1),
+                level2Pct: absorbPct(2),
+                level3Pct: absorbPct(3),
+                fortifiedPct: Math.round(ABSORB_PER_ROLL_POINT * 100),
               })}
             />
           </ul>

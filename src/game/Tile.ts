@@ -1,4 +1,4 @@
-import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, GARRISON_BONUS_SLOTS, TOWER_FORTIFICATION_MULT, GARRISON_LEVEL_BONUS_PCT } from './constants';
+import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, GARRISON_BONUS_SLOTS, FORTIFIED_TILE_GROUPS } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER, isBanzaiAttack } from './army';
@@ -220,7 +220,7 @@ export class Tile implements TileJSON {
    * player's army slots scale with fame (see game/army.ts), plus
    * GARRISON_BONUS_SLOTS so capacity runs 16/24/32 by level. Uniform across
    * groups: a Tower's edge is its fortification bonus, not more room (see
-   * getGarrisonBonusPct). */
+   * getGarrisonAbsorbBonus). */
   get garrisonSlots(): number {
     return this.level + GARRISON_BONUS_SLOTS;
   }
@@ -343,14 +343,16 @@ export class Tile implements TileJSON {
     return this.bonuses ? this.bonuses[level] || 0 : 0;
   }
 
-  /** % bonus a garrison's rolls get from being stationed on a tile of this
-   * level, applied additively to the roll itself during an actual battle
-   * (see BattleScreen) — it no longer inflates the static defence/power
-   * number below, so a fortified tile fights tougher without pretending to
-   * have more defenders than it really does. */
-  getGarrisonBonusPct(level: number): number {
-    const base = GARRISON_LEVEL_BONUS_PCT[level >= 3 ? 3 : level === 2 ? 2 : 1];
-    return base * (this.group === 'Towers' ? TOWER_FORTIFICATION_MULT : 1);
+  /** What a garrison stationed here adds to its second-stage absorption
+   * roll (see engine.ts's rollAbsorption): this tile's level, plus one more
+   * for the groups built to hold soldiers. So 1/2/3 by level for ordinary
+   * land and 2/3/4 for Camps and Towers — each point soaking 10% more of
+   * every incoming hit. It never inflates the static defence/power number
+   * below, so a fortified tile fights tougher without pretending to have
+   * more defenders than it really does. */
+  getGarrisonAbsorbBonus(level: number): number {
+    const lvl = Math.max(1, Math.min(3, level));
+    return lvl + (FORTIFIED_TILE_GROUPS.includes(this.group) ? 1 : 0);
   }
 
   /**
@@ -369,7 +371,7 @@ export class Tile implements TileJSON {
     // Defence = the garrison's weighted power (Riders count for more than
     // Militia — see game/army.ts). Wild/unowned guards have no tier, so
     // their power is just their headcount. The level's fortification bonus
-    // is a roll-time bonus now (getGarrisonBonusPct), not baked in here, so
+    // is a roll-time bonus now (getGarrisonAbsorbBonus), not baked in here, so
     // this no longer varies by level.
     return this.owner ? this.garrisonPower : this._garrison;
   }

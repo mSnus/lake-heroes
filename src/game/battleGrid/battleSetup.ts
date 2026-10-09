@@ -3,6 +3,7 @@ import { CaravanPrize } from '../caravanPrize';
 import { Tile } from '../Tile';
 import { DRAGON_UNITS } from '../constants';
 import { getArtifactRollBonus } from '../artifacts';
+import { ABSORB_PER_ROLL_POINT } from '../constants';
 import { isLocalHuman } from '../seats';
 import { sizeArmyForGrid } from './scale';
 
@@ -40,7 +41,7 @@ export interface BattleSetup {
   board: BattleBoard;
   attackerFormation: FormationSpec;
   defenderFormation: FormationSpec | undefined;
-  garrisonRollBonusPct: number;
+  garrisonAbsorbBonus: number;
   attackerRollBonus: number;
   defenderRollBonus: number;
   attackerManual: boolean;
@@ -165,10 +166,12 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
 
   // The level-based fortification bonus is earned by an actual garrison
   // defending its owner's land -- a wild/unclaimed tile's default guards
-  // (claimTile.ts, no defender) get none of it.
-  const garrisonRollBonusPct = (isTile || isRogue) && tile && tile.isOwned()
-    ? tile.getGarrisonBonusPct(tile.level)
-    : (statOverrides?.defenderPctBonus ?? 0);
+  // (claimTile.ts, no defender) get none of it. The simulator's own defence
+  // knob is a percentage, converted at the boundary since each point of the
+  // absorption roll is worth 10%.
+  const garrisonAbsorbBonus = (isTile || isRogue) && tile && tile.isOwned()
+    ? tile.getGarrisonAbsorbBonus(tile.level)
+    : Math.round((statOverrides?.defenderPctBonus ?? 0) / ABSORB_PER_ROLL_POINT);
 
   const attackerArtifactBonus = getArtifactRollBonus(attacker, { isDragon: isDragonFight });
   const defenderArtifactBonus =
@@ -202,7 +205,7 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     board,
     attackerFormation,
     defenderFormation,
-    garrisonRollBonusPct,
+    garrisonAbsorbBonus,
     attackerRollBonus,
     defenderRollBonus,
     attackerManual,

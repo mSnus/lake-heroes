@@ -5,6 +5,8 @@ import {
   DRAGON_HP,
   DRAGON_DMG_MIN,
   DRAGON_DMG_MAX,
+  ABSORB_BASE,
+  ABSORB_PER_ROLL_POINT,
 } from '../constants';
 import { getOverrides } from '../../utils/overridesStore';
 import { generateObstacles, placeArmy, relocateUnitsOffObstacles } from './placement';
@@ -86,15 +88,10 @@ function obstacleKeySet(state: GridBattleState): Set<string> {
   return new Set(state.obstacles.map((o) => `${o.col},${o.row}`));
 }
 
-// A unit that's actively defending (mitigating incoming damage rather than
-// dealing it) rolls with this bonus on top of whatever side bonuses
-// (artifacts, garrison) already apply. Negative: defence rolls 10% weaker
-// than the same unit's attack -- balance knob, adjust as needed.
-const DEFENSE_ROLL_BONUS = -0.1;
-
 // A unit that moved this turn defends less effectively -- it hasn't set its
-// footing to brace for the hit.
-const MOVED_DEFENSE_PENALTY = 0.1;
+// footing to brace for the hit. One point off its second-stage absorption
+// roll, i.e. 10% less of the hit soaked.
+const MOVED_DEFENSE_PENALTY = 1;
 
 // Chance that a connecting hit against an already-wounded target is a
 // critical hit, killing it outright regardless of remaining HP. Only ever
@@ -151,6 +148,33 @@ function rollDamage(u: GridUnit, pctBonus: number, flatBonus: number, rng: () =>
 
   const base = rollInRange(min, max, rng) * mult;
   return Math.max(0, Math.round(base * (1 + pctBonus) + flatBonus));
+}
+
+/**
+ * What share of one incoming hit a defender soaks, in two stages:
+ *
+ *  1. a d6 -- a 1 soaks nothing at all, a 6 soaks the lot, and anything
+ *     between goes on to
+ *  2. a second d6, soaking ABSORB_BASE + ABSORB_PER_ROLL_POINT per point,
+ *     i.e. 30%-80%.
+ *
+ * `bonus` shifts only that second roll (a garrison's tile level, less a
+ * point if the unit moved this turn), so even the sturdiest tower still
+ * takes a clean hit on a first-stage 1. Clamped to 0..1.
+ *
+ * Deliberately NOT a counter-roll against the attacker's own damage roll,
+ * which is what the old defence worked as: that let a weakened attacker
+ * (see GridUnit.energy) be outrolled so reliably that two drained armies
+ * could stand and swing at each other forever without landing a point.
+ * A share always leaves something through -- see the floor in resolveCombat.
+ */
+function rollAbsorption(bonus: number, rng: () => number): number {
+  const stage1 = rollInRange(1, 6, rng);
+  if (stage1 === 1) return 0;
+  if (stage1 === 6) return 1;
+
+  const stage2 = rollInRange(1, 6, rng) + bonus;
+  return Math.max(0, Math.min(1, ABSORB_BASE + ABSORB_PER_ROLL_POINT * stage2));
 }
 
 interface SideComp {
@@ -593,8 +617,8 @@ function resolveCombat(
 ): { engagedIds: Set<string> } {
   const attackerPctBonus = opts.attackerPctBonus ?? 0;
   const attackerFlatBonus = opts.attackerFlatBonus ?? 0;
-  const defenderPctBonus = opts.defenderPctBonus ?? 0;
   const defenderFlatBonus = opts.defenderFlatBonus ?? 0;
+  const defenderAbsorbBonus = opts.defenderAbsorbBonus ?? 0;
 
   const adjacency = new Map<string, GridUnit[]>();
   for (const u of combatPool) adjacency.set(u.id, livingAdjacentEnemies(u, combatPool));
@@ -632,13 +656,22 @@ function resolveCombat(
   // Every engaged unit with a target attacks it, full stop.
   const willAttack = (u: GridUnit): boolean => !!chosenTarget.get(u.id);
 
-  const rollFor = (u: GridUnit, defending: boolean): number => {
-    const sidePct = u.side === 'attacker' ? attackerPctBonus : defenderPctBonus;
+  // Only whoever is swinging rolls damage now -- a defender's own stats no
+  // longer decide what it stops, the absorption roll does. The flat bonus
+  // still follows the unit's own side, so an ambushed player (who holds the
+  // grid's defender role) still swings with their weapons' bonus.
+  const attackRollFor = (u: GridUnit): number => {
+    const sidePct = u.side === 'attacker' ? attackerPctBonus : 0;
     const sideFlat = u.side === 'attacker' ? attackerFlatBonus : defenderFlatBonus;
-    const movedPenalty = defending && movedIds.has(u.id) ? MOVED_DEFENSE_PENALTY : 0;
-    const pct = (defending ? sidePct + DEFENSE_ROLL_BONUS : sidePct) - movedPenalty;
-    return rollDamage(u, pct, sideFlat, rng);
+    return rollDamage(u, sidePct, sideFlat, rng);
   };
+
+  // The defender's second-stage bonus: its side's standing bonus (a
+  // garrison's tile level -- see Tile.getGarrisonAbsorbBonus), less a point
+  // if it moved this turn and never set its footing.
+  const absorbBonusFor = (u: GridUnit): number =>
+    (u.side === 'defender' ? defenderAbsorbBonus : 0) -
+    (movedIds.has(u.id) ? MOVED_DEFENSE_PENALTY : 0);
 
   const damage = new Map<string, number>();
   const applyDamage = (unitId: string, amount: number) => {
@@ -646,10 +679,10 @@ function resolveCombat(
     damage.set(unitId, (damage.get(unitId) ?? 0) + amount);
   };
 
-  // Each attack is resolved against its own fresh defence roll, rather than
-  // one roll subtracted from the summed incoming -- being swarmed should
-  // hurt, but every attacker after the first meets a progressively weaker
-  // guard rather than a free pass through one already-spent roll.
+  // Each attack is soaked by its own fresh absorption roll, rather than one
+  // roll spread over the summed incoming -- being swarmed should hurt, but
+  // every attacker after the first meets a progressively weaker guard
+  // rather than a free pass through one already-spent roll.
   const incomingBy = new Map<string, GridUnit[]>();
   for (const u of engaged) {
     if (!willAttack(u)) continue;
@@ -659,10 +692,10 @@ function resolveCombat(
     else incomingBy.set(target.id, [u]);
   }
 
-  // How much of its defence roll a target still brings to bear against its
-  // i-th attacker this turn (1-based): full against the first, then 80%,
-  // 70%, ... A hex cell has at most 6 neighbours, so this bottoms out at
-  // 40%; floored at 0 regardless.
+  // How much of the share it rolled a target actually brings to bear
+  // against its i-th attacker this turn (1-based): all of it against the
+  // first, then 80%, 70%, ... A hex cell has at most 6 neighbours, so this
+  // bottoms out at 40%; floored at 0 regardless.
   const defenceFactor = (i: number): number => (i <= 1 ? 1 : Math.max(0, (100 - i * 10) / 100));
 
   for (const u of engaged) {
@@ -672,20 +705,24 @@ function resolveCombat(
       (a, b) => (rand.get(a.id) ?? 0) - (rand.get(b.id) ?? 0)
     );
     let total = 0;
-    let defenceTotal = 0;
+    let absorbedTotal = 0;
     let critical = false;
     const wasWounded = u.hp < u.maxHp;
     attackers.forEach((atk, idx) => {
-      let roll = rollFor(atk, false);
+      let roll = attackRollFor(atk);
       // A spent attacker still swings, just much weaker.
       if (atk.energy === 0) {
         roll = Math.round(roll * ENERGY_DEPLETED_DAMAGE_MULT);
       }
 
       atk.energy = Math.max(0, atk.energy - 1);
-      const guard = Math.round(rollFor(u, true) * defenceFactor(idx + 1));
-      defenceTotal += guard;
-      const hit = Math.max(0, roll - guard);
+      const absorbed = rollAbsorption(absorbBonusFor(u), rng) * defenceFactor(idx + 1);
+      // A partial soak always lets a point through, however feeble the
+      // swing -- only an outright block (a first-stage 6, which survives
+      // the swarm factor only for the first attacker) stops it dead. This
+      // floor is what guarantees a fight can always resolve.
+      const hit = roll <= 0 || absorbed >= 1 ? 0 : Math.max(1, Math.floor(roll * (1 - absorbed)));
+      absorbedTotal += roll - hit;
       total += hit;
       // Only a landed hit (not fully blocked) against an already-wounded
       // target can crit -- a full-health unit, or a fully-soaked attack,
@@ -704,8 +741,9 @@ function resolveCombat(
       });
     });
     // Every engaged unit shows as defending, attacking or not -- an unattacked
-    // one just has nothing to soak.
-    events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll: defenceTotal });
+    // one just has nothing to soak. `roll` carries the damage actually
+    // soaked, which is the readable stand-in now that there's no guard roll.
+    events.push({ type: 'defend', unitId: u.id, side: u.side, kind: u.kind, roll: absorbedTotal });
     if (attackers.length === 0) continue;
     // A critical hit kills regardless of remaining HP -- bump total up to at
     // least the target's current HP so the hp-= below always zeroes it out.

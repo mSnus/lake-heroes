@@ -3,6 +3,7 @@ import { sizeArmyForGrid } from './scale';
 import { battleBoardFor, squadGroupCount } from './layout';
 import { FormationSpec } from './formations';
 import { GridBattleState, StepTurnOptions } from './types';
+import { ABSORB_PER_ROLL_POINT } from '../constants';
 
 export interface SimAttacker {
   militia: number;
@@ -108,7 +109,12 @@ export function simulateOneBattle(
     rows
   );
 
-  const opts: StepTurnOptions = { defenderPctBonus, attackerFlatBonus: attacker.flatBonus ?? 0 };
+  // The sim screen's defence input is a percentage; each point of the
+  // absorption roll is worth ABSORB_PER_ROLL_POINT of a hit.
+  const opts: StepTurnOptions = {
+    defenderAbsorbBonus: Math.round(defenderPctBonus / ABSORB_PER_ROLL_POINT),
+    attackerFlatBonus: attacker.flatBonus ?? 0,
+  };
   state = runGridBattleToCompletion(state, isBrawl, opts);
 
   const attackerLeft = state.units.filter((u) => u.side === 'attacker').length;

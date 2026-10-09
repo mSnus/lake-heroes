@@ -386,7 +386,7 @@
       "item2": "Each upgrade brings one more garrison tower 🏯 to the tile. Each tower can hold up to 10 defending units and adds a bonus to their defence rolls.",
       "item3": "Upgrades can't be sold separately or dismantled, but their price is added to the tile's price value.",
       "item4": "You can send units to garrison a tile at any time, but can only take them back into your army while visiting that tile.",
-      "item5": "Upgraded tiles allow bigger garrisons and provide additional bonus to defending units: 🏯 - +{level1Pct}%, 🏯🏯 - +{level2Pct}%, 🏯🏯🏯 - +{level3Pct}%"
+      "item5": "Upgraded tiles allow bigger garrisons and help them soak damage: a garrison absorbs part of every hit, and the tile's level adds to that — 🏯 +{level1Pct}%, 🏯🏯 +{level2Pct}%, 🏯🏯🏯 +{level3Pct}% absorbed. Camps and Towers absorb a further {fortifiedPct}%."
     },
     "specialTiles": {
       "title": "Special tiles 🃏",

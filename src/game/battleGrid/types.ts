@@ -89,12 +89,16 @@ export interface TurnResult {
 
 export interface StepTurnOptions {
   rng?: () => number;
-  /** Applied to every roll (attack/defence alike) a side's units make this
-   * turn: `roll = round(base * (1 + pctBonus) + flatBonus)` — mirrors the
-   * old single-duel-roll formula (fortification % bonus, then a flat
-   * artifact bonus on top), just applied per-unit-roll instead of once. */
+  /** Applied to every damage roll a side's units make this turn:
+   * `roll = round(base * (1 + pctBonus) + flatBonus)`. Attack only --
+   * defence is an absorption roll now and takes none of these (see
+   * defenderAbsorbBonus). The defender side still gets its flat bonus on
+   * its own swings, which is what arms an ambushed player's weapons. */
   attackerPctBonus?: number;
   attackerFlatBonus?: number;
-  defenderPctBonus?: number;
   defenderFlatBonus?: number;
+  /** Added to the defending side's second-stage absorption roll -- a
+   * garrison's tile level (see Tile.getGarrisonAbsorbBonus). Each point
+   * soaks 10% more of every incoming hit. */
+  defenderAbsorbBonus?: number;
 }

@@ -23,7 +23,7 @@ export function runHeadlessBattle(props: BattleScreenProps): { setup: BattleSetu
 
   const opts: StepTurnOptions = {
     attackerFlatBonus: setup.attackerRollBonus,
-    defenderPctBonus: setup.garrisonRollBonusPct,
+    defenderAbsorbBonus: setup.garrisonAbsorbBonus,
     defenderFlatBonus: setup.defenderRollBonus,
   };
   const finalState = runGridBattleToCompletion(initialState, setup.board.isBrawl, opts);
