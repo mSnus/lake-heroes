@@ -499,7 +499,16 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
               <div
                 key={u.id}
                 className={'bfg-unit bfg-unit-' + u.side + (actedIds.has(u.id) ? ' bfg-unit-acted' : '')}
-                style={{ ...cellStyle(u.col, u.row), ...(op !== undefined ? { opacity: op } : {}) }}
+                style={{
+                  ...cellStyle(u.col, u.row),
+                  ...(op !== undefined ? { opacity: op } : {}),
+                  // A unit moved out this turn is invisible but stays
+                  // mounted here (its twin now stands at the destination) --
+                  // without this it would silently eat clicks aimed at the
+                  // now-empty cell it left (the arena's click-to-move never
+                  // sees them land, see handleArenaClick's .bfg-unit guard).
+                  ...(op === 0 ? { pointerEvents: 'none' } : {}),
+                }}
                 title={`${u.kind} ${u.hp}/${u.maxHp} hp, ${u.energy}/${energyFor(u.kind)} energy`}
                 onClick={brawl ? () => revealHp(u.id) : undefined}
               >
