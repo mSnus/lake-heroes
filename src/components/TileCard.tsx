@@ -11,6 +11,7 @@ import { garrisonSlotCapacity, isBanzaiAttack } from '../game/army';
 import { UNIT_POWER } from '../game/army';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
+import { hasYearEffect, DOUBLE_INCOME_EFFECT } from '../game/year';
 import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
@@ -82,15 +83,24 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   // Per-turn payout at the tile's current level (see game/income.ts's
   // tileTurnIncome) -- exactly one of gold/units is nonzero, depending on
-  // the tile's own bonus type.
+  // the tile's own bonus type. The figure below is already doubled when
+  // this year's lucky groups include this tile's own (see game/year.ts) --
+  // the badge is purely an annotation explaining why, not a second
+  // multiplier applied here.
   const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState, ownerPlayer ?? undefined);
+  const doubleIncomeActive = !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
   // Units below this are hidden entirely (not just rounded away) -- a
   // trickle of 1 isn't worth a line, but that means the "per turn" caption
   // below must stay hidden right along with it, not dangle on its own.
   const hasTurnIncome = turnIncome.gold > 0 || turnIncome.units > 1;
   const turnIncomeLabel = (
     <>
-      {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
+      {turnIncome.gold > 0 && (
+        <>
+          +{turnIncome.gold}🟡
+          {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}{' '}
+        </>
+      )}
       {turnIncome.units > 1 && <>+{turnIncome.units}🧍</>}
     </>
   );
