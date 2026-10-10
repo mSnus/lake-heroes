@@ -5,7 +5,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
-import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
+import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact, hasArtifact, getArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS, KARMA_JOKER_BAD_CHANCE } from '../game/constants';
 import { currentYear, addYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT } from '../game/year';
@@ -70,10 +70,23 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       message = t('joker.taxesMessage');
       break;
 
-    case 'Plague':
+    case 'Plague': {
       addYearEffect(board, { id: NO_UNIT_INCOME_EFFECT, untilYear: currentYear(board) });
       message = t('joker.plagueMessage');
+
+      // Pipe of Hamelin exempts its holder from this for as long as the
+      // effect lasts (see income.ts's tileTurnIncome) -- named here so it
+      // doesn't just happen silently.
+      const immune = board.players.filter((p) => hasArtifact(p, 'pipe-of-hamelin'));
+      if (immune.length > 0) {
+        const artifact = getArtifact('pipe-of-hamelin')!;
+        message += ` ${immune
+          .map((p) => t('joker.savedByArtifact', { playerName: p.name, artifactName: artifact.name, emoji: artifact.emoji }))
+          .join('; ')}`;
+      }
+
       break;
+    }
 
     case 'Hurricane': {
       // Only the strongest player is ever at risk, and only while they're

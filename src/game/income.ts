@@ -3,6 +3,7 @@ import { Player } from './Player';
 import { Tile } from './Tile';
 import { FLAT_TILE_UNIT_INCOME } from './constants';
 import { syndicateMultiplier } from './syndicate';
+import { hasArtifact } from './artifacts';
 import { hasYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
 
 /**
@@ -27,12 +28,18 @@ import { hasYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INC
  * else including the double. Omitted entirely by the one caller with no
  * live game to check (HelpScreen's static demo tile card), which then
  * behaves exactly as if no year effect were ever in force.
+ *
+ * `player`, when given alongside `board`, is checked for the Pipe of
+ * Hamelin: its holder's units are exempt from a live Plague
+ * (NO_UNIT_INCOME_EFFECT) specifically -- Taxes has no artifact
+ * protection and never did, so gold suppression is unconditional.
  */
 export function tileTurnIncome(
   tile: Tile,
   mult: number = 1,
   level: number = tile.level,
-  board?: GameState
+  board?: GameState,
+  player?: Player
 ): { gold: number; units: number } {
   if (tile.isYielded) return { gold: 0, units: 0 };
   const groupBoost = board && hasYearEffect(board, DOUBLE_INCOME_EFFECT, tile.group) ? 2 : 1;
@@ -43,7 +50,8 @@ export function tileTurnIncome(
       : { gold: own, units: FLAT_TILE_UNIT_INCOME };
 
   if (board && hasYearEffect(board, NO_GOLD_INCOME_EFFECT)) result.gold = 0;
-  if (board && hasYearEffect(board, NO_UNIT_INCOME_EFFECT)) result.units = 0;
+  const plagueImmune = !!player && hasArtifact(player, 'pipe-of-hamelin');
+  if (board && hasYearEffect(board, NO_UNIT_INCOME_EFFECT) && !plagueImmune) result.units = 0;
   return result;
 }
 
@@ -76,7 +84,7 @@ export function playerRawTurnIncome(board: GameState, player: Player): { gold: n
   let units = 0;
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id) continue;
-    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group), undefined, board);
+    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group), undefined, board, player);
     gold += income.gold;
     units += income.units;
   }
