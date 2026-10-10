@@ -74,17 +74,31 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
       addYearEffect(board, { id: NO_UNIT_INCOME_EFFECT, untilYear: currentYear(board) });
       message = t('joker.plagueMessage');
 
-      // Pipe of Hamelin exempts its holder from this for as long as the
-      // effect lasts (see income.ts's tileTurnIncome) -- named here so it
-      // doesn't just happen silently.
-      const immune = board.players.filter((p) => hasArtifact(p, 'pipe-of-hamelin'));
-      if (immune.length > 0) {
-        const artifact = getArtifact('pipe-of-hamelin')!;
-        message += ` ${immune
-          .map((p) => t('joker.savedByArtifact', { playerName: p.name, artifactName: artifact.name, emoji: artifact.emoji }))
-          .join('; ')}`;
+      // Pipe of Hamelin exempts its holder for as long as the effect lasts
+      // (checked live, every turn -- see income.ts's tileTurnIncome).
+      // Divine Beads gets its usual 50% roll, but taken once here rather
+      // than every turn (which would make the protection flicker) --
+      // stamped onto plagueImmuneUntilYear so tileTurnIncome can read it
+      // without re-rolling. Either way, named here so it doesn't just
+      // happen silently.
+      const immuneMsgs: string[] = [];
+      for (const p of board.players) {
+        let artifactId: string | null = null;
+        if (hasArtifact(p, 'pipe-of-hamelin')) {
+          artifactId = 'pipe-of-hamelin';
+        } else if (hasArtifact(p, 'divine-beads') && Math.random() < 0.5) {
+          p.plagueImmuneUntilYear = currentYear(board);
+          artifactId = 'divine-beads';
+        }
+
+        if (!artifactId) continue;
+        const artifact = getArtifact(artifactId)!;
+        immuneMsgs.push(
+          t('joker.savedByArtifact', { playerName: p.name, artifactName: artifact.name, emoji: artifact.emoji })
+        );
       }
 
+      if (immuneMsgs.length > 0) message += ` ${immuneMsgs.join('; ')}`;
       break;
     }
 

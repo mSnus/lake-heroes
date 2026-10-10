@@ -47,6 +47,14 @@ export class Player {
    * to undefined (units > 0) or being overwritten (a fresh drop to 0) ever
    * changes it. */
   zeroUnitsSinceYear?: number;
+  /** Set when Divine Beads wins its 50% roll against a live Plague --
+   * the roll happens once, at the moment Plague fires (actions/joker.ts),
+   * not every turn, so this stamps which year that exemption is good for
+   * rather than re-rolling (which would make the protection flicker on
+   * and off turn to turn). income.ts's tileTurnIncome checks it alongside
+   * Pipe of Hamelin, which needs no stamp since it protects live, every
+   * turn, for as long as it's held -- see that function's own comment. */
+  plagueImmuneUntilYear?: number;
   isPrisonerOfWar: boolean;
   hasClaimedThisTurn: boolean;
   hasConsideredClaimThisTurn: boolean;

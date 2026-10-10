@@ -4,7 +4,7 @@ import { Tile } from './Tile';
 import { FLAT_TILE_UNIT_INCOME } from './constants';
 import { syndicateMultiplier } from './syndicate';
 import { hasArtifact } from './artifacts';
-import { hasYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
+import { hasYearEffect, currentYear, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
 
 /**
  * A single owned tile's per-turn income: its own bonus (gold for Mills/
@@ -29,10 +29,14 @@ import { hasYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INC
  * live game to check (HelpScreen's static demo tile card), which then
  * behaves exactly as if no year effect were ever in force.
  *
- * `player`, when given alongside `board`, is checked for the Pipe of
- * Hamelin: its holder's units are exempt from a live Plague
- * (NO_UNIT_INCOME_EFFECT) specifically -- Taxes has no artifact
- * protection and never did, so gold suppression is unconditional.
+ * `player`, when given alongside `board`, is checked for the two artifacts
+ * that exempt a holder from a live Plague (NO_UNIT_INCOME_EFFECT)
+ * specifically -- Taxes has no artifact protection and never did, so gold
+ * suppression is unconditional. Pipe of Hamelin protects live, every turn,
+ * for as long as it's held. Divine Beads is a one-shot 50% roll taken once
+ * when Plague fires (see actions/joker.ts), stamped onto
+ * player.plagueImmuneUntilYear rather than re-rolled here -- re-rolling
+ * every turn would make the protection flicker on and off.
  */
 export function tileTurnIncome(
   tile: Tile,
@@ -50,7 +54,12 @@ export function tileTurnIncome(
       : { gold: own, units: FLAT_TILE_UNIT_INCOME };
 
   if (board && hasYearEffect(board, NO_GOLD_INCOME_EFFECT)) result.gold = 0;
-  const plagueImmune = !!player && hasArtifact(player, 'pipe-of-hamelin');
+  const plagueImmune =
+    !!player &&
+    (hasArtifact(player, 'pipe-of-hamelin') ||
+      (!!board &&
+        player.plagueImmuneUntilYear !== undefined &&
+        player.plagueImmuneUntilYear >= currentYear(board)));
   if (board && hasYearEffect(board, NO_UNIT_INCOME_EFFECT) && !plagueImmune) result.units = 0;
   return result;
 }
