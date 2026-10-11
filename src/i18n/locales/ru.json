@@ -166,7 +166,8 @@
     "statistics": "Статистика",
     "battleSim": "Симулятор боя",
     "mapEditOn": "Редактор карты: ВКЛ",
-    "mapEditOff": "Редактор карты: ВЫКЛ"
+    "mapEditOff": "Редактор карты: ВЫКЛ",
+    "saveSlots": "Слоты сохранения"
   },
   "kingsCastle": {
     "title": "Замок короля",
@@ -1106,5 +1107,23 @@
       "Farms": "Фермы",
       "Fields": "Поля"
     }
+  },
+  "saveSlots": {
+    "title": "Слоты Сохранения",
+    "hint": "Одновременно может быть в процессе до 5 игр — локальных или сетевых. Переключение слота перезагружает страницу.",
+    "empty": "Пусто",
+    "onlineSummary": "Сетевая игра · код {code} · {status}",
+    "statusActive": "активна",
+    "statusFinished": "завершена",
+    "unknownPlayers": "неизвестные игроки",
+    "localSummaryOver": "{players} · игра завершена",
+    "localSummary": "{players} · ход {turn}",
+    "slotLabel": "Слот {slot}",
+    "activeBadge": "АКТИВЕН",
+    "switchEmpty": "Начать здесь",
+    "switch": "Переключить",
+    "delete": "Удалить",
+    "confirmDelete": "Удалить игру в слоте {slot}? Это нельзя отменить.",
+    "slotCountNote": "Всего {count} слотов — слот 1 — исходное сохранение этого устройства."
   }
 }

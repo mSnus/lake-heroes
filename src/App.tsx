@@ -11,7 +11,7 @@ import { Tile, TileJSON } from './game/Tile';
 import { BoardCanvas } from './components/BoardCanvas';
 import { PlayerLabel } from './components/PlayerLabel';
 import { CurrentPlayerCard } from './components/CurrentPlayerCard';
-import { loadFromStorage, saveToStorage } from './utils/storage';
+import { loadFromStorage, saveToStorage, removeFromStorage } from './utils/storage';
 import { halt, isHalted, resumeAfterHalt } from './utils/haltStore';
 import { resetFogTransition } from './utils/transitionStore';
 import { say, sayLocal } from './utils/say';
@@ -561,8 +561,8 @@ function App() {
           return;
         } catch (e) {
           console.error('Failed to restore saved game, starting fresh:', e);
-          localStorage.removeItem('game-state');
-          localStorage.removeItem('game-log');
+          removeFromStorage('game-state');
+          removeFromStorage('game-log');
           setGameLog([]);
         }
       }
@@ -597,7 +597,7 @@ function App() {
         hordeUnits: screen.hordeUnits,
       });
     } else {
-      localStorage.removeItem('game-screen');
+      removeFromStorage('game-screen');
     }
   }, [gameState, screen]);
 
@@ -747,9 +747,9 @@ function App() {
                   onClick={() => {
                     halt();
       resetFogTransition();
-                    localStorage.removeItem('game-state');
-                    localStorage.removeItem('game-screen');
-                    localStorage.removeItem('game-log');
+                    removeFromStorage('game-state');
+                    removeFromStorage('game-screen');
+                    removeFromStorage('game-log');
                     // Or the next game silently inherits this game's join code.
                     clearOnlineSession();
                     resetLiveFeed();

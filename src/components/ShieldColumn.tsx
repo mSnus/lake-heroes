@@ -24,6 +24,8 @@ import ShareCodesScreen from './ShareCodesScreen';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
 import { isMobileLayout } from './board/common';
+import { removeFromStorage } from '../utils/storage';
+import SaveSlotsScreen from './SaveSlotsScreen';
 
 interface ShieldColumnProps {
   gameState: GameState;
@@ -61,9 +63,9 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
       halt();
       resetFogTransition();
       try {
-        localStorage.removeItem('game-state');
-        localStorage.removeItem('game-screen');
-        localStorage.removeItem('game-log');
+        removeFromStorage('game-state');
+        removeFromStorage('game-screen');
+        removeFromStorage('game-log');
         // Cheated parameters shouldn't leak into a fresh game.
         resetOverrides();
         // Or the next game silently inherits this game's join code.
@@ -144,6 +146,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   📈
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.saveSlots')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <SaveSlotsScreen />, doNotPersist: true });
+                  }}
+                  className="shield-button"
+                >
+                  🛡️
                 </button>
               </div>
               <div className="shield-button-container" title={t('common.language')}>

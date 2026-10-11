@@ -169,7 +169,8 @@
     "statistics": "Estadísticas",
     "battleSim": "Simulador de Batallas",
     "mapEditOn": "Edición de mapa: ACTIVADA (haz clic en una casilla o icono de jugador para ajustar)",
-    "mapEditOff": "Edición de mapa: DESACTIVADA"
+    "mapEditOff": "Edición de mapa: DESACTIVADA",
+    "saveSlots": "Ranuras de guardado"
   },
   "kingsCastle": {
     "title": "El Castillo del Rey",
@@ -1109,5 +1110,23 @@
       "Farms": "las Granjas",
       "Fields": "los Campos"
     }
+  },
+  "saveSlots": {
+    "title": "Ranuras de Guardado",
+    "hint": "Hasta 5 partidas —locales u online— pueden estar en curso a la vez. Cambiar de ranura recarga la página.",
+    "empty": "Vacía",
+    "onlineSummary": "Partida online · código {code} · {status}",
+    "statusActive": "activa",
+    "statusFinished": "terminada",
+    "unknownPlayers": "jugadores desconocidos",
+    "localSummaryOver": "{players} · partida terminada",
+    "localSummary": "{players} · turno {turn}",
+    "slotLabel": "Ranura {slot}",
+    "activeBadge": "ACTIVA",
+    "switchEmpty": "Empezar aquí",
+    "switch": "Cambiar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar la partida de la ranura {slot}? No se puede deshacer.",
+    "slotCountNote": "{count} ranuras en total — la ranura 1 es la partida original de este dispositivo."
   }
 }

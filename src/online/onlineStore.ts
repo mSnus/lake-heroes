@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { setSeatSession } from '../game/seats';
+import { slotKey } from '../utils/saveSlots';
 import { SeatCode } from './api';
 
 const STORAGE_KEY = 'online-game';
@@ -68,7 +69,7 @@ export const clientId = loadClientId();
 
 function loadSession(): OnlineState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(slotKey(STORAGE_KEY));
     if (!raw) return { sync: 'idle' };
     const s = JSON.parse(raw) as OnlineSession;
     if (typeof s?.code !== 'string' || typeof s?.seat !== 'number') return { sync: 'idle' };
@@ -102,13 +103,13 @@ syncSeats();
 function persist(): void {
   try {
     if (current.code === undefined) {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(slotKey(STORAGE_KEY));
       return;
     }
 
     const { code, seat, seats, links, isHost, version, status, codes } = current;
     localStorage.setItem(
-      STORAGE_KEY,
+      slotKey(STORAGE_KEY),
       JSON.stringify({ code, seat, seats, links, isHost, version, status, codes })
     );
   } catch {
@@ -145,7 +146,7 @@ export function clearOnlineSession(): void {
   current = { sync: 'idle' };
   syncSeats();
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(slotKey(STORAGE_KEY));
   } catch {
     /* nothing to clear */
   }

@@ -167,7 +167,8 @@
     "battleSim": "Battle Simulator",
     "economySim": "Economy Simulator",
     "mapEditOn": "Map edit: ON (click a tile or player icon to adjust)",
-    "mapEditOff": "Map edit: OFF"
+    "mapEditOff": "Map edit: OFF",
+    "saveSlots": "Save slots"
   },
   "kingsCastle": {
     "title": "The King's Castle",
@@ -1105,5 +1106,23 @@
       "Farms": "Farms",
       "Fields": "Fields"
     }
+  },
+  "saveSlots": {
+    "title": "Save Slots",
+    "hint": "Up to 5 games — local or online — can be in progress at once. Switching slots reloads the page.",
+    "empty": "Empty",
+    "onlineSummary": "Online game · code {code} · {status}",
+    "statusActive": "active",
+    "statusFinished": "finished",
+    "unknownPlayers": "unknown players",
+    "localSummaryOver": "{players} · game over",
+    "localSummary": "{players} · turn {turn}",
+    "slotLabel": "Slot {slot}",
+    "activeBadge": "ACTIVE",
+    "switchEmpty": "Start here",
+    "switch": "Switch",
+    "delete": "Delete",
+    "confirmDelete": "Delete the game in slot {slot}? This can't be undone.",
+    "slotCountNote": "{count} slots total — slot 1 is this device's original save."
   }
 }

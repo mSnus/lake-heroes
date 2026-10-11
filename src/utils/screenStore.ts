@@ -5,6 +5,7 @@ import { setEndTurn } from './endTurnStore';
 import { showDice, startDiceRoll } from './diceStore';
 import { isHeadlessRun } from './headlessStore';
 import { playFogTransition } from './transitionStore';
+import { removeFromStorage } from './storage';
 import { Tile } from '../game/Tile';
 import { t } from '../i18n';
 
@@ -123,7 +124,7 @@ export function markScreenResolved(): void {
   if (isHeadlessRun()) return;
   if (state) {
     state = { ...state, doNotPersist: true };
-    localStorage.removeItem('game-screen');
+    removeFromStorage('game-screen');
     emit();
   }
 }
@@ -131,7 +132,7 @@ export function markScreenResolved(): void {
 export function clearScreen(): void {
   if (isHeadlessRun()) return;
   state = null;
-  localStorage.removeItem('game-screen');
+  removeFromStorage('game-screen');
   emit();
   document.body.classList.remove('screen-open');
 }
