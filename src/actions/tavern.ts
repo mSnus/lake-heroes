@@ -12,6 +12,7 @@ import { getOverrides } from '../utils/overridesStore';
 import { planArmyPurchase } from '../ai/botPlans';
 import { TAVERN_PRICE_MULT } from '../game/constants';
 import { currentYear } from '../game/year';
+import { narrate } from '../utils/say';
 import { t } from '../i18n';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
@@ -71,6 +72,7 @@ export function handleTavern(
       player.militia -= unitsReward;
       player.riders += unitsReward;
       joinedMsg = t('tavern.horsesJoined', { units: unitsReward, playerSpan });
+      narrate(t('tavern.narrateHorses', { playerName: player.name, units: unitsReward }));
     } else {
       // No room to grow riders even after freeing space by removing the
       // rolled amount from militia — sacrifice one whole militia slot's
@@ -85,6 +87,8 @@ export function handleTavern(
       if (leftDrunk > 0) {
         fullNote = t('tavern.leftDrunk', { units: leftDrunk });
       }
+
+      narrate(t('tavern.narrateHorses', { playerName: player.name, units: ridersAdded }));
     }
   } else {
     const gained = player.gainMilitia(unitsReward);
@@ -95,8 +99,11 @@ export function handleTavern(
       if (turnedAway > 0) {
         fullNote = t('tavern.fullNote', { used: player.slotsUsed, total: player.armySlots, turnedAway });
       }
+
+      narrate(t('tavern.narrateMilitia', { playerName: player.name, units: gained }));
     } else {
       joinedMsg = t('tavern.ranksFull', { units: unitsReward });
+      narrate(t('tavern.narrateEmpty', { playerName: player.name }));
     }
   }
 

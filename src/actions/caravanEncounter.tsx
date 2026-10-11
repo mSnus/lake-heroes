@@ -9,6 +9,7 @@ import { rollCaravanPrize, CaravanPrize } from '../game/caravanPrize';
 import { announce } from '../utils/announce';
 import { getOverrides } from '../utils/overridesStore';
 import { currentYear } from '../game/year';
+import { narrate } from '../utils/say';
 import { t } from '../i18n';
 
 /** Share of the escort its cargo is worth that actually stands and fights.
@@ -135,6 +136,7 @@ export function checkCaravanEncounter(
       {
         label: t('caravanEncounter.letThemPass'),
         onClick: () => {
+          narrate(t('caravanEncounter.narrateLetPass', { playerName: player.name }));
           clearScreen();
           onContinue();
         },

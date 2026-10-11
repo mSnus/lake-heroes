@@ -11,6 +11,8 @@ import { upgradeSquad } from './upgradeSquad';
 import { tavernMilitiaPrice, tavernRiderPrice, tavernUpgradePricePerUnit } from './tavern';
 import WorkersModal from '../components/WorkersModal';
 import { announce } from '../utils/announce';
+import { narrate } from '../utils/say';
+import { t } from '../i18n';
 
 /** Same base odds as a caravan. */
 const ENCOUNTER_CHANCE = 1 / 12;
@@ -66,6 +68,7 @@ export function checkWorkersEncounter(
   // Encounter!
   player.workersEncounters = (player.workersEncounters ?? 0) + 1;
   updateGameState(board);
+  narrate(t('workersEncounter.narrateVisit', { playerName: player.name }));
 
   // Same decision WorkersModal's own self-drive effect makes.
   if (isHeadlessRun()) {

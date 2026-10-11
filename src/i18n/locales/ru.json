@@ -553,7 +553,8 @@
     "attackedNothingToBurn": "{playerName} атакован драконом, но жечь нечего.",
     "burnsYourTile": "Дракон сжигает башню на «{tileName}»!",
     "tileDestroyed": "«{tileName}» игрока {playerName} уничтожена драконом!",
-    "tileDamaged": "«{tileName}» игрока {playerName} повреждена драконом (теперь уровень {level})!"
+    "tileDamaged": "«{tileName}» игрока {playerName} повреждена драконом (теперь уровень {level})!",
+    "narrateSoarsOverhead": "Огромный чёрный дракон пролетает над {playerName} и летит дальше"
   },
   "sphynx": {
     "pipeSavedMessage": "Вы усмиряете рычащего Сфинкса своей Дудочкой 🪈 и поспешно уходите.",
@@ -567,11 +568,19 @@
     "nothingScreen": "Сфинкс остался безмолвен.",
     "gainGoldMessage": "Получено {gold}🟡 (20%).",
     "gainGoldScreen": "Сфинкс вознаградил вас {gold}🟡 за вашу мудрость!",
-    "fameSuffix": "Слава +1🏆 за приключение."
+    "fameSuffix": "Слава +1🏆 за приключение.",
+    "narratePipe": "{playerName} встретил Сфинкса, но Дудочка Крысолова очаровала его 🪈",
+    "narrateLostGold": "{playerName} встретил Сфинкса и потерял {gold}🟡",
+    "narratePoverty": "{playerName} встретил Сфинкса, который отпустил его — слишком бедного, чтобы грабить",
+    "narrateAteUnits": "{playerName} встретил Сфинкса, который сожрал {units}🧍",
+    "narrateNothing": "{playerName} встретил Сфинкса, но ничего не произошло",
+    "narrateGainGold": "{playerName} встретил Сфинкса и был награждён {gold}🟡"
   },
   "king": {
     "aTile": "постройка",
-    "contractOffered": "📜 Король вручает вам контракт: захватите «{tileName}» за {award}🟡!"
+    "contractOffered": "📜 Король вручает вам контракт: захватите «{tileName}» за {award}🟡!",
+    "narrateVisit": "{playerName} посетил Замок Короля",
+    "narrateVisitContract": "{playerName} посетил Замок Короля и получил контракт на захват {tileName} за {award}🟡"
   },
   "becomeBeggar": {
     "captured": "{playerName} схвачен и отправлен в темницу, репутация рушится, воины разбегаются. Теперь слава {fame}🏆{unitsPart}",
@@ -937,7 +946,8 @@
     "letThemPass": "✖️ Пусть проходят..",
     "attack": "⚔️ Атаковать!",
     "drivingHorses": "с табуном в {prize}🐎",
-    "cargoJoin": ", "
+    "cargoJoin": ", ",
+    "narrateLetPass": "{playerName} отпускает караван целым и невредимым 🐫"
   },
   "gameStart": {
     "message": "Новая игра началась! Удачи всем игрокам."
@@ -958,7 +968,10 @@
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} отрядов заполнено — {turnedAway}🧍 отправлены восвояси)</span>",
     "newFolksWelcome": "🍻 За славные победы!",
     "title": "Таверна",
-    "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов"
+    "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов",
+    "narrateHorses": "{playerName} посетил Таверну, и {units}🐎 присоединились как всадники",
+    "narrateMilitia": "{playerName} посетил Таверну, и {units}🧍 присоединились к войску",
+    "narrateEmpty": "{playerName} посетил Таверну, но ряды были полны"
   },
   "portal": {
     "title": "Вихрь огней",
@@ -1058,7 +1071,10 @@
     "upgradedSlot": "{sold}🧍 пехоты продано за {militiaGold}🟡 — теперь их кони несут {received}🐎 всадников",
     "overflow": "{units}🐎 не вместились — проданы за {gold}🟡",
     "noKnight": "Прибыло {units}🐎 великолепных коней, но {playerSpan} — не рыцарь; проданы за {gold}🟡",
-    "leave": "🐴 В путь!"
+    "leave": "🐴 В путь!",
+    "narrateSold": "{playerName} посетил Конюшню и продал {units}🐎 за {gold}🟡",
+    "narrateRiders": "{playerName} посетил Конюшню и получил {units}🐎",
+    "narrateNone": "{playerName} посетил Конюшню, но остался ни с чем"
   },
   "dismountSquad": {
     "dismounted": "{playerName} спешивает {amount}🐎 в {amount}🧍, продав коней за {gold}🟡"
@@ -1081,7 +1097,8 @@
     "title": "Рабочие",
     "message": "{playerSpan} встречает группу людей, ищущих любую хорошо оплачиваемую работу. Возможно, вы захотите их нанять.",
     "hireButton": "Нанять {army}",
-    "passByButton": "⚜️ Гордо пройти мимо"
+    "passByButton": "⚜️ Гордо пройти мимо",
+    "narrateVisit": "{playerName} встретил вольных работников, ищущих, к кому присоединиться 🧑‍🌾"
   },
   "year": {
     "yearlyBonus": "Все игроки получают годовой бонус со своих клеток",

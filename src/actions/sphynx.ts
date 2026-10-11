@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { say } from '../utils/say';
+import { say, narrate } from '../utils/say';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { hasArtifact } from '../game/artifacts';
@@ -31,6 +31,7 @@ export function handleSphynx(
   if (pipeSaved) {
     message = t('sphynx.pipeSavedMessage');
     screenMessage = message;
+    narrate(t('sphynx.narratePipe', { playerName: player.name }));
   } else if (roll === 1 || roll === 2) {
     // Lose half gold, rounded up to nearest 5, capped by available gold
     if (player.gold > 0) {
@@ -41,9 +42,11 @@ export function handleSphynx(
       player.gold -= loss;
       message = t('sphynx.lostGoldMessage', { gold: loss });
       screenMessage = t('sphynx.lostGoldScreen', { gold: loss });
+      narrate(t('sphynx.narrateLostGold', { playerName: player.name, gold: loss }));
     } else {
       message = t('sphynx.povertyMessage');
       screenMessage = t('sphynx.povertyScreen');
+      narrate(t('sphynx.narratePoverty', { playerName: player.name }));
     }
   } else if (roll === 3 || roll === 4) {
     // Lose 33% units, minimum 1, floor at 0
@@ -53,9 +56,11 @@ export function handleSphynx(
     player.units = Math.max(0, player.units - loss);
     message = t('sphynx.ateUnitsMessage', { units: loss });
     screenMessage = t('sphynx.ateUnitsScreen', { units: loss });
+    narrate(t('sphynx.narrateAteUnits', { playerName: player.name, units: loss }));
   } else if (roll === 5) {
     message = t('sphynx.nothingMessage');
     screenMessage = t('sphynx.nothingScreen');
+    narrate(t('sphynx.narrateNothing', { playerName: player.name }));
   } else if (roll === 6) {
     // Gain 20% gold, rounded up to nearest 10, with a floor of 80
     const bonusBase = player.gold * 0.2;
@@ -63,6 +68,7 @@ export function handleSphynx(
     player.gold += gain;
     message = t('sphynx.gainGoldMessage', { gold: gain });
     screenMessage = t('sphynx.gainGoldScreen', { gold: gain });
+    narrate(t('sphynx.narrateGainGold', { playerName: player.name, gold: gain }));
   }
 
   // Visiting the Sphynx always grants fame, win or lose.

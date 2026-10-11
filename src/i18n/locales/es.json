@@ -556,7 +556,8 @@
     "attackedNothingToBurn": "¡{playerName} es atacado por el dragón, pero no tiene nada que quemar!",
     "burnsYourTile": "¡El Dragón quema tu {tileName}, torre perdida!",
     "tileDestroyed": "¡El {tileName} de {playerName} fue destruido por el Dragón!",
-    "tileDamaged": "¡El {tileName} de {playerName} fue dañado por el Dragón (ahora nivel {level})!"
+    "tileDamaged": "¡El {tileName} de {playerName} fue dañado por el Dragón (ahora nivel {level})!",
+    "narrateSoarsOverhead": "Un enorme dragón negro vuela sobre {playerName} y sigue su camino"
   },
   "sphynx": {
     "pipeSavedMessage": "Calmas a la Esfinge gruñona con tu Flauta 🪈 y te alejas rápidamente.",
@@ -570,11 +571,19 @@
     "nothingScreen": "La Esfinge permaneció en silencio.",
     "gainGoldMessage": "Recibiste {gold}🟡 (20%).",
     "gainGoldScreen": "¡La Esfinge te recompensó con {gold}🟡 por tu sabiduría!",
-    "fameSuffix": "Fama +1🏆 por la aventura."
+    "fameSuffix": "Fama +1🏆 por la aventura.",
+    "narratePipe": "{playerName} se encontró con la Esfinge, pero su Flauta de Hamelín la encantó 🪈",
+    "narrateLostGold": "{playerName} se encontró con la Esfinge y perdió {gold}🟡",
+    "narratePoverty": "{playerName} se encontró con la Esfinge, que lo dejó ir — demasiado pobre para robar",
+    "narrateAteUnits": "{playerName} se encontró con la Esfinge, que devoró {units}🧍",
+    "narrateNothing": "{playerName} se encontró con la Esfinge, pero no pasó nada",
+    "narrateGainGold": "{playerName} se encontró con la Esfinge y fue recompensado con {gold}🟡"
   },
   "king": {
     "aTile": "una casilla",
-    "contractOffered": "📜 ¡El Rey te entrega un contrato: reclama {tileName} por {award}🟡!"
+    "contractOffered": "📜 ¡El Rey te entrega un contrato: reclama {tileName} por {award}🟡!",
+    "narrateVisit": "{playerName} visitó el Castillo del Rey",
+    "narrateVisitContract": "{playerName} visitó el Castillo del Rey y recibió un contrato para reclamar {tileName} por {award}🟡"
   },
   "becomeBeggar": {
     "captured": "{playerName} fue capturado y trasladado a Prisión, su reputación se desvanece, sus unidades se dispersan. Ahora tiene {fame}🏆{unitsPart}",
@@ -940,7 +949,8 @@
     "letThemPass": "✖️ Dejarles pasar..",
     "attack": "⚔️ ¡Atacar!",
     "drivingHorses": "arreando {prize}🐎",
-    "cargoJoin": ", "
+    "cargoJoin": ", ",
+    "narrateLetPass": "{playerName} deja pasar a la caravana sin hacerle daño 🐫"
   },
   "gameStart": {
     "message": "¡Nueva partida iniciada! Buena suerte a todos los jugadores."
@@ -961,7 +971,10 @@
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} esquadrones completas — {turnedAway}🧍 rechazados)</span>",
     "newFolksWelcome": "🍻 A la gloria!",
     "title": "La Taberna",
-    "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades"
+    "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades",
+    "narrateHorses": "{playerName} visitó la Taberna y {units}🐎 se unieron como jinetes",
+    "narrateMilitia": "{playerName} visitó la Taberna y {units}🧍 se unieron a las filas",
+    "narrateEmpty": "{playerName} visitó la Taberna, pero las filas estaban llenas"
   },
   "portal": {
     "title": "Torbellino de luces",
@@ -1061,7 +1074,10 @@
     "upgradedSlot": "{sold}🧍 milicia vendida por {militiaGold}🟡 — sus monturas llevan ahora {received}🐎 jinetes",
     "overflow": "{units}🐎 no cabían — vendidos por {gold}🟡",
     "noKnight": "Llegaron {units}🐎 magníficos caballos, pero {playerSpan} no es caballero — vendidos por {gold}🟡",
-    "leave": "🐴 ¡A cabalgar!"
+    "leave": "🐴 ¡A cabalgar!",
+    "narrateSold": "{playerName} visitó los Establos y vendió {units}🐎 por {gold}🟡",
+    "narrateRiders": "{playerName} visitó los Establos y ganó {units}🐎",
+    "narrateNone": "{playerName} visitó los Establos, pero se fue con las manos vacías"
   },
   "dismountSquad": {
     "dismounted": "{playerName} desmonta {amount}🐎 a {amount}🧍, vendiendo los caballos por {gold}🟡"
@@ -1084,7 +1100,8 @@
     "title": "Trabajadores",
     "message": "{playerSpan} se encuentra con un grupo de hombres buscando cualquier trabajo bien pagado. Puede que quieras contratarlos.",
     "hireButton": "Contratar {army}",
-    "passByButton": "⚜️ Seguir de largo, con orgullo"
+    "passByButton": "⚜️ Seguir de largo, con orgullo",
+    "narrateVisit": "{playerName} se encontró con trabajadores libres buscando una causa a la que unirse 🧑‍🌾"
   },
   "year": {
     "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas",

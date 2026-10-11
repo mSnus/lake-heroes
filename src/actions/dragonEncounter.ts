@@ -9,7 +9,7 @@ import {
   showDragonChallengeScreen,
 } from '../utils/screenStore';
 import { fightDragon, DRAGON_UNITS_THRESHOLD } from './fightDragon';
-import { say } from '../utils/say';
+import { say, narrate } from '../utils/say';
 import { razeTile } from '../game/tileOwnership';
 import { checkArtifactProtection } from '../game/artifacts';
 import { isHeadlessRun } from '../utils/headlessStore';
@@ -140,6 +140,9 @@ function dragonSkyWithSay(board: GameState, onContinue: () => void) {
   const player = board.activePlayer;
   // Flavor-only message -- skip it headless so it doesn't clutter the sim log.
   if (!isHeadlessRun()) say(t('dragonEncounter.soarsOverhead'), 'info');
+  // The local flavor line above deliberately has no name in it (it's
+  // written as what the acting player themself sees) -- observers need one.
+  narrate(t('dragonEncounter.narrateSoarsOverhead', { playerName: player.name }));
   showDragonSkyScreen(onContinue, player.name, player.color);
 }
 

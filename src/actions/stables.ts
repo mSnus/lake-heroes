@@ -10,6 +10,7 @@ import StablesModal from '../components/StablesModal';
 import { slotChunks } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { planArmyPurchase } from '../ai/botPlans';
+import { narrate } from '../utils/say';
 import { t } from '../i18n';
 import { tavernMilitiaPrice, tavernRiderPrice, tavernUpgradePricePerUnit } from './tavern';
 
@@ -41,6 +42,7 @@ export function handleStables(
     const goldGained = rolled * riderPrice;
     player.gold += goldGained;
     lines.push(t('stables.noKnight', { units: rolled, gold: goldGained, playerSpan }));
+    narrate(t('stables.narrateSold', { playerName: player.name, units: rolled, gold: goldGained }));
   } else {
     // Step 1: fit what we can directly into empty/rider slots
     const added = player.gainRiders(rolled);
@@ -51,6 +53,7 @@ export function handleStables(
     }
 
     // Step 2: sell the smallest militia slot, fill it with riders
+    let moreAdded = 0;
     if (remainder > 0 && player.militia > 0) {
       const chunks = slotChunks(player.militia);
       const soldMilitia = Math.min(...chunks);
@@ -58,7 +61,7 @@ export function handleStables(
       const militiaGold = soldMilitia * militiaPrice;
       player.gold += militiaGold;
 
-      const moreAdded = player.gainRiders(remainder);
+      moreAdded = player.gainRiders(remainder);
       remainder -= moreAdded;
 
       lines.push(t('stables.upgradedSlot', { sold: soldMilitia, received: moreAdded, militiaGold, playerSpan }));
@@ -70,6 +73,13 @@ export function handleStables(
       player.gold += goldGained;
       lines.push(t('stables.overflow', { units: remainder, gold: goldGained }));
     }
+
+    const totalRiders = added + moreAdded;
+    narrate(
+      totalRiders > 0
+        ? t('stables.narrateRiders', { playerName: player.name, units: totalRiders })
+        : t('stables.narrateNone', { playerName: player.name })
+    );
   }
 
   const joinedHtml = lines.join('<br />');

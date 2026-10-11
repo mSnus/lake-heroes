@@ -7,7 +7,7 @@ import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
 import KingsCastleModal from '../components/KingsCastleModal';
-import { say } from '../utils/say';
+import { say, narrate } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
 import { planArmyPurchase } from '../ai/botPlans';
 import { t } from '../i18n';
@@ -32,6 +32,9 @@ export function handleKingCastle(
     if (contract) {
       const tileName = board.tiles[contract.tilePosition]?.name ?? t('king.aTile');
       say(t('king.contractOffered', { tileName, award: contract.award }), 'success');
+      narrate(t('king.narrateVisitContract', { playerName: player.name, tileName, award: contract.award }));
+    } else {
+      narrate(t('king.narrateVisit', { playerName: player.name }));
     }
 
     updateGameState(board);

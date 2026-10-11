@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { say } from '../utils/say';
+import { say, narrate } from '../utils/say';
 import { TREASURE_BOX_MULTIPLIER } from '../game/constants';
 import { currentYear } from '../game/year';
 import { showScreen, clearScreen } from '../utils/screenStore';
@@ -101,6 +101,7 @@ export function handleTreasureBox(
   player.gold += goldReward;
 
   updateGameState(board);
+  narrate(t('treasureBox.foundGold', { playerName: player.name, size: sizeLabel, roll: effectiveRoll, gold: goldReward }));
 
   showScreen({
     screenType: 'treasure-result',

@@ -558,7 +558,8 @@
     "attackedNothingToBurn": "{playerName} is attacked by the dragon, but has nothing to burn.",
     "burnsYourTile": "Dragon burns your {tileName}, tower lost!",
     "tileDestroyed": "{playerName}'s {tileName} was destroyed by the Dragon!",
-    "tileDamaged": "{playerName}'s {tileName} was damaged by the Dragon (now level {level})!"
+    "tileDamaged": "{playerName}'s {tileName} was damaged by the Dragon (now level {level})!",
+    "narrateSoarsOverhead": "A massive black dragon soars over {playerName}, then flies on"
   },
   "sphynx": {
     "pipeSavedMessage": "You calm the growling Sphynx with your Pipe 🪈 and hastily leave",
@@ -572,11 +573,19 @@
     "nothingScreen": "Sphynx remained silent.",
     "gainGoldMessage": "Sphynx gits you {gold}🟡",
     "gainGoldScreen": "Sphynx rewarded you with {gold}🟡 for your wisdom!",
-    "fameSuffix": "Fame +1🏆 for the adventure"
+    "fameSuffix": "Fame +1🏆 for the adventure",
+    "narratePipe": "{playerName} encountered the Sphynx, but their Pipe of Hamelin charmed it away 🪈",
+    "narrateLostGold": "{playerName} encountered the Sphynx and lost {gold}🟡",
+    "narratePoverty": "{playerName} encountered the Sphynx, who let them go — too poor to rob",
+    "narrateAteUnits": "{playerName} encountered the Sphynx, who devoured {units}🧍",
+    "narrateNothing": "{playerName} encountered the Sphynx, but nothing happened",
+    "narrateGainGold": "{playerName} encountered the Sphynx and was rewarded {gold}🟡"
   },
   "king": {
     "aTile": "a tile",
-    "contractOffered": "📜 The King hands you a contract: claim {tileName} for {award}🟡!"
+    "contractOffered": "📜 The King hands you a contract: claim {tileName} for {award}🟡!",
+    "narrateVisit": "{playerName} visited the King's Castle",
+    "narrateVisitContract": "{playerName} visited the King's Castle and was offered a contract to claim {tileName} for {award}🟡"
   },
   "becomeBeggar": {
     "captured": "{playerName} was captured and moved to Prison, their reputation vanishes, units scatter. They are now {fame}🏆{unitsPart}",
@@ -942,7 +951,8 @@
     "letThemPass": "✖️ Let 'em pass..",
     "attack": "⚔️ Attack!",
     "drivingHorses": "driving {prize}🐎",
-    "cargoJoin": ", "
+    "cargoJoin": ", ",
+    "narrateLetPass": "{playerName} let the caravan pass unharmed 🐫"
   },
   "gameStart": {
     "message": "New game started! Good luck to all players."
@@ -963,7 +973,10 @@
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} army squads full — {turnedAway}🧍 turned away)</span>",
     "newFolksWelcome": "🍻 To glory!",
     "title": "The Tavern",
-    "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units"
+    "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units",
+    "narrateHorses": "{playerName} visited the Tavern and {units}🐎 joined as riders",
+    "narrateMilitia": "{playerName} visited the Tavern and {units}🧍 joined the ranks",
+    "narrateEmpty": "{playerName} visited the Tavern, but the ranks were full"
   },
   "portal": {
     "title": "Whirlpool of lights",
@@ -1088,7 +1101,10 @@
     "upgradedSlot": "{sold}🧍 militia sold for {militiaGold}🟡 — their mounts now carry {received}🐎 riders",
     "overflow": "{units}🐎 couldn't fit — sold for {gold}🟡",
     "noKnight": "{units}🐎 magnificent horses arrived, but {playerSpan} is no knight — sold for {gold}🟡",
-    "leave": "🐴 Ride on!"
+    "leave": "🐴 Ride on!",
+    "narrateSold": "{playerName} visited the Stables and sold {units}🐎 for {gold}🟡",
+    "narrateRiders": "{playerName} visited the Stables and gained {units}🐎",
+    "narrateNone": "{playerName} visited the Stables, but came away empty-handed"
   },
   "dismountSquad": {
     "dismounted": "{playerName} dismounts {amount}🐎 into {amount}🧍, selling the horses for {gold}🟡"
@@ -1111,7 +1127,8 @@
     "title": "Workers",
     "message": "{playerSpan} encounters a group of men looking for any well-paid job. You may want to hire them.",
     "hireButton": "Hire {army}",
-    "passByButton": "⚜️ Pass by, proudly"
+    "passByButton": "⚜️ Pass by, proudly",
+    "narrateVisit": "{playerName} came across free workers looking for a cause to join 🧑‍🌾"
   },
   "year": {
     "yearlyBonus": "All players collect yearly bonus from their tiles",
