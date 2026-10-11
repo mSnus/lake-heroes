@@ -19,6 +19,7 @@ import { forceFreshReload } from '../utils/forceReload';
 import { resetOverrides } from '../utils/overridesStore';
 import { clearOnlineSession, isOnlineGame } from '../online/onlineStore';
 import { resetLiveFeed } from '../online/liveFeedStore';
+import { resetRemoteMove } from '../online/remoteMoveStore';
 import ShareCodesScreen from './ShareCodesScreen';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
 import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
@@ -68,6 +69,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         // Or the next game silently inherits this game's join code.
         clearOnlineSession();
         resetLiveFeed();
+        resetRemoteMove();
       } catch {
         // ignore
       } finally {

@@ -12,6 +12,8 @@ import '../styles/Board.css';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { gameEvent } from '../utils/events';
 import { sayLocal } from '../utils/say';
+import { useRemoteMove } from '../online/remoteMoveStore';
+import { seatIndex } from '../game/seats';
 import { showScreen } from '../utils/screenStore';
 import RealmOverviewScreen from './RealmOverviewScreen';
 import { handleKingCastle } from '../actions/king';
@@ -61,6 +63,14 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
   const forkChoice = useForkChoice();
+  const remoteMove = useRemoteMove();
+
+  // While a remote player's move is being replayed hop-by-hop (see
+  // online/remoteMoveStore.ts), render THEIR token at the replayed position
+  // instead of the board's own (already-final) player.position -- every
+  // other player renders at their real position as always.
+  const displayPosition = (p: any) =>
+    remoteMove && remoteMove.seat === seatIndex(p) ? remoteMove.position : p.position;
 
   const [mapReady, setMapReady] = React.useState(false);
   const mapUrl = 'assets/map13.jpg';
@@ -398,7 +408,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   };
 
   const renderPlayer = (player: any, i: number) => {
-    const tileNumber = player.position % TILE_COUNT;
+    const tileNumber = displayPosition(player) % TILE_COUNT;
     const pos = getTilePosition(tileNumber);
 
     const src = getPlayerImageSrc(player.image, player.isKnight);
@@ -410,7 +420,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
     const sameTilePlayers = board.players
       .map((p, idx) => ({ p, idx }))
-      .filter(({ p }) => p.position % TILE_COUNT === tileNumber);
+      .filter(({ p }) => displayPosition(p) % TILE_COUNT === tileNumber);
     const indexInCluster = sameTilePlayers.findIndex(({ idx }) => idx === i);
     const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length, offset.clusterStepPct);
 

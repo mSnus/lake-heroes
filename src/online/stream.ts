@@ -99,6 +99,17 @@ if (typeof window !== 'undefined') {
     if (d?.message) queue({ kind: 'toast', level: d.level, message: d.message });
   });
 
+  // narrateMove(): one hop of the acting player's token, piggybacked on the
+  // same toast schema under a level no real toast uses -- see
+  // useOnlineSync's renderEvents, which pulls 'move'-level events back out
+  // before they ever reach showToast.
+  window.addEventListener('narrateMove', (e: Event) => {
+    const d = (e as CustomEvent).detail as { position: number };
+    if (d && Number.isFinite(d.position)) {
+      queue({ kind: 'toast', level: 'move', message: String(d.position) });
+    }
+  });
+
   window.addEventListener('bannerMessage', (e: Event) => {
     const message = (e as CustomEvent).detail as string;
     if (message) queue({ kind: 'banner', level: 'info', message });

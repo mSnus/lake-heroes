@@ -7,6 +7,7 @@ import { buildEnvelope, parseEnvelope } from './envelope';
 import { clientId, clearOnlineSession, startOnlineSession, updateOnline } from './onlineStore';
 import { clearLogDelta } from './sync';
 import { resetLiveFeed, setCursor } from './liveFeedStore';
+import { resetRemoteMove } from './remoteMoveStore';
 
 /**
  * Publish a freshly created game and claim seat 0.
@@ -107,6 +108,7 @@ export async function joinGame(codes: string[]): Promise<GameState | null> {
 
   // Start reading narration from here, not from the beginning of the game.
   resetLiveFeed();
+  resetRemoteMove();
   setCursor(first.lastEvent ?? 0);
 
   const board = rehydrateGameState(parsed.raw as SavedGameState);
@@ -119,4 +121,5 @@ export function leaveOnlineGame(): void {
   clearOnlineSession();
   clearLogDelta();
   resetLiveFeed();
+  resetRemoteMove();
 }

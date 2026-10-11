@@ -7,6 +7,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { revealTile } from './revealTile';
 import { passStart } from './passStart';
 import { PortalScreen } from '../components/PortalScreen';
+import { narrateMove } from '../utils/say';
 
 export function handlePortal(
   board: GameState,
@@ -29,6 +30,7 @@ export function handlePortal(
   }
 
   player.position = newPos;
+  narrateMove(newPos);
 
   const landedTile = board.tiles[newPos];
   const wasFogged = landedTile.fog;

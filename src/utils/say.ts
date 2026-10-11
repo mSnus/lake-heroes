@@ -100,6 +100,20 @@ export function narrate(message: string, level: SayLevel = 'info'): void {
 }
 
 /**
+ * Tell the other players this player's token just stepped onto a new tile,
+ * for the live hop-by-hop board animation (see online/stream.ts's listener
+ * and online/remoteMoveStore.ts's replay). Piggybacks on the same toast
+ * event the server already accepts (kind 'toast', a 'move' level no real
+ * toast ever uses) instead of adding a new event kind, so no backend change
+ * is needed -- the position travels as the message text, and the mover's
+ * seat comes for free from the event row's own seat column.
+ */
+export function narrateMove(position: number): void {
+  if (isHeadlessRun()) return;
+  gameEvent('narrateMove', { position });
+}
+
+/**
  * say() for something only THIS player should see: a tooltip they clicked, a
  * validation error they hit, a connection problem on their own machine.
  *

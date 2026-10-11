@@ -21,6 +21,7 @@ import {
   setCursor,
   setLiveBanner,
 } from './liveFeedStore';
+import { retireRemoteMove, replayRemoteMoves, RemoteMove } from './remoteMoveStore';
 import { RemoteEvent } from './api';
 
 /** How often to ask the server whether anything changed. Only the version
@@ -66,9 +67,19 @@ export function useOnlineSync({
    */
   const renderEvents = useCallback(
     (events: RemoteEvent[], appliedVersion: number) => {
+      const moveSteps: RemoteMove[] = [];
       for (const e of events) {
         // A straggler from a turn whose state we already have.
         if (e.version < appliedVersion) continue;
+        // narrateMove()'s piggybacked hop -- never shown as a toast (see
+        // online/stream.ts); collected to replay at its own pace below
+        // instead of applying every hop from this poll at once.
+        if (e.kind === 'toast' && e.level === 'move') {
+          const position = Number(e.message);
+          if (Number.isFinite(position)) moveSteps.push({ seat: e.seat, position, seq: e.seq });
+          continue;
+        }
+
         if (e.kind === 'banner') setLiveBanner(e.message, e.seq);
         else {
           showToast(e.message, e.level as SayLevel);
@@ -78,6 +89,7 @@ export function useOnlineSync({
         }
       }
 
+      if (moveSteps.length) void replayRemoteMoves(moveSteps);
       if (events.length) setCursor(events[events.length - 1].seq);
     },
     [setGameLog]
@@ -131,8 +143,10 @@ export function useOnlineSync({
       const delta = parsed.meta._log ?? [];
       if (delta.length) setGameLog((prev) => [...prev, ...delta].slice(-500));
 
-      // The banner in the applied state supersedes any live one up to here.
+      // The banner (and the board's own player.position) in the applied
+      // state supersedes any live one up to here.
       retireLiveBanner(parsed.meta._eventsThrough ?? Number.MAX_SAFE_INTEGER);
+      retireRemoteMove(parsed.meta._eventsThrough ?? Number.MAX_SAFE_INTEGER);
 
       updateOnline({
         version: res.data.version,

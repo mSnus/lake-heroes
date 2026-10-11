@@ -13,7 +13,7 @@ import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
-import { say, narrate } from '../utils/say';
+import { say, narrate, narrateMove } from '../utils/say';
 import { advanceBoardPosition, nextBoardPosition, stepsToFork, stepsToTile } from '../game/boardPath';
 import { currentYear } from '../game/year';
 import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
@@ -134,6 +134,7 @@ export async function rollAndMove(
       gameEvent('setPhase', 'moving');
       player.position = nextPos;
       updateGameState(board);
+      narrateMove(nextPos);
 
       if (willWrap) passStart(board, updateGameState);
 

@@ -22,6 +22,7 @@ import { rehydrateGameState } from './game/rehydrate';
 import { isLocalTurn } from './game/seats';
 import { clearOnlineSession } from './online/onlineStore';
 import { useLiveFeed, resetLiveFeed } from './online/liveFeedStore';
+import { resetRemoteMove } from './online/remoteMoveStore';
 import { hostGame, joinGame } from './online/session';
 import { useOnlineSync } from './online/useOnlineSync';
 import ShareCodesScreen from './components/ShareCodesScreen';
@@ -752,6 +753,7 @@ function App() {
                     // Or the next game silently inherits this game's join code.
                     clearOnlineSession();
                     resetLiveFeed();
+                    resetRemoteMove();
                     setGameState(null);
                     setGameLog([]);
                     showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
