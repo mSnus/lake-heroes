@@ -1,13 +1,12 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { playerWealth } from './wealth';
+import { playerScore } from './score';
 
 export interface PlayerTurnStat {
   playerId: number;
   turn: number;
-  wealth: number;
-  units: number;
-  fame: number;
+  /** Same figure Kingdom Overview shows with ⭐ -- see game/score.ts. */
+  power: number;
 }
 
 export type StatEventType =
@@ -28,29 +27,13 @@ export interface PlayerStatEvent {
   opponentName?: string;
 }
 
-/** Raw headcount (militia + riders, each counted as 1) across a player's
- * traveling army and every tile garrison they own. Deliberately NOT
- * armyPower-weighted -- this is a headcount stat, not a combat-strength one. */
-function computeUnitsHeadcount(board: GameState, player: Player): number {
-  let units = player.militia + player.riders;
-  for (const idx of player.ownedTiles) {
-    const tile = board.tiles[idx];
-    if (!tile) continue;
-    units += tile.garrisonMilitia + tile.garrisonRiders;
-  }
-
-  return units;
-}
-
 /** Snapshots one player's stats for the turn that just ended. Call once per
  * player, right as their turn concludes (see endTurn.ts). */
 export function recordTurnStat(board: GameState, player: Player): void {
   board.turnStats.push({
     playerId: player.id,
     turn: board.turns,
-    wealth: playerWealth(board, player).gold,
-    units: computeUnitsHeadcount(board, player),
-    fame: player.fame,
+    power: playerScore(board, player),
   });
 }
 
