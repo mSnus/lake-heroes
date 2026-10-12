@@ -43,10 +43,12 @@
   --bfg-cell: 10vmin;
 }
 
-/* Brawl board: fewer, bigger cells. Sized so the 6-wide grid fills the
-   container width (6 columns + the even-row half-cell shift). */
+/* Brawl board: fewer, bigger cells. Sized so the BRAWL_COLS-wide grid fills
+   the container width (BRAWL_COLS columns + the even-row half-cell shift) --
+   scaled down from the 15.1(v|cq)i this was at BRAWL_COLS=7 by 7.5/9.5 when
+   it widened to 9, so the wider board still fits instead of overflowing. */
 .bfg-battlefield.bfg-brawl {
-  --bfg-cell: 15.1vmin;
+  --bfg-cell: 11.9vmin;
 }
 @supports (container-type: inline-size) {
   .bfg-battlefield {
@@ -58,7 +60,7 @@
   }
 
   .bfg-battlefield.bfg-brawl {
-    --bfg-cell: 15.1cqi;
+    --bfg-cell: 11.9cqi;
   }
 }
 
@@ -73,7 +75,7 @@
   }
 
   .bfg-battlefield.bfg-brawl {
-    --bfg-cell: 8vmin;
+    --bfg-cell: 6.3vmin;
   }
 
   @supports (container-type: inline-size) {
@@ -86,7 +88,7 @@
     }
 
         .bfg-battlefield.bfg-brawl {
-      --bfg-cell: 8cqi;
+      --bfg-cell: 6.3cqi;
     }
   }
 }
