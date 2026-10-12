@@ -4,7 +4,7 @@ import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { getOverrides } from '../utils/overridesStore';
-import { narrate, say } from '../utils/say';
+import { narrate, say, sayLocal } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
@@ -18,7 +18,7 @@ import { BattleOutcome, BattleResolution } from '../actions/battles/common';
 import { useT } from '../i18n';
 import { getArtifactRollBonusBreakdown } from '../game/artifacts';
 import { ABSORB_PER_ROLL_POINT } from '../game/constants';
-import { stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, BrawlPlan } from '../game/battleGrid/engine';
+import { stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, energyFor, BrawlPlan } from '../game/battleGrid/engine';
 import { realLossFromGridLoss } from '../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../game/battleGrid/battleSetup';
 import { dispatchBattleResolution, handleBattleClose } from '../game/battleGrid/battleResolution';
@@ -594,6 +594,60 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     return () => clearTimeout(timer);
   }, [phase, battle.turn, manualMode]);
 
+  /** Debug export: clicking either side's portrait copies the live battle
+   * state as JSON -- for pasting into a bug report rather than describing
+   * the board by hand. `attackerRoleLabel`/`defenderRoleLabel` mirror the
+   * same isAmbush branch the bc-attacker/bc-defender JSX below uses, so the
+   * labels always match whichever identity is actually shown in that grid
+   * role (ambush/rogue put the real player and the NPC role in different
+   * slots depending on mode -- see their PlayerCard branches). */
+  const handleCopyBattleDebugState = () => {
+    const attackerRoleLabel = isAmbush ? defenderLabel : attacker.name;
+    const attackerRoleColor = isAmbush ? defenderColor : attacker.color;
+    const defenderRoleLabel = isAmbush ? attacker.name : defenderLabel;
+    const defenderRoleColor = isAmbush ? attacker.color : defenderColor;
+
+    const payload = {
+      schema: 1,
+      exportedAt: new Date().toISOString(),
+      battle: {
+        cols: battle.cols,
+        rows: battle.rows,
+        turn: battle.turn,
+        status: battle.status,
+        phase,
+        isBrawl,
+        // Whose manual placement turn it is right now, if this is a
+        // manually-controlled brawl mid-placement -- 'auto' when the engine
+        // is resolving on its own (auto-battle toggle on, a bot, or any
+        // non-brawl battle, which never pauses for input at all).
+        turnOwner: brawlManualSide ?? 'auto',
+      },
+      sides: {
+        attacker: { label: attackerRoleLabel, color: attackerRoleColor },
+        defender: { label: defenderRoleLabel, color: defenderRoleColor },
+      },
+      units: battle.units.map((u) => ({
+        id: u.id,
+        side: u.side,
+        kind: u.kind,
+        col: u.col,
+        row: u.row,
+        hp: u.hp,
+        maxHp: u.maxHp,
+        energy: u.energy,
+        maxEnergy: energyFor(u.kind),
+      })),
+      obstacles: battle.obstacles,
+    };
+
+    const json = JSON.stringify(payload, null, 2);
+    navigator.clipboard
+      .writeText(json)
+      .then(() => sayLocal(t('battleScreen.debugStateCopied'), 'success'))
+      .catch(() => sayLocal(t('battleScreen.debugStateCopyFailed'), 'error'));
+  };
+
   const handleVsIconClick = () => {
     if (phase !== 'ongoing') return;
     // Brawl: hand the human's side over to the AI for the rest of the fight,
@@ -695,6 +749,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                 name={defenderLabel}
                 color={defenderColor}
                 showArtifacts={false}
+                onIconClick={handleCopyBattleDebugState}
               />
             ) : isRogue ? (
               <PlayerCard
@@ -702,9 +757,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                 name={attacker.name}
                 color={attacker.color}
                 showArtifacts={false}
+                onIconClick={handleCopyBattleDebugState}
               />
             ) : (
-              <PlayerCard player={attacker} showArtifacts={false} />
+              <PlayerCard player={attacker} showArtifacts={false} onIconClick={handleCopyBattleDebugState} />
             )}
 
             {(attackerBonusEntries.length > 0 || defenderBonusEntries.length > 0) && (
@@ -768,13 +824,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           <div className="bc-defender">
             {isAmbush ? (
-              <PlayerCard player={attacker} showArtifacts={false} />
+              <PlayerCard player={attacker} showArtifacts={false} onIconClick={handleCopyBattleDebugState} />
             ) : (
               <PlayerCard
                 imageSrc={defenderImg}
                 name={defenderLabel}
                 color={defenderColor}
                 showArtifacts={false}
+                onIconClick={handleCopyBattleDebugState}
               />
             )}
 

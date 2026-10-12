@@ -260,7 +260,9 @@
     "battleStarted": "⚔️ {attackerName} ataca {target}…",
     "targetDragon": "al Dragón 🐉",
     "targetCaravan": "una caravana 🐫",
-    "targetGarrison": "la guarnición de {tileName}"
+    "targetGarrison": "la guarnición de {tileName}",
+    "debugStateCopied": "Estado de la batalla copiado al portapapeles",
+    "debugStateCopyFailed": "No se pudo copiar el estado de la batalla (portapapeles bloqueado)"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decidió atacar a {targetName}",

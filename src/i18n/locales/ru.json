@@ -257,7 +257,9 @@
     "battleStarted": "⚔️ {attackerName} атакует {target}…",
     "targetDragon": "Дракона 🐉",
     "targetCaravan": "караван 🐫",
-    "targetGarrison": "гарнизон «{tileName}»"
+    "targetGarrison": "гарнизон «{tileName}»",
+    "debugStateCopied": "Состояние боя скопировано в буфер обмена",
+    "debugStateCopyFailed": "Не удалось скопировать состояние боя (буфер обмена заблокирован)"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} решил атаковать {targetName}",

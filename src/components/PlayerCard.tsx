@@ -27,6 +27,10 @@ interface PlayerCardProps {
    * for these even when there are no artifacts to put beside them. */
   extraBadges?: React.ReactNode;
   className?: string;
+  /** Fires when the portrait image itself (not the whole card) is clicked --
+   * used by BattleScreen to export the live battle state as JSON. Omitted
+   * everywhere else. */
+  onIconClick?: () => void;
 }
 
 /**
@@ -44,6 +48,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   showArtifacts = true,
   extraBadges,
   className,
+  onIconClick,
 }) => {
   const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.isKnight) : undefined);
   const altName = player?.name ?? name ?? '';
@@ -56,7 +61,15 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
   return (
     <div className={'player-card' + (className ? ' ' + className : '')}>
-      {img && <img src={img} alt={altName} className="battle-player-icon" />}
+      {img && (
+        <img
+          src={img}
+          alt={altName}
+          className="battle-player-icon"
+          onClick={onIconClick}
+          style={onIconClick ? { cursor: 'pointer' } : undefined}
+        />
+      )}
       <div className="player-card-name">
         {prefix ? <span className="player-card-prefix">{prefix}</span> : null}
         <PlayerLabel player={player ?? undefined} name={name} color={color} bold />
