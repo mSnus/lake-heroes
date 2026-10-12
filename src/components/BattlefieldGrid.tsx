@@ -210,8 +210,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     return { col: u.col, row: u.row };
   };
 
-  // Would this final cell already be occupied by some other living unit?
+  // Would this final cell already be occupied by some other living unit, or
+  // is it impassable terrain? The auto-played engine (engine.ts's own
+  // obstacleKeySet) already keeps units off obstacles everywhere -- this is
+  // the equivalent guard for manual placement (drag AND click-to-move both
+  // route through resolveDrop below, which calls this), which had none.
   const cellTaken = (col: number, row: number, exceptId: string): boolean =>
+    battle.obstacles.some((o) => o.col === col && o.row === row) ||
     units.some((u) => {
       if (u.hp <= 0 || u.id === exceptId) return false;
       const fc = finalCellOf(u);
