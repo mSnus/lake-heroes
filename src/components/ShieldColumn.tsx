@@ -156,7 +156,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   }}
                   className="shield-button"
                 >
-                  🛡️
+                  💾
                 </button>
               </div>
               <div className="shield-button-container" title={t('common.language')}>

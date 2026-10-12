@@ -170,7 +170,7 @@
     "battleSim": "Simulador de Batallas",
     "mapEditOn": "Edición de mapa: ACTIVADA (haz clic en una casilla o icono de jugador para ajustar)",
     "mapEditOff": "Edición de mapa: DESACTIVADA",
-    "saveSlots": "Ranuras de guardado"
+    "saveSlots": "Partidas Guardadas"
   },
   "kingsCastle": {
     "title": "El Castillo del Rey",
@@ -1112,7 +1112,7 @@
     }
   },
   "saveSlots": {
-    "title": "Ranuras de Guardado",
+    "title": "Partidas Guardadas",
     "hint": "Hasta 5 partidas —locales u online— pueden estar en curso a la vez. Cambiar de ranura recarga la página.",
     "empty": "Vacía",
     "onlineSummary": "Partida online · código {code} · {status}",
@@ -1127,6 +1127,10 @@
     "switch": "Cambiar",
     "delete": "Eliminar",
     "confirmDelete": "¿Eliminar la partida de la ranura {slot}? No se puede deshacer.",
-    "slotCountNote": "{count} ranuras en total — la ranura 1 es la partida original de este dispositivo."
+    "downloadBackup": "Descargar copia",
+    "uploadBackup": "Cargar copia",
+    "invalidBackup": "Ese archivo no parece una copia de seguridad de Lake Heroes.",
+    "confirmRestore": "¿Restaurar esta copia en la Ranura {slot}? Reemplazará lo que haya ahí.",
+    "backupHint": "Descarga o restaura una copia de seguridad de la Ranura {slot} (la activa)."
   }
 }

@@ -171,7 +171,7 @@
     "economySim": "Economy Simulator",
     "mapEditOn": "Map edit: ON (click a tile or player icon to adjust)",
     "mapEditOff": "Map edit: OFF",
-    "saveSlots": "Save slots"
+    "saveSlots": "Saved Games"
   },
   "kingsCastle": {
     "title": "The King's Castle",
@@ -1139,7 +1139,7 @@
     }
   },
   "saveSlots": {
-    "title": "Save Slots",
+    "title": "Saved Games",
     "hint": "Up to 5 games — local or online — can be in progress at once. Switching slots reloads the page.",
     "empty": "Empty",
     "onlineSummary": "Online game · code {code} · {status}",
@@ -1154,6 +1154,10 @@
     "switch": "Switch",
     "delete": "Delete",
     "confirmDelete": "Delete the game in slot {slot}? This can't be undone.",
-    "slotCountNote": "{count} slots total — slot 1 is this device's original save."
+    "downloadBackup": "Download backup",
+    "uploadBackup": "Upload backup",
+    "invalidBackup": "That file doesn't look like a Lake Heroes save backup.",
+    "confirmRestore": "Restore this backup into Slot {slot}? It will replace whatever is there now.",
+    "backupHint": "Download or restore a backup of Slot {slot} (the active one)."
   }
 }

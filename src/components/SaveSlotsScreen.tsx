@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { clearScreen } from '../utils/screenStore';
-import { SLOT_COUNT, SlotSummary, listSlots, switchToSlot, clearSlotStorage, getActiveSlot } from '../utils/saveSlots';
+import {
+  SLOT_STORAGE_BASES,
+  SlotSummary,
+  listSlots,
+  switchToSlot,
+  clearSlotStorage,
+  getActiveSlot,
+  keyForSlot,
+} from '../utils/saveSlots';
 import { halt } from '../utils/haltStore';
 import { resetFogTransition } from '../utils/transitionStore';
 import { resetOverrides } from '../utils/overridesStore';
@@ -27,11 +35,80 @@ function describeSlot(summary: SlotSummary, t: typeof translate): string {
     : t('saveSlots.localSummary', { players, turn: summary.turn ?? 0 });
 }
 
+/** On-disk shape of a downloaded backup -- one raw (already-JSON-stringified)
+ * value per storage base the slot actually had, so restoring is a literal
+ * localStorage.setItem per base rather than re-serializing anything. */
+interface SlotBackup {
+  schema: 1;
+  bases: Partial<Record<(typeof SLOT_STORAGE_BASES)[number], string>>;
+}
+
 const SaveSlotsScreen: React.FC = () => {
   const t = useT();
   const [slots, setSlots] = useState<SlotSummary[]>(() => listSlots());
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const activeSlot = getActiveSlot();
 
   const refresh = () => setSlots(listSlots());
+
+  /** Downloads the active slot's raw storage as one JSON file -- a backup
+   * of whatever's actually there (a local game, an online bookmark, or
+   * nothing), restorable later via handleFileSelected below, even into a
+   * different slot or a different device entirely. */
+  const handleDownload = () => {
+    const backup: SlotBackup = { schema: 1, bases: {} };
+    for (const base of SLOT_STORAGE_BASES) {
+      const raw = localStorage.getItem(keyForSlot(activeSlot, base));
+      if (raw !== null) backup.bases[base] = raw;
+    }
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lake-heroes-slot${activeSlot}-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  /** Restores a previously downloaded backup into the active slot, replacing
+   * whatever is there now -- every base the backup doesn't mention is
+   * removed too, so this is a full swap, not a merge. */
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // lets the same file be picked again later
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      let backup: SlotBackup;
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        if (!parsed || parsed.schema !== 1 || typeof parsed.bases !== 'object') {
+          throw new Error('not a backup');
+        }
+
+        backup = parsed as SlotBackup;
+      } catch {
+        window.alert(t('saveSlots.invalidBackup'));
+        return;
+      }
+
+      if (!window.confirm(t('saveSlots.confirmRestore', { slot: activeSlot }))) return;
+
+      for (const base of SLOT_STORAGE_BASES) {
+        const value = backup.bases[base];
+        if (typeof value === 'string') localStorage.setItem(keyForSlot(activeSlot, base), value);
+        else localStorage.removeItem(keyForSlot(activeSlot, base));
+      }
+
+      window.location.reload();
+    };
+
+    reader.readAsText(file);
+  };
 
   /** Full teardown of the currently active slot's game -- same steps the
    * 🏆 New Game button runs (see ShieldColumn.tsx), just against the active
@@ -62,7 +139,7 @@ const SaveSlotsScreen: React.FC = () => {
     <div className="save-slots-screen">
       <div className="save-slots-screen-inner">
         <div className="save-slots-screen-header">
-          <h2 className="save-slots-screen-title">🛡️ {t('saveSlots.title')}</h2>
+          <h2 className="save-slots-screen-title">💾 {t('saveSlots.title')}</h2>
           <button onClick={clearScreen} className="save-slots-screen-close">
             ✕
           </button>
@@ -100,7 +177,24 @@ const SaveSlotsScreen: React.FC = () => {
           ))}
         </div>
 
-        <p className="save-slots-screen-footnote">{t('saveSlots.slotCountNote', { count: SLOT_COUNT })}</p>
+        <div className="save-slots-backup">
+          <p className="save-slots-backup-hint">{t('saveSlots.backupHint', { slot: activeSlot })}</p>
+          <div className="save-slots-backup-actions">
+            <button className="save-slot-button" onClick={handleDownload}>
+              💾 {t('saveSlots.downloadBackup')}
+            </button>
+            <button className="save-slot-button" onClick={() => fileInputRef.current?.click()}>
+              📂 {t('saveSlots.uploadBackup')}
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            style={{ display: 'none' }}
+            onChange={handleFileSelected}
+          />
+        </div>
       </div>
     </div>
   );

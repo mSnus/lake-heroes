@@ -119,8 +119,20 @@
   color: #e6a699;
 }
 
-.save-slots-screen-footnote {
-  font-size: 0.75rem;
+.save-slots-backup {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #554a35;
+}
+
+.save-slots-backup-hint {
+  font-size: 0.8rem;
   color: #8a8166;
-  margin-top: 16px;
+  margin: 0 0 10px;
+}
+
+.save-slots-backup-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
