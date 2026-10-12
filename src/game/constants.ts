@@ -255,11 +255,14 @@ export const ZOMBIE_AMBUSH_FORCE_RATIO = 2 / 3;
 // turn-based / manually-controlled brawl fights instead of the full-size
 // battlefield above. A battle is a brawl when both sides field at most
 // BRAWL_THRESHOLD grid units.
-// 7, not 6: the extra column of approach room measurably evens out the
-// small-fight win rates (the two blocks otherwise start almost in contact,
-// letting the starting geometry decide the whole fight).
-export const BRAWL_COLS = 7;
-export const BRAWL_ROWS = 7;
+// Was 7x7 (the extra column of approach room beyond a bare 6 measurably
+// evens out small-fight win rates, since otherwise the two blocks start
+// almost in contact and the starting geometry decides the whole fight);
+// widened further to give a manually-played brawl (up to BRAWL_THRESHOLD
+// a side) more room to maneuver once units start moving off their starting
+// formation.
+export const BRAWL_COLS = 9;
+export const BRAWL_ROWS = 11;
 export const MILITIA_HP = 6;
 export const MILITIA_DMG_MIN = 4;
 export const MILITIA_DMG_MAX = 14;

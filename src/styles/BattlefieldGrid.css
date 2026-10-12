@@ -155,6 +155,10 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* Clicking/dragging units (brawl mode) shouldn't leave a text selection
+     highlight behind on their emoji/HP label. */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .bfg-unit {
