@@ -5,7 +5,7 @@
     "spriteImage": "assets/sprites/water.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 2,
+    "requiredFame": 0,
     "garrison": 8,
     "prices": {
       "1": 6,
@@ -81,7 +81,7 @@
     "spriteImage": "assets/sprites/cows.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 2,
+    "requiredFame": 0,
     "garrison": 8,
     "prices": {
       "1": 6,
@@ -138,7 +138,7 @@
     "spriteImage": "assets/sprites/cabbage.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 2,
+    "requiredFame": 0,
     "garrison": 12,
     "prices": {
       "1": 5,
@@ -195,7 +195,7 @@
     "spriteImage": "assets/sprites/fish.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 2,
+    "requiredFame": 0,
     "garrison": 12,
     "prices": {
       "1": 7,
@@ -214,7 +214,7 @@
     "spriteImage": "assets/sprites/fur.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 6,
+    "requiredFame": 4,
     "garrison": 18,
     "prices": {
       "1": 9,
