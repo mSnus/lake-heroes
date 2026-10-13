@@ -10,6 +10,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { say } from '../utils/say';
 import { currentYear } from '../game/year';
 import { changeKarma } from '../utils/karma';
+import { changeStars } from '../utils/stars';
 import { fightTile } from './fightTile';
 import { sellTile } from './sellTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
@@ -164,11 +165,19 @@ function chargeToll(player: Player, owner: Player | undefined, tile: Tile, fee: 
 /** Ends the encounter as a prisoner of war -- the toll couldn't be fully
  * covered even after selling everything sellable (or there was nothing to
  * sell at all). Mirrors the old "accept loss" button's consequences
- * exactly, just triggered automatically instead of by manual choice. */
-function triggerPrisonerOfWar(board: GameState, updateGameState: (board: GameState) => void): void {
+ * exactly, just triggered automatically instead of by manual choice.
+ * `owner` -- the tile owner whose toll bankrupted them -- earns a star for
+ * taking them prisoner (see utils/stars.ts); undefined only for the
+ * defensive case of a toll with no real owner left to credit. */
+function triggerPrisonerOfWar(
+  board: GameState,
+  updateGameState: (board: GameState) => void,
+  owner: Player | undefined
+): void {
   const player = board.activePlayer;
   player.owedToll = 0;
   player.isPrisonerOfWar = true;
+  if (owner) changeStars(board, owner, 1);
   becomeBeggar(board, updateGameState);
   if (isHeadlessRun()) setEndTurn();
   else showPrisonScreen(board.gameMessage);
@@ -276,7 +285,7 @@ function showSellToPayOrPOWScreen(
       {
         label: t('afterMoveLogic.becomePOW'),
         action: 'accept-loss',
-        onClick: () => triggerPrisonerOfWar(board, updateGameState),
+        onClick: () => triggerPrisonerOfWar(board, updateGameState, owner),
       },
     ],
   });
@@ -362,7 +371,7 @@ export function showTileEncounterScreen(
   if (hasSellableTiles && sellable.gold >= remaining) {
     showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee, remaining, goldBefore);
   } else {
-    triggerPrisonerOfWar(board, updateGameState);
+    triggerPrisonerOfWar(board, updateGameState, owner);
   }
 }
 
@@ -406,7 +415,7 @@ function resolveGuardsHeadless(
 
   if (remaining > 0) {
     announce(player, 'botController.acceptTheLoss');
-    triggerPrisonerOfWar(board, updateGameState);
+    triggerPrisonerOfWar(board, updateGameState, owner);
     return;
   }
 

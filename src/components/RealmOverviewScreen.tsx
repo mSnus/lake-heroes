@@ -5,6 +5,7 @@ import { clearScreen } from '../utils/screenStore';
 import { playerScore } from '../game/score';
 import { getArtifact } from '../game/artifacts';
 import { totalWealth } from '../game/wealth';
+import { STARS_TO_WIN } from '../utils/stars';
 import { playerTurnIncome } from '../game/income';
 import { computeAnnualReward, KingsGraceReward } from '../game/kingsGrace';
 import { formatArmy } from '../utils/formatArmy';
@@ -151,6 +152,11 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
               <div className="realm-totals">
                 <span>{playerScore(gameState, player)}⭐</span>
                 <span>{totalWealth(gameState, player)}🧮</span>
+                {/* 🌟, not ⭐ -- this is the prisoners-taken win counter (see
+                    utils/stars.ts), not the power score just left of it. */}
+                <span>
+                  {player.stars}/{STARS_TO_WIN}🌟
+                </span>
               </div>
             </div>
           );

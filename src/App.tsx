@@ -64,6 +64,7 @@ import { BattleScreen } from './components/BattleScreen';
 import NewGameModal from './components/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
 import { DRAGON_GOLD } from './game/constants';
+import { STARS_TO_WIN } from './utils/stars';
 import { getOverrides } from './utils/overridesStore';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
@@ -683,14 +684,23 @@ function App() {
 
       {gameState?.gameOver &&
         (() => {
-          const winner = gameState.activePlayer;
+          // A save from before stars existed has no winCondition at all --
+          // that can only mean a Dragon win, since it was the only way to
+          // end the game then. Same reasoning for falling back to
+          // activePlayer: the Dragon's winner always IS whoever's turn it
+          // was when they landed the killing blow, but a star's winner is
+          // the tile owner who took the prisoner, not necessarily them.
+          const winner = gameState.players.find((p) => p.id === gameState.winner) ?? gameState.activePlayer;
+          const isDragonWin = (gameState.winCondition ?? 'dragon') === 'dragon';
           const tilesGold = winner.ownedTiles.reduce((sum, idx) => {
             const t = gameState.tiles[idx];
             return t && t.owner === winner.id ? sum + t.currentPrice.gold : sum;
           }, 0);
           const ov = getOverrides();
           const armyGold = winner.militia * ov.militiaPrice + winner.riders * ov.riderPrice;
-          const totalGold = winner.gold + tilesGold + armyGold + DRAGON_GOLD;
+          // The Dragon's hoard is part of the victory tally only when it's
+          // actually the thing that was won -- a stars win never saw it.
+          const totalGold = winner.gold + tilesGold + armyGold + (isDragonWin ? DRAGON_GOLD : 0);
           const years = winner.circles;
 
           return (
@@ -721,12 +731,21 @@ function App() {
                   fontFamily: 'Texturina',
                 }}
               >
-                Oh mighty <PlayerLabel player={winner} />,<br />
-                it took you {years} years to slain that dragon!
-                <br />
-                <i style={{ fontSize: '0.8rem', fontFamily: 'Texturina' }}>
-                  Boromir would do it in only {years - 1}...
-                </i>
+                {isDragonWin ? (
+                  <>
+                    Oh mighty <PlayerLabel player={winner} />,<br />
+                    it took you {years} years to slain that dragon!
+                    <br />
+                    <i style={{ fontSize: '0.8rem', fontFamily: 'Texturina' }}>
+                      Boromir would do it in only {years - 1}...
+                    </i>
+                  </>
+                ) : (
+                  <>
+                    Oh mighty <PlayerLabel player={winner} />,<br />
+                    {STARS_TO_WIN} prisoners of war taken in {years} years have won you the realm!
+                  </>
+                )}
                 <br />
                 <br />
                 You leave that kingdom <br />

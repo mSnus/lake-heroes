@@ -237,9 +237,13 @@ const EconomySimScreen: React.FC = () => {
 
       let winnerIndex = 0;
       if (runOutcome.stopReason === 'game-over') {
-        // The dragon fight doesn't advance the turn on a win (see
-        // driveOneTurn), so the active player is still whoever slew it.
-        winnerIndex = board.players.findIndex((p) => p.id === board.activePlayer.id);
+        // board.winner names the actual winner (set by both the Dragon win
+        // and a 3-star win -- see utils/stars.ts) -- fall back to
+        // activePlayer only for the case it's unset, which given stopReason
+        // is already 'game-over' can only be a Dragon win from before
+        // `winner` existed (the dragon fight doesn't advance the turn on a
+        // win, so the active player was always whoever slew it).
+        winnerIndex = board.players.findIndex((p) => p.id === (board.winner ?? board.activePlayer.id));
         if (winnerIndex < 0) winnerIndex = 0;
       } else {
         // Strongest by power score -- the same metric the King's Grace and

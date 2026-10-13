@@ -33,6 +33,10 @@ export class Player {
   /** Clandestine moral-standing counter -- see utils/karma.ts. Signed, 0 at
    * start, never shown directly (only a 🕷️ marker once it goes negative). */
   karma: number;
+  /** One per prisoner of war this player has taken (see utils/stars.ts,
+   * credited to the tile owner whose toll bankrupted the prisoner) --
+   * reaching STARS_TO_WIN ends the game, same as slaying the Dragon. */
+  stars: number;
   circles: number;
   dragonEncounters: number;
   dragonEncounteredLastTurn: boolean;
@@ -111,6 +115,7 @@ export class Player {
     this.turnsToSkip = 0;
     this.fame = params.fame ?? 1;
     this.karma = 0;
+    this.stars = 0;
     this.circles = 0;
     this.dragonEncounters = 0;
     this.dragonEncounteredLastTurn = false;

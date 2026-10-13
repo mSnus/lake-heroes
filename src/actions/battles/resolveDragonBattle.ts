@@ -30,6 +30,8 @@ export function resolveDragonBattle(
   if (outcome === 'attacker') {
     setGameMessage(board, t('resolveDragonBattle.slaysGameMessage', { attackerName: attacker.name }));
     board.gameOver = true;
+    board.winner = attacker.id;
+    board.winCondition = 'dragon';
     message = t('resolveDragonBattle.slaysMessage');
     victoryBg = true;
   } else if (outcome === 'tie') {

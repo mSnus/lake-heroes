@@ -27,6 +27,14 @@ export class GameState {
   // which is exactly "nothing in force".
   yearEffects: YearEffect[] = [];
   gameOver: boolean = false;
+  /** Id of the player who ended the game, once gameOver is true -- the
+   * victory screen falls back to activePlayer when unset (a save from
+   * before this existed, which can only mean a Dragon win, since that was
+   * the only way to end the game then). */
+  winner?: number;
+  /** How the game was won, for the victory screen's flavor text -- unset
+   * only for the same pre-existing-save case `winner` is. */
+  winCondition?: 'dragon' | 'stars';
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.
   skippingTurn: boolean = false;

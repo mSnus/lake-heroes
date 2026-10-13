@@ -352,7 +352,7 @@
   "helpScreen": {
     "objective": {
       "title": "Objetivo",
-      "body": "Reúne un ejército de aproximadamente <strong>60 Jinetes 🐎</strong>, derrota al Dragón 🐉 y reclama la victoria."
+      "body": "Reúne un ejército de aproximadamente <strong>60 Jinetes 🐎</strong> y derrota al Dragón 🐉 para una victoria instantánea — o toma <strong>3 prisioneros de guerra 🌟</strong> (captura a jugadores que no puedan pagar tu peaje) para reclamar el trono."
     },
     "turnOrder": {
       "title": "Orden del turno",
