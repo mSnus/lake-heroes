@@ -306,7 +306,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         className="tile-claim-owner-banner"
         style={{
           background:
-            'url("/assets/shade.jpg") center / cover no-repeat,\
+            'url("assets/shade.jpg") center / cover no-repeat,\
             linear-gradient(' +
             player.color +
             ', ' +
