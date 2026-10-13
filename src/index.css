@@ -1,3 +1,12 @@
+/* Mobile Chrome/Safari flash a translucent blue rectangle over whatever was
+   just tapped (dice, buttons, banners...) -- purely a touch-feedback
+   artifact, not a focus ring, so it's safe to kill everywhere. rgba(0,0,0,0)
+   rather than the `transparent` keyword, which some WebKit versions ignore
+   here. */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 body {
   margin: 0;
   font-family:
