@@ -370,7 +370,7 @@
       "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
       "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
-      "item6": "Cada loseta propia también aporta +{flatUnitIncome}🧍 por turno — puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 (pero al doble de precio)"
+      "item6": "Cada loseta propia también aporta +{flatUnitIncome}🧍 por turno — puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o la Caravana de Trabajadores (pero al doble de precio)"
     },
     "fame": {
       "title": "Fama 🏆",
