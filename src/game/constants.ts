@@ -83,7 +83,7 @@ export const LEVEL_3_UPGRADE_MULT = 1;
 // off their raw TILE_BASE_INCOME-scaled value -- a deliberate income nerf
 // independent of TILE_BASE_PRICE, which stays at its full value for
 // purchase/upgrade costs.
-export const BONUS_GOLD_RATIO = 0.65;
+export const BONUS_GOLD_RATIO = 0.8;
 // A tile's own income (gold for Mills/Farms/Fields/Traders, units for Camps/
 // Towers) pays out every turn now, not once a lap -- a turn's worth is a
 // small slice of what the old per-year figure was. Applied on top of

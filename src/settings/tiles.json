@@ -24,7 +24,7 @@
     "spriteImage": "assets/sprites/windmill.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 3,
+    "requiredFame": 0,
     "garrison": 12,
     "prices": {
       "1": 7,
@@ -43,7 +43,7 @@
     "spriteImage": "assets/sprites/bricks.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 4,
+    "requiredFame": 3,
     "garrison": 18,
     "prices": {
       "1": 8,
@@ -100,7 +100,7 @@
     "spriteImage": "assets/sprites/sheep.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 4,
+    "requiredFame": 3,
     "garrison": 10,
     "prices": {
       "1": 8,
@@ -157,7 +157,7 @@
     "spriteImage": "assets/sprites/fruit.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 5,
+    "requiredFame": 3,
     "garrison": 16,
     "prices": {
       "1": 7,
@@ -214,7 +214,7 @@
     "spriteImage": "assets/sprites/fur.png",
     "isOwnable": true,
     "bonusType": "gold",
-    "requiredFame": 4,
+    "requiredFame": 3,
     "garrison": 18,
     "prices": {
       "1": 9,
