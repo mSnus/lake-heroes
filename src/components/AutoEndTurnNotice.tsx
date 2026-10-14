@@ -41,6 +41,12 @@ interface AutoEndTurnNoticeProps {
  * instead cancels auto-end-turn for the rest of this turn specifically,
  * re-arming automatically once it's someone else's turn (or this player's
  * next one).
+ *
+ * Resilient to the tab being backgrounded (screen lock, app switch) while
+ * idling -- mobile browsers throttle/freeze setTimeout and
+ * requestAnimationFrame then, so a visibilitychange check reconciles the
+ * wall-clock deadline on resume rather than trusting a timer that may have
+ * silently failed to fire while frozen.
  */
 export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState, updateGameState }) => {
   const t = useT();
@@ -97,15 +103,54 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
     let raf: number | undefined;
     let fireTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const warmupTimer = setTimeout(() => {
+    // Absolute wall-clock deadlines, not just the relative setTimeout delays
+    // below -- mobile browsers throttle or outright freeze setTimeout/rAF
+    // while a tab is backgrounded or the screen locks, which is exactly when
+    // a player is likeliest to be idling. The visibilitychange handler below
+    // re-checks these against Date.now() whenever the tab wakes back up, so
+    // a turn that should already have ended still does, even if the timer
+    // meant to fire it got frozen mid-flight instead (the bug this guards
+    // against: the gauge's CSS visually jumps to "done" on resume -- a
+    // transition has no concept of being paused -- while the setTimeout
+    // that was actually supposed to call endTurn() never fired at all).
+    const showAt = Date.now() + WARMUP_MS;
+    const fireAt = showAt + DURATION_MS;
+
+    const fire = () => {
+      gameEvent('setPhase', 'before-move');
+      gameEvent('displayTile', {});
+      endTurn(gameStateRef.current, updateGameStateRef.current);
+    };
+
+    const startVisiblePhase = () => {
       setShowing(true);
       raf = requestAnimationFrame(() => setActive(true));
-      fireTimer = setTimeout(() => {
-        gameEvent('setPhase', 'before-move');
-        gameEvent('displayTile', {});
-        endTurn(gameStateRef.current, updateGameStateRef.current);
-      }, DURATION_MS);
-    }, WARMUP_MS);
+      fireTimer = setTimeout(fire, DURATION_MS);
+    };
+
+    const warmupTimer = setTimeout(startVisiblePhase, WARMUP_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      const now = Date.now();
+      if (now >= fireAt) {
+        // Past the full deadline -- don't trust the frozen timers to still
+        // fire correctly on their own; end the turn right now instead.
+        clearTimeout(warmupTimer);
+        if (fireTimer !== undefined) clearTimeout(fireTimer);
+        if (raf !== undefined) cancelAnimationFrame(raf);
+        fire();
+      } else if (now >= showAt && fireTimer === undefined) {
+        // Warmup elapsed while backgrounded, but the visible phase's own
+        // setTimeout got frozen before it could start -- start it fresh now
+        // (a full, correct DURATION_MS countdown) rather than trust a timer
+        // that already proved unreliable once this cycle.
+        clearTimeout(warmupTimer);
+        startVisiblePhase();
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisible);
 
     // Capture phase so this sees the click before a tile/screen handler
     // further down the tree can stop its own propagation.
@@ -117,6 +162,7 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
       if (raf !== undefined) cancelAnimationFrame(raf);
       if (fireTimer !== undefined) clearTimeout(fireTimer);
       document.removeEventListener('pointerdown', onActivity, true);
+      document.removeEventListener('visibilitychange', onVisible);
     };
   }, [eligible, cycle]);
 
