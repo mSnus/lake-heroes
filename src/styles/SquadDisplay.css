@@ -91,5 +91,7 @@
 .squad-chunk-locked {
   opacity: 0.4;
   filter: grayscale(1);
+  background-color: #dbdbd6;
   pointer-events: none;
+  border-radius: 4px;
 }

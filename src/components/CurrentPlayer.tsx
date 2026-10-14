@@ -201,27 +201,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
       <div className="player-pane">
         {/* Money and army share a row; the badges sit under it. */}
         <div className="player-stats-main-row">
-          {/* wealth */}
           <div
-            className="player-stats-data"
-            id="statsOwnedResources"
-            onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
-          >
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              👛
-            </div>
-            <div className="player-stats-inline-row">
-              <strong>
-                <Gold amount={revealed.gold ?? 0} />
-              </strong>
-            </div>
-          </div>
-
-          <div
-            className="player-stats-data player-stats-army-cell"
+            className="player-stats-data player-stats-army"
             id="statsArmy"
             onClick={() =>
               showScreen({
@@ -233,13 +214,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               })
             }
           >
-            <div
-              className="player-stats-hint"
-              style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
-            >
-              ⚔️
-            </div>
-            <div className="player-stats-inline-row">
+            <div>
               <SquadDisplay
                 militia={revealed.militia}
                 riders={revealed.riders}
@@ -248,87 +223,100 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 className="player-stats-army-slots"
               />
             </div>
+
+            {(turnIncome.units > 0 || atUnitCapacity || noUnitIncomeAtFame1) && (
+              <div className="player-stats-income-row">
+                <span className="player-stats-turn-income player-stats-army">
+                  {atUnitCapacity
+                    ? t('currentPlayer.maxCapacityReached', { fame: activePlayer.fame })
+                    : noUnitIncomeAtFame1
+                      ? t('currentPlayer.gainMoreFame')
+                      : turnIncome.units > 0
+                        ? `+${turnIncome.units}🧍`
+                        : ''}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {(turnIncome.gold > 0 || turnIncome.units > 0 || atUnitCapacity || noUnitIncomeAtFame1) && (
-          /* Same shape as the row above (natural width, then flex) so each
-             figure lines up under the stat it adds to. */
-          <div className="player-stats-main-row player-stats-income-row">
-            <span className="player-stats-turn-income">
-              {turnIncome.gold > 0 && (
-                <>
-                  +<Gold amount={turnIncome.gold} />
-                </>
-              )}
-            </span>
-            <span className="player-stats-turn-income player-stats-army-cell">
-              {atUnitCapacity
-                ? t('currentPlayer.maxCapacityReached', { fame: activePlayer.fame })
-                : noUnitIncomeAtFame1
-                  ? t('currentPlayer.gainMoreFame')
-                  : turnIncome.units > 0
-                    ? `+${turnIncome.units}🧍`
-                    : ''}
-            </span>
+        {/* wealth */}
+        <div
+          className="player-stats-data player-stats-gold"
+          id="statsOwnedResources"
+          onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
+        >
+          <div className="player-stats-inline-row">
+            <strong>
+              <Gold amount={revealed.gold ?? 0} />
+            </strong>
           </div>
-        )}
+          <div className="player-stats-inline-row">
+            {turnIncome.gold > 0 && (
+              <div className="player-stats-income-row">
+                <span className="player-stats-turn-income">
+                  +<Gold amount={turnIncome.gold ?? 0} />
+                </span>
+              </div>
+            )}
+          </div>
 
-        {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
-          activePlayer.artifacts.length > 0) && (
-          <div className="player-stats-contracts">
-            {gameState.kingsContracts
-              .filter((c) => c.playerId === activePlayer.id)
-              .map((c) => {
-                const tile = gameState.tiles[c.tilePosition];
-                if (!tile) return null;
+          {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
+            activePlayer.artifacts.length > 0) && (
+            <div className="player-stats-contracts">
+              {gameState.kingsContracts
+                .filter((c) => c.playerId === activePlayer.id)
+                .map((c) => {
+                  const tile = gameState.tiles[c.tilePosition];
+                  if (!tile) return null;
+                  return (
+                    <span
+                      key={c.tilePosition}
+                      className="player-contract-badge"
+                      onClick={() =>
+                        sayLocal(
+                          t('currentPlayer.kingsContractTooltip', {
+                            tileName: tile.name,
+                            award: c.award,
+                          }),
+                          'info'
+                        )
+                      }
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className="icon">📜</span> {tile.name}
+                    </span>
+                  );
+                })}
+              {activePlayer.artifacts.map((id) => {
+                const artifact = getArtifact(id);
+                if (!artifact) return null;
                 return (
                   <span
-                    key={c.tilePosition}
-                    className="player-contract-badge"
+                    key={`artifact-${id}`}
+                    className={
+                      'player-artifact-badge' +
+                      (iconOnlyArtifacts ? ' player-artifact-badge--icon-only' : '')
+                    }
                     onClick={() =>
                       sayLocal(
-                        t('currentPlayer.kingsContractTooltip', {
-                          tileName: tile.name,
-                          award: c.award,
+                        t('currentPlayer.artifactTooltip', {
+                          name: artifact.name,
+                          description: artifact.description,
                         }),
                         'info'
                       )
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    <span className="icon">📜</span> {tile.name}
+                    <span className="icon">{artifact.emoji}</span>
+                    {!iconOnlyArtifacts && <> {artifact.name}</>}
                   </span>
                 );
               })}
-            {activePlayer.artifacts.map((id) => {
-              const artifact = getArtifact(id);
-              if (!artifact) return null;
-              return (
-                <span
-                  key={`artifact-${id}`}
-                  className={
-                    'player-artifact-badge' +
-                    (iconOnlyArtifacts ? ' player-artifact-badge--icon-only' : '')
-                  }
-                  onClick={() =>
-                    sayLocal(
-                      t('currentPlayer.artifactTooltip', {
-                        name: artifact.name,
-                        description: artifact.description,
-                      }),
-                      'info'
-                    )
-                  }
-                  style={{ cursor: 'pointer' }}
-                >
-                  <span className="icon">{artifact.emoji}</span>
-                  {!iconOnlyArtifacts && <> {artifact.name}</>}
-                </span>
-              );
-            })}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

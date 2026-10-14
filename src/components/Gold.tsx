@@ -20,7 +20,7 @@ interface GoldProps {
  * -- a lowercase `gold` would be parsed as a literal HTML element instead.
  */
 export const Gold: React.FC<GoldProps> = ({ amount, where = 'after' }) => {
-  const icon = <img src="assets/sprites/coin2x64.png" alt="🟡" className="gold-icon" />;
+  const icon = <img src="/assets/sprites/coin3.svg" alt="🟡" className="gold-icon" />;
   return (
     <div className="gold-inline">
       {where === 'before' && icon}

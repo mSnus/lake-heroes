@@ -383,7 +383,7 @@
       "title": "Casillas 🧩",
       "discoverTitle": "Descubrir",
       "discoverBody": "nuevas casillas y ser recompensado por ello",
-      "own": "<strong>👛 Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Cada casilla que posees te aporta al menos +{flatUnitIncome}🧍 cada día. Visitar tus propias casillas te aporta un bono de {visitGoldMult}x 🟡 o {visitUnitsShare}x🧍🏻",
+      "own": "<strong> Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Cada casilla que posees te aporta al menos +{flatUnitIncome}🧍 cada día. Visitar tus propias casillas te aporta un bono de {visitGoldMult}x 🟡 o {visitUnitsShare}x🧍🏻",
       "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — la tarifa 💰 se cobra automáticamente. Tras pagarla, puedes marcharte en paz o luchar ⚔️ por venganza. Una casilla arrasada 🔥 pierde sus mejoras, queda sin dueño y no se puede reclamar hasta la siguiente ronda. Si no puedes cubrir una tarifa, vende casillas; si aún no basta, te conviertes en prisionero de guerra, pierdes un turno en prisión y después recibes el rescate del Rey para continuar.",
       "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: el bono de ingresos y la tarifa se <strong>duplican</strong>",
       "sellAnytime": "<strong>Vender</strong> — las casillas pueden venderse en cualquier momento por el precio total de la casilla y sus mejoras. Haz clic en el encabezado de la casilla para ver los botones de Vender/Ceder.",

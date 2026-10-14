@@ -136,7 +136,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
     if (gold <= 0) return <>0</>;
 
-    const icon = lacksGold ? '❌ ' : useWalletIcon ? '👛 ' : 'ᅠ';
+    const icon = lacksGold ? '❌ ' : useWalletIcon ? ' ' : 'ᅠ';
 
     return (
       <>
@@ -532,7 +532,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                                   : { paddingRight: '8px' }
                               }
                             >
-                              {goldLacking ? '🔻' : '👛 '}
+                              {goldLacking ? '🔻' : ' '}
                               <Gold amount={tile.currentPrice.gold ?? 0} />{' '}
                             </span>
                           )}
