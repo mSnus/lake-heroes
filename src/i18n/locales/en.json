@@ -1161,5 +1161,9 @@
     "invalidBackup": "That file doesn't look like a Lake Heroes save backup.",
     "confirmRestore": "Restore this backup into Slot {slot}? It will replace whatever is there now.",
     "backupHint": "Download or restore a backup of Slot {slot} (the active one)."
+  },
+  "autoEndTurn": {
+    "label": "End turn",
+    "cancelHint": "(tap to cancel)"
   }
 }

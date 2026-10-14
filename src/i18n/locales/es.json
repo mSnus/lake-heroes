@@ -1134,5 +1134,9 @@
     "invalidBackup": "Ese archivo no parece una copia de seguridad de Lake Heroes.",
     "confirmRestore": "¿Restaurar esta copia en la Ranura {slot}? Reemplazará lo que haya ahí.",
     "backupHint": "Descarga o restaura una copia de seguridad de la Ranura {slot} (la activa)."
+  },
+  "autoEndTurn": {
+    "label": "Terminar turno",
+    "cancelHint": "(toca para cancelar)"
   }
 }

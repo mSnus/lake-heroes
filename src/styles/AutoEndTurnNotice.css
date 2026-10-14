@@ -1,0 +1,79 @@
+.auto-end-turn-notice {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 5199;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.auto-end-turn-notice.auto-end-turn-notice-active {
+  opacity: 1;
+}
+
+.auto-end-turn-badge {
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #f6d38155;
+  border-radius: 12px;
+  background: #00000090;
+  padding: 10px 20px;
+  font-family: 'Texturina', serif;
+  color: #f6d381;
+  text-shadow: 2px 1px 4px black;
+  filter: drop-shadow(1px 2px 4px black);
+}
+
+.auto-end-turn-gauge {
+  width: 48px;
+  height: 48px;
+}
+
+.auto-end-turn-gauge-track,
+.auto-end-turn-gauge-ring {
+  fill: none;
+  stroke-width: 4;
+}
+
+.auto-end-turn-gauge-track {
+  stroke: #f6d38133;
+}
+
+.auto-end-turn-gauge-ring {
+  stroke: #f6d381;
+  stroke-linecap: round;
+  /* Drains clockwise from the top, instead of the default 3-o'clock start. */
+  transform: rotate(-90deg);
+  transform-origin: 24px 24px;
+  /* No transition by default -- a reset (activity mid-drain) must snap the
+     ring back to full instantly, not animate backward. Only the drain
+     itself (base -> active, below) should ease smoothly. */
+  transition: none;
+}
+
+.auto-end-turn-notice-active .auto-end-turn-gauge-ring {
+  transition: stroke-dashoffset linear var(--auto-end-turn-duration, 3000ms);
+}
+
+.auto-end-turn-gauge-flag {
+  font-size: 14px;
+}
+
+.auto-end-turn-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.auto-end-turn-cancel-hint {
+  font-size: 0.75rem;
+  font-weight: normal;
+  opacity: 0.8;
+}

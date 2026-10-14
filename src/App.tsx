@@ -30,6 +30,7 @@ import TurnWaitShield from './components/TurnWaitShield';
 import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
 import { TurnAnnouncement } from './components/TurnAnnouncement';
+import { AutoEndTurnNotice } from './components/AutoEndTurnNotice';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import { PlayerSetup } from './utils/playerSetup';
@@ -793,6 +794,7 @@ function App() {
         <div id="mainContainer">
           <TurnWaitShield gameState={gameState} />
           <TurnAnnouncement gameState={gameState} />
+          <AutoEndTurnNotice gameState={gameState} updateGameState={updateGameState} />
 
           <ShieldColumn
             gameState={gameState}
