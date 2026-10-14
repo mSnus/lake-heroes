@@ -11,7 +11,11 @@ interface SpriteCircleIconProps {
  * A sprite image cropped into a circle, used as the icon under a screen
  * title (encounter screens, tile claim, etc).
  */
-export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({ src, size = isMobileLayout() ? '30vw' : '6rem', style = null }) => (  
+export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({
+  src,
+  size = isMobileLayout() ? '30vw' : '6rem',
+  style = null,
+}) => (
   <div
     style={{
       width: size,
@@ -20,10 +24,11 @@ export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({ src, size = 
       marginBottom: '16px',
       flexShrink: 0,
       zIndex: 6000,
-      backgroundImage: `url(${src})`,
+      backgroundImage: `url('assets/sprites/ring.png'), url(${src})`,
+      backgroundBlendMode: 'luminosity',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      ...style
+      ...style,
     }}
   />
 );

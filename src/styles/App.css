@@ -140,18 +140,24 @@ body.screen-open {
    meant for the tile beneath it. */
 .year-indicator {
   position: absolute;
-  top: 0;
-  left: 0;
-  padding-top: 0.5rem;
-  padding-left: 0.5rem;
+  top: 1rem;
+  left: 1rem;
   z-index: 90;
   pointer-events: none;
+  background-image: url('/assets/sprites/ring.png');
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .year-indicator svg {
   display: block;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.7;
 }
 
 @media screen and (max-width: 768px) {
