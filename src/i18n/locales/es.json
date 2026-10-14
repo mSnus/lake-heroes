@@ -316,7 +316,8 @@
     "fromYourTowers": "del peaje de tus Torres",
     "fromPristineDiamond": "del Diamante Puro 💎",
     "wagesMessage": "Pasa por el Castillo del Rey para {summary}",
-    "artifactTooltip": "{name}: {description}"
+    "artifactTooltip": "{name}: {description}",
+    "gainMoreFame": "Gana más fama 🏆 para tener más escuadras"
   },
   "garrisonsScreen": {
     "title": "Guarniciones",

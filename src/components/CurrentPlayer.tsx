@@ -11,6 +11,7 @@ import { GarrisonsScreen } from './GarrisonsScreen';
 import { gameEvent } from '../utils/events';
 import { showScreen } from '../utils/screenStore';
 import { handleKingCastle } from '../actions/king';
+import { MAX_ARMY_SLOTS } from '../game/constants';
 import { openTavernHireOnly } from '../actions/tavern';
 import { openStablesHireOnly } from '../actions/stables';
 import { useT } from '../i18n';
@@ -149,6 +150,10 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   const atUnitCapacity =
     playerRawTurnIncome(gameState, activePlayer).units > 0 &&
     activePlayer.remainingCapacity('militia') <= 0;
+  // Fame 1 is the lowest army-slot bracket (1 slot) -- a player stuck there
+  // with no unit income at all (not even the capped-out case above) is
+  // nudged toward the fix rather than shown a blank income line.
+  const noUnitIncomeAtFame1 = !atUnitCapacity && turnIncome.units === 0 && activePlayer.fame === 1;
   const ownedTileCount = gameState.tiles.filter(
     (tile) => tile && tile.owner === activePlayer.id && !tile.isYielded
   ).length;
@@ -236,13 +241,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 militia={revealed.militia}
                 riders={revealed.riders}
                 totalSlots={activePlayer.armySlots}
+                maxSlots={MAX_ARMY_SLOTS}
                 className="player-stats-army-slots"
               />
             </div>
           </div>
         </div>
 
-        {(turnIncome.gold > 0 || turnIncome.units > 0 || atUnitCapacity) && (
+        {(turnIncome.gold > 0 || turnIncome.units > 0 || atUnitCapacity || noUnitIncomeAtFame1) && (
           /* Same shape as the row above (natural width, then flex) so each
              figure lines up under the stat it adds to. */
           <div className="player-stats-main-row player-stats-income-row">
@@ -252,9 +258,11 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             <span className="player-stats-turn-income player-stats-army-cell">
               {atUnitCapacity
                 ? t('currentPlayer.maxCapacityReached', { fame: activePlayer.fame })
-                : turnIncome.units > 0
-                  ? `+${turnIncome.units}🧍`
-                  : ''}
+                : noUnitIncomeAtFame1
+                  ? t('currentPlayer.gainMoreFame')
+                  : turnIncome.units > 0
+                    ? `+${turnIncome.units}🧍`
+                    : ''}
             </span>
           </div>
         )}

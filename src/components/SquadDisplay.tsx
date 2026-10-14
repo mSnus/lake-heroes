@@ -8,6 +8,12 @@ interface SquadDisplayProps {
   militia: number;
   riders: number;
   totalSlots: number;
+  /** Slots beyond `totalSlots` (the player's current fame-based allowance),
+   * up to this absolute cap, render as locked/disabled boxes instead of
+   * being left out entirely -- so more squads than fame currently allows
+   * are still visible, just grayed. Defaults to `totalSlots` (no locked
+   * boxes), the behavior every existing caller keeps. */
+  maxSlots?: number;
   /** When provided, a ✖️ button appears next to every non-empty squad,
    * calling back with that squad's tier/count to sell. Omit for read-only
    * display (e.g. the player-stats panel). */
@@ -29,6 +35,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
   militia,
   riders,
   totalSlots,
+  maxSlots = totalSlots,
   onSellSquad,
   onUpgradeSquad,
   canUpgradeToRiders = false,
@@ -38,6 +45,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
 }) => {
   const t = useT();
   const chunks = buildSquadChunks(militia, riders, totalSlots);
+  const lockedSlots = Math.max(0, maxSlots - totalSlots);
 
   return (
     <div className={['squad-display', className].filter(Boolean).join(' ')}>
@@ -91,6 +99,14 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
           </span>
         );
       })}
+      {/* Beyond totalSlots, up to maxSlots -- same box as an empty available
+          slot, just grayed and inert, so more fame's extra squads are
+          visible as a goal rather than simply missing. */}
+      {Array.from({ length: lockedSlots }, (_, i) => (
+        <span key={`locked-${i}`} className="squad-chunk squad-chunk-locked">
+          <span className="squad-badge">0🧍</span>
+        </span>
+      ))}
     </div>
   );
 };

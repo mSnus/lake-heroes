@@ -313,7 +313,8 @@
     "fromYourTowers": "как дань с ваших башен",
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Пройдите Замок короля и получите {summary}",
-    "artifactTooltip": "{name}: {description}"
+    "artifactTooltip": "{name}: {description}",
+    "gainMoreFame": "Заработайте больше славы 🏆, чтобы получить больше отрядов"
   },
   "garrisonsScreen": {
     "title": "Гарнизоны",

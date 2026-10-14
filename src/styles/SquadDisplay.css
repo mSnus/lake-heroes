@@ -85,3 +85,11 @@
 .squad-upgrade-button:hover {
   opacity: 1;
 }
+
+/* A slot beyond the player's current fame-based allowance -- same box as a
+   normal empty one, just disabled and grayed. */
+.squad-chunk-locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+  pointer-events: none;
+}
