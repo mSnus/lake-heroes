@@ -9,6 +9,7 @@ import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { gameEvent } from '../utils/events';
 import { garrisonSlotCapacity, isBanzaiAttack } from '../game/army';
 import { UNIT_POWER } from '../game/army';
+import { claimAffordability } from '../game/tileOwnership';
 import { syndicateMultiplier } from '../game/syndicate';
 import { tileTurnIncome } from '../game/income';
 import { hasYearEffect, DOUBLE_INCOME_EFFECT } from '../game/year';
@@ -179,12 +180,18 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const attackEmoji = (isBrawlTile ? '👊' : '⚔️') + (isBanzai ? '🩸' : '');
 
-  const unitsInsufficient = !isBanzai && !!activePlayer && attackerPower < lvl1Defence;
-  const goldLacking = !!activePlayer && (activePlayer.gold ?? 0) < (tile.currentPrice.gold ?? 0);
-  const fameLacking =
-    tile.requiredFame > 0 && !!activePlayer && (activePlayer.fame ?? 1) < tile.requiredFame;
+  // Shared with AutoEndTurnNotice (game/tileOwnership.ts's
+  // claimAffordability) so "claimable" has one definition -- it re-derives
+  // lvl1Defence/attackerPower/isBanzai internally rather than taking the
+  // copies above as params, a cheap duplicated computation. No activePlayer
+  // (HelpScreen's static demo card, the only caller with no live game --
+  // see TileCard's own gameState prop comment) reads as affordable, same as
+  // before: nothing to compare against, so nothing to flag as lacking.
+  const { unitsInsufficient, goldLacking, fameLacking, canClaim } = activePlayer
+    ? claimAffordability(tile, activePlayer)
+    : { unitsInsufficient: false, goldLacking: false, fameLacking: false, canClaim: true };
 
-  const cantAfford = goldLacking || unitsInsufficient || fameLacking;
+  const cantAfford = !canClaim;
 
   const isOnFire = tile.isOnFire(gameState?.round ?? 0);
 
