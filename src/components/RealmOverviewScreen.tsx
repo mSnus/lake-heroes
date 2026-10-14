@@ -10,6 +10,7 @@ import { playerTurnIncome } from '../game/income';
 import { computeAnnualReward, KingsGraceReward } from '../game/kingsGrace';
 import { formatArmy } from '../utils/formatArmy';
 import { PlayerLabel } from './PlayerLabel';
+import { Gold } from './Gold';
 import { useT } from '../i18n';
 import '../styles/RealmOverviewScreen.css';
 
@@ -113,7 +114,8 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
               <div className="realm-stats">
                 <span>{player.fame}🏆</span>
                 <span>
-                  {player.gold}🟡{delta(income.gold)}
+                  <Gold amount={player.gold} />
+                  {delta(income.gold)}
                 </span>
                 <span>
                   {player.militia}🧍{delta(income.units)}
@@ -123,7 +125,11 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
 
               <div className="realm-annual" title={annualBreakdown(t, annual)}>
                 <span className="realm-annual-label">🏰 {t('tileCard.perYear')}:</span>
-                {annual.totalGold > 0 && <span>+{annual.totalGold}🟡</span>}
+                {annual.totalGold > 0 && (
+                  <span>
+                    +<Gold amount={annual.totalGold} />
+                  </span>
+                )}
                 {hypotheticalUnits(annual) > 0 && <span>+{hypotheticalUnits(annual)}👬</span>}
                 {annual.kingsHandicap < 1 && (
                   <span className="realm-annual-grace">

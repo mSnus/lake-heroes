@@ -8,6 +8,7 @@ import { PlayerLabel } from './PlayerLabel';
 import { DecoratedButton } from './DecoratedButton';
 import { SquadDisplay } from './SquadDisplay';
 import { SquadHirePanel } from './SquadHirePanel';
+import { Gold } from './Gold';
 import { KingsContract } from '../game/kingsContracts';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
@@ -103,7 +104,11 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
         <h3>
           {tJsx('kingsCastle.moneyAndFame', {
-            gold: <span className="value">{player.gold}🟡</span>,
+            gold: (
+              <span className="value">
+                <Gold amount={player.gold} />
+              </span>
+            ),
             fame: <span className="value">{player.fame}🏆</span>,
             squads: <span className="value">{t('squadDisplay.youHaveSquads', { squads: player.armySlots })}</span>,
           })}

@@ -31,6 +31,7 @@ import { isMobileLayout } from './components/board/common';
 import { CurrentTile } from './components/CurrentTile';
 import { TurnAnnouncement } from './components/TurnAnnouncement';
 import { AutoEndTurnNotice } from './components/AutoEndTurnNotice';
+import { Gold } from './components/Gold';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/GameMessage';
 import { PlayerSetup } from './utils/playerSetup';
@@ -750,7 +751,7 @@ function App() {
                 <br />
                 <br />
                 You leave that kingdom <br />
-                with a fame of {winner.fame}🏆 and {totalGold.toLocaleString()}🟡
+                with a fame of {winner.fame}🏆 and <Gold amount={totalGold.toLocaleString()} />
                 <br />
                 <br />
                 Congratulations! Time for a new challenge!

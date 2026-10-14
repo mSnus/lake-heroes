@@ -1,0 +1,13 @@
+.gold-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+}
+
+.gold-icon {
+  height: 1em;
+  width: 1em;
+  object-fit: contain;
+  vertical-align: middle;
+  flex-shrink: 0;
+}

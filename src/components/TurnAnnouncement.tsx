@@ -3,6 +3,7 @@ import { GameState } from '../game/GameState';
 import { useModal } from '../utils/diceStore';
 import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
+import { Gold } from './Gold';
 import { playerTurnIncome } from '../game/income';
 import { gameEvent } from '../utils/events';
 import { tJsx } from '../i18n/tJsx';
@@ -101,7 +102,11 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
         </span>
         {(turnIncome.gold > 0 || turnIncome.units > 0) && (
           <span className="turn-announcement-income">
-            {turnIncome.gold > 0 && <>+{turnIncome.gold}🟡 </>}
+            {turnIncome.gold > 0 && (
+              <>
+                +<Gold amount={turnIncome.gold} />{' '}
+              </>
+            )}
             {turnIncome.units > 0 && <>+{turnIncome.units}🧍</>}
           </span>
         )}

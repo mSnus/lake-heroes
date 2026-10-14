@@ -17,6 +17,7 @@ import { BRAWL_THRESHOLD } from '../game/constants';
 import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
 import { TileUpgradesScreen } from './TileUpgradesScreen';
+import { Gold } from './Gold';
 import { showScreen } from '../utils/screenStore';
 import { useT } from '../i18n';
 
@@ -105,7 +106,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     <>
       {turnIncome.gold > 0 && (
         <>
-          +{turnIncome.gold}🟡
+          +<Gold amount={turnIncome.gold} />
           {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}{' '}
         </>
       )}
@@ -143,7 +144,7 @@ export const TileCard: React.FC<TileCardProps> = ({
         {!useWalletIcon && (level > currentLevel ? '+' : ' ')}
         <span style={lacksGold ? redBold : undefined}>
           {lacksGold && '🔻'}
-          {gold}🟡
+          <Gold amount={gold} />
         </span>
       </>
     );
@@ -153,7 +154,8 @@ export const TileCard: React.FC<TileCardProps> = ({
   const defence = (level: number) => tile.getDefence(level);
   const defenceCapacity = (level: number) => garrisonSlotCapacity() * level;
 
-  const bonusTypeIcon = bonusType === 'gold' ? '🟡' : '🧍';
+  const bonusAmount = (level: number) =>
+    bonusType === 'gold' ? <Gold amount={bonus(level)} /> : <>{bonus(level)} 🧍</>;
 
   const class1 = tile.isOwned() && tile.level < 2 ? 'tc-td level-highlighted' : 'tc-td';
   const class2 = tile.isOwned() && tile.level == 2 ? 'tc-td level-highlighted' : 'tc-td';
@@ -359,7 +361,7 @@ export const TileCard: React.FC<TileCardProps> = ({
             {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
             {tile.isOwned() && (
               <div>
-                <div className="tile-base-price">{tile.prices[1] ? tile.prices[1] + '🟡' : ''}</div>
+                <div className="tile-base-price">{tile.prices[1] ? <Gold amount={tile.prices[1]} /> : ''}</div>
                 <div className="tile-defence">
                   {Array.from({ length: tile.level }, (_, i) => (
                     <span key={i}>🏯</span>
@@ -422,7 +424,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                     {tile.owner !== activePlayer?.id && (
                       <div>
                         <div className="big-icon-hint">
-                          <div>{tile.fee}🟡</div>
+                          <div>
+                            <Gold amount={tile.fee} />
+                          </div>
                           <div>{t('tileCard.fee')}</div>
                         </div>
                       </div>
@@ -529,7 +533,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                               }
                             >
                               {goldLacking ? '🔻' : '👛 '}
-                              {tile.currentPrice.gold ?? 0}🟡{' '}
+                              <Gold amount={tile.currentPrice.gold ?? 0} />{' '}
                             </span>
                           )}
                           {/* The help screen's static sample card skips the unit
@@ -597,7 +601,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>→</td>
                       <td className={class1}>
-                        +{bonus(1)} {bonusTypeIcon}
+                        +{bonusAmount(1)}
                       </td>
                       <td className={class1}>{slotsAtLevel(1)}🏯 </td>
                     </tr>
@@ -610,7 +614,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>→</td>
                       <td className={class2}>
-                        +{bonus(2)} {bonusTypeIcon}
+                        +{bonusAmount(2)}
                       </td>
                       <td className={class2}>{slotsAtLevel(2)}🏯 </td>
                     </tr>
@@ -623,7 +627,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>→</td>
                       <td className={class3}>
-                        +{bonus(3)} {bonusTypeIcon}
+                        +{bonusAmount(3)}
                       </td>
                       <td className={class3}>{slotsAtLevel(3)}🏯 </td>
                     </tr>

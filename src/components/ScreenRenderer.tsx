@@ -7,6 +7,7 @@ import { Fade } from './Fade';
 import { OwnedTiles } from './OwnedTiles';
 import { DecoratedButton } from './DecoratedButton';
 import { PlayerLabel } from './PlayerLabel';
+import { Gold } from './Gold';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { gameEvent } from '../utils/events';
 import { formatArmy } from '../utils/formatArmy';
@@ -124,7 +125,9 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 /><br/>
                 {config.encounter?.gold !== undefined && (
                   <>
-                    <strong>{config.encounter.gold}🟡</strong>
+                    <strong>
+                      <Gold amount={config.encounter.gold} />
+                    </strong>
                     <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
                   </>
                 )}

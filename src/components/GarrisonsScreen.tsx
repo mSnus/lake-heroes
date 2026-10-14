@@ -6,6 +6,7 @@ import { ScreenBackground } from './ScreenBackground';
 import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { DecoratedButton } from './DecoratedButton';
 import { DecoratedSlider } from './DecoratedSlider';
+import { Gold } from './Gold';
 import { clearScreen } from '../utils/screenStore';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { dismountSquad, dismountRefund, snapDismount } from '../actions/dismountSquad';
@@ -124,7 +125,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
               <div className="garrisons-army-side">
                 {unassigned + dismountPick}🧍
                 {dismountRefund(dismountPick) > 0 && (
-                  <span>+ {dismountRefund(dismountPick)} 🟡</span>
+                  <span>
+                    + <Gold amount={dismountRefund(dismountPick)} />
+                  </span>
                 )}
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Player } from '../game/Player';
 import { formatArmy } from '../utils/formatArmy';
+import { Gold } from './Gold';
 import { useT } from '../i18n';
 import '../styles/PlayerStats.css';
 
@@ -38,7 +39,9 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
 
         {showGold && (
           <span className="player-stat">
-            <strong>{player.gold ?? 0}🟡</strong>
+            <strong>
+              <Gold amount={player.gold ?? 0} />
+            </strong>
           </span>
         )}
         {showUnits && (
@@ -52,7 +55,9 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
           <div className="player-stats-hint" style={{ backgroundColor: player.color }}>
             🏰
           </div>
-          <span className="player-stat">+{income.gold}🟡</span>
+          <span className="player-stat">
+            +<Gold amount={income.gold} />
+          </span>
           <span className="player-stat">+{income.units}👬</span>
         </div>
       )}

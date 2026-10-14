@@ -8,6 +8,7 @@ import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { DecoratedButton } from './DecoratedButton';
 import { DecoratedSlider } from './DecoratedSlider';
 import { fmtPrice } from './TileCard';
+import { Gold } from './Gold';
 import { clearScreen } from '../utils/screenStore';
 import { say, sayLocal } from '../utils/say';
 import { setTileGarrison } from '../actions/garrisonTile';
@@ -49,7 +50,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     const income = tileTurnIncome(tile, 1, level, gameState, player);
     return (
       <>
-        {income.gold > 0 && <>+{income.gold}🟡 </>}
+        {income.gold > 0 && (
+          <>
+            +<Gold amount={income.gold} />{' '}
+          </>
+        )}
         <br />
         {income.units > 1 && <>+{income.units}🧍</>}
       </>
@@ -177,7 +182,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         {clickable ? '👛' : ' '}{' '}
         <span style={lacksGold ? { color: '#ff4444', fontWeight: 'bold' } : undefined}>
           {lacksGold && '🔻'}
-          {gold}🟡
+          <Gold amount={gold} />
         </span>
       </div>
     );
@@ -312,7 +317,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         {tJsx(ownerTag, {
           player: player.name,
           fame: <>🏆{player.fame}</>,
-          gold: <>🟡{player.gold}</>,
+          gold: <Gold amount={player.gold} where="before" />,
         })}
       </div>
 

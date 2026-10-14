@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { DecoratedSlider } from './DecoratedSlider';
+import { Gold } from './Gold';
 import { useT } from '../i18n';
 import '../styles/SquadHirePanel.css';
 
@@ -53,7 +54,9 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
     <div className="hire-row">
       <div className="hire-row-stack">
         <div className="hire-row-name">{emoji}</div>
-        <div className="hire-row-caption">{unitPrice}🟡</div>
+        <div className="hire-row-caption">
+          <Gold amount={unitPrice} />
+        </div>
       </div>
       <DecoratedSlider
         min={0}
@@ -69,7 +72,9 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
       <div className={'shield-button-container' + (canBuy ? '' : ' shield-button-container--disabled')}>
         <button className="shield-button hire-submit" onClick={handleBuy} disabled={!canBuy}>
           <span className="hire-submit-icon">👛</span>
-          <span className="hire-row-caption">{displayedAmount * unitPrice}🟡</span>
+          <span className="hire-row-caption">
+            <Gold amount={displayedAmount * unitPrice} />
+          </span>
         </button>
       </div>
     </div>

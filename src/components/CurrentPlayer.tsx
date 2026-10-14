@@ -7,6 +7,7 @@ import { PlayerLabel } from './PlayerLabel';
 import { playerTurnIncome, playerRawTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
+import { Gold } from './Gold';
 import { GarrisonsScreen } from './GarrisonsScreen';
 import { gameEvent } from '../utils/events';
 import { showScreen } from '../utils/screenStore';
@@ -213,7 +214,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               👛
             </div>
             <div className="player-stats-inline-row">
-              <strong>{revealed.gold ?? 0}🟡</strong>
+              <strong>
+                <Gold amount={revealed.gold ?? 0} />
+              </strong>
             </div>
           </div>
 
@@ -253,7 +256,11 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
              figure lines up under the stat it adds to. */
           <div className="player-stats-main-row player-stats-income-row">
             <span className="player-stats-turn-income">
-              {turnIncome.gold > 0 ? `+${turnIncome.gold}🟡` : ''}
+              {turnIncome.gold > 0 && (
+                <>
+                  +<Gold amount={turnIncome.gold} />
+                </>
+              )}
             </span>
             <span className="player-stats-turn-income player-stats-army-cell">
               {atUnitCapacity
