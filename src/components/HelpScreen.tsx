@@ -105,6 +105,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.goldUnits.item3')} />
             <HtmlLi html={t('helpScreen.goldUnits.item4', { knightFame: KNIGHT_FAME })} />
             <HtmlLi html={t('helpScreen.goldUnits.item5')} />
+            <HtmlLi html={t('helpScreen.goldUnits.item6', { flatUnitIncome: FLAT_TILE_UNIT_INCOME })} />
           </ul>
 
           <h3>{t('helpScreen.fame.title')}</h3>
@@ -264,6 +265,7 @@ const HelpScreen: React.FC = () => {
           <h3>{t('helpScreen.battle.title')}</h3>
           <ul>
             <HtmlLi html={t('helpScreen.battle.occurs')} />
+            <HtmlLi html={t('helpScreen.battle.banzai')} />
             <li>
               <span dangerouslySetInnerHTML={{ __html: t('helpScreen.battle.statsIntro') }} />
               <ul className="help-battle-stats">

@@ -369,7 +369,8 @@
       "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Pasar por el Castillo del Rey también concede la Gracia del Rey y recompensas de propiedades.",
       "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
-      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey."
+      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
+      "item6": "Cada loseta propia también aporta +{flatUnitIncome}🧍 por turno — puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 (pero al doble de precio)"
     },
     "fame": {
       "title": "Fama 🏆",
@@ -508,7 +509,8 @@
           "desc": "La batalla termina: victoria, derrota o empate",
           "icon": "—"
         }
-      }
+      },
+      "banzai": "Un botón 🩸 ¡Banzai! en lugar del ataque normal significa que el juego espera que pierdas esa batalla — aun así puedes atacar como una apuesta"
     },
     "artifacts": {
       "title": "Artefactos",
@@ -1106,7 +1108,7 @@
     "narrateVisit": "{playerName} se encontró con trabajadores libres buscando una causa a la que unirse 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas",
+    "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas.",
     "doubleIncomeAnnounce": "Este año se presenta prometedor: {groups} darán el doble de ingresos.",
     "groupName": {
       "Mills": "los Molinos",

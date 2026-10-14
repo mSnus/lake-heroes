@@ -364,7 +364,8 @@
       "item2": "Yearly income: more tiles you own, more you get each year",
       "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
-      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle."
+      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
+      "item6": "Each owned tile also brings +{flatUnitIncome}🧍 per turn — you can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 (but for double price)"
     },
     "fame": {
       "title": "Fame 🏆",
@@ -481,7 +482,8 @@
           "desc": "The battle ends: victory, defeat, or a tie",
           "icon": "—"
         }
-      }
+      },
+      "banzai": "A 🩸 Banzai! button instead of the normal attack means the game expects you to lose that battle — you can still attack as a gamble"
     },
     "artifacts": {
       "title": "Artifacts",
@@ -1102,7 +1104,7 @@
     "narrateVisit": "{playerName} came across free workers looking for a cause to join 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "All players collect yearly bonus from their tiles",
+    "yearlyBonus": "All players collect yearly bonus from their tiles.",
     "doubleIncomeAnnounce": "This year is promising, {groups} will provide double income!",
     "groupName": {
       "Mills": "Mills",

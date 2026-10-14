@@ -82,10 +82,6 @@ export function startNewYear(board: GameState): void {
     if (bonus.gold > 0 || bonus.units > 0) anyBonus = true;
   }
 
-  if (anyBonus) {
-    say(t('year.yearlyBonus'), 'info');
-  }
-
   // This year's lucky groups: each of Mills/Farms/Fields independently
   // rolls DOUBLE_INCOME_CHANCE, capped at DOUBLE_INCOME_MAX_GROUPS -- a
   // random one of the extras is dropped rather than the roll order always
@@ -100,10 +96,17 @@ export function startNewYear(board: GameState): void {
     addYearEffect(board, { id: DOUBLE_INCOME_EFFECT, untilYear: currentYear(board), group });
   }
 
+  // One shared toast for both year-rollover announcements -- the "lucky
+  // groups" sentence reads as a continuation of the bonus one, not a
+  // separate event, so they're one message when both have something to say.
+  const announcements: string[] = [];
+  if (anyBonus) announcements.push(t('year.yearlyBonus'));
   if (promoted.length > 0) {
     const groups = promoted
       .map((g) => `${GROUP_EMOJI[g]} ${t(`year.groupName.${g}`)}`)
       .join(` ${t('common.and')} `);
-    say(t('year.doubleIncomeAnnounce', { groups }), 'info');
+    announcements.push(t('year.doubleIncomeAnnounce', { groups }));
   }
+
+  if (announcements.length > 0) say(announcements.join(' '), 'info');
 }
