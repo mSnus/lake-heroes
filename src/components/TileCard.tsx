@@ -88,8 +88,15 @@ export const TileCard: React.FC<TileCardProps> = ({
   // this year's lucky groups include this tile's own (see game/year.ts) --
   // the badge is purely an annotation explaining why, not a second
   // multiplier applied here.
-  const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState, ownerPlayer ?? undefined);
-  const doubleIncomeActive = !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
+  const turnIncome = tileTurnIncome(
+    tile,
+    syndicateMult,
+    undefined,
+    gameState,
+    ownerPlayer ?? undefined
+  );
+  const doubleIncomeActive =
+    !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
   // Units below this are hidden entirely (not just rounded away) -- a
   // trickle of 1 isn't worth a line, but that means the "per turn" caption
   // below must stay hidden right along with it, not dangle on its own.
@@ -629,13 +636,13 @@ export const TileCard: React.FC<TileCardProps> = ({
               <div className="tile-card-sell" style={{ marginTop: '1rem' }}>
                 <div
                   onClick={() => handleYieldToggle()}
-                  className={'tile-card-button tile-card-sell-item'}
+                  className={'tile-card-button tile-card-small-button'}
                 >
                   👑 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
                 </div>
                 <div
                   onClick={() => handleSell()}
-                  className={'tile-card-button tile-card-sell-item'}
+                  className={'tile-card-button tile-card-small-button'}
                 >
                   🪙 {t('tileCard.sell')}
                 </div>

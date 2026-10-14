@@ -41,9 +41,11 @@
 }
 
 .upgrades-table {
-  width: 100%;
   border-collapse: collapse;
+
   display: flex;
+
+  flex-direction: column;
   align-items: flex-start;
   justify-content: center;
 
@@ -56,33 +58,49 @@
 
   padding: 0 1rem;
   margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
 
   z-index: 6002;
 }
 
 .upgrade-level {
-  display: flex;
-  flex-direction: column;
-
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  width: 100%;
   font-size: 1rem;
-  display: flex;
   align-items: center;
-  justify-content: flex-start;
-  height: 100%;
 }
 
+.upgrade-level > * {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.upgrade-level > :nth-child(3) {
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+/* REMOVED: the nth-child(1) and nth-child(2) rules with min-width: 5rem,
+   they made the columns unequal */
+
 .upgrade-level + .upgrade-level {
-  border-left: 1px solid wheat;
-  padding-left: 12px;
-  padding-right: 12px;
+  border-top: 1px solid wheat;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .upgrade-level.current-level {
   border-radius: 8px;
-  padding: 0 8px 0 8px;
+  padding: 8px 0 8px 0;
 }
 
-.current-level .upgrade-price-badge {
+.current-level .upgrade-price-badge .checkmark {
   font-size: 1.6rem;
   font-weight: 300;
   line-height: 1.6rem;
@@ -91,9 +109,4 @@
 .upgrade-level.upgrade-unreachable {
   filter: sepia(1);
   opacity: 0.5;
-}
-
-.upgrade-level.current-level:nth-child(1),
-.upgrade-level.current-level:nth-child(2) {
-  border-radius: 8px 0 0 8px;
 }

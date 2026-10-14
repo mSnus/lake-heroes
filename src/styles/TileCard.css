@@ -57,7 +57,6 @@
   border-radius: 50%;
 }
 
-
 .current-tile.special .tile-card {
   background-color: transparent;
   border: none;
@@ -93,7 +92,7 @@
   width: 200px;
 }
 
-.tile-card.expanded .tile-card-button.tile-card-sell-item {
+.tile-card.expanded .tile-card-button.tile-card-small-button {
   color: #4c412d;
 }
 
@@ -292,7 +291,7 @@
 }
 
 .tile-card.yielded {
-  background-color: #eee
+  background-color: #eee;
 }
 
 .tile-card.yielded .tile-card-bg {
@@ -424,11 +423,11 @@
 }
 
 .screen-common .tile-card-sell {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
-.tile-card-sell-item {
+.tile-card-small-button {
   background: linear-gradient(1deg, #68613ec7, #41382894);
   text-shadow: #736c5eaf 0 0 6px;
   color: wheat;
@@ -438,7 +437,7 @@
   border: 1px solid #ffb32c;
 }
 
-.tile-card-ownable .tile-card-sell-item {
+.tile-card-ownable .tile-card-small-button {
   background: #f8dc9b;
   border: 1px outset #ffb32c7a;
   text-shadow: none;
@@ -484,7 +483,6 @@
   color: wheat;
   font-family: 'Texturina';
 }
-
 
 .tile-card-attack-emoji {
   font-size: 0.9rem;

@@ -50,7 +50,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     return (
       <>
         {income.gold > 0 && <>+{income.gold}🟡 </>}
-        <br/>
+        <br />
         {income.units > 1 && <>+{income.units}🧍</>}
       </>
     );
@@ -148,8 +148,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const handleUpgradeToLevel = (level: number) => {
     if (!canUpgradeToLevel(level)) return;
     const price = tile.prices[level];
-    if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: price })))
-      return;
+    if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: price }))) return;
 
     player.gold = (player.gold || 0) - (price || 0);
     tile._level = level;
@@ -161,7 +160,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     forceRerender((v) => v + 1);
   };
 
-  const priceTag = (level: number) => {
+  const priceTag = (level: number, currentLevel: number) => {
     const gold = tile.prices[level] ?? 0;
     const clickable = canUpgradeToLevel(level);
     // The upgrade-target level the player can't afford gets the same "can't
@@ -170,22 +169,17 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     const isUpgradeTarget = !tile.isYielded && level === nextLevel && currentLevel < maxLevel;
     const lacksGold = isUpgradeTarget && (player.gold ?? 0) < gold;
     return (
-      <span
-        className={'upgrade-price-badge' + (clickable ? ' clickable' : '')}
+      <div
+        className={clickable ? ' tile-card-button tile-card-small-button' : 'upgrade-price-badge'}
         onClick={clickable ? () => handleUpgradeToLevel(level) : undefined}
       >
+        {currentLevel === level ? <span className="checkmark">{t('tileClaimScreen.now')}</span> : ''}
         {clickable ? '👛' : ' '}{' '}
         <span style={lacksGold ? { color: '#ff4444', fontWeight: 'bold' } : undefined}>
           {lacksGold && '🔻'}
           {gold}🟡
         </span>
-      </span>
-    );
-  };
-
-  const currently = (level: number, currentLevel: number) => {
-    return (
-      <span className={'upgrade-price-badge'}>{level === currentLevel ? t('tileClaimScreen.now') : ''}</span>
+      </div>
     );
   };
 
@@ -293,10 +287,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             zIndex: 6002,
           }}
         >
-          <div onClick={handleYieldToggle} className="tile-card-button tile-card-sell-item">
+          <div onClick={handleYieldToggle} className="tile-card-button tile-card-small-button">
             👑 {tile.isYielded ? t('tileCard.takeBack') : t('tileCard.yieldToKing')}
           </div>
-          <div onClick={handleSell} className="tile-card-button tile-card-sell-item">
+          <div onClick={handleSell} className="tile-card-button tile-card-small-button">
             🪙 {t('tileCard.sell')}
           </div>
         </div>
@@ -325,16 +319,16 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
       {!tile.isYielded && (
         <div className="upgrades-table">
           {currentLevel < 2 && (
-            <div
-              className={
-                'upgrade-level' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
-              }
-            >
-              <div className="big-icon-hint">
+            <div className={'upgrade-level'}>
+              {priceTag(1, currentLevel)}
+
+              <div
+                className={
+                  'big-icon-hint' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
+                }
+              >
                 <span className="value">🏯</span>
               </div>
-
-              {currently(currentLevel, 1)}
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(1)}</div>
@@ -352,11 +346,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
           {currentLevel < 3 && (
             <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
+              {priceTag(2, currentLevel)}
+
               <div className="big-icon-hint">
                 <span className="value">🏯🏯</span>
               </div>
-
-              {currentLevel === 2 ? currently(currentLevel, 2) : priceTag(2)}
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(2)}</div>
@@ -379,11 +373,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 (currentLevel === 3 ? ' current-level' : '')
               }
             >
+              {priceTag(3, currentLevel)}
+
               <div className="big-icon-hint">
                 <span className="value">🏯🏯🏯</span>
               </div>
-
-              {currentLevel === 3 ? currently(currentLevel, 3) : priceTag(3)}
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(3)}</div>
