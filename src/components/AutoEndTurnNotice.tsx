@@ -55,7 +55,17 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
   const screen = useScreen();
   const player = gameState.activePlayer;
 
-  const [cancelled, setCancelled] = useState(false);
+  // A plain ref, not state: a tap on the cancel button is a native
+  // pointerdown (the document-level activity listener below, capture
+  // phase) followed by a SEPARATE React synthetic click (handleCancelClick)
+  // -- two independent event dispatches for the same tap, not guaranteed to
+  // land in the same render/batch. Reading cancelled from state left a
+  // window where a render could recompute `eligible` against a value that
+  // hadn't caught up yet; a ref has no such window, since every read is the
+  // actual current value, synchronously, with no commit to wait on.
+  const cancelledRef = useRef(false);
+  const [, forceRender] = useState(0);
+
   const [showing, setShowing] = useState(false); // past the silent warmup -- gauge is mounted
   const [active, setActive] = useState(false); // drives the gauge's CSS transition
   const [cycle, setCycle] = useState(0); // bumped on activity to restart both phases
@@ -68,19 +78,26 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
   gameStateRef.current = gameState;
   updateGameStateRef.current = updateGameState;
 
-  // A new turn always re-arms the feature, even if it was cancelled last time.
-  useEffect(() => {
-    if (lastPlayerIdRef.current === player.id) return;
+  // A new turn always re-arms the feature, even if it was cancelled last
+  // time -- done directly during render (a plain ref mutation, not a side
+  // effect) rather than in a useEffect, so the reset is visible to
+  // `eligible` below in this SAME render instead of one render later.
+  if (lastPlayerIdRef.current !== player.id) {
     lastPlayerIdRef.current = player.id;
-    setCancelled(false);
-  }, [player.id]);
+    cancelledRef.current = false;
+  }
 
   // A claimable tile under the player's feet is an unmade decision, even
   // though nothing here shows it as a screen (the Current Tile card isn't
   // one -- see utils/screenStore.ts) -- the game is still waiting on them.
   const awaitingClaimDecision = canClaimTile(gameState.activeTile, player);
   const eligible =
-    endTurnReady && !diceActive && !screen && !awaitingClaimDecision && isLocalHuman(player) && !cancelled;
+    endTurnReady &&
+    !diceActive &&
+    !screen &&
+    !awaitingClaimDecision &&
+    isLocalHuman(player) &&
+    !cancelledRef.current;
 
   useEffect(() => {
     if (!eligible) {
@@ -180,7 +197,11 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
 
   const handleCancelClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCancelled(true);
+    cancelledRef.current = true;
+    // Refs don't trigger a re-render on their own -- this is what makes the
+    // new value actually take effect (eligible gets recomputed against it
+    // on the forced render, tearing the countdown's effect down).
+    forceRender((n) => n + 1);
   };
 
   if (!showing) return null;
