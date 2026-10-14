@@ -153,8 +153,20 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
     document.addEventListener('visibilitychange', onVisible);
 
     // Capture phase so this sees the click before a tile/screen handler
-    // further down the tree can stop its own propagation.
-    const onActivity = () => setCycle((c) => c + 1);
+    // further down the tree can stop its own propagation -- which also
+    // means it fires for a tap on the gauge's OWN cancel button before
+    // handleCancelClick's stopPropagation ever runs (that only stops
+    // React's synthetic event, not this native capture-phase listener that
+    // already ran). A bumped cycle from that tap is harmless today --
+    // cancelled still wins on the next render, since eligible checks it
+    // too -- but it's needless churn riding along with a cancel that's
+    // about to tear this whole effect down anyway, so it's excluded
+    // explicitly rather than left to depend on that ordering.
+    const onActivity = (e: Event) => {
+      if ((e.target as Element | null)?.closest?.('.auto-end-turn-badge')) return;
+      setCycle((c) => c + 1);
+    };
+
     document.addEventListener('pointerdown', onActivity, true);
 
     return () => {
