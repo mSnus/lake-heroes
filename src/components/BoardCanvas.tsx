@@ -108,7 +108,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const lastZoomPositionRef = React.useRef<number | null>(null);
 
   //set to 1 to disable zoom, 2 to normal zoom-in
-  const ZOOM_MAX_LEVEL = 1; 
+  const ZOOM_MAX_LEVEL = 2;
 
   useEffect(() => {
     const newPosition = board.activePlayer.position;
