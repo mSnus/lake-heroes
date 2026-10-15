@@ -33,6 +33,12 @@ export interface BattleSetup {
   caravanDefenceRiders: number;
   ambushAttackerRiders: number;
   isZombieAmbush: boolean;
+  /** Ambush or a claim fought directly against an abandoned tile's wild
+   * garrison -- decides the zombie-themed background/portrait. Frozen here
+   * rather than re-read from `tile.abandoned` at render time, since a won
+   * claim clears that flag (grantTile) the instant the fight resolves and
+   * would otherwise flip the results screen's portrait back to the Saracen. */
+  isZombieFlavored: boolean;
   isRuins: boolean;
   attackerSized: SizedArmy;
   defenderSized: SizedArmy;
@@ -120,6 +126,8 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   const attackerGridTotal = attackerSized.militiaCount + attackerSized.ridersCount;
   const defenderGridTotal = defenderSized.militiaCount + defenderSized.ridersCount;
 
+  const isZombieFlavored = isZombieAmbush || (isTile && !!tile?.abandoned);
+
   const isDragonFight = isDragon || statOverrides?.defenderKind === 'dragon';
   const board = battleBoardFor(attackerGridTotal, defenderGridTotal, {
     allowBrawl: isTile || isRogue || isPlayerBattle || isCaravan || isAmbush,
@@ -197,6 +205,7 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     caravanDefenceRiders,
     ambushAttackerRiders,
     isZombieAmbush,
+    isZombieFlavored,
     isRuins,
     attackerSized,
     defenderSized,

@@ -189,6 +189,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     battlefieldUnits,
     ambushAttackerUnits,
     isZombieAmbush,
+    isZombieFlavored,
     isRuins,
     attackerSized,
     defenderSized,
@@ -266,11 +267,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isCaravan || isAmbush
       ? '#f6b03e'
       : defender?.color ?? '#eee';
-  // Same zombie-flavored condition the background image below keys off --
-  // either the ambush interrupt or a tile-claim battle fought directly
-  // against an abandoned tile's wild garrison, which has no real defender
-  // to show a portrait for either and used to fall back to the Saracen.
-  const isZombieFlavored = isZombieAmbush || (isTile && !!tile?.abandoned);
+  // isZombieFlavored comes frozen from setupRef (see battleSetup.ts) --
+  // winning a claim clears tile.abandoned immediately, which would otherwise
+  // flip this back to the Saracen on the results screen for the same fight.
   const defenderImg = isDragon
     ? 'assets/figures/npc-drac.png'
     : isZombieFlavored
@@ -712,11 +711,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           ? 'assets/screens/ruins.jpg'
           : isRogue
             ? 'assets/screens/raid.jpeg'
-            : // Zombie-flavored fight: either the ambush interrupt from an
-              // abandoned tile's garrison, or a normal tile-claim battle
-              // fought directly against one (same zombie: !!tile?.abandoned
-              // grid reskin either way, see buildInitialBattleState).
-              isZombieAmbush || (isTile && !!tile?.abandoned)
+            : isZombieFlavored
               ? 'assets/screens/zombies.jpeg'
               : isAmbush
                 ? 'assets/screens/ambush.jpg'
