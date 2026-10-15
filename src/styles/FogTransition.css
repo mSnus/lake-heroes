@@ -43,7 +43,7 @@
 .fog-transition-symbol {
   width: min(38vmin, 320px);
   height: min(38vmin, 320px);
-  background: url(fog.png) center / contain no-repeat;
+  background: url(/assets/fog.png) center / contain no-repeat;
   border-radius: 50%;
   filter: brightness(1);
 }
