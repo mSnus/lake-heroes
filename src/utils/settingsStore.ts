@@ -12,15 +12,19 @@ export interface AppSettings {
   autoEndTurn: boolean;
   autoBattle: boolean;
   doNotDisplayBattles: boolean;
+  mapAutoZoom: boolean;
+  disableFog: boolean;
 }
 
-// autoEndTurn defaults true (preserves today's always-on AutoEndTurnNotice
-// behavior); the other two default false (preserve today's interactive
-// default) unless explicitly opted in.
+// autoEndTurn/mapAutoZoom default true (preserve today's always-on
+// behavior); the rest default false (preserve today's behavior) unless
+// explicitly opted in.
 export const SETTINGS_DEFAULTS: AppSettings = {
   autoEndTurn: true,
   autoBattle: false,
   doNotDisplayBattles: false,
+  mapAutoZoom: true,
+  disableFog: false,
 };
 
 const STORAGE_KEY = 'app-settings';
@@ -31,6 +35,8 @@ function sanitize(raw: Partial<AppSettings> | null | undefined): AppSettings {
     autoEndTurn: !!merged.autoEndTurn,
     autoBattle: !!merged.autoBattle,
     doNotDisplayBattles: !!merged.doNotDisplayBattles,
+    mapAutoZoom: !!merged.mapAutoZoom,
+    disableFog: !!merged.disableFog,
   };
 }
 

@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { isHeadlessRun } from './headlessStore';
+import { getSettings } from './settingsStore';
 
 /** Fog wipe fronting a mid-move event screen: black fades in, the fog symbol
  * dims to nothing while the screen is revealed underneath, then black lifts. */
@@ -27,7 +28,7 @@ function clearTimers() {
  * runs and a wipe already in flight reveal at once, so this never gates game
  * logic. */
 export function playFogTransition(reveal: () => void): void {
-  if (isHeadlessRun() || phase !== 'idle') {
+  if (isHeadlessRun() || getSettings().disableFog || phase !== 'idle') {
     reveal();
     return;
   }

@@ -1062,7 +1062,11 @@
     "autoBattle": "Always use auto battle",
     "autoBattleHint": "Battles auto-resolve without asking you for step-by-step input or brawl placement.",
     "doNotDisplayBattles": "Do not display battles",
-    "doNotDisplayBattlesHint": "Battles resolve instantly in the background instead of showing the battle screen."
+    "doNotDisplayBattlesHint": "Battles resolve instantly in the background instead of showing the battle screen.",
+    "mapAutoZoom": "Map auto-zoom",
+    "mapAutoZoomHint": "The map camera zooms in on the active player at the start of their turn.",
+    "fogEffect": "Fog transition effect",
+    "fogEffectHint": "Shows a brief fog wipe before certain mid-move event screens. Turn off for faster transitions."
   },
   "versionMismatch": {
     "message": "🔄 New version available (you have {running}, server has {latest}) — tap to update",

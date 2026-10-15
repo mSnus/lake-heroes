@@ -69,6 +69,30 @@ const SettingsScreen: React.FC = () => {
           <span className="settings-hint">{t('settingsScreen.doNotDisplayBattlesHint')}</span>
         </div>
 
+        <div className="settings-field">
+          <label className="settings-toggle-label">
+            <input
+              type="checkbox"
+              checked={settings.mapAutoZoom}
+              onChange={(e) => setSettings({ mapAutoZoom: e.target.checked })}
+            />
+            {t('settingsScreen.mapAutoZoom')}
+          </label>
+          <span className="settings-hint">{t('settingsScreen.mapAutoZoomHint')}</span>
+        </div>
+
+        <div className="settings-field">
+          <label className="settings-toggle-label">
+            <input
+              type="checkbox"
+              checked={!settings.disableFog}
+              onChange={(e) => setSettings({ disableFog: !e.target.checked })}
+            />
+            {t('settingsScreen.fogEffect')}
+          </label>
+          <span className="settings-hint">{t('settingsScreen.fogEffectHint')}</span>
+        </div>
+
         <div
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}

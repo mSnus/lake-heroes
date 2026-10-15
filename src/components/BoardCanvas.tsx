@@ -21,6 +21,7 @@ import { openTavernHireOnly } from '../actions/tavern';
 import { openStablesHireOnly } from '../actions/stables';
 import { challengeDragonFromBoard } from '../actions/fightDragon';
 import { useT } from '../i18n';
+import { useSettings } from '../utils/settingsStore';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -107,8 +108,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const activePlayerId = board.activePlayer.id;
   const lastZoomPositionRef = React.useRef<number | null>(null);
 
-  //set to 1 to disable zoom, 2 to normal zoom-in
-  const ZOOM_MAX_LEVEL = 2;
+  // "Use map auto-zoom" (Settings screen) -- 1 leaves the camera at rest, 2
+  // is the normal zoom-in-on-active-player behavior.
+  const mapAutoZoom = useSettings().mapAutoZoom;
+  const ZOOM_MAX_LEVEL = mapAutoZoom ? 2 : 1;
 
   useEffect(() => {
     const newPosition = board.activePlayer.position;
@@ -130,7 +133,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, ZOOM_TRANSITION_MS + ZOOM_OUT_PAUSE_MS);
     return () => clearTimeout(t);
-  }, [activePlayerId]);
+  }, [activePlayerId, ZOOM_MAX_LEVEL]);
 
   // Recomputed every render (cheap arithmetic) so the camera keeps tracking
   // the active player as they move step-by-step during their turn. Reads

@@ -1058,7 +1058,11 @@
     "autoBattle": "Usar siempre combate automático",
     "autoBattleHint": "Las batallas se resuelven solas, sin pedirte entrada paso a paso ni colocación de tropas.",
     "doNotDisplayBattles": "No mostrar batallas",
-    "doNotDisplayBattlesHint": "Las batallas se resuelven al instante en segundo plano, sin mostrar la pantalla de combate."
+    "doNotDisplayBattlesHint": "Las batallas se resuelven al instante en segundo plano, sin mostrar la pantalla de combate.",
+    "mapAutoZoom": "Zoom automático del mapa",
+    "mapAutoZoomHint": "La cámara del mapa se acerca al jugador activo al inicio de su turno.",
+    "fogEffect": "Efecto de transición de niebla",
+    "fogEffectHint": "Muestra un breve barrido de niebla antes de ciertas pantallas de evento. Desactívalo para transiciones más rápidas."
   },
   "battleSimScreen": {
     "attacker": "Atacante",
