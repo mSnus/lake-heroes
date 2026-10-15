@@ -10,6 +10,7 @@ import { useShakeToRoll } from '../utils/useShakeToRoll';
 import HelpScreen from './HelpScreen';
 import CheatScreen from './CheatScreen';
 import OverridesScreen from './OverridesScreen';
+import SettingsScreen from './SettingsScreen';
 import StatsScreen from './StatsScreen';
 import BattleSimScreen from './BattleSimScreen';
 import EconomySimScreen from './EconomySimScreen';
@@ -22,7 +23,7 @@ import { resetLiveFeed } from '../online/liveFeedStore';
 import { resetRemoteMove } from '../online/remoteMoveStore';
 import ShareCodesScreen from './ShareCodesScreen';
 import { useMapEditStore, enableMapEditMode, disableMapEditMode } from '../utils/mapEditStore';
-import { LANGUAGES, cycleLanguage, useLanguage, t } from '../i18n';
+import { t } from '../i18n';
 import { isMobileLayout } from './board/common';
 import { removeFromStorage } from '../utils/storage';
 import SaveSlotsScreen from './SaveSlotsScreen';
@@ -45,8 +46,6 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   // browser offers no roll/end-turn controls". Offline this is !isComputer.
   const isBotTurn = !isLocalHuman(gameState.activePlayer);
   const [menuOpen, setMenuOpen] = useState(false);
-  const currentLanguage = useLanguage();
-  const currentFlag = LANGUAGES.find((l) => l.code === currentLanguage)?.flag ?? '🏳️';
   const mapEdit = useMapEditStore();
 
   // Covers movement rolls and the Tavern/Sphynx/Treasure dice prompts, since
@@ -159,12 +158,6 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   💾
                 </button>
               </div>
-              <div className="shield-button-container" title={t('common.language')}>
-                <button onClick={cycleLanguage} className="shield-button">
-                  {currentFlag}
-                </button>
-              </div>
-
               {/* Join links -- only meaningful in a network game, so it is
                   absent entirely from a local one rather than disabled. */}
               {isOnlineGame() && (
@@ -226,6 +219,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   ⚖️
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.settings')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <SettingsScreen /> });
+                  }}
+                  className="shield-button"
+                >
+                  ⚙️
                 </button>
               </div>
               <div className="shield-button-container" title={t('shieldColumn.battleSim')}>

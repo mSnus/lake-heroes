@@ -166,6 +166,7 @@
     "confirmNewGame": "Are you sure you want to start a new game? Your current progress will be lost.",
     "cheat": "Cheat",
     "overrides": "Overrides",
+    "settings": "Settings",
     "statistics": "Statistics",
     "battleSim": "Battle Simulator",
     "economySim": "Economy Simulator",
@@ -424,7 +425,8 @@
       "queensGift": "💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower tile, or 300🟡 and 5🧍 if none are free.",
       "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
       "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it.",
-      "kingsGift": "👑 <strong>King's Gift</strong> — the player who rolled it receives a random artifact nobody owns yet, or 200🟡 if none are left."
+      "kingsGift": "👑 <strong>King's Gift</strong> — the player who rolled it receives a random artifact nobody owns yet, or 200🟡 if none are left.",
+      "rust": "🟫 <strong>Rust</strong> — every player's Riders 🐎 rust away and become Militia 🧍."
     },
     "travel": {
       "title": "Travel 🧭",
@@ -524,6 +526,12 @@
       "title": "Dragon 🐉",
       "item1": "With an army of roughly 60 Riders 🐎 (120 army power) at the <em>start</em> of your turn, choose to challenge the Dragon or roll the dice instead.",
       "item2": "Sometimes while travelling you may see the dragon in the sky. And if you're rich and famous, beware: he could attack you and burn your tiles to the ground!"
+    },
+    "copyrights": {
+      "title": "Copyrights",
+      "item1": "This game was co-authored with the help of AI assistants: <strong>Claude</strong> (Anthropic), <strong>Gemini</strong> (Google), and <strong>ChatGPT</strong> (OpenAI).",
+      "item2": "The dice-rolling animation is powered by <em>react-dice-complete</em> by Adam Tyler, used under the ISC license.",
+      "item3": "Board and battle randomization use the classic <em>Fisher-Yates shuffle</em> algorithm."
     }
   },
   "screenStore": {
@@ -714,7 +722,8 @@
       "queensGift": "Queen's Gift",
       "earthquake": "Earthquake",
       "meteor": "Meteor",
-      "kingsGift": "King's Gift"
+      "kingsGift": "King's Gift",
+      "rust": "Rust"
     },
     "taxesMessage": "No gold income for 1 year.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
@@ -732,7 +741,8 @@
     "queensGiftGold": "Queen sends 300🟡 and 5🧍 to {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "{playerName} is given the {artifactName} {emoji} by the King!",
-    "kingsGiftGold": "The treasury holds no more artifacts, so the King sends 200🟡 to {playerName}"
+    "kingsGiftGold": "The treasury holds no more artifacts, so the King sends 200🟡 to {playerName}",
+    "rustMessage": "Rust corrodes every army's armor across the realm — all Riders are reduced to Militia."
   },
   "battleCommon": {
     "losingUnitsPart": " losing {army}",
@@ -1044,6 +1054,15 @@
     "headlessCombats": "Headless combats",
     "apply": "Apply",
     "resetDefaults": "Reset to defaults"
+  },
+  "settingsScreen": {
+    "title": "Settings",
+    "autoEndTurn": "Auto end turn",
+    "autoEndTurnHint": "Automatically ends your turn after a short idle period once there's nothing left to decide.",
+    "autoBattle": "Always use auto battle",
+    "autoBattleHint": "Battles auto-resolve without asking you for step-by-step input or brawl placement.",
+    "doNotDisplayBattles": "Do not display battles",
+    "doNotDisplayBattlesHint": "Battles resolve instantly in the background instead of showing the battle screen."
   },
   "versionMismatch": {
     "message": "🔄 New version available (you have {running}, server has {latest}) — tap to update",

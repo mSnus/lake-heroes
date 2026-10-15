@@ -239,6 +239,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.joker.earthquake')} />
             <HtmlLi html={t('helpScreen.joker.meteor')} />
             <HtmlLi html={t('helpScreen.joker.kingsGift')} />
+            <HtmlLi html={t('helpScreen.joker.rust')} />
           </ul>
 
           <h3>{t('helpScreen.caravan.title')}</h3>
@@ -350,6 +351,13 @@ const HelpScreen: React.FC = () => {
           <ul>
             <HtmlLi html={t('helpScreen.dragon.item1')} />
             <HtmlLi html={t('helpScreen.dragon.item2')} />
+          </ul>
+
+          <h3>{t('helpScreen.copyrights.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.copyrights.item1')} />
+            <HtmlLi html={t('helpScreen.copyrights.item2')} />
+            <HtmlLi html={t('helpScreen.copyrights.item3')} />
           </ul>
 
           <div className="help-screen-continue">

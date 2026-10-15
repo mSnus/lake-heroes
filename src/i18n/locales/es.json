@@ -166,6 +166,7 @@
     "confirmNewGame": "¿Seguro que quieres empezar una nueva partida? Se perderá tu progreso actual.",
     "cheat": "Trucos",
     "overrides": "Ajustes",
+    "settings": "Preferencias",
     "statistics": "Estadísticas",
     "battleSim": "Simulador de Batallas",
     "mapEditOn": "Edición de mapa: ACTIVADA (haz clic en una casilla o icono de jugador para ajustar)",
@@ -422,7 +423,8 @@
       "queensGift": "💍 <strong>Regalo de la Reina</strong> — el jugador que lo obtuvo recibe una casilla de Campamento/Torre gratis, o 300🟡 y 5🧍 si no hay ninguna libre.",
       "earthquake": "🪨 <strong>Terremoto</strong> — las casillas mejoradas pierden un nivel; los jugadores sin casillas mejoradas pierden su casilla más barata en su lugar.",
       "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola.",
-      "kingsGift": "👑 <strong>Regalo del Rey</strong> — quien lo saca recibe un artefacto al azar que nadie tenga aún, o 200🟡 si no queda ninguno."
+      "kingsGift": "👑 <strong>Regalo del Rey</strong> — quien lo saca recibe un artefacto al azar que nadie tenga aún, o 200🟡 si no queda ninguno.",
+      "rust": "🟫 <strong>Óxido</strong> — los Jinetes 🐎 de todos los jugadores se oxidan y se convierten en Milicia 🧍."
     },
     "travel": {
       "title": "Viaje 🧭",
@@ -522,6 +524,12 @@
       "title": "Dragón 🐉",
       "item1": "Con un ejército de aproximadamente 60 Jinetes 🐎 (120 de poder de ejército) al <em>inicio</em> de tu turno, puedes desafiar al Dragón o tirar el dado en su lugar.",
       "item2": "A veces, mientras viajas, puedes ver al dragón en el cielo. Y si eres rico y famoso, ten cuidado: ¡podría atacarte y quemar tus casillas hasta los cimientos!"
+    },
+    "copyrights": {
+      "title": "Derechos de autor",
+      "item1": "Este juego fue coescrito con la ayuda de asistentes de IA: <strong>Claude</strong> (Anthropic), <strong>Gemini</strong> (Google) y <strong>ChatGPT</strong> (OpenAI).",
+      "item2": "La animación de los dados utiliza <em>react-dice-complete</em> de Adam Tyler, bajo licencia ISC.",
+      "item3": "La aleatorización del tablero y las batallas usa el clásico algoritmo de <em>barajado Fisher-Yates</em>."
     }
   },
   "screenStore": {
@@ -712,7 +720,8 @@
       "queensGift": "Regalo de la Reina",
       "earthquake": "Terremoto",
       "meteor": "Meteorito",
-      "kingsGift": "Regalo del Rey"
+      "kingsGift": "Regalo del Rey",
+      "rust": "Óxido"
     },
     "taxesMessage": "Sin ingresos de oro durante 1 año.",
     "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
@@ -730,7 +739,8 @@
     "queensGiftGold": "La Reina envía 300🟡 y 5🧍 a {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "¡El Rey concede a {playerName} el artefacto {artifactName} {emoji}!",
-    "kingsGiftGold": "El tesoro ya no guarda artefactos, así que el Rey envía 200🟡 a {playerName}"
+    "kingsGiftGold": "El tesoro ya no guarda artefactos, así que el Rey envía 200🟡 a {playerName}",
+    "rustMessage": "El óxido corroe la armadura de todos los ejércitos del reino — todos los Jinetes quedan reducidos a Milicia."
   },
   "battleCommon": {
     "losingUnitsPart": " perdiendo {army}",
@@ -1040,6 +1050,15 @@
     "muteToasts": "Silenciar mensajes emergentes",
     "apply": "Aplicar",
     "resetDefaults": "Restablecer valores predeterminados"
+  },
+  "settingsScreen": {
+    "title": "Preferencias",
+    "autoEndTurn": "Terminar turno automáticamente",
+    "autoEndTurnHint": "Termina tu turno automáticamente tras un breve periodo de inactividad cuando ya no queda nada por decidir.",
+    "autoBattle": "Usar siempre combate automático",
+    "autoBattleHint": "Las batallas se resuelven solas, sin pedirte entrada paso a paso ni colocación de tropas.",
+    "doNotDisplayBattles": "No mostrar batallas",
+    "doNotDisplayBattlesHint": "Las batallas se resuelven al instante en segundo plano, sin mostrar la pantalla de combate."
   },
   "battleSimScreen": {
     "attacker": "Atacante",

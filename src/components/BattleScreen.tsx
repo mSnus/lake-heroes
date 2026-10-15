@@ -4,6 +4,7 @@ import { Tile } from '../game/Tile';
 import { GameState } from '../game/GameState';
 import { clearScreen, markScreenResolved } from '../utils/screenStore';
 import { getOverrides } from '../utils/overridesStore';
+import { getSettings } from '../utils/settingsStore';
 import { narrate, say, sayLocal } from '../utils/say';
 import { getPlayerImageSrc } from '../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
@@ -593,7 +594,12 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // one turn the same way.
   // The ⚖️ override makes battles start paused in step-by-step mode (advance
   // one turn per ⚔️ click) instead of auto-playing to the end.
-  const [manualMode, setManualMode] = useState(getOverrides().stepByStepCombat);
+  // "Always use auto battle" (Settings screen) overrides the ⚖️ step-by-step
+  // dev override entirely -- a battle never starts paused if the human asked
+  // to never be bothered for input.
+  const [manualMode, setManualMode] = useState(
+    getSettings().autoBattle ? false : getOverrides().stepByStepCombat
+  );
   useEffect(() => {
     if (phase !== 'ongoing' || manualMode) return;
     const timer = setTimeout(() => handleNextTurn(), AUTO_TURN_DELAY_MS);

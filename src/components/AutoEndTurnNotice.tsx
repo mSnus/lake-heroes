@@ -8,6 +8,7 @@ import { canClaimTile } from '../game/tileOwnership';
 import { endTurn } from '../actions/endTurn';
 import { gameEvent } from '../utils/events';
 import { useT } from '../i18n';
+import { useSettings } from '../utils/settingsStore';
 import '../styles/AutoEndTurnNotice.css';
 
 const WARMUP_MS = 5000; // silent idle wait before the gauge appears at all
@@ -54,6 +55,7 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
   const endTurnReady = useEndTurnReady();
   const screen = useScreen();
   const player = gameState.activePlayer;
+  const { autoEndTurn } = useSettings();
 
   // A plain ref, not state: a tap on the cancel button is a native
   // pointerdown (the document-level activity listener below, capture
@@ -92,6 +94,7 @@ export const AutoEndTurnNotice: React.FC<AutoEndTurnNoticeProps> = ({ gameState,
   // one -- see utils/screenStore.ts) -- the game is still waiting on them.
   const awaitingClaimDecision = canClaimTile(gameState.activeTile, player);
   const eligible =
+    autoEndTurn &&
     endTurnReady &&
     !diceActive &&
     !screen &&

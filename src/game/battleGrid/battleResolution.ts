@@ -14,6 +14,7 @@ import { setEndTurn } from '../../utils/endTurnStore';
 import { showScreen, clearScreen, ScreenConfig } from '../../utils/screenStore';
 import { isHeadlessRun } from '../../utils/headlessStore';
 import { getOverrides } from '../../utils/overridesStore';
+import { getSettings } from '../../utils/settingsStore';
 import { BattleScreen, type BattleScreenProps } from '../../components/BattleScreen';
 import { BattleSetup } from './battleSetup';
 import { runHeadlessBattle } from './headlessBattle';
@@ -141,7 +142,7 @@ export function showBattleScreen(
     | 'caravanPrize'
   >
 ): void {
-  if (isHeadlessRun() || getOverrides().headlessCombats) {
+  if (isHeadlessRun() || getOverrides().headlessCombats || getSettings().doNotDisplayBattles) {
     clearScreen();
     const { setup, resolution } = runHeadlessBattle(props);
     // A real BattleScreen refreshes state as the animation plays out --

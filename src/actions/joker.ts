@@ -21,6 +21,7 @@ const EVENTS = [
   'Earthquake',
   'Meteor',
   "King's Gift",
+  'Rust',
 ] as const;
 type JokerEvent = (typeof EVENTS)[number];
 
@@ -34,6 +35,7 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
   Earthquake: '🪨',
   Meteor: '☄️',
   "King's Gift": '👑',
+  Rust: '🟫',
 };
 
 // EVENTS values are internal switch keys (never shown directly) — this maps
@@ -47,17 +49,23 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
   Earthquake: 'joker.eventName.earthquake',
   Meteor: 'joker.eventName.meteor',
   "King's Gift": 'joker.eventName.kingsGift',
+  Rust: 'joker.eventName.rust',
 };
 
 // Which half of the table a draw comes from, before the specific event is
 // picked within that half -- karma (if negative) skews which half, never
 // which event, so the within-half odds stay exactly as they are today.
-const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor'];
+const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor', 'Rust'];
 const GOOD_EVENTS: JokerEvent[] = ['Blessing', "Queen's Gift", "King's Gift"];
 
 export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
   const badChance = board.activePlayer.karma < 0 ? KARMA_JOKER_BAD_CHANCE : 0.5;
-  const pool = Math.random() < badChance ? BAD_EVENTS : GOOD_EVENTS;
+  // Rust (global rider->militia conversion) is only ever drawable when
+  // someone on the board actually has Riders to lose -- otherwise it would
+  // "fire" as a no-op, wasting a bad-event turn on nothing.
+  const anyRidersInPlay = board.players.some((p) => p.riders > 0);
+  const badPool = anyRidersInPlay ? BAD_EVENTS : BAD_EVENTS.filter((e) => e !== 'Rust');
+  const pool = Math.random() < badChance ? badPool : GOOD_EVENTS;
   const event: JokerEvent = pool[Math.floor(Math.random() * pool.length)];
   let message = '';
 
@@ -228,6 +236,20 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
         message = t('joker.meteorWilderness');
       }
 
+      break;
+    }
+
+    case 'Rust': {
+      // Global, unlike every other event here -- every player's Riders rust
+      // away, not just the lander's. Guaranteed at least one Rider in play
+      // by the pool guard above, so this never fires as a no-op.
+      board.players.forEach((p) => {
+        if (p.riders > 0) {
+          p.militia += p.riders;
+          p.riders = 0;
+        }
+      });
+      message = t('joker.rustMessage');
       break;
     }
 

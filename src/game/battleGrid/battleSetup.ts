@@ -5,6 +5,7 @@ import { DRAGON_UNITS } from '../constants';
 import { getArtifactRollBonus } from '../artifacts';
 import { ABSORB_PER_ROLL_POINT } from '../constants';
 import { isLocalHuman } from '../seats';
+import { getSettings } from '../../utils/settingsStore';
 import { sizeArmyForGrid } from './scale';
 
 type SizedArmy = ReturnType<typeof sizeArmyForGrid>;
@@ -141,8 +142,12 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   // round -- input that player is not present to give. Their side is planned by
   // the AI instead (the same path a bot's is). Offline isLocalHuman(p) is
   // exactly !p.isComputer, so this is unchanged for a local game.
-  const attackerManual = isBrawl && !isAmbush && isLocalHuman(attacker);
-  const defenderManual = isBrawl && (isAmbush ? isLocalHuman(attacker) : !!defender && isLocalHuman(defender));
+  // "Always use auto battle" (Settings screen) suppresses manual input for
+  // the whole fight -- a local human is treated like a bot here too.
+  const autoBattle = getSettings().autoBattle;
+  const attackerManual = isBrawl && !isAmbush && isLocalHuman(attacker) && !autoBattle;
+  const defenderManual =
+    isBrawl && (isAmbush ? isLocalHuman(attacker) : !!defender && isLocalHuman(defender)) && !autoBattle;
 
   const squadCountFor = (player: Player): number => squadGroupCount(player.militia, player.riders);
 

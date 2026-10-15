@@ -416,7 +416,8 @@
       "queensGift": "💍 <strong>Queen's Gift</strong> — the player who rolled it gets a free Camp/Tower tile, or 300🟡 and 5🧍 if none are free.",
       "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
       "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it.",
-      "kingsGift": "King's Gift: a random unowned artifact, or 200 gold."
+      "kingsGift": "King's Gift: a random unowned artifact, or 200 gold.",
+      "rust": "Rust: every player's Riders become Militia."
     },
     "caravan": {
       "title": "Caravan 🐪",
@@ -495,6 +496,12 @@
       "title": "Dragon 🐉",
       "item1": "If you have more than 50 warriors at the <em>start</em> of your turn — choose to challenge the Dragon or roll dice instead.",
       "item2": "Sometimes while travelling you may see the dragon in the sky. And if you're rich and famous, beware: he could attack you and burn your tiles to the ground!"
+    },
+    "copyrights": {
+      "title": "Copyrights",
+      "item1": "This game was co-authored with the help of AI assistants: <strong>Claude</strong> (Anthropic), <strong>Gemini</strong> (Google), and <strong>ChatGPT</strong> (OpenAI).",
+      "item2": "The dice-rolling animation is powered by <em>react-dice-complete</em> by Adam Tyler, used under the ISC license.",
+      "item3": "Board and battle randomization use the classic <em>Fisher-Yates shuffle</em> algorithm."
     }
   },
   "screenStore": {
@@ -685,7 +692,8 @@
       "queensGift": "Queen's Gift",
       "earthquake": "Earthquake",
       "meteor": "Meteor",
-      "kingsGift": "King's Gift"
+      "kingsGift": "King's Gift",
+      "rust": "Rust"
     },
     "taxesMessage": "No gold income for 1 year.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
@@ -703,7 +711,8 @@
     "queensGiftGold": "Queen sends 300🟡 and 5🧍 to {playerName}",
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "{playerName} is given the {artifactName} {emoji}",
-    "kingsGiftGold": "King sends 200 gold to {playerName}"
+    "kingsGiftGold": "King sends 200 gold to {playerName}",
+    "rustMessage": "Rust corrodes every army's armor across the realm -- all Riders are reduced to Militia."
   },
   "battleCommon": {
     "losingUnitsPart": " losing {army}",

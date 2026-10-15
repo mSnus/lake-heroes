@@ -1,0 +1,15 @@
+.settings-row {
+  justify-content: space-between;
+}
+
+.settings-label-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-hint {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  font-weight: normal;
+}
