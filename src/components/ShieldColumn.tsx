@@ -158,6 +158,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   💾
                 </button>
               </div>
+              <div className="shield-button-container" title={t('shieldColumn.settings')}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    showScreen({ content: <SettingsScreen /> });
+                  }}
+                  className="shield-button"
+                >
+                  ⚙️
+                </button>
+              </div>
               {/* Join links -- only meaningful in a network game, so it is
                   absent entirely from a local one rather than disabled. */}
               {isOnlineGame() && (
@@ -219,17 +230,6 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   ⚖️
-                </button>
-              </div>
-              <div className="shield-button-container" title={t('shieldColumn.settings')}>
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    showScreen({ content: <SettingsScreen /> });
-                  }}
-                  className="shield-button"
-                >
-                  ⚙️
                 </button>
               </div>
               <div className="shield-button-container" title={t('shieldColumn.battleSim')}>

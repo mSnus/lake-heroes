@@ -1,15 +1,35 @@
-.settings-row {
-  justify-content: space-between;
-}
-
-.settings-label-block {
+.settings-screen .settings-field {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.settings-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.settings-toggle-label input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
 }
 
 .settings-hint {
   font-size: 0.75rem;
   opacity: 0.75;
   font-weight: normal;
+  text-align: left;
+}
+
+.modal-content select.settings-language-select {
+  width: 200px;
 }

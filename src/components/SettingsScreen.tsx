@@ -18,9 +18,13 @@ const SettingsScreen: React.FC = () => {
       <div className="modal-content cheat-screen settings-screen">
         <h2 className="game-title">⚙️ {t('settingsScreen.title')}</h2>
 
-        <div className="cheat-row settings-row">
+        <div className="settings-field">
           <label>{t('common.language')}</label>
-          <select value={language} onChange={(e) => setLanguage(e.target.value as Language)}>
+          <select
+            className="settings-language-select"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as Language)}
+          >
             {LANGUAGES.map((l) => (
               <option key={l.code} value={l.code}>
                 {l.flag} {l.name}
@@ -29,40 +33,40 @@ const SettingsScreen: React.FC = () => {
           </select>
         </div>
 
-        <div className="cheat-row overrides-toggle settings-row">
-          <div className="settings-label-block">
-            <label>{t('settingsScreen.autoEndTurn')}</label>
-            <span className="settings-hint">{t('settingsScreen.autoEndTurnHint')}</span>
-          </div>
-          <input
-            type="checkbox"
-            checked={settings.autoEndTurn}
-            onChange={(e) => setSettings({ autoEndTurn: e.target.checked })}
-          />
+        <div className="settings-field">
+          <label className="settings-toggle-label">
+            <input
+              type="checkbox"
+              checked={settings.autoEndTurn}
+              onChange={(e) => setSettings({ autoEndTurn: e.target.checked })}
+            />
+            {t('settingsScreen.autoEndTurn')}
+          </label>
+          <span className="settings-hint">{t('settingsScreen.autoEndTurnHint')}</span>
         </div>
 
-        <div className="cheat-row overrides-toggle settings-row">
-          <div className="settings-label-block">
-            <label>{t('settingsScreen.autoBattle')}</label>
-            <span className="settings-hint">{t('settingsScreen.autoBattleHint')}</span>
-          </div>
-          <input
-            type="checkbox"
-            checked={settings.autoBattle}
-            onChange={(e) => setSettings({ autoBattle: e.target.checked })}
-          />
+        <div className="settings-field">
+          <label className="settings-toggle-label">
+            <input
+              type="checkbox"
+              checked={settings.autoBattle}
+              onChange={(e) => setSettings({ autoBattle: e.target.checked })}
+            />
+            {t('settingsScreen.autoBattle')}
+          </label>
+          <span className="settings-hint">{t('settingsScreen.autoBattleHint')}</span>
         </div>
 
-        <div className="cheat-row overrides-toggle settings-row">
-          <div className="settings-label-block">
-            <label>{t('settingsScreen.doNotDisplayBattles')}</label>
-            <span className="settings-hint">{t('settingsScreen.doNotDisplayBattlesHint')}</span>
-          </div>
-          <input
-            type="checkbox"
-            checked={settings.doNotDisplayBattles}
-            onChange={(e) => setSettings({ doNotDisplayBattles: e.target.checked })}
-          />
+        <div className="settings-field">
+          <label className="settings-toggle-label">
+            <input
+              type="checkbox"
+              checked={settings.doNotDisplayBattles}
+              onChange={(e) => setSettings({ doNotDisplayBattles: e.target.checked })}
+            />
+            {t('settingsScreen.doNotDisplayBattles')}
+          </label>
+          <span className="settings-hint">{t('settingsScreen.doNotDisplayBattlesHint')}</span>
         </div>
 
         <div
