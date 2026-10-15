@@ -266,13 +266,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     : isCaravan || isAmbush
       ? '#f6b03e'
       : defender?.color ?? '#eee';
+  // Same zombie-flavored condition the background image below keys off --
+  // either the ambush interrupt or a tile-claim battle fought directly
+  // against an abandoned tile's wild garrison, which has no real defender
+  // to show a portrait for either and used to fall back to the Saracen.
+  const isZombieFlavored = isZombieAmbush || (isTile && !!tile?.abandoned);
   const defenderImg = isDragon
     ? 'assets/figures/npc-drac.png'
-    : isCaravan || isAmbush
-      ? 'assets/figures/npc-saracen.png'
-      : defender
-        ? getPlayerImageSrc(defender.image, defender.isKnight)
-        : 'assets/figures/npc-saracen.png';
+    : isZombieFlavored
+      ? 'assets/figures/npc-skeleton.png'
+      : isCaravan || isAmbush
+        ? 'assets/figures/npc-saracen.png'
+        : defender
+          ? getPlayerImageSrc(defender.image, defender.isKnight)
+          : 'assets/figures/npc-saracen.png';
   // Center icon between the two portraits: the tile's own sprite for a tile
   // fight, nothing otherwise — dragon/caravan/ambush modes have no third
   // icon to show, since defenderImg is already one of the two side portraits
