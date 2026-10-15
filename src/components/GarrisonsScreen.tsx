@@ -100,13 +100,19 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
       </div>
 
       <div className="army-stats" style={{ lineHeight: '1.2' }}>
-        {t('garrisonsScreen.message', {
-          fame: player.fame,
-          slots: player.armySlots,
-          perSlot: getOverrides().armySlotCapacity,
-          units: turnIncome.units,
-          tiles: rows.length,
-        })}
+        {rows.length === 0
+          ? t('garrisonsScreen.messageNoTiles', {
+              fame: player.fame,
+              slots: player.armySlots,
+              perSlot: getOverrides().armySlotCapacity,
+            })
+          : t('garrisonsScreen.message', {
+              fame: player.fame,
+              slots: player.armySlots,
+              perSlot: getOverrides().armySlotCapacity,
+              units: turnIncome.units,
+              tiles: rows.length,
+            })}
       </div>
 
       <div className="garrisons-army">

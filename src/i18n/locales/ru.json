@@ -320,6 +320,7 @@
     "title": "Гарнизоны",
     "available": "Доступно",
     "message": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot}🧍 каждый. Доход за ход: +{units}🧍 с {tiles} клеток",
+    "messageNoTiles": "Слава {fame}🏆 позволяет иметь {slots} отрядов по {perSlot}🧍 каждый.",
     "maxLabel": "макс: {max}",
     "atMax": "Уже максимум",
     "noTiles": "У вас пока нет клеток",
