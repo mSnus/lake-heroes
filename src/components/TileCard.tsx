@@ -106,7 +106,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     <>
       {turnIncome.gold > 0 && (
         <>
-          +<Gold amount={turnIncome.gold} />
+          <Gold amount={`+${turnIncome.gold}`} />
           {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}{' '}
         </>
       )}
@@ -533,7 +533,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                               }
                             >
                               {goldLacking ? '🔻' : ' '}
-                              <Gold amount={tile.currentPrice.gold ?? 0} />{' '}
+                              <Gold amount={tile.currentPrice.gold ?? 0} where={'before'}/>{' '}
                             </span>
                           )}
                           {/* The help screen's static sample card skips the unit
