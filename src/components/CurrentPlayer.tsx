@@ -196,8 +196,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
       </div>
 
       <div className="player-pane">
-        {/* Money and army share a row; the badges sit under it. */}
         <div className="player-stats-main-row">
+          <img src="assets/sprites/banner.svg" alt="🟡" className="gold-icon" />
           <div
             className="player-stats-data player-stats-army"
             id="statsArmy"
@@ -250,6 +250,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
         >
           <div className="player-stats-inline-row">
+            <img src="assets/sprites/moneybag.svg" alt="🟡" className="gold-icon" />
+
             <strong>
               <Gold amount={revealed.gold ?? 0} />
             </strong>

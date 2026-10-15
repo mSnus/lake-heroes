@@ -54,7 +54,7 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
       title={`${currentYear(gameState)} · ${turn}/${SECTOR_COLORS.length}`}
     >
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`}>
-        <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="#abab93c4" />
+        <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="#abab9344" />
         {Array.from({ length: elapsed }, (_, i) => (
           <path
             key={i}

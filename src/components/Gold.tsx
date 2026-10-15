@@ -10,7 +10,7 @@ interface GoldProps {
 }
 
 export const Gold: React.FC<GoldProps> = ({ amount, where = 'after' }) => {
-  const icon = <img src="assets/sprites/coin3.svg" alt="🟡" className="gold-icon" />;
+  const icon = <img src="assets/sprites/coin8.svg" alt="🟡" className="gold-icon" />;
   return (
     <div className="gold-inline">
       {where === 'before' && icon}

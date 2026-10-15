@@ -6,10 +6,9 @@
   padding-left: 16px;
   gap: 16px;
   align-items: flex-start;
-  line-height: 0.9;
   overflow-y: hidden;
   padding-right: 12px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   z-index: 999;
 }
 
@@ -120,7 +119,6 @@
   gap: 16px;
   width: 100%;
   white-space: nowrap;
-  margin-left: -8px;
 }
 
 .player-stats-army {
