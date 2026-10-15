@@ -22,6 +22,7 @@ import '../styles/TileCard.css';
 import '../styles/TileClaim.css';
 import '../styles/GameMenu.css';
 import { planClaimGarrison } from '../ai/botPlans';
+import Army from './Army';
 
 interface TileInfoScreenProps {
   tile: Tile;
@@ -406,7 +407,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             {t('tileClaimScreen.onGuard')}
             <div className="guards-hire-scroll" style={{}}>
               <div className="big-icon-hint">
-                <div>{totalMilitiaPool - displayedGarrison}🧍🚩</div>
+                <div>
+                  {totalMilitiaPool - displayedGarrison}🧍
+                  <Army />
+                </div>
                 <div>{t('tileClaimScreen.army')}</div>
               </div>
 
@@ -422,7 +426,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               />
 
               <div className="big-icon-hint">
-                <div>{displayedGarrison}🧍</div>
+                <div>{displayedGarrison}🧍🏯</div>
                 <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>
               </div>
             </div>
