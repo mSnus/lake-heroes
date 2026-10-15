@@ -250,7 +250,7 @@
 }
 
 .tile-sprite-unowned {
-  background-image: url(/assets/fog.png);
+  background-image: url(fog.png);
   background-size: cover;
   border-radius: 50%;
   box-shadow: none;
@@ -412,7 +412,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/assets/shield.png');
+  background-image: url('shield.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -439,7 +439,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/assets/shield.png');
+  background-image: url('shield.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;

@@ -45,20 +45,20 @@ body.screen-open {
 
 @font-face {
   font-family: 'Texturina';
-  src: url('/assets/fonts/Texturina/Texturina-VariableFont_opsz,wght.ttf') format('truetype');
+  src: url('fonts/Texturina/Texturina-VariableFont_opsz,wght.ttf') format('truetype');
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Encode';
-  src: url('/assets/fonts/Encode_Sans/EncodeSans-VariableFont_wdth,wght.ttf') format('truetype');
+  src: url('fonts/Encode_Sans/EncodeSans-VariableFont_wdth,wght.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'StyleScript';
-  src: url('/assets/fonts/StyleScript-Regular.ttf') format('truetype');
+  src: url('fonts/StyleScript-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -144,7 +144,7 @@ body.screen-open {
   left: 1rem;
   z-index: 90;
   pointer-events: none;
-  background-image: url('/assets/sprites/ring.png');
+  background-image: url('sprites/ring.png');
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
