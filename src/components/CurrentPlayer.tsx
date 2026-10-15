@@ -127,9 +127,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   const t = useT();
   const activePlayer = gameState.activePlayer;
 
-  // The active tile's name is always clickable, but King's Castle and the
-  // Tavern get their own dialogue back (mirrors clicking the tile itself on
-  // the board) instead of the generic read-only tile card.
   const handleTileNameClick = () => {
     if (gameState.activeTile.id === 'king-castle') {
       handleKingCastle(gameState, updateGameState);
@@ -175,7 +172,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
           style={{ cursor: 'pointer' }}
         >
           <div
-            className="player-stats-hint"
+            className="player-stats-hint gold-icon"
             style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
           >
             🏆
@@ -224,21 +221,27 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               />
             </div>
 
-            {(turnIncome.units > 0 || atUnitCapacity || noUnitIncomeAtFame1) && (
+            {turnIncome.units > 0 && (
               <div className="player-stats-income-row">
                 <span className="player-stats-turn-income player-stats-army">
-                  {atUnitCapacity
-                    ? t('currentPlayer.maxCapacityReached', { fame: activePlayer.fame })
-                    : noUnitIncomeAtFame1
-                      ? t('currentPlayer.gainMoreFame')
-                      : turnIncome.units > 0
-                        ? `+${turnIncome.units}🧍`
-                        : ''}
+                  {`+${turnIncome.units}🧍`}
                 </span>
               </div>
             )}
           </div>
         </div>
+
+        {(atUnitCapacity || noUnitIncomeAtFame1) && (
+          <div className="player-stats-income-hint">
+            <span className="player-stats-turn-income">
+              {atUnitCapacity
+                ? t('currentPlayer.maxCapacityReached', { fame: activePlayer.fame })
+                : noUnitIncomeAtFame1
+                  ? t('currentPlayer.gainMoreFame')
+                  : ''}
+            </span>
+          </div>
+        )}
 
         {/* wealth */}
         <div

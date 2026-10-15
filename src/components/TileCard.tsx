@@ -361,11 +361,8 @@ export const TileCard: React.FC<TileCardProps> = ({
             {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
             {tile.isOwned() && (
               <div>
-                <div className="tile-base-price">{tile.prices[1] ? <Gold amount={tile.prices[1]} /> : ''}</div>
-                <div className="tile-defence">
-                  {Array.from({ length: tile.level }, (_, i) => (
-                    <span key={i}>🏯</span>
-                  ))}
+                <div className="tile-base-price">
+                  {tile.prices[1] ? <Gold amount={tile.prices[1]} where={'before'} /> : ''}
                 </div>
               </div>
             )}
@@ -425,7 +422,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <div>
                         <div className="big-icon-hint">
                           <div>
-                            <Gold amount={tile.fee} />
+                            <Gold amount={tile.fee} where={'before'}/>
                           </div>
                           <div>{t('tileCard.fee')}</div>
                         </div>
@@ -461,7 +458,13 @@ export const TileCard: React.FC<TileCardProps> = ({
                     <div></div>
 
                     <div className="big-icon-hint">
-                      <div>{tile.garrison}🛡️</div>
+                      <div className="tile-defence">
+                        {Array.from({ length: tile.level }, (_, i) => (
+                          <span key={i}>🏯</span>
+                        ))}
+                        {tile.garrison}🧍
+                      </div>
+
                       <div>
                         {t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}
                       </div>
@@ -533,7 +536,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                               }
                             >
                               {goldLacking ? '🔻' : ' '}
-                              <Gold amount={tile.currentPrice.gold ?? 0} where={'before'}/>{' '}
+                              <Gold amount={tile.currentPrice.gold ?? 0} where={'before'} />{' '}
                             </span>
                           )}
                           {/* The help screen's static sample card skips the unit
@@ -600,9 +603,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     >
                       <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>→</td>
-                      <td className={class1}>
-                        +{bonusAmount(1)}
-                      </td>
+                      <td className={class1}>+{bonusAmount(1)}</td>
                       <td className={class1}>{slotsAtLevel(1)}🏯 </td>
                     </tr>
                     <tr
@@ -613,9 +614,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     >
                       <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>→</td>
-                      <td className={class2}>
-                        +{bonusAmount(2)}
-                      </td>
+                      <td className={class2}>+{bonusAmount(2)}</td>
                       <td className={class2}>{slotsAtLevel(2)}🏯 </td>
                     </tr>
                     <tr
@@ -626,9 +625,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     >
                       <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>→</td>
-                      <td className={class3}>
-                        +{bonusAmount(3)}
-                      </td>
+                      <td className={class3}>+{bonusAmount(3)}</td>
                       <td className={class3}>{slotsAtLevel(3)}🏯 </td>
                     </tr>
                   </tbody>

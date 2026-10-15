@@ -314,7 +314,7 @@
     "fromPristineDiamond": "от Чистейшего алмаза 💎",
     "wagesMessage": "Пройдите Замок короля и получите {summary}",
     "artifactTooltip": "{name}: {description}",
-    "gainMoreFame": "Заработайте больше славы 🏆, чтобы получить больше отрядов"
+    "gainMoreFame": "Чем выше слава 🏆, тем больше отрядов"
   },
   "garrisonsScreen": {
     "title": "Гарнизоны",
