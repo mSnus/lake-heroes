@@ -15,6 +15,7 @@ import { setTileGarrison } from '../actions/garrisonTile';
 import { sellTile } from '../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../actions/yieldTile';
 import { remainingCapacity, garrisonSlotCapacity } from '../game/army';
+import { ABSORB_PER_ROLL_POINT } from '../game/constants';
 import { tileTurnIncome } from '../game/income';
 import { useT } from '../i18n';
 import { tJsx } from '../i18n/tJsx';
@@ -119,6 +120,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const [previewGarrison, setPreviewGarrison] = useState<number | null>(null);
   const displayedGarrison = previewGarrison ?? garrisonAmount;
   const defenceCapacity = (level: number) => garrisonSlotCapacity() * level;
+  // getGarrisonAbsorbBonus already accounts for Ordinary (1/2/3) vs. a
+  // Camp/Tower's extra point (2/3/4) -- each point is worth +10% absorption
+  // (see engine.ts's rollAbsorption).
+  const defenceBonusPct = (level: number) =>
+    Math.round(tile.getGarrisonAbsorbBonus(level) * ABSORB_PER_ROLL_POINT * 100);
 
   useEffect(() => {
     if (variant !== 'claimed' || !player.isComputer) return;
@@ -168,19 +174,15 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
   const priceTag = (level: number, currentLevel: number) => {
     const gold = tile.prices[level] ?? 0;
-    const clickable = canUpgradeToLevel(level);
     // The upgrade-target level the player can't afford gets the same "can't
-    // pay" treatment as TileCard's upgrade table: ❌ instead of 👛, a 🔻
-    // prefix, and bold red price text (see TileCard.priceCell).
+    // pay" treatment as TileCard's upgrade table: a 🔻 prefix and bold red
+    // price text (see TileCard.priceCell). Price only -- the actual buy
+    // action lives in the single "Upgrade" button below the table.
     const isUpgradeTarget = !tile.isYielded && level === nextLevel && currentLevel < maxLevel;
     const lacksGold = isUpgradeTarget && (player.gold ?? 0) < gold;
     return (
-      <div
-        className={clickable ? ' tile-card-button tile-card-small-button' : 'upgrade-price-badge'}
-        onClick={clickable ? () => handleUpgradeToLevel(level) : undefined}
-      >
+      <div className="upgrade-price-badge">
         {currentLevel === level ? <span className="checkmark">{t('tileClaimScreen.now')}</span> : ''}
-        {clickable ? '👛' : ' '}{' '}
         <span style={lacksGold ? { color: '#ff4444', fontWeight: 'bold' } : undefined}>
           {lacksGold && '🔻'}
           <Gold amount={gold} />
@@ -330,10 +332,15 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
               <div
                 className={
-                  'big-icon-hint' + (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
+                  'big-icon-hint upgrade-fortification' +
+                  (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
                 }
               >
                 <span className="value">🏯</span>
+                <div className="upgrade-fortification-info">
+                  <div>+{defenceBonusPct(1)}%🛡️</div>
+                  <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(1) })}</div>
+                </div>
               </div>
 
               <div className="big-icon-hint">
@@ -354,8 +361,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
               {priceTag(2, currentLevel)}
 
-              <div className="big-icon-hint">
+              <div className="big-icon-hint upgrade-fortification">
                 <span className="value">🏯🏯</span>
+                <div className="upgrade-fortification-info">
+                  <div>+{defenceBonusPct(2)}%🛡️</div>
+                  <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(2) })}</div>
+                </div>
               </div>
 
               <div className="big-icon-hint">
@@ -381,8 +392,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             >
               {priceTag(3, currentLevel)}
 
-              <div className="big-icon-hint">
+              <div className="big-icon-hint upgrade-fortification">
                 <span className="value">🏯🏯🏯</span>
+                <div className="upgrade-fortification-info">
+                  <div>+{defenceBonusPct(3)}%🛡️</div>
+                  <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(3) })}</div>
+                </div>
               </div>
 
               <div className="big-icon-hint">
@@ -398,6 +413,20 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {!tile.isYielded && currentLevel < maxLevel && (
+        <div className="upgrade-action">
+          <div
+            className={
+              'tile-card-button tile-card-small-button' +
+              (canUpgradeToLevel(nextLevel) ? '' : ' upgrade-unreachable')
+            }
+            onClick={canUpgradeToLevel(nextLevel) ? () => handleUpgradeToLevel(nextLevel) : undefined}
+          >
+            👛 {t('tileClaimScreen.upgradeButton')}
+          </div>
         </div>
       )}
 

@@ -110,3 +110,26 @@
   filter: sepia(1);
   opacity: 0.5;
 }
+
+/* Fortification bonus + max garrison, shown beside the 🏯 icon(s) and
+   right-aligned so the row's three cells read left-to-right as
+   price / fortification / income. */
+.upgrade-level > .upgrade-fortification {
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.upgrade-fortification-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.upgrade-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+}

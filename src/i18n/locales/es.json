@@ -232,7 +232,8 @@
     "garrisonVisitCaveat": "vuelve a la casilla para recuperar unidades de la guarnición",
     "leaveUnguarded": "Dejar sin protección 🩸",
     "kingSeesTheWay": "👑 El Rey ve el camino",
-    "setToGuard": "Defender con {amount}🧍"
+    "setToGuard": "Defender con {amount}🧍",
+    "upgradeButton": "Mejorar"
   },
   "battleScreen": {
     "theDragon": "El Dragón",

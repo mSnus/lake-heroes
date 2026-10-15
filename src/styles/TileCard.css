@@ -449,20 +449,14 @@
   margin-top: -0.3rem;
 }
 
-/* The "👛 N🟡" price tag inside the upgrade-info lines on the Tile
-   Upgrades screen — doubles as the actual upgrade-purchase button. */
+/* The "N🟡" price tag inside the upgrade-info lines on the Tile Upgrades
+   screen -- display only, see .upgrade-action for the actual buy button. */
 .upgrade-price-badge {
   display: inline-block;
   border-radius: 4px;
   margin-top: 1rem;
   padding: 0 6px;
   border: 1px solid #ffde2c00;
-}
-
-.upgrade-price-badge.clickable {
-  cursor: pointer;
-  border: 1px solid #ffde2c;
-  background: linear-gradient(1deg, #68613ec7, #41382894);
 }
 
 /* Matches King's Castle's input look (see modal.css's
