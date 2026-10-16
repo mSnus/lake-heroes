@@ -1066,8 +1066,8 @@
     "doNotDisplayBattlesHint": "Battles resolve instantly in the background instead of showing the battle screen.",
     "mapAutoZoom": "Map auto-zoom",
     "mapAutoZoomHint": "The map camera zooms in on the active player at the start of their turn.",
-    "fogEffect": "Fog transition effect",
-    "fogEffectHint": "Shows a brief fog wipe before certain mid-move event screens. Turn off for faster transitions."
+    "fogOfWar": "Fog of war",
+    "fogOfWarHint": "Tiles start hidden and are only revealed once a player lands on them. Turn off to reveal the whole map from the start."
   },
   "versionMismatch": {
     "message": "🔄 New version available (you have {running}, server has {latest}) — tap to update",

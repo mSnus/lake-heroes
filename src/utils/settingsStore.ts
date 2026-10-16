@@ -13,7 +13,10 @@ export interface AppSettings {
   autoBattle: boolean;
   doNotDisplayBattles: boolean;
   mapAutoZoom: boolean;
-  disableFog: boolean;
+  /** Fog of war: tiles start undiscovered (Tile.fog) until a player lands
+   * on them. Disabling this reveals every tile from the start of a new
+   * game. Unrelated to the fog screen-transition wipe (transitionStore.ts). */
+  disableFogOfWar: boolean;
 }
 
 // autoEndTurn/mapAutoZoom default true (preserve today's always-on
@@ -24,7 +27,7 @@ export const SETTINGS_DEFAULTS: AppSettings = {
   autoBattle: false,
   doNotDisplayBattles: false,
   mapAutoZoom: true,
-  disableFog: false,
+  disableFogOfWar: false,
 };
 
 const STORAGE_KEY = 'app-settings';
@@ -36,7 +39,7 @@ function sanitize(raw: Partial<AppSettings> | null | undefined): AppSettings {
     autoBattle: !!merged.autoBattle,
     doNotDisplayBattles: !!merged.doNotDisplayBattles,
     mapAutoZoom: !!merged.mapAutoZoom,
-    disableFog: !!merged.disableFog,
+    disableFogOfWar: !!merged.disableFogOfWar,
   };
 }
 

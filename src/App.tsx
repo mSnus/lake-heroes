@@ -68,6 +68,7 @@ import { rollAndMove } from './actions/rollAndMove';
 import { DRAGON_GOLD } from './game/constants';
 import { STARS_TO_WIN } from './utils/stars';
 import { getOverrides } from './utils/overridesStore';
+import { getSettings } from './utils/settingsStore';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/ActionBar';
 import { ShieldColumn } from './components/ShieldColumn';
@@ -617,6 +618,14 @@ function App() {
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[], online?: boolean) => {
       const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
+      // "Fog of war" setting: reveal every tile from the start instead of
+      // the default, where each is hidden until a player lands on it.
+      if (getSettings().disableFogOfWar) {
+        tiles.forEach((tile) => {
+          tile.fog = false;
+        });
+      }
+
       const players = playersSetup.map((p, i) => {
         const name =
           p.isComputer && p.character ? `${p.name} ${CHARACTER_EMOJI[p.character]}` : p.name;

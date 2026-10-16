@@ -85,12 +85,12 @@ const SettingsScreen: React.FC = () => {
           <label className="settings-toggle-label">
             <input
               type="checkbox"
-              checked={!settings.disableFog}
-              onChange={(e) => setSettings({ disableFog: !e.target.checked })}
+              checked={!settings.disableFogOfWar}
+              onChange={(e) => setSettings({ disableFogOfWar: !e.target.checked })}
             />
-            {t('settingsScreen.fogEffect')}
+            {t('settingsScreen.fogOfWar')}
           </label>
-          <span className="settings-hint">{t('settingsScreen.fogEffectHint')}</span>
+          <span className="settings-hint">{t('settingsScreen.fogOfWarHint')}</span>
         </div>
 
         <div

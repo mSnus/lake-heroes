@@ -1062,8 +1062,8 @@
     "doNotDisplayBattlesHint": "Las batallas se resuelven al instante en segundo plano, sin mostrar la pantalla de combate.",
     "mapAutoZoom": "Zoom automático del mapa",
     "mapAutoZoomHint": "La cámara del mapa se acerca al jugador activo al inicio de su turno.",
-    "fogEffect": "Efecto de transición de niebla",
-    "fogEffectHint": "Muestra un breve barrido de niebla antes de ciertas pantallas de evento. Desactívalo para transiciones más rápidas."
+    "fogOfWar": "Niebla de guerra",
+    "fogOfWarHint": "Las casillas empiezan ocultas y solo se revelan cuando un jugador cae en ellas. Desactívalo para revelar todo el mapa desde el inicio."
   },
   "battleSimScreen": {
     "attacker": "Atacante",
