@@ -6,7 +6,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
-import StablesModal from '../components/StablesModal';
+import StablesModal from '../components/screens/StablesModal';
 import { slotChunks } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { planArmyPurchase } from '../ai/botPlans';

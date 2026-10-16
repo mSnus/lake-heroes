@@ -9,7 +9,7 @@ import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
 import { tavernMilitiaPrice, tavernRiderPrice, tavernUpgradePricePerUnit } from './tavern';
-import WorkersModal from '../components/WorkersModal';
+import WorkersModal from '../components/screens/WorkersModal';
 import { announce } from '../utils/announce';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';

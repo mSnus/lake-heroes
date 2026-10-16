@@ -13,7 +13,7 @@ import { battleBoardFor, squadGroupCount, BattleBoard } from './layout';
 import { FormationSpec } from './formations';
 import { createBattle } from './engine';
 import { GridBattleState } from './types';
-import type { BattleScreenProps } from '../../components/BattleScreen';
+import type { BattleScreenProps } from '../../components/screens/BattleScreen';
 
 export interface BattleSetup {
   isCaravan: boolean;

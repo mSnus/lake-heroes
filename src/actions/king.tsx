@@ -6,7 +6,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
-import KingsCastleModal from '../components/KingsCastleModal';
+import KingsCastleModal from '../components/screens/KingsCastleModal';
 import { say, narrate } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
 import { planArmyPurchase } from '../ai/botPlans';

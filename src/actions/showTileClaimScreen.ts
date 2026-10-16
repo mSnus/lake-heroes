@@ -2,7 +2,7 @@ import React from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
-import { TileClaimScreen } from '../components/TileClaimScreen';
+import { TileClaimScreen } from '../components/screens/TileClaimScreen';
 import { showScreen } from '../utils/screenStore';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { planClaimGarrison } from '../ai/botPlans';

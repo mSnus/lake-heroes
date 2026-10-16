@@ -8,14 +8,14 @@ import { Player } from './game/Player';
 import { CHARACTER_EMOJI } from './ai/characters';
 import { GameState, TurnPhase } from './game/GameState';
 import { Tile, TileJSON } from './game/Tile';
-import { BoardCanvas } from './components/BoardCanvas';
-import { PlayerLabel } from './components/PlayerLabel';
-import { CurrentPlayerCard } from './components/CurrentPlayerCard';
+import { BoardCanvas } from './components/board/BoardCanvas';
+import { PlayerLabel } from './components/snippets/PlayerLabel';
+import { CurrentPlayerCard } from './components/board/CurrentPlayerCard';
 import { loadFromStorage, saveToStorage, removeFromStorage } from './utils/storage';
 import { halt, isHalted, resumeAfterHalt } from './utils/haltStore';
 import { resetFogTransition } from './utils/transitionStore';
 import { say, sayLocal } from './utils/say';
-import { OwnedTiles } from './components/OwnedTiles';
+import { OwnedTiles } from './components/dashboard/OwnedTiles';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, SavedGameState } from './game/TileSet';
 import { rehydrateGameState } from './game/rehydrate';
@@ -25,20 +25,20 @@ import { useLiveFeed, resetLiveFeed } from './online/liveFeedStore';
 import { resetRemoteMove } from './online/remoteMoveStore';
 import { hostGame, joinGame } from './online/session';
 import { useOnlineSync } from './online/useOnlineSync';
-import ShareCodesScreen from './components/ShareCodesScreen';
-import TurnWaitShield from './components/TurnWaitShield';
+import ShareCodesScreen from './components/menu/ShareCodesScreen';
+import TurnWaitShield from './components/board/TurnWaitShield';
 import { isMobileLayout } from './components/board/common';
-import { CurrentTile } from './components/CurrentTile';
-import { TurnAnnouncement } from './components/TurnAnnouncement';
-import { AutoEndTurnNotice } from './components/AutoEndTurnNotice';
-import { Gold } from './components/Gold';
+import { CurrentTile } from './components/board/CurrentTile';
+import { TurnAnnouncement } from './components/board/TurnAnnouncement';
+import { AutoEndTurnNotice } from './components/board/AutoEndTurnNotice';
+import { Gold } from './components/snippets/Gold';
 import { gameStart } from './actions/gameStart';
-import GameMessage from './components/GameMessage';
+import GameMessage from './components/snippets/GameMessage';
 import { PlayerSetup } from './utils/playerSetup';
-import GameLogModal, { LogMessage } from './components/GameLogModal';
+import GameLogModal, { LogMessage } from './components/menu/GameLogModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
-import { ModalRenderer } from './components/ModalRenderer';
+import { ModalRenderer } from './components/screens/ModalRenderer';
 import { BotController } from './components/BotController';
 import { showDice } from './utils/diceStore';
 import { requestShakeToRollPermission } from './utils/useShakeToRoll';
@@ -62,22 +62,22 @@ import { handleTavern } from './actions/tavern';
 import { handleTreasureBox } from './actions/treasureBox';
 import { fightDragon } from './actions/fightDragon';
 import { t } from './i18n';
-import { BattleScreen } from './components/BattleScreen';
-import NewGameModal from './components/NewGameModal';
+import { BattleScreen } from './components/screens/BattleScreen';
+import NewGameModal from './components/screens/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
 import { DRAGON_GOLD } from './game/constants';
 import { STARS_TO_WIN } from './utils/stars';
 import { getOverrides } from './utils/overridesStore';
 import { getSettings } from './utils/settingsStore';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
-import { ActionBar } from './components/ActionBar';
-import { ShieldColumn } from './components/ShieldColumn';
-import { YearIndicator } from './components/YearIndicator';
-import VersionMismatchBanner from './components/VersionMismatchBanner';
-import FogTransition from './components/FogTransition';
-import { ScreenRenderer } from './components/ScreenRenderer';
-import { DecoratedButton } from './components/DecoratedButton';
-import StatsScreen from './components/StatsScreen';
+import { ActionBar } from './components/dashboard/ActionBar';
+import { ShieldColumn } from './components/ui/ShieldColumn';
+import { YearIndicator } from './components/board/YearIndicator';
+import VersionMismatchBanner from './components/board/VersionMismatchBanner';
+import FogTransition from './components/screens/FogTransition';
+import { ScreenRenderer } from './components/screens/ScreenRenderer';
+import { DecoratedButton } from './components/ui/DecoratedButton';
+import StatsScreen from './components/menu/StatsScreen';
 
 /** Most recent game-log entries kept (and persisted). A full game produces
  * thousands of messages, which would eventually blow localStorage's quota. */
@@ -813,7 +813,7 @@ function App() {
           />
 
           <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
-          
+
           <div className="board-section">
             {/* liveBanner mirrors whoever is on turn, so an observer sees
                 their banner change as it happens; it retires once the state

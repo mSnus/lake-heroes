@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { GameState } from '../game/GameState';
 import { SavedGameState } from '../game/TileSet';
-import { LogMessage } from '../components/GameLogModal';
+import { LogMessage } from '../components/menu/GameLogModal';
 import { rehydrateGameState } from '../game/rehydrate';
 import { isLocalTurn } from '../game/seats';
 import { beginTurn } from '../actions/beginTurn';

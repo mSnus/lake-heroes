@@ -14,7 +14,7 @@ import { changeStars } from '../utils/stars';
 import { fightTile } from './fightTile';
 import { sellTile } from './sellTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
-import { HeroHourScreen } from '../components/HeroHourScreen';
+import { HeroHourScreen } from '../components/screens/HeroHourScreen';
 import { computeFeeOptions, FeeOptions } from './feeOptions';
 import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
 import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget } from '../ai/decisions';

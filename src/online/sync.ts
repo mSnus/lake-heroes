@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { LogMessage } from '../components/GameLogModal';
+import { LogMessage } from '../components/menu/GameLogModal';
 import { buildEnvelope, LOG_DELTA_CAP } from './envelope';
 import { pushState } from './api';
 import { clientId, getOnline, updateOnline } from './onlineStore';

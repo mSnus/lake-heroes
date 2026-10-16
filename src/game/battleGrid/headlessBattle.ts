@@ -4,7 +4,7 @@ import { buildBattleSetup, buildInitialBattleState, BattleSetup } from './battle
 import { dispatchBattleResolution } from './battleResolution';
 import { StepTurnOptions } from './types';
 import { BattleOutcome, BattleResolution } from '../../actions/battles/common';
-import type { BattleScreenProps } from '../../components/BattleScreen';
+import type { BattleScreenProps } from '../../components/screens/BattleScreen';
 
 /**
  * Fight a battle start to finish with no animation and no screens -- the

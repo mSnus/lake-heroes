@@ -6,7 +6,7 @@ import { gameEvent } from '../utils/events';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { revealTile } from './revealTile';
 import { passStart } from './passStart';
-import { PortalScreen } from '../components/PortalScreen';
+import { PortalScreen } from '../components/screens/PortalScreen';
 import { narrateMove } from '../utils/say';
 
 export function handlePortal(

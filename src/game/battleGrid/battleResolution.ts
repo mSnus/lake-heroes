@@ -15,7 +15,7 @@ import { showScreen, clearScreen, ScreenConfig } from '../../utils/screenStore';
 import { isHeadlessRun } from '../../utils/headlessStore';
 import { getOverrides } from '../../utils/overridesStore';
 import { getSettings } from '../../utils/settingsStore';
-import { BattleScreen, type BattleScreenProps } from '../../components/BattleScreen';
+import { BattleScreen, type BattleScreenProps } from '../../components/screens/BattleScreen';
 import { BattleSetup } from './battleSetup';
 import { runHeadlessBattle } from './headlessBattle';
 
