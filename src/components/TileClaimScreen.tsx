@@ -423,7 +423,9 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               'tile-card-button tile-card-small-button' +
               (canUpgradeToLevel(nextLevel) ? '' : ' upgrade-unreachable')
             }
-            onClick={canUpgradeToLevel(nextLevel) ? () => handleUpgradeToLevel(nextLevel) : undefined}
+            onClick={
+              canUpgradeToLevel(nextLevel) ? () => handleUpgradeToLevel(nextLevel) : undefined
+            }
           >
             👛 {t('tileClaimScreen.upgradeButton')}
           </div>
@@ -455,7 +457,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               />
 
               <div className="big-icon-hint">
-                <div>{displayedGarrison}🧍🏯</div>
+                <div>
+                  {displayedGarrison}🧍
+                  <img src="assets/sprites/tower.svg" alt="🟡" className="gold-icon" />
+                </div>
                 <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>
               </div>
             </div>

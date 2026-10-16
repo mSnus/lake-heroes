@@ -53,3 +53,5 @@ yarn-error.log*
 !/server/laravel/routes
 /server/laravel/routes/*
 !/server/laravel/routes/api.php
+!/.junie
+/.junie/*

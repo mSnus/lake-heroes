@@ -14,6 +14,8 @@
   gap: 8px;
   cursor: pointer;
   text-align: left;
+  color: white;
+  font-size: 1.2rem !important;
 }
 
 .settings-toggle-label input[type='checkbox'] {
@@ -24,10 +26,12 @@
 }
 
 .settings-hint {
-  font-size: 0.75rem;
-  opacity: 0.75;
+  font-family: 'Texturina', sans-serif;
+  font-size: 0.9rem;
+  max-width: 80%;
   font-weight: normal;
   text-align: left;
+  color: wheat;
 }
 
 .modal-content select.settings-language-select {

@@ -105,7 +105,9 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.goldUnits.item3')} />
             <HtmlLi html={t('helpScreen.goldUnits.item4', { knightFame: KNIGHT_FAME })} />
             <HtmlLi html={t('helpScreen.goldUnits.item5')} />
-            <HtmlLi html={t('helpScreen.goldUnits.item6', { flatUnitIncome: FLAT_TILE_UNIT_INCOME })} />
+            <HtmlLi
+              html={t('helpScreen.goldUnits.item6', { flatUnitIncome: FLAT_TILE_UNIT_INCOME })}
+            />
           </ul>
 
           <h3>{t('helpScreen.fame.title')}</h3>
@@ -315,7 +317,11 @@ const HelpScreen: React.FC = () => {
               })}
             />
             <HtmlLi html={t('helpScreen.battle.modifiers')} />
-            <HtmlLi html={t('helpScreen.battle.energy', { pct: Math.round(ENERGY_DEPLETED_DAMAGE_MULT * 100) })} />
+            <HtmlLi
+              html={t('helpScreen.battle.energy', {
+                pct: Math.round(ENERGY_DEPLETED_DAMAGE_MULT * 100),
+              })}
+            />
             <HtmlLi html={t('helpScreen.battle.unitsEquivalence')} />
             <HtmlLi html={t('helpScreen.battle.twoModes', { brawlThreshold: BRAWL_THRESHOLD })} />
             <HtmlLi html={t('helpScreen.battle.controls')} />
@@ -326,7 +332,16 @@ const HelpScreen: React.FC = () => {
           <table className="help-battle-phases">
             <tbody>
               {(
-                ['tactics', 'attackDefend', 'impact', 'outcome', 'autoToggle', 'undo', 'finishTurn', 'result'] as const
+                [
+                  'tactics',
+                  'attackDefend',
+                  'impact',
+                  'outcome',
+                  'autoToggle',
+                  'undo',
+                  'finishTurn',
+                  'result',
+                ] as const
               ).map((key) => (
                 <tr key={key}>
                   <td>{t(`helpScreen.battle.phase.${key}.name`)}</td>
@@ -355,6 +370,7 @@ const HelpScreen: React.FC = () => {
 
           <h3>{t('helpScreen.copyrights.title')}</h3>
           <ul>
+            <li>(c) 2026 Mike Vinetsky, <a href={'https://github.com/mSnus/lake-heroes'}>GitHub</a></li>
             <HtmlLi html={t('helpScreen.copyrights.item1')} />
             <HtmlLi html={t('helpScreen.copyrights.item2')} />
             <HtmlLi html={t('helpScreen.copyrights.item3')} />
