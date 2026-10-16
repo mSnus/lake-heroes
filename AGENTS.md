@@ -29,7 +29,7 @@ The game is managed by the `GameState` class, which tracks players, tiles, and t
     *   **Victory**: The attacker loses units equal to the tile's defense but takes control of the tile. The tile's level is reset to 1, and it becomes unowned, giving the attacker the option to buy it.
     *   **Defeat**: A roll of less than 4 means the battle is lost. The attacker loses units equal to the tile's defense, and the turn ends.
 
-9.  **Death and Winning**: If only one player remains, they are the winner.
+9.  **Death and Winning**: Player wins when he wins the battle with dragon or when he collects 3 stars for making other players 'Prisoners of War'.
 
 10. **Turn End**: The turn concludes in the `after-move` phase, and the next player in the order takes their turn.
 
