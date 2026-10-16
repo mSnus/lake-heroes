@@ -1,5 +1,5 @@
 import { isLocalHuman } from '../../game/seats';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { endTurn } from '../../actions/endTurn';
 import { gameEvent } from '../../utils/events';
@@ -46,6 +46,60 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   // browser offers no roll/end-turn controls". Offline this is !isComputer.
   const isBotTurn = !isLocalHuman(gameState.activePlayer);
   const [menuOpen, setMenuOpen] = useState(false);
+  // The godmode column (♻️ reload through 🗺️ Map Editor) only shows up when
+  // the 🐲 button is double-tapped to open the menu -- a single tap still
+  // opens the regular menu, godmode column just stays out of it. Closing is
+  // always a single tap either way, so this resets alongside menuOpen
+  // wherever that's closed (closeMenu below).
+  const [godmodeVisible, setGodmodeVisible] = useState(false);
+  // Pending "was this a single tap?" timer -- a tap on the closed menu waits
+  // this long for a second tap before committing to opening single-tap-style
+  // (no godmode). A second tap arriving first cancels it and opens
+  // immediately with godmode shown instead.
+  const pendingTapRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const DOUBLE_TAP_MS = 300;
+
+  useEffect(
+    () => () => {
+      if (pendingTapRef.current) clearTimeout(pendingTapRef.current);
+    },
+    []
+  );
+
+  function closeMenu() {
+    if (pendingTapRef.current) {
+      clearTimeout(pendingTapRef.current);
+      pendingTapRef.current = null;
+    }
+
+    setMenuOpen(false);
+    setGodmodeVisible(false);
+  }
+
+  function handleMenuButtonClick() {
+    // Open menus close in a single tap regardless of how they were opened.
+    if (menuOpen) {
+      closeMenu();
+      return;
+    }
+
+    if (pendingTapRef.current) {
+      // Second tap within the window -- open now, with godmode.
+      clearTimeout(pendingTapRef.current);
+      pendingTapRef.current = null;
+      setMenuOpen(true);
+      setGodmodeVisible(true);
+      return;
+    }
+
+    // First tap -- wait briefly for a possible second one.
+    pendingTapRef.current = setTimeout(() => {
+      pendingTapRef.current = null;
+      setMenuOpen(true);
+      setGodmodeVisible(false);
+    }, DOUBLE_TAP_MS);
+  }
+
   const mapEdit = useMapEditStore();
 
   // Covers movement rolls and the Tavern/Sphynx/Treasure dice prompts, since
@@ -54,7 +108,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   useShakeToRoll(diceActive && !rolling && !isBotTurn, startDiceRoll);
 
   function handleNewGame() {
-    setMenuOpen(false);
+    closeMenu();
     if (window.confirm(t('shieldColumn.confirmNewGame'))) {
       // Halt first: reload is asynchronous, and bot timers queued while the
       // confirm dialog blocked would otherwise fire, re-persist the old game
@@ -100,7 +154,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
       <div style={{ ...colStyle, top: 8 }}>
         <div style={{ display: 'flex', flexDirection: 'row', gap: 8, justifyContent: 'flex-end' }}>
           <div className="shield-button-container main-menu-button" title={t('shieldColumn.menu')}>
-            <button onClick={() => setMenuOpen((o) => !o)} className="shield-button">
+            <button onClick={handleMenuButtonClick} className="shield-button">
               🐲
             </button>
           </div>
@@ -117,7 +171,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.help')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({ content: <HelpScreen /> });
                   }}
                   className="shield-button"
@@ -128,7 +182,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.gameLog')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     onOpenLog();
                   }}
                   className="shield-button"
@@ -139,7 +193,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.statistics')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({ content: <StatsScreen gameState={gameState} /> });
                   }}
                   className="shield-button"
@@ -150,7 +204,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.saveSlots')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({ content: <SaveSlotsScreen />, doNotPersist: true });
                   }}
                   className="shield-button"
@@ -161,7 +215,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.settings')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({ content: <SettingsScreen /> });
                   }}
                   className="shield-button"
@@ -175,7 +229,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 <div className="shield-button-container" title={t('online.shareTitle')}>
                   <button
                     onClick={() => {
-                      setMenuOpen(false);
+                      closeMenu();
                       showScreen({
                         content: <ShareCodesScreen gameState={gameState} />,
                         doNotPersist: true,
@@ -189,12 +243,15 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               )}
             </div>
 
-            {/* Left column: reload, cheat, overrides, sims, map edit */}
+            {/* Left (godmode) column: reload, cheat, overrides, sims, map
+                edit -- only shown when the 🐲 button was double-tapped to
+                open the menu (see handleMenuButtonClick). */}
+            {godmodeVisible && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div className="shield-button-container" title={t('shieldColumn.reload')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     forceFreshReload();
                   }}
                   className="shield-button"
@@ -205,7 +262,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.cheat')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({
                       content: (
                         <CheatScreen gameState={gameState} updateGameState={updateGameState} />
@@ -220,7 +277,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.overrides')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({
                       content: (
                         <OverridesScreen gameState={gameState} updateGameState={updateGameState} />
@@ -235,7 +292,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.battleSim')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({ content: <BattleSimScreen /> });
                   }}
                   className="shield-button"
@@ -246,7 +303,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               <div className="shield-button-container" title={t('shieldColumn.economySim')}>
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     showScreen({ content: <EconomySimScreen /> });
                   }}
                   className="shield-button"
@@ -260,7 +317,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
               >
                 <button
                   onClick={() => {
-                    setMenuOpen(false);
+                    closeMenu();
                     if (mapEdit.active) disableMapEditMode();
                     else enableMapEditMode();
                   }}
@@ -271,6 +328,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                 </button>
               </div>
             </div>
+            )}
           </div>
         )}
       </div>
