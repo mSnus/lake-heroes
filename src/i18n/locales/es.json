@@ -1082,7 +1082,6 @@
   },
   "statsScreen": {
     "title": "Estadísticas",
-    "turnAxis": "Turno",
     "noData": "Aún no hay datos — vuelve a comprobarlo después de una ronda completa.",
     "vsOpponent": "vs {opponent}",
     "event": {

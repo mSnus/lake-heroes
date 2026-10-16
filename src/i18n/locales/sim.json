@@ -1061,7 +1061,6 @@
   },
   "statsScreen": {
     "title": "Statistics",
-    "turnAxis": "Turn",
     "noData": "No data yet — check back after a full round.",
     "vsOpponent": "vs {opponent}",
     "event": {
