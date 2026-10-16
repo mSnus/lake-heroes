@@ -36,7 +36,6 @@ const StatsScreen: React.FC<StatsScreenProps> = ({ gameState }) => {
         </div>
 
         <div className="stats-screen-legend">
-          <strong>{t('statsScreen.legend')}:</strong>
           {EVENT_TYPES.map((type) => (
             <span key={type} className="stats-screen-legend-item">
               {EVENT_EMOJI[type]} {t(`statsScreen.event.${type}`)}
@@ -47,12 +46,7 @@ const StatsScreen: React.FC<StatsScreenProps> = ({ gameState }) => {
         {turnStats.length === 0 ? (
           <p className="stats-screen-empty">{t('statsScreen.noData')}</p>
         ) : (
-          <StatsChart
-            players={players}
-            turnStats={turnStats}
-            statEvents={statEvents}
-            title={`⭐ ${t('statsScreen.power')}`}
-          />
+          <StatsChart players={players} turnStats={turnStats} statEvents={statEvents} />
         )}
       </div>
     </div>

@@ -1079,10 +1079,8 @@
   },
   "statsScreen": {
     "title": "Статистика",
-    "power": "Сила",
     "turnAxis": "Ход",
     "noData": "Пока нет данных — загляните сюда после полного раунда.",
-    "legend": "Обозначения",
     "vsOpponent": "против {opponent}",
     "event": {
       "sphynx": "Сфинкс",

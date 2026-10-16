@@ -1082,10 +1082,8 @@
   },
   "statsScreen": {
     "title": "Estadísticas",
-    "power": "Poder",
     "turnAxis": "Turno",
     "noData": "Aún no hay datos — vuelve a comprobarlo después de una ronda completa.",
-    "legend": "Leyenda",
     "vsOpponent": "vs {opponent}",
     "event": {
       "sphynx": "Esfinge",

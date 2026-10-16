@@ -68,13 +68,6 @@
   margin-bottom: 40px;
 }
 
-.stats-chart-title {
-  color: #dec27c;
-  font-family: 'Encode';
-  font-size: 1.2rem;
-  margin: 0 0 8px;
-}
-
 .stats-chart-scroll {
   overflow-x: auto;
   border: 1px solid #4443;

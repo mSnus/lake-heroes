@@ -1061,10 +1061,8 @@
   },
   "statsScreen": {
     "title": "Statistics",
-    "power": "Power",
     "turnAxis": "Turn",
     "noData": "No data yet — check back after a full round.",
-    "legend": "Legend",
     "vsOpponent": "vs {opponent}",
     "event": {
       "sphynx": "Sphynx",

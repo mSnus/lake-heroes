@@ -18,7 +18,6 @@ interface StatsChartProps {
   players: Player[];
   turnStats: PlayerTurnStat[];
   statEvents: PlayerStatEvent[];
-  title: string;
 }
 
 const PLOT_WIDTH = 560;
@@ -36,7 +35,7 @@ const EVENT_OFFSET = 14;
  * a much wider range late-game than early, so a linear axis would flatten
  * the whole early game into a sliver). Players are identified by a colored
  * circle in the legend row. */
-export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, statEvents, title }) => {
+export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, statEvents }) => {
   const t = useT();
 
   const maxTurn = turnStats.reduce((m, s) => Math.max(m, s.turn), 0);
@@ -58,8 +57,6 @@ export const StatsChart: React.FC<StatsChartProps> = ({ players, turnStats, stat
 
   return (
     <div className="stats-chart">
-      <h3 className="stats-chart-title">{title}</h3>
-
       <div className="stats-chart-legend">
         {players.map((player) => (
           <span key={player.id} className="stats-chart-legend-item">
