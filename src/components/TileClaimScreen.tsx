@@ -336,7 +336,9 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
                 }
               >
-                <span className="value">🏯</span>
+                <span className="value">
+                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                </span>
                 <div className="upgrade-fortification-info">
                   <div>+{defenceBonusPct(1)}%🛡️</div>
                   <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(1) })}</div>
@@ -362,7 +364,10 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               {priceTag(2, currentLevel)}
 
               <div className="big-icon-hint upgrade-fortification">
-                <span className="value">🏯🏯</span>
+                <span className="value">
+                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                </span>
                 <div className="upgrade-fortification-info">
                   <div>+{defenceBonusPct(2)}%🛡️</div>
                   <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(2) })}</div>
@@ -393,7 +398,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               {priceTag(3, currentLevel)}
 
               <div className="big-icon-hint upgrade-fortification">
-                <span className="value">🏯🏯🏯</span>
+                <span className="value">
+                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                </span>
                 <div className="upgrade-fortification-info">
                   <div>+{defenceBonusPct(3)}%🛡️</div>
                   <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(3) })}</div>

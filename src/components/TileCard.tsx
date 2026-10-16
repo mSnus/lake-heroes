@@ -18,6 +18,7 @@ import { isBrawlMatchup } from '../actions/battles/common';
 import DecoratedButton from './DecoratedButton';
 import { TileUpgradesScreen } from './TileUpgradesScreen';
 import { Gold } from './Gold';
+import { Tower } from './Tower';
 import { showScreen } from '../utils/screenStore';
 import { useT } from '../i18n';
 
@@ -460,7 +461,12 @@ export const TileCard: React.FC<TileCardProps> = ({
                     <div className="big-icon-hint">
                       <div className="tile-defence">
                         {Array.from({ length: tile.level }, (_, i) => (
-                          <span key={i}>🏯</span>
+                          <img
+                            key={i}
+                            src="assets/sprites/tower.svg"
+                            alt="🏯"
+                            className="tower-icon"
+                          />
                         ))}
                         {tile.garrison}🧍
                       </div>
@@ -604,7 +610,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>→</td>
                       <td className={class1}>+{bonusAmount(1)}</td>
-                      <td className={class1}>{slotsAtLevel(1)}🏯 </td>
+                      <td className={class1}><Tower amount={slotsAtLevel(1)} /></td>
                     </tr>
                     <tr
                       className={
@@ -615,7 +621,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>→</td>
                       <td className={class2}>+{bonusAmount(2)}</td>
-                      <td className={class2}>{slotsAtLevel(2)}🏯 </td>
+                      <td className={class2}><Tower amount={slotsAtLevel(2)} /></td>
                     </tr>
                     <tr
                       className={
@@ -626,7 +632,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>→</td>
                       <td className={class3}>+{bonusAmount(3)}</td>
-                      <td className={class3}>{slotsAtLevel(3)}🏯 </td>
+                      <td className={class3}><Tower amount={slotsAtLevel(3)} /></td>
                     </tr>
                   </tbody>
                 </table>

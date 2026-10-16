@@ -7,6 +7,7 @@ import { SpriteCircleIcon } from './SpriteCircleIcon';
 import { DecoratedButton } from './DecoratedButton';
 import { DecoratedSlider } from './DecoratedSlider';
 import { Gold } from './Gold';
+import { Tower } from './Tower';
 import { clearScreen } from '../utils/screenStore';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { dismountSquad, dismountRefund, snapDismount } from '../actions/dismountSquad';
@@ -197,7 +198,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                 </div>
 
                 <div className="big-icon-hint towers-max">
-                  <div className="garrison-towers">{tile.level}🏯</div>
+                  <div className="garrison-towers">
+                    <Tower amount={tile.level} />
+                  </div>
                   <div style={{ color: 'wheat' }}>{t('garrisonsScreen.maxLabel', { max })}</div>
                 </div>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
+import { Tower } from './Tower';
 import { Player } from '../game/Player';
 import { clearScreen } from '../utils/screenStore';
 import { playerScore } from '../game/score';
@@ -144,7 +145,7 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
                     <li key={tile.id} className={tile.isYielded ? 'realm-tile yielded' : 'realm-tile'}>
                       <span style={{ color: tile.groupTextColor }}>{tile.name}</span>
                       <span className="realm-tile-meta">
-                        🏯{tile.level}
+                        <Tower amount={tile.level} where="before" />
                         {tile.garrison > 0 && <> · {tile.garrison}🛡️</>}
                         {tile.isYielded && <> · 👑</>}
                       </span>

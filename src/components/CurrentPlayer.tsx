@@ -8,6 +8,7 @@ import { playerTurnIncome, playerRawTurnIncome } from '../game/income';
 import { getArtifact } from '../game/artifacts';
 import { SquadDisplay } from './SquadDisplay';
 import { Gold } from './Gold';
+import { Tower } from './Tower';
 import { GarrisonsScreen } from './GarrisonsScreen';
 import { gameEvent } from '../utils/events';
 import { showScreen } from '../utils/screenStore';
@@ -155,6 +156,11 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   const ownedTileCount = gameState.tiles.filter(
     (tile) => tile && tile.owner === activePlayer.id && !tile.isYielded
   ).length;
+  const totalGarrison = gameState.tiles.reduce(
+    (sum, tile) =>
+      tile && tile.owner === activePlayer.id ? sum + tile.garrisonMilitia + tile.garrisonRiders : sum,
+    0
+  );
   const revealed = useRevealedStats(activePlayer);
   // Past three, the names stop fitting on one line and wrap into a block that
   // crowds out the row above -- so they drop away and the icons grow instead,
@@ -228,6 +234,14 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 </span>
               </div>
             )}
+
+            <div className="player-stats-income-row">
+              <span className="squad-chunk">
+                <span className="squad-badge">
+                  <Tower amount={totalGarrison} where="before" />
+                </span>
+              </span>
+            </div>
           </div>
         </div>
 
