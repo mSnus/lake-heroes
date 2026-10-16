@@ -107,7 +107,10 @@ body.screen-open {
      --board-aspect-ratio if the map image is ever swapped. */
   top: calc(100vw * 1368 / 1150 - 48px);
   text-align: center;
-  background: linear-gradient(90deg, #3f591e, #6b8e23);
+
+  background: url('/assets/shade.jpg') center center / cover no-repeat, linear-gradient(90deg, #3f591e, #6b8e23);
+  background-blend-mode: soft-light;
+
   width: 100vw;
   padding-left: 27px;
   box-sizing: border-box;
