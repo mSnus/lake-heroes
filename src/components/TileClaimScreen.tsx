@@ -459,7 +459,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               <div className="big-icon-hint">
                 <div>
                   {displayedGarrison}🧍
-                  <img src="assets/sprites/tower.svg" alt="🟡" className="gold-icon" />
+                  <img src="assets/sprites/tower.svg" alt="🟡" className="tower-icon" />
                 </div>
                 <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>
               </div>

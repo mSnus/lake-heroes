@@ -4,7 +4,9 @@
   gap: 0.15em;
 }
 
-.gold-icon {
+.gold-icon,
+.tower-icon,
+.banner-icon {
   height: 1.5em;
   width: 1.5em;
   object-fit: contain;
