@@ -526,7 +526,8 @@
       "title": "Авторские права",
       "item1": "Игра создана в соавторстве с ИИ-ассистентами: <strong>Claude</strong> (Anthropic), <strong>Gemini</strong> (Google) и <strong>ChatGPT</strong> (OpenAI).",
       "item2": "Анимация кубика работает на <em>react-dice-complete</em> авторства Adam Tyler, используется по лицензии ISC.",
-      "item3": "Случайность на доске и в боях использует классический алгоритм <em>тасования Фишера-Йейтса</em>."
+      "item3": "Случайность на доске и в боях использует классический алгоритм <em>тасования Фишера-Йейтса</em>.",
+      "item4": "Игра распространяется по лицензии <a href=\"https://polyformproject.org/licenses/noncommercial/1.0.0\" target=\"_blank\" rel=\"noopener noreferrer\">PolyForm Noncommercial License 1.0.0</a> — только некоммерческое использование и распространение."
     }
   },
   "screenStore": {

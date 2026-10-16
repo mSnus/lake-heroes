@@ -2,6 +2,7 @@
   "name": "board-game-simulator",
   "version": "0.74.0",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
   "type": "module",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",

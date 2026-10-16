@@ -529,7 +529,8 @@
       "title": "Derechos de autor",
       "item1": "Este juego fue coescrito con la ayuda de asistentes de IA: <strong>Claude</strong> (Anthropic), <strong>Gemini</strong> (Google) y <strong>ChatGPT</strong> (OpenAI).",
       "item2": "La animación de los dados utiliza <em>react-dice-complete</em> de Adam Tyler, bajo licencia ISC.",
-      "item3": "La aleatorización del tablero y las batallas usa el clásico algoritmo de <em>barajado Fisher-Yates</em>."
+      "item3": "La aleatorización del tablero y las batallas usa el clásico algoritmo de <em>barajado Fisher-Yates</em>.",
+      "item4": "Este juego está bajo la <a href=\"https://polyformproject.org/licenses/noncommercial/1.0.0\" target=\"_blank\" rel=\"noopener noreferrer\">PolyForm Noncommercial License 1.0.0</a> — solo uso y distribución no comerciales."
     }
   },
   "screenStore": {

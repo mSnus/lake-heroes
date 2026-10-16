@@ -531,7 +531,8 @@
       "title": "Copyrights",
       "item1": "This game was co-authored with the help of AI assistants: <strong>Claude</strong> (Anthropic), <strong>Gemini</strong> (Google), and <strong>ChatGPT</strong> (OpenAI).",
       "item2": "The dice-rolling animation is powered by <em>react-dice-complete</em> by Adam Tyler, used under the ISC license.",
-      "item3": "Board and battle randomization use the classic <em>Fisher-Yates shuffle</em> algorithm."
+      "item3": "Board and battle randomization use the classic <em>Fisher-Yates shuffle</em> algorithm.",
+      "item4": "This game is licensed under the <a href=\"https://polyformproject.org/licenses/noncommercial/1.0.0\" target=\"_blank\" rel=\"noopener noreferrer\">PolyForm Noncommercial License 1.0.0</a> — noncommercial use and sharing only."
     }
   },
   "screenStore": {

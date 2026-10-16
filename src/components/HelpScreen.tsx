@@ -358,6 +358,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.copyrights.item1')} />
             <HtmlLi html={t('helpScreen.copyrights.item2')} />
             <HtmlLi html={t('helpScreen.copyrights.item3')} />
+            <HtmlLi html={t('helpScreen.copyrights.item4')} />
           </ul>
 
           <div className="help-screen-continue">
