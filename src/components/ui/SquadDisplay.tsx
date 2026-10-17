@@ -103,7 +103,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
           visible as a goal rather than simply missing. */}
       {Array.from({ length: lockedSlots }, (_, i) => (
         <span key={`locked-${i}`} className="squad-chunk squad-chunk-locked">
-          <span className="squad-badge">‒🧍</span>
+          <span className="squad-badge">🧍</span>
         </span>
       ))}
     </div>

@@ -3,9 +3,6 @@ import '../../styles/Icons.css';
 
 interface GoldProps {
   amount: number | string;
-  /** Which side of the amount the coin icon sits on. Default 'after',
-   * matching how 🟡 already trailed the amount at nearly every site this
-   * replaces. */
   where?: 'before' | 'after';
 }
 

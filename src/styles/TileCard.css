@@ -214,6 +214,8 @@
 
 .tile-defence {
   margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
 }
 
 .tile-card-base-level {

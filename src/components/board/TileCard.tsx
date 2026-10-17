@@ -13,7 +13,6 @@ import { claimAffordability } from '../../game/tileOwnership';
 import { syndicateMultiplier } from '../../game/syndicate';
 import { tileTurnIncome } from '../../game/income';
 import { hasYearEffect, DOUBLE_INCOME_EFFECT } from '../../game/year';
-import { BRAWL_THRESHOLD } from '../../game/constants';
 import { isBrawlMatchup } from '../../actions/battles/common';
 import DecoratedButton from '../ui/DecoratedButton';
 import { TileUpgradesScreen } from '../screens/TileUpgradesScreen';
@@ -461,12 +460,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     <div className="big-icon-hint">
                       <div className="tile-defence">
                         {Array.from({ length: tile.level }, (_, i) => (
-                          <img
-                            key={i}
-                            src="assets/sprites/tower.svg"
-                            alt="🏯"
-                            className="tower-icon"
-                          />
+                          <Tower key={i}/>
                         ))}
                         {tile.garrison}🧍
                       </div>

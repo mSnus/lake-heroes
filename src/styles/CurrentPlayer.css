@@ -144,6 +144,12 @@
   align-items: flex-end;
 }
 
+.player-stats-garrison-row {
+  display: flex;
+  align-items: flex-end;
+  margin-left: 1rem;
+}
+
 .player-stats-income-hint {
   display: flex;
   align-items: flex-start;

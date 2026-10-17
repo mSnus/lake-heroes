@@ -25,6 +25,7 @@ import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../../ga
 import { dispatchBattleResolution, handleBattleClose } from '../../game/battleGrid/battleResolution';
 import { GridBattleState, TurnEvent, BattleSide } from '../../game/battleGrid/types';
 import '../../styles/BattleScreen.css';
+import Tower from '../snippets/Tower';
 
 type BattlePhase = 'ongoing' | 'result';
 
@@ -225,7 +226,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
           {
             key: 'garrison-fortification',
             label: t('battleScreen.fortification'),
-            emoji: <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />,
+            emoji: <Tower />,
             // Shown as the share of each hit the level is worth soaking,
             // which is what a player can actually reason about.
             bonus: Math.round(garrisonAbsorbBonus * ABSORB_PER_ROLL_POINT * 100),

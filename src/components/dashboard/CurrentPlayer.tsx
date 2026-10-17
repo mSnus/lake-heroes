@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import '../../styles/CurrentPlayer.css';
-import { say, sayLocal } from '../../utils/say';
+import { sayLocal } from '../../utils/say';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { playerTurnIncome, playerRawTurnIncome } from '../../game/income';
 import { getArtifact } from '../../game/artifacts';
@@ -17,6 +17,7 @@ import { MAX_ARMY_SLOTS } from '../../game/constants';
 import { openTavernHireOnly } from '../../actions/tavern';
 import { openStablesHireOnly } from '../../actions/stables';
 import { useT } from '../../i18n';
+import Militia from '../snippets/Militia';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -203,7 +204,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
 
       <div className="player-pane">
         <div className="player-stats-main-row">
-          <img src="assets/sprites/banner.svg" alt="🚩" className="gold-icon" />
+          <img src="assets/sprites/banner.svg" alt="🚩" className="banner-icon" />
           <div
             className="player-stats-data player-stats-army"
             id="statsArmy"
@@ -230,15 +231,16 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             {turnIncome.units > 0 && (
               <div className="player-stats-income-row">
                 <span className="player-stats-turn-income player-stats-army">
+                  <Militia amount={`+${turnIncome.units}`} />
                   {`+${turnIncome.units}🧍`}
                 </span>
               </div>
             )}
 
-            <div className="player-stats-income-row">
+            <div className="player-stats-garrison-row">
               <span className="squad-chunk">
                 <span className="squad-badge">
-                  <Tower amount={totalGarrison} where="before" />
+                  <Tower amount={`${totalGarrison}🧍`} where="before" />
                 </span>
               </span>
             </div>

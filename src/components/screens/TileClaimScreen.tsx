@@ -24,6 +24,7 @@ import '../../styles/TileClaim.css';
 import '../../styles/GameMenu.css';
 import { planClaimGarrison } from '../../ai/botPlans';
 import Army from '../snippets/Army';
+import Tower from '../snippets/Tower';
 
 interface TileInfoScreenProps {
   tile: Tile;
@@ -337,7 +338,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 }
               >
                 <span className="value">
-                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                  <Tower />
                 </span>
                 <div className="upgrade-fortification-info">
                   <div>+{defenceBonusPct(1)}%🛡️</div>
@@ -365,8 +366,8 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
               <div className="big-icon-hint upgrade-fortification">
                 <span className="value">
-                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
-                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                  <Tower />
+                  <Tower />
                 </span>
                 <div className="upgrade-fortification-info">
                   <div>+{defenceBonusPct(2)}%🛡️</div>
@@ -399,9 +400,9 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
               <div className="big-icon-hint upgrade-fortification">
                 <span className="value">
-                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
-                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
-                  <img src="assets/sprites/tower.svg" alt="🏯" className="tower-icon" />
+                  <Tower />
+                  <Tower />
+                  <Tower />
                 </span>
                 <div className="upgrade-fortification-info">
                   <div>+{defenceBonusPct(3)}%🛡️</div>
@@ -468,7 +469,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               <div className="big-icon-hint">
                 <div>
                   {displayedGarrison}🧍
-                  <img src="assets/sprites/tower.svg" alt="🟡" className="tower-icon" />
+                  <Tower />
                 </div>
                 <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>
               </div>
