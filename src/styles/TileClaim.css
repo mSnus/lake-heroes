@@ -81,14 +81,6 @@
   text-align: center;
 }
 
-.upgrade-level > :nth-child(3) {
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-/* REMOVED: the nth-child(1) and nth-child(2) rules with min-width: 5rem,
-   they made the columns unequal */
-
 .upgrade-level + .upgrade-level {
   border-top: 1px solid wheat;
   padding-top: 12px;
@@ -141,6 +133,10 @@
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
+}
+
+.value-defence > * {
+  white-space: nowrap;
 }
 
 .upgrade-action {
