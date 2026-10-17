@@ -14,8 +14,6 @@ import { gameEvent } from '../../utils/events';
 import { sayLocal } from '../../utils/say';
 import { useRemoteMove } from '../../online/remoteMoveStore';
 import { seatIndex } from '../../game/seats';
-import { showScreen } from '../../utils/screenStore';
-import RealmOverviewScreen from '../screens/RealmOverviewScreen';
 import { handleKingCastle } from '../../actions/king';
 import { openTavernHireOnly } from '../../actions/tavern';
 import { openStablesHireOnly } from '../../actions/stables';
@@ -208,11 +206,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       }
 
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
-      if (tile.id === 'king-castle') {
-        // Standing on it opens the Castle itself; from anywhere else the
-        // King's Castle is just where you go to survey the realm.
-        if (isActivePlayerTile) handleKingCastle(board, updateGameState);
-        else showScreen({ content: <RealmOverviewScreen gameState={board} /> });
+      if (tile.id === 'king-castle' && isActivePlayerTile) {
+        handleKingCastle(board, updateGameState);
         return;
       }
 

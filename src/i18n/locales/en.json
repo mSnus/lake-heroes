@@ -309,10 +309,8 @@
     "incomePerYear": "Income per year"
   },
   "currentPlayer": {
-    "fameTooltip": "Your Fame. Gain it by owning the tiles and winning the battles!",
     "isAt": "is at",
     "kingsContractTooltip": "King's contract: claim {tileName} for {award}🟡!",
-    "goldTooltip": "Current gold you own",
     "maxCapacityReached": "max capacity for {fame}🏆 reached",
     "asKingsGrace": "as the King's grace",
     "asKingsGraceHandicapped": "as the King's grace ({pct}% — the King favours those behind)",
@@ -435,7 +433,7 @@
     },
     "overviewControls": {
       "title": "Overview controls 🔍",
-      "kingdom": "🏰 <strong>Kingdom Overview</strong> — tap King's Castle when not visiting it to display all players with their power rank ⭐ and total wealth 🧮.",
+      "kingdom": "🏰 <strong>Kingdom Overview</strong> — tap your own Fame or Gold in the stats panel to display all players with their power rank ⭐ and total wealth 🧮.",
       "garrison": "⚔️ <strong>Garrison Overview</strong> — tap army slots to display all your tiles and distribute army to garrisons. Remember you couldn't take them back from the tile until you visit it!",
       "player": "👤 <strong>Player Overview</strong> — tap the player icon on the map to quickly observe his possessions."
     },

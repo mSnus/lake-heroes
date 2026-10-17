@@ -10,6 +10,7 @@ import { SquadDisplay } from '../ui/SquadDisplay';
 import { Gold } from '../snippets/Gold';
 import { Tower } from '../snippets/Tower';
 import { GarrisonsScreen } from '../screens/GarrisonsScreen';
+import RealmOverviewScreen from '../screens/RealmOverviewScreen';
 import { gameEvent } from '../../utils/events';
 import { showScreen } from '../../utils/screenStore';
 import { handleKingCastle } from '../../actions/king';
@@ -130,6 +131,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   const t = useT();
   const activePlayer = gameState.activePlayer;
 
+  const openKingdomOverview = () =>
+    showScreen({ content: <RealmOverviewScreen gameState={gameState} /> });
+
   const handleTileNameClick = () => {
     if (gameState.activeTile.id === 'king-castle') {
       handleKingCastle(gameState, updateGameState);
@@ -176,7 +180,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
         <div
           className="player-stats-fame-wrap"
           id="statsFame"
-          onClick={() => sayLocal(t('currentPlayer.fameTooltip'), 'info')}
+          onClick={openKingdomOverview}
           style={{ cursor: 'pointer' }}
         >
           <div
@@ -261,7 +265,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
         <div
           className="player-stats-data player-stats-gold"
           id="statsOwnedResources"
-          onClick={() => sayLocal(t('currentPlayer.goldTooltip'), 'info')}
+          onClick={openKingdomOverview}
         >
           <div className="player-stats-inline-row">
             <img src="assets/sprites/moneybag.svg" alt="🟡" className="gold-icon" />

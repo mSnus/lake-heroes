@@ -308,10 +308,8 @@
     "incomePerYear": "Ingresos por año"
   },
   "currentPlayer": {
-    "fameTooltip": "Tu Fama. ¡Gánala poseyendo casillas y ganando batallas!",
     "isAt": "está en",
     "kingsContractTooltip": "Contrato del Rey: ¡reclama {tileName} por {award}🟡!",
-    "goldTooltip": "Oro que posees actualmente",
     "maxCapacityReached": "capacidad máxima alcanzada para {fame}🏆",
     "asKingsGrace": "como gracia del Rey",
     "fromYourTiles": "de tus casillas",
@@ -433,7 +431,7 @@
     },
     "overviewControls": {
       "title": "Controles de vista general 🔍",
-      "kingdom": "🏰 <strong>Vista del Reino</strong> — toca el Castillo del Rey cuando no lo estés visitando para ver a todos los jugadores con su rango de poder ⭐ y riqueza total 🧮.",
+      "kingdom": "🏰 <strong>Vista del Reino</strong> — toca tu Fama u Oro en el panel de estadísticas para ver a todos los jugadores con su rango de poder ⭐ y riqueza total 🧮.",
       "garrison": "⚔️ <strong>Vista de Guarniciones</strong> — toca tus escuadrones para ver todas tus casillas y repartir tu ejército en sus guarniciones. ¡Recuerda que no podrás recuperarlos de la casilla hasta que la visites!",
       "player": "👤 <strong>Vista de Jugador</strong> — toca el icono de un jugador en el mapa para ver rápidamente sus posesiones."
     },
