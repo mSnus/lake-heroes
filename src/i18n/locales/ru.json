@@ -304,6 +304,13 @@
   "playerStats": {
     "incomePerYear": "Доход в год"
   },
+  "yearIndicator": {
+    "season": "Сейчас {season}, сударь.",
+    "winter": "зима",
+    "spring": "весна",
+    "summer": "лето",
+    "autumn": "осень"
+  },
   "currentPlayer": {
     "isAt": "на клетке",
     "kingsContractTooltip": "Контракт короля: захватите «{tileName}» за {award}🟡!",

@@ -307,6 +307,13 @@
   "playerStats": {
     "incomePerYear": "Ingresos por año"
   },
+  "yearIndicator": {
+    "season": "Es {season}, señor.",
+    "winter": "invierno",
+    "spring": "primavera",
+    "summer": "verano",
+    "autumn": "otoño"
+  },
   "currentPlayer": {
     "isAt": "está en",
     "kingsContractTooltip": "Contrato del Rey: ¡reclama {tileName} por {award}🟡!",

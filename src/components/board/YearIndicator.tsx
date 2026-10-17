@@ -1,6 +1,8 @@
 import React from 'react';
 import { GameState } from '../../game/GameState';
 import { currentYear, currentYearTurn } from '../../game/year';
+import { sayLocal } from '../../utils/say';
+import { useT } from '../../i18n';
 
 /** One color per turn of the year, in order -- the wedge for that turn's
  * position on the dial. Indexed modulo its own length, same reasoning as
@@ -23,6 +25,14 @@ const STROKE_WIDTH = 1;
 const RADIUS = CENTER - STROKE_WIDTH / 2; // inset so the 1px outline isn't clipped
 const SECTOR_DEG = 360 / SECTOR_COLORS.length;
 
+/** Two turns of the year per season, in order. */
+function seasonKey(yearTurn: number): 'winter' | 'spring' | 'summer' | 'autumn' {
+  if (yearTurn <= 2) return 'winter';
+  if (yearTurn <= 4) return 'spring';
+  if (yearTurn <= 6) return 'summer';
+  return 'autumn';
+}
+
 function polarPoint(angleDeg: number): [number, number] {
   // -90 so 0deg lands at 12 o'clock (SVG's own 0deg is 3 o'clock) --
   // increasing angleDeg from there sweeps clockwise.
@@ -42,9 +52,10 @@ function sectorPath(startDeg: number, endDeg: number): string {
 /** Where the shared calendar stands, shown over the map's corner -- see
  * game/year.ts. A circular gauge: one wedge per turn of the year, filled in
  * clockwise from the top as the year progresses, resetting bare at rollover.
- * Deliberately wordless: the tooltip's "year · turn/total" is the only
- * text, so it needs no translating. */
+ * The dial itself is wordless (the tooltip's "year · turn/total" is the
+ * only text on hover); a click announces the season as a local toast. */
 export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState }) => {
+  const t = useT();
   const turn = currentYearTurn(gameState);
   const elapsed = Math.min(turn, SECTOR_COLORS.length);
 
@@ -52,6 +63,13 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
     <div
       className="year-indicator"
       title={`${currentYear(gameState)} · ${turn}/${SECTOR_COLORS.length}`}
+      onClick={() =>
+        sayLocal(
+          t('yearIndicator.season', { season: t(`yearIndicator.${seasonKey(turn)}`) }),
+          'info'
+        )
+      }
+      style={{ cursor: 'pointer' }}
     >
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="#abab9344" />
