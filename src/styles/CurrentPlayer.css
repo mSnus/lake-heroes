@@ -44,7 +44,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
-  width: calc(100% - 78px);
+  width: calc(100% - 130px);
   line-height: 0.9;
 }
 
@@ -200,8 +200,8 @@
 .fame-icon {
   display: inline-flex;
   align-items: center;
-  gap: 0.15em;
-  color: white;
+  justify-content: center;
+  color: wheat;
   font-size: 1.0rem;
 }
 

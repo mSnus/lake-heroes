@@ -231,7 +231,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               <div className="player-stats-income-row">
                 <span className="player-stats-turn-income player-stats-army">
                   <Militia amount={`+${turnIncome.units}`} />
-                  {`+${turnIncome.units}🧍`}
                 </span>
               </div>
             )}

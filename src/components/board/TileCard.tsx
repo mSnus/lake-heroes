@@ -421,9 +421,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     {tile.owner !== activePlayer?.id && (
                       <div>
                         <div className="big-icon-hint">
-                          <div>
-                            <Gold amount={tile.fee} where={'before'}/>
-                          </div>
+                           <Gold amount={tile.fee} where={'before'}/>
                           <div>{t('tileCard.fee')}</div>
                         </div>
                       </div>
