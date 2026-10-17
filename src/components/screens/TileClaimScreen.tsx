@@ -25,6 +25,7 @@ import '../../styles/GameMenu.css';
 import { planClaimGarrison } from '../../ai/botPlans';
 import Army from '../snippets/Army';
 import Tower from '../snippets/Tower';
+import Militia from '../snippets/Militia';
 
 interface TileInfoScreenProps {
   tile: Tile;
@@ -337,12 +338,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
                 }
               >
-                <span className="value">
+                <div className="value-towers">
                   <Tower />
-                </span>
+                </div>
                 <div className="upgrade-fortification-info">
-                  <div>+{defenceBonusPct(1)}%🛡️</div>
-                  <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(1) })}</div>
+                  <div className="value-defence">
+                    <div>+{defenceBonusPct(1)}%🛡️️</div>
+                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(1) })}🧍</div>
+                  </div>
                 </div>
               </div>
 
@@ -365,13 +368,15 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               {priceTag(2, currentLevel)}
 
               <div className="big-icon-hint upgrade-fortification">
-                <span className="value">
+                <div className="value-towers">
                   <Tower />
                   <Tower />
-                </span>
+                </div>
                 <div className="upgrade-fortification-info">
-                  <div>+{defenceBonusPct(2)}%🛡️</div>
-                  <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(2) })}</div>
+                  <div className="value-defence">
+                    <div>+{defenceBonusPct(2)}%️🛡️</div>
+                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(2) })}🧍</div>
+                  </div>
                 </div>
               </div>
 
@@ -399,14 +404,16 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               {priceTag(3, currentLevel)}
 
               <div className="big-icon-hint upgrade-fortification">
-                <span className="value">
+                <div className="value-towers">
                   <Tower />
                   <Tower />
                   <Tower />
-                </span>
+                </div>
                 <div className="upgrade-fortification-info">
-                  <div>+{defenceBonusPct(3)}%🛡️</div>
-                  <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(3) })}</div>
+                  <div className="value-defence">
+                    <div>+{defenceBonusPct(3)}%️🛡️</div>
+                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(3) })}🧍</div>
+                  </div>
                 </div>
               </div>
 
@@ -449,7 +456,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             <div className="guards-hire-scroll" style={{}}>
               <div className="big-icon-hint">
                 <div>
-                  {totalMilitiaPool - displayedGarrison}🧍
+                  <Militia amount={totalMilitiaPool - displayedGarrison} color={player.image} />
                   <Army />
                 </div>
                 <div>{t('tileClaimScreen.army')}</div>
@@ -468,7 +475,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
               <div className="big-icon-hint">
                 <div>
-                  {displayedGarrison}🧍
+                  <Militia amount={displayedGarrison} color={player.image} />
                   <Tower />
                 </div>
                 <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>

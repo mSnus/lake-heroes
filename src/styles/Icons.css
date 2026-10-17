@@ -7,11 +7,17 @@
 
 .gold-icon,
 .tower-icon,
-.banner-icon {
+.banner-icon,
+.unit-icon {
   width: 1.3rem;
   object-fit: contain;
   vertical-align: middle;
   flex-shrink: 0;
   filter: drop-shadow(0px 0.5px 1px #00000050);
   text-shadow: 1px 1px 2px #00000050;
+}
+
+.unit-icon {
+  max-height: 2rem;
+  margin-bottom: 0.3rem;
 }
