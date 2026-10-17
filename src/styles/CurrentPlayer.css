@@ -1,5 +1,5 @@
 .player-pane {
-  width: 90vw;
+  width: 94vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -8,7 +8,7 @@
   align-items: flex-start;
   overflow-y: hidden;
   padding-right: 12px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   z-index: 999;
 }
 
@@ -45,6 +45,7 @@
   flex-wrap: wrap;
   gap: 4px;
   width: calc(100% - 78px);
+  line-height: 0.9;
 }
 
 .player-marker-indicator {
@@ -59,6 +60,14 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.player-stats-fame-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .player-stats-artifacts {
@@ -81,7 +90,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   font-size: 0.75rem;
   color: #5b4636;
@@ -116,7 +125,7 @@
 .player-stats-main-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   width: 100%;
   white-space: nowrap;
 }
@@ -130,6 +139,7 @@
   flex: 1;
   min-width: 0;
   min-height: 1.6rem;
+  justify-content: flex-start;
 }
 
 .player-stats-army-slots {
@@ -147,7 +157,6 @@
 .player-stats-garrison-row {
   display: flex;
   align-items: flex-end;
-  margin-left: 1rem;
 }
 
 .player-stats-income-hint {
@@ -188,6 +197,13 @@
   cursor: pointer;
 }
 
+.fame-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  color: white;
+  font-size: 1.0rem;
+}
 
 @media (min-width: 769px) {
   .player-pane-wrapper {

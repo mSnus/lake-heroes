@@ -1,5 +1,6 @@
 .gold-inline,
-.tower-inline {
+.tower-inline,
+.fame-inline {
   display: inline-flex;
   align-items: center;
   gap: 0.15em;
@@ -8,7 +9,8 @@
 .gold-icon,
 .tower-icon,
 .banner-icon,
-.unit-icon {
+.unit-icon,
+.fame-icon {
   width: 1.3rem;
   object-fit: contain;
   vertical-align: middle;

@@ -18,6 +18,7 @@ import { openTavernHireOnly } from '../../actions/tavern';
 import { openStablesHireOnly } from '../../actions/stables';
 import { useT } from '../../i18n';
 import Militia from '../snippets/Militia';
+import Fame from '../snippets/Fame';
 
 interface CurrentPlayerProps {
   gameState: GameState;
@@ -170,23 +171,21 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
 
   return (
     <div className="player-pane-wrapper">
-      <div className="current-player">
+      <div className="current-player player-stats-data">
         {/* fame */}
         <div
-          className="player-stats-data"
+          className="player-stats-fame-wrap"
           id="statsFame"
           onClick={() => sayLocal(t('currentPlayer.fameTooltip'), 'info')}
           style={{ cursor: 'pointer' }}
         >
           <div
-            className="player-stats-hint gold-icon"
+            className="player-stats-hint fame-icon"
             style={{ background: (activePlayer?.color ?? '#eeeeee') + 'ff' }}
           >
-            🏆
+            {activePlayer.fame ?? 1}
           </div>
-          <div>
-            <strong>{activePlayer.fame ?? 1}</strong>
-          </div>
+          <Fame amount={''} />
         </div>
 
         <div className="player-position">
@@ -281,63 +280,63 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               </div>
             )}
           </div>
+        </div>
 
-          {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
-            activePlayer.artifacts.length > 0) && (
-            <div className="player-stats-contracts">
-              {gameState.kingsContracts
-                .filter((c) => c.playerId === activePlayer.id)
-                .map((c) => {
-                  const tile = gameState.tiles[c.tilePosition];
-                  if (!tile) return null;
-                  return (
-                    <span
-                      key={c.tilePosition}
-                      className="player-contract-badge"
-                      onClick={() =>
-                        sayLocal(
-                          t('currentPlayer.kingsContractTooltip', {
-                            tileName: tile.name,
-                            award: c.award,
-                          }),
-                          'info'
-                        )
-                      }
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className="icon">📜</span> {tile.name}
-                    </span>
-                  );
-                })}
-              {activePlayer.artifacts.map((id) => {
-                const artifact = getArtifact(id);
-                if (!artifact) return null;
+        {(gameState.kingsContracts.some((c) => c.playerId === activePlayer.id) ||
+          activePlayer.artifacts.length > 0) && (
+          <div className="player-stats-contracts">
+            {gameState.kingsContracts
+              .filter((c) => c.playerId === activePlayer.id)
+              .map((c) => {
+                const tile = gameState.tiles[c.tilePosition];
+                if (!tile) return null;
                 return (
                   <span
-                    key={`artifact-${id}`}
-                    className={
-                      'player-artifact-badge' +
-                      (iconOnlyArtifacts ? ' player-artifact-badge--icon-only' : '')
-                    }
+                    key={c.tilePosition}
+                    className="player-contract-badge"
                     onClick={() =>
                       sayLocal(
-                        t('currentPlayer.artifactTooltip', {
-                          name: artifact.name,
-                          description: artifact.description,
+                        t('currentPlayer.kingsContractTooltip', {
+                          tileName: tile.name,
+                          award: c.award,
                         }),
                         'info'
                       )
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    <span className="icon">{artifact.emoji}</span>
-                    {!iconOnlyArtifacts && <> {artifact.name}</>}
+                    <span className="icon">📜</span> {tile.name}
                   </span>
                 );
               })}
-            </div>
-          )}
-        </div>
+            {activePlayer.artifacts.map((id) => {
+              const artifact = getArtifact(id);
+              if (!artifact) return null;
+              return (
+                <span
+                  key={`artifact-${id}`}
+                  className={
+                    'player-artifact-badge' +
+                    (iconOnlyArtifacts ? ' player-artifact-badge--icon-only' : '')
+                  }
+                  onClick={() =>
+                    sayLocal(
+                      t('currentPlayer.artifactTooltip', {
+                        name: artifact.name,
+                        description: artifact.description,
+                      }),
+                      'info'
+                    )
+                  }
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span className="icon">{artifact.emoji}</span>
+                  {!iconOnlyArtifacts && <> {artifact.name}</>}
+                </span>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
