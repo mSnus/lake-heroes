@@ -265,7 +265,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const goToTile = (nextTile: Tile) => {
     showScreen({
       content: (
+        // Keyed by tile id so React remounts fresh instead of re-rendering
+        // this same instance in place -- without it, garrisonAmount and
+        // every other useState here (initialized once from the tile that
+        // was current at first mount) would keep showing the PREVIOUS
+        // tile's numbers after a swipe, out of sync with whatever the
+        // slider recomputes from the new tile's own props.
         <TileInfoScreen
+          key={nextTile.id}
           tile={nextTile}
           player={player}
           gameState={gameState}
