@@ -385,7 +385,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         <div className="upgrades-table">
           {currentLevel < 2 && (
             <div className={'upgrade-level'}>
-              {priceTag(1, currentLevel)}
+              <div className="value-towers">
+                <Tower />
+              </div>
+
+              <div className="price-and-towers">{priceTag(1, currentLevel)}</div>
 
               <div
                 className={
@@ -393,9 +397,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                   (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
                 }
               >
-                <div className="value-towers">
-                  <Tower />
-                </div>
                 <div className="upgrade-fortification-info">
                   <div className="value-defence">
                     <div>+{defenceBonusPct(1)}%🛡️️</div>
@@ -420,13 +421,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
           {currentLevel < 3 && (
             <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
-              {priceTag(2, currentLevel)}
+              <div className="value-towers">
+                <Tower />
+                <Tower />
+              </div>
+
+              <div className="price-and-towers">{priceTag(2, currentLevel)}</div>
 
               <div className="big-icon-hint upgrade-fortification">
-                <div className="value-towers">
-                  <Tower />
-                  <Tower />
-                </div>
                 <div className="upgrade-fortification-info">
                   <div className="value-defence">
                     <div>+{defenceBonusPct(2)}%️🛡️</div>
@@ -448,6 +450,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
               )}
             </div>
           )}
+
           {currentLevel <= 3 && (
             <div
               className={
@@ -456,14 +459,15 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 (currentLevel === 3 ? ' current-level' : '')
               }
             >
-              {priceTag(3, currentLevel)}
+              <div className="value-towers">
+                <Tower />
+                <Tower />
+                <Tower />
+              </div>
 
-              <div className="big-icon-hint upgrade-fortification">
-                <div className="value-towers">
-                  <Tower />
-                  <Tower />
-                  <Tower />
-                </div>
+              <div className="price-and-towers">{priceTag(3, currentLevel)}</div>
+
+              <div className="upgrade-fortification">
                 <div className="upgrade-fortification-info">
                   <div className="value-defence">
                     <div>+{defenceBonusPct(3)}%️🛡️</div>

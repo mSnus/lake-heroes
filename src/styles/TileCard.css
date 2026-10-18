@@ -395,14 +395,15 @@
 }
 
 .big-icon-hint>div:first-child {
-  font-size: 16px;
+  font-size: 0.9rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .big-icon-hint>div:last-child {
-  font-size: 10px;
+  font-size: 0.7rem;
+  line-height: 0.7rem;
 }
 
 /* This year's lucky-group doubling (see game/year.ts) -- a small badge
@@ -452,16 +453,6 @@
 
 .tile-card .decorated-button-content {
   margin-top: -0.3rem;
-}
-
-/* The "N🟡" price tag inside the upgrade-info lines on the Tile Upgrades
-   screen -- display only, see .upgrade-action for the actual buy button. */
-.upgrade-price-badge {
-  display: inline-block;
-  border-radius: 4px;
-  margin-top: 1rem;
-  padding: 0 6px;
-  border: 1px solid #ffde2c00;
 }
 
 /* Matches King's Castle's input look (see modal.css's
