@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
 import { GameState } from '../../game/GameState';
@@ -9,7 +9,7 @@ import { DecoratedButton } from '../ui/DecoratedButton';
 import { DecoratedSlider } from '../ui/DecoratedSlider';
 import { fmtPrice } from '../board/TileCard';
 import { Gold } from '../snippets/Gold';
-import { clearScreen } from '../../utils/screenStore';
+import { clearScreen, showScreen } from '../../utils/screenStore';
 import { say, sayLocal } from '../../utils/say';
 import { setTileGarrison } from '../../actions/garrisonTile';
 import { sellTile } from '../../actions/sellTile';
@@ -253,10 +253,65 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
         ? 'tileClaimScreen.yieldedBelongsTo'
         : 'tileClaimScreen.belongsTo';
 
+  // Swipe left/right pages to the next/previous owned tile, wrapping around
+  // at either end -- an infinite carousel over player.ownedTiles, same order
+  // GarrisonsScreen lists them in. A single tile (or none at all, which
+  // shouldn't reach this screen) makes the gesture a no-op.
+  const ownedTiles = player.ownedTiles
+    .map((idx) => gameState.tiles[idx])
+    .filter((t): t is Tile => !!t);
+  const carouselIndex = ownedTiles.indexOf(tile);
+
+  const goToTile = (nextTile: Tile) => {
+    showScreen({
+      content: (
+        <TileInfoScreen
+          tile={nextTile}
+          player={player}
+          gameState={gameState}
+          updateGameState={updateGameState}
+          variant={variant}
+        />
+      ),
+    });
+  };
+
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const SWIPE_THRESHOLD_PX = 60;
+
+  const handleSwipePointerDown = (e: React.PointerEvent) => {
+    // Let a slider drag, a button tap, etc. own the gesture entirely --
+    // don't also interpret it as a swipe.
+    if ((e.target as HTMLElement).closest('button, input, select, a, .decorated-slider')) {
+      swipeStartRef.current = null;
+      return;
+    }
+
+    swipeStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleSwipePointerUp = (e: React.PointerEvent) => {
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+    if (!start || carouselIndex === -1 || ownedTiles.length < 2) return;
+
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    // Horizontal intent only -- a mostly-vertical drag (scrolling) shouldn't
+    // page the carousel.
+    if (Math.abs(dx) < SWIPE_THRESHOLD_PX || Math.abs(dx) <= Math.abs(dy)) return;
+
+    const delta = dx < 0 ? 1 : -1; // swipe left -> next, swipe right -> previous
+    const nextIndex = (carouselIndex + delta + ownedTiles.length) % ownedTiles.length;
+    goToTile(ownedTiles[nextIndex]);
+  };
+
   return (
     <ScreenBackground
       image={variant === 'upgrades' ? 'assets/screens/guards.jpg' : 'assets/screens/victory.jpg'}
       style={{ paddingTop: '1rem' }}
+      onPointerDown={handleSwipePointerDown}
+      onPointerUp={handleSwipePointerUp}
     >
       <Fade />
       <Fade amount={0.3} />

@@ -5,15 +5,25 @@ interface ScreenBackgroundProps {
   image: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
+  onPointerDown?: React.PointerEventHandler<HTMLDivElement>;
+  onPointerUp?: React.PointerEventHandler<HTMLDivElement>;
 }
 
-export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({ image, style, children }) => (
+export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({
+  image,
+  style,
+  children,
+  onPointerDown,
+  onPointerUp,
+}) => (
   <div
     className='screen-common'
     style={{
       backgroundImage: `url(${image})`,
       ...style,
     }}
+    onPointerDown={onPointerDown}
+    onPointerUp={onPointerUp}
   >
     {children}
   </div>
