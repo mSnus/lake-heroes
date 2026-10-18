@@ -1,7 +1,7 @@
-import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, GARRISON_BONUS_SLOTS, FORTIFIED_TILE_GROUPS } from './constants';
+import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, FORTIFIED_TILE_GROUPS } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
-import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, UNIT_POWER, isBanzaiAttack } from './army';
+import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, garrisonSlotsForLevel, UNIT_POWER, isBanzaiAttack } from './army';
 import { t, tOptional } from '../i18n';
 
 export interface TileJSON {
@@ -221,7 +221,7 @@ export class Tile implements TileJSON {
    * groups: a Tower's edge is its fortification bonus, not more room (see
    * getGarrisonAbsorbBonus). */
   get garrisonSlots(): number {
-    return this.level + GARRISON_BONUS_SLOTS;
+    return garrisonSlotsForLevel(this.level);
   }
 
   get garrisonPower(): number {

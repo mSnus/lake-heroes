@@ -6,6 +6,7 @@ import {
   DRAGON_POWER_WEIGHT,
   DRAGON_UNITS,
   BANZAI_THRESHOLD,
+  GARRISON_BONUS_SLOTS,
 } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 
@@ -21,6 +22,20 @@ function slotCapacity(): number {
  * capacity-taking helpers below instead of defaulting to the army one. */
 export function garrisonSlotCapacity(): number {
   return getOverrides().garrisonSlotCapacity;
+}
+
+/** Garrison slots a tile of this level holds -- scales with level, plus
+ * GARRISON_BONUS_SLOTS (see Tile.garrisonSlots, which calls this). The
+ * single source of truth every "max garrison" display must go through,
+ * since a display computing level + 0 instead of level + GARRISON_BONUS_SLOTS
+ * would show a cap the slider itself doesn't enforce. */
+export function garrisonSlotsForLevel(level: number): number {
+  return level + GARRISON_BONUS_SLOTS;
+}
+
+/** Total militia/riders headcount a tile of this level's garrison can hold. */
+export function garrisonCapacityForLevel(level: number): number {
+  return garrisonSlotCapacity() * garrisonSlotsForLevel(level);
 }
 
 export type UnitTier = 'militia' | 'riders';

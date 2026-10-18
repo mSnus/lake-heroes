@@ -14,7 +14,7 @@ import { say, sayLocal } from '../../utils/say';
 import { setTileGarrison } from '../../actions/garrisonTile';
 import { sellTile } from '../../actions/sellTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../../actions/yieldTile';
-import { remainingCapacity, garrisonSlotCapacity } from '../../game/army';
+import { remainingCapacity, garrisonSlotCapacity, garrisonCapacityForLevel } from '../../game/army';
 import { ABSORB_PER_ROLL_POINT } from '../../game/constants';
 import { tileTurnIncome } from '../../game/income';
 import { useT } from '../../i18n';
@@ -121,7 +121,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // labels fall back to the real committed garrisonAmount.
   const [previewGarrison, setPreviewGarrison] = useState<number | null>(null);
   const displayedGarrison = previewGarrison ?? garrisonAmount;
-  const defenceCapacity = (level: number) => garrisonSlotCapacity() * level;
+  const defenceCapacity = (level: number) => garrisonCapacityForLevel(level);
   // getGarrisonAbsorbBonus already accounts for Ordinary (1/2/3) vs. a
   // Camp/Tower's extra point (2/3/4) -- each point is worth +10% absorption
   // (see engine.ts's rollAbsorption).

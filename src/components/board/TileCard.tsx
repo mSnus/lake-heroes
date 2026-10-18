@@ -7,7 +7,7 @@ import { sellTile } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { gameEvent } from '../../utils/events';
-import { garrisonSlotCapacity, isBanzaiAttack } from '../../game/army';
+import { garrisonCapacityForLevel, isBanzaiAttack } from '../../game/army';
 import { UNIT_POWER } from '../../game/army';
 import { claimAffordability } from '../../game/tileOwnership';
 import { syndicateMultiplier } from '../../game/syndicate';
@@ -152,7 +152,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
   const defence = (level: number) => tile.getDefence(level);
-  const defenceCapacity = (level: number) => garrisonSlotCapacity() * level;
+  const defenceCapacity = (level: number) => garrisonCapacityForLevel(level);
 
   const bonusAmount = (level: number) =>
     bonusType === 'gold' ? <Gold amount={bonus(level)} /> : <>{bonus(level)} 🧍</>;
