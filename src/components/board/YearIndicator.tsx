@@ -69,7 +69,6 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
           'info'
         )
       }
-      style={{ cursor: 'pointer' }}
     >
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="#abab9344" />

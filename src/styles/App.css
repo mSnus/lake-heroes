@@ -139,14 +139,14 @@ body.screen-open {
 /* Which turn of the year the realm is living through, as a circular gauge
    (see components/YearIndicator.tsx) -- its own colors are precisely
    specified, so unlike the season emoji this replaced, nothing here dims or
-   tints them. Sits over the map's top-left corner and never catches a click
-   meant for the tile beneath it. */
+   tints them. Sits over the map's top-left corner, clickable since it
+   announces the season on click. */
 .year-indicator {
   position: absolute;
   top: 1rem;
   left: 1rem;
   z-index: 90;
-  pointer-events: none;
+  cursor: pointer;
   background-image: url('/assets/sprites/ring.png');
   background-position: center center;
   background-size: contain;
