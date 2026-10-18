@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../../game/GameState';
-import { useModal } from '../../utils/diceStore';
+import { useModal, startDiceRoll } from '../../utils/diceStore';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
@@ -64,6 +64,11 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   const choosePath = (choice: 'short' | 'long') => {
     setForkChoice(choice);
     hide();
+    // The dice modal is already active by the time the fork buttons can show
+    // (beginTurn fires 'showDice' before the player ever reaches this screen)
+    // -- picking a path rolls immediately instead of waiting for a tap on
+    // the die.
+    startDiceRoll();
   };
 
   useEffect(() => {
