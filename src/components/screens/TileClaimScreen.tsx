@@ -309,9 +309,12 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   return (
     <ScreenBackground
       image={variant === 'upgrades' ? 'assets/screens/guards.jpg' : 'assets/screens/victory.jpg'}
-      style={{ paddingTop: '1rem' }}
+      style={{ paddingTop: '1rem', touchAction: 'pan-y' }}
       onPointerDown={handleSwipePointerDown}
       onPointerUp={handleSwipePointerUp}
+      onPointerCancel={() => {
+        swipeStartRef.current = null;
+      }}
     >
       <Fade />
       <Fade amount={0.3} />

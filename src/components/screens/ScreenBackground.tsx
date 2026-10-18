@@ -7,6 +7,7 @@ interface ScreenBackgroundProps {
   children?: React.ReactNode;
   onPointerDown?: React.PointerEventHandler<HTMLDivElement>;
   onPointerUp?: React.PointerEventHandler<HTMLDivElement>;
+  onPointerCancel?: React.PointerEventHandler<HTMLDivElement>;
 }
 
 export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({
@@ -15,6 +16,7 @@ export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({
   children,
   onPointerDown,
   onPointerUp,
+  onPointerCancel,
 }) => (
   <div
     className='screen-common'
@@ -24,6 +26,7 @@ export const ScreenBackground: React.FC<ScreenBackgroundProps> = ({
     }}
     onPointerDown={onPointerDown}
     onPointerUp={onPointerUp}
+    onPointerCancel={onPointerCancel}
   >
     {children}
   </div>
