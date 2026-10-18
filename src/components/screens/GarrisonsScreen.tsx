@@ -6,14 +6,16 @@ import { ScreenBackground } from './ScreenBackground';
 import { SpriteCircleIcon } from '../snippets/SpriteCircleIcon';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { DecoratedSlider } from '../ui/DecoratedSlider';
+import { SquadDisplay } from '../ui/SquadDisplay';
 import { Gold } from '../snippets/Gold';
 import { Tower } from '../snippets/Tower';
 import { clearScreen } from '../../utils/screenStore';
 import { setTileGarrison } from '../../actions/garrisonTile';
 import { dismountSquad, dismountRefund, snapDismount } from '../../actions/dismountSquad';
+import { sellUnits } from '../../actions/sellUnits';
+import { upgradeSquad } from '../../actions/upgradeSquad';
 import { playerTurnIncome } from '../../game/income';
-import { remainingCapacity, garrisonSlotCapacity } from '../../game/army';
-import { getOverrides } from '../../utils/overridesStore';
+import { remainingCapacity, garrisonSlotCapacity, UnitTier } from '../../game/army';
 import { useT } from '../../i18n';
 import '../../styles/TileCard.css';
 import '../../styles/TileClaim.css';
@@ -68,6 +70,16 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
     forceRerender((v) => v + 1);
   };
 
+  const handleSellSquad = (tier: UnitTier, count: number) => {
+    sellUnits(gameState, count, updateGameState, tier);
+    forceRerender((v) => v + 1);
+  };
+
+  const handleUpgradeSquad = (count: number) => {
+    upgradeSquad(gameState, count, updateGameState);
+    forceRerender((v) => v + 1);
+  };
+
   const totalPool = player.militia + rows.reduce((sum, { tile }) => sum + tile.garrisonMilitia, 0);
   const allocated = rows.reduce((sum, { idx, tile }) => sum + (targets[idx] ?? tile.garrisonMilitia), 0);
   const unassigned = totalPool - allocated;
@@ -100,17 +112,26 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         {t('garrisonsScreen.title')}
       </div>
 
+      <SquadDisplay
+        militia={player.militia}
+        riders={player.riders}
+        totalSlots={player.armySlots}
+        onSellSquad={handleSellSquad}
+        onUpgradeSquad={handleUpgradeSquad}
+        canUpgradeToRiders={player.isKnight}
+        playerGold={player.gold}
+        className="squad-display-large"
+      />
+
       <div className="army-stats" style={{ lineHeight: '1.2' }}>
         {rows.length === 0
           ? t('garrisonsScreen.messageNoTiles', {
               fame: player.fame,
               slots: player.armySlots,
-              perSlot: getOverrides().armySlotCapacity,
             })
           : t('garrisonsScreen.message', {
               fame: player.fame,
               slots: player.armySlots,
-              perSlot: getOverrides().armySlotCapacity,
               units: turnIncome.units,
               tiles: rows.length,
             })}

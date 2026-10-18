@@ -329,8 +329,8 @@
   "garrisonsScreen": {
     "title": "Guarniciones",
     "available": "Disponible",
-    "message": "Fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot}🧍 cada uno. Ingreso diario: +{units}🧍 de {tiles} casillas",
-    "messageNoTiles": "Fama {fame}🏆 te permite tener {slots} escuadrones de {perSlot}🧍 cada uno.",
+    "message": "Fama {fame}🏆 te permite tener {slots} escuadrones. +{units} por turno de {tiles} casillas",
+    "messageNoTiles": "Fama {fame}🏆 te permite tener {slots} escuadrones.",
     "maxLabel": "máx: {max}",
     "atMax": "Ya al máximo",
     "noTiles": "Todavía no posees ninguna casilla",

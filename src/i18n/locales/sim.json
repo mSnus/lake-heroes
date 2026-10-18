@@ -316,8 +316,8 @@
   },
   "garrisonsScreen": {
     "title": "Garrisons",
-    "message": "Fame {fame}🏆 allows to have {slots} squads of {perSlot}🧍 each.\n Daily income: +{units}🧍 from {tiles} tiles",
-    "messageNoTiles": "Fame {fame}🏆 allows to have {slots} squads of {perSlot}🧍 each.",
+    "message": "Fame {fame}🏆 allows to have {slots} squads.\n +{units} per turn from {tiles} tiles",
+    "messageNoTiles": "Fame {fame}🏆 allows to have {slots} squads.",
     "maxLabel": "max: {max}",
     "atMax": "At maximum",
     "noTiles": "You don't own any tiles yet",
