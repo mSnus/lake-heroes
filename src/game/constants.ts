@@ -8,7 +8,7 @@ export const TILE_COUNT = 28;
 export const MAX_PLAYERS = 6;
 // How big an ownable tile is drawn on the map, by level -- so an upgrade is
 // visible at a glance. Purely visual: nothing reads it but BoardCanvas.
-export const TILE_LEVEL_SCALE: Record<number, number> = { 1: 0.6, 2: 0.8, 3: 1.2 };
+export const TILE_LEVEL_SCALE: Record<number, number> = { 1: 0.8, 2: 1, 3: 1.2 };
 export const REVEAL_GOLD_PER_YEAR = 25; // discovery bonus scales with how many years the game has run
 // Board fork: leaving FORK_START_INDEX branches onto either the short or the
 // long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
