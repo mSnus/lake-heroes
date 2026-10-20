@@ -305,7 +305,7 @@
     "noMessages": "Aún no hay mensajes."
   },
   "playerStats": {
-    "incomePerYear": "Ingresos por año"
+    "incomePerYear": "Bonificación anual"
   },
   "yearIndicator": {
     "season": "Es {season}, señor.",
@@ -369,12 +369,12 @@
       "step2": "Actúa según la casilla en la que caigas",
       "step3": "Mejora o vende tus casillas si es necesario",
       "step4": "Termina tu turno ⏳",
-      "step5": "Cada vuelta completa un año — pasa por el 🏰 Castillo del Rey para recibir la Gracia del Rey y las recompensas de propiedades"
+      "step5": "Cada jugador recibe una Bonificación Anual cuando termina el año compartido del calendario — o cae exactamente en el 🏰 Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante"
     },
     "goldUnits": {
       "title": "Oro 🟡 y unidades 🧍",
       "item1": "El Oro 🟡 y las unidades 🧍 son los recursos básicos para comprar casillas, luchar o iniciar la batalla final",
-      "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Pasar por el Castillo del Rey también concede la Gracia del Rey y recompensas de propiedades.",
+      "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Todos reciben también una Bonificación Anual cuando termina el año del calendario — cae exactamente en el Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante.",
       "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
       "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
@@ -408,7 +408,7 @@
     },
     "specialTiles": {
       "title": "Casillas especiales 🃏",
-      "kingsCastle": "🏰 <strong>Castillo del Rey</strong> — visítalo para reclutar unidades 🧍 con oro; la cantidad está limitada por tu fama. Pasar por el Castillo del Rey otorga ingresos base más bonos de todas tus propiedades.",
+      "kingsCastle": "🏰 <strong>Castillo del Rey</strong> — visítalo para reclutar unidades 🧍 con oro; la cantidad está limitada por tu fama. Caer exactamente aquí también concede la Gracia del Rey — la misma recompensa que todos reciben como Bonificación Anual al terminar el año del calendario, solo que antes y solo para ti.",
       "treasureChest": "🪎 <strong>Cofre del Tesoro</strong> — recompensa en oro, de tamaño pequeño/mediano/grande.",
       "tavern": "🍺 <strong>Taberna</strong> — recluta unidades",
       "sphynx": "🦁 <strong>Esfinge</strong>: <br/>Tira el dado 🎲:<br/> <b>1,2</b> - pierdes la mitad de tu 🟡<br/><b>3,4</b> - pierdes 1/3 de tus 🧍<br/> <b>5</b> - nada, exhala 🌬️<br/> <b>6</b> - ganas la mitad de tu 🟡",
@@ -605,7 +605,9 @@
     "aTile": "una casilla",
     "contractOffered": "📜 ¡El Rey te entrega un contrato: reclama {tileName} por {award}🟡!",
     "narrateVisit": "{playerName} visitó el Castillo del Rey",
-    "narrateVisitContract": "{playerName} visitó el Castillo del Rey y recibió un contrato para reclamar {tileName} por {award}🟡"
+    "narrateVisitContract": "{playerName} visitó el Castillo del Rey y recibió un contrato para reclamar {tileName} por {award}🟡",
+    "kingsGrace": "La Gracia del Rey",
+    "kingsGraceReceived": "{playerName} recibe {summary} como Gracia del Rey"
   },
   "becomeBeggar": {
     "captured": "{playerName} fue capturado y trasladado a Prisión, su reputación se desvanece, sus unidades se dispersan. Ahora tiene {fame}🏆{unitsPart}",
@@ -638,11 +640,7 @@
     "paid": "{playerName} pagó {fee}🟡 a {ownerName} por {tileName}."
   },
   "passStart": {
-    "spentYearsWandering": "{playerName} pasó {circles} años vagando, buscando la gloria",
-    "receives": "{playerName} recibe {summary}",
-    "aYear": "un año",
-    "years": "{count} años",
-    "kingRewardsYou": "El Rey te recompensa por {years} de tu servicio"
+    "spentYearsWandering": "{playerName} pasó {circles} años vagando, buscando la gloria"
   },
   "garrisonTile": {
     "setGarrison": "{playerName} fija la guarnición de {tileName} en {militia}🧍/{riders}🐎"
@@ -1136,7 +1134,9 @@
     "narrateVisit": "{playerName} se encontró con trabajadores libres buscando una causa a la que unirse 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "Todos los jugadores cobran una bonificación anual de sus casillas.",
+    "yearlyBonus": "Todos los jugadores cobran su Bonificación Anual.",
+    "yearlyBonusLabel": "Bonificación Anual",
+    "tileHarvestBonus": "Todos los jugadores cobran una cosecha extra de sus casillas.",
     "doubleIncomeAnnounce": "Este año se presenta prometedor: {groups} darán el doble de ingresos.",
     "groupName": {
       "Mills": "los Molinos",

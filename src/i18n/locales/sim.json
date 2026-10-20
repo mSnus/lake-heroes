@@ -299,7 +299,7 @@
     "noMessages": "No messages yet."
   },
   "playerStats": {
-    "incomePerYear": "Income per year"
+    "incomePerYear": "Yearly Bonus"
   },
   "currentPlayer": {
     "isAt": "is at",
@@ -570,7 +570,9 @@
     "aTile": "a tile",
     "contractOffered": "📜 The King hands you a contract: claim {tileName} for {award}🟡!",
     "narrateVisit": "{playerName} visited the King's Castle",
-    "narrateVisitContract": "{playerName} visited the King's Castle and was offered a contract to claim {tileName} for {award}🟡"
+    "narrateVisitContract": "{playerName} visited the King's Castle and was offered a contract to claim {tileName} for {award}🟡",
+    "kingsGrace": "King's Grace",
+    "kingsGraceReceived": "{playerName} receives {summary} as King's Grace"
   },
   "becomeBeggar": {
     "captured": "{playerName} was captured and moved to Prison, their reputation vanishes, units scatter. They are now {fame}🏆{unitsPart}",
@@ -603,11 +605,7 @@
     "paid": "{playerName} paid {fee}🟡 to {ownerName} for {tileName}."
   },
   "passStart": {
-    "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory",
-    "receives": "(passStart): {playerName} receives {summary}",
-    "aYear": "a year",
-    "years": "{count} years",
-    "kingRewardsYou": "The King rewards you for {years} of your service"
+    "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory"
   },
   "garrisonTile": {
     "setGarrison": "{playerName} sets {tileName}'s garrison to {militia}🧍/{riders}🐎"
@@ -1111,7 +1109,9 @@
     "narrateVisit": "{playerName} came across free workers looking for a cause to join 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "All players collect yearly bonus from their tiles.",
+    "yearlyBonus": "All players collect their Yearly Bonus.",
+    "yearlyBonusLabel": "Yearly Bonus",
+    "tileHarvestBonus": "All players collect a bonus harvest from their tiles.",
     "doubleIncomeAnnounce": "This year is promising, {groups} will provide double income!",
     "groupName": {
       "Mills": "Mills",

@@ -306,7 +306,7 @@
     "noMessages": "No messages yet."
   },
   "playerStats": {
-    "incomePerYear": "Income per year"
+    "incomePerYear": "Yearly Bonus"
   },
   "yearIndicator": {
     "season": "It's {season}, Sir.",
@@ -371,12 +371,12 @@
       "step2": "Take action based on the tile you land on",
       "step3": "Upgrade or sell your tiles if needed",
       "step4": "End your turn ⏳",
-      "step5": "Each circle makes a year — pass the 🏰 King's Castle for the King's Grace and property rewards"
+      "step5": "Every player gets a Yearly Bonus when the shared calendar year ends — or land exactly on 🏰 King's Castle for the same reward as King's Grace, right away"
     },
     "goldUnits": {
       "title": "Gold 🟡 and units 🧍",
       "item1": "Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final battle",
-      "item2": "Owned tiles pay income at the start of each of your turns. Passing the King's Castle also grants the King's Grace and property rewards.",
+      "item2": "Owned tiles pay income at the start of each of your turns. Everyone also collects a Yearly Bonus when the calendar year ends — land exactly on the King's Castle for the same reward as King's Grace, right away.",
       "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
       "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
@@ -410,7 +410,7 @@
     },
     "specialTiles": {
       "title": "Special tiles 🃏",
-      "kingsCastle": "🏰 <strong>King's Castle</strong> — visit to recruit 🧍 units for gold, the amount is limited by your fame. Passing the King's Castle grants base income plus bonuses from all your properties.",
+      "kingsCastle": "🏰 <strong>King's Castle</strong> — visit to recruit 🧍 units for gold, the amount is limited by your fame. Landing exactly here also grants King's Grace — the same reward everyone else gets as a Yearly Bonus at the calendar year's end, just early and only for you.",
       "treasureChest": "🪎 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.",
       "tavern": "🍺 <strong>Tavern</strong> — recruit units",
       "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
@@ -607,7 +607,9 @@
     "aTile": "a tile",
     "contractOffered": "📜 The King hands you a contract: claim {tileName} for {award}🟡!",
     "narrateVisit": "{playerName} visited the King's Castle",
-    "narrateVisitContract": "{playerName} visited the King's Castle and was offered a contract to claim {tileName} for {award}🟡"
+    "narrateVisitContract": "{playerName} visited the King's Castle and was offered a contract to claim {tileName} for {award}🟡",
+    "kingsGrace": "King's Grace",
+    "kingsGraceReceived": "{playerName} receives {summary} as King's Grace"
   },
   "becomeBeggar": {
     "captured": "{playerName} was captured and moved to Prison, their reputation vanishes, units scatter. They are now {fame}🏆{unitsPart}",
@@ -640,11 +642,7 @@
     "paid": "{playerName} paid {fee}🟡 to {ownerName} for {tileName}."
   },
   "passStart": {
-    "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory",
-    "receives": "{playerName} receives {summary}",
-    "aYear": "a year",
-    "years": "{count} years",
-    "kingRewardsYou": "The King rewards you for {years} of your service"
+    "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory"
   },
   "garrisonTile": {
     "setGarrison": "{playerName} sets {tileName}'s garrison to {militia}🧍/{riders}🐎"
@@ -1163,7 +1161,9 @@
     "narrateVisit": "{playerName} came across free workers looking for a cause to join 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "All players collect yearly bonus from their tiles.",
+    "yearlyBonus": "All players collect their Yearly Bonus.",
+    "yearlyBonusLabel": "Yearly Bonus",
+    "tileHarvestBonus": "All players collect a bonus harvest from their tiles.",
     "doubleIncomeAnnounce": "This year is promising, {groups} will provide double income!",
     "groupName": {
       "Mills": "Mills",

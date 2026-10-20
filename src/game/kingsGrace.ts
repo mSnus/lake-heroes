@@ -154,15 +154,22 @@ function fitGraceUnits(
 }
 
 /**
- * The reward for passing (or about to pass) the King's Castle: the King's
- * grace, plus a flat per-tile trickle from every tile the player
- * owns -- in whichever resource its own bonus ISN'T, since that own resource
- * already pays out every turn instead (see game/income.ts's
- * collectTileTurnIncome). A units-type tile's (Camps/Towers) own
- * annualGold/annualUnits (tiles.json) can add an extra per-level unit toll
- * on top of that trickle, plus any artifact gold bonus (Pristine Diamond).
- * Shared by the actual payout (passStart.ts) and its preview
- * (CurrentPlayer.tsx) so they can't drift apart.
+ * The Yearly Bonus / King's Grace reward: the King's grace, plus a flat
+ * per-tile trickle from every tile the player owns -- in whichever resource
+ * its own bonus ISN'T, since that own resource already pays out every turn
+ * instead (see game/income.ts's collectTileTurnIncome). A units-type tile's
+ * (Camps/Towers) own annualGold/annualUnits (tiles.json) can add an extra
+ * per-level unit toll on top of that trickle, plus any artifact gold bonus
+ * (Pristine Diamond).
+ *
+ * Two different triggers pay this same formula out: the shared calendar
+ * year ending grants it to every player at once as the "Yearly Bonus" (see
+ * grantYearlyBonusToAll below, called from game/year.ts's startNewYear),
+ * and landing directly on King's Castle grants it to that one player
+ * immediately as "King's Grace" (see actions/king.tsx). Both call this
+ * same function, and CurrentPlayer.tsx/CurrentPlayerCard.tsx preview it the
+ * same way, so none of the three can drift apart from what a player
+ * actually receives.
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
   const ranking = rankByScore(board);
@@ -243,4 +250,31 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     totalGold,
     totalUnits: tileUnits + kingsUnits,
   };
+}
+
+/**
+ * The Yearly Bonus: computeAnnualReward's gold/units, paid out to every
+ * player at once when the shared calendar year ends (see game/year.ts's
+ * startNewYear). The identical formula also pays out as King's Grace to a
+ * single player landing directly on King's Castle (see actions/king.tsx) --
+ * that path calls computeAnnualReward itself instead of this one, since it
+ * only ever grants to the one player who just landed.
+ *
+ * Every player's reward is computed from a single snapshot of the board
+ * BEFORE any of them are granted, not one at a time -- computeAnnualReward
+ * averages gold/militia/riders across every player's CURRENT holdings
+ * (graceBase) and ranks by CURRENT power score (kingsHandicap), so granting
+ * player 1's reward before computing player 2's would skew player 2's
+ * numbers by player 1's own payout.
+ */
+export function grantYearlyBonusToAll(board: GameState): KingsGraceReward[] {
+  const rewards = board.players.map((player) => computeAnnualReward(board, player));
+  board.players.forEach((player, i) => {
+    const reward = rewards[i];
+    player.gold += reward.totalGold;
+    player.units += reward.tileUnits + reward.kingsMilitia;
+    player.gainRiders(reward.kingsRiders);
+  });
+
+  return rewards;
 }

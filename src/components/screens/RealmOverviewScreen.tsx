@@ -125,7 +125,7 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
               </div>
 
               <div className="realm-annual" title={annualBreakdown(t, annual)}>
-                <span className="realm-annual-label">🏰 {t('tileCard.perYear')}:</span>
+                <span className="realm-annual-label">🏰 {t('year.yearlyBonusLabel')}:</span>
                 {annual.totalGold > 0 && (
                   <span>
                     +<Gold amount={annual.totalGold} />

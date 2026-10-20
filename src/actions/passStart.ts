@@ -1,31 +1,28 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
-import { computeAnnualReward } from '../game/kingsGrace';
 import { recordStatEvent } from '../game/statistics';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { recordSimCircleSnapshot } from '../utils/simLogStore';
 import { formatPlayerCell } from '../utils/formatPlayerCell';
 import { t } from '../i18n';
 
-/** Gold and every King's Grace unit reward pay out on every crossing of
- * King's Castle -- passing through mid-roll counts the same as landing. */
+/**
+ * Lap tracking only -- crossing King's Castle no longer pays out anything
+ * by itself. The Yearly Bonus moved to the shared calendar year ending
+ * (game/year.ts's startNewYear, for every player at once), and landing
+ * directly on the Castle grants King's Grace instead (actions/king.tsx).
+ * Passing through mid-roll still counts the same as landing for lap
+ * purposes -- it just doesn't carry a reward either way anymore.
+ */
 export function passStart(
   board: GameState | null,
   updateGameState: (board: GameState) => void
-): string {
-  if (!board) return '';
+): void {
+  if (!board) return;
 
   const player = board.activePlayer;
-  const { totalGold, tileUnits, kingsMilitia, kingsRiders } = computeAnnualReward(board, player);
-  const militiaGranted = tileUnits + kingsMilitia;
-  const ridersGranted = kingsRiders;
-  const unitsGranted = militiaGranted + ridersGranted;
 
-  // A lap of the board, which is what the King pays for -- not a year.
-  // The calendar (and with it the per-year encounter quotas and karma's
-  // drift back toward neutral) runs on its own shared clock now, see
-  // game/year.ts.
   player.circles = (player.circles ?? 0) + 1;
   // Surviving the first lap is itself worth a point of fame.
   if (player.circles === 1) changeFame(player, 1);
@@ -37,27 +34,6 @@ export function passStart(
     'debug'
   );
 
-  // Apply rewards
-  player.gold += totalGold;
-  player.units += militiaGranted;
-  player.gainRiders(ridersGranted);
-
-  // Build toast message summarizing rewards
-  const parts: string[] = [];
-
-  if (totalGold > 0) parts.push(`${totalGold}🟡`);
-  if (unitsGranted > 0) parts.push(`${unitsGranted}👬`);
-
-  if (parts.length > 0) {
-    const summary = parts.join(` ${t('common.and')} `);
-    say(t('passStart.receives', { playerName: player.name, summary }), 'success');
-  }
-
-  const years =
-    player.circles < 3 ? t('passStart.aYear') : t('passStart.years', { count: player.circles - 1 });
-  const rewardMessage = t('passStart.kingRewardsYou', { years });
-  board.kingRewardMessage = rewardMessage;
-
   // This crossing is simultaneously "circle player.circles begins" and
   // "circle player.circles - 1 ends" -- one snapshot serves both (see
   // recordSimCircleSnapshot).
@@ -66,5 +42,4 @@ export function passStart(
   }
 
   updateGameState(board);
-  return rewardMessage;
 }
