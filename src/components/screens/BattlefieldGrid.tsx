@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useId } from 'react';
 import { GridBattleState, TurnEvent, BattleSide, GridUnit, UnitKind } from '../../game/battleGrid/types';
 import { BrawlPlan, adjacentCells, energyFor } from '../../game/battleGrid/engine';
 import { useT } from '../../i18n';
+import Militia from '../snippets/Militia';
 import '../../styles/BattlefieldGrid.css';
 
 type AnimPhase = 'idle' | 'attack-defend' | 'impact' | 'outcome';
@@ -27,6 +28,14 @@ interface BattlefieldGridProps {
    * screens share). */
   attackerIcon?: SideIcon;
   defenderIcon?: SideIcon;
+  /** Player color key (e.g. 'red', matching Player.image/getPlayerImageSrc)
+   * for that side's militia sprite (see the Militia snippet) -- only used
+   * where emojiFor falls through to a plain militia unit, i.e. wherever
+   * attackerIcon/defenderIcon didn't already override that side's icon
+   * entirely (dragon/caravan/ambush/rogue modes). Omit for an NPC/wild
+   * garrison with no real owner; Militia falls back to its own default. */
+  attackerColor?: string;
+  defenderColor?: string;
   /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells
    * and units at 180% of the normal height. */
   brawl?: boolean;
@@ -50,11 +59,11 @@ interface BattlefieldGridProps {
   instant?: boolean;
 }
 
+// Militia isn't here -- emojiFor renders the Militia snippet (colored per
+// side's actual player) for that kind instead, see below.
 const UNIT_EMOJI: Record<string, string> = {
   'attacker-rider': '🐎',
-  'attacker-militia': '🧍',
   'defender-rider': '🐎',
-  'defender-militia': '🧍',
   'defender-dragon': '🐉',
   'defender-zombie': '🧟‍♀️',
 };
@@ -105,6 +114,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   animPhase = 'idle',
   attackerIcon,
   defenderIcon,
+  attackerColor,
+  defenderColor,
   brawl = false,
   large = false,
   manualSide,
@@ -420,10 +431,15 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     }
   }
 
-  const emojiFor = (u: GridUnit) => {
+  const emojiFor = (u: GridUnit): React.ReactNode => {
     const icon = u.side === 'attacker' ? attackerIcon : defenderIcon;
     const override = typeof icon === 'string' ? icon : icon?.[u.kind];
-    return override ?? UNIT_EMOJI[`${u.side}-${u.kind}`];
+    if (override) return override;
+    if (u.kind === 'militia') {
+      return <Militia amount="" color={u.side === 'attacker' ? attackerColor : defenderColor} />;
+    }
+
+    return UNIT_EMOJI[`${u.side}-${u.kind}`];
   };
 
   // Original-unit opacity while its own side is being manually controlled: a

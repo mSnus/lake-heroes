@@ -303,6 +303,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ? toSideIcon(HORDE_EMOJI)
       : undefined;
   const defenderFieldIcon = isDragon ? '🐉' : isCaravan ? toSideIcon(CARAVAN_EMOJI) : undefined;
+  // Militia sprite color per grid side (see BattlefieldGrid's own doc
+  // comment on attackerColor/defenderColor) -- attacker is always the real
+  // initiating player, and every mode that puts an NPC on the attacker role
+  // (ambush/rogue, above) already overrides its icon entirely, so it never
+  // falls through to a plain militia sprite anyway. The defender role needs
+  // ambush's same role swap the rest of this screen already accounts for
+  // (see defenderColor/defenderImg above): the real ambushed player shows
+  // in the grid's defender role there, not attacker.
+  const attackerFieldColor = attacker.image;
+  const defenderFieldColor = isAmbush ? attacker.image : defender?.image;
 
   // ── Initial log ──
   const loggedRef = useRef(false);
@@ -866,6 +876,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             animPhase={animPhase}
             attackerIcon={attackerFieldIcon}
             defenderIcon={defenderFieldIcon}
+            attackerColor={attackerFieldColor}
+            defenderColor={defenderFieldColor}
             brawl={isBrawl}
             large={isLargeAutoBattle}
             manualSide={brawlManualSide ?? undefined}

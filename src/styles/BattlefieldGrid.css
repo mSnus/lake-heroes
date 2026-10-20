@@ -217,6 +217,18 @@
   filter: drop-shadow(0 0 3px currentColor);
 }
 
+/* The Militia snippet's own .unit-icon is a fixed rem size everywhere else
+   it's used -- here it has to track the hex cell size instead (brawl/large
+   boards use different --bfg-cell values), so it's sized in em against this
+   span's own font-size like the plain emoji glyphs it sits alongside. */
+.bfg-unit-emoji .unit-icon,
+.bfg-twin .bfg-unit-emoji .unit-icon {
+  width: 1em;
+  max-height: none;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
 .bfg-unit-attacker .bfg-unit-emoji {
   color: #6fd1ff;
 }
