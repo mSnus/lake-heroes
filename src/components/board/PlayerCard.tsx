@@ -51,7 +51,11 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   onIconClick,
 }) => {
   const img = imageSrc ?? (player ? getPlayerImageSrc(player.image, player.isKnight) : undefined);
-  const altName = player?.name ?? name ?? '';
+  // The player's color key, not their name -- PlayerLabel right below
+  // already shows the name as visible text, and some copy/accessibility
+  // paths pull alt text in too, doubling it on a plain-text copy. NPCs
+  // (dragon, ambushers, ...) have no color key, so they keep their label.
+  const altName = player ? player.image : (name ?? '');
   const visibleArtifacts =
     player && showArtifacts
       ? artifactIds

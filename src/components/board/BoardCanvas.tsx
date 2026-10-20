@@ -451,7 +451,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
               'player-image' + (player.name == board.activePlayer.name ? ' current-player' : '')
             }
             src={src}
-            alt={player.name}
+            alt={player.image}
           />
         </div>
       </div>

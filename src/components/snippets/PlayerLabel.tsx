@@ -41,7 +41,10 @@ export const PlayerLabel: React.FC<PlayerLabelProps> = ({
         <img
           className="player-label-img"
           src={getPlayerImageSrc(player.image, player.isKnight)}
-          alt={displayName}
+          // Not the player's name -- it already sits right next to this
+          // image as visible text, and some copy/accessibility paths pull
+          // in alt text too, which doubled the name on a plain-text copy.
+          alt={player.image}
         />
       )}
       <NameTag style={{ color: displayColor }}>{displayName}</NameTag>

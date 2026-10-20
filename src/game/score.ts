@@ -23,7 +23,7 @@ export const SCORE_PER_UNIT_TILE = 200;
  * the troops it raises, so it is worth more than a gold tile's upgrade. */
 export const SCORE_PER_UNIT_UPGRADE = 100;
 /** Any artifact, whatever it does -- they are all hard to come by. */
-export const SCORE_PER_ARTIFACT = 300;
+export const SCORE_PER_ARTIFACT = 150;
 /** Gold is divided by this, rounded down. */
 export const SCORE_GOLD_PER_POINT = 20;
 /** Garrisoned troops are stationary -- they hold one tile and can't march,
