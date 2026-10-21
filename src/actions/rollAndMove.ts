@@ -38,6 +38,7 @@ import { checkRogueAttackEncounter } from './rogueAttackEncounter';
 import { checkWorkersEncounter } from './workersEncounter';
 import { checkKnightPromotion } from './knightPromotion';
 import { tickWildGarrisons } from '../game/wildGarrison';
+import { consumeBattleWon } from '../utils/battleOutcomeStore';
 import { t } from '../i18n';
 
 export async function rollAndMove(
@@ -168,7 +169,13 @@ export async function rollAndMove(
     // Special tiles (King's Castle, Treasure Chest, etc.) get their own
     // dedicated screen right below via continueTileLogic, so auto-showing
     // the plain tile card underneath it would just be a redundant flash.
-    gameEvent('displayTile', board.activeTile.isOwnable ? board.activeTile : {});
+    // Skipped entirely if an "encounter" battle (rogue/caravan/dragon/
+    // ambush) was just won -- those interrupt movement before this point,
+    // so this would otherwise be the first time the card shows, popping up
+    // right after the player already saw a dedicated win screen.
+    if (!consumeBattleWon()) {
+      gameEvent('displayTile', board.activeTile.isOwnable ? board.activeTile : {});
+    }
 
     updateGameState(board);
 

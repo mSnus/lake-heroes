@@ -15,6 +15,8 @@ import { showScreen, clearScreen, ScreenConfig } from '../../utils/screenStore';
 import { isHeadlessRun } from '../../utils/headlessStore';
 import { getOverrides } from '../../utils/overridesStore';
 import { getSettings } from '../../utils/settingsStore';
+import { gameEvent } from '../../utils/events';
+import { markBattleWon } from '../../utils/battleOutcomeStore';
 import { BattleScreen, type BattleScreenProps } from '../../components/screens/BattleScreen';
 import { BattleSetup } from './battleSetup';
 import { runHeadlessBattle } from './headlessBattle';
@@ -27,6 +29,27 @@ import { runHeadlessBattle } from './headlessBattle';
  * simulator (which just needs the mutation, not the screen).
  */
 export function dispatchBattleResolution(
+  props: BattleScreenProps,
+  setup: BattleSetup,
+  battleOutcome: BattleOutcome,
+  atkKilled: number,
+  defKilled: number
+): BattleResolution {
+  const resolution = resolveBattle(props, setup, battleOutcome, atkKilled, defKilled);
+  if (resolution.victoryBg) {
+    // The real player just won -- don't let the plain tile-info card sit
+    // showing (or pop back up once movement resumes for an "encounter"
+    // battle like rogue/caravan/dragon/ambush, which interrupts movement
+    // before it and would otherwise re-show it for the landed tile right
+    // after the win -- see rollAndMove.ts's own use of consumeBattleWon).
+    markBattleWon();
+    gameEvent('displayTile', {});
+  }
+
+  return resolution;
+}
+
+function resolveBattle(
   props: BattleScreenProps,
   setup: BattleSetup,
   battleOutcome: BattleOutcome,

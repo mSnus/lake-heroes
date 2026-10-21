@@ -240,7 +240,6 @@
     "caravanGuards": "Охрана каравана",
     "guards": "Стража",
     "garrisonOf": "Гарнизон: {tileName}",
-    "fortification": "Укрепление",
     "ambushedMessage": "{name} попадает в засаду {units}👹!",
     "zombieAttackMessage": "На {name} нападают {units}🧟‍♀️!",
     "ruinsAttackMessage": "На {name} среди руин нападают {units}🧟!",

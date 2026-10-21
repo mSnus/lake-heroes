@@ -9,6 +9,8 @@ import { DecoratedSlider } from '../ui/DecoratedSlider';
 import { SquadDisplay } from '../ui/SquadDisplay';
 import { Gold } from '../snippets/Gold';
 import { Tower } from '../snippets/Tower';
+import { Militia } from '../snippets/Militia';
+import { Rider } from '../snippets/Rider';
 import { clearScreen } from '../../utils/screenStore';
 import { setTileGarrison } from '../../actions/garrisonTile';
 import { dismountSquad, dismountRefund, snapDismount } from '../../actions/dismountSquad';
@@ -120,6 +122,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         onUpgradeSquad={handleUpgradeSquad}
         canUpgradeToRiders={player.isKnight}
         playerGold={player.gold}
+        spriteColor={player.image}
         className="squad-display-large"
       />
 
@@ -142,7 +145,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
           <div className="garrisons-dismount-block">
             <div className="garrisons-army-side">Dismount:</div>
             <div className="garrisons-army-dismount">
-              <div className="garrisons-army-side">{player.riders - dismountPick}🐎</div>
+              <div className="garrisons-army-side">
+                <Rider amount={player.riders - dismountPick} color={player.image} />
+              </div>
               <DecoratedSlider
                 min={0}
                 max={player.riders}
@@ -151,7 +156,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                 onCommit={setDismount}
               />
               <div className="garrisons-army-side">
-                {unassigned + dismountPick}🧍
+                <Militia amount={unassigned + dismountPick} color={player.image} />
                 {dismountRefund(dismountPick) > 0 && (
                   <span>
                     + <Gold amount={dismountRefund(dismountPick)} />
@@ -171,18 +176,15 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                 onClick={handleDismount}
                 disabled={dismountPick <= 0}
               >
-                <span
-                  className="hire-submit-icon"
-                  style={{ fontSize: '1.2rem', letterSpacing: '-0.3rem' }}
-                >
-                  ➜🧍
+                <span className="hire-submit-icon" style={{ fontSize: '1.2rem' }}>
+                  ➜<Militia amount="" color={player.image} />
                 </span>
               </button>
             </div>
           </div>
         ) : (
           <div className="garrisons-army-side">
-            {t('garrisonsScreen.available')}: {unassigned}🧍
+            {t('garrisonsScreen.available')}: <Militia amount={unassigned} color={player.image} />
           </div>
         )}
       </div>
@@ -246,7 +248,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
                 </div>
 
                 <div className="garrisons-row-value">
-                  <div>{value}🧍</div>
+                  <div>
+                    <Militia amount={value} color={player.image} />
+                  </div>
                 </div>
               </React.Fragment>
             );

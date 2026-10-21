@@ -25,6 +25,17 @@
   margin-bottom: 0.3rem;
 }
 
+/* Shrunk via width, not max-height: militia's sprite is portrait (unlike
+   the ~square unit-icon default), so a max-height tight enough to matter
+   forces object-fit:contain into a letterbox -- which silently fails to
+   paint at all inside a position:absolute/overflow:clip ancestor (every
+   ScreenBackground-based screen, e.g. Garrisons). Narrowing the width
+   instead keeps the image's own aspect ratio as its only constraint, so
+   contain never needs to letterbox it.
+   Floored at 0.9rem: below roughly that width, the drop-shadow filter
+   above silently fails to paint too (a separate, narrower Chromium bug --
+   confirmed by the image reappearing the moment the filter is removed at
+   the same size), same symptom, same clipped-ancestor trigger. */
 .unit-militia {
-  max-height: 1.2rem;
+  width: 0.9rem;
 }

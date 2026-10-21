@@ -207,7 +207,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   } = setupRef.current;
   const { isBrawl, isLargeAutoBattle, isMassiveBattle, cols: gridCols, rows: gridRows } = setupRef.current.board;
 
-  type BonusEntry = { key: string; label: string; emoji?: React.ReactNode; bonus: number; suffix?: string };
+  type BonusEntry = { key: string; label?: string; emoji?: React.ReactNode; bonus: number; suffix?: string };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
     player
       ? getArtifactRollBonusBreakdown(player, { isDragon: isDragonFight }).map(({ artifact, bonus }) => ({
@@ -225,7 +225,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       ? [
           {
             key: 'garrison-fortification',
-            label: t('battleScreen.fortification'),
             emoji: <Tower />,
             // Shown as the share of each hit the level is worth soaking,
             // which is what a player can actually reason about.
@@ -786,7 +785,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <div className="battle-artifacts-row">
                 {(isAmbush ? defenderBonusEntries : attackerBonusEntries).map((e) => (
                   <span key={e.key} className="battle-artifact-badge">
-                    {e.label}
+                    {e.label && <>{e.label} </>}
                     {e.emoji && <> {e.emoji}</>} +{e.bonus}
                     {e.suffix ?? ''}
                   </span>
@@ -858,7 +857,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <div className="battle-artifacts-row">
                 {(isAmbush ? attackerBonusEntries : defenderBonusEntries).map((e) => (
                   <span key={e.key} className="battle-artifact-badge">
-                    {e.label}
+                    {e.label && <>{e.label} </>}
                     {e.emoji && <> {e.emoji}</>} +{e.bonus}
                     {e.suffix ?? ''}
                     <br />
