@@ -88,23 +88,24 @@ const HEX_ROW_FACTOR = 0.866; // row vertical pitch / --bfg-cell (√3/2)
 // swap) rather than a drag (resolve as a drop) -- see the twin's onPointerUp.
 const CLICK_MOVE_THRESHOLD_PX = 8;
 
-/** The HP and energy pair under a unit's emoji. Shared by the real units
- * and by their drag twins: a twin stands in for a unit that has been moved
- * out of its own cell, so without these it would show no bars at all --
- * and with only some of them it would sit at a different height than the
- * units around it. */
+/** The HP and energy pair beside a unit's emoji (vertical gauges, filling
+ * bottom-up -- see .bfg-unit-bars). Shared by the real units and by their
+ * drag twins: a twin stands in for a unit that has been moved out of its
+ * own cell, so without these it would show no bars at all -- and with only
+ * some of them it would sit at a different height than the units around
+ * it. */
 const UnitBars: React.FC<{ unit: GridUnit }> = ({ unit }) => {
   const hpPct = Math.max(0, Math.round((unit.hp / unit.maxHp) * 100));
   const energyPct = Math.max(0, Math.round((unit.energy / energyFor(unit.kind)) * 100));
   return (
-    <>
+    <span className="bfg-unit-bars">
       <span className="bfg-unit-hp">
-        <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
+        <span className="bfg-unit-hp-fill" style={{ height: `${hpPct}%` }} />
       </span>
       <span className="bfg-unit-energy">
-        <span className="bfg-unit-energy-fill" style={{ width: `${energyPct}%` }} />
+        <span className="bfg-unit-energy-fill" style={{ height: `${energyPct}%` }} />
       </span>
-    </>
+    </span>
   );
 };
 

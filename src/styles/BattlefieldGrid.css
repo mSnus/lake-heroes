@@ -168,10 +168,21 @@
   width: var(--bfg-cell);
   height: var(--bfg-cell-h);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   transition: left 0.25s ease, top 0.25s ease;
+}
+
+/* Bars sit on the outer side of each unit, away from the opposing side, so
+   the clash in the middle of the board doesn't cover them -- attacker units
+   face right toward the defender (see .unit-icon's mirror below), so their
+   bars go on the left; defender units mirror to face left, so theirs go on
+   the right. This is fixed per side, independent of the icon's own mirror
+   transform -- the bars themselves are never mirrored. */
+.bfg-unit-attacker {
+  flex-direction: row-reverse;
 }
 
 /* Snap units to their new cells without the slide (the twins already showed
@@ -211,7 +222,7 @@
 }
 
 .bfg-unit-emoji {
-  font-size: calc(var(--bfg-cell) * 1.1);
+  font-size: calc(var(--bfg-cell) * 0.55);
   line-height: 1;
   text-shadow: 1px 1px 3px #000;
   filter: drop-shadow(0 0 3px currentColor);
@@ -219,17 +230,19 @@
 
 /* The Militia/Rider snippets' own .unit-icon is a fixed rem size everywhere
    else it's used -- here it has to track the hex cell size instead
-   (brawl/large boards use different --bfg-cell values), so it's capped in em
-   against this span's own font-size like the plain emoji glyphs it sits
-   alongside. Height (not width) is the capped dimension and width is left to
+   (brawl/large boards use different --bfg-cell values). Sized directly off
+   --bfg-cell rather than off .bfg-unit-emoji's own font-size, so enlarging
+   the sprite doesn't also blow up the plain emoji glyphs it sits alongside
+   (dragon/zombie/caravan guards etc -- those should stay their original
+   size). Height (not width) is the capped dimension and width is left to
    scale -- these sprites are portrait-oriented (not the ~square emoji glyphs
    they replace), so capping width alone let the scaled height blow past the
    row's fixed height and squeeze the HP/energy bars below it down to 0. */
 .bfg-unit-emoji .unit-icon,
 .bfg-twin .bfg-unit-emoji .unit-icon {
   width: auto;
-  height: 1em;
-  max-height: 1em;
+  height: calc(var(--bfg-cell) * 1.1);
+  max-height: calc(var(--bfg-cell) * 1.1);
   object-fit: contain;
   margin-bottom: 0;
   vertical-align: middle;
@@ -255,19 +268,38 @@
   filter: drop-shadow(0 0 6px #ffca28);
 }
 
-.bfg-unit-hp {
-  display: block;
-  width: 70%;
-  height: 3px;
-  background: #00000080;
+/* Vertical gauges beside the unit icon (see .bfg-unit-attacker's
+   row-reverse above for the left/right placement by side) -- a horizontal
+   bar below the icon got squeezed out or hidden once the icon grew to fill
+   most of the cell, so these are narrow vertical strips instead, each
+   filling bottom-up via height%. */
+.bfg-unit-bars {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2px;
+  height: calc(var(--bfg-cell) * 0.9);
+  flex-shrink: 0;
+}
+
+.bfg-unit-hp,
+.bfg-unit-energy {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 4px;
+  height: 100%;
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 2px;
+}
+
+.bfg-unit-hp {
+  background: #00000080;
 }
 
 .bfg-unit-hp-fill {
   display: block;
-  height: 100%;
+  width: 100%;
   background: #6fe86f;
 }
 
@@ -280,20 +312,14 @@
 }
 
 .bfg-unit-energy {
-  display: block;
-  width: 70%;
-  height: 2px;
   /* The spent part reads as solid dark grey rather than see-through black,
      so a drained bar is legible against the battlefield art behind it. */
   background: #3f3f3f;
-  border-radius: 1px;
-  overflow: hidden;
-  margin-top: 1px;
 }
 
 .bfg-unit-energy-fill {
   display: block;
-  height: 100%;
+  width: 100%;
   background: #39d353;
 }
 
@@ -313,11 +339,13 @@
   width: var(--bfg-cell);
   height: var(--bfg-cell-h);
   display: flex;
-  /* Match .bfg-unit's column layout (emoji over HP bar) so the twin's emoji
+  /* Match .bfg-unit's row layout (emoji beside the HP/energy bars, mirrored
+     left/right by side via .bfg-unit-attacker above) so the twin's emoji
      lands at exactly the same spot as the real unit's. */
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   pointer-events: auto;
   cursor: grab;
   touch-action: none;
@@ -325,7 +353,7 @@
 }
 
 .bfg-twin .bfg-unit-emoji {
-  font-size: calc(var(--bfg-cell) * 1.1);
+  font-size: calc(var(--bfg-cell) * 0.55);
   line-height: 1;
   text-shadow: 1px 1px 3px #000;
 }
