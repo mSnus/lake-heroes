@@ -211,7 +211,7 @@
 }
 
 .bfg-unit-emoji {
-  font-size: calc(var(--bfg-cell) * 0.55);
+  font-size: calc(var(--bfg-cell) * 1.1);
   line-height: 1;
   text-shadow: 1px 1px 3px #000;
   filter: drop-shadow(0 0 3px currentColor);
@@ -325,7 +325,7 @@
 }
 
 .bfg-twin .bfg-unit-emoji {
-  font-size: calc(var(--bfg-cell) * 0.55);
+  font-size: calc(var(--bfg-cell) * 1.1);
   line-height: 1;
   text-shadow: 1px 1px 3px #000;
 }
