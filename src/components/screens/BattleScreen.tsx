@@ -733,6 +733,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                 ? 'assets/screens/ambush.jpg'
                 : 'assets/screens/battle.jpg'
       }
+      // screen-common's default vertical centering leaves a top gap whenever
+      // the battle content is shorter than the viewport -- brawl mode makes
+      // this worse, since its manual Undo/Go controls reserve their height
+      // even while hidden (so the battlefield above doesn't jump between
+      // auto/manual turns, see .bfg-manual-controls--hidden). Anchoring to
+      // the top instead means any leftover space collects at the bottom,
+      // which reads as normal rather than as a stray gap above the fight.
+      style={{ justifyContent: 'flex-start' }}
     >
       <div
         style={{

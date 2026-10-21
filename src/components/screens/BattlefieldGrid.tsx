@@ -614,6 +614,25 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                     const moved = start ? Math.hypot(e.clientX - start.x, e.clientY - start.y) : Infinity;
                     if (moved < CLICK_MOVE_THRESHOLD_PX) {
                       if (selectedForSwap === u.id) {
+                        // Hex rows overlap vertically by design (see
+                        // BattlefieldGrid.css's row-step comment), so a tap
+                        // aimed at a diagonal neighbour can still land inside
+                        // this unit's own (already-selected) twin instead of
+                        // reaching the arena's click-to-move handler. Try
+                        // resolving it as a move to wherever it actually
+                        // landed first; only deselect if that really is this
+                        // unit's own cell.
+                        const cr = cellAndRect();
+                        const result = cr ? resolveDrop(e.clientX, e.clientY, u, cr.cell * 0.6) : null;
+                        if (
+                          result?.kind === 'placement' &&
+                          !result.pl.attackTargetId &&
+                          (result.pl.col !== u.col || result.pl.row !== u.row)
+                        ) {
+                          place(u, result.pl);
+                          return;
+                        }
+
                         setSelectedForSwap(null); // clicked the same unit again — deselect
                         return;
                       }
