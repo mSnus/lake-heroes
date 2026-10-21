@@ -237,6 +237,12 @@
   vertical-align: middle;
 }
 
+.bfg-unit-emoji .unit-militia {
+  height: calc(var(--bfg-cell) * 0.9);
+  max-height: calc(var(--bfg-cell) * 0.9);
+  filter: saturate(1.1);
+}
+
 /* Sprite art faces right (the attacker's own facing, toward the defender on
    the opposite side) -- mirror it for the defender side so both sides face
    each other instead of the defender appearing to face away. */
