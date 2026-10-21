@@ -16,10 +16,6 @@ export const Rider: React.FC<RiderProps> = ({ amount, where = 'after', color }) 
       src={`assets/sprites/rider-${color ?? 'blue'}.png`}
       alt="🐎"
       className="unit-icon"
-      onError={(e) => {
-        const img = e.currentTarget;
-        if (!img.src.endsWith('rider-blue.png')) img.src = 'assets/sprites/rider-blue.png';
-      }}
     />
   );
 
