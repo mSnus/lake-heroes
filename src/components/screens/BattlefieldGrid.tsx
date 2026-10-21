@@ -92,12 +92,17 @@ const CLICK_MOVE_THRESHOLD_PX = 8;
  * .bfg-unit-bars). Shared by the real units and by their drag twins: a twin
  * stands in for a unit that has been moved out of its own cell, so without
  * these it would show no bars at all -- and with only some of them it
- * would sit at a different height than the units around it. */
-const UnitBars: React.FC<{ unit: GridUnit }> = ({ unit }) => {
+ * would sit at a different height than the units around it.
+ * `hidden` keeps the box's size (so the emoji above still lands at the same
+ * height) but hides its content -- for a twin whose real unit is still
+ * fully visible at the same spot (not yet moved), which already shows its
+ * own bars a pixel or two away from the twin's identical copy, reading as
+ * a doubled bar rather than one. */
+const UnitBars: React.FC<{ unit: GridUnit; hidden?: boolean }> = ({ unit, hidden }) => {
   const hpPct = Math.max(0, Math.round((unit.hp / unit.maxHp) * 100));
   const energyPct = Math.max(0, Math.round((unit.energy / energyFor(unit.kind)) * 100));
   return (
-    <span className="bfg-unit-bars">
+    <span className="bfg-unit-bars" style={hidden ? { visibility: 'hidden' } : undefined}>
       <span className="bfg-unit-hp">
         <span className="bfg-unit-hp-fill" style={{ width: `${hpPct}%` }} />
       </span>
@@ -664,9 +669,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   {/* Real bars, not a blank spacer: a twin standing at a
                       destination cell IS the only thing drawn for that unit
                       (its real self stays faded on the cell it left), so a
-                      hidden bar left moved units looking bar-less. Keeps the
-                      emoji at the same height as every other unit too. */}
-                  <UnitBars unit={u} />
+                      hidden bar left moved units looking bar-less. Hidden
+                      (not omitted, to keep the emoji's height consistent)
+                      while still unplaced, though -- the real unit is fully
+                      visible at the same spot then and already shows its
+                      own, see UnitBars' own doc comment. */}
+                  <UnitBars unit={u} hidden={originalOpacity(u) === 1} />
                 </div>
               );
             })}
