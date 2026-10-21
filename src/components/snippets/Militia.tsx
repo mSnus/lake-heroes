@@ -8,11 +8,15 @@ interface MilitiaProps {
 
 export const Militia: React.FC<MilitiaProps> = ({ amount, where = 'after', color }) => {
   const icon = (
-    <img src={`assets/sprites/militia-${color ?? 'red'}.png`} alt="🧍" className="unit-icon" />
+    <img
+      src={`assets/sprites/militia-${color ?? 'red'}.png`}
+      alt="🧍"
+      className="unit-icon unit-militia"
+    />
   );
 
   return (
-    <div className="gold-inline">
+    <div className="unit-inline">
       {where === 'before' && icon}
       {amount}
       {where === 'after' && icon}

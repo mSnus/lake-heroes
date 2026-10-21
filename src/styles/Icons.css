@@ -1,6 +1,7 @@
 .gold-inline,
 .tower-inline,
-.fame-inline {
+.fame-inline,
+.unit-inline{
   display: inline-flex;
   align-items: center;
   gap: 0.15em;
@@ -22,4 +23,8 @@
 .unit-icon {
   max-height: 2rem;
   margin-bottom: 0.3rem;
+}
+
+.unit-militia {
+  max-height: 1.2rem;
 }
