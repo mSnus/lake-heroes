@@ -227,6 +227,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 riders={revealed.riders}
                 totalSlots={activePlayer.armySlots}
                 maxSlots={MAX_ARMY_SLOTS}
+                spriteColor={activePlayer.image}
                 className="player-stats-army-slots"
               />
             </div>
@@ -242,7 +243,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             <div className="player-stats-garrison-row">
               <span className="squad-chunk">
                 <span className="squad-badge">
-                  <Tower amount={`${totalGarrison}🧍`} where="before" />
+                  <Tower where="before" />
+                  <Militia amount={totalGarrison} color={activePlayer.image} />
                 </span>
               </span>
             </div>

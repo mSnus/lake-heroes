@@ -2,12 +2,18 @@ import React from 'react';
 import { buildSquadChunks } from '../../game/army';
 import { upgradeSquadCost } from '../../actions/upgradeSquad';
 import { useT } from '../../i18n';
+import Militia from '../snippets/Militia';
+import Rider from '../snippets/Rider';
 import '../../styles/SquadDisplay.css';
 
 interface SquadDisplayProps {
   militia: number;
   riders: number;
   totalSlots: number;
+  /** Player color key for the Militia/Rider sprites -- when provided, the
+   * badges show the colored sprite instead of the plain 🧍/🐎 emoji. Omit to
+   * keep the plain emoji (every caller except the player-stats panel). */
+  spriteColor?: string;
   /** Slots beyond `totalSlots` (the player's current fame-based allowance),
    * up to this absolute cap, render as locked/disabled boxes instead of
    * being left out entirely -- so more squads than fame currently allows
@@ -36,6 +42,7 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
   riders,
   totalSlots,
   maxSlots = totalSlots,
+  spriteColor,
   onSellSquad,
   onUpgradeSquad,
   canUpgradeToRiders = false,
@@ -62,7 +69,17 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
         return (
           <span key={i} className="squad-chunk">
             <span className="squad-badge">
-              {chunk.count > 0 ? chunk.count : '‒'} {chunk.tier === 'riders' ? '🐎' : '🧍'}
+              {spriteColor ? (
+                chunk.tier === 'riders' ? (
+                  <Rider amount={chunk.count > 0 ? chunk.count : '‒'} color={spriteColor} />
+                ) : (
+                  <Militia amount={chunk.count > 0 ? chunk.count : '‒'} color={spriteColor} />
+                )
+              ) : (
+                <>
+                  {chunk.count > 0 ? chunk.count : '‒'} {chunk.tier === 'riders' ? '🐎' : '🧍'}
+                </>
+              )}
             </span>
             {/* Buttons always render when the capability is offered at all
                 (onSellSquad/onUpgradeSquad provided), even for a squad that
@@ -103,7 +120,9 @@ export const SquadDisplay: React.FC<SquadDisplayProps> = ({
           visible as a goal rather than simply missing. */}
       {Array.from({ length: lockedSlots }, (_, i) => (
         <span key={`locked-${i}`} className="squad-chunk squad-chunk-locked">
-          <span className="squad-badge">🧍</span>
+          <span className="squad-badge">
+            {spriteColor ? <Militia amount="" color={spriteColor} /> : '🧍'}
+          </span>
         </span>
       ))}
     </div>
