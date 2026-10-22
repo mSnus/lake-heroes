@@ -182,7 +182,8 @@
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Contratar más (tienes {gold}🟡):"
+    "hireTitle": "Contratar más (tienes {gold}🟡):",
+    "hireTitleMax": "Contratar más (máx: {max}):"
   },
   "squadDisplay": {
     "sellSquad": "Vender este escuadrón",
@@ -991,6 +992,8 @@
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...y {units}🧍 se quedaron borrachos en la taberna)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} esquadrones completas — {turnedAway}🧍 rechazados)</span>",
     "newFolksWelcome": "🍻 A la gloria!",
+    "hireAmount": "🧾 Contratar {amount}",
+    "moneyAndFame": "{gold}   {fame}",
     "title": "La Taberna",
     "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades",
     "narrateHorses": "{playerName} visitó la Taberna y {units}🐎 se unieron como jinetes",

@@ -13,9 +13,26 @@ interface HireRowProps {
   emoji: string;
   unitPrice: number;
   onBuy: (amount: number, tier: UnitTier) => void;
+  /** Tavern only: mirrors this row's live (pre-commit) slider amount up to
+   * the parent, so a footer button elsewhere can reflect it (e.g. turn into
+   * "Hire {amount}"). */
+  onAmountChange?: (tier: UnitTier, amount: number) => void;
+  /** Tavern only: hands the parent a way to trigger this row's own buy
+   * button remotely -- stored in a ref there (not state), since it's a
+   * closure that changes every render and would never settle if compared
+   * for a state update. */
+  registerBuy?: (tier: UnitTier, buy: () => void) => void;
 }
 
-const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy }) => {
+const HireRow: React.FC<HireRowProps> = ({
+  player,
+  tier,
+  emoji,
+  unitPrice,
+  onBuy,
+  onAmountChange,
+  registerBuy,
+}) => {
   const goldCap = Math.floor(player.gold / unitPrice);
   const slotCap = player.remainingCapacity(tier);
   const maxAmount = Math.min(goldCap, slotCap);
@@ -43,6 +60,17 @@ const HireRow: React.FC<HireRowProps> = ({ player, tier, emoji, unitPrice, onBuy
     setAmount(0);
     setPreviewAmount(null);
   };
+
+  // No dependency array -- these just mirror the latest `displayedAmount`/
+  // `handleBuy` out to the parent after every render. onAmountChange's own
+  // setState is guarded against no-op updates there, and registerBuy only
+  // ever writes a ref, so neither can loop.
+  useEffect(() => {
+    onAmountChange?.(tier, displayedAmount);
+  });
+  useEffect(() => {
+    registerBuy?.(tier, handleBuy);
+  });
 
   // Keyed off the displayed (live) amount, not the committed one, so the
   // button enables and prices itself as the thumb moves rather than waiting
@@ -93,6 +121,15 @@ interface SquadHirePanelProps {
    * tavernMilitiaPrice/tavernRiderPrice). */
   militiaPrice?: number;
   riderPrice?: number;
+  /** Tavern only: shows "Hire more (max: N):" instead of the default
+   * "...(you have {gold}🟡):" -- the militia row's own max (gold, fame-
+   * driven slots, and current headcount all folded into one number) is
+   * the more useful figure once you're already looking at the slider. */
+  titleMax?: number;
+  /** Tavern only: see HireRow's own doc comments -- threaded straight
+   * through so the footer button there can mirror/drive the sliders. */
+  onAmountChange?: (tier: UnitTier, amount: number) => void;
+  registerBuy?: (tier: UnitTier, buy: () => void) => void;
 }
 
 /** Reusable "Hire:" panel — a Militia row always, and a Knights (Riders) row
@@ -105,6 +142,9 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   onBuy,
   militiaPrice,
   riderPrice,
+  titleMax,
+  onAmountChange,
+  registerBuy,
 }) => {
   const t = useT();
   const ov = getOverrides();
@@ -112,7 +152,9 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   return (
     <div className="squad-hire-panel">
       <div className="squad-hire-panel-title">
-        {t('squadHirePanel.hireTitle', { gold: player.gold })}
+        {titleMax !== undefined
+          ? t('squadHirePanel.hireTitleMax', { max: titleMax })
+          : t('squadHirePanel.hireTitle', { gold: player.gold })}
       </div>
       {showMilitia && (
         <HireRow
@@ -121,6 +163,8 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
           emoji="🧍"
           unitPrice={militiaPrice ?? ov.militiaPrice}
           onBuy={onBuy}
+          onAmountChange={onAmountChange}
+          registerBuy={registerBuy}
         />
       )}
       {showRiders && (
@@ -129,6 +173,8 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
           tier="riders"
           emoji="🐎"
           unitPrice={riderPrice ?? ov.riderPrice}
+          onAmountChange={onAmountChange}
+          registerBuy={registerBuy}
           onBuy={onBuy}
         />
       )}

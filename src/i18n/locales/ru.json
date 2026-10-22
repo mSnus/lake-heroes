@@ -179,7 +179,8 @@
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Нанять ещё (у вас {gold}🟡):"
+    "hireTitle": "Нанять ещё (у вас {gold}🟡):",
+    "hireTitleMax": "Нанять ещё (макс: {max}):"
   },
   "squadDisplay": {
     "sellSquad": "Продать этот отряд",
@@ -988,6 +989,8 @@
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...а {units}🧍 остались пьянствовать в таверне)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} отрядов заполнено — {turnedAway}🧍 отправлены восвояси)</span>",
     "newFolksWelcome": "🍻 За славные победы!",
+    "hireAmount": "🧾 Нанять {amount}",
+    "moneyAndFame": "{gold}   {fame}",
     "title": "Таверна",
     "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов",
     "narrateHorses": "{playerName} посетил Таверну, и {units}🐎 присоединились как всадники",

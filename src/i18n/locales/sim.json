@@ -179,7 +179,8 @@
     "moneyAndFame": "{gold}   {fame}   {squads}"
   },
   "squadHirePanel": {
-    "hireTitle": "Hire more (you have {gold}🟡):"
+    "hireTitle": "Hire more (you have {gold}🟡):",
+    "hireTitleMax": "Hire more (max: {max}):"
   },
   "squadDisplay": {
     "sellSquad": "Sell this squad",
@@ -956,6 +957,8 @@
     "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...and {units}🧍 were left drunk at the tavern)</span>",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} army squads full — {turnedAway}🧍 turned away)</span>",
     "newFolksWelcome": "🍻 To glory!",
+    "hireAmount": "🧾 Hire {amount}",
+    "moneyAndFame": "{gold}   {fame}",
     "title": "The Tavern",
     "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units",
     "narrateHorses": "{playerName} visited the Tavern and {units}🐎 joined as riders",
