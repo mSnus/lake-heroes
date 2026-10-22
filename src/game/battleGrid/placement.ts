@@ -36,9 +36,12 @@ export function generateObstacles(cols: number, rows: number, rng: () => number 
  * After a side's units are placed (placeArmy or placeFormation, both purely
  * geometric and unaware of obstacles), move any unit that landed on an
  * obstacle cell to the back of its own army instead -- the first free,
- * non-obstacle cell found scanning outward from that side's home edge
- * (col 0 for the attacker, the last col for the defender), column by
- * column. Mutates `col`/`row` in place, same as the placement functions.
+ * non-obstacle cell found scanning outward column by column from that
+ * side's home edge (col 0 for the attacker, the last col for the
+ * defender), and within each column, outward row by row from the grid's
+ * vertical center -- so a displaced unit lands as close as possible to
+ * its own (vertically-centered) army rather than in a top corner far from
+ * it. Mutates `col`/`row` in place, same as the placement functions.
  */
 export function relocateUnitsOffObstacles(
   units: GridUnit[],
@@ -55,16 +58,25 @@ export function relocateUnitsOffObstacles(
   const homeCol = side === 'attacker' ? 0 : cols - 1;
   const step = side === 'attacker' ? 1 : -1;
 
+  // Rows visited nearest-to-center first (not top-down), so a displaced unit
+  // lands next to the rest of its vertically-centered army instead of in a
+  // top corner far away from it.
+  const centerRow = (rows - 1) / 2;
+  const rowsByCenterDistance = Array.from({ length: rows }, (_, r) => r).sort(
+    (a, b) => Math.abs(a - centerRow) - Math.abs(b - centerRow)
+  );
+
   const findBackCell = (): { col: number; row: number } | undefined => {
     for (let offset = 0; offset < cols; offset++) {
       const col = homeCol + step * offset;
       if (col < 0 || col >= cols) break;
-      for (let row = 0; row < rows; row++) {
+      for (const row of rowsByCenterDistance) {
         const key = `${col},${row}`;
         if (obstacleKeys.has(key) || occupied.has(key)) continue;
         return { col, row };
       }
     }
+
     return undefined;
   };
 
