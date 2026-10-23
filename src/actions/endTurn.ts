@@ -17,7 +17,7 @@ export function endTurn(board: GameState | null, updateGameState: (board: GameSt
   // below), so it correctly identifies a player whose "turn" was just a
   // prison/skip tick with no real move -- recording that would duplicate the
   // turn number of whoever played before them.
-  if (!board.skippingTurn) {
+  if (!board.skippingTurn && !board.harvest) {
     recordTurnStat(board, board.activePlayer);
   }
 

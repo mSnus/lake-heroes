@@ -1,4 +1,5 @@
 import { GameState } from './GameState';
+import { emptyYearIncome } from './Player';
 import { changeKarma } from '../utils/karma';
 import { collectTileTurnIncome } from './income';
 import { grantYearlyBonusToAll } from './kingsGrace';
@@ -56,16 +57,14 @@ export type { YearEffect };
 const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪', Fields: '🟩' };
 
 /**
- * Year rollover: everything that used to ride on each player's own Castle
- * crossing but is now the same clock for all of them -- the Yearly Bonus
- * (King's Grace's own formula, see game/kingsGrace.ts) included. Landing
- * directly on King's Castle still grants that same formula immediately, as
- * King's Grace, to just that one player (see actions/king.tsx) -- only the
- * calendar-wide payout moved here.
+ * Year end, as the Harvest round begins: the year's payouts -- the Yearly
+ * Bonus (King's Grace's own formula, see game/kingsGrace.ts) included --
+ * land for everyone at once, so the Harvest can show and trade them.
+ * Landing directly on King's Castle still grants that same formula
+ * immediately, as King's Grace, to just that one player (see
+ * actions/king.tsx).
  */
-export function startNewYear(board: GameState): void {
-  expireYearEffects(board);
-
+export function endYear(board: GameState): void {
   // A one-time bonus from every tile each player owns, on top of whatever
   // they already collected this turn -- same formula as the regular
   // per-turn payout (collectTileTurnIncome), just granted once more for
@@ -85,7 +84,7 @@ export function startNewYear(board: GameState): void {
     else if (player.karma > 0) changeKarma(player, -1);
 
     const bonus = collectTileTurnIncome(board, player);
-    if (bonus.gold > 0 || bonus.units > 0) anyHarvestBonus = true;
+    if (bonus.gold > 0 || bonus.food > 0 || bonus.arms > 0 || bonus.units > 0) anyHarvestBonus = true;
   }
 
   // The Yearly Bonus: King's Grace's own formula, paid to every player at
@@ -94,6 +93,25 @@ export function startNewYear(board: GameState): void {
   // player).
   const yearlyRewards = grantYearlyBonusToAll(board);
   const anyYearlyBonus = yearlyRewards.some((r) => r.totalGold > 0 || r.totalUnits > 0);
+
+  // The year's income is complete -- the Harvest shows it.
+  for (const player of board.players) {
+    player.lastYearIncome = player.yearIncome ?? emptyYearIncome();
+    player.yearIncome = emptyYearIncome();
+  }
+
+  const announcements: string[] = [];
+  if (anyYearlyBonus) announcements.push(t('year.yearlyBonus'));
+  if (anyHarvestBonus) announcements.push(t('year.tileHarvestBonus'));
+  if (announcements.length > 0) say(announcements.join(' '), 'info');
+}
+
+/**
+ * The first day of a new year, once the Harvest round is over: last year's
+ * effects expire and this year's lucky groups are rolled.
+ */
+export function startNewYear(board: GameState): void {
+  expireYearEffects(board);
 
   // This year's lucky groups: each of Mills/Farms/Fields independently
   // rolls DOUBLE_INCOME_CHANCE, capped at DOUBLE_INCOME_MAX_GROUPS -- a
@@ -109,19 +127,10 @@ export function startNewYear(board: GameState): void {
     addYearEffect(board, { id: DOUBLE_INCOME_EFFECT, untilYear: currentYear(board), group });
   }
 
-  // One shared toast for all three year-rollover announcements -- the
-  // "lucky groups" sentence reads as a continuation of the bonus ones, not
-  // a separate event, so they're one message when more than one has
-  // something to say.
-  const announcements: string[] = [];
-  if (anyYearlyBonus) announcements.push(t('year.yearlyBonus'));
-  if (anyHarvestBonus) announcements.push(t('year.tileHarvestBonus'));
   if (promoted.length > 0) {
     const groups = promoted
       .map((g) => `${GROUP_EMOJI[g]} ${t(`year.groupName.${g}`)}`)
       .join(` ${t('common.and')} `);
-    announcements.push(t('year.doubleIncomeAnnounce', { groups }));
+    say(t('year.doubleIncomeAnnounce', { groups }), 'info');
   }
-
-  if (announcements.length > 0) say(announcements.join(' '), 'info');
 }

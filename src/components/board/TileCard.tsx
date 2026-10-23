@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tile } from '../../game/Tile';
+import { Tile, TileBonusType } from '../../game/Tile';
 import '../../styles/TileCard.css';
 import { say, sayLocal } from '../../utils/say';
 import { GameState } from '../../game/GameState';
@@ -16,6 +16,9 @@ import { hasYearEffect, DOUBLE_INCOME_EFFECT } from '../../game/year';
 import DecoratedButton from '../ui/DecoratedButton';
 import { TileUpgradesScreen } from '../screens/TileUpgradesScreen';
 import { Gold } from '../snippets/Gold';
+import { Food } from '../snippets/Food';
+import { Arms } from '../snippets/Arms';
+import { IncomeLabel, hasIncome } from '../snippets/IncomeLabel';
 import { Tower } from '../snippets/Tower';
 import { showScreen } from '../../utils/screenStore';
 import { useT } from '../../i18n';
@@ -35,11 +38,7 @@ export const fmtPrice = (gold: number, units: number, join: string = ''): string
 // grant instead of a computed defence number, and slots == level by design.
 const slotsAtLevel = (level: number): number => level;
 
-const getBonusType = (tile: Tile): 'gold' | 'units' => {
-  if (tile.bonusType) return tile.bonusType;
-  // Fallback rule
-  return tile.group === 'Camps' || tile.group === 'Towers' ? 'units' : 'gold';
-};
+const getBonusType = (tile: Tile): TileBonusType => tile.bonusType ?? 'gold';
 
 // Add exported props type for TileCard
 export type TileCardProps = {
@@ -83,8 +82,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const isSyndicate = syndicateMult > 1;
 
   // Per-turn payout at the tile's current level (see game/income.ts's
-  // tileTurnIncome) -- exactly one of gold/units is nonzero, depending on
-  // the tile's own bonus type. The figure below is already doubled when
+  // tileTurnIncome) -- only the tile's own bonus type is nonzero. The figure below is already doubled when
   // this year's lucky groups include this tile's own (see game/year.ts) --
   // the badge is purely an annotation explaining why, not a second
   // multiplier applied here.
@@ -97,19 +95,11 @@ export const TileCard: React.FC<TileCardProps> = ({
   );
   const doubleIncomeActive =
     !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
-  // Units below this are hidden entirely (not just rounded away) -- a
-  // trickle of 1 isn't worth a line, but that means the "per turn" caption
-  // below must stay hidden right along with it, not dangle on its own.
-  const hasTurnIncome = turnIncome.gold > 0 || turnIncome.units > 1;
+  const hasTurnIncome = hasIncome(turnIncome);
   const turnIncomeLabel = (
     <>
-      {turnIncome.gold > 0 && (
-        <>
-          <Gold amount={`+${turnIncome.gold}`} />
-          {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}{' '}
-        </>
-      )}
-      {turnIncome.units > 1 && <>+{turnIncome.units}🧍</>}
+      <IncomeLabel income={turnIncome} unitColor={ownerPlayer?.image} />
+      {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}
     </>
   );
 
@@ -154,7 +144,15 @@ export const TileCard: React.FC<TileCardProps> = ({
   const defenceCapacity = (level: number) => garrisonCapacityForLevel(level);
 
   const bonusAmount = (level: number) =>
-    bonusType === 'gold' ? <Gold amount={bonus(level)} /> : <>{bonus(level)} 🧍</>;
+    bonusType === 'gold' ? (
+      <Gold amount={bonus(level)} />
+    ) : bonusType === 'food' ? (
+      <Food amount={bonus(level)} />
+    ) : bonusType === 'arms' ? (
+      <Arms amount={bonus(level)} />
+    ) : (
+      <>{bonus(level)} 🧍</>
+    );
 
   const class1 = tile.isOwned() && tile.level < 2 ? 'tc-td level-highlighted' : 'tc-td';
   const class2 = tile.isOwned() && tile.level == 2 ? 'tc-td level-highlighted' : 'tc-td';

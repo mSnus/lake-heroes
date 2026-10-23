@@ -1,3 +1,5 @@
+import { TileBonusType } from './Tile';
+import { resourcesGoldValue } from './resources';
 import { GameState } from './GameState';
 import { Player } from './Player';
 import { syndicateMultiplier } from './syndicate';
@@ -36,7 +38,7 @@ export const SCORE_SYNDICATE_MULT = 1.5;
 /** What one owned tile contributes, before its owner's other holdings.
  * `inSyndicate` scales the whole figure, upgrades included. */
 export function tileScore(
-  tile: { bonusType?: 'gold' | 'units'; level: number },
+  tile: { bonusType?: TileBonusType; level: number },
   inSyndicate = false
 ): number {
   const isUnitTile = tile.bonusType === 'units';
@@ -95,7 +97,7 @@ export function playerScore(board: GameState, player: Player): number {
     garrison +
     tiles +
     player.artifacts.length * SCORE_PER_ARTIFACT +
-    Math.floor(player.gold / SCORE_GOLD_PER_POINT)
+    Math.floor((player.gold + resourcesGoldValue(player)) / SCORE_GOLD_PER_POINT)
   );
 }
 

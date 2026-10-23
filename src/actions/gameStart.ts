@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { Player } from '../game/Player';
 import { MONEY_START, UNITS_START } from '../components/board/common';
+import { FOOD_START, ARMS_START } from '../game/constants';
 import { gameEvent } from '../utils/events';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
@@ -16,6 +17,8 @@ export function gameStart(
 
   gameState.players.forEach((player: Player) => {
     player.gold = MONEY_START;
+    player.food = FOOD_START;
+    player.arms = ARMS_START;
     player.units = UNITS_START;
   });
 

@@ -1,4 +1,5 @@
 import { GameState } from './GameState';
+import { addYearIncome } from './income';
 import { Player } from './Player';
 import { ANNUAL_DEFAULT_UNITS, GRACE_TOTAL_UNITS_MULT, GRACE_TOTAL_GOLD_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
@@ -269,6 +270,7 @@ export function grantYearlyBonusToAll(board: GameState): KingsGraceReward[] {
     player.gold += reward.totalGold;
     player.units += reward.tileUnits + reward.kingsMilitia;
     player.gainRiders(reward.kingsRiders);
+    addYearIncome(player, { gold: reward.totalGold, units: reward.totalUnits });
   });
 
   return rewards;

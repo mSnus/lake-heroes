@@ -1,3 +1,4 @@
+import { hireMax } from '../../game/resources';
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
@@ -66,9 +67,9 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   // militia and riders. Shown as a single "can't recruit" message instead
   // of the full recruiting panel (the army display and sell buttons stay
   // usable either way, since selling frees room).
-  const militiaMax = Math.min(Math.floor(player.gold / getOverrides().militiaPrice), player.armyRoom('militia'));
+  const militiaMax = hireMax(player, 'militia');
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / getOverrides().riderPrice), player.armyRoom('riders'))
+    ? hireMax(player, 'riders')
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
   // Recruiting can also be blocked purely by empty pockets — only mention
@@ -129,7 +130,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           onSell={handleSell}
           onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}
-          playerGold={player.gold}
+          wallet={player}
           className="squad-display-large"
         />
 

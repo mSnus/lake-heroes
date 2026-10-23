@@ -1,0 +1,54 @@
+.harvest-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  font-size: 1.1rem;
+}
+
+.harvest-income {
+  margin: 0.8rem 0;
+}
+
+.harvest-caption {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 0.2rem;
+}
+
+/* Buy / Sell switch. */
+.harvest-mode {
+  display: flex;
+  justify-content: center;
+  margin: 0.6rem 0;
+}
+
+.harvest-mode-button {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.3rem 1rem;
+  color: wheat;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid #c9a35a;
+  cursor: pointer;
+}
+
+.harvest-mode-button:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.harvest-mode-button:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.harvest-mode-button--active {
+  background: #c9a35a;
+  color: #2a1a05;
+  font-weight: bold;
+}
+
+.harvest-trade {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.4rem;
+}

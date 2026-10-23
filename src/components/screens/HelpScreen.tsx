@@ -12,7 +12,8 @@ import {
   ABSORB_PER_ROLL_POINT,
   ABSORB_BASE,
   FORTIFIED_TILE_GROUPS,
-  FLAT_TILE_UNIT_INCOME,
+  HARVEST_BUY_PRICE,
+  HARVEST_SELL_PRICE,
   VISIT_GOLD_MULT,
   VISIT_UNITS_SHARE,
   MILITIA_HP,
@@ -35,6 +36,7 @@ import {
   RIDER_CAP_BY_FAME,
 } from '../../game/constants';
 import { formatArmyCap } from '../../game/army';
+import { formatCost, unitCost } from '../../game/resources';
 import { useAppVersion } from '../../utils/useAppVersion';
 import { getArtifacts } from '../../game/artifacts';
 import { useT } from '../../i18n';
@@ -111,8 +113,16 @@ const HelpScreen: React.FC = () => {
 
           <h3>{t('helpScreen.goldUnits.title')}</h3>
           <ul>
-            <HtmlLi html={t('helpScreen.goldUnits.item1')} />
+            <HtmlLi
+              html={t('helpScreen.goldUnits.item1', {
+                militiaCost: formatCost(unitCost('militia')),
+                riderCost: formatCost(unitCost('riders')),
+              })}
+            />
             <HtmlLi html={t('helpScreen.goldUnits.item2')} />
+            <HtmlLi
+              html={t('helpScreen.goldUnits.itemHarvest', { buy: HARVEST_BUY_PRICE, sell: HARVEST_SELL_PRICE })}
+            />
             <HtmlLi
               html={t('helpScreen.goldUnits.item3', {
                 militiaCaps: capList(MILITIA_CAP_BY_FAME, 0),
@@ -122,7 +132,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.goldUnits.item4', { knightFame: KNIGHT_FAME })} />
             <HtmlLi html={t('helpScreen.goldUnits.item5')} />
             <HtmlLi
-              html={t('helpScreen.goldUnits.item6', { flatUnitIncome: FLAT_TILE_UNIT_INCOME })}
+              html={t('helpScreen.goldUnits.item6')}
             />
           </ul>
 
@@ -150,7 +160,6 @@ const HelpScreen: React.FC = () => {
             </li>
             <HtmlLi
               html={t('helpScreen.tiles.own', {
-                flatUnitIncome: FLAT_TILE_UNIT_INCOME,
                 visitGoldMult: VISIT_GOLD_MULT,
                 visitUnitsShare: VISIT_UNITS_SHARE,
               })}

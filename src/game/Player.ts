@@ -1,6 +1,15 @@
 import { CharacterId } from '../ai/characters';
 import { UnitTier, armyCapacityForFame, computeArmyPower } from './army';
 
+export interface YearIncome {
+  gold: number;
+  food: number;
+  arms: number;
+  units: number;
+}
+
+export const emptyYearIncome = (): YearIncome => ({ gold: 0, food: 0, arms: 0, units: 0 });
+
 export interface PlayerParams {
   id?: number;
   name: string;
@@ -21,6 +30,13 @@ export class Player {
   color: string;
   lightColor: string;
   gold: number;
+  /** Raw materials a unit is made from (see game/resources.ts). */
+  food: number;
+  arms: number;
+  /** Everything this player's tiles and the King paid out this calendar
+   * year so far; moved to lastYearIncome when the year ends. */
+  yearIncome: YearIncome;
+  lastYearIncome: YearIncome;
   /** Cheap, always-recruitable tier. */
   militia: number;
   /** Pricier tier unlocked at KNIGHT_FAME — see game/army.ts. */
@@ -107,6 +123,10 @@ export class Player {
     this.color = params.color;
     this.lightColor = params.lightColor ?? params.color;
     this.gold = params.gold;
+    this.food = 0;
+    this.arms = 0;
+    this.yearIncome = emptyYearIncome();
+    this.lastYearIncome = emptyYearIncome();
     this.militia = params.units;
     this.riders = 0;
     this.position = params.position;

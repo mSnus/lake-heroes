@@ -17,6 +17,7 @@ import { yieldTile, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { remainingCapacity, garrisonSlotCapacity, garrisonCapacityForLevel } from '../../game/army';
 import { ABSORB_PER_ROLL_POINT } from '../../game/constants';
 import { tileTurnIncome } from '../../game/income';
+import { IncomeLabel } from '../snippets/IncomeLabel';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import '../../styles/TileCard.css';
@@ -48,22 +49,11 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const t = useT();
 
   // Per-turn income at a given level (not necessarily the tile's current
-  // one -- levels 2/3 preview an upgrade not yet taken), same combined
-  // gold+units format as TileCard's own preview.
-  const turnIncomeLabel = (level: number) => {
-    const income = tileTurnIncome(tile, 1, level, gameState, player);
-    return (
-      <>
-        {income.gold > 0 && (
-          <>
-            +<Gold amount={income.gold} />{' '}
-          </>
-        )}
-        <br />
-        {income.units > 1 && <>+{income.units}🧍</>}
-      </>
-    );
-  };
+  // one -- levels 2/3 preview an upgrade not yet taken), same format as
+  // TileCard's own preview.
+  const turnIncomeLabel = (level: number) => (
+    <IncomeLabel income={tileTurnIncome(tile, 1, level, gameState, player)} unitColor={player.image} />
+  );
 
   // Some units-type tiles' (Camps/Towers) extra per-level toll (see
   // game/kingsGrace.ts's computeAnnualReward) only pays out once a lap, not

@@ -1,3 +1,4 @@
+import { CostLabel } from '../snippets/CostLabel';
 import React, { useState } from 'react';
 import { Player } from '../../game/Player';
 import { GameState } from '../../game/GameState';
@@ -124,7 +125,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         onSell={handleSellSquad}
         onUpgrade={handleUpgradeSquad}
         canUpgradeToRiders={player.isKnight}
-        playerGold={player.gold}
+        wallet={player}
         spriteColor={player.image}
         className="squad-display-large garrisons-army-display"
       />
@@ -162,11 +163,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
               />
               <div className="garrisons-army-side">
                 <Militia amount={unassigned + dismountPick} color={player.image} />
-                {dismountRefund(dismountPick) > 0 && (
-                  <span>
-                    + <Gold amount={dismountRefund(dismountPick)} />
-                  </span>
-                )}
+                {dismountPick > 0 && <CostLabel cost={dismountRefund(dismountPick)} sign="+" />}
               </div>
             </div>
 

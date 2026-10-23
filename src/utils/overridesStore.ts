@@ -8,6 +8,10 @@ import {
   RIDER_DMG_MAX,
   UNIT_PRICE,
   RIDER_UNIT_PRICE,
+  MILITIA_FOOD,
+  MILITIA_ARMS,
+  RIDER_FOOD,
+  RIDER_ARMS,
   GARRISON_SLOT_CAPACITY,
   TILE_BASE_PRICE,
   TILE_BASE_UPGRADE,
@@ -32,11 +36,15 @@ export interface GameOverrides {
   militiaHp: number;
   militiaDmgMin: number;
   militiaDmgMax: number;
-  militiaPrice: number; // UNIT_PRICE
+  militiaPrice: number; // UNIT_PRICE (gold part)
+  militiaFood: number; // MILITIA_FOOD
+  militiaArms: number; // MILITIA_ARMS
   riderHp: number;
   riderDmgMin: number;
   riderDmgMax: number;
-  riderPrice: number; // RIDER_UNIT_PRICE
+  riderPrice: number; // RIDER_UNIT_PRICE (gold part)
+  riderFood: number; // RIDER_FOOD
+  riderArms: number; // RIDER_ARMS
   garrisonSlotCapacity: number; // GARRISON_SLOT_CAPACITY (units per tile garrison slot)
   tileBasePrice: number; // TILE_BASE_PRICE
   tileUpgradeMult: number; // TILE_BASE_UPGRADE as a multiple of tileBasePrice
@@ -56,10 +64,14 @@ export const OVERRIDE_DEFAULTS: GameOverrides = {
   militiaDmgMin: MILITIA_DMG_MIN,
   militiaDmgMax: MILITIA_DMG_MAX,
   militiaPrice: UNIT_PRICE,
+  militiaFood: MILITIA_FOOD,
+  militiaArms: MILITIA_ARMS,
   riderHp: RIDER_HP,
   riderDmgMin: RIDER_DMG_MIN,
   riderDmgMax: RIDER_DMG_MAX,
   riderPrice: RIDER_UNIT_PRICE,
+  riderFood: RIDER_FOOD,
+  riderArms: RIDER_ARMS,
   garrisonSlotCapacity: GARRISON_SLOT_CAPACITY,
   tileBasePrice: TILE_BASE_PRICE,
   // Constants derive UPGRADE/INCOME from PRICE, so the default multiples are
@@ -90,10 +102,14 @@ function sanitize(raw: Partial<GameOverrides> | null | undefined): GameOverrides
     militiaDmgMin: num(merged.militiaDmgMin, OVERRIDE_DEFAULTS.militiaDmgMin, 0),
     militiaDmgMax: num(merged.militiaDmgMax, OVERRIDE_DEFAULTS.militiaDmgMax, 0),
     militiaPrice: num(merged.militiaPrice, OVERRIDE_DEFAULTS.militiaPrice, 0),
+    militiaFood: num(merged.militiaFood, OVERRIDE_DEFAULTS.militiaFood, 0),
+    militiaArms: num(merged.militiaArms, OVERRIDE_DEFAULTS.militiaArms, 0),
     riderHp: num(merged.riderHp, OVERRIDE_DEFAULTS.riderHp, 1),
     riderDmgMin: num(merged.riderDmgMin, OVERRIDE_DEFAULTS.riderDmgMin, 0),
     riderDmgMax: num(merged.riderDmgMax, OVERRIDE_DEFAULTS.riderDmgMax, 0),
     riderPrice: num(merged.riderPrice, OVERRIDE_DEFAULTS.riderPrice, 0),
+    riderFood: num(merged.riderFood, OVERRIDE_DEFAULTS.riderFood, 0),
+    riderArms: num(merged.riderArms, OVERRIDE_DEFAULTS.riderArms, 0),
     garrisonSlotCapacity: Math.round(
       num(merged.garrisonSlotCapacity, OVERRIDE_DEFAULTS.garrisonSlotCapacity, 1)
     ),

@@ -3,7 +3,8 @@ import { Player } from '../../game/Player';
 import { UnitTier } from '../../game/army';
 import { getOverrides } from '../../utils/overridesStore';
 import { DecoratedSlider } from './DecoratedSlider';
-import { Gold } from '../snippets/Gold';
+import { CostLabel } from '../snippets/CostLabel';
+import { hireMax, scaleCost, unitCost } from '../../game/resources';
 import { useT } from '../../i18n';
 import '../../styles/SquadHirePanel.css';
 
@@ -33,8 +34,8 @@ const HireRow: React.FC<HireRowProps> = ({
   onAmountChange,
   registerBuy,
 }) => {
-  const goldCap = Math.floor(player.gold / unitPrice);
-  const maxAmount = Math.min(goldCap, player.armyRoom(tier));
+  const cost = unitCost(tier, unitPrice);
+  const maxAmount = hireMax(player, tier, unitPrice);
 
   // Starts at 0, and returns to 0 after a hire: buying is opt-in, so the
   // panel never opens with a purchase already dialled in.
@@ -81,8 +82,8 @@ const HireRow: React.FC<HireRowProps> = ({
     <div className="hire-row">
       <div className="hire-row-stack">
         <div className="hire-row-name">{emoji}</div>
-        <div className="hire-row-caption">
-          <Gold amount={unitPrice} />
+        <div className="hire-row-caption hire-row-cost">
+          <CostLabel cost={cost} />
         </div>
       </div>
       <DecoratedSlider
@@ -99,8 +100,8 @@ const HireRow: React.FC<HireRowProps> = ({
       <div className={'shield-button-container' + (canBuy ? '' : ' shield-button-container--disabled')}>
         <button className="shield-button hire-submit" onClick={handleBuy} disabled={!canBuy}>
           <span className="hire-submit-icon">👛</span>
-          <span className="hire-row-caption">
-            <Gold amount={displayedAmount * unitPrice} />
+          <span className="hire-row-caption hire-row-cost">
+            <CostLabel cost={scaleCost(cost, displayedAmount)} />
           </span>
         </button>
       </div>

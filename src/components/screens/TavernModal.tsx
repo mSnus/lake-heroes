@@ -1,3 +1,4 @@
+import { hireMax } from '../../game/resources';
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
@@ -73,9 +74,9 @@ const TavernModal: React.FC<TavernModalProps> = ({
 
   const canRecruitRiders = player.isKnight;
 
-  const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.armyRoom('militia'));
+  const militiaMax = hireMax(player, 'militia', militiaPrice);
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / riderPrice), player.armyRoom('riders'))
+    ? hireMax(player, 'riders', riderPrice)
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
@@ -139,7 +140,7 @@ const TavernModal: React.FC<TavernModalProps> = ({
           onSell={handleSell}
           onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}
-          playerGold={player.gold}
+          wallet={player}
           upgradePricePerUnit={riderPrice - militiaPrice}
           className="squad-display-large"
         />

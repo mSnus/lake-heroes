@@ -1,3 +1,4 @@
+import { hireMax } from '../../game/resources';
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
@@ -56,7 +57,7 @@ const StablesModal: React.FC<StablesModalProps> = ({
   const canRecruitRiders = player.isKnight;
 
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / riderPrice), player.armyRoom('riders'))
+    ? hireMax(player, 'riders', riderPrice)
     : 0;
   const atMax = ridersMax <= 0;
 
@@ -113,7 +114,7 @@ const StablesModal: React.FC<StablesModalProps> = ({
           onSell={handleSell}
           onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}
-          playerGold={player.gold}
+          wallet={player}
           upgradePricePerUnit={riderPrice - militiaPrice}
           className="squad-display-large"
         />

@@ -1,6 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { getOverrides } from '../utils/overridesStore';
+import { resourcesGoldValue, unitGoldValue } from './resources';
 
 // A player's wealth is what they hold (gold/units) plus the full price paid for
 // every owned tile and its upgrades.
@@ -19,15 +19,15 @@ export function playerWealth(board: GameState, player: Player): { gold: number; 
 
 /**
  * A player's total wealth expressed in gold — their own army valued by tier
- * (militia at UNIT_PRICE, riders at the pricier RIDER_UNIT_PRICE), plus
- * cumulative tile unit-costs at the generic UNIT_PRICE, plus gold on hand.
+ * at its full recipe (see unitGoldValue), plus cumulative tile unit-costs at
+ * a militia's value, plus food/arms and gold on hand.
  */
 export function totalWealth(board: GameState, player: Player): number {
   const w = playerWealth(board, player);
-  const ov = getOverrides();
-  const armyValue = player.militia * ov.militiaPrice + player.riders * ov.riderPrice;
-  const tileUnitsValue = (w.units - player.units) * ov.militiaPrice;
-  return w.gold + armyValue + tileUnitsValue;
+  const militiaValue = unitGoldValue('militia');
+  const armyValue = player.militia * militiaValue + player.riders * unitGoldValue('riders');
+  const tileUnitsValue = (w.units - player.units) * militiaValue;
+  return w.gold + armyValue + tileUnitsValue + resourcesGoldValue(player);
 }
 
 /* Ranking players is done on power score now, not gold -- see

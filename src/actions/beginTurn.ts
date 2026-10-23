@@ -9,7 +9,8 @@ import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { collectTileTurnIncome } from '../game/income';
-import { startNewYear, yearForRound } from '../game/year';
+import { endYear, startNewYear, yearForRound } from '../game/year';
+import { beginHarvestTurn } from './harvest';
 import { recordSimIncome } from '../utils/simLogStore';
 import { formatArmy } from '../utils/formatArmy';
 import { announce } from '../utils/announce';
@@ -48,14 +49,40 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   board.activePlayer.owedToll = 0;
   board.activePlayer.hasSettledTollThisTurn = false;
 
+  if (board.activePlayerIndex === 0) {
+    // The last player's turn just ended, so this is also where the shared
+    // calendar ticks over -- ahead of the prison-skip check below, which is
+    // what makes a turn spent in jail still pass the time. The year's last
+    // day is followed by a Harvest round, which is not a day itself.
+    if (board.harvest) {
+      board.harvest = false;
+      board.round++;
+      startNewYear(board);
+    } else if (yearForRound(board.round + 1) > yearForRound(board.round)) {
+      board.harvest = true;
+      endYear(board);
+    } else {
+      board.round++;
+    }
+
+    console.debug(`Round ${board.round}`, board.players);
+  }
+
+  if (board.harvest) {
+    beginHarvestTurn(board, updateGameState);
+    return;
+  }
+
   // Tiles pay their owner at the start of every turn now, not once a lap --
   // applies even to a player about to skip their turn in prison, since it's
   // their tiles earning it, not them personally taking an action.
   const turnIncome = collectTileTurnIncome(board, board.activePlayer);
   if (isHeadlessRun()) recordSimIncome(turnIncome.gold, turnIncome.units);
-  if (turnIncome.gold > 0 || turnIncome.units > 0) {
+  if (turnIncome.gold > 0 || turnIncome.food > 0 || turnIncome.arms > 0 || turnIncome.units > 0) {
     const incomeParts: string[] = [];
     if (turnIncome.gold > 0) incomeParts.push(`${turnIncome.gold}🟡`);
+    if (turnIncome.food > 0) incomeParts.push(`${turnIncome.food}🍞`);
+    if (turnIncome.arms > 0) incomeParts.push(`${turnIncome.arms}⚔️`);
     if (turnIncome.units > 0) incomeParts.push(`${turnIncome.units}🧍`);
     say(
       t('endTurn.turnIncome', {
@@ -64,16 +91,6 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
       }),
       'debug'
     );
-  }
-
-  if (board.activePlayerIndex === 0) {
-    // The last player's turn just ended, so this is also where the shared
-    // calendar ticks over -- ahead of the prison-skip check below, which is
-    // what makes a turn spent in jail still pass the time.
-    const yearBefore = yearForRound(board.round);
-    board.round++;
-    console.debug(`Round ${board.round}`, board.players);
-    if (yearForRound(board.round) > yearBefore) startNewYear(board);
   }
 
   if (board.activePlayer.turnsToSkip > 0) {

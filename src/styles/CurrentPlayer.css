@@ -142,6 +142,14 @@
   justify-content: flex-start;
 }
 
+.player-stats-resources {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  min-height: 1.6rem;
+  align-items: center;
+}
+
 .player-stats-army-slots {
   display: flex;
   flex-wrap: wrap;

@@ -98,7 +98,7 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
  * introspected this way), otherwise roll, resolve, and let the bot act.
  */
 async function driveOneTurn(board: GameState, updateGameState: (board: GameState) => void): Promise<void> {
-  if (board.skippingTurn) {
+  if (board.skippingTurn || board.harvest) {
     endTurn(board, updateGameState);
     return;
   }

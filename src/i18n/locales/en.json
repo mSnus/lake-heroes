@@ -2,7 +2,8 @@
   "turnAnnouncement": {
     "text": "{playerName}'s turn",
     "goLeft": "Go left",
-    "goRight": "Go right"
+    "goRight": "Go right",
+    "harvestText": "{playerName}'s harvest"
   },
   "common": {
     "language": "Language",
@@ -190,10 +191,10 @@
     "sellMilitia": "Sell militia",
     "sellRiders": "Sell riders",
     "sell": "sell",
-    "upgrade": "Upgrade militia to Riders, {gold}🟡 each",
+    "upgrade": "Upgrade militia to Riders, {cost} each",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "upgraded": "{playerName} upgraded {amount}🧍 to Riders for {gold}🟡"
+    "upgraded": "{playerName} upgraded {amount}🧍 to Riders for {cost}"
   },
   "tileCard": {
     "confirmUpgrade": "Really upgrade {tileName} for {gold}🟡?",
@@ -381,14 +382,15 @@
       "step5": "Every player gets a Yearly Bonus when the shared calendar year ends — or land exactly on 🏰 King's Castle for the same reward as King's Grace, right away"
     },
     "goldUnits": {
-      "title": "Gold 🟡 and units 🧍",
-      "item1": "Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final battle",
-      "item2": "Owned tiles pay income at the start of each of your turns. Everyone also collects a Yearly Bonus when the calendar year ends — land exactly on the King's Castle for the same reward as King's Grace, right away.",
+      "title": "Resources 🟡🍞⚔️ and units 🧍",
+      "item1": "Gold 🟡 buys tiles and upgrades. Food 🍞 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
+      "item2": "Owned tiles pay at the start of each of your turns: Traders 🟡, Fields and Farms 🍞, Camps and Mills ⚔️, Towers 🧍. Everyone also collects a Yearly Bonus when the calendar year ends — land exactly on the King's Castle for the same reward as King's Grace, right away.",
+      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn of its own when nobody moves: see the year's income, then buy 🍞/⚔️ for {buy}🟡 or sell them for {sell}🟡 each.",
       "item3": "Fame 🏆 limits your army. 🧍 militia: {militiaCaps}. 🐎 riders (Knights only): {riderCaps}",
       "item3At": "{cap} at {fame}🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
       "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",
-      "item6": "Each owned tile also brings +{flatUnitIncome}🧍 per turn — you can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 or Worker's Caravan (but for double price)"
+      "item6": "You can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 or Worker's Caravan (paying double gold)"
     },
     "fame": {
       "title": "Fame 🏆",
@@ -401,7 +403,7 @@
       "title": "Tiles 🧩",
       "discoverTitle": "Discover",
       "discoverBody": "new tiles and get rewarded for that",
-      "own": "<strong> Own tiles</strong> by spending gold 🟡 and 🧍 units. Each owned tile provides you at least +{flatUnitIncome}🧍 each day. Visiting own tiles brings you {visitGoldMult}x 🟡 or {visitUnitsShare}x🧍🏻 bonus from it",
+      "own": "<strong> Own tiles</strong> by spending gold 🟡 and 🧍 units. Visiting own tiles brings you {visitGoldMult}x its own income, or {visitUnitsShare}x🧍🏻 from a Tower",
       "landingOnOpponent": "<strong>Landing on an opponent's tile</strong> — its fee 💰 is collected automatically. Once it is paid, you may leave peacefully or fight ⚔️ for revenge. A razed 🔥 tile loses all upgrades, becomes unowned, and cannot be claimed until the next round. If you cannot cover a fee, sell tiles; if that is still not enough, you become a prisoner of war, skip a turn in prison, then receive the King's ransom to continue.",
       "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: income bonus and fee is <strong>doubled</strong>",
       "sellAnytime": "<strong>Sell</strong> — tiles can be sold at any time for the full price of the tile and its upgrades. Click the tile's heading to reveal the Sell/Yield buttons.",
@@ -584,7 +586,7 @@
     "foundGoldHtml": "{playerSpan} found a {size} chest with {gold}🟡"
   },
   "sellUnits": {
-    "sold": "{playerName} sold {amount} {tier} for {gold}🟡."
+    "sold": "{playerName} sold {amount} {tier} for {cost}."
   },
   "dragonEncounter": {
     "descends": "The Dragon descends from the skies upon {playerSpan}!",
@@ -649,7 +651,7 @@
     "turnIncome": "{playerName} collects {summary} from their tiles"
   },
   "buyUnits": {
-    "bought": "{playerName} bought {amount} {tier} for {gold}🟡, and now has {army}.",
+    "bought": "{playerName} bought {amount} {tier} for {cost}, and now has {army}.",
     "notEnoughGold": "Not enough gold to buy units."
   },
   "payFee": {
@@ -1055,7 +1057,8 @@
     "forceRoll": "Force next roll",
     "forcedRollSet": "Next dice roll forced to {value}.",
     "encCaravanHorses": "🐫 Caravan (horses)",
-    "encWorkers": "Workers"
+    "encWorkers": "Workers",
+    "setResources": "Set food/arms"
   },
   "overridesScreen": {
     "title": "Overrides",
@@ -1149,7 +1152,7 @@
     "narrateNone": "{playerName} visited the Stables, but came away empty-handed"
   },
   "dismountSquad": {
-    "dismounted": "{playerName} dismounts {amount}🐎 into {amount}🧍, selling the horses for {gold}🟡"
+    "dismounted": "{playerName} dismounts {amount}🐎 into {amount}🧍, selling the horses for {cost}"
   },
   "online": {
     "shareTitle": "Send the ravens",
@@ -1209,5 +1212,15 @@
   "autoEndTurn": {
     "label": "End turn",
     "cancelHint": "(tap to cancel)"
+  },
+  "harvest": {
+    "title": "🌾 Harvest of year {year}",
+    "yearIncome": "This year's income:",
+    "noIncome": "nothing this year",
+    "buyMode": "Buy, {price}🟡 each",
+    "sellMode": "Sell, {price}🟡 each",
+    "trade": "Trade",
+    "finish": "🌾 Finish harvest",
+    "botSold": "{playerName} sold {food}🍞 and {arms}⚔️ at the Harvest"
   }
 }

@@ -2,7 +2,8 @@
   "turnAnnouncement": {
     "text": "Turno de {playerName}",
     "goLeft": "Ir a la izquierda",
-    "goRight": "Ir a la derecha"
+    "goRight": "Ir a la derecha",
+    "harvestText": "Cosecha de {playerName}"
   },
   "common": {
     "language": "Idioma",
@@ -189,10 +190,10 @@
     "sellMilitia": "Vender milicia",
     "sellRiders": "Vender jinetes",
     "sell": "vender",
-    "upgrade": "Mejorar milicia a Jinetes, {gold}🟡 cada uno",
+    "upgrade": "Mejorar milicia a Jinetes, {cost} cada uno",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
-    "upgraded": "{playerName} mejoró {amount}🧍 a Jinetes por {gold}🟡"
+    "upgraded": "{playerName} mejoró {amount}🧍 a Jinetes por {cost}"
   },
   "tileCard": {
     "confirmUpgrade": "¿Mejorar de verdad {tileName} por {gold}🟡?",
@@ -379,14 +380,15 @@
       "step5": "Cada jugador recibe una Bonificación Anual cuando termina el año compartido del calendario — o cae exactamente en el 🏰 Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante"
     },
     "goldUnits": {
-      "title": "Oro 🟡 y unidades 🧍",
-      "item1": "El Oro 🟡 y las unidades 🧍 son los recursos básicos para comprar casillas, luchar o iniciar la batalla final",
-      "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Todos reciben también una Bonificación Anual cuando termina el año del calendario — cae exactamente en el Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante.",
+      "title": "Recursos 🟡🍞⚔️ y unidades 🧍",
+      "item1": "El oro 🟡 compra casillas y mejoras. La comida 🍞 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
+      "item2": "Las casillas que posees pagan al inicio de cada uno de tus turnos: Comerciantes 🟡, Campos y Granjas 🍞, Campamentos y Molinos ⚔️, Torres 🧍. Todos reciben también una Bonificación Anual cuando termina el año — cae exactamente en el Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante.",
+      "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno propio en el que nadie se mueve: mira los ingresos del año y compra 🍞/⚔️ a {buy}🟡 o véndelos a {sell}🟡 cada uno.",
       "item3": "La fama 🏆 limita tu ejército. 🧍 milicia: {militiaCaps}. 🐎 jinetes (solo Caballeros): {riderCaps}",
       "item3At": "{cap} con {fame}🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
       "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a tus 🧍 mientras estés en el Castillo del Rey.",
-      "item6": "Cada loseta propia también aporta +{flatUnitIncome}🧍 por turno — puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o la Caravana de Trabajadores (pero al doble de precio)"
+      "item6": "Puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o la Caravana de Trabajadores (pagando el doble de oro)"
     },
     "fame": {
       "title": "Fama 🏆",
@@ -399,7 +401,7 @@
       "title": "Casillas 🧩",
       "discoverTitle": "Descubrir",
       "discoverBody": "nuevas casillas y ser recompensado por ello",
-      "own": "<strong> Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Cada casilla que posees te aporta al menos +{flatUnitIncome}🧍 cada día. Visitar tus propias casillas te aporta un bono de {visitGoldMult}x 🟡 o {visitUnitsShare}x🧍🏻",
+      "own": "<strong> Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Visitar tus propias casillas te aporta {visitGoldMult}x su ingreso, o {visitUnitsShare}x🧍🏻 de una Torre",
       "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — la tarifa 💰 se cobra automáticamente. Tras pagarla, puedes marcharte en paz o luchar ⚔️ por venganza. Una casilla arrasada 🔥 pierde sus mejoras, queda sin dueño y no se puede reclamar hasta la siguiente ronda. Si no puedes cubrir una tarifa, vende casillas; si aún no basta, te conviertes en prisionero de guerra, pierdes un turno en prisión y después recibes el rescate del Rey para continuar.",
       "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: el bono de ingresos y la tarifa se <strong>duplican</strong>",
       "sellAnytime": "<strong>Vender</strong> — las casillas pueden venderse en cualquier momento por el precio total de la casilla y sus mejoras. Haz clic en el encabezado de la casilla para ver los botones de Vender/Ceder.",
@@ -582,7 +584,7 @@
     "foundGoldHtml": "{playerSpan} encontró un cofre {size} con {gold}🟡"
   },
   "sellUnits": {
-    "sold": "{playerName} vendió {amount} {tier} por {gold}🟡."
+    "sold": "{playerName} vendió {amount} {tier} por {cost}."
   },
   "dragonEncounter": {
     "descends": "¡El Dragón desciende del cielo sobre {playerSpan}!",
@@ -647,7 +649,7 @@
     "turnIncome": "{playerName} recoge {summary} de sus casillas"
   },
   "buyUnits": {
-    "bought": "{playerName} compró {amount} {tier} por {gold}🟡, y ahora tiene {army}.",
+    "bought": "{playerName} compró {amount} {tier} por {cost}, y ahora tiene {army}.",
     "notEnoughGold": "No hay suficiente oro para comprar unidades."
   },
   "payFee": {
@@ -1053,7 +1055,8 @@
     "forceRoll": "Forzar próxima tirada",
     "forcedRollSet": "Próxima tirada de dado forzada a {value}.",
     "encCaravanHorses": "🐫 Caravana (caballos)",
-    "encWorkers": "Trabajadores"
+    "encWorkers": "Trabajadores",
+    "setResources": "Fijar comida/armas"
   },
   "overridesScreen": {
     "title": "Ajustes",
@@ -1122,7 +1125,7 @@
     "narrateNone": "{playerName} visitó los Establos, pero se fue con las manos vacías"
   },
   "dismountSquad": {
-    "dismounted": "{playerName} desmonta {amount}🐎 a {amount}🧍, vendiendo los caballos por {gold}🟡"
+    "dismounted": "{playerName} desmonta {amount}🐎 a {amount}🧍, vendiendo los caballos por {cost}"
   },
   "online": {
     "shareTitle": "Enviad los cuervos",
@@ -1182,5 +1185,15 @@
   "autoEndTurn": {
     "label": "Terminar turno",
     "cancelHint": "(toca para cancelar)"
+  },
+  "harvest": {
+    "title": "🌾 Cosecha del año {year}",
+    "yearIncome": "Ingresos de este año:",
+    "noIncome": "nada este año",
+    "buyMode": "Comprar, {price}🟡 cada uno",
+    "sellMode": "Vender, {price}🟡 cada uno",
+    "trade": "Comerciar",
+    "finish": "🌾 Terminar la cosecha",
+    "botSold": "{playerName} vendió {food}🍞 y {arms}⚔️ en la Cosecha"
   }
 }

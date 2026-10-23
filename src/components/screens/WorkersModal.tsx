@@ -1,3 +1,4 @@
+import { canPay, hireMax, scaleCost, unitCost } from '../../game/resources';
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
@@ -63,9 +64,9 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
 
   const canRecruitRiders = player.isKnight;
 
-  const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.armyRoom('militia'));
+  const militiaMax = hireMax(player, 'militia', militiaPrice);
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / riderPrice), player.armyRoom('riders'))
+    ? hireMax(player, 'riders', riderPrice)
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
@@ -74,7 +75,13 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
   const footer = useHireFooter(!atMax);
   const pendingMilitia = footer.amountOf('militia');
   const pendingRiders = footer.amountOf('riders');
-  const bothAffordable = pendingMilitia * militiaPrice + pendingRiders * riderPrice <= player.gold;
+  const pendingMilitiaCost = scaleCost(unitCost('militia', militiaPrice), pendingMilitia);
+  const pendingRidersCost = scaleCost(unitCost('riders', riderPrice), pendingRiders);
+  const bothAffordable = canPay(player, {
+    gold: pendingMilitiaCost.gold + pendingRidersCost.gold,
+    food: pendingMilitiaCost.food + pendingRidersCost.food,
+    arms: pendingMilitiaCost.arms + pendingRidersCost.arms,
+  });
   const toHire = {
     militia: pendingMilitia,
     riders: bothAffordable || pendingMilitia === 0 ? pendingRiders : 0,
@@ -145,7 +152,7 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
           onSell={handleSell}
           onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}
-          playerGold={player.gold}
+          wallet={player}
           upgradePricePerUnit={riderPrice - militiaPrice}
           className="squad-display-large"
         />

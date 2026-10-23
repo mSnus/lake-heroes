@@ -35,6 +35,10 @@ export class GameState {
   /** How the game was won, for the victory screen's flavor text -- unset
    * only for the same pre-existing-save case `winner` is. */
   winCondition?: 'dragon' | 'stars';
+  /** True for the Harvest round between two years: nobody moves and it is
+   * not a day -- each player in turn trades food/arms, then ends their turn
+   * (see actions/harvest.ts). */
+  harvest: boolean = false;
   // True while the active player is serving a skipped (prison) turn — persisted
   // so a reload doesn't offer them the dice.
   skippingTurn: boolean = false;

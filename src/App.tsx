@@ -19,7 +19,9 @@ import { OwnedTiles } from './components/dashboard/OwnedTiles';
 import tilesData from './settings/tiles.json';
 import { buildTilesFromTemplates, SavedGameState } from './game/TileSet';
 import { rehydrateGameState } from './game/rehydrate';
-import { isLocalTurn } from './game/seats';
+import { isLocalTurn, isLocalHuman } from './game/seats';
+import { showHarvestScreen } from './actions/harvest';
+import { unitGoldValue } from './game/resources';
 import { clearOnlineSession } from './online/onlineStore';
 import { useLiveFeed, resetLiveFeed } from './online/liveFeedStore';
 import { resetRemoteMove } from './online/remoteMoveStore';
@@ -256,6 +258,14 @@ function App() {
           const restored = rehydrateGameState(saved as SavedGameState);
 
           setGameState(restored);
+
+          // Mid-Harvest: the screen is rebuilt from state, not saved.
+          if (restored.harvest) {
+            if (restored.activePlayer.isComputer) setEndTurn();
+            else if (isLocalHuman(restored.activePlayer)) showHarvestScreen(restored, updateGameState);
+            gameEvent('setPhase', restored.turnPhase);
+            return;
+          }
 
           const savedScreen = loadFromStorage<SavedScreen | null>('game-screen', null);
           if (savedScreen) {
@@ -707,8 +717,7 @@ function App() {
             const t = gameState.tiles[idx];
             return t && t.owner === winner.id ? sum + t.currentPrice.gold : sum;
           }, 0);
-          const ov = getOverrides();
-          const armyGold = winner.militia * ov.militiaPrice + winner.riders * ov.riderPrice;
+          const armyGold = winner.militia * unitGoldValue('militia') + winner.riders * unitGoldValue('riders');
           // The Dragon's hoard is part of the victory tally only when it's
           // actually the thing that was won -- a stars win never saw it.
           const totalGold = winner.gold + tilesGold + armyGold + (isDragonWin ? DRAGON_GOLD : 0);

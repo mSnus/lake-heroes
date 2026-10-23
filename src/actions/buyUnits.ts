@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { say, sayLocal } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
-import { getOverrides } from '../utils/overridesStore';
+import { unitCost, scaleCost, canPay, pay, formatCost } from '../game/resources';
 import { UnitTier } from '../game/army';
 import { formatArmy } from '../utils/formatArmy';
 import { t } from '../i18n';
@@ -11,27 +11,26 @@ export function buyUnits(
   amount: number,
   updateGameState: (board: GameState) => void,
   tier: UnitTier = 'militia',
-  // Overrides the normal per-tier price -- the Tavern charges a premium
-  // over the King's Castle's own militia price (see tavern.ts).
+  // Overrides the gold part of the price -- the Tavern charges a premium
+  // over the King's Castle's own (see tavern.ts).
   priceOverride?: number
 ) {
   if (!board) return;
 
   const player = board.activePlayer;
-  const ov = getOverrides();
-  const unitPrice = priceOverride ?? (tier === 'riders' ? ov.riderPrice : ov.militiaPrice);
-  const cost = amount * unitPrice;
+  const unit = unitCost(tier, priceOverride);
 
-  if (player.gold >= cost) {
+  if (canPay(player, scaleCost(unit, amount))) {
     const gained = tier === 'riders' ? player.gainRiders(amount) : player.gainMilitia(amount);
-    player.gold -= gained * unitPrice;
+    const paid = scaleCost(unit, gained);
+    pay(player, paid);
     const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
     say(
       t('buyUnits.bought', {
         playerName: player.name,
         amount: gained,
         tier: tierLabel,
-        gold: gained * unitPrice,
+        cost: formatCost(paid),
         army: formatArmy(player.militia, player.riders),
       }),
       'success'

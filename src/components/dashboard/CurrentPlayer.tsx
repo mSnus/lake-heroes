@@ -8,6 +8,8 @@ import { playerTurnIncome, playerRawTurnIncome } from '../../game/income';
 import { getArtifact } from '../../game/artifacts';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { Gold } from '../snippets/Gold';
+import { Food } from '../snippets/Food';
+import { Arms } from '../snippets/Arms';
 import { Tower } from '../snippets/Tower';
 import { GarrisonsScreen } from '../screens/GarrisonsScreen';
 import RealmOverviewScreen from '../screens/RealmOverviewScreen';
@@ -283,6 +285,22 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                 </span>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* food and arms -- what units are made of */}
+        <div className="player-stats-data player-stats-resources">
+          <div className="player-stats-inline-row">
+            <strong>
+              <Food amount={activePlayer.food ?? 0} />
+            </strong>
+            {turnIncome.food > 0 && <span className="player-stats-turn-income">+{turnIncome.food}</span>}
+          </div>
+          <div className="player-stats-inline-row">
+            <strong>
+              <Arms amount={activePlayer.arms ?? 0} />
+            </strong>
+            {turnIncome.arms > 0 && <span className="player-stats-turn-income">+{turnIncome.arms}</span>}
           </div>
         </div>
 

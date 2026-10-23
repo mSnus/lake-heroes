@@ -1,3 +1,4 @@
+import { addYearIncome } from '../game/income';
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { showScreen, clearScreen } from '../utils/screenStore';
@@ -49,6 +50,7 @@ export function handleKingCastle(
     player.gainRiders(grace.kingsRiders);
 
     const graceUnitsGranted = graceMilitiaGranted + grace.kingsRiders;
+    addYearIncome(player, { gold: grace.totalGold, units: graceUnitsGranted });
     board.kingRewardMessage = t('king.kingsGrace');
     if (grace.totalGold > 0 || graceUnitsGranted > 0) {
       const parts: string[] = [];

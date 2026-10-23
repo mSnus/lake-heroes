@@ -1,7 +1,7 @@
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
-import { upgradeSquadCost } from '../actions/upgradeSquad';
+import { hireMax, maxAffordable, scaleCost, unitCost, upgradeCost } from '../game/resources';
 import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
 
 /**
@@ -22,7 +22,7 @@ export function planUnitHire(
   const tier = forcedTier ?? pickKingsCastleHireTier(player);
   const ov = getOverrides();
   const price = priceOverride ?? (tier === 'riders' ? ov.riderPrice : ov.militiaPrice);
-  const maxAmount = Math.min(Math.floor(player.gold / price), player.armyRoom(tier));
+  const maxAmount = hireMax(player, tier, price);
   return { tier, amount: pickKingsCastleHireAmount(player, maxAmount, price) };
 }
 
@@ -53,25 +53,28 @@ export interface PriceOverrides {
  */
 function planRiderBuildUp(player: Player, prices: PriceOverrides): ArmyStep[] {
   if (!player.isKnight) return [];
-  if (prices.riderPrice <= 0) return [];
 
-  let gold = player.gold;
+  const wallet = { gold: player.gold, food: player.food, arms: player.arms };
   let riderRoom = player.armyRoom('riders');
   const steps: ArmyStep[] = [];
 
-  const hired = Math.min(Math.floor(gold / prices.riderPrice), riderRoom);
+  const riderCost = unitCost('riders', prices.riderPrice);
+  const hired = Math.min(maxAffordable(wallet, riderCost), riderRoom);
   if (hired > 0) {
     steps.push({ kind: 'hire', tier: 'riders', count: hired });
-    gold -= hired * prices.riderPrice;
+    const paid = scaleCost(riderCost, hired);
+    wallet.gold -= paid.gold;
+    wallet.food -= paid.food;
+    wallet.arms -= paid.arms;
     riderRoom -= hired;
   }
 
-  const perUnit = prices.riderPrice - prices.militiaPrice;
-  const affordable = perUnit > 0 ? Math.floor(gold / perUnit) : player.militia;
-  const upgraded = Math.min(player.militia, riderRoom, affordable);
-  if (upgraded > 0 && gold >= upgradeSquadCost(upgraded, perUnit)) {
-    steps.push({ kind: 'upgrade', count: upgraded });
-  }
+  const upgraded = Math.min(
+    player.militia,
+    riderRoom,
+    maxAffordable(wallet, upgradeCost(prices.riderPrice - prices.militiaPrice))
+  );
+  if (upgraded > 0) steps.push({ kind: 'upgrade', count: upgraded });
 
   return steps;
 }

@@ -1,6 +1,8 @@
 .gold-inline,
 .tower-inline,
 .fame-inline,
+.food-inline,
+.arms-inline,
 .unit-inline{
   display: inline-flex;
   align-items: center;
@@ -38,4 +40,10 @@
    the same size), same symptom, same clipped-ancestor trigger. */
 .unit-militia {
   width: 0.9rem;
+}
+/* Food/arms have no sprite yet -- an emoji sized like the other icons. */
+.resource-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
 }

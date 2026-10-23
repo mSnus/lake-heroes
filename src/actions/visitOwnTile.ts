@@ -5,6 +5,8 @@ import { syndicateMultiplier } from '../game/syndicate';
 import { setGameMessage } from '../utils/gameMessage';
 import { VISIT_GOLD_MULT, VISIT_UNITS_SHARE } from '../game/constants';
 import { t } from '../i18n';
+
+const RESOURCE_EMOJI = { gold: '🟡', food: '🍞', arms: '⚔️' };
 export function handleVisitOwnTile(
   board: GameState | null,
   updateGameState: (board: GameState) => void
@@ -27,10 +29,10 @@ export function handleVisitOwnTile(
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
 
   const rewards = [];
-  if (tile.bonusType === 'gold') {
-    const goldReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_GOLD_MULT);
-    rewards.push(`${goldReward}🟡`);
-    player.gold += goldReward;
+  if (tile.bonusType === 'gold' || tile.bonusType === 'food' || tile.bonusType === 'arms') {
+    const reward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_GOLD_MULT);
+    rewards.push(`${reward}${RESOURCE_EMOJI[tile.bonusType]}`);
+    player[tile.bonusType] += reward;
   }
 
   if (tile.bonusType === 'units') {

@@ -74,6 +74,8 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   const [moveIdx, setMoveIdx] = useState(tileOptions[0]?.index ?? 0);
   const [ownIdx, setOwnIdx] = useState(tileOptions[0]?.index ?? 0);
   const [gold, setGold] = useState(player.gold);
+  const [food, setFood] = useState(player.food);
+  const [arms, setArms] = useState(player.arms);
   const [militia, setMilitia] = useState(player.militia);
   const [riders, setRiders] = useState(player.riders);
   const [fame, setFame] = useState(player.fame);
@@ -98,6 +100,12 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
 
   const handleSetGold = () => {
     player.gold = Math.max(0, Math.min(GOLD_CAP, Math.round(gold)));
+    refresh();
+  };
+
+  const handleSetResources = () => {
+    player.food = Math.max(0, Math.min(GOLD_CAP, Math.round(food)));
+    player.arms = Math.max(0, Math.min(GOLD_CAP, Math.round(arms)));
     refresh();
   };
 
@@ -167,6 +175,31 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             onChange={(e) => clampedInput(e, GOLD_CAP, setGold)}
           />
           <button className="game-menu-button" onClick={handleSetGold}>
+            {t('cheatScreen.set')}
+          </button>
+        </div>
+
+        <div className="cheat-row">
+          <label>{t('cheatScreen.setResources')}</label>
+          <input
+            type="number"
+            min={0}
+            max={GOLD_CAP}
+            value={food}
+            style={{ width: '4rem' }}
+            onChange={(e) => clampedInput(e, GOLD_CAP, setFood)}
+          />
+          🍞
+          <input
+            type="number"
+            min={0}
+            max={GOLD_CAP}
+            value={arms}
+            style={{ width: '4rem' }}
+            onChange={(e) => clampedInput(e, GOLD_CAP, setArms)}
+          />
+          ⚔️
+          <button className="game-menu-button" onClick={handleSetResources}>
             {t('cheatScreen.set')}
           </button>
         </div>

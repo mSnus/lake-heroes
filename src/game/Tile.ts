@@ -4,6 +4,9 @@ import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, garrisonSlotsForLevel, UNIT_POWER, isBanzaiAttack } from './army';
 import { t, tOptional } from '../i18n';
 
+/** What a tile's own bonus pays out every turn. */
+export type TileBonusType = 'gold' | 'food' | 'arms' | 'units';
+
 export interface TileJSON {
   /** Stable, never-translated slug (e.g. "king-castle") — every game-logic
    * check against "which tile is this" uses this, never the (translatable)
@@ -15,7 +18,7 @@ export interface TileJSON {
    * type-checks. */
   name?: string;
   isOwnable: boolean;
-  bonusType?: 'gold' | 'units';
+  bonusType?: TileBonusType;
   /** Purchase (level 1) and upgrade (2, 3) cost, as a coefficient of the
    * TILE_BASE_* values -- see the `prices` getter. */
   prices?: { [level: number]: number };
@@ -71,7 +74,7 @@ export class Tile implements TileJSON {
   id: string;
   group: string;
   isOwnable: boolean;
-  bonusType: 'gold' | 'units';
+  bonusType: TileBonusType;
   /** Authored price/income coefficients (from tiles.json). The real gold
    * numbers are computed on read by the `prices` / `bonuses` getters using the
    * live TILE_BASE_* overrides, so an economy tweak (⚖️ screen) reprices every
@@ -184,13 +187,13 @@ export class Tile implements TileJSON {
 
   /** Per-level income, paid out every turn (see game/income.ts's
    * collectTileTurnIncome), computed from coefficients and the live income
-   * multiplier. Gold-type tiles pay gold (× base × mult, then cut by
-   * BONUS_GOLD_RATIO and TURN_INCOME_RATIO, rounded to the nearest 5) --
-   * that's the only thing the income multiplier scales; unit-type tiles
-   * (Camps/Towers) pay a raw unit headcount, unscaled by it. */
+   * multiplier. Gold, food and arms tiles pay on one scale (× base × mult,
+   * then cut by BONUS_GOLD_RATIO and TURN_INCOME_RATIO, rounded to the
+   * nearest 5) -- the only thing the income multiplier scales; Towers pay a
+   * raw unit headcount, unscaled by it. */
   get bonuses(): { [level: number]: number } {
     const ov = getOverrides();
-    const isGold = this.bonusType === 'gold';
+    const isGold = this.bonusType !== 'units';
     const incomeBase = isGold ? ov.tileBasePrice * ov.tileIncomeMult : 1;
     const out: { [level: number]: number } = {};
     for (const key of Object.keys(this._bonusCoeffs)) {

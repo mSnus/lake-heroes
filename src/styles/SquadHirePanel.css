@@ -63,3 +63,12 @@
   white-space: nowrap;
   margin-left: 1rem;
 }
+
+/* A unit's or purchase's full recipe (gold/food/arms), stacked so the row
+   stays narrow. */
+.hire-row-cost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}

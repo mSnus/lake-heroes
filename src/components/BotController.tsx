@@ -134,6 +134,12 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
   // BattleScreen) — hand off entirely.
   if (screen?.content) return null;
 
+  // Harvest round: the bot already traded in beginHarvestTurn -- nothing else
+  // to do but end the turn.
+  if (board.harvest) {
+    return endTurnReady ? action(() => endTurn(board, updateGameState)) : null;
+  }
+
   if (screen?.buttons?.length) {
     return pickGenericScreenAction(ctx); // unrecognized multi-button screen -> null, don't guess
   }

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { UnitTier, formatArmyCap } from '../../game/army';
 import { upgradeSquadCost } from '../../actions/upgradeSquad';
-import { getOverrides } from '../../utils/overridesStore';
+import { Cost, formatCost, maxAffordable, scaleCost, unitCost, upgradeCost } from '../../game/resources';
+import { CostLabel } from '../snippets/CostLabel';
 import { useT } from '../../i18n';
 import Militia from '../snippets/Militia';
 import Rider from '../snippets/Rider';
-import { Gold } from '../snippets/Gold';
 import { DecoratedSlider } from './DecoratedSlider';
 import '../../styles/ArmyDisplay.css';
 import '../../styles/SquadHirePanel.css';
@@ -24,7 +24,8 @@ interface ArmyDisplayProps {
    * opens a slider to upgrade some to riders. */
   onUpgrade?: (count: number) => void;
   canUpgradeToRiders?: boolean;
-  playerGold?: number;
+  /** The player's gold/food/arms -- what an upgrade can be paid from. */
+  wallet?: { gold: number; food: number; arms: number };
   /** Overrides the per-unit upgrade price (the Tavern's premium). */
   upgradePricePerUnit?: number;
   className?: string;
@@ -41,7 +42,7 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
   onSell,
   onUpgrade,
   canUpgradeToRiders = false,
-  playerGold = 0,
+  wallet = { gold: 0, food: 0, arms: 0 },
   upgradePricePerUnit,
   className,
 }) => {
@@ -50,10 +51,10 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
   const [amount, setAmount] = useState(0);
   const [previewAmount, setPreviewAmount] = useState<number | null>(null);
 
-  const ov = getOverrides();
-  const upgradePerUnit = upgradePricePerUnit ?? ov.riderPrice - ov.militiaPrice;
-  const upgradeAffordable = upgradePerUnit > 0 ? Math.floor(playerGold / upgradePerUnit) : militia;
-  const upgradeMax = Math.max(0, Math.min(militia, capacity.riders - riders, upgradeAffordable));
+  const upgradeMax = Math.max(
+    0,
+    Math.min(militia, capacity.riders - riders, maxAffordable(wallet, upgradeCost(upgradePricePerUnit)))
+  );
   const canUpgrade = !!onUpgrade && canUpgradeToRiders && upgradeMax > 0;
 
   const maxFor = (action: PendingAction) =>
@@ -80,11 +81,12 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
     setPreviewAmount(null);
   };
 
-  const goldDelta = !pending
-    ? 0
+  // Paid for an upgrade, refunded for a sale.
+  const delta: Cost | null = !pending
+    ? null
     : pending.kind === 'upgrade'
-      ? -upgradeSquadCost(shown, upgradePerUnit)
-      : shown * (pending.tier === 'riders' ? ov.riderPrice : ov.militiaPrice);
+      ? upgradeSquadCost(shown, upgradePricePerUnit)
+      : scaleCost(unitCost(pending.tier), shown);
 
   const badge = (tier: UnitTier) => {
     const count = tier === 'riders' ? riders : militia;
@@ -127,7 +129,7 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
             {showUpgrade && (
               <button
                 className={'squad-upgrade-button' + (canUpgrade ? '' : ' squad-action-hidden')}
-                title={t('armyDisplay.upgrade', { gold: upgradePerUnit })}
+                title={t('armyDisplay.upgrade', { cost: formatCost(upgradeCost(upgradePricePerUnit)) })}
                 disabled={!canUpgrade}
                 onClick={() => toggle({ kind: 'upgrade' })}
               >
@@ -172,7 +174,7 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
             >
               <span className="hire-submit-icon">✔️</span>
               <span className="hire-row-caption">
-                <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
+                {delta && <CostLabel cost={delta} sign={pending?.kind === 'upgrade' ? '-' : '+'} />}
               </span>
             </button>
           </div>

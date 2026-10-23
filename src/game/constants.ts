@@ -105,10 +105,6 @@ export const ANNUAL_DEFAULT_GOLD_MULT = 2.5;
 //adjustments for the King's grace reward
 export const GRACE_TOTAL_UNITS_MULT = 0.5;
 export const GRACE_TOTAL_GOLD_MULT = 0.5;
-// Every owned tile also brings in a flat militia trickle every turn, on top
-// of whatever its own bonus produces (gold-type tiles) or in addition to it
-// (units-type tiles) -- see game/income.ts's tileTurnIncome.
-export const FLAT_TILE_UNIT_INCOME = 1;
 // Calling in on your own tile pays a multiple of its daily bonus -- the
 // reward for spending the turn there rather than moving on (see
 // actions/visitOwnTile.ts). Units get the bigger multiple since passing
@@ -117,7 +113,18 @@ export const FLAT_TILE_UNIT_INCOME = 1;
 export const VISIT_GOLD_MULT = 2;
 export const VISIT_UNITS_SHARE = 5;
 
-export const UNIT_PRICE = 50; // gold per militia unit (King's Castle recruit price)
+// A unit costs gold, food and arms (King's Castle prices; the Tavern doubles
+// only the gold part -- see TAVERN_PRICE_MULT).
+export const UNIT_PRICE = 20; // gold per militia unit
+export const MILITIA_FOOD = 10;
+// Each player's opening stock, enough to hire a few militia before their
+// own tiles produce any.
+export const FOOD_START = 30;
+export const ARMS_START = 30;
+export const MILITIA_ARMS = 10;
+// Food/arms trade at the yearly Harvest (see components/screens/HarvestModal.tsx).
+export const HARVEST_BUY_PRICE = 2; // gold per food/arms bought
+export const HARVEST_SELL_PRICE = 1; // gold per food/arms sold
 // The Tavern charges a premium over the King's Castle's own prices, for both
 // hiring and squad upgrades -- a night of drinking recruits costs more than
 // the crown's standing offer.
@@ -134,7 +141,9 @@ export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible f
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
-export const RIDER_UNIT_PRICE = 100; // gold per rider
+export const RIDER_UNIT_PRICE = 40; // gold per rider
+export const RIDER_FOOD = 20;
+export const RIDER_ARMS = 30;
 // How much one unit of each kind is worth on a single strength scale, in
 // militia. Everything that rates a force -- AI decisions, the Banzai
 // threshold, the tile-card strength readout -- measures with these, so the

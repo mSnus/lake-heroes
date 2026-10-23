@@ -3,7 +3,7 @@ import { GameState } from '../../game/GameState';
 import { useModal, startDiceRoll } from '../../utils/diceStore';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { PlayerLabel } from '../snippets/PlayerLabel';
-import { Gold } from '../snippets/Gold';
+import { IncomeLabel, hasIncome } from '../snippets/IncomeLabel';
 import { playerTurnIncome } from '../../game/income';
 import { gameEvent } from '../../utils/events';
 import { tJsx } from '../../i18n/tJsx';
@@ -103,16 +103,14 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
         style={{ fontWeight: 'normal' }}
       >
         <span>
-          {tJsx('turnAnnouncement.text', { playerName: <PlayerLabel player={player}/> })}
+          {tJsx(gameState.harvest ? 'turnAnnouncement.harvestText' : 'turnAnnouncement.text', {
+            playerName: <PlayerLabel player={player} />,
+          })}
         </span>
-        {(turnIncome.gold > 0 || turnIncome.units > 0) && (
+        {/* A Harvest turn collects no tile income. */}
+        {!gameState.harvest && hasIncome(turnIncome) && (
           <span className="turn-announcement-income">
-            {turnIncome.gold > 0 && (
-              <>
-                +<Gold amount={turnIncome.gold} />{' '}
-              </>
-            )}
-            {turnIncome.units > 0 && <>+{turnIncome.units}🧍</>}
+            <IncomeLabel income={turnIncome} unitColor={player.image} />
           </span>
         )}
       </DecoratedButton>

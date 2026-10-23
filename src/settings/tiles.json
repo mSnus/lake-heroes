@@ -4,7 +4,7 @@
     "group": "Mills",
     "spriteImage": "assets/sprites/water.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "arms",
     "requiredFame": 0,
     "garrison": 8,
     "prices": {
@@ -23,7 +23,7 @@
     "group": "Mills",
     "spriteImage": "assets/sprites/windmill.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "arms",
     "requiredFame": 0,
     "garrison": 12,
     "prices": {
@@ -42,7 +42,7 @@
     "group": "Mills",
     "spriteImage": "assets/sprites/bricks.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "arms",
     "requiredFame": 3,
     "garrison": 18,
     "prices": {
@@ -61,7 +61,7 @@
     "group": "Farms",
     "spriteImage": "assets/sprites/pigs.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "food",
     "requiredFame": 0,
     "garrison": 6,
     "prices": {
@@ -80,7 +80,7 @@
     "group": "Farms",
     "spriteImage": "assets/sprites/cows.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "food",
     "requiredFame": 0,
     "garrison": 8,
     "prices": {
@@ -99,7 +99,7 @@
     "group": "Farms",
     "spriteImage": "assets/sprites/sheep.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "food",
     "requiredFame": 3,
     "garrison": 10,
     "prices": {
@@ -118,7 +118,7 @@
     "group": "Fields",
     "spriteImage": "assets/sprites/wheat.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "food",
     "requiredFame": 0,
     "garrison": 8,
     "prices": {
@@ -137,7 +137,7 @@
     "group": "Fields",
     "spriteImage": "assets/sprites/cabbage.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "food",
     "requiredFame": 0,
     "garrison": 12,
     "prices": {
@@ -156,7 +156,7 @@
     "group": "Fields",
     "spriteImage": "assets/sprites/fruit.png",
     "isOwnable": true,
-    "bonusType": "gold",
+    "bonusType": "food",
     "requiredFame": 3,
     "garrison": 16,
     "prices": {
@@ -232,7 +232,7 @@
     "group": "Camps",
     "spriteImage": "assets/sprites/bows.png",
     "isOwnable": true,
-    "bonusType": "units",
+    "bonusType": "arms",
     "requiredFame": 3,
     "garrison": 24,
     "prices": {
@@ -241,15 +241,9 @@
       "3": 15
     },
     "bonuses": {
-      "1": 0,
-      "2": 1,
-      "3": 2
-    },
-    "annualGoldMult": 3,
-    "annualUnits": {
-      "1": 1,
-      "2": 3,
-      "3": 5
+      "1": 5,
+      "2": 10,
+      "3": 15
     }
   },
   {
@@ -257,7 +251,7 @@
     "group": "Camps",
     "spriteImage": "assets/sprites/knives.png",
     "isOwnable": true,
-    "bonusType": "units",
+    "bonusType": "arms",
     "requiredFame": 6,
     "garrison": 32,
     "prices": {
@@ -266,15 +260,9 @@
       "3": 15
     },
     "bonuses": {
-      "1": 0,
-      "2": 1,
-      "3": 2
-    },
-    "annualGoldMult": 4,
-    "annualUnits": {
-      "1": 1,
-      "2": 3,
-      "3": 5
+      "1": 5,
+      "2": 10,
+      "3": 15
     }
   },
   {
@@ -282,7 +270,7 @@
     "group": "Camps",
     "spriteImage": "assets/sprites/swords.png",
     "isOwnable": true,
-    "bonusType": "units",
+    "bonusType": "arms",
     "requiredFame": 7,
     "garrison": 40,
     "prices": {
@@ -291,15 +279,9 @@
       "3": 15
     },
     "bonuses": {
-      "1": 0,
-      "2": 1,
-      "3": 2
-    },
-    "annualGoldMult": 4,
-    "annualUnits": {
-      "1": 1,
-      "2": 3,
-      "3": 5
+      "1": 5,
+      "2": 10,
+      "3": 15
     }
   },
   {
