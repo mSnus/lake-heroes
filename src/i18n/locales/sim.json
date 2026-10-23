@@ -286,7 +286,9 @@
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by 🧍{amount}",
     "riskOrPay": "Seek revenge and raze it?",
-    "razedSmokeCaveat": "Razed tiles become abandoned"
+    "razedSmokeCaveat": "Razed tiles become abandoned",
+    "forcedToPayAmount": "{amount}",
+    "forcedToPayAmountFrom": "{amount} ({before} → {after})"
   },
   "newGameModal": {
     "heroes": "Heroes:",

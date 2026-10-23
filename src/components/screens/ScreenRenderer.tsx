@@ -92,7 +92,8 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
           <div className="text-message">
             {isToll ? (
               <>
-                <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />{' '}
+                <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />
+                <br />
                 <Militia amount={config.encounter.militia ?? 0} color={config.encounter.playerImage} />
                 {(config.encounter.riders ?? 0) > 0 && (
                   <Rider amount={config.encounter.riders!} color={config.encounter.playerImage} />
@@ -104,9 +105,9 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   owner: <PlayerLabel name={config.encounter.ownerName!} color={config.encounter.ownerColor} bold />,
                   amount:
                     config.encounter.goldBefore === undefined
-                      ? t('screenRenderer.forcedToPayAmount', { amount: config.encounter.fee ?? 0 })
-                      : t('screenRenderer.forcedToPayAmountFrom', {
-                          amount: config.encounter.fee ?? 0,
+                      ? tJsx('screenRenderer.forcedToPayAmount', { amount: <Gold amount={config.encounter.fee ?? 0} /> })
+                      : tJsx('screenRenderer.forcedToPayAmountFrom', {
+                          amount: <Gold amount={config.encounter.fee ?? 0} />,
                           before: config.encounter.goldBefore,
                           after: config.encounter.gold ?? 0,
                         }),
