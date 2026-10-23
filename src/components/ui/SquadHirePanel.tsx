@@ -3,15 +3,15 @@ import { Player } from '../../game/Player';
 import { UnitTier } from '../../game/army';
 import { getOverrides } from '../../utils/overridesStore';
 import { DecoratedSlider } from './DecoratedSlider';
-import { CostLabel } from '../snippets/CostLabel';
-import { hireMax, scaleCost, unitCost } from '../../game/resources';
+import { Militia } from '../snippets/Militia';
+import { Rider } from '../snippets/Rider';
+import { hireMax } from '../../game/resources';
 import { useT } from '../../i18n';
 import '../../styles/SquadHirePanel.css';
 
 interface HireRowProps {
   player: Player;
   tier: UnitTier;
-  emoji: string;
   unitPrice: number;
   onBuy: (amount: number, tier: UnitTier) => void;
   /** Tavern only: mirrors this row's live (pre-commit) slider amount up to
@@ -28,13 +28,12 @@ interface HireRowProps {
 const HireRow: React.FC<HireRowProps> = ({
   player,
   tier,
-  emoji,
   unitPrice,
   onBuy,
   onAmountChange,
   registerBuy,
 }) => {
-  const cost = unitCost(tier, unitPrice);
+  const UnitIcon = tier === 'riders' ? Rider : Militia;
   const maxAmount = hireMax(player, tier, unitPrice);
 
   // Starts at 0, and returns to 0 after a hire: buying is opt-in, so the
@@ -80,11 +79,8 @@ const HireRow: React.FC<HireRowProps> = ({
 
   return (
     <div className="hire-row">
-      <div className="hire-row-stack">
-        <div className="hire-row-name">{emoji}</div>
-        <div className="hire-row-caption hire-row-cost">
-          <CostLabel cost={cost} />
-        </div>
+      <div className="hire-row-name">
+        <UnitIcon amount="" color={player.image} />
       </div>
       <DecoratedSlider
         min={0}
@@ -100,9 +96,6 @@ const HireRow: React.FC<HireRowProps> = ({
       <div className={'shield-button-container' + (canBuy ? '' : ' shield-button-container--disabled')}>
         <button className="shield-button hire-submit" onClick={handleBuy} disabled={!canBuy}>
           <span className="hire-submit-icon">👛</span>
-          <span className="hire-row-caption hire-row-cost">
-            <CostLabel cost={scaleCost(cost, displayedAmount)} />
-          </span>
         </button>
       </div>
     </div>
@@ -160,7 +153,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
         <HireRow
           player={player}
           tier="militia"
-          emoji="🧍"
           unitPrice={militiaPrice ?? ov.militiaPrice}
           onBuy={onBuy}
           onAmountChange={onAmountChange}
@@ -171,7 +163,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
         <HireRow
           player={player}
           tier="riders"
-          emoji="🐎"
           unitPrice={riderPrice ?? ov.riderPrice}
           onAmountChange={onAmountChange}
           registerBuy={registerBuy}

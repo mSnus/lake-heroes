@@ -42,14 +42,6 @@
   line-height: 1;
 }
 
-/* Unit emoji + unit price, stacked so the row stays narrow. */
-.hire-row-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
 /* Unit/total price captions -- same small size as TileCard's "defence"
    caption -- live, updates while dragging. */
 .hire-row-caption {
@@ -64,13 +56,4 @@
   font-weight: 600;
   white-space: nowrap;
   margin-left: 1rem;
-}
-
-/* A unit's or purchase's full recipe (gold/food/arms), stacked so the row
-   stays narrow. */
-.hire-row-cost {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.1;
 }

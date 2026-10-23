@@ -75,16 +75,6 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
   const ridersMax = canRecruitRiders ? hireMax(player, 'riders', riderPrice) : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
-  // Militia is always the cheapest recruitable tier, so a resource that
-  // can't cover even one of those blocks hiring outright -- that's the
-  // "not enough for a single unit" flag on each resource row below.
-  const cheapestUnitCost = unitCost('militia', militiaPrice);
-  const shortOnGold = player.gold < cheapestUnitCost.gold;
-  const shortOnFood = player.food < cheapestUnitCost.food;
-  const shortOnArms = player.arms < cheapestUnitCost.arms;
-  const flagIfShort = (short: boolean, node: React.ReactNode): React.ReactNode =>
-    short ? <span style={{ color: '#ff4d4d', fontWeight: 'bold' }}>🔻{node}</span> : node;
-
   const footer = useHireFooter(!atMax);
   const handleBuy = (amount: number, tier: UnitTier) => {
     buyUnits(gameState, amount, updateGameState, tier, tier === 'riders' ? riderPrice : militiaPrice);
@@ -94,6 +84,30 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
 
   const pendingTier: UnitTier | null =
     footer.amountOf('militia') > 0 ? 'militia' : footer.amountOf('riders') > 0 ? 'riders' : null;
+
+  // What the sliders currently have dialled in (committed or mid-drag) would
+  // cost -- subtracted from the player's actual holdings so the gold line up
+  // top and the resource bar below react live to the hire panel, not just to
+  // an actual purchase.
+  const militiaUnitCost = unitCost('militia', militiaPrice);
+  const riderUnitCost = unitCost('riders', riderPrice);
+  const pendingMilitia = footer.amountOf('militia');
+  const pendingRiders = footer.amountOf('riders');
+  const projectedGold =
+    player.gold - militiaUnitCost.gold * pendingMilitia - riderUnitCost.gold * pendingRiders;
+  const projectedFood =
+    player.food - militiaUnitCost.food * pendingMilitia - riderUnitCost.food * pendingRiders;
+  const projectedArms =
+    player.arms - militiaUnitCost.arms * pendingMilitia - riderUnitCost.arms * pendingRiders;
+
+  // Militia is always the cheapest recruitable tier, so a resource that
+  // can't cover even one of those blocks hiring outright -- that's the
+  // "not enough for a single unit" flag on each resource row below.
+  const shortOnGold = projectedGold < militiaUnitCost.gold;
+  const shortOnFood = projectedFood < militiaUnitCost.food;
+  const shortOnArms = projectedArms < militiaUnitCost.arms;
+  const flagIfShort = (short: boolean, node: React.ReactNode): React.ReactNode =>
+    short ? <span style={{ color: '#ff4d4d', fontWeight: 'bold' }}>🔻{node}</span> : node;
 
   return (
     <ScreenBackground
@@ -121,7 +135,7 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
       </div>
 
       <div className="text-message" style={{ marginTop: 0 }}>
-        <PlayerLabel player={player} bold /> <Fame amount={player.fame} /> <Gold amount={player.gold} />
+        <PlayerLabel player={player} bold /> <Fame amount={player.fame} /> <Gold amount={projectedGold} />
       </div>
 
       <ArmyDisplay
@@ -177,15 +191,6 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
         </div>
       )}
 
-      <div
-        className="player-stats-data player-stats-gold army-screen-resources"
-        style={{ justifyContent: 'center', gap: '1rem', cursor: 'default' }}
-      >
-        <div className="player-stats-inline-row">{flagIfShort(shortOnGold, <Gold amount={player.gold} />)}</div>
-        <div className="player-stats-inline-row">{flagIfShort(shortOnFood, <Food amount={player.food} />)}</div>
-        <div className="player-stats-inline-row">{flagIfShort(shortOnArms, <Arms amount={player.arms} />)}</div>
-      </div>
-
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
         <SquadHirePanel
           player={player}
@@ -196,6 +201,15 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
           onAmountChange={footer.onAmountChange}
           registerBuy={footer.registerBuy}
         />
+      </div>
+
+      <div
+        className="player-stats-data player-stats-gold army-screen-resources"
+        style={{ justifyContent: 'center', gap: '1rem', cursor: 'default' }}
+      >
+        <div className="player-stats-inline-row">{flagIfShort(shortOnGold, <Gold amount={projectedGold} />)}</div>
+        <div className="player-stats-inline-row">{flagIfShort(shortOnFood, <Food amount={projectedFood} />)}</div>
+        <div className="player-stats-inline-row">{flagIfShort(shortOnArms, <Arms amount={projectedArms} />)}</div>
       </div>
 
       <div className="game-menu pay-or-fight-grid" style={{ '--pay-or-fight-cols': 1 } as React.CSSProperties}>
