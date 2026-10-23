@@ -85,7 +85,7 @@ const SettingsScreen: React.FC = () => {
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}
         >
-          <DecoratedButton onClick={clearScreen}>{t('common.close')}</DecoratedButton>
+          <DecoratedButton onClick={clearScreen}>{t('settingsScreen.saveAndClose')}</DecoratedButton>
         </div>
       </div>
     </GameModal>

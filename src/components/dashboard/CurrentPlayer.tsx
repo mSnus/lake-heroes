@@ -192,7 +192,9 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
         </div>
 
         <div className="player-position">
-          <PlayerLabel player={activePlayer} />
+          <span onClick={openKingdomOverview} style={{ cursor: 'pointer' }}>
+            <PlayerLabel player={activePlayer} />
+          </span>
 
           <span>{t('currentPlayer.isAt')}</span>
           <span

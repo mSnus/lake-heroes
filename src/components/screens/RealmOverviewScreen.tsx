@@ -12,6 +12,7 @@ import { computeAnnualReward, KingsGraceReward } from '../../game/kingsGrace';
 import { formatArmy } from '../../utils/formatArmy';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
+import { DecoratedButton } from '../ui/DecoratedButton';
 import { useT } from '../../i18n';
 import '../../styles/RealmOverviewScreen.css';
 
@@ -90,9 +91,9 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
 
   return (
     <div className="realm-screen">
-      <button onClick={clearScreen} className="realm-close" aria-label={t('common.close')}>
-        ✕
-      </button>
+      <div className="realm-close">
+        <DecoratedButton onClick={clearScreen}>{t('common.close')}</DecoratedButton>
+      </div>
 
       <div className="realm-inner">
         {ranked.map((player) => {

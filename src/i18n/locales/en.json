@@ -12,7 +12,7 @@
     "slots": "slots",
     "and": "and",
     "vs": "vs",
-    "close": "Save settings",
+    "close": "Close",
     "continue": "Continue",
     "tierMilitia": "militia",
     "tierRiders": "riders"
@@ -1084,7 +1084,8 @@
     "mapAutoZoom": "Map auto-zoom",
     "mapAutoZoomHint": "The map camera zooms in on the active player at the start of their turn.",
     "fogOfWar": "Fog of war",
-    "fogOfWarHint": "Tiles start hidden and are only revealed once a player lands on them. Turn off to reveal the whole map from the start."
+    "fogOfWarHint": "Tiles start hidden and are only revealed once a player lands on them. Turn off to reveal the whole map from the start.",
+    "saveAndClose": "Save settings"
   },
   "versionMismatch": {
     "message": "🔄 New version available (you have {running}, server has {latest}) — tap to update",

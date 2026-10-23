@@ -12,7 +12,7 @@
     "slots": "ranuras",
     "and": "y",
     "vs": "vs",
-    "close": "Guardar y cerrar",
+    "close": "Cerrar",
     "continue": "Continuar",
     "tierMilitia": "milicia",
     "tierRiders": "jinetes"
@@ -1080,7 +1080,8 @@
     "mapAutoZoom": "Zoom automático del mapa",
     "mapAutoZoomHint": "La cámara del mapa se acerca al jugador activo al inicio de su turno.",
     "fogOfWar": "Niebla de guerra",
-    "fogOfWarHint": "Las casillas empiezan ocultas y solo se revelan cuando un jugador cae en ellas. Desactívalo para revelar todo el mapa desde el inicio."
+    "fogOfWarHint": "Las casillas empiezan ocultas y solo se revelan cuando un jugador cae en ellas. Desactívalo para revelar todo el mapa desde el inicio.",
+    "saveAndClose": "Guardar y cerrar"
   },
   "battleSimScreen": {
     "attacker": "Atacante",
