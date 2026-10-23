@@ -180,7 +180,8 @@
   },
   "squadHirePanel": {
     "hireTitle": "Нанять ещё (у вас {gold}🟡):",
-    "hireTitleMax": "Нанять ещё (макс: {max}):"
+    "hireTitleMax": "Нанять ещё (макс: {max}):",
+    "hireTitlePlain": "Нанять ещё:"
   },
   "armyDisplay": {
     "sellMilitia": "Продать пехоту",
@@ -1141,6 +1142,7 @@
   "workersEncounter": {
     "title": "Рабочие",
     "message": "{playerSpan} встречает группу людей, ищущих любую хорошо оплачиваемую работу. Возможно, вы захотите их нанять.",
+    "fameAndGold": "{fame}   {gold}",
     "hireButton": "Нанять {army}",
     "passByButton": "⚜️ Гордо пройти мимо",
     "narrateVisit": "{playerName} встретил вольных работников, ищущих, к кому присоединиться 🧑‍🌾"

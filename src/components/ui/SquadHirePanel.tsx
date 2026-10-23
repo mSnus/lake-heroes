@@ -125,8 +125,11 @@ interface SquadHirePanelProps {
    * driven cap, and current headcount all folded into one number) is
    * the more useful figure once you're already looking at the slider. */
   titleMax?: number;
-  /** Tavern only: see HireRow's own doc comments -- threaded straight
-   * through so the footer button there can mirror/drive the sliders. */
+  /** Plain "Hire more:" with no gold or max -- for a dialogue that already
+   * shows the player's gold elsewhere. */
+  plainTitle?: boolean;
+  /** See HireRow's own doc comments -- threaded straight through so a
+   * footer button can mirror/drive the sliders (see useHireFooter). */
   onAmountChange?: (tier: UnitTier, amount: number) => void;
   registerBuy?: (tier: UnitTier, buy: () => void) => void;
 }
@@ -142,6 +145,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   militiaPrice,
   riderPrice,
   titleMax,
+  plainTitle = false,
   onAmountChange,
   registerBuy,
 }) => {
@@ -151,9 +155,11 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   return (
     <div className="squad-hire-panel">
       <div className="squad-hire-panel-title">
-        {titleMax !== undefined
-          ? t('squadHirePanel.hireTitleMax', { max: titleMax })
-          : t('squadHirePanel.hireTitle', { gold: player.gold })}
+        {plainTitle
+          ? t('squadHirePanel.hireTitlePlain')
+          : titleMax !== undefined
+            ? t('squadHirePanel.hireTitleMax', { max: titleMax })
+            : t('squadHirePanel.hireTitle', { gold: player.gold })}
       </div>
       {showMilitia && (
         <HireRow

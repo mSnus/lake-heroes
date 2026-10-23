@@ -6,9 +6,13 @@ import { UnitTier } from '../../game/army';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
+import { useHireFooter } from '../ui/useHireFooter';
+import { Gold } from '../snippets/Gold';
+import { Fame } from '../snippets/Fame';
 import { formatArmy } from '../../utils/formatArmy';
 import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
 import { useT } from '../../i18n';
+import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
 
 /** Workers reuse 🧍🏾 rather than the army's own 🧍, so the close button
@@ -26,9 +30,8 @@ interface WorkersModalProps {
 /**
  * Workers' hire dialogue -- same mechanics and prices as the Tavern's (see
  * actions/tavern.ts's tavernMilitiaPrice/tavernRiderPrice), just reached as
- * a random encounter instead of a tile. The close button itself reports
- * what was hired this visit, tallied locally since onBuy commits instantly
- * (same as the Tavern) rather than staging a pending amount.
+ * a random encounter instead of a tile. The footer button hires whatever the
+ * sliders show (see useHireFooter), or passes by when they're at 0.
  */
 const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, onUpgrade, onSkip }) => {
   const t = useT();
@@ -41,13 +44,10 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
   // re-invokes it — force a re-render so the squad row and gold/fame-derived
   // text update immediately (mirrors TavernModal/KingsCastleModal).
   const [, forceRerender] = useState(0);
-  const [hiredMilitia, setHiredMilitia] = useState(0);
-  const [hiredRiders, setHiredRiders] = useState(0);
 
   const handleBuy = (amount: number, tier: UnitTier) => {
     onBuy(amount, tier);
-    if (tier === 'riders') setHiredRiders((n) => n + amount);
-    else setHiredMilitia((n) => n + amount);
+    footer.clear(tier);
     forceRerender((v) => v + 1);
   };
 
@@ -69,6 +69,22 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
+  // Both rows' amounts at once when the gold covers them together; otherwise
+  // militia first, same priority order the rows render in.
+  const footer = useHireFooter(!atMax);
+  const pendingMilitia = footer.amountOf('militia');
+  const pendingRiders = footer.amountOf('riders');
+  const bothAffordable = pendingMilitia * militiaPrice + pendingRiders * riderPrice <= player.gold;
+  const toHire = {
+    militia: pendingMilitia,
+    riders: bothAffordable || pendingMilitia === 0 ? pendingRiders : 0,
+  };
+
+  const hirePending = () => {
+    if (toHire.militia > 0) footer.buy('militia');
+    if (toHire.riders > 0) footer.buy('riders');
+  };
+
   useEffect(() => {
     if (!player.isComputer) return;
     const plan = planArmyPurchase(player, { militiaPrice, riderPrice });
@@ -84,10 +100,10 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
     return () => clearTimeout(timer);
   }, []);
 
-  const closeLabel =
-    hiredMilitia + hiredRiders > 0
-      ? t('workersEncounter.hireButton', { army: formatArmy(hiredMilitia, hiredRiders, WORKER_EMOJI) })
-      : t('workersEncounter.passByButton');
+  const isHiring = toHire.militia + toHire.riders > 0;
+  const footerLabel = isHiring
+    ? t('workersEncounter.hireButton', { army: formatArmy(toHire.militia, toHire.riders, WORKER_EMOJI) })
+    : t('workersEncounter.passByButton');
 
   return (
     <GameModal
@@ -106,6 +122,20 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
             }),
           }}
         />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
+          {tJsx('workersEncounter.fameAndGold', {
+            fame: (
+              <span className="value">
+                <Fame amount={player.fame} />
+              </span>
+            ),
+            gold: (
+              <span className="value">
+                <Gold amount={player.gold} />
+              </span>
+            ),
+          })}
+        </div>
 
         <ArmyDisplay
           militia={player.militia}
@@ -130,6 +160,9 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
               onBuy={handleBuy}
               militiaPrice={militiaPrice}
               riderPrice={riderPrice}
+              plainTitle
+              onAmountChange={footer.onAmountChange}
+              registerBuy={footer.registerBuy}
             />
           )}
         </div>
@@ -138,7 +171,7 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
         >
-          <DecoratedButton onClick={onSkip}>{closeLabel}</DecoratedButton>
+          <DecoratedButton onClick={isHiring ? hirePending : onSkip}>{footerLabel}</DecoratedButton>
         </div>
       </div>
     </GameModal>

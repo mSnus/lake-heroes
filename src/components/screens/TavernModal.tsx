@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
 import GameModal from './GameModal';
@@ -6,6 +6,7 @@ import { UnitTier } from '../../game/army';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
+import { useHireFooter } from '../ui/useHireFooter';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
 import { Fame } from '../snippets/Fame';
@@ -56,6 +57,7 @@ const TavernModal: React.FC<TavernModalProps> = ({
   const [, forceRerender] = useState(0);
   const handleBuy = (amount: number, tier: UnitTier) => {
     onBuy(amount, tier);
+    footer.clear(tier);
     forceRerender((v) => v + 1);
   };
 
@@ -77,25 +79,11 @@ const TavernModal: React.FC<TavernModalProps> = ({
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
-  // Mirrors SquadHirePanel's sliders so the footer button below can turn
-  // into "Hire {amount}" and trigger whichever row currently has a pending
-  // amount dialled in -- amount as state (so the button label re-renders),
-  // the actual row buy functions as a ref (closures that are new every
-  // render, so comparing them for a state update would never settle).
-  const [pendingAmount, setPendingAmount] = useState<Partial<Record<UnitTier, number>>>({});
-  const buyRefs = useRef<Partial<Record<UnitTier, () => void>>>({});
-  const handleRowAmountChange = (tier: UnitTier, amount: number) => {
-    setPendingAmount((s) => (s[tier] === amount ? s : { ...s, [tier]: amount }));
-  };
-
-  const handleRegisterBuy = (tier: UnitTier, buy: () => void) => {
-    buyRefs.current[tier] = buy;
-  };
-
   // Militia first, same priority order the rows render in -- only knights
   // ever have a second (riders) row to prefer instead.
+  const footer = useHireFooter(!atMax);
   const pendingTier: UnitTier | null =
-    (pendingAmount.militia ?? 0) > 0 ? 'militia' : (pendingAmount.riders ?? 0) > 0 ? 'riders' : null;
+    footer.amountOf('militia') > 0 ? 'militia' : footer.amountOf('riders') > 0 ? 'riders' : null;
 
   useEffect(() => {
     if (!player.isComputer) return;
@@ -167,8 +155,8 @@ const TavernModal: React.FC<TavernModalProps> = ({
               militiaPrice={militiaPrice}
               riderPrice={riderPrice}
               titleMax={militiaMax}
-              onAmountChange={handleRowAmountChange}
-              registerBuy={handleRegisterBuy}
+              onAmountChange={footer.onAmountChange}
+              registerBuy={footer.registerBuy}
             />
           )}
         </div>
@@ -177,11 +165,9 @@ const TavernModal: React.FC<TavernModalProps> = ({
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
         >
-          <DecoratedButton
-            onClick={pendingTier ? () => buyRefs.current[pendingTier]?.() : onSkip}
-          >
+          <DecoratedButton onClick={pendingTier ? () => footer.buy(pendingTier) : onSkip}>
             {pendingTier
-              ? t('tavern.hireAmount', { amount: pendingAmount[pendingTier] ?? 0 })
+              ? t('tavern.hireAmount', { amount: footer.amountOf(pendingTier) })
               : t('tavern.newFolksWelcome')}
           </DecoratedButton>
         </div>

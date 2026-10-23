@@ -180,7 +180,8 @@
   },
   "squadHirePanel": {
     "hireTitle": "Hire more (you have {gold}🟡):",
-    "hireTitleMax": "Hire more (max: {max}):"
+    "hireTitleMax": "Hire more (max: {max}):",
+    "hireTitlePlain": "Hire more:"
   },
   "armyDisplay": {
     "sellMilitia": "Sell militia",
@@ -1121,6 +1122,7 @@
   "workersEncounter": {
     "title": "Workers",
     "message": "{playerSpan} encounters a group of men looking for any well-paid job. You may want to hire them.",
+    "fameAndGold": "{fame}   {gold}",
     "hireButton": "Hire {army}",
     "passByButton": "⚜️ Pass by, proudly",
     "narrateVisit": "{playerName} came across free workers looking for a cause to join 🧑‍🌾"
