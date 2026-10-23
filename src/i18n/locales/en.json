@@ -1224,8 +1224,6 @@
   },
   "armyScreen": {
     "title": "Army",
-    "capLine": "Fame {fame}: {militiaCap}max{ridersPart}",
-    "ridersPart": " {ridersCap}max",
     "dismount": "Dismount:",
     "hireAmount": "🧾 Hire {amount}",
     "close": "✖️ Close"

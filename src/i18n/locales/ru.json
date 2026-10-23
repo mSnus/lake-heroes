@@ -1194,8 +1194,6 @@
   },
   "armyScreen": {
     "title": "Армия",
-    "capLine": "Слава {fame}: {militiaCap}макс{ridersPart}",
-    "ridersPart": " {ridersCap}макс",
     "dismount": "Снять с коней:",
     "hireAmount": "🧾 Нанять {amount}",
     "close": "✖️ Закрыть"

@@ -1197,8 +1197,6 @@
   },
   "armyScreen": {
     "title": "Ejército",
-    "capLine": "Fama {fame}: {militiaCap}máx{ridersPart}",
-    "ridersPart": " {ridersCap}máx",
     "dismount": "Desmontar:",
     "hireAmount": "🧾 Contratar {amount}",
     "close": "✖️ Cerrar"

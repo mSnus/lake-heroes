@@ -1,13 +1,3 @@
-.army-stats {
-  color: wheat;
-  font-size: 1.2rem;
-  text-align: center;
-  padding: 0 24px;
-  line-height: 1.8;
-  z-index: 6001;
-  font-family: 'Texturina';
-}
-
 /* Above the screen's Fade (z-index 5501), so the sell/upgrade buttons work. */
 .garrisons-army-display {
   z-index: 5503;
@@ -22,6 +12,17 @@
   margin-top: 0.4rem;
   padding: 0 1rem;
   z-index: 5503;
+}
+
+/* ArmyScreen's gold/food/arms bar -- wheat on the screen's dark background,
+   matching the game's other text here. A resource flagged as blocking a
+   hire overrides this with its own red inline style. */
+.army-screen-resources,
+.army-screen-resources .gold-inline,
+.army-screen-resources .food-inline,
+.army-screen-resources .arms-inline {
+  color: wheat;
+  font-family: 'Texturina';
 }
 
 .garrisons-army-side {

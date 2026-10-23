@@ -22,9 +22,8 @@ import { upgradeSquad } from '../../actions/upgradeSquad';
 import { buyUnits } from '../../actions/buyUnits';
 import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
 import { hireMax, unitCost } from '../../game/resources';
-import { formatArmyCap, UnitTier } from '../../game/army';
+import { UnitTier } from '../../game/army';
 import { useT } from '../../i18n';
-import { tJsx } from '../../i18n/tJsx';
 import '../../styles/GameMenu.css';
 import '../../styles/GarrisonsScreen.css';
 import { Fade } from './Fade';
@@ -96,12 +95,6 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
   const pendingTier: UnitTier | null =
     footer.amountOf('militia') > 0 ? 'militia' : footer.amountOf('riders') > 0 ? 'riders' : null;
 
-  const ridersPart = player.isKnight
-    ? tJsx('armyScreen.ridersPart', {
-        ridersCap: <Rider amount={formatArmyCap(player.armyCapacity.riders)} color={player.image} />,
-      })
-    : '';
-
   return (
     <ScreenBackground
       image="assets/screens/battle.jpg"
@@ -143,14 +136,6 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
         spriteColor={player.image}
         className="squad-display-large garrisons-army-display"
       />
-
-      <div className="army-stats" style={{ lineHeight: '1.2' }}>
-        {tJsx('armyScreen.capLine', {
-          fame: <Fame amount={player.fame} />,
-          militiaCap: <Militia amount={formatArmyCap(player.armyCapacity.militia)} color={player.image} />,
-          ridersPart,
-        })}
-      </div>
 
       {player.riders > 0 && (
         <div className="garrisons-army">
