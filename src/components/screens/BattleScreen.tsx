@@ -825,12 +825,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               <span className="vs"> {t('common.vs')} </span>
               {defenderGridTotal}
             </div>
-            {battle.reserves.length > 0 && (
-              <div className="vs-reserves" title={t('battleScreen.reservesTitle')}>
-                +{battle.reserves.filter((u) => u.side === 'attacker').length} ·{' '}
-                +{battle.reserves.filter((u) => u.side === 'defender').length}
-              </div>
-            )}
             {modeIconSrc && <SpriteCircleIcon src={modeIconSrc} size="4.5rem" />}
           </div>
 

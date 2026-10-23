@@ -270,7 +270,6 @@
     "controlToggleTitle": "Cambia tu bando entre control automático y manual (desde su próximo movimiento)",
     "controlAuto": "auto",
     "controlManual": "manual",
-    "reservesTitle": "En reserva",
     "escapeTitle": "Huir: pierdes las {units} unidades en el campo y salvas la reserva",
     "escapeConfirm": "Pulsa 🏃 otra vez para huir — se perderán las {units} unidades en el campo",
     "escaped": "{name} huyó de la batalla, abandonando {units} unidades en el campo",

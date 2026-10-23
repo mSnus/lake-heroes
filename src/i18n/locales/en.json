@@ -271,7 +271,6 @@
     "controlToggleTitle": "Switch your side between automatic and manual control (from its next move)",
     "controlAuto": "auto",
     "controlManual": "manual",
-    "reservesTitle": "In reserve",
     "escapeTitle": "Escape: lose the {units} units on the field, save the reserves",
     "escapeConfirm": "Tap 🏃 again to escape — the {units} units on the field will be lost",
     "escaped": "{name} fled the battle, abandoning {units} units on the field",
