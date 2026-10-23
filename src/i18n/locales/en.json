@@ -290,7 +290,8 @@
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by 🧍{amount}",
     "forcedToPay": "and is forced to pay him",
-    "wasForcedToPay": "was forced to pay {amount} to",
+    "wasForcedToPay": "was forced to pay {amount}",
+    "toOwner": "to {owner}",
     "forTheTile": "for the {tile}{towers}",
     "riskOrPay": "Seek revenge and raze it?",
     "razedSmokeCaveat": "Razed tiles become abandoned"

@@ -111,7 +111,9 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                 <br />
                 {tJsx('screenRenderer.wasForcedToPay', { amount: <Gold amount={config.encounter.fee ?? 0} /> })}
                 <br />
-                <PlayerLabel name={config.encounter.ownerName!} color={config.encounter.ownerColor} bold />
+                {tJsx('screenRenderer.toOwner', {
+                  owner: <PlayerLabel name={config.encounter.ownerName!} color={config.encounter.ownerColor} bold />,
+                })}
                 <br />
                 {tJsx('screenRenderer.forTheTile', {
                   tile: (
