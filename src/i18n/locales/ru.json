@@ -286,9 +286,8 @@
     "belongsTo": "принадлежащую",
     "andIsGuarded": "и охраняемую 🧍{amount}",
     "forcedToPay": "и вынужден заплатить ему",
-    "forcedToPayAmount": "{amount}",
-    "forcedToPayAmountFrom": "{amount} ({before} → {after})",
-    "wasForcedBy": "вынужден заплатить {owner} {amount}",
+    "wasForcedBy": "по требованию {owner}",
+    "toPayAmount": "вынужден заплатить {amount}",
     "forTheTile": "за {tile}{towers}",
     "riskOrPay": "Отомстить и сжечь дотла?",
     "razedSmokeCaveat": "Разорённые земли становятся заброшенными"

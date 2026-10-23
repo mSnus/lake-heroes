@@ -99,19 +99,21 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
                   <Rider amount={config.encounter.riders!} color={config.encounter.playerImage} />
                 )}
                 {config.encounter.fame !== undefined && <Fame amount={config.encounter.fame} />}
+                {config.encounter.goldBefore !== undefined && (
+                  <>
+                    <span className="gold-struck">
+                      <Gold amount={config.encounter.goldBefore} />
+                    </span>{' '}
+                    →{' '}
+                  </>
+                )}
                 <Gold amount={config.encounter.gold ?? 0} />
                 <br />
                 {tJsx('screenRenderer.wasForcedBy', {
                   owner: <PlayerLabel name={config.encounter.ownerName!} color={config.encounter.ownerColor} bold />,
-                  amount:
-                    config.encounter.goldBefore === undefined
-                      ? tJsx('screenRenderer.forcedToPayAmount', { amount: <Gold amount={config.encounter.fee ?? 0} /> })
-                      : tJsx('screenRenderer.forcedToPayAmountFrom', {
-                          amount: <Gold amount={config.encounter.fee ?? 0} />,
-                          before: config.encounter.goldBefore,
-                          after: config.encounter.gold ?? 0,
-                        }),
                 })}
+                <br />
+                {tJsx('screenRenderer.toPayAmount', { amount: <Gold amount={config.encounter.fee ?? 0} /> })}
                 <br />
                 {tJsx('screenRenderer.forTheTile', {
                   tile: (
