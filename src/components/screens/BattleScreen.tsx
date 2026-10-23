@@ -791,12 +791,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                 <br />
               </div>
             </div>
-            {/* Left/right already follow the grid roles -- ambush's role
-                reversal is baked into the setup, so no isAmbush swap here. */}
+            {/* The armies as they entered the fight (left/right already follow
+                the grid roles -- ambush's role reversal is baked into the
+                setup, so no isAmbush swap here). */}
             <div className="vs-count">
-              {sideRemaining(battle, 'attacker')}
+              {attackerGridTotal}
               <span className="vs"> {t('common.vs')} </span>
-              {sideRemaining(battle, 'defender')}
+              {defenderGridTotal}
             </div>
             {battle.reserves.length > 0 && (
               <div className="vs-reserves" title={t('battleScreen.reservesTitle')}>
