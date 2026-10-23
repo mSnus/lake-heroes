@@ -276,31 +276,30 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             <strong>
               <Gold amount={revealed.gold ?? 0} />
             </strong>
-          </div>
-          <div className="player-stats-inline-row">
+
             {turnIncome.gold > 0 && (
               <div className="player-stats-income-row">
-                <span className="player-stats-turn-income">
-                  +<Gold amount={turnIncome.gold ?? 0} />
-                </span>
+                <span className="player-stats-turn-income">+{turnIncome.gold ?? 0}</span>
               </div>
             )}
           </div>
-        </div>
 
-        {/* food and arms -- what units are made of */}
-        <div className="player-stats-data player-stats-resources">
           <div className="player-stats-inline-row">
             <strong>
               <Food amount={activePlayer.food ?? 0} />
             </strong>
-            {turnIncome.food > 0 && <span className="player-stats-turn-income">+{turnIncome.food}</span>}
+            {turnIncome.food > 0 && (
+              <span className="player-stats-turn-income">+{turnIncome.food}</span>
+            )}
           </div>
+
           <div className="player-stats-inline-row">
             <strong>
               <Arms amount={activePlayer.arms ?? 0} />
             </strong>
-            {turnIncome.arms > 0 && <span className="player-stats-turn-income">+{turnIncome.arms}</span>}
+            {turnIncome.arms > 0 && (
+              <span className="player-stats-turn-income">+{turnIncome.arms}</span>
+            )}
           </div>
         </div>
 

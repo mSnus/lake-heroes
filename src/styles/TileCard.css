@@ -223,7 +223,7 @@
   flex-direction: column;
   margin-bottom: 8px;
   margin-top: 24px;
-  font-size: 18px;
+  font-size: 0.9rem;
   font-weight: 600;
   align-items: center;
   gap: 12px;
@@ -455,9 +455,7 @@
   margin-top: -0.3rem;
 }
 
-/* Matches King's Castle's input look (see modal.css's
-   .modal-content input[type='number']) for the garrison input, which isn't
-   nested under .modal-content here. */
+
 .tile-card-table-wrap input.units-input {
   height: 32px;
   width: 4rem;
@@ -470,7 +468,7 @@
   font-size: 20px;
   border-radius: 0;
   color: wheat;
-  font-family: 'Texturina';
+  font-family: 'Texturina', serif;
 }
 
 .tile-card-attack-emoji {

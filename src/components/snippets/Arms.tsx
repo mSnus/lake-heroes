@@ -7,7 +7,15 @@ interface ArmsProps {
 }
 
 export const Arms: React.FC<ArmsProps> = ({ amount, where = 'after' }) => {
-  const icon = <span className="resource-icon">⚔️</span>;
+  const icon = (
+    <span className="defence-icon">
+      <img
+        src={`assets/sprites/defence.svg`}
+        alt={'️⚔'}
+        className={`unit-icon`}
+      />
+    </span>
+  );
   return (
     <div className="arms-inline">
       {where === 'before' && icon}

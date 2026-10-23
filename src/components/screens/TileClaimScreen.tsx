@@ -142,15 +142,14 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   const maxLevel = 3;
   const nextLevel = Math.min(currentLevel + 1, maxLevel);
 
-  const canUpgradeToLevel = (level: number): boolean =>
+  const canUpgrade = (): boolean =>
     !tile.isYielded &&
-    level === nextLevel &&
     currentLevel < maxLevel &&
-    !!tile.prices[level] &&
-    (player.gold ?? 0) >= (tile.prices[level] || 0);
+    !!tile.prices[nextLevel] &&
+    (player.gold ?? 0) >= (tile.prices[nextLevel] || 0);
 
   const handleUpgradeToLevel = (level: number) => {
-    if (!canUpgradeToLevel(level)) return;
+    if (!canUpgrade()) return;
     const price = tile.prices[level];
     if (!window.confirm(t('tileCard.confirmUpgrade', { tileName: tile.name, gold: price }))) return;
 
@@ -164,19 +163,16 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     forceRerender((v) => v + 1);
   };
 
-  const priceTag = (level: number, currentLevel: number) => {
-    const gold = tile.prices[level] ?? 0;
-    // The upgrade-target level the player can't afford gets the same "can't
-    // pay" treatment as TileCard's upgrade table: a 🔻 prefix and bold red
-    // price text (see TileCard.priceCell). Price only -- the actual buy
-    // action lives in the single "Upgrade" button below the table.
-    const isUpgradeTarget = !tile.isYielded && level === nextLevel && currentLevel < maxLevel;
+  const priceTag = (forLevel: number, currentLevel: number) => {
+    const gold = tile.prices[forLevel] ?? 0;
+
+    const isUpgradeTarget = !tile.isYielded && forLevel === nextLevel && currentLevel < maxLevel;
     const lacksGold = isUpgradeTarget && (player.gold ?? 0) < gold;
     return (
       <div className="upgrade-price-badge">
-        {currentLevel === level ? <span className="checkmark">{t('tileClaimScreen.now')}</span> : ''}
-        <span style={lacksGold ? { color: '#ff4444', fontWeight: 'bold' } : undefined}>
-          {lacksGold && '🔻'}
+
+        <span style={lacksGold ? { color: '#777777', fontWeight: 'bold' } : undefined}>
+          {lacksGold ? '🔻' : '👛'}
           <Gold amount={gold} />
         </span>
       </div>
@@ -383,128 +379,66 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
       {!tile.isYielded && (
         <div className="upgrades-table">
-          {currentLevel < 2 && (
-            <div className={'upgrade-level'}>
-              <div className="value-towers">
-                <Tower />
-              </div>
+          {Array.from([currentLevel, nextLevel], (i) => (
+            <div
+              className={
+                'upgrade-level' + (canUpgrade() || i === currentLevel ? '' : ' upgrade-unreachable')
+              }
+            >
+              <div className="next-level">
+                {i === currentLevel ? (
+                  <div className="checkmark">{t('tileClaimScreen.now')}</div>
+                ) : (
+                  <div></div>
+                )}
 
-              <div className="price-and-towers">{priceTag(1, currentLevel)}</div>
+                <div className="value-towers">
+                  {Array.from({ length: i }, (_, t) => (
+                    <Tower />
+                  ))}
+                </div>
+
+                <br />
+
+                {i === currentLevel
+                  ? ''
+                  : !tile.isYielded &&
+                    currentLevel < maxLevel && (
+                      <div
+                        className={'tile-card-button tile-card-small-button upgrade-action'}
+                        onClick={canUpgrade() ? () => handleUpgradeToLevel(nextLevel) : undefined}
+                      >
+                        {priceTag(nextLevel, currentLevel)}
+                      </div>
+                    )}
+              </div>
 
               <div
                 className={
-                  'big-icon-hint upgrade-fortification' +
-                  (currentLevel === 1 ? ' current-level' : ' upgrade-unreachable')
+                  'big-icon-hint upgrade-fortification'
                 }
               >
                 <div className="upgrade-fortification-info">
                   <div className="value-defence">
-                    <div>+{defenceBonusPct(1)}%🛡️️</div>
-                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(1) })}🧍</div>
+                    <div>+{defenceBonusPct(i)}%🛡️️</div>
+                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(i) })}🧍</div>
                   </div>
                 </div>
               </div>
 
               <div className="big-icon-hint">
-                <div>{turnIncomeLabel(1)}</div>
+                <div>{turnIncomeLabel(i)}</div>
                 <div>{t('tileCard.perTurn')}</div>
               </div>
 
               {isTower && (
                 <div className="big-icon-hint">
-                  <div>{towerYearlyLabel(1)}</div>
+                  <div>{towerYearlyLabel(i)}</div>
                   <div>{t('tileCard.perYear')}</div>
                 </div>
               )}
             </div>
-          )}
-
-          {currentLevel < 3 && (
-            <div className={'upgrade-level' + (currentLevel === 2 ? ' current-level' : '')}>
-              <div className="value-towers">
-                <Tower />
-                <Tower />
-              </div>
-
-              <div className="price-and-towers">{priceTag(2, currentLevel)}</div>
-
-              <div className="big-icon-hint upgrade-fortification">
-                <div className="upgrade-fortification-info">
-                  <div className="value-defence">
-                    <div>+{defenceBonusPct(2)}%️🛡️</div>
-                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(2) })}🧍</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="big-icon-hint">
-                <div>{turnIncomeLabel(2)}</div>
-                <div>{t('tileCard.perTurn')}</div>
-              </div>
-
-              {isTower && (
-                <div className="big-icon-hint">
-                  <div>{towerYearlyLabel(2)}</div>
-                  <div>{t('tileCard.perYear')}</div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {currentLevel <= 3 && (
-            <div
-              className={
-                'upgrade-level' +
-                (nextLevel !== 3 ? ' upgrade-unreachable' : '') +
-                (currentLevel === 3 ? ' current-level' : '')
-              }
-            >
-              <div className="value-towers">
-                <Tower />
-                <Tower />
-                <Tower />
-              </div>
-
-              <div className="price-and-towers">{priceTag(3, currentLevel)}</div>
-
-              <div className="upgrade-fortification">
-                <div className="upgrade-fortification-info">
-                  <div className="value-defence">
-                    <div>+{defenceBonusPct(3)}%️🛡️</div>
-                    <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(3) })}🧍</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="big-icon-hint">
-                <div>{turnIncomeLabel(3)}</div>
-                <div>{t('tileCard.perTurn')}</div>
-              </div>
-
-              {isTower && (
-                <div className="big-icon-hint">
-                  <div>{towerYearlyLabel(3)}</div>
-                  <div>{t('tileCard.perYear')}</div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {!tile.isYielded && currentLevel < maxLevel && (
-        <div className="upgrade-action">
-          <div
-            className={
-              'tile-card-button tile-card-small-button' +
-              (canUpgradeToLevel(nextLevel) ? '' : ' upgrade-unreachable')
-            }
-            onClick={
-              canUpgradeToLevel(nextLevel) ? () => handleUpgradeToLevel(nextLevel) : undefined
-            }
-          >
-            👛 {t('tileClaimScreen.upgradeButton')}
-          </div>
+          ))}
         </div>
       )}
 

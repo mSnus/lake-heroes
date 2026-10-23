@@ -442,15 +442,11 @@ export const TileCard: React.FC<TileCardProps> = ({
                       </div>
                     )}
 
-                    <div></div>
-
-                    <div className="big-icon-hint">
-                      <div className="tile-defence">
-                        {Array.from({ length: tile.level }, (_, i) => (
-                          <Tower key={i}/>
-                        ))}
-                        <Militia amount={tile.garrison} color={ownerPlayer?.image} />
-                      </div>
+                    <div className="tile-defence">
+                      {Array.from({ length: tile.level }, (_, i) => (
+                        <Tower key={i}/>
+                      ))}
+                      <Militia amount={tile.garrison} color={ownerPlayer?.image} />
                     </div>
                   </div>
                 </div>

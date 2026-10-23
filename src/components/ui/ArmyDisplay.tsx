@@ -90,18 +90,16 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
 
   const badge = (tier: UnitTier) => {
     const count = tier === 'riders' ? riders : militia;
-    const label = `${count}/${formatArmyCap(capacity[tier])}`;
-    if (spriteColor) {
-      return tier === 'riders' ? (
-        <Rider amount={label} color={spriteColor} />
-      ) : (
-        <Militia amount={label} color={spriteColor} />
-      );
-    }
+    const label = `${count}`;
+    const labelMax = `/ ${formatArmyCap(capacity[tier])}`;
 
     return (
       <>
-        {label} {tier === 'riders' ? '🐎' : '🧍'}
+        {tier === 'riders' ? (
+          <Rider amount={label} color={spriteColor} maxAmount={labelMax} />
+        ) : (
+          <Militia amount={label} color={spriteColor} maxAmount={labelMax} />
+        )}
       </>
     );
   };

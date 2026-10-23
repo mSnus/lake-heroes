@@ -53,23 +53,29 @@
   justify-content: space-between;
 
   font-size: 1.1rem;
-  font-family: Encode;
+  font-family: Encode,sans-serif;
   color: wheat;
 
   text-shadow: 4px 4px 12px black;
   line-height: 1.8;
 
-  padding: 0 1rem;
   margin-top: 1rem;
   margin-left: auto;
   margin-right: auto;
 
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border: solid 1px wheat;
+  background-color: #4334196b;
+  border-radius: 0.6rem;
+
+  width: 90%;
   z-index: 6002;
 }
 
 .upgrade-level {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.5rem;
   width: 100%;
   font-size: 1rem;
@@ -87,7 +93,6 @@
 .upgrade-level + .upgrade-level {
   border-top: 1px solid wheat;
   padding-top: 12px;
-  padding-bottom: 12px;
 }
 
 .upgrade-level.current-level {
@@ -102,7 +107,7 @@
   text-wrap: nowrap;
 }
 
-.upgrade-price-badge .checkmark {
+.upgrades-table .checkmark {
   font-size: 1.6rem;
   font-weight: 300;
   line-height: 1.6rem;
@@ -114,9 +119,6 @@
   opacity: 0.5;
 }
 
-/* Fortification bonus + max garrison, shown beside the 🏯 icon(s) and
-   right-aligned so the row's three cells read left-to-right as
-   price / fortification / income. */
 .upgrade-level > .upgrade-fortification {
   flex-direction: row;
   justify-content: flex-end;
@@ -134,6 +136,12 @@
   font-size: 1.3rem;
   display: flex;
   flex-wrap: nowrap;
+}
+
+.next-level {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .upgrade-fortification-info {
@@ -162,4 +170,15 @@
   justify-content: center;
   margin-top: 0.75rem;
   z-index: 6003;
+}
+
+.upgrade-unreachable .tile-card-small-button{
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.upgrades-table .tile-card-small-button{
+  padding: 0;
+  margin-left: 0.5rem;
 }
