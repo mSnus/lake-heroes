@@ -211,6 +211,8 @@ function showPeaceOrRevengeScreen(
     gold: player.gold,
     militia: player.militia,
     riders: player.riders,
+    fame: player.fame,
+    playerImage: player.image,
   };
 
   showScreen({
@@ -268,6 +270,8 @@ function showSellToPayOrPOWScreen(
     gold: player.gold,
     militia: player.militia,
     riders: player.riders,
+    fame: player.fame,
+    playerImage: player.image,
   };
 
   showScreen({
@@ -333,6 +337,8 @@ export function showTileEncounterScreen(
       gold: player.gold,
       militia: player.militia,
       riders: player.riders,
+      fame: player.fame,
+      playerImage: player.image,
     };
 
     showScreen({

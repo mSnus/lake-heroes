@@ -179,7 +179,6 @@
     "moneyAndFame": "{gold}   {fame}"
   },
   "squadHirePanel": {
-    "hireTitle": "Hire more (you have {gold}🟡):",
     "hireTitleMax": "Hire more (max: {max}):",
     "hireTitlePlain": "Hire more:"
   },
@@ -286,12 +285,8 @@
     "encounters": "encounters",
     "belongsTo": "that belongs to",
     "andIsGuarded": "and is guarded by 🧍{amount}",
-    "riskOrPay": "Seek revenge with {army} vs🧍{defence} and raze it?",
-    "razedSmokeCaveat": "Razed tiles become abandoned",
-    "forcedWhom": "forced",
-    "toPay": "to pay",
-    "forThe": "for the",
-    "guardedByShort": "guarded by 🧍{amount}"
+    "riskOrPay": "Seek revenge and raze it?",
+    "razedSmokeCaveat": "Razed tiles become abandoned"
   },
   "newGameModal": {
     "heroes": "Heroes:",

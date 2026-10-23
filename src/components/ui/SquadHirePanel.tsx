@@ -120,14 +120,11 @@ interface SquadHirePanelProps {
    * tavernMilitiaPrice/tavernRiderPrice). */
   militiaPrice?: number;
   riderPrice?: number;
-  /** Tavern only: shows "Hire more (max: N):" instead of the default
-   * "...(you have {gold}🟡):" -- the militia row's own max (gold, fame-
-   * driven cap, and current headcount all folded into one number) is
-   * the more useful figure once you're already looking at the slider. */
+  /** Tavern only: shows "Hire more (max: N):" instead of the plain "Hire
+   * more:" -- the militia row's own max (gold, fame-driven cap, and current
+   * headcount all folded into one number). Every hire dialogue shows the
+   * player's gold itself, so the title never repeats it. */
   titleMax?: number;
-  /** Plain "Hire more:" with no gold or max -- for a dialogue that already
-   * shows the player's gold elsewhere. */
-  plainTitle?: boolean;
   /** See HireRow's own doc comments -- threaded straight through so a
    * footer button can mirror/drive the sliders (see useHireFooter). */
   onAmountChange?: (tier: UnitTier, amount: number) => void;
@@ -145,7 +142,6 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   militiaPrice,
   riderPrice,
   titleMax,
-  plainTitle = false,
   onAmountChange,
   registerBuy,
 }) => {
@@ -155,11 +151,9 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   return (
     <div className="squad-hire-panel">
       <div className="squad-hire-panel-title">
-        {plainTitle
-          ? t('squadHirePanel.hireTitlePlain')
-          : titleMax !== undefined
-            ? t('squadHirePanel.hireTitleMax', { max: titleMax })
-            : t('squadHirePanel.hireTitle', { gold: player.gold })}
+        {titleMax !== undefined
+          ? t('squadHirePanel.hireTitleMax', { max: titleMax })
+          : t('squadHirePanel.hireTitlePlain')}
       </div>
       {showMilitia && (
         <HireRow

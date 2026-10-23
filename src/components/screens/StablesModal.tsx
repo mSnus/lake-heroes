@@ -6,7 +6,11 @@ import { UnitTier } from '../../game/army';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
+import { PlayerLabel } from '../snippets/PlayerLabel';
+import { Gold } from '../snippets/Gold';
+import { Fame } from '../snippets/Fame';
 import { useT } from '../../i18n';
+import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
 
 interface StablesModalProps {
@@ -82,6 +86,24 @@ const StablesModal: React.FC<StablesModalProps> = ({
         {joinedHtml && (
           <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
         )}
+
+        <h3>
+          <PlayerLabel player={player} bold />
+        </h3>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
+          {tJsx('tavern.moneyAndFame', {
+            gold: (
+              <span className="value">
+                <Gold amount={player.gold} />
+              </span>
+            ),
+            fame: (
+              <span className="value">
+                <Fame amount={player.fame} />
+              </span>
+            ),
+          })}
+        </div>
 
         <ArmyDisplay
           militia={player.militia}

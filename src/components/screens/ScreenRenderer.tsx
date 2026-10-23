@@ -8,10 +8,15 @@ import { OwnedTiles } from '../dashboard/OwnedTiles';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
+import { Fame } from '../snippets/Fame';
+import { Militia } from '../snippets/Militia';
+import { Rider } from '../snippets/Rider';
+import { Tower } from '../snippets/Tower';
 import { SpriteCircleIcon } from '../snippets/SpriteCircleIcon';
 import { gameEvent } from '../../utils/events';
 import { formatArmy } from '../../utils/formatArmy';
 import { useT } from '../../i18n';
+import { tJsx } from '../../i18n/tJsx';
 
 interface ScreenRendererProps {
   gameState: GameState;
@@ -60,9 +65,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   // the visitor's own stat line and the "encounters ... belongs to" build-up.
   const isToll = !!config.encounter?.ownerName && !!config.encounter?.fee;
 
-  // When a revenge prompt is about to show, its own "vs🧍{defence}" already
-  // states the garrison's strength -- showing the standalone "guarded by"
-  // line first would just say the same number twice.
+  // The revenge prompt takes the place of the standalone "guarded by" line.
   const showsRevengePrompt = !!(config.encounter?.ownerName && config.encounter?.canFight && config.encounter?.tile);
 
   function handleButtonClick(onClick: () => void, action?: string) {
@@ -89,32 +92,34 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
           <div className="text-message">
             {isToll ? (
               <>
-                <PlayerLabel
-                  name={config.encounter.ownerName!}
-                  color={config.encounter.ownerColor}
-                  bold
-                />{' '}
-                {t('screenRenderer.forcedWhom')}{' '}
-                <PlayerLabel
-                  name={config.encounter.playerName}
-                  color={config.encounter.playerColor}
-                  bold
-                />
+                <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />{' '}
+                <Militia amount={config.encounter.militia ?? 0} color={config.encounter.playerImage} />
+                {(config.encounter.riders ?? 0) > 0 && (
+                  <Rider amount={config.encounter.riders!} color={config.encounter.playerImage} />
+                )}
+                {config.encounter.fame !== undefined && <Fame amount={config.encounter.fame} />}
+                <Gold amount={config.encounter.gold ?? 0} />
                 <br />
-                {t('screenRenderer.toPay')}{' '}
-                {config.encounter.goldBefore === undefined
-                  ? t('screenRenderer.forcedToPayAmount', { amount: config.encounter.fee ?? 0 })
-                  : t('screenRenderer.forcedToPayAmountFrom', {
-                      amount: config.encounter.fee ?? 0,
-                      before: config.encounter.goldBefore,
-                      after: config.encounter.gold ?? 0,
-                    })}
+                {tJsx('screenRenderer.wasForcedBy', {
+                  owner: <PlayerLabel name={config.encounter.ownerName!} color={config.encounter.ownerColor} bold />,
+                  amount:
+                    config.encounter.goldBefore === undefined
+                      ? t('screenRenderer.forcedToPayAmount', { amount: config.encounter.fee ?? 0 })
+                      : t('screenRenderer.forcedToPayAmountFrom', {
+                          amount: config.encounter.fee ?? 0,
+                          before: config.encounter.goldBefore,
+                          after: config.encounter.gold ?? 0,
+                        }),
+                })}
                 <br />
-                {t('screenRenderer.forThe')}{' '}
-                <strong style={{ color: config.encounter.tile?.groupTextColor }}>
-                  {config.encounter.tile?.name}
-                </strong><br/>
-                {t('screenRenderer.guardedByShort', { amount: config.encounter.tile?.defence ?? 0 })}
+                {tJsx('screenRenderer.forTheTile', {
+                  tile: (
+                    <strong style={{ color: config.encounter.tile?.groupTextColor }}>
+                      {config.encounter.tile?.name}
+                    </strong>
+                  ),
+                  towers: Array.from({ length: config.encounter.tile?.level ?? 0 }, (_, i) => <Tower key={i} />),
+                })}
               </>
             ) : (
               <>
@@ -155,10 +160,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               <>
                 <br />
                 <br />
-                {t('screenRenderer.riskOrPay', {
-                  army: formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0),
-                  defence: config.encounter.tile!.defence,
-                })}
+                {t('screenRenderer.riskOrPay')}
                 <br />
                 <span style={{ fontSize: '1rem', lineHeight: '1', color: 'wheat' ,opacity: 0.85 }}>
                   {t('screenRenderer.razedSmokeCaveat')}

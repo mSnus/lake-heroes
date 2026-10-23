@@ -160,7 +160,6 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
               onBuy={handleBuy}
               militiaPrice={militiaPrice}
               riderPrice={riderPrice}
-              plainTitle
               onAmountChange={footer.onAmountChange}
               registerBuy={footer.registerBuy}
             />

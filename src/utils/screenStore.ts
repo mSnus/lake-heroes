@@ -59,6 +59,9 @@ export interface ScreenConfig {
     gold?: number;
     militia?: number;
     riders?: number;
+    fame?: number;
+    /** Player color key for the Militia/Rider sprites (Player.image). */
+    playerImage?: string;
   };
   message?: string;
   htmlMessage?: string;

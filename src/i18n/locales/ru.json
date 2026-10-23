@@ -179,7 +179,6 @@
     "moneyAndFame": "{gold}   {fame}"
   },
   "squadHirePanel": {
-    "hireTitle": "Нанять ещё (у вас {gold}🟡):",
     "hireTitleMax": "Нанять ещё (макс: {max}):",
     "hireTitlePlain": "Нанять ещё:"
   },
@@ -289,12 +288,10 @@
     "forcedToPay": "и вынужден заплатить ему",
     "forcedToPayAmount": "{amount}🟡",
     "forcedToPayAmountFrom": "{amount}🟡 ({before} → {after})",
-    "riskOrPay": "Отомстить силами {army} против 🧍{defence} и сжечь дотла?",
-    "razedSmokeCaveat": "Разорённые земли становятся заброшенными",
-    "forcedWhom": "вынудил",
-    "toPay": "заплатить",
-    "forThe": "за",
-    "guardedByShort": "под охраной 🧍{amount}"
+    "wasForcedBy": "вынужден заплатить {owner} {amount}",
+    "forTheTile": "за {tile}{towers}",
+    "riskOrPay": "Отомстить и сжечь дотла?",
+    "razedSmokeCaveat": "Разорённые земли становятся заброшенными"
   },
   "newGameModal": {
     "heroes": "Герои:",
