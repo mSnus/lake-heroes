@@ -660,7 +660,7 @@
     "setGarrison": "{playerName} устанавливает гарнизон «{tileName}»: {militia}🧍/{riders}🐎"
   },
   "resolvePlayerBattle": {
-    "losingUnits": ", теряя {army}",
+    "losingUnits": "\nтеряя {army}",
     "attackerWinsGameMessage": "{attackerName} побеждает {defenderName}! {defenderName} бежит в Королевский замок{lossStr}",
     "attackerWinsMessage": "{defenderName} бежит в Королевский замок!{lossStr}",
     "tieGameMessage": "{attackerName} и {defenderName} сражаются вничью в кровавой битве — оба теряют {loss}🧍",
@@ -775,7 +775,7 @@
     "logLine": "⚔️ {attackerName} {outcomeVerb} против {defenderLabel}{capturePart}{unitsPart}{goldPart}"
   },
   "resolveTileBattle": {
-    "losingSuffix": ", теряя {army}",
+    "losingSuffix": "\nтеряя {army}",
     "claims": "{attackerName} захватывает «{tileName}»{lossStr}!",
     "contractFulfilled": "📜 Контракт короля выполнен: +{award}🟡!",
     "razedGameMessage": "{attackerName} разрушил «{tileName}»{lossStr}{plunderStr}!",
@@ -792,7 +792,7 @@
   "resolveCaravanBattle": {
     "whileUnitsLostGame": ", потеряв {army}",
     "whileUnitsLostScreen": ", потеряв в бою {army}",
-    "losingSuffix": ", теряя {army}",
+    "losingSuffix": "\nтеряя {army}",
     "failedGameMessage": "{attackerName} не смог совершить набег на караван!",
     "gotAway": "Каравану удалось скрыться!",
     "caravanGuards": "Стража каравана",

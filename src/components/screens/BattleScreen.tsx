@@ -34,6 +34,9 @@ import { dispatchBattleResolution, handleBattleClose } from '../../game/battleGr
 import { GridBattleState, TurnEvent, BattleSide } from '../../game/battleGrid/types';
 import '../../styles/BattleScreen.css';
 import Tower from '../snippets/Tower';
+import Militia from '../snippets/Militia';
+import Rider from '../snippets/Rider';
+import { Gold } from '../snippets/Gold';
 
 type BattlePhase = 'ongoing' | 'result';
 
@@ -57,6 +60,29 @@ const BRAWL_MOVE_ANIM_MS = 320;
 // Brief hold after the player's placed units snap into position (twins hidden)
 // before the fight resolves — long enough to read the new formation.
 const BRAWL_SNAP_HOLD_MS = 260;
+
+// Army/gold amounts inside a result message ("🧍5", "5🧍", "🐎2", "40🟡"),
+// drawn as snippets with the number first.
+const RESULT_TOKEN = /🧍(\d+)|(\d+)🧍|🐎(\d+)|(\d+)🐎|(\d+)🟡/gu;
+
+function renderResultText(text: string, color?: string): React.ReactNode[] {
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  RESULT_TOKEN.lastIndex = 0;
+  while ((m = RESULT_TOKEN.exec(text))) {
+    out.push(text.slice(last, m.index));
+    const [, m1, m2, r1, r2, gold] = m;
+    const key = m.index;
+    if (m1 ?? m2) out.push(<Militia key={key} amount={m1 ?? m2} color={color} />);
+    else if (r1 ?? r2) out.push(<Rider key={key} amount={r1 ?? r2} color={color} />);
+    else out.push(<Gold key={key} amount={gold} />);
+    last = m.index + m[0].length;
+  }
+
+  out.push(text.slice(last));
+  return out;
+}
 
 export type BattleScreenProps =
   | {
@@ -895,9 +921,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
                         : t('battleScreen.aTie')}
               </span>
             </div>
-            <p className="battle-result-message" style={{ whiteSpace: 'pre-line' }}>
-              {resultMsg}
-            </p>
+            <div className="battle-result-message" style={{ whiteSpace: 'pre-line' }}>
+              {renderResultText(resultMsg, isRogue ? defender?.image : attacker.image)}
+            </div>
             <DecoratedButton onClick={handleClose}>
               {isAmbush ? t('battleScreen.keepCalmCarryOn') : t('battleScreen.wasItWorthIt')}
             </DecoratedButton>

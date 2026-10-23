@@ -663,7 +663,7 @@
     "setGarrison": "{playerName} fija la guarnición de {tileName} en {militia}🧍/{riders}🐎"
   },
   "resolvePlayerBattle": {
-    "losingUnits": ", perdiendo {army}",
+    "losingUnits": "\nperdiendo {army}",
     "attackerWinsGameMessage": "¡{attackerName} derrota a {defenderName}! {defenderName} huye al Castillo del Rey{lossStr}",
     "attackerWinsMessage": "¡{defenderName} huye al Castillo del Rey!{lossStr}",
     "tieGameMessage": "{attackerName} y {defenderName} luchan hasta un sangriento empate — ambos pierden {loss}🧍",
@@ -778,7 +778,7 @@
     "logLine": "⚔️ {attackerName} {outcomeVerb} con {defenderLabel}{capturePart}{unitsPart}{goldPart}"
   },
   "resolveTileBattle": {
-    "losingSuffix": ", perdiendo {army}",
+    "losingSuffix": "\nperdiendo {army}",
     "claims": "¡{attackerName} reclama {tileName}{lossStr}!",
     "contractFulfilled": "📜 ¡Contrato del Rey cumplido: +{award}🟡!",
     "razedGameMessage": "¡{attackerName} arrasó {tileName}{lossStr}{plunderStr}!",
@@ -795,7 +795,7 @@
   "resolveCaravanBattle": {
     "whileUnitsLostGame": " mientras se perdían {army}",
     "whileUnitsLostScreen": " mientras se perdían {army} luchando por ello",
-    "losingSuffix": ", perdiendo {army}",
+    "losingSuffix": "\nperdiendo {army}",
     "failedGameMessage": "¡{attackerName} no logró asaltar la caravana!",
     "gotAway": "¡La caravana escapó!",
     "caravanGuards": "Guardias de la Caravana",

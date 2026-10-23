@@ -7,7 +7,7 @@ import { sellTile } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
 import { yieldTile, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { gameEvent } from '../../utils/events';
-import { garrisonCapacityForLevel, isBanzaiAttack } from '../../game/army';
+import { isBanzaiAttack } from '../../game/army';
 import { UNIT_POWER } from '../../game/army';
 import { claimAffordability } from '../../game/tileOwnership';
 import { syndicateMultiplier } from '../../game/syndicate';
@@ -20,6 +20,7 @@ import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { IncomeLabel, hasIncome } from '../snippets/IncomeLabel';
 import { Tower } from '../snippets/Tower';
+import { Militia } from '../snippets/Militia';
 import { showScreen } from '../../utils/screenStore';
 import { useT } from '../../i18n';
 
@@ -138,7 +139,6 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
   const defence = (level: number) => tile.getDefence(level);
-  const defenceCapacity = (level: number) => garrisonCapacityForLevel(level);
 
   const bonusAmount = (level: number) =>
     bonusType === 'gold' ? (
@@ -449,11 +449,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                         {Array.from({ length: tile.level }, (_, i) => (
                           <Tower key={i}/>
                         ))}
-                        {tile.garrison}🧍
-                      </div>
-
-                      <div>
-                        {t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}
+                        <Militia amount={tile.garrison} color={ownerPlayer?.image} />
                       </div>
                     </div>
                   </div>

@@ -665,7 +665,7 @@
     "setGarrison": "{playerName} sets {tileName}'s garrison to {militia}🧍/{riders}🐎"
   },
   "resolvePlayerBattle": {
-    "losingUnits": ", losing {army}",
+    "losingUnits": "\nlosing {army}",
     "attackerWinsGameMessage": "{attackerName} defeats {defenderName}! {defenderName} flees to the King's Castle{lossStr}",
     "attackerWinsMessage": "{defenderName} flees to the King's Castle!{lossStr}",
     "tieGameMessage": "{attackerName} and {defenderName} fight to a bloody tie — both lose {loss}🧍",
@@ -780,7 +780,7 @@
     "logLine": "⚔️ {attackerName} {outcomeVerb} with {defenderLabel}{capturePart}{unitsPart}{goldPart}"
   },
   "resolveTileBattle": {
-    "losingSuffix": ", losing {army}",
+    "losingSuffix": "\nlosing {army}",
     "claims": "{attackerName} claims {tileName}{lossStr}!",
     "contractFulfilled": "📜 King's contract fulfilled: +{award}🟡!",
     "razedGameMessage": "{attackerName} razed {tileName}{lossStr}{plunderStr}!",
@@ -797,7 +797,7 @@
   "resolveCaravanBattle": {
     "whileUnitsLostGame": " while {army} were lost",
     "whileUnitsLostScreen": " while {army} were lost fighting for it",
-    "losingSuffix": ", losing {army}",
+    "losingSuffix": "\nlosing {army}",
     "failedGameMessage": "{attackerName} failed to raid the caravan!",
     "gotAway": "The caravan got away!",
     "caravanGuards": "Caravan Guards",
