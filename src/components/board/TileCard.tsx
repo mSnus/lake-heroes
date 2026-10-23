@@ -130,7 +130,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     return (
       <>
         <span>{icon}</span>
-        {!useWalletIcon && (level > currentLevel ? '+' : ' ')}
+        {!useWalletIcon && !lacksGold && (level > currentLevel ? '+' : ' ')}
         <span style={lacksGold ? redBold : undefined}>
           {lacksGold && '🔻'}
           <Gold amount={gold} />

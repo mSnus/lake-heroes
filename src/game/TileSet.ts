@@ -56,7 +56,7 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
       t = { ...t, garrison: fresh.garrison, baseGarrison: fresh.garrison };
     }
 
-    // Balance data (group/prices/bonuses/annual reward) is authored in
+    // Balance data (group/bonus type/prices/bonuses/annual reward) is authored in
     // tiles.json, not player progress — always pull the current values
     // instead of trusting whatever was baked into the save when the tile
     // was first serialized, or a rebalance never reaches a game that's
@@ -68,6 +68,7 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
       t = {
         ...t,
         group: fresh.group,
+        bonusType: fresh.bonusType,
         prices: fresh.prices,
         bonuses: fresh.bonuses,
         annualGoldMult: fresh.annualGoldMult,
