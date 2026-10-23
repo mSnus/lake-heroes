@@ -289,8 +289,7 @@
     "belongsTo": "que pertenece a",
     "andIsGuarded": "y está defendida por 🧍{amount}",
     "forcedToPay": "y se ve obligado a pagarle",
-    "wasForcedBy": "fue obligado por {owner}",
-    "toPayAmount": "a pagar {amount}",
+    "wasForcedToPay": "fue obligado a pagar {amount} a",
     "forTheTile": "por {tile}{towers}",
     "riskOrPay": "¿Buscar venganza y arrasarla?",
     "razedSmokeCaveat": "Las casillas arrasadas quedan abandonadas"
