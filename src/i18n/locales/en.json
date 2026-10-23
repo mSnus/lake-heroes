@@ -261,13 +261,20 @@
     "wasItWorthIt": "🩸 Was it worth it?",
     "brawlUndo": "Undo last move",
     "brawlGo": "Finish turn",
-    "autoResolveBrawl": "Auto-resolve the rest of this battle",
     "battleStarted": "⚔️ {attackerName} attacks {target}…",
     "targetDragon": "the Dragon 🐉",
     "targetCaravan": "a caravan 🐫",
     "targetGarrison": "{tileName}'s garrison",
     "debugStateCopied": "Battle state copied to clipboard",
-    "debugStateCopyFailed": "Couldn't copy battle state (clipboard blocked)"
+    "debugStateCopyFailed": "Couldn't copy battle state (clipboard blocked)",
+    "controlToggleTitle": "Switch your side between automatic and manual control (from its next move)",
+    "controlAuto": "auto",
+    "controlManual": "manual",
+    "reservesTitle": "In reserve",
+    "escapeTitle": "Escape: lose the {units} units on the field, save the reserves",
+    "escapeConfirm": "Tap 🏃 again to escape — the {units} units on the field will be lost",
+    "escaped": "{name} fled the battle, abandoning {units} units on the field",
+    "nextRound": "Next round"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decided to attack {targetName}",
@@ -479,8 +486,10 @@
       "modifiers": "Attack can also be altered by artifacts 🪓, defence — by tile upgrades 🏯",
       "energy": "Energy is consumed by each attack. A completely tired unit's attack is weak (only {pct}%!), but it recovers fully if it doesn't move or attack for a turn. Swapping it out for a fresh reserve is a good strategy.",
       "unitsEquivalence": "Units like 👹🥷 are equal to 🧍, and mounted 🦬🐫 to 🐎",
-      "twoModes": "There are two modes: <strong>Brawl</strong> — manually controlled, for armies under {brawlThreshold} units — or <strong>automatic</strong>, for bigger armies",
-      "controls": "A manual (Brawl) battle can be switched to automatic with the Auto ⚔️ button atop the battlefield. There are also Undo ⬅️ and Finish turn 🚩 buttons.",
+      "reinforcements": "Each side opens with <strong>{startUnits} units</strong> at its own edge. The rest wait in reserve and march in at that edge whenever a cell there is free.",
+      "controls": "Every battle starts automatic. The ⚔️ button switches your side between automatic and manual control, from its next move. In manual mode there are also Undo ⬅️ and Finish turn 🚩 buttons.",
+      "fromBehind": "A hit from behind (from the side of the target's own starting edge) is <strong>twice as likely</strong> to be critical.",
+      "escape": "The player who started the fight can 🏃 <strong>escape</strong> (tap twice): it counts as a defeat and every unit on the field is lost, but the reserves are saved.",
       "heroHour": "Hero's Hour is a friendly brawl between two heroes and doesn't result in heavy casualties",
       "phasesTitle": "Battle phases",
       "phase": {
@@ -505,8 +514,8 @@
           "icon": "🩸🛡️☠️"
         },
         "autoToggle": {
-          "name": "Auto-battle",
-          "desc": "Hands the fight over to be resolved automatically",
+          "name": "Auto / manual",
+          "desc": "Switches your side between automatic and manual control, from its next move",
           "icon": "⚔️"
         },
         "undo": {
@@ -518,6 +527,11 @@
           "name": "Finish turn",
           "desc": "Commits this round's moves and resolves combat",
           "icon": "🚩"
+        },
+        "escape": {
+          "name": "Escape",
+          "desc": "Ends the battle as a defeat: units on the field are lost, reserves are saved",
+          "icon": "🏃"
         },
         "result": {
           "name": "Result",
@@ -1067,8 +1081,6 @@
     "title": "Settings",
     "autoEndTurn": "Auto end turn",
     "autoEndTurnHint": "Automatically ends your turn after a short idle period once there's nothing left to decide.",
-    "autoBattle": "Always use auto battle",
-    "autoBattleHint": "Battles auto-resolve without asking you for step-by-step input or brawl placement.",
     "doNotDisplayBattles": "Do not display battles",
     "doNotDisplayBattlesHint": "Battles resolve instantly in the background instead of showing the battle screen.",
     "mapAutoZoom": "Map auto-zoom",

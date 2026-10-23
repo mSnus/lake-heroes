@@ -1,154 +1,163 @@
-import { BattleObstacle, GridUnit } from './types';
+import { BattleObstacle, BattleSide, GridUnit } from './types';
+import { Cell, adjacentCells, rowsByCenterDistance } from './hex';
 
 // Random cosmetic battlefield terrain -- impassable, unattackable, purely a
-// movement obstacle. Picked per-cell at random from this set.
+// movement obstacle. Every cell of a grouped obstacle shares one emoji.
 export const OBSTACLE_EMOJIS = ['⛰️', '🌲', '🌳', '🌵', '🕳️'];
 
-// Share of the grid's cells that become obstacles.
-export const OBSTACLE_RATIO = 0.07;
+// Share of the grid's cells that become single-cell obstacles.
+const SINGLE_OBSTACLE_RATIO = 0.04;
+// Plus this many grouped obstacles of GROUP_SIZE_MIN..MAX adjacent cells.
+const OBSTACLE_GROUPS_MIN = 1;
+const OBSTACLE_GROUPS_MAX = 5;
+const GROUP_SIZE_MIN = 2;
+const GROUP_SIZE_MAX = 4;
+// Columns at each edge kept clear: armies open and reinforce there.
+const CLEAR_EDGE_COLS = 2;
+const GENERATE_ATTEMPTS = 20;
 
-/**
- * Scatter obstacles across the grid before either army is placed, so their
- * presence can affect where units end up (see relocateUnitsOffObstacles).
- * Picks OBSTACLE_RATIO of all cells uniformly at random, each a random
- * emoji from OBSTACLE_EMOJIS.
- */
-export function generateObstacles(cols: number, rows: number, rng: () => number = Math.random): BattleObstacle[] {
-  const cells: { col: number; row: number }[] = [];
-  for (let col = 0; col < cols; col++) {
-    for (let row = 0; row < rows; row++) cells.push({ col, row });
+const randInt = (min: number, max: number, rng: () => number) => min + Math.floor(rng() * (max - min + 1));
+const key = (c: Cell) => `${c.col},${c.row}`;
+
+function tryGenerateObstacles(cols: number, rows: number, rng: () => number): BattleObstacle[] {
+  const interior: Cell[] = [];
+  for (let col = CLEAR_EDGE_COLS; col < cols - CLEAR_EDGE_COLS; col++) {
+    for (let row = 0; row < rows; row++) interior.push({ col, row });
   }
 
-  // Fisher-Yates, same pattern as components/board/common.ts's shuffle.
-  for (let i = cells.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [cells[i], cells[j]] = [cells[j], cells[i]];
+  const inInterior = (c: Cell) => c.col >= CLEAR_EDGE_COLS && c.col < cols - CLEAR_EDGE_COLS;
+  const taken = new Set<string>();
+  const obstacles: BattleObstacle[] = [];
+  const pickEmoji = () => OBSTACLE_EMOJIS[Math.floor(rng() * OBSTACLE_EMOJIS.length)];
+  const randomFree = (): Cell | undefined => {
+    const free = interior.filter((c) => !taken.has(key(c)));
+    return free.length ? free[Math.floor(rng() * free.length)] : undefined;
+  };
+
+  // Grouped: grown one random hex neighbour at a time from a seed cell.
+  const groups = randInt(OBSTACLE_GROUPS_MIN, OBSTACLE_GROUPS_MAX, rng);
+  for (let g = 0; g < groups; g++) {
+    const seed = randomFree();
+    if (!seed) break;
+    const size = randInt(GROUP_SIZE_MIN, GROUP_SIZE_MAX, rng);
+    const group: Cell[] = [seed];
+    const inGroup = new Set([key(seed)]);
+    while (group.length < size) {
+      const frontier = group
+        .flatMap((c) => adjacentCells(c.col, c.row, cols, rows))
+        .filter((c) => inInterior(c) && !taken.has(key(c)) && !inGroup.has(key(c)));
+      if (frontier.length === 0) break;
+      const next = frontier[Math.floor(rng() * frontier.length)];
+      group.push(next);
+      inGroup.add(key(next));
+    }
+
+    if (group.length < GROUP_SIZE_MIN) continue;
+    const emoji = pickEmoji();
+    for (const c of group) {
+      taken.add(key(c));
+      obstacles.push({ ...c, emoji });
+    }
   }
 
-  const count = Math.round(cells.length * OBSTACLE_RATIO);
-  return cells.slice(0, count).map((c) => ({
-    ...c,
-    emoji: OBSTACLE_EMOJIS[Math.floor(rng() * OBSTACLE_EMOJIS.length)],
-  }));
+  const singles = Math.round(cols * rows * SINGLE_OBSTACLE_RATIO);
+  for (let i = 0; i < singles; i++) {
+    const c = randomFree();
+    if (!c) break;
+    taken.add(key(c));
+    obstacles.push({ ...c, emoji: pickEmoji() });
+  }
+
+  return obstacles;
+}
+
+/** Whether the left edge can still reach the right edge around the obstacles. */
+function edgesConnected(cols: number, rows: number, obstacles: BattleObstacle[]): boolean {
+  const blocked = new Set(obstacles.map(key));
+  const queue: Cell[] = [];
+  const seen = new Set<string>();
+  for (let row = 0; row < rows; row++) {
+    const c = { col: 0, row };
+    if (!blocked.has(key(c))) {
+      queue.push(c);
+      seen.add(key(c));
+    }
+  }
+
+  while (queue.length) {
+    const c = queue.shift()!;
+    if (c.col === cols - 1) return true;
+    for (const n of adjacentCells(c.col, c.row, cols, rows)) {
+      const k = key(n);
+      if (seen.has(k) || blocked.has(k)) continue;
+      seen.add(k);
+      queue.push(n);
+    }
+  }
+
+  return false;
 }
 
 /**
- * After a side's units are placed (placeArmy or placeFormation, both purely
- * geometric and unaware of obstacles), move any unit that landed on an
- * obstacle cell to the back of its own army instead -- the first free,
- * non-obstacle cell found scanning outward column by column from that
- * side's home edge (col 0 for the attacker, the last col for the
- * defender), and within each column, outward row by row from the grid's
- * vertical center -- so a displaced unit lands as close as possible to
- * its own (vertically-centered) army rather than in a top corner far from
- * it. Mutates `col`/`row` in place, same as the placement functions.
+ * Scatter obstacles before either army is placed: 1-5 grouped obstacles of
+ * 2-4 adjacent cells plus a few single cells, all clear of the starting
+ * columns at both edges, and never sealing one edge off from the other.
  */
-export function relocateUnitsOffObstacles(
+export function generateObstacles(cols: number, rows: number, rng: () => number = Math.random): BattleObstacle[] {
+  for (let attempt = 0; attempt < GENERATE_ATTEMPTS; attempt++) {
+    const obstacles = tryGenerateObstacles(cols, rows, rng);
+    if (edgesConnected(cols, rows, obstacles)) return obstacles;
+  }
+
+  return [];
+}
+
+/** A side's home edge column (where it opens and reinforces) and its forward step. */
+export function homeEdge(side: BattleSide, cols: number): { col: number; step: number } {
+  return side === 'attacker' ? { col: 0, step: 1 } : { col: cols - 1, step: -1 };
+}
+
+/**
+ * Line a side's opening units up along its own edge: the edge column first,
+ * then the next one in, each filled from the vertical center outward.
+ * Earlier units land at the back, so callers pass the ones meant to stand in
+ * front last. Mutates `col`/`row` in place.
+ */
+export function placeAtEdge(
   units: GridUnit[],
-  side: 'attacker' | 'defender',
+  side: BattleSide,
   cols: number,
   rows: number,
   obstacles: BattleObstacle[]
 ): void {
-  const obstacleKeys = new Set(obstacles.map((o) => `${o.col},${o.row}`));
-  const onObstacle = units.filter((u) => obstacleKeys.has(`${u.col},${u.row}`));
-  if (onObstacle.length === 0) return;
-
-  const occupied = new Set(units.map((u) => `${u.col},${u.row}`));
-  const homeCol = side === 'attacker' ? 0 : cols - 1;
-  const step = side === 'attacker' ? 1 : -1;
-
-  // Rows visited nearest-to-center first (not top-down), so a displaced unit
-  // lands next to the rest of its vertically-centered army instead of in a
-  // top corner far away from it.
-  const centerRow = (rows - 1) / 2;
-  const rowsByCenterDistance = Array.from({ length: rows }, (_, r) => r).sort(
-    (a, b) => Math.abs(a - centerRow) - Math.abs(b - centerRow)
-  );
-
-  const findBackCell = (): { col: number; row: number } | undefined => {
-    for (let offset = 0; offset < cols; offset++) {
-      const col = homeCol + step * offset;
-      if (col < 0 || col >= cols) break;
-      for (const row of rowsByCenterDistance) {
-        const key = `${col},${row}`;
-        if (obstacleKeys.has(key) || occupied.has(key)) continue;
-        return { col, row };
-      }
-    }
-
-    return undefined;
-  };
-
-  for (const unit of onObstacle) {
-    const key = `${unit.col},${unit.row}`;
-    occupied.delete(key);
-    const dest = findBackCell();
-    if (dest) {
-      unit.col = dest.col;
-      unit.row = dest.row;
-      occupied.add(`${dest.col},${dest.row}`);
-    } else {
-      // Board fully packed -- shouldn't happen at a 10% obstacle density,
-      // but leave the unit where it is rather than lose it.
-      occupied.add(key);
+  const blocked = new Set(obstacles.map(key));
+  const { col: home, step } = homeEdge(side, cols);
+  const order = rowsByCenterDistance(rows);
+  const cells: Cell[] = [];
+  for (let offset = 0; offset < cols && cells.length < units.length; offset++) {
+    for (const row of order) {
+      const c = { col: home + step * offset, row };
+      if (!blocked.has(key(c))) cells.push(c);
     }
   }
+
+  units.forEach((u, i) => {
+    u.col = cells[i].col;
+    u.row = cells[i].row;
+  });
 }
 
-/**
- * Fill a side's starting position: a square block (or, when the count isn't
- * a perfect square, a rectangle with a narrower back column) hugging the
- * grid's long-edge side nearest that army (col 0 for the attacker, the last
- * col for the defender), vertically centered rather than pinned to the top
- * row. Column offset grows *away* from that edge (toward the enemy), so
- * units earlier in the array land in the back and later ones in the front —
- * callers should order militia first, then riders, so riders end up in
- * front, closest to the enemy (see engine.ts's createBattle). Mutates
- * `col`/`row` on each unit in place.
- */
-export function placeArmy(units: GridUnit[], side: 'attacker' | 'defender', cols: number, rows: number): void {
-  const n = units.length;
-  if (n === 0) return;
-
-  // Square side length, clamped so the block is never taller than the grid
-  // (in which case it just widens instead).
-  const blockRows = Math.min(rows, Math.ceil(Math.sqrt(n)));
-
-  const startCol = side === 'attacker' ? 0 : cols - 1;
-  const step = side === 'attacker' ? 1 : -1;
-  const startRow = Math.floor((rows - blockRows) / 2);
-
-  // If n isn't a multiple of blockRows, one column ends up short. That
-  // column goes at the BACK (col offset 0), not the front: since riders
-  // fill last and land in the highest-offset column, putting the shortfall
-  // there instead would leave the front line narrower than a full column.
-  // A narrower front is more than just lopsided — the opposing army's
-  // nearest-enemy targeting (Euclidean-distance-based) finds that thin
-  // front cluster disproportionately attractive from many different rows
-  // at once, since being one column closer usually outweighs a modest row
-  // offset, so units converge on it instead of advancing in a roughly
-  // parallel line. Keeping every column but the backmost one at full
-  // strength avoids creating that pull. The short back column is itself
-  // centered in the block's row range, same as any column would be.
-  const remainder = n % blockRows;
-  const firstColCount = remainder > 0 ? remainder : blockRows;
-  const firstColOffset = remainder > 0 ? Math.floor((blockRows - remainder) / 2) : 0;
-
-  units.forEach((unit, i) => {
-    let colOffset: number;
-    let row: number;
-    if (i < firstColCount) {
-      colOffset = 0;
-      row = firstColOffset + i;
-    } else {
-      const j = i - firstColCount;
-      colOffset = 1 + Math.floor(j / blockRows);
-      row = j % blockRows;
-    }
-
-    const col = startCol + step * colOffset;
-    unit.col = Math.max(0, Math.min(cols - 1, col));
-    unit.row = Math.max(0, Math.min(rows - 1, startRow + row));
-  });
+/** Free cells on a side's own edge column, center rows first. */
+export function freeEdgeCells(
+  side: BattleSide,
+  cols: number,
+  rows: number,
+  obstacles: BattleObstacle[],
+  units: GridUnit[]
+): Cell[] {
+  const { col } = homeEdge(side, cols);
+  const taken = new Set([...obstacles.map(key), ...units.map(key)]);
+  return rowsByCenterDistance(rows)
+    .map((row) => ({ col, row }))
+    .filter((c) => !taken.has(key(c)));
 }

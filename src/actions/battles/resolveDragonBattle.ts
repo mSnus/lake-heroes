@@ -10,12 +10,13 @@ import { t } from '../../i18n';
  * Resolve the dragon challenge.
  * - Win: game is won.
  * - Tie: attacker loses 1/4 of their units.
- * - Defeat: attacker loses their entire army, but keeps their gold.
+ * - Defeat: attacker loses every unit that fell (the whole army, unless they
+ *   escaped and kept their reserves), but keeps their gold.
  */
 export function resolveDragonBattle(
   board: GameState,
   attacker: Player,
-  _attackerUnitsKilled: number,
+  attackerUnitsKilled: number,
   outcome: BattleOutcome
 ): BattleResolution {
   const armyBefore = tallyArmy(attacker);
@@ -44,7 +45,7 @@ export function resolveDragonBattle(
     lostBg = true;
   } else {
     const beforeLoss = tallyArmy(attacker);
-    attacker.units = 0;
+    attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
     const loss = armyLostStr(beforeLoss, attacker);
     setGameMessage(
       board,

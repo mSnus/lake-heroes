@@ -1,4 +1,4 @@
-import { runGridBattleToCompletion } from './engine';
+import { runGridBattleToCompletion, sideRemaining } from './engine';
 import { realLossFromGridLoss } from './scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from './battleSetup';
 import { dispatchBattleResolution } from './battleResolution';
@@ -26,10 +26,10 @@ export function runHeadlessBattle(props: BattleScreenProps): { setup: BattleSetu
     defenderAbsorbBonus: setup.garrisonAbsorbBonus,
     defenderFlatBonus: setup.defenderRollBonus,
   };
-  const finalState = runGridBattleToCompletion(initialState, setup.board.isBrawl, opts);
+  const finalState = runGridBattleToCompletion(initialState, opts);
 
-  const attackerLeft = finalState.units.filter((u) => u.side === 'attacker').length;
-  const defenderLeft = finalState.units.filter((u) => u.side === 'defender').length;
+  const attackerLeft = sideRemaining(finalState, 'attacker');
+  const defenderLeft = sideRemaining(finalState, 'defender');
   const atkGridKilled = setup.attackerGridTotal - attackerLeft;
   const defGridKilled = setup.defenderGridTotal - defenderLeft;
   const atkKilled = realLossFromGridLoss(atkGridKilled, setup.attackerSized.scale);

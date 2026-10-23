@@ -131,7 +131,6 @@ export const DRAGON_GOLD = 10000; // dragon's hoard, awarded on victory
 // is still offered the challenge (see actions/dragonEncounter.ts).
 export const DRAGON_MERCY_SCORE_RATIO = 1.5;
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
-export const BRAWL_THRESHOLD = 12; // defence at or below this triggers brawl mode (manual duel-by-duel rounds)
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
@@ -157,8 +156,6 @@ export const RIDER_DUEL_MULTIPLIER = 2.2;
 /** An abandoned tile's wild garrison guards as zombies -- tougher per head. */
 export const ZOMBIE_POWER_WEIGHT = 2.1;
 export const DRAGON_POWER_WEIGHT = 3;
-// Units per formation cluster on the battle grid (see layout.ts's squadGroupCount).
-export const ARMY_SLOT_CAPACITY = 12;
 export const GARRISON_SLOT_CAPACITY = 8;
 // Every tile holds this many garrison slots beyond its level, so capacity
 // runs 16/24/32 by level rather than 8/16/24 (see Tile.ts's garrisonSlots).
@@ -201,85 +198,30 @@ export const RIDER_CAP_BY_FAME: { minFame: number; cap: number }[] = [
 export const SPRITE_SIZE = 96;
 
 // ── Grid battle (BattlefieldGrid) ──
-export const BATTLEFIELD_COLS = 11;
-// 16, not 13: a maxed-out 5-squad, 40-unit army (the AUTO_BATTLE_LARGE_THRESHOLD
-// case below) needs 16 rows to lay out without squads clamping into overlap.
-export const BATTLEFIELD_ROWS = 16;
-// An automatic (non-brawl) battle gets bigger cells/units when both sides
-// field at most this many grid units -- easier to read a small fight without
-// needing the full battlefield's tight packing.
-export const AUTO_BATTLE_LARGE_THRESHOLD = 40;
-// Below this, an automatic battle also gets a shorter board (SMALL_BATTLEFIELD_
-// ROWS instead of BATTLEFIELD_ROWS). A real army's squads are always
-// front-loaded per tier (each slot filled to capacity before the next starts),
-// so a total under 30 can never actually split into more than 4 non-empty
-// squads (verified by enumeration) -- one fewer than the 5 a 30-40 army can
-// reach, which is why this band tolerates a shorter board than BATTLEFIELD_ROWS.
-// Width is the tighter of the two: at 10 columns two evenly-matched
-// single-tier armies whose squads happen to pack widest (9v9, 19v19, 29v29
-// -- 20 of 3364 real size/tier combos) overlap by 2-3 units at the center
-// gap, which extra rows don't help since it's a horizontal squeeze. Kept at
-// 10 deliberately for the tighter board; 11 is the collision-free width.
-export const SMALL_AUTO_BATTLE_THRESHOLD = 30;
-export const SMALL_BATTLEFIELD_COLS = 10;
-export const SMALL_BATTLEFIELD_ROWS = 15;
-// Above this on EITHER side, the board gets taller and a little narrower --
-// the extra height keeps a big grouped formation (towers/squads, see
-// formations.ts's layoutGroup) from overlapping at the standard
-// BATTLEFIELD_ROWS, and the tighter width closes the approach. Sized for up
-// to AUTO_BATTLE_LARGE_THRESHOLD a side: the worst real split there (as
-// lopsided as a Knight's army gets, e.g. 1 militia + 39 riders) measures 16
-// rows, so 20 leaves a real margin without the excess scroll a flat 27 would
-// cost a fight barely over SMALL_AUTO_BATTLE_THRESHOLD.
-export const HUGE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
-export const HUGE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 4;
-// Above AUTO_BATTLE_LARGE_THRESHOLD a side -- a maxed-out army (5 slots x
-// ARMY_SLOT_CAPACITY each) tops out around 23 rows in its worst (most
-// lopsided) split, so 27 keeps the same margin HUGE_BATTLEFIELD_ROWS does at
-// its own ceiling.
-export const MASSIVE_BATTLEFIELD_COLS = BATTLEFIELD_COLS - 2;
-export const MASSIVE_BATTLEFIELD_ROWS = BATTLEFIELD_ROWS + 11;
-// The dragon fight is an encirclement, not a face-off: both sides share the
-// middle of the board (see formations.ts's encircle/huddle), so it needs a
-// roughly SQUARE board rather than a tall corridor -- the ring is only as
-// round as the largest circle the board can hold. Rows step down by
-// sqrt(3)/2 of the column pitch, so ~1.15 rows per column comes out square
-// on screen. Sized to seat the ring, the huddle and a gap between them:
-// 48 dragons + up to 60 militia/riders inside an inscribed circle of ~170
-// cells.
-export const DRAGON_BATTLEFIELD_COLS = 15;
-export const DRAGON_BATTLEFIELD_ROWS = 19;
+// Every battle is fought on this one corridor-shaped board.
+export const BATTLEFIELD_COLS = 9;
+export const BATTLEFIELD_ROWS = 11;
+// Units each side opens the battle with; the rest wait in reserve and enter
+// at that side's own edge column whenever a cell there is free.
+export const BATTLE_START_UNITS = 12;
 // Landing on an abandoned (zombie-guarded) tile has this chance to trigger a
 // zombie ambush — same mechanics as a regular Ambush, but the attackers are
 // zombies drawn from the tile's own garrison (see zombieAmbushEncounter.ts).
 export const ZOMBIE_AMBUSH_CHANCE = 0.3;
 export const ZOMBIE_AMBUSH_FORCE_RATIO = 2 / 3;
-// Brawl (small skirmish): a compact board with larger cells, used for the
-// turn-based / manually-controlled brawl fights instead of the full-size
-// battlefield above. A battle is a brawl when both sides field at most
-// BRAWL_THRESHOLD grid units.
-// Was 7x7 (the extra column of approach room beyond a bare 6 measurably
-// evens out small-fight win rates, since otherwise the two blocks start
-// almost in contact and the starting geometry decides the whole fight);
-// widened further to give a manually-played brawl (up to BRAWL_THRESHOLD
-// a side) more room to maneuver once units start moving off their starting
-// formation.
-export const BRAWL_COLS = 9;
-export const BRAWL_ROWS = 11;
 export const MILITIA_HP = 6;
 export const MILITIA_DMG_MIN = 4;
 export const MILITIA_DMG_MAX = 8;
 export const RIDER_HP = 12;
 export const RIDER_DMG_MIN = 8;
 export const RIDER_DMG_MAX = 18;
-// The dragon fights as its own kind, not a rider — see the 'dragon'
-// formation in game/battleGrid/formations.ts, always exactly DRAGON_UNITS.
+// The dragon fights as its own kind, not a rider -- always exactly DRAGON_UNITS.
 export const DRAGON_HP = 25;
 export const DRAGON_DMG_MIN = 2;
 export const DRAGON_DMG_MAX = 20;
 // Per-side cap on how many real militia/riders get their own grid unit —
-// above this, army composition is proportionally downscaled to fit the
-// 16x20=320-cell battlefield (see game/battleGrid/scale.ts).
+// above this, army composition is proportionally downscaled (see
+// game/battleGrid/scale.ts).
 export const MAX_GRID_ARMY_SIZE = 150;
 
 // Abandoned tiles (razed, never reclaimed) are guarded by Zombies instead of

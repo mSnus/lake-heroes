@@ -4,7 +4,6 @@ import { Tile } from '../../game/Tile';
 import { GameState } from '../../game/GameState';
 import { clearScreen, markScreenResolved } from '../../utils/screenStore';
 import { getOverrides } from '../../utils/overridesStore';
-import { getSettings } from '../../utils/settingsStore';
 import { narrate, say, sayLocal } from '../../utils/say';
 import { getPlayerImageSrc } from '../../game/PlayerOptions';
 import { ScreenBackground } from './ScreenBackground';
@@ -19,7 +18,16 @@ import { BattleOutcome, BattleResolution } from '../../actions/battles/common';
 import { useT } from '../../i18n';
 import { getArtifactRollBonusBreakdown } from '../../game/artifacts';
 import { ABSORB_PER_ROLL_POINT } from '../../game/constants';
-import { stepTurn, isBattleOver, planBrawlSide, applyBrawlMoves, resolveBrawlCombat, energyFor, BrawlPlan } from '../../game/battleGrid/engine';
+import {
+  isBattleOver,
+  planBrawlSide,
+  applyBrawlMoves,
+  resolveBrawlCombat,
+  deployReinforcements,
+  sideRemaining,
+  energyFor,
+  BrawlPlan,
+} from '../../game/battleGrid/engine';
 import { realLossFromGridLoss } from '../../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../../game/battleGrid/battleSetup';
 import { dispatchBattleResolution, handleBattleClose } from '../../game/battleGrid/battleResolution';
@@ -29,9 +37,11 @@ import Tower from '../snippets/Tower';
 
 type BattlePhase = 'ongoing' | 'result';
 
-// Pause between automatic turns when both sides are bots — fast, but still a
-// visible turn-by-turn playback rather than an instant jump to the result.
+// Pause between automatic rounds — fast, but still a visible round-by-round
+// playback rather than an instant jump to the result.
 const AUTO_TURN_DELAY_MS = 250;
+// How long the first 🏃 tap stays armed, waiting for the confirming second tap.
+const ESCAPE_ARM_MS = 3000;
 
 // Duration of the per-turn combat animation (see handleNextTurn): weapons/
 // shields (🗡️/🛡️) -> who's under attack (💥) -> each unit's own result
@@ -197,15 +207,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     defenderSized,
     attackerGridTotal,
     defenderGridTotal,
-    attackerFormation,
-    defenderFormation,
     garrisonAbsorbBonus,
     attackerRollBonus,
     defenderRollBonus,
     attackerManual,
     defenderManual,
+    escapeSide,
   } = setupRef.current;
-  const { isBrawl, isLargeAutoBattle, isMassiveBattle, cols: gridCols, rows: gridRows } = setupRef.current.board;
+  const canControl = attackerManual || defenderManual;
 
   type BonusEntry = { key: string; label?: string; emoji?: React.ReactNode; bonus: number; suffix?: string };
   const buildBonusEntries = (player: Player | undefined): BonusEntry[] =>
@@ -284,10 +293,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // fight, nothing otherwise — dragon/caravan/ambush modes have no third
   // icon to show, since defenderImg is already one of the two side portraits
   // (the NPC's, or the real player's for ambush's reversed roles).
-  // The tallest board there is (see MASSIVE_BATTLEFIELD_ROWS) -- the icon is
-  // the one easy thing to give back at that height.
-  const modeIconSrc =
-    !isMassiveBattle && (isTile || isRogue) && tile?.spriteImage ? tile.spriteImage : undefined;
+  const modeIconSrc = (isTile || isRogue) && tile?.spriteImage ? tile.spriteImage : undefined;
 
   // Mode-specific battlefield icons, matching the old duel screen's grid
   // emoji: NPC ambushers/rogue horde occupy the grid's attacker role, the
@@ -371,33 +377,32 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     []
   );
 
-  // Each turn plays out as a 3-stage micro-animation before the computed
-  // result is actually committed to `battle` state: attack/defend icons,
-  // then a hit flash on whoever's being attacked, then a death flash on
-  // whoever's dying — all against the *pre-turn* snapshot, since combat
-  // itself never moves anyone (see engine.ts). Only non-engaged units
-  // moving is "invisible" here, same as before — they just animate to
-  // their new cell (via CSS transition) once the turn commits.
+  // The combat beats play out against the post-move positions before the
+  // computed result is committed to `battle` state: attack icons, then a hit
+  // flash on whoever's being attacked, then each unit's own outcome.
   const animatingRef = useRef(false);
   const [animPhase, setAnimPhase] = useState<'idle' | 'attack-defend' | 'impact' | 'outcome'>('idle');
 
-  // Manual brawl control: which side (if any) the human is currently placing.
+  // Every battle starts automatic; ⚔️ toggles the local human's side(s)
+  // between auto and manual, applied at that side's next movement phase.
+  const [manualControl, setManualControl] = useState(false);
+  const manualControlRef = useRef(false);
+  // Which side (if any) the human is currently placing.
   const [brawlManualSide, setBrawlManualSide] = useState<BattleSide | null>(null);
-  // ⚔️ click during a brawl: hand the human's side over to the AI for every
-  // remaining round instead of placing manually. Checked fresh each time a
-  // new round starts, and also applied immediately to a round already
-  // showing the placement UI right when this is clicked (see
-  // handleVsIconClick) -- units start moving as soon as it's pressed.
-  const [autoResolveBrawl, setAutoResolveBrawl] = useState(false);
   const [instantMove, setInstantMove] = useState(false); // snap (no slide) the human's just-placed units
   const manualBaseRef = useRef<GridBattleState | null>(null); // state a manual phase edits
-  const roundActiveRef = useRef(false); // a brawl round is in progress
+  const roundActiveRef = useRef(false); // a round is in progress
   const roundStartPosRef = useRef<Map<string, { col: number; row: number }>>(new Map()); // positions at round start, to tell who moved
   const manualAttacksRef = useRef<Record<string, string>>({}); // human's attack orders this round (unitId -> enemyId)
+  // Set once the human escapes -- every pending phase/animation callback
+  // checks it and stands down.
+  const escapedRef = useRef(false);
+  const [escapeArmed, setEscapeArmed] = useState(false);
+  const battleRef = useRef(battle);
+  battleRef.current = battle;
 
   // The 3-beat combat playback (attack/defend icons -> who's under attack ->
-  // everyone's own result at once), then commit the resolved state. Shared
-  // by the full-battle and brawl turn handlers.
+  // everyone's own result at once), then commit the resolved state.
   const animateCombat = useCallback((finalState: GridBattleState, events: TurnEvent[]) => {
     animatingRef.current = true;
     setLastEvents(events);
@@ -409,7 +414,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         setTimeout(() => {
           setAnimPhase('idle');
           animatingRef.current = false;
-          setBattle(finalState);
+          if (!escapedRef.current) setBattle(finalState);
         }, OUTCOME_FLASH_MS);
       }, IMPACT_FLASH_MS);
     }, COMBAT_ANIM_BEAT_MS);
@@ -430,16 +435,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setBattle(to);
     setTimeout(() => {
       animatingRef.current = false;
-      next();
+      if (!escapedRef.current) next();
     }, BRAWL_MOVE_ANIM_MS);
   };
 
-  // A brawl round: defender moves all its units, then the attacker (planning
-  // against the defender's new positions), then one combat resolution. Each
-  // side's move is either auto-planned (bot) or hand-placed by the human via
-  // the shadow overlay (manual). Held in refs so the auto-advance effect and
-  // the ⚔️ click always invoke the current version.
+  // A round: reinforcements enter, the defender moves all its units, then the
+  // attacker (planning against the defender's new positions), then one combat
+  // resolution. Each side's move is auto-planned, or hand-placed by the human
+  // via the shadow overlay while manual control is on.
   const brawlResolve = (s: GridBattleState) => {
+    if (escapedRef.current) return;
     roundActiveRef.current = false;
     // Units whose cell changed since the round started defend less
     // effectively this round -- see MOVED_DEFENSE_PENALTY.
@@ -450,34 +455,23 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       if (!p || p.col !== u.col || p.row !== u.row) movedIds.add(u.id);
     }
 
-    // The human-controlled side attacks the enemy it explicitly pointed at, or
-    // auto-targets like the bot otherwise — so a unit that simply moved into
-    // contact (or was left untouched while already adjacent) always fights,
-    // same as an AI unit would; there's no way to opt out of attacking. The
-    // bot side always auto-targets. Fully-auto rounds pass no intent.
-    const manualS: BattleSide | null = autoResolveBrawl
-      ? null
-      : attackerManual
-        ? 'attacker'
-        : defenderManual
-          ? 'defender'
-          : null;
-    let intent: Map<string, string> | undefined;
-    if (manualS) {
-      intent = new Map();
-      const atk = manualAttacksRef.current;
-      for (const u of s.units) {
-        intent.set(u.id, u.side === manualS ? (atk[u.id] ?? 'auto') : 'auto');
-      }
-    }
+    // A manually placed unit attacks the enemy it explicitly pointed at; every
+    // other unit (and every unit of an auto side) picks its own target.
+    const attacks = manualAttacksRef.current;
+    const intent = Object.keys(attacks).length ? new Map(Object.entries(attacks)) : undefined;
 
     const { state, events } = resolveBrawlCombat(s, brawlOpts(), movedIds, intent);
     animateCombat(state, events);
   };
 
+  const isManualSide = (side: BattleSide) =>
+    manualControlRef.current && (side === 'attacker' ? attackerManual : defenderManual);
+
   const brawlAttackerPhase = (s: GridBattleState) => {
-    if (attackerManual && !autoResolveBrawl) {
+    if (escapedRef.current) return;
+    if (isManualSide('attacker')) {
       manualBaseRef.current = s;
+      setBattle(s);
       setBrawlManualSide('attacker');
       return;
     }
@@ -487,8 +481,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
 
   const brawlDefenderPhase = (s: GridBattleState) => {
-    if (defenderManual && !autoResolveBrawl) {
+    if (escapedRef.current) return;
+    if (isManualSide('defender')) {
       manualBaseRef.current = s;
+      setBattle(s);
       setBrawlManualSide('defender');
       return;
     }
@@ -498,18 +494,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
 
   const startBrawlRound = () => {
-    if (phase !== 'ongoing' || roundActiveRef.current || animatingRef.current || isBattleOver(battle)) return;
+    if (phase !== 'ongoing' || escapedRef.current || roundActiveRef.current || animatingRef.current) return;
+    if (isBattleOver(battle)) return;
     roundActiveRef.current = true;
-    roundStartPosRef.current = new Map(battle.units.map((u) => [u.id, { col: u.col, row: u.row }]));
+    const deployed = deployReinforcements(battle);
+    roundStartPosRef.current = new Map(deployed.units.map((u) => [u.id, { col: u.col, row: u.row }]));
     manualAttacksRef.current = {};
-    brawlDefenderPhase(battle);
+    brawlDefenderPhase(deployed);
   };
 
   const handleManualComplete = (plan: BrawlPlan, attacks: Record<string, string>) => {
     const side = brawlManualSide;
     const base = manualBaseRef.current;
-    if (!side || !base) return;
-    manualAttacksRef.current = attacks;
+    if (!side || !base || escapedRef.current) return;
+    manualAttacksRef.current = { ...manualAttacksRef.current, ...attacks };
     const moved = applyBrawlMoves(base, plan);
     // The twins already showed where these units go, so don't re-animate the
     // move: hide the twins and snap the real units into place in the same
@@ -523,6 +521,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setTimeout(() => {
       setInstantMove(false);
       animatingRef.current = false;
+      if (escapedRef.current) return;
       if (side === 'defender') brawlAttackerPhase(moved);
       else brawlResolve(moved);
     }, BRAWL_SNAP_HOLD_MS);
@@ -535,39 +534,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   const handleNextTurn = useCallback(() => {
     if (phase !== 'ongoing' || animatingRef.current || isBattleOver(battle)) return;
-    if (isBrawl) {
-      startBrawlRoundRef.current();
-      return;
-    }
-
-    const { state, events } = stepTurn(battle, {
-      rng: Math.random,
-      attackerFlatBonus: attackerRollBonus,
-      defenderAbsorbBonus: garrisonAbsorbBonus,
-      defenderFlatBonus: defenderRollBonus,
-    });
-    // stepTurn now moves first and fights afterwards (same order as a brawl
-    // round), so the fight has to play out at the cells everyone ended up in
-    // -- animating it against the pre-turn snapshot would draw every mover's
-    // 🗡️/💥 on the cell it just left. Slide the movers first, then play the
-    // combat beats, exactly like animateBrawlMove -> brawlResolve does.
-    const moveEvents = events.filter((e) => e.type === 'move');
-    const combatEvents = events.filter((e) => e.type !== 'move');
-    if (moveEvents.length === 0) {
-      animateCombat(state, combatEvents);
-      return;
-    }
-
-    const movedTo = new Map(moveEvents.map((e) => [e.unitId, e.to!]));
-    const afterMove: GridBattleState = {
-      ...battle,
-      units: battle.units.map((u) => {
-        const to = movedTo.get(u.id);
-        return to ? { ...u, col: to.col, row: to.row } : u;
-      }),
-    };
-    animateBrawlMove(afterMove, () => animateCombat(state, combatEvents));
-  }, [phase, battle, isBrawl, attackerRollBonus, garrisonAbsorbBonus, defenderRollBonus, animateCombat]);
+    startBrawlRoundRef.current();
+  }, [phase, battle]);
 
   // Trigger resolution exactly once, the moment the grid battle ends —
   // watching `battle` rather than resolving inline inside the setBattle
@@ -577,10 +545,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   useEffect(() => {
     if (phase !== 'ongoing' || !isBattleOver(battle) || finishedRef.current) return;
     finishedRef.current = true;
-    const attackerLeft = battle.units.filter((u) => u.side === 'attacker').length;
-    const defenderLeft = battle.units.filter((u) => u.side === 'defender').length;
-    const atkGridKilled = attackerGridTotal - attackerLeft;
-    const defGridKilled = defenderGridTotal - defenderLeft;
+    const atkGridKilled = attackerGridTotal - sideRemaining(battle, 'attacker');
+    const defGridKilled = defenderGridTotal - sideRemaining(battle, 'defender');
     const battleOutcome: BattleOutcome =
       battle.status === 'attacker-win' ? 'attacker' : battle.status === 'defender-win' ? 'defender' : 'tie';
     finishBattle(battleOutcome, atkGridKilled, defGridKilled);
@@ -596,25 +562,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     handleBattleClose(props, setupRef.current, outcome);
   };
 
-  // Every battle auto-plays turns until it ends — no click required —
-  // unless the ⚔️ icon is clicked, which switches to step-by-step mode:
-  // that first click both cancels the pending auto-advance (manualMode
-  // becoming true re-runs this effect, which cleans up the old timer) and
-  // performs its own manual step, and every click after it just advances
-  // one turn the same way.
-  // The ⚖️ override makes battles start paused in step-by-step mode (advance
-  // one turn per ⚔️ click) instead of auto-playing to the end.
-  // "Always use auto battle" (Settings screen) overrides the ⚖️ step-by-step
-  // dev override entirely -- a battle never starts paused if the human asked
-  // to never be bothered for input.
-  const [manualMode, setManualMode] = useState(
-    getSettings().autoBattle ? false : getOverrides().stepByStepCombat
-  );
+  // Rounds auto-play until the battle ends; the ⚖️ step-by-step override
+  // instead waits for a ⏭️ click per round.
+  const stepMode = getOverrides().stepByStepCombat;
   useEffect(() => {
-    if (phase !== 'ongoing' || manualMode) return;
+    if (phase !== 'ongoing' || stepMode) return;
     const timer = setTimeout(() => handleNextTurn(), AUTO_TURN_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [phase, battle.turn, manualMode]);
+  }, [phase, battle.turn, stepMode]);
 
   /** Debug export: clicking either side's portrait copies the live battle
    * state as JSON -- for pasting into a bug report rather than describing
@@ -638,11 +593,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         turn: battle.turn,
         status: battle.status,
         phase,
-        isBrawl,
-        // Whose manual placement turn it is right now, if this is a
-        // manually-controlled brawl mid-placement -- 'auto' when the engine
-        // is resolving on its own (auto-battle toggle on, a bot, or any
-        // non-brawl battle, which never pauses for input at all).
+        manualControl,
+        // Whose manual placement turn it is right now -- 'auto' when the
+        // engine is resolving on its own.
         turnOwner: brawlManualSide ?? 'auto',
       },
       sides: {
@@ -660,6 +613,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         energy: u.energy,
         maxEnergy: energyFor(u.kind),
       })),
+      reserves: battle.reserves.map((u) => ({ id: u.id, side: u.side, kind: u.kind })),
       obstacles: battle.obstacles,
     };
 
@@ -671,29 +625,49 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   };
 
   const handleVsIconClick = () => {
-    if (phase !== 'ongoing') return;
-    // Brawl: hand the human's side over to the AI for the rest of the fight,
-    // instead of the non-brawl auto-play/step-by-step toggle below. If a
-    // round is already showing the manual placement UI right now, take it
-    // over immediately too (AI-planned, same as any other auto round)
-    // instead of waiting for the player to finish placing it themselves --
-    // units should visibly start moving as soon as this is clicked, not
-    // only from the next round onward.
-    if (isBrawl) {
-      setAutoResolveBrawl(true);
-      const side = brawlManualSide;
-      const base = manualBaseRef.current;
-      if (side && base) {
-        setBrawlManualSide(null);
-        const moved = applyBrawlMoves(base, planBrawlSide(base, side, Math.random));
-        animateBrawlMove(moved, () => (side === 'defender' ? brawlAttackerPhase(moved) : brawlResolve(moved)));
-      }
+    if (phase !== 'ongoing' || !canControl) return;
+    const next = !manualControlRef.current;
+    manualControlRef.current = next;
+    setManualControl(next);
+    // Back to auto while the placement UI is showing: the AI takes this
+    // movement phase over right away.
+    const side = brawlManualSide;
+    const base = manualBaseRef.current;
+    if (!next && side && base) {
+      setBrawlManualSide(null);
+      const moved = applyBrawlMoves(base, planBrawlSide(base, side, Math.random));
+      animateBrawlMove(moved, () => (side === 'defender' ? brawlAttackerPhase(moved) : brawlResolve(moved)));
+    }
+  };
 
+  // Units of the escaping side that are on the field right now -- lost on escape.
+  const escapeLoss = escapeSide ? battle.units.filter((u) => u.side === escapeSide).length : 0;
+
+  // First tap arms (with a warning), a second tap within ESCAPE_ARM_MS escapes:
+  // the escaping side loses the battle and every unit on the field, but keeps
+  // its reserves.
+  const handleEscapeClick = () => {
+    if (phase !== 'ongoing' || !escapeSide || finishedRef.current) return;
+    if (!escapeArmed) {
+      setEscapeArmed(true);
+      sayLocal(t('battleScreen.escapeConfirm', { units: escapeLoss }), 'warning');
+      setTimeout(() => setEscapeArmed(false), ESCAPE_ARM_MS);
       return;
     }
 
-    setManualMode(true);
-    handleNextTurn();
+    escapedRef.current = true;
+    finishedRef.current = true;
+    roundActiveRef.current = false;
+    setBrawlManualSide(null);
+    setAnimPhase('idle');
+    setLastEvents([]);
+    const cur = battleRef.current;
+    const lost = cur.units.filter((u) => u.side === escapeSide).length;
+    const atkGridKilled = attackerGridTotal - sideRemaining(cur, 'attacker') + (escapeSide === 'attacker' ? lost : 0);
+    const defGridKilled = defenderGridTotal - sideRemaining(cur, 'defender') + (escapeSide === 'defender' ? lost : 0);
+    setBattle({ ...cur, units: cur.units.filter((u) => u.side !== escapeSide) });
+    say(t('battleScreen.escaped', { name: attacker.name, units: lost }), 'warning');
+    finishBattle(escapeSide === 'attacker' ? 'defender' : 'attacker', atkGridKilled, defGridKilled);
   };
 
   // Give the player a beat to see the final positions on the battlefield
@@ -804,47 +778,32 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
           <div className="battle-vs-heading">
             <div
-              className={
-                'vs-icon' +
-                (phase === 'ongoing' && !(isBrawl && autoResolveBrawl) ? ' vs-icon-clickable' : '')
-              }
-              onClick={
-                phase === 'ongoing' && !(isBrawl && autoResolveBrawl)
-                  ? handleVsIconClick
-                  : undefined
-              }
-              title={isBrawl ? t('battleScreen.autoResolveBrawl') : undefined}
+              className={'vs-icon' + (phase === 'ongoing' && canControl ? ' vs-icon-clickable' : '')}
+              onClick={phase === 'ongoing' && canControl ? handleVsIconClick : undefined}
+              title={canControl ? t('battleScreen.controlToggleTitle') : undefined}
             >
               ⚔️
-              {/* Brawl-only -- a non-brawl fight is already auto-playing by
-                  default, so a label advertising "auto-battle" there would
-                  be both redundant and actively misleading (clicking it
-                  switches OUT of auto-play into step-by-step, the opposite
-                  of what the label implies). Always rendered (space reserved
-                  via visibility, not unmounted) -- removing it outright
-                  shrinks .battle-vs-heading and, since the grid is a later
-                  flex sibling, pulls the whole battlefield up to fill the
-                  gap the moment this hides (clicking auto-battle, or the
-                  battle resolving). */}
-              <div
-                className={
-                  'auto-label' +
-                  (phase === 'ongoing' && isBrawl && !autoResolveBrawl ? '' : ' auto-label--hidden')
-                }
-              >
-                auto-battle
+              {/* Always rendered (space reserved via visibility, not
+                  unmounted) -- removing it would shrink .battle-vs-heading
+                  and pull the battlefield up the moment it hides. */}
+              <div className={'auto-label' + (phase === 'ongoing' && canControl ? '' : ' auto-label--hidden')}>
+                {manualControl ? t('battleScreen.controlManual') : t('battleScreen.controlAuto')}
                 <br />
               </div>
             </div>
-            {/* attackerGridTotal/defenderGridTotal already track whichever
-                side is shown on the left/right respectively -- ambush's
-                role reversal is baked into their assignment above, so no
-                extra isAmbush swap is needed (or correct) here. */}
+            {/* Left/right already follow the grid roles -- ambush's role
+                reversal is baked into the setup, so no isAmbush swap here. */}
             <div className="vs-count">
-              {attackerGridTotal}
+              {sideRemaining(battle, 'attacker')}
               <span className="vs"> {t('common.vs')} </span>
-              {defenderGridTotal}
+              {sideRemaining(battle, 'defender')}
             </div>
+            {battle.reserves.length > 0 && (
+              <div className="vs-reserves" title={t('battleScreen.reservesTitle')}>
+                +{battle.reserves.filter((u) => u.side === 'attacker').length} ·{' '}
+                +{battle.reserves.filter((u) => u.side === 'defender').length}
+              </div>
+            )}
             {modeIconSrc && <SpriteCircleIcon src={modeIconSrc} size="4.5rem" />}
           </div>
 
@@ -885,11 +844,30 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             defenderIcon={defenderFieldIcon}
             attackerColor={attackerFieldColor}
             defenderColor={defenderFieldColor}
-            brawl={isBrawl}
-            large={isLargeAutoBattle}
             manualSide={brawlManualSide ?? undefined}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
             instant={instantMove}
+            extraControls={
+              <>
+                {stepMode && phase === 'ongoing' && (
+                  <div className="shield-button-container" title={t('battleScreen.nextRound')}>
+                    <button className="shield-button" onClick={handleNextTurn}>
+                      ⏭️
+                    </button>
+                  </div>
+                )}
+                {escapeSide && phase === 'ongoing' && (
+                  <div
+                    className={'shield-button-container' + (escapeArmed ? ' battle-escape-armed' : '')}
+                    title={t('battleScreen.escapeTitle', { units: escapeLoss })}
+                  >
+                    <button className="shield-button" onClick={handleEscapeClick}>
+                      🏃
+                    </button>
+                  </div>
+                )}
+              </>
+            }
           />
         )}
 

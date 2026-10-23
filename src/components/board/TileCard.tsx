@@ -13,7 +13,6 @@ import { claimAffordability } from '../../game/tileOwnership';
 import { syndicateMultiplier } from '../../game/syndicate';
 import { tileTurnIncome } from '../../game/income';
 import { hasYearEffect, DOUBLE_INCOME_EFFECT } from '../../game/year';
-import { isBrawlMatchup } from '../../actions/battles/common';
 import DecoratedButton from '../ui/DecoratedButton';
 import { TileUpgradesScreen } from '../screens/TileUpgradesScreen';
 import { Gold } from '../snippets/Gold';
@@ -163,12 +162,8 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const activePlayer = gameState?.activePlayer ?? null;
 
-  // Brawl tiles (low defence) always require enough units to win the
-  // winner-take-all round — but only when the attacker's own army is also
-  // small; a big army attacking a weak tile fights a normal battle instead
-  // (mirrors BattleScreen's isBrawl rule). Above the brawl threshold, an
-  // attacker with more than BRAWL_THRESHOLD units may "banzai" — attack
-  // despite having fewer units than the tile's defence — as a deliberate gamble.
+  // An attacker may "banzai" — attack despite having less strength than the
+  // tile's defence — as a deliberate gamble (see isBanzaiAttack).
   // Rated strength on the shared scale (see UNIT_POWER), matching what
   // Tile.isAffordable compares against -- zombies count for more than their
   // headcount, and attackerPower is weighted the same way.
@@ -183,11 +178,10 @@ export const TileCard: React.FC<TileCardProps> = ({
     : activePlayer.militia > 0
       ? `${activePlayer.militia}${activePlayer.riders > 0 ? `+${activePlayer.riders}` : ''}`
       : `${activePlayer.riders}`;
-  const isBrawlTile = isBrawlMatchup(lvl1Defence, attackerPower);
 
   const isBanzai = !!activePlayer && isBanzaiAttack(lvl1Defence, attackerPower);
 
-  const attackEmoji = (isBrawlTile ? '👊' : '⚔️') + (isBanzai ? '🩸' : '');
+  const attackEmoji = '⚔️' + (isBanzai ? '🩸' : '');
 
   // Shared with AutoEndTurnNotice (game/tileOwnership.ts's
   // claimAffordability) so "claimable" has one definition -- it re-derives

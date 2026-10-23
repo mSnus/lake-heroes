@@ -1,20 +1,9 @@
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
 import { formatArmy } from '../../utils/formatArmy';
-import { BRAWL_THRESHOLD } from '../../game/constants';
 import { t } from '../../i18n';
 
 export type BattleOutcome = 'attacker' | 'defender' | 'tie';
-
-/**
- * A brawl (manual, one duel at a time, rightmost attacker vs leftmost
- * defender each round) requires BOTH a small defence and a small attacking
- * force — a big army attacking a weakly-defended tile or caravan fights a
- * normal automatic battle (random pairs) instead.
- */
-export function isBrawlMatchup(defence: number, attackerUnits: number): boolean {
-  return defence <= BRAWL_THRESHOLD && attackerUnits <= BRAWL_THRESHOLD;
-}
 
 export interface RoundResult {
   attackerRoll: number;

@@ -49,18 +49,6 @@ const SettingsScreen: React.FC = () => {
           <label className="settings-toggle-label">
             <input
               type="checkbox"
-              checked={settings.autoBattle}
-              onChange={(e) => setSettings({ autoBattle: e.target.checked })}
-            />
-            {t('settingsScreen.autoBattle')}
-          </label>
-          <span className="settings-hint">{t('settingsScreen.autoBattleHint')}</span>
-        </div>
-
-        <div className="settings-field">
-          <label className="settings-toggle-label">
-            <input
-              type="checkbox"
               checked={settings.doNotDisplayBattles}
               onChange={(e) => setSettings({ doNotDisplayBattles: e.target.checked })}
             />

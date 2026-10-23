@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useId } from 'react';
+import React, { useRef, useState, useEffect, useId, useMemo } from 'react';
 import { GridBattleState, TurnEvent, BattleSide, GridUnit, UnitKind } from '../../game/battleGrid/types';
 import { BrawlPlan, adjacentCells, energyFor } from '../../game/battleGrid/engine';
 import { useT } from '../../i18n';
@@ -38,12 +38,6 @@ interface BattlefieldGridProps {
    * own default. */
   attackerColor?: string;
   defenderColor?: string;
-  /** Brawl mode: a compact board (BRAWL_COLS×BRAWL_ROWS) rendered with cells
-   * and units at 180% of the normal height. */
-  brawl?: boolean;
-  /** A small automatic (non-brawl) battle: bigger cells/units than the
-   * default battlefield, though not as large as brawl's. */
-  large?: boolean;
   /** When set, this side is being manually controlled: a shadow layer of
    * draggable "twin" units appears over that side's units and the caller is
    * handed the chosen destinations via onManualComplete once every unit is
@@ -59,6 +53,9 @@ interface BattlefieldGridProps {
    * units straight to where the twins already showed them, instead of
    * re-animating the moves the player just made. */
   instant?: boolean;
+  /** Always-visible buttons shown in the controls row next to Undo/Finish
+   * (escape, step-by-step). */
+  extraControls?: React.ReactNode;
 }
 
 // Militia/rider aren't here -- emojiFor renders the Militia/Rider snippets
@@ -77,6 +74,9 @@ interface Placement {
 }
 
 const colShiftFor = (row: number) => (row % 2 === 0 ? 0.7 : 0.2);
+
+// The corridor's rocky walls above and below the field -- cosmetic only.
+const ROCK_EMOJIS = ['🪨', '🪨', '⛰️', '⛰️', '🗿'];
 
 // Pointy-top hex geometry, kept in sync with BattlefieldGrid.css's
 // --bfg-cell-h / --bfg-row: the hex box is taller than the horizontal pitch,
@@ -121,11 +121,10 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   defenderIcon,
   attackerColor,
   defenderColor,
-  brawl = false,
-  large = false,
   manualSide,
   onManualComplete,
   instant = false,
+  extraControls,
 }) => {
   const t = useT();
   const { cols, rows, units } = battle;
@@ -133,6 +132,18 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   // Unique per mount so multiple battlefields on screen at once (unlikely
   // today, but cheap to guard) don't collide on the SVG filter's id.
   const hexFilterId = 'bfg-hex-border-' + useId().replace(/[^a-zA-Z0-9]/g, '');
+  // Picked once per battle, so the walls don't reshuffle every render.
+  const rockRows = useMemo(() => {
+    const row = () => Array.from({ length: cols + 1 }, () => ROCK_EMOJIS[Math.floor(Math.random() * ROCK_EMOJIS.length)]);
+    return { top: row(), bottom: row() };
+  }, [cols]);
+  const rocks = (items: string[]) => (
+    <div className="bfg-rocks" aria-hidden>
+      {items.map((r, i) => (
+        <span key={i}>{r}</span>
+      ))}
+    </div>
+  );
 
   // ── Manual (drag) state ──
   const [placements, setPlacements] = useState<Record<string, Placement>>({});
@@ -487,7 +498,9 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         </filter>
       </defs>
     </svg>
-    <div className={'bfg-battlefield' + (brawl ? ' bfg-brawl' : large ? ' bfg-large' : '') + (instant ? ' bfg-instant' : '')}>
+    <div className={'bfg-battlefield' + (instant ? ' bfg-instant' : '')}>
+      <div className="bfg-corridor">
+      {rocks(rockRows.top)}
       <div className="bfg-arena" ref={arenaRef} onClick={handleArenaClick}>
         <div
           className="bfg-grid"
@@ -536,7 +549,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
                   ...(op === 0 ? { pointerEvents: 'none' } : {}),
                 }}
                 title={`${u.kind} ${u.hp}/${u.maxHp} hp, ${u.energy}/${energyFor(u.kind)} energy`}
-                onClick={brawl ? () => revealHp(u.id) : undefined}
+                onClick={() => revealHp(u.id)}
               >
                 <span className="bfg-unit-emoji">{overrideEmoji.get(u.id) ?? emojiFor(u)}</span>
                 <UnitBars unit={u} />
@@ -681,28 +694,36 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
           </div>
         )}
       </div>
+      {rocks(rockRows.bottom)}
+      </div>
     </div>
 
-    {/* Kept in the DOM through the whole brawl (not just the manual turn) so
-        the battlefield doesn't shift when they appear/disappear — hidden and
-        disabled while it isn't the human's turn to place. */}
-    {brawl && (
-      <div className={'bfg-manual-controls' + (manualSide ? '' : ' bfg-manual-controls--hidden')} aria-hidden={!manualSide}>
-        <div
-          className={'shield-button-container' + (!manualSide || undoStack.length === 0 ? ' shield-button-container--disabled' : '')}
-          title={t('battleScreen.brawlUndo')}
-        >
-          <button className="shield-button" onClick={undo} disabled={!manualSide || undoStack.length === 0}>
-            ⬅️
-          </button>
-        </div>
-        <div className="shield-button-container" title={t('battleScreen.brawlGo')}>
-          <button className="shield-button" onClick={finishTurn} disabled={!manualSide}>
-            🚩
-          </button>
-        </div>
+    {/* Undo/Finish stay in the DOM through the whole battle (not just the
+        manual turn) so the battlefield doesn't shift when they appear --
+        hidden and disabled while it isn't the human's turn to place. */}
+    <div className="bfg-manual-controls">
+      <div
+        className={
+          'shield-button-container' +
+          (!manualSide || undoStack.length === 0 ? ' shield-button-container--disabled' : '') +
+          (manualSide ? '' : ' bfg-manual-btn--hidden')
+        }
+        title={t('battleScreen.brawlUndo')}
+      >
+        <button className="shield-button" onClick={undo} disabled={!manualSide || undoStack.length === 0}>
+          ⬅️
+        </button>
       </div>
-    )}
+      <div
+        className={'shield-button-container' + (manualSide ? '' : ' bfg-manual-btn--hidden')}
+        title={t('battleScreen.brawlGo')}
+      >
+        <button className="shield-button" onClick={finishTurn} disabled={!manualSide}>
+          🚩
+        </button>
+      </div>
+      {extraControls}
+    </div>
     </>
   );
 };

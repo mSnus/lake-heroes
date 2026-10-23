@@ -25,7 +25,11 @@
   container-name: battlefield;
   position: relative;
   width: 100%;
-  --bfg-cell: 6.2vmin;
+  /* The half-cell padding below stays inside the 100% width. */
+  box-sizing: border-box;
+  /* Sized so the BATTLEFIELD_COLS-wide grid (9 cells + 8 grid gaps) fills
+     the content width exactly. */
+  --bfg-cell: 10vmin;
   --bfg-cell-h: calc(var(--bfg-cell) * 1.1547);
   --bfg-row: calc(var(--bfg-cell) * 0.8660);
   /* Room for even rows' cells/units to shift right without clipping. */
@@ -36,61 +40,40 @@
   justify-content: center;
   align-items: flex-start;
 }
-
-/* A small automatic battle (see AUTO_BATTLE_LARGE_THRESHOLD): bigger cells
-   than the default battlefield, but not as large as brawl's. */
-.bfg-battlefield.bfg-large {
-  --bfg-cell: 10vmin;
-}
-
-/* Brawl board: fewer, bigger cells. Sized so the BRAWL_COLS-wide grid fills
-   the container width (BRAWL_COLS columns + the even-row half-cell shift) --
-   scaled down from the 15.1(v|cq)i this was at BRAWL_COLS=7 by 7.5/9.5 when
-   it widened to 9, so the wider board still fits instead of overflowing. */
-.bfg-battlefield.bfg-brawl {
-  --bfg-cell: 11.9vmin;
-}
 @supports (container-type: inline-size) {
   .bfg-battlefield {
-    --bfg-cell: 6.2cqi;
-  }
-
-  .bfg-battlefield.bfg-large {
-    --bfg-cell: 10cqi;
-  }
-
-  .bfg-battlefield.bfg-brawl {
-    --bfg-cell: 11.9cqi;
+    --bfg-cell: calc((100cqi - 16px) / 9);
   }
 }
-
 
 @media (min-width: 769px) {
   .bfg-battlefield {
-    --bfg-cell: 6vmin;
-  }
-
-  .bfg-battlefield.bfg-large {
-    --bfg-cell: 7vmin;
-  }
-
-  .bfg-battlefield.bfg-brawl {
     --bfg-cell: 6.3vmin;
   }
 
   @supports (container-type: inline-size) {
     .bfg-battlefield {
-      --bfg-cell: 6cqi;
-    }
-
-    .bfg-battlefield.bfg-large {
-      --bfg-cell: 7cqi;
-    }
-
-        .bfg-battlefield.bfg-brawl {
       --bfg-cell: 6.3cqi;
     }
   }
+}
+
+/* The arena between its two rock walls. Kept outside .bfg-arena, whose box
+   is what every cell coordinate is measured from. */
+.bfg-corridor {
+  display: flex;
+  flex-direction: column;
+}
+
+.bfg-rocks {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(var(--bfg-cell) * 0.6);
+  line-height: 1;
+  text-shadow: 1px 1px 3px #000;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Shared positioned box for .bfg-grid and .bfg-units — .bfg-units is
@@ -157,7 +140,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Clicking/dragging units (brawl mode) shouldn't leave a text selection
+  /* Clicking/dragging units shouldn't leave a text selection
      highlight behind on their emoji/HP label. */
   -webkit-user-select: none;
   user-select: none;
@@ -180,19 +163,19 @@
   transition: none;
 }
 
-/* Brawl only: units are clickable (reveals remaining HP -- see
+/* Units are clickable (reveals remaining HP -- see
    .bfg-unit-hp-label below). A friendly unit's real cell sits under its drag
    twin during your own placement turn, so in practice this only catches
    enemies then; outside your placement turn (or on the enemy side, any
    time), every unit is reachable. */
-.bfg-brawl .bfg-unit {
+.bfg-units .bfg-unit {
   pointer-events: auto;
   cursor: pointer;
 }
 
 /* Remaining HP, shown for 1s after a click (see revealHp in
    BattlefieldGrid.tsx) -- a small fixed size (not cell-scaled, which made it
-   huge on brawl's oversized cells) overlaid near the bottom of the unit's
+   huge on the oversized cells) overlaid near the bottom of the unit's
    own box rather than pushed out below it, so it stays over the field
    instead of spilling past the board's edge for a bottom-row unit. */
 .bfg-unit-hp-label {
@@ -379,9 +362,9 @@
   margin-top: 10px;
 }
 
-/* Reserve the space but hide the buttons while it isn't the human's turn, so
+/* Reserve the space but hide Undo/Finish while it isn't the human's turn, so
    the battlefield above doesn't jump when they toggle. */
-.bfg-manual-controls--hidden {
+.bfg-manual-controls .bfg-manual-btn--hidden {
   opacity: 0;
   pointer-events: none;
 }

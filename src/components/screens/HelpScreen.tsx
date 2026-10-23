@@ -30,7 +30,7 @@ import {
   MILITIA_ENERGY,
   OTHER_KIND_ENERGY,
   ENERGY_DEPLETED_DAMAGE_MULT,
-  BRAWL_THRESHOLD,
+  BATTLE_START_UNITS,
   MILITIA_CAP_BY_FAME,
   RIDER_CAP_BY_FAME,
 } from '../../game/constants';
@@ -339,8 +339,10 @@ const HelpScreen: React.FC = () => {
               })}
             />
             <HtmlLi html={t('helpScreen.battle.unitsEquivalence')} />
-            <HtmlLi html={t('helpScreen.battle.twoModes', { brawlThreshold: BRAWL_THRESHOLD })} />
+            <HtmlLi html={t('helpScreen.battle.reinforcements', { startUnits: BATTLE_START_UNITS })} />
             <HtmlLi html={t('helpScreen.battle.controls')} />
+            <HtmlLi html={t('helpScreen.battle.fromBehind')} />
+            <HtmlLi html={t('helpScreen.battle.escape')} />
             <HtmlLi html={t('helpScreen.battle.heroHour')} />
           </ul>
 
@@ -356,6 +358,7 @@ const HelpScreen: React.FC = () => {
                   'autoToggle',
                   'undo',
                   'finishTurn',
+                  'escape',
                   'result',
                 ] as const
               ).map((key) => (

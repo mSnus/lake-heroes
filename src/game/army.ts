@@ -1,5 +1,4 @@
 import {
-  ARMY_SLOT_CAPACITY,
   MILITIA_CAP_BY_FAME,
   RIDER_CAP_BY_FAME,
   MILITIA_POWER_WEIGHT,
@@ -111,21 +110,6 @@ export function remainingCapacity(
   const otherSlots = Math.ceil(otherCount / capacity);
   const availableSlots = Math.max(0, slotCount - otherSlots);
   return Math.max(0, availableSlots * capacity - thisCount);
-}
-
-/** Splits a tier's count into formation clusters of up to `capacity` -- e.g.
- * 14 -> [12, 2]. Battle-grid grouping only, not a limit on the army. */
-export function slotChunks(count: number, capacity: number = ARMY_SLOT_CAPACITY): number[] {
-  if (count <= 0) return [];
-  const chunks: number[] = [];
-  let remaining = count;
-  while (remaining > 0) {
-    const chunk = Math.min(capacity, remaining);
-    chunks.push(chunk);
-    remaining -= chunk;
-  }
-
-  return chunks;
 }
 
 /**

@@ -44,18 +44,23 @@ export interface GridUnit {
 export interface BattleObstacle {
   col: number;
   row: number;
-  /** One of OBSTACLE_EMOJIS (engine.ts) -- purely cosmetic, picked at
-   * random per obstacle when the battle is created. */
+  /** One of OBSTACLE_EMOJIS (placement.ts) -- purely cosmetic; every cell
+   * of a grouped obstacle shares one. */
   emoji: string;
 }
 
 export interface GridBattleState {
   cols: number;
   rows: number;
+  /** Units on the field. */
   units: GridUnit[];
+  /** Units still waiting off the field, both sides, in entry order -- see
+   * deployReinforcements in engine.ts. A side is beaten only once it has
+   * none left here and none on the field. */
+  reserves: GridUnit[];
   /** Impassable terrain cells, generated once up front (before either army
    * is placed) and fixed for the rest of the battle -- no unit may ever
-   * move onto one. See OBSTACLE_RATIO in engine.ts. */
+   * move onto one. See generateObstacles in placement.ts. */
   obstacles: BattleObstacle[];
   turn: number;
   status: 'ongoing' | 'attacker-win' | 'defender-win' | 'tie';
@@ -80,6 +85,9 @@ export interface TurnEvent {
    * (wounded) target outright regardless of remaining HP. See
    * CRITICAL_HIT_CHANCE in engine.ts. */
   critical?: boolean;
+  /** True on an 'attack' event that struck its target from behind (from the
+   * side of the target's own starting edge). */
+  fromBehind?: boolean;
 }
 
 export interface TurnResult {

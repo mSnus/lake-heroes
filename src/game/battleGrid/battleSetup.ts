@@ -5,14 +5,11 @@ import { DRAGON_UNITS } from '../constants';
 import { getArtifactRollBonus } from '../artifacts';
 import { ABSORB_PER_ROLL_POINT } from '../constants';
 import { isLocalHuman } from '../seats';
-import { getSettings } from '../../utils/settingsStore';
 import { sizeArmyForGrid } from './scale';
+import { createBattle } from './engine';
+import { BattleSide, GridBattleState } from './types';
 
 type SizedArmy = ReturnType<typeof sizeArmyForGrid>;
-import { battleBoardFor, squadGroupCount, BattleBoard } from './layout';
-import { FormationSpec } from './formations';
-import { createBattle } from './engine';
-import { GridBattleState } from './types';
 import type { BattleScreenProps } from '../../components/screens/BattleScreen';
 
 export interface BattleSetup {
@@ -45,19 +42,20 @@ export interface BattleSetup {
   defenderSized: SizedArmy;
   attackerGridTotal: number;
   defenderGridTotal: number;
-  board: BattleBoard;
-  attackerFormation: FormationSpec;
-  defenderFormation: FormationSpec | undefined;
   garrisonAbsorbBonus: number;
   attackerRollBonus: number;
   defenderRollBonus: number;
+  /** Grid sides a local human may switch to manual control. */
   attackerManual: boolean;
   defenderManual: boolean;
+  /** The grid side of the human who started the fight (or got ambushed) --
+   * the only side offered an escape. */
+  escapeSide: BattleSide | null;
 }
 
 /**
  * Everything about a battle that's decided purely from its mode and props --
- * army composition, board tier, formations, roll bonuses -- with no React or
+ * army composition, manual-control and escape sides, roll bonuses -- with no React or
  * rendering involved. BattleScreen freezes one of these in a ref for the
  * fight's lifetime; the headless economy simulator (src/game/economy) builds
  * one directly and runs the grid battle to completion with it. Shared so
@@ -130,52 +128,15 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
   const isZombieFlavored = isZombieAmbush || (isTile && !!tile?.abandoned);
 
   const isDragonFight = isDragon || statOverrides?.defenderKind === 'dragon';
-  const board = battleBoardFor(attackerGridTotal, defenderGridTotal, {
-    allowBrawl: isTile || isRogue || isPlayerBattle || isCaravan || isAmbush,
-    allowSmall: isTile || isRogue || isPlayerBattle,
-    isDragon: isDragonFight,
-  });
-  const { isBrawl } = board;
 
   // isLocalHuman, not !isComputer: in an online game the defender is usually
-  // someone else's seat, and a brawl asks its manual side for placement every
-  // round -- input that player is not present to give. Their side is planned by
-  // the AI instead (the same path a bot's is). Offline isLocalHuman(p) is
-  // exactly !p.isComputer, so this is unchanged for a local game.
-  // "Always use auto battle" (Settings screen) suppresses manual input for
-  // the whole fight -- a local human is treated like a bot here too.
-  const autoBattle = getSettings().autoBattle;
-  const attackerManual = isBrawl && !isAmbush && isLocalHuman(attacker) && !autoBattle;
-  const defenderManual =
-    isBrawl && (isAmbush ? isLocalHuman(attacker) : !!defender && isLocalHuman(defender)) && !autoBattle;
-
-  const squadCountFor = (player: Player): number => squadGroupCount(player.militia, player.riders);
-
-  // The dragon fight is an encirclement: the player's army huddles at the
-  // centre of the board with its tiers mixed, ringed by the dragons (see
-  // formations.ts). Every other fight still lines the two sides up facing
-  // each other across the board.
-  const attackerFormation: FormationSpec = isDragonFight
-    ? { kind: 'huddle' }
-    : isBrawl
-      ? { kind: 'compact' }
-      : isAmbush
-        ? { kind: 'triangle' }
-        : { kind: 'grouped', groupCount: squadCountFor(attacker) };
-
-  const defenderFormation: FormationSpec | undefined = isBrawl
-    ? { kind: 'compact' }
-    : isCaravan
-      ? { kind: 'columns' }
-      : isDragonFight
-        ? { kind: 'encircle' }
-        : isPlayerBattle
-          ? { kind: 'grouped', groupCount: squadCountFor(defender!) }
-          : isAmbush
-            ? { kind: 'grouped', groupCount: squadCountFor(attacker) }
-            : (isTile || isRogue) && tile
-              ? { kind: 'grouped', groupCount: Math.max(1, tile.level) }
-              : undefined;
+  // someone else's seat, and manual control asks its side for placement every
+  // round -- input that player is not present to give. Offline isLocalHuman(p)
+  // is exactly !p.isComputer.
+  const attackerManual = !isAmbush && !isRogue && isLocalHuman(attacker);
+  const defenderManual = isAmbush ? isLocalHuman(attacker) : !!defender && isLocalHuman(defender);
+  // Rogue: the attacker is an NPC horde, and garrison defenders fight on.
+  const escapeSide: BattleSide | null = isRogue || !isLocalHuman(attacker) ? null : isAmbush ? 'defender' : 'attacker';
 
   // The level-based fortification bonus is earned by an actual garrison
   // defending its owner's land -- a wild/unclaimed tile's default guards
@@ -216,14 +177,12 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
     defenderSized,
     attackerGridTotal,
     defenderGridTotal,
-    board,
-    attackerFormation,
-    defenderFormation,
     garrisonAbsorbBonus,
     attackerRollBonus,
     defenderRollBonus,
     attackerManual,
     defenderManual,
+    escapeSide,
   };
 }
 
@@ -233,13 +192,12 @@ export function buildBattleSetup(props: BattleScreenProps): BattleSetup {
  * headless runner (which runs it straight to completion).
  */
 export function buildInitialBattleState(setup: BattleSetup): GridBattleState {
-  const { attackerSized, defenderSized, attackerFormation, defenderFormation, isZombieAmbush, isDragonFight, tile, statOverrides, board } = setup;
+  const { attackerSized, defenderSized, isZombieAmbush, isDragonFight, tile, statOverrides } = setup;
 
   return createBattle(
     {
       militia: attackerSized.militiaCount,
       riders: attackerSized.ridersCount,
-      formation: attackerFormation,
       zombie: isZombieAmbush,
       ...(statOverrides
         ? {
@@ -255,9 +213,7 @@ export function buildInitialBattleState(setup: BattleSetup): GridBattleState {
     {
       militia: defenderSized.militiaCount,
       riders: defenderSized.ridersCount,
-      formation: defenderFormation,
-      // Kept as its own kind (HP/damage/🐉) even though it now lines up in
-      // a normal grouped formation rather than the dragon silhouette.
+      // Kept as its own kind (HP/damage/🐉).
       dragon: isDragonFight,
       zombie: statOverrides ? statOverrides.defenderKind === 'zombie' : !!tile?.abandoned,
       // A 'normal' test defender shares the attacker's own militia stats,
@@ -278,8 +234,6 @@ export function buildInitialBattleState(setup: BattleSetup): GridBattleState {
               riderDmgMax: statOverrides.defenderDmgMax,
             }
         : {}),
-    },
-    board.cols,
-    board.rows
+    }
   );
 }

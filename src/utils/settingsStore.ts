@@ -10,7 +10,6 @@ import { useSyncExternalStore } from 'react';
  */
 export interface AppSettings {
   autoEndTurn: boolean;
-  autoBattle: boolean;
   doNotDisplayBattles: boolean;
   mapAutoZoom: boolean;
   /** Fog of war: tiles start undiscovered (Tile.fog) until a player lands
@@ -24,7 +23,6 @@ export interface AppSettings {
 // explicitly opted in.
 export const SETTINGS_DEFAULTS: AppSettings = {
   autoEndTurn: true,
-  autoBattle: false,
   doNotDisplayBattles: false,
   mapAutoZoom: true,
   disableFogOfWar: false,
@@ -36,7 +34,6 @@ function sanitize(raw: Partial<AppSettings> | null | undefined): AppSettings {
   const merged = { ...SETTINGS_DEFAULTS, ...(raw ?? {}) };
   return {
     autoEndTurn: !!merged.autoEndTurn,
-    autoBattle: !!merged.autoBattle,
     doNotDisplayBattles: !!merged.doNotDisplayBattles,
     mapAutoZoom: !!merged.mapAutoZoom,
     disableFogOfWar: !!merged.disableFogOfWar,

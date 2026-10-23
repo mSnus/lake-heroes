@@ -260,13 +260,20 @@
     "wasItWorthIt": "🩸 ¿Valió la pena?",
     "brawlUndo": "Deshacer último movimiento",
     "brawlGo": "Terminar turno",
-    "autoResolveBrawl": "Resolver automáticamente el resto de esta batalla",
     "battleStarted": "⚔️ {attackerName} ataca {target}…",
     "targetDragon": "al Dragón 🐉",
     "targetCaravan": "una caravana 🐫",
     "targetGarrison": "la guarnición de {tileName}",
     "debugStateCopied": "Estado de la batalla copiado al portapapeles",
-    "debugStateCopyFailed": "No se pudo copiar el estado de la batalla (portapapeles bloqueado)"
+    "debugStateCopyFailed": "No se pudo copiar el estado de la batalla (portapapeles bloqueado)",
+    "controlToggleTitle": "Cambia tu bando entre control automático y manual (desde su próximo movimiento)",
+    "controlAuto": "auto",
+    "controlManual": "manual",
+    "reservesTitle": "En reserva",
+    "escapeTitle": "Huir: pierdes las {units} unidades en el campo y salvas la reserva",
+    "escapeConfirm": "Pulsa 🏃 otra vez para huir — se perderán las {units} unidades en el campo",
+    "escaped": "{name} huyó de la batalla, abandonando {units} unidades en el campo",
+    "nextRound": "Siguiente ronda"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decidió atacar a {targetName}",
@@ -477,8 +484,10 @@
       "modifiers": "El ataque también puede verse alterado por artefactos 🪓, la defensa — por mejoras de la casilla 🏯",
       "energy": "La energía se consume con cada ataque. Una unidad completamente agotada ataca débilmente (¡solo un {pct}%!), pero se recupera por completo si no se mueve ni ataca durante un turno. Intercambiarla por una reserva fresca es una buena estrategia.",
       "unitsEquivalence": "Unidades como 👹🥷 equivalen a 🧍, y las montadas 🦬🐫 a 🐎",
-      "twoModes": "Hay dos modos: <strong>Combate</strong> — controlado manualmente, para ejércitos de menos de {brawlThreshold} unidades — o <strong>automático</strong>, para ejércitos más grandes",
-      "controls": "Una batalla manual (Combate) puede cambiarse a automática con el botón Auto ⚔️ sobre el campo de batalla. También hay botones de Deshacer ⬅️ y Terminar turno 🚩.",
+      "reinforcements": "Cada bando empieza con <strong>{startUnits} unidades</strong> en su propio borde. El resto espera en reserva y entra por ese borde cuando hay una casilla libre.",
+      "controls": "Toda batalla empieza en automático. El botón ⚔️ cambia tu bando entre control automático y manual, desde su próximo movimiento. En modo manual también hay botones de Deshacer ⬅️ y Terminar turno 🚩.",
+      "fromBehind": "Un golpe por la espalda (desde el lado del borde inicial del objetivo) tiene <strong>el doble de probabilidad</strong> de ser crítico.",
+      "escape": "El jugador que inició la lucha puede 🏃 <strong>huir</strong> (pulsa dos veces): cuenta como derrota y se pierden todas las unidades en el campo, pero la reserva se salva.",
       "heroHour": "La Hora del Héroe es un combate amistoso entre dos héroes y no provoca grandes bajas",
       "phasesTitle": "Fases de la batalla",
       "phase": {
@@ -503,8 +512,8 @@
           "icon": "🩸🛡️☠️"
         },
         "autoToggle": {
-          "name": "Combate automático",
-          "desc": "Entrega la lucha para resolverse automáticamente",
+          "name": "Auto / manual",
+          "desc": "Cambia tu bando entre control automático y manual, desde su próximo movimiento",
           "icon": "⚔️"
         },
         "undo": {
@@ -516,6 +525,11 @@
           "name": "Terminar turno",
           "desc": "Confirma los movimientos de esta ronda y resuelve el combate",
           "icon": "🚩"
+        },
+        "escape": {
+          "name": "Huir",
+          "desc": "Termina la batalla como derrota: se pierden las unidades en el campo, la reserva se salva",
+          "icon": "🏃"
         },
         "result": {
           "name": "Resultado final",
@@ -1063,8 +1077,6 @@
     "title": "Preferencias",
     "autoEndTurn": "Terminar turno automáticamente",
     "autoEndTurnHint": "Termina tu turno automáticamente tras un breve periodo de inactividad cuando ya no queda nada por decidir.",
-    "autoBattle": "Usar siempre combate automático",
-    "autoBattleHint": "Las batallas se resuelven solas, sin pedirte entrada paso a paso ni colocación de tropas.",
     "doNotDisplayBattles": "No mostrar batallas",
     "doNotDisplayBattlesHint": "Las batallas se resuelven al instante en segundo plano, sin mostrar la pantalla de combate.",
     "mapAutoZoom": "Zoom automático del mapa",
