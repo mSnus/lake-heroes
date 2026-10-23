@@ -11,13 +11,17 @@ import { useHireFooter } from '../ui/useHireFooter';
 import { Militia } from '../snippets/Militia';
 import { Rider } from '../snippets/Rider';
 import { Fame } from '../snippets/Fame';
+import { Gold } from '../snippets/Gold';
+import { Food } from '../snippets/Food';
+import { Arms } from '../snippets/Arms';
+import { PlayerLabel } from '../snippets/PlayerLabel';
 import { clearScreen } from '../../utils/screenStore';
 import { dismountSquad, dismountRefund, maxDismount } from '../../actions/dismountSquad';
 import { sellUnits } from '../../actions/sellUnits';
 import { upgradeSquad } from '../../actions/upgradeSquad';
 import { buyUnits } from '../../actions/buyUnits';
 import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
-import { hireMax } from '../../game/resources';
+import { hireMax, unitCost } from '../../game/resources';
 import { formatArmyCap, UnitTier } from '../../game/army';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
@@ -72,6 +76,16 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
   const ridersMax = canRecruitRiders ? hireMax(player, 'riders', riderPrice) : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
+  // Militia is always the cheapest recruitable tier, so a resource that
+  // can't cover even one of those blocks hiring outright -- that's the
+  // "not enough for a single unit" flag on each resource row below.
+  const cheapestUnitCost = unitCost('militia', militiaPrice);
+  const shortOnGold = player.gold < cheapestUnitCost.gold;
+  const shortOnFood = player.food < cheapestUnitCost.food;
+  const shortOnArms = player.arms < cheapestUnitCost.arms;
+  const flagIfShort = (short: boolean, node: React.ReactNode): React.ReactNode =>
+    short ? <span style={{ color: '#ff4d4d', fontWeight: 'bold' }}>🔻{node}</span> : node;
+
   const footer = useHireFooter(!atMax);
   const handleBuy = (amount: number, tier: UnitTier) => {
     buyUnits(gameState, amount, updateGameState, tier, tier === 'riders' ? riderPrice : militiaPrice);
@@ -111,6 +125,10 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
       >
       <div className="text-title" style={{ marginBottom: '0' }}>
         {t('armyScreen.title')}
+      </div>
+
+      <div className="text-message" style={{ marginTop: 0 }}>
+        <PlayerLabel player={player} bold /> <Fame amount={player.fame} /> <Gold amount={player.gold} />
       </div>
 
       <ArmyDisplay
@@ -174,22 +192,25 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
         </div>
       )}
 
-      <div style={{ marginTop: '1rem', width: '100%' }}>
-        {atMax ? (
-          <h3 style={{ whiteSpace: 'pre-line', color: 'wheat', textAlign: 'center' }}>
-            {t('tavern.cannotRecruit')}
-          </h3>
-        ) : (
-          <SquadHirePanel
-            player={player}
-            showRiders={canRecruitRiders}
-            onBuy={handleBuy}
-            militiaPrice={militiaPrice}
-            riderPrice={riderPrice}
-            onAmountChange={footer.onAmountChange}
-            registerBuy={footer.registerBuy}
-          />
-        )}
+      <div
+        className="player-stats-data player-stats-gold army-screen-resources"
+        style={{ justifyContent: 'center', gap: '1rem', cursor: 'default' }}
+      >
+        <div className="player-stats-inline-row">{flagIfShort(shortOnGold, <Gold amount={player.gold} />)}</div>
+        <div className="player-stats-inline-row">{flagIfShort(shortOnFood, <Food amount={player.food} />)}</div>
+        <div className="player-stats-inline-row">{flagIfShort(shortOnArms, <Arms amount={player.arms} />)}</div>
+      </div>
+
+      <div style={{ marginTop: '0.5rem', width: '100%' }}>
+        <SquadHirePanel
+          player={player}
+          showRiders={canRecruitRiders}
+          onBuy={handleBuy}
+          militiaPrice={militiaPrice}
+          riderPrice={riderPrice}
+          onAmountChange={footer.onAmountChange}
+          registerBuy={footer.registerBuy}
+        />
       </div>
 
       <div className="game-menu pay-or-fight-grid" style={{ '--pay-or-fight-cols': 1 } as React.CSSProperties}>
