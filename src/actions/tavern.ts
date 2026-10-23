@@ -7,7 +7,6 @@ import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
 import TavernModal from '../components/screens/TavernModal';
-import { computeSlotsUsed } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { planArmyPurchase } from '../ai/botPlans';
 import { TAVERN_PRICE_MULT } from '../game/constants';
@@ -58,38 +57,21 @@ export function handleTavern(
   void roll; // dice animation still plays for atmosphere
   const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
 
-  const wantsHorses =
-    player.isKnight && player.militia >= unitsReward && Math.random() < KNIGHT_HORSE_CHANCE;
+  // Free horses turn militia already in the army into riders, as far as the
+  // rider cap allows.
+  const horsed =
+    player.isKnight && player.militia >= unitsReward && Math.random() < KNIGHT_HORSE_CHANCE
+      ? Math.min(unitsReward, player.armyRoom('riders'))
+      : 0;
 
   let joinedMsg: string;
   let fullNote = '';
 
-  if (wantsHorses) {
-    const fitsDirectly =
-      computeSlotsUsed(player.militia - unitsReward, player.riders + unitsReward) <= player.armySlots;
-
-    if (fitsDirectly) {
-      player.militia -= unitsReward;
-      player.riders += unitsReward;
-      joinedMsg = t('tavern.horsesJoined', { units: unitsReward, playerSpan });
-      narrate(t('tavern.narrateHorses', { playerName: player.name, units: unitsReward }));
-    } else {
-      // No room to grow riders even after freeing space by removing the
-      // rolled amount from militia — sacrifice one whole militia slot's
-      // worth instead (even 10🧍 become 1🐎 if that's all that was rolled)
-      // and replace it with the rolled amount of riders; whatever's left
-      // over from that slot is lost.
-      const sacrificed = Math.min(getOverrides().armySlotCapacity, player.militia);
-      player.militia -= sacrificed;
-      const ridersAdded = player.gainRiders(unitsReward);
-      const leftDrunk = sacrificed - ridersAdded;
-      joinedMsg = t('tavern.horsesJoined', { units: ridersAdded, playerSpan });
-      if (leftDrunk > 0) {
-        fullNote = t('tavern.leftDrunk', { units: leftDrunk });
-      }
-
-      narrate(t('tavern.narrateHorses', { playerName: player.name, units: ridersAdded }));
-    }
+  if (horsed > 0) {
+    player.militia -= horsed;
+    player.riders += horsed;
+    joinedMsg = t('tavern.horsesJoined', { units: horsed, playerSpan });
+    narrate(t('tavern.narrateHorses', { playerName: player.name, units: horsed }));
   } else {
     const gained = player.gainMilitia(unitsReward);
     const turnedAway = unitsReward - gained;
@@ -97,7 +79,7 @@ export function handleTavern(
     if (gained > 0) {
       joinedMsg = t('tavern.joined', { units: gained, playerSpan });
       if (turnedAway > 0) {
-        fullNote = t('tavern.fullNote', { used: player.slotsUsed, total: player.armySlots, turnedAway });
+        fullNote = t('tavern.fullNote', { used: player.militia, total: player.armyCapacity.militia, turnedAway });
       }
 
       narrate(t('tavern.narrateMilitia', { playerName: player.name, units: gained }));

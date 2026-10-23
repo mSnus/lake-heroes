@@ -1,5 +1,5 @@
 import { CharacterId } from '../ai/characters';
-import { computeArmyPower, computeSlotsUsed, remainingCapacity, slotCountForFame } from './army';
+import { UnitTier, armyCapacityForFame, computeArmyPower } from './army';
 
 export interface PlayerParams {
   id?: number;
@@ -171,32 +171,30 @@ export class Player {
     return computeArmyPower(this.militia, this.riders);
   }
 
-  /** Army slots available at this player's current fame. */
-  get armySlots(): number {
-    return slotCountForFame(this.fame);
+  /** Militia/rider headcount caps at this player's fame -- riders need knighthood. */
+  get armyCapacity(): { militia: number; riders: number } {
+    const cap = armyCapacityForFame(this.fame);
+    return this.isKnight ? cap : { militia: cap.militia, riders: 0 };
   }
 
-  get slotsUsed(): number {
-    return computeSlotsUsed(this.militia, this.riders);
+  /** How many more of `tier` fit under its cap. */
+  armyRoom(tier: UnitTier): number {
+    const held = tier === 'militia' ? this.militia : this.riders;
+    return Math.max(0, this.armyCapacity[tier] - held);
   }
 
-  remainingCapacity(tier: 'militia' | 'riders'): number {
-    return remainingCapacity(this.militia, this.riders, this.armySlots, tier);
-  }
-
-  /** Add militia, clamped to remaining slot capacity — the slot cap applies
-   * uniformly to every source of militia growth, not just deliberate
-   * recruiting, since that's what makes Riders worth their price. */
+  /** Add militia, clamped to the militia cap -- applies to every source of
+   * militia growth, not just deliberate recruiting. */
   gainMilitia(amount: number): number {
     if (amount <= 0) return 0;
-    const added = Math.min(amount, this.remainingCapacity('militia'));
+    const added = Math.min(amount, this.armyRoom('militia'));
     this.militia += added;
     return added;
   }
 
   gainRiders(amount: number): number {
     if (amount <= 0) return 0;
-    const added = Math.min(amount, this.remainingCapacity('riders'));
+    const added = Math.min(amount, this.armyRoom('riders'));
     this.riders += added;
     return added;
   }

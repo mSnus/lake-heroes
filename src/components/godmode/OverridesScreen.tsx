@@ -91,11 +91,6 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
         </div>
 
         <div className="cheat-row">
-          <label>⚔️ {t('overridesScreen.armySlotCapacity')}</label>
-          {numInput(form.armySlotCapacity, (n) => set({ armySlotCapacity: n }))}
-        </div>
-
-        <div className="cheat-row">
           <label>🏯 {t('overridesScreen.garrisonSlotCapacity')}</label>
           {numInput(form.garrisonSlotCapacity, (n) => set({ garrisonSlotCapacity: n }))}
         </div>

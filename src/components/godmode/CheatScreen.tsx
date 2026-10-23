@@ -5,8 +5,8 @@ import { gameEvent } from '../../utils/events';
 import { grantTile } from '../../game/tileOwnership';
 import { say, sayLocal } from '../../utils/say';
 import { DecoratedButton } from '../ui/DecoratedButton';
-import { getOverrides } from '../../utils/overridesStore';
 import { setForcedRoll } from '../../utils/diceStore';
+import { armyCapacityForFame } from '../../game/army';
 import { useT } from '../../i18n';
 import GameModal from '../screens/GameModal';
 import '../../styles/modal.css';
@@ -65,7 +65,11 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   };
 
   const tileOptions = buildTileOptions(gameState);
-  const unitCap = getOverrides().armySlotCapacity * player.armySlots;
+  // Fame's caps without the knighthood gate, so riders can be cheated in.
+  const fameCap = armyCapacityForFame(player.fame);
+  const militiaCap = fameCap.militia;
+  // Infinity would break the number input's max.
+  const riderCap = Math.min(fameCap.riders, 999);
 
   const [moveIdx, setMoveIdx] = useState(tileOptions[0]?.index ?? 0);
   const [ownIdx, setOwnIdx] = useState(tileOptions[0]?.index ?? 0);
@@ -98,8 +102,8 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
   };
 
   const handleSetUnits = () => {
-    player.militia = Math.max(0, Math.min(unitCap, Math.round(militia)));
-    player.riders = Math.max(0, Math.min(unitCap, Math.round(riders)));
+    player.militia = Math.max(0, Math.min(militiaCap, Math.round(militia)));
+    player.riders = Math.max(0, Math.min(riderCap, Math.round(riders)));
     refresh();
   };
 
@@ -172,19 +176,19 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
           <input
             type="number"
             min={0}
-            max={unitCap}
+            max={militiaCap}
             value={militia}
             style={{ width: '4rem' }}
-            onChange={(e) => clampedInput(e, unitCap, setMilitia)}
+            onChange={(e) => clampedInput(e, militiaCap, setMilitia)}
           />
           🧍
           <input
             type="number"
             min={0}
-            max={unitCap}
+            max={riderCap}
             value={riders}
             style={{ width: '4rem' }}
-            onChange={(e) => clampedInput(e, unitCap, setRiders)}
+            onChange={(e) => clampedInput(e, riderCap, setRiders)}
           />
           🐎
           <button className="game-menu-button" onClick={handleSetUnits}>

@@ -6,10 +6,8 @@ import { t } from '../i18n';
 
 // Army power (see Player.armyPower) at which a player is even OFFERED the
 // challenge. The Dragon's true strength on the same scale is far higher
-// than any army can reach -- the hard slot cap (5 slots x 12 units, see
-// ARMY_SLOT_CAPACITY/MAX_ARMY_SLOTS) limits armyPower to at most 60 riders
-// x RIDER_DUEL_MULTIPLIER (2.2) = 132. Set just under that ceiling so a
-// near-maxed army can still get the offer.
+// than any army can reach. Set so a big Knight's army (see
+// MILITIA_CAP_BY_FAME/RIDER_CAP_BY_FAME) can get the offer.
 export const DRAGON_UNITS_THRESHOLD = 120;
 
 export function fightDragon(board: GameState | null, updateGameState: (board: GameState) => void) {

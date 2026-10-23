@@ -6,18 +6,18 @@ import { ScreenBackground } from './ScreenBackground';
 import { SpriteCircleIcon } from '../snippets/SpriteCircleIcon';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { DecoratedSlider } from '../ui/DecoratedSlider';
-import { SquadDisplay } from '../ui/SquadDisplay';
+import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { Gold } from '../snippets/Gold';
 import { Tower } from '../snippets/Tower';
 import { Militia } from '../snippets/Militia';
 import { Rider } from '../snippets/Rider';
 import { clearScreen } from '../../utils/screenStore';
 import { setTileGarrison } from '../../actions/garrisonTile';
-import { dismountSquad, dismountRefund, snapDismount } from '../../actions/dismountSquad';
+import { dismountSquad, dismountRefund, maxDismount } from '../../actions/dismountSquad';
 import { sellUnits } from '../../actions/sellUnits';
 import { upgradeSquad } from '../../actions/upgradeSquad';
 import { playerTurnIncome } from '../../game/income';
-import { remainingCapacity, garrisonSlotCapacity, UnitTier } from '../../game/army';
+import { remainingCapacity, garrisonSlotCapacity, formatArmyCap, UnitTier } from '../../game/army';
 import { useT } from '../../i18n';
 import '../../styles/TileCard.css';
 import '../../styles/TileClaim.css';
@@ -62,9 +62,8 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
   // forced re-render to redraw the army line and every row's headroom.
   const [dismount, setDismount] = useState(0);
   const [, forceRerender] = useState(0);
-  // Snapped, because the legal counts have a hole in the middle -- see
-  // dismountSquad.ts's legalDismounts.
-  const dismountPick = snapDismount(player.militia, player.riders, player.armySlots, dismount);
+  const dismountMax = maxDismount(player);
+  const dismountPick = Math.min(dismount, dismountMax);
 
   const handleDismount = () => {
     dismountSquad(gameState, dismountPick, updateGameState);
@@ -86,6 +85,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
   const allocated = rows.reduce((sum, { idx, tile }) => sum + (targets[idx] ?? tile.garrisonMilitia), 0);
   const unassigned = totalPool - allocated;
   const turnIncome = playerTurnIncome(gameState, player);
+  const ridersPart = player.isKnight
+    ? t('garrisonsScreen.ridersPart', { ridersCap: formatArmyCap(player.armyCapacity.riders) })
+    : '';
 
   const setRowValue = (idx: number, value: number) =>
     setTargets((prev) => ({ ...prev, [idx]: value }));
@@ -114,27 +116,30 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         {t('garrisonsScreen.title')}
       </div>
 
-      <SquadDisplay
+      <ArmyDisplay
         militia={player.militia}
         riders={player.riders}
-        totalSlots={player.armySlots}
-        onSellSquad={handleSellSquad}
-        onUpgradeSquad={handleUpgradeSquad}
+        capacity={player.armyCapacity}
+          showRiders={player.isKnight || player.riders > 0}
+        onSell={handleSellSquad}
+        onUpgrade={handleUpgradeSquad}
         canUpgradeToRiders={player.isKnight}
         playerGold={player.gold}
         spriteColor={player.image}
-        className="squad-display-large"
+        className="squad-display-large garrisons-army-display"
       />
 
       <div className="army-stats" style={{ lineHeight: '1.2' }}>
         {rows.length === 0
           ? t('garrisonsScreen.messageNoTiles', {
               fame: player.fame,
-              slots: player.armySlots,
+              militiaCap: player.armyCapacity.militia,
+              ridersPart,
             })
           : t('garrisonsScreen.message', {
               fame: player.fame,
-              slots: player.armySlots,
+              militiaCap: player.armyCapacity.militia,
+              ridersPart,
               units: turnIncome.units,
               tiles: rows.length,
             })}
@@ -150,7 +155,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
               </div>
               <DecoratedSlider
                 min={0}
-                max={player.riders}
+                max={dismountMax}
                 value={dismountPick}
                 onPreview={setDismount}
                 onCommit={setDismount}

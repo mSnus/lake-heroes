@@ -55,9 +55,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     upgrade: { goldFraction: 1 / 2, maxPerTurn: 1 },
     fightThreshold: { heroHour: 2, caravan: 2 },
     revenge: { powerRatio: 2, minPower: 0 },
-    // Same flat threshold as DRAGON_UNITS_THRESHOLD (see fightDragon.ts) --
-    // the 60-unit army slot cap leaves no room for a per-character spread,
-    // since anything above ~120 armyPower is already unreachable.
+    // Same flat threshold as DRAGON_UNITS_THRESHOLD (see fightDragon.ts).
     dragonThreshold: 120,
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,

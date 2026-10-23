@@ -23,6 +23,8 @@ const NON_ASSIGNABLE = new Set([
   'activePlayer',
   'activeTile',
   'armyPower',
+  'armyCapacity',
+  // Pre-capacity getters an old save may still carry.
   'armySlots',
   'slotsUsed',
 ]);

@@ -1,6 +1,4 @@
 import { Player } from './Player';
-import { computeSlotsUsed } from './army';
-import { getOverrides } from '../utils/overridesStore';
 
 /** A caravan's cargo. Any component may be 0; gold and slaves are never
  * both 0 (see rollCaravanPrize). */
@@ -24,7 +22,7 @@ export const CARAVAN_HORSES_MAX = 12;
  * rough parity with what the gold branch buys (a caravan's gold runs to
  * 1-3x 10 per escort head, i.e. a fifth to two-fifths of that many
  * militia at UNIT_PRICE) so neither kind of cargo dominates the other.
- * Note the freed slaves still have to fit the victor's army slots -- a
+ * Note the freed slaves still have to fit the victor's militia cap -- a
  * full army absorbs only what it has room for, and the rest are lost. */
 export const CARAVAN_SLAVES_MIN_SHARE = 0.4;
 export const CARAVAN_SLAVES_MAX_SHARE = 0.8;
@@ -76,33 +74,17 @@ export function quarterPrize(prize: CaravanPrize): CaravanPrize {
 
 /**
  * Mount captured horses: militia are promoted to riders, one per horse, as
- * many as the army has room to re-tier.
- *
- * Militia and riders each round up to whole slots, so a partial promotion
- * can cost a slot the army hasn't got (21 militia in 2 slots + 3 riders
- * needs 3). The largest promotion that keeps the army inside its slots is
- * therefore taken, which is exactly the authored rule: a whole militia slot
- * no bigger than the horse count converts in place, or a free slot takes
- * the new riders.
+ * many as the rider cap allows.
  *
  * @returns how many militia were promoted (0 if there was no room).
  */
 export function mountHorses(player: Player, horses: number): number {
   if (horses <= 0 || !player.isKnight) return 0;
 
-  const cap = getOverrides().armySlotCapacity;
-  const slots = player.armySlots;
-  const fits = (k: number) => computeSlotsUsed(player.militia - k, player.riders + k, cap) <= slots;
-
-  for (let k = Math.min(horses, player.militia); k > 0; k--) {
-    if (fits(k)) {
-      player.militia -= k;
-      player.riders += k;
-      return k;
-    }
-  }
-
-  return 0;
+  const k = Math.max(0, Math.min(horses, player.militia, player.armyRoom('riders')));
+  player.militia -= k;
+  player.riders += k;
+  return k;
 }
 
 /**

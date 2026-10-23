@@ -2,7 +2,6 @@ import { GameState } from './GameState';
 import { Player } from './Player';
 import { ANNUAL_DEFAULT_UNITS, GRACE_TOTAL_UNITS_MULT, GRACE_TOTAL_GOLD_MULT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
-import { remainingCapacity } from './army';
 import { getArtifactGoldBonus } from './artifacts';
 import { playerScore } from './score';
 
@@ -21,7 +20,7 @@ export interface KingsGraceReward {
   kingsUnits: number;
   kingsMilitia: number;
   kingsRiders: number;
-  /** The grace as measured out, before the army-slot fit trimmed it. */
+  /** The grace as measured out, before the army-cap fit trimmed it. */
   graceMilitiaOffered: number;
   graceRidersOffered: number;
   /** The same offer in militia-equivalents (a rider is 2). Above kingsUnits'
@@ -51,7 +50,7 @@ const GRACE_HANDICAP_ANCHORS: [ratio: number, share: number][] = [
 ];
 
 /** A rider counts as this many militia when the grace is measured out and
- * then fitted back into army slots. */
+ * then fitted back into the army caps. */
 const GRACE_RIDER_IN_MILITIA = 2;
 
 /** Players sorted weakest-first, with each player's power score. */
@@ -117,15 +116,15 @@ function graceBase(board: GameState): { gold: number; militia: number; riders: n
 }
 
 /**
- * Fit the grace's own militia/rider mix into the player's army slots.
+ * Fit the grace's own militia/rider mix into the player's army caps.
  *
- * A Knight keeps grace riders as riders, up to the room his free and
- * rider-held slots allow; whatever doesn't fit falls back to militia at
+ * A Knight keeps grace riders as riders, up to his rider cap; whatever
+ * doesn't fit falls back to militia at
  * GRACE_RIDER_IN_MILITIA each. Militia never convert up into riders -- a
  * player who is not a Knight cannot hold riders at all, so his whole grace
  * is converted down to militia.
  *
- * @param committedMilitia militia this same payout already spends slots on
+ * @param committedMilitia militia this same payout already spends cap room on
  * (the per-tile trickle), which land before the grace does.
  */
 function fitGraceUnits(
@@ -134,23 +133,19 @@ function fitGraceUnits(
   graceRiders: number,
   committedMilitia: number
 ): { militia: number; riders: number } {
-  const slots = player.armySlots;
-  const heldMilitia = player.militia + committedMilitia;
-  const militiaRoom = (addedRiders: number) =>
-    remainingCapacity(heldMilitia, player.riders + addedRiders, slots, 'militia');
-  const riderRoom = (addedMilitia: number) =>
-    remainingCapacity(heldMilitia + addedMilitia, player.riders, slots, 'riders');
+  const militiaRoom = Math.max(0, player.armyRoom('militia') - committedMilitia);
+  const riderRoom = player.armyRoom('riders');
 
   if (player.isKnight && graceRiders > 0) {
-    const riders = Math.max(0, Math.min(graceRiders, riderRoom(0)));
+    const riders = Math.min(graceRiders, riderRoom);
     const asMilitia = graceMilitia + (graceRiders - riders) * GRACE_RIDER_IN_MILITIA;
-    return { militia: Math.max(0, Math.min(asMilitia, militiaRoom(riders))), riders };
+    return { militia: Math.max(0, Math.min(asMilitia, militiaRoom)), riders };
   }
 
   const asMilitia = player.isKnight
     ? graceMilitia
     : graceMilitia + graceRiders * GRACE_RIDER_IN_MILITIA;
-  return { militia: Math.max(0, Math.min(asMilitia, militiaRoom(0))), riders: 0 };
+  return { militia: Math.max(0, Math.min(asMilitia, militiaRoom)), riders: 0 };
 }
 
 /**
@@ -223,7 +218,7 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
 
   const arifactGold = getArtifactGoldBonus(player);
 
-  // The tile trickle lands first, so the grace is fitted into whatever slot
+  // The tile trickle lands first, so the grace is fitted into whatever cap
   // room is left after it.
   const grace = fitGraceUnits(player, graceMilitia, graceRiders, tileUnits);
   const kingsUnits = grace.militia + grace.riders;

@@ -121,7 +121,7 @@
 }
 
 /* Money and army share one row; the wallet takes its natural width and the
-   squads block takes whatever is left (see .player-stats-army-cell). */
+   army block takes whatever is left (see .player-stats-army-cell). */
 .player-stats-main-row {
   display: flex;
   align-items: center;
@@ -147,6 +147,11 @@
   flex-wrap: wrap;
   gap: 4px;
   width: 100%;
+  align-items: flex-start;
+}
+
+.player-stats-army-slots .squad-display {
+  justify-content: flex-start;
 }
 
 .player-stats-income-row {

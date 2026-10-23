@@ -176,21 +176,23 @@
   "kingsCastle": {
     "title": "El Castillo del Rey",
     "newContract": "📜 Nuevo contrato: reclama\n{tileName} por una recompensa de {award}🟡!",
-    "cannotRecruit": "Tu oro y tus escuadrones completos\nno te permiten reclutar más",
+    "cannotRecruit": "Tu oro y tu ejército completo\nno te permiten reclutar más",
     "cannotRecruitNoMoney": "Tu oro\nno te permite reclutar más",
     "iAmTheGreatest": "⚜️ ¡Soy el más grande!",
-    "moneyAndFame": "{gold}   {fame}   {squads}"
+    "moneyAndFame": "{gold}   {fame}"
   },
   "squadHirePanel": {
     "hireTitle": "Contratar más (tienes {gold}🟡):",
     "hireTitleMax": "Contratar más (máx: {max}):"
   },
-  "squadDisplay": {
-    "sellSquad": "Vender este escuadrón",
+  "armyDisplay": {
+    "sellMilitia": "Vender milicia",
+    "sellRiders": "Vender jinetes",
     "sell": "vender",
-    "upgradeSquad": "Mejorar este escuadrón a Jinetes por {gold}🟡",
-    "upgraded": "{playerName} mejoró {amount}🧍 a Jinetes por {gold}🟡",
-    "youHaveSquads": "{squads} escuadrones:"
+    "upgrade": "Mejorar milicia a Jinetes, {gold}🟡 cada uno",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "upgraded": "{playerName} mejoró {amount}🧍 a Jinetes por {gold}🟡"
   },
   "tileCard": {
     "confirmUpgrade": "¿Mejorar de verdad {tileName} por {gold}🟡?",
@@ -324,13 +326,14 @@
     "fromPristineDiamond": "del Diamante Puro 💎",
     "wagesMessage": "Pasa por el Castillo del Rey para {summary}",
     "artifactTooltip": "{name}: {description}",
-    "gainMoreFame": "Gana más fama 🏆 para más escuadras"
+    "gainMoreFame": "Gana más fama 🏆 para un ejército mayor"
   },
   "garrisonsScreen": {
     "title": "Guarniciones",
     "available": "Disponible",
-    "message": "Fama {fame}🏆 te permite tener {slots} escuadrones. +{units} por turno de {tiles} casillas",
-    "messageNoTiles": "Fama {fame}🏆 te permite tener {slots} escuadrones.",
+    "message": "Fama {fame}🏆 te permite tener {militiaCap}🧍{ridersPart}. +{units} por turno de {tiles} casillas",
+    "messageNoTiles": "Fama {fame}🏆 te permite tener {militiaCap}🧍{ridersPart}.",
+    "ridersPart": " y {ridersCap}🐎",
     "maxLabel": "máx: {max}",
     "atMax": "Ya al máximo",
     "noTiles": "Todavía no posees ninguna casilla",
@@ -375,9 +378,10 @@
       "title": "Oro 🟡 y unidades 🧍",
       "item1": "El Oro 🟡 y las unidades 🧍 son los recursos básicos para comprar casillas, luchar o iniciar la batalla final",
       "item2": "Las casillas que posees dan ingresos al inicio de cada uno de tus turnos. Todos reciben también una Bonificación Anual cuando termina el año del calendario — cae exactamente en el Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante.",
-      "item3": "El ejército de un héroe puede tener hasta <strong>5 escuadrones</strong>, cada uno con hasta <strong>10 unidades</strong> del mismo tipo (🧍 o 🐎). El número de escuadrones depende de tu fama 🏆",
+      "item3": "La fama 🏆 limita tu ejército. 🧍 milicia: {militiaCaps}. 🐎 jinetes (solo Caballeros): {riderCaps}",
+      "item3At": "{cap} con {fame}🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
-      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a un escuadrón mientras estés en el Castillo del Rey.",
+      "item5": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a tus 🧍 mientras estés en el Castillo del Rey.",
       "item6": "Cada loseta propia también aporta +{flatUnitIncome}🧍 por turno — puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o la Caravana de Trabajadores (pero al doble de precio)"
     },
     "fame": {
@@ -385,7 +389,7 @@
       "item1": "Es tu reputación. Depende de cada batalla ganada o perdida y de las casillas que posees.",
       "item2": "Una fama de {knightFame} o más te hace apto para el ascenso — el Rey te nombra caballero (desbloqueando el reclutamiento de Jinetes) la próxima vez que cruces su Castillo. También te hace más visible para un dragón - ¡cuidado, podría atacar!",
       "item3": "Los caballeros pueden contratar jinetes 🐎, más poderosos y mejor preparados para luchar contra dragones o zombis",
-      "item4": "Una fama más alta otorga más espacios a tu ejército y permite poseer mejores casillas"
+      "item4": "Una fama más alta permite un ejército mayor y poseer mejores casillas"
     },
     "tiles": {
       "title": "Casillas 🧩",
@@ -439,7 +443,7 @@
     "overviewControls": {
       "title": "Controles de vista general 🔍",
       "kingdom": "🏰 <strong>Vista del Reino</strong> — toca tu Fama u Oro en el panel de estadísticas para ver a todos los jugadores con su rango de poder ⭐ y riqueza total 🧮.",
-      "garrison": "⚔️ <strong>Vista de Guarniciones</strong> — toca tus escuadrones para ver todas tus casillas y repartir tu ejército en sus guarniciones. ¡Recuerda que no podrás recuperarlos de la casilla hasta que la visites!",
+      "garrison": "⚔️ <strong>Vista de Guarniciones</strong> — toca tu ejército para ver todas tus casillas y repartirlo en sus guarniciones. ¡Recuerda que no podrás recuperarlos de la casilla hasta que la visites!",
       "player": "👤 <strong>Vista de Jugador</strong> — toca el icono de un jugador en el mapa para ver rápidamente sus posesiones."
     },
     "contracts": {
@@ -460,7 +464,7 @@
     "ruins": {
       "title": "Ruinas Antiguas 🏚️",
       "item1": "Caer en la casilla de las Ruinas siempre desencadena una lucha contra sus ocupantes monstruosos — no hay forma de rechazarla.",
-      "item2": "La fuerza de los monstruos equivale a entre el <strong>90% y el 105%</strong> de tu propio escuadrón, así que siempre es una lucha reñida e impredecible.",
+      "item2": "La fuerza de los monstruos equivale a entre el <strong>90% y el 105%</strong> de tu propio ejército, así que siempre es una lucha reñida e impredecible.",
       "item3": "Las unidades perdidas en la batalla se pierden de todos modos, ya sea victoria, empate o derrota.",
       "item4": "Una victoria o un empate tienen un <strong>80% de probabilidad</strong> de encontrar un artefacto sin dueño entre los escombros, además del resultado habitual de la batalla."
     },
@@ -473,7 +477,7 @@
       "modifiers": "El ataque también puede verse alterado por artefactos 🪓, la defensa — por mejoras de la casilla 🏯",
       "energy": "La energía se consume con cada ataque. Una unidad completamente agotada ataca débilmente (¡solo un {pct}%!), pero se recupera por completo si no se mueve ni ataca durante un turno. Intercambiarla por una reserva fresca es una buena estrategia.",
       "unitsEquivalence": "Unidades como 👹🥷 equivalen a 🧍, y las montadas 🦬🐫 a 🐎",
-      "twoModes": "Hay dos modos: <strong>Combate</strong> — controlado manualmente, para escuadras de menos de {brawlThreshold} unidades — o <strong>automático</strong>, para ejércitos más grandes",
+      "twoModes": "Hay dos modos: <strong>Combate</strong> — controlado manualmente, para ejércitos de menos de {brawlThreshold} unidades — o <strong>automático</strong>, para ejércitos más grandes",
       "controls": "Una batalla manual (Combate) puede cambiarse a automática con el botón Auto ⚔️ sobre el campo de batalla. También hay botones de Deshacer ⬅️ y Terminar turno 🚩.",
       "heroHour": "La Hora del Héroe es un combate amistoso entre dos héroes y no provoca grandes bajas",
       "phasesTitle": "Fases de la batalla",
@@ -989,8 +993,7 @@
     "joined": "{units}🧍 se unieron al poderoso ejército<br />de {playerSpan}",
     "ranksFull": "{units}🧍 estaban a punto de unirse a ti, pero tus filas están llenas",
     "horsesJoined": "¡{units}🧍 del generoso {playerSpan} recibieron caballos gratis 🐴<br />y se convirtieron en jinetes!",
-    "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...y {units}🧍 se quedaron borrachos en la taberna)</span>",
-    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} esquadrones completas — {turnedAway}🧍 rechazados)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 milicia completa {used}/{total} — {turnedAway}🧍 rechazados)</span>",
     "newFolksWelcome": "🍻 A la gloria!",
     "hireAmount": "🧾 Contratar {amount}",
     "moneyAndFame": "{gold}   {fame}",
@@ -1047,7 +1050,6 @@
     "rider": "Jinete",
     "hp": "PV",
     "dmg": "daño",
-    "armySlotCapacity": "Capacidad del escuadrón del ejército",
     "garrisonSlotCapacity": "Capacidad de la torre de guarnición",
     "tileBasePrice": "Precio base de casilla",
     "tileUpgradeMult": "Multiplicador de mejora",
@@ -1103,7 +1105,6 @@
   "stables": {
     "title": "Los Establos",
     "ridersJoined": "¡{units}🐎 jinetes se unieron al ejército de {playerSpan}!",
-    "upgradedSlot": "{sold}🧍 milicia vendida por {militiaGold}🟡 — sus monturas llevan ahora {received}🐎 jinetes",
     "overflow": "{units}🐎 no cabían — vendidos por {gold}🟡",
     "noKnight": "Llegaron {units}🐎 magníficos caballos, pero {playerSpan} no es caballero — vendidos por {gold}🟡",
     "leave": "🐴 ¡A cabalgar!",

@@ -15,13 +15,12 @@ import {
   SMALL_BATTLEFIELD_COLS,
   SMALL_BATTLEFIELD_ROWS,
 } from '../constants';
-import { buildSquadChunks } from '../army';
+import { slotChunks } from '../army';
 
-/** How many non-empty squads a militia/riders pair forms -- the groupCount
- * of a 'grouped' formation. Slot count only pads the chunk list with empty
- * squads, which are filtered out, so it doesn't affect the result. */
+/** How many formation clusters a militia/riders pair forms -- the groupCount
+ * of a 'grouped' formation. */
 export function squadGroupCount(militia: number, riders: number): number {
-  return Math.max(1, buildSquadChunks(militia, riders, 0).filter((c) => c.count > 0).length);
+  return Math.max(1, slotChunks(militia).length + slotChunks(riders).length);
 }
 
 export interface BattleBoard {

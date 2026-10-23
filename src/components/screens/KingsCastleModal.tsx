@@ -6,7 +6,7 @@ import { getOverrides } from '../../utils/overridesStore';
 import { UnitTier } from '../../game/army';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { DecoratedButton } from '../ui/DecoratedButton';
-import { SquadDisplay } from '../ui/SquadDisplay';
+import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
 import { Gold } from '../snippets/Gold';
 import { KingsContract } from '../../game/kingsContracts';
@@ -62,19 +62,18 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
   const canRecruitRiders = player.isKnight;
 
-  // Neither tier has any room left — gold or slots block both militia and
-  // riders (slot count already scales with fame, so that's the real fame
-  // cap — no separate per-visit throttle). Shown as a single "can't recruit"
-  // message instead of the full recruiting panel (the squad display and
-  // sell buttons stay usable either way, since selling frees room).
-  const militiaMax = Math.min(Math.floor(player.gold / getOverrides().militiaPrice), player.remainingCapacity('militia'));
+  // Neither tier has any room left — gold or the fame-based caps block both
+  // militia and riders. Shown as a single "can't recruit" message instead
+  // of the full recruiting panel (the army display and sell buttons stay
+  // usable either way, since selling frees room).
+  const militiaMax = Math.min(Math.floor(player.gold / getOverrides().militiaPrice), player.armyRoom('militia'));
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / getOverrides().riderPrice), player.remainingCapacity('riders'))
+    ? Math.min(Math.floor(player.gold / getOverrides().riderPrice), player.armyRoom('riders'))
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
   // Recruiting can also be blocked purely by empty pockets — only mention
-  // "full army slots" when the army genuinely has no free slot left.
-  const slotsFull = player.slotsUsed >= player.armySlots;
+  // a full army when no recruitable tier has room left.
+  const armyFull = player.armyRoom('militia') <= 0 && (!canRecruitRiders || player.armyRoom('riders') <= 0);
 
   useEffect(() => {
     if (!player.isComputer) return;
@@ -110,7 +109,6 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
               </span>
             ),
             fame: <span className="value">{player.fame}🏆</span>,
-            squads: <span className="value">{t('squadDisplay.youHaveSquads', { squads: player.armySlots })}</span>,
           })}
         </h3>
 
@@ -123,12 +121,13 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           </h3>
         )}
 
-        <SquadDisplay
+        <ArmyDisplay
           militia={player.militia}
           riders={player.riders}
-          totalSlots={player.armySlots}
-          onSellSquad={handleSell}
-          onUpgradeSquad={handleUpgrade}
+          capacity={player.armyCapacity}
+          showRiders={player.isKnight || player.riders > 0}
+          onSell={handleSell}
+          onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}
           playerGold={player.gold}
           className="squad-display-large"
@@ -136,7 +135,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
 
         {atMax ? (
           <h3 style={{ whiteSpace: 'pre-line' }}>
-            {t(slotsFull ? 'kingsCastle.cannotRecruit' : 'kingsCastle.cannotRecruitNoMoney')}
+            {t(armyFull ? 'kingsCastle.cannotRecruit' : 'kingsCastle.cannotRecruitNoMoney')}
           </h3>
         ) : (
           <SquadHirePanel player={player} showRiders={canRecruitRiders} onBuy={handleBuy} />

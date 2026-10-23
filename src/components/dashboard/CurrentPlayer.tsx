@@ -6,7 +6,7 @@ import { sayLocal } from '../../utils/say';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { playerTurnIncome, playerRawTurnIncome } from '../../game/income';
 import { getArtifact } from '../../game/artifacts';
-import { SquadDisplay } from '../ui/SquadDisplay';
+import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { Gold } from '../snippets/Gold';
 import { Tower } from '../snippets/Tower';
 import { GarrisonsScreen } from '../screens/GarrisonsScreen';
@@ -14,7 +14,6 @@ import RealmOverviewScreen from '../screens/RealmOverviewScreen';
 import { gameEvent } from '../../utils/events';
 import { showScreen } from '../../utils/screenStore';
 import { handleKingCastle } from '../../actions/king';
-import { MAX_ARMY_SLOTS } from '../../game/constants';
 import { openTavernHireOnly } from '../../actions/tavern';
 import { openStablesHireOnly } from '../../actions/stables';
 import { useT } from '../../i18n';
@@ -154,8 +153,8 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   // the "max capacity" message instead of a silently blank income line.
   const atUnitCapacity =
     playerRawTurnIncome(gameState, activePlayer).units > 0 &&
-    activePlayer.remainingCapacity('militia') <= 0;
-  // Fame 1 is the lowest army-slot bracket (1 slot) -- a player stuck there
+    activePlayer.armyRoom('militia') <= 0;
+  // Fame 1 is in the lowest army-cap bracket -- a player stuck there
   // with no unit income at all (not even the capped-out case above) is
   // nudged toward the fix rather than shown a blank income line.
   const noUnitIncomeAtFame1 = !atUnitCapacity && turnIncome.units === 0 && activePlayer.fame === 1;
@@ -222,11 +221,11 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             }
           >
             <div>
-              <SquadDisplay
+              <ArmyDisplay
                 militia={revealed.militia}
                 riders={revealed.riders}
-                totalSlots={activePlayer.armySlots}
-                maxSlots={MAX_ARMY_SLOTS}
+                capacity={activePlayer.armyCapacity}
+                showRiders={activePlayer.isKnight || revealed.riders > 0}
                 spriteColor={activePlayer.image}
                 className="player-stats-army-slots"
               />

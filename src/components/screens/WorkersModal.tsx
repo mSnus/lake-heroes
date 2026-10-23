@@ -4,7 +4,7 @@ import '../../styles/modal.css';
 import GameModal from './GameModal';
 import { UnitTier } from '../../game/army';
 import { DecoratedButton } from '../ui/DecoratedButton';
-import { SquadDisplay } from '../ui/SquadDisplay';
+import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
 import { formatArmy } from '../../utils/formatArmy';
 import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
@@ -63,9 +63,9 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
 
   const canRecruitRiders = player.isKnight;
 
-  const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.remainingCapacity('militia'));
+  const militiaMax = Math.min(Math.floor(player.gold / militiaPrice), player.armyRoom('militia'));
   const ridersMax = canRecruitRiders
-    ? Math.min(Math.floor(player.gold / riderPrice), player.remainingCapacity('riders'))
+    ? Math.min(Math.floor(player.gold / riderPrice), player.armyRoom('riders'))
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
@@ -107,14 +107,13 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
           }}
         />
 
-        <h3>{t('squadDisplay.youHaveSquads', { squads: player.armySlots })}</h3>
-
-        <SquadDisplay
+        <ArmyDisplay
           militia={player.militia}
           riders={player.riders}
-          totalSlots={player.armySlots}
-          onSellSquad={handleSell}
-          onUpgradeSquad={handleUpgrade}
+          capacity={player.armyCapacity}
+          showRiders={player.isKnight || player.riders > 0}
+          onSell={handleSell}
+          onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}
           playerGold={player.gold}
           upgradePricePerUnit={riderPrice - militiaPrice}

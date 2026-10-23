@@ -1,5 +1,5 @@
 import { Player } from '../game/Player';
-import { UnitTier, remainingCapacity, slotChunks } from '../game/army';
+import { UnitTier } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { upgradeSquadCost } from '../actions/upgradeSquad';
 import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
@@ -22,7 +22,7 @@ export function planUnitHire(
   const tier = forcedTier ?? pickKingsCastleHireTier(player);
   const ov = getOverrides();
   const price = priceOverride ?? (tier === 'riders' ? ov.riderPrice : ov.militiaPrice);
-  const maxAmount = Math.min(Math.floor(player.gold / price), player.remainingCapacity(tier));
+  const maxAmount = Math.min(Math.floor(player.gold / price), player.armyRoom(tier));
   return { tier, amount: pickKingsCastleHireAmount(player, maxAmount, price) };
 }
 
@@ -41,24 +41,12 @@ export interface PriceOverrides {
   riderPrice: number;
 }
 
-// Every step either spends gold or disbands a squad, so the loop below can't
-// run away -- but overrides can set a 0 unit price, which makes "how many can
-// I afford" unbounded. Cheap insurance.
-const MAX_ARMY_STEPS = 24;
-
 /**
- * Riders are the only way past the militia power ceiling (militia alone caps
- * at slots x capacity), so a Knight bot spends its way toward them:
+ * A Knight bot spends its way toward riders, the stronger tier:
  *
- * 1. Any rider capacity going spare gets filled, as far as gold allows.
- * 2. Once nothing is spare, convert the smallest militia squad into riders
- *    in place via upgradeSquad -- a whole squad moving tiers never needs
- *    more slots (see maxUpgradable), so it needs no capacity room and is a guaranteed
- *    power gain at any amount the bot can afford, unlike disbanding for a
- *    fresh hire which used to require affording back at least half the
- *    squad given up.
- * 3. Re-check with the new gold/squad counts, and keep going until neither
- *    rule fires.
+ * 1. Any spare rider cap gets filled with fresh hires, as far as gold allows.
+ * 2. Then militia on hand are upgraded in place (cheaper per rider than a
+ *    fresh hire), as far as gold and the rider cap allow.
  *
  * Same for every character -- there's no rider-shy personality. Non-Knights
  * can't recruit riders at all, so they fall through to militia.
@@ -67,37 +55,22 @@ function planRiderBuildUp(player: Player, prices: PriceOverrides): ArmyStep[] {
   if (!player.isKnight) return [];
   if (prices.riderPrice <= 0) return [];
 
-  const ov = getOverrides();
-  const slots = player.armySlots;
-  const cap = ov.armySlotCapacity;
   let gold = player.gold;
-  let militia = player.militia;
-  let riders = player.riders;
+  let riderRoom = player.armyRoom('riders');
   const steps: ArmyStep[] = [];
 
-  for (let guard = 0; guard < MAX_ARMY_STEPS; guard++) {
-    const affordable = Math.floor(gold / prices.riderPrice);
-    if (affordable >= 1) {
-      const room = remainingCapacity(militia, riders, slots, 'riders', cap);
-      if (room > 0) {
-        const count = Math.min(affordable, room);
-        steps.push({ kind: 'hire', tier: 'riders', count });
-        gold -= count * prices.riderPrice;
-        riders += count;
-        continue;
-      }
-    }
+  const hired = Math.min(Math.floor(gold / prices.riderPrice), riderRoom);
+  if (hired > 0) {
+    steps.push({ kind: 'hire', tier: 'riders', count: hired });
+    gold -= hired * prices.riderPrice;
+    riderRoom -= hired;
+  }
 
-    const chunks = slotChunks(militia, cap);
-    if (chunks.length === 0) break;
-    const smallest = Math.min(...chunks);
-    const upgradeCost = upgradeSquadCost(smallest, prices.riderPrice - prices.militiaPrice);
-    if (gold < upgradeCost) break;
-
-    steps.push({ kind: 'upgrade', count: smallest });
-    gold -= upgradeCost;
-    militia -= smallest;
-    riders += smallest;
+  const perUnit = prices.riderPrice - prices.militiaPrice;
+  const affordable = perUnit > 0 ? Math.floor(gold / perUnit) : player.militia;
+  const upgraded = Math.min(player.militia, riderRoom, affordable);
+  if (upgraded > 0 && gold >= upgradeSquadCost(upgraded, perUnit)) {
+    steps.push({ kind: 'upgrade', count: upgraded });
   }
 
   return steps;

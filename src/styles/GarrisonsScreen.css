@@ -8,6 +8,12 @@
   font-family: 'Texturina';
 }
 
+/* Above the screen's Fade (z-index 5501), so the sell/upgrade buttons work. */
+.garrisons-army-display {
+  z-index: 5503;
+  color: wheat;
+}
+
 .garrisons-army {
   display: flex;
   align-items: center;

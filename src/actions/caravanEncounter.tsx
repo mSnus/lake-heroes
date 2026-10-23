@@ -7,7 +7,6 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldAttackCaravan } from '../ai/decisions';
 import { rollCaravanPrize, CaravanPrize } from '../game/caravanPrize';
 import { announce } from '../utils/announce';
-import { getOverrides } from '../utils/overridesStore';
 import { currentYear } from '../game/year';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';
@@ -34,9 +33,8 @@ export function checkCaravanEncounter(
     if (currentYear(board) <= 1) return false;
 
     // Not enough units to threaten a caravan -- needs at least half the
-    // army's own slot capacity filled, not just some flat minimum.
-    const totalCapacity = player.armySlots * getOverrides().armySlotCapacity;
-    if (player.units < totalCapacity / 2) return false;
+    // militia cap filled, not just some flat minimum.
+    if (player.units < player.armyCapacity.militia / 2) return false;
 
     // No back-to-back
     if (player.caravanEncounteredLastTurn) {

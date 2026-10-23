@@ -23,7 +23,7 @@
   height: 2rem;
 }
 
-/* Recruiting dialogues (King's Castle, Tavern) show squads larger than the
+/* Recruiting dialogues (King's Castle, Tavern) show the army larger than the
  * compact top-bar display. */
 .squad-display-large {
   font-size: 1.4em;
@@ -85,12 +85,28 @@
   opacity: 1;
 }
 
-/* A slot beyond the player's current fame-based allowance -- same box as a
-   normal empty one, just disabled and grayed. */
-.squad-chunk-locked {
-  opacity: 0.4;
-  filter: grayscale(1);
-  background-color: #dbdbd6;
-  pointer-events: none;
-  border-radius: 4px;
+.army-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Sell/upgrade amount picker under the badges -- reuses the hire row
+   layout, at normal size inside the enlarged dialogue badges. */
+.squad-display-large .army-action-row {
+  font-size: 0.72em;
+}
+
+.army-action-cancel {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.army-action-cancel:hover {
+  opacity: 1;
 }

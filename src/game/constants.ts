@@ -157,9 +157,8 @@ export const RIDER_DUEL_MULTIPLIER = 2.2;
 /** An abandoned tile's wild garrison guards as zombies -- tougher per head. */
 export const ZOMBIE_POWER_WEIGHT = 2.1;
 export const DRAGON_POWER_WEIGHT = 3;
-export const ARMY_SLOT_CAPACITY = 12; // max units of one tier per slot
-// A tile garrison's own per-slot cap -- independent of ARMY_SLOT_CAPACITY
-// (see overridesStore.ts's armySlotCapacity/garrisonSlotCapacity split).
+// Units per formation cluster on the battle grid (see layout.ts's squadGroupCount).
+export const ARMY_SLOT_CAPACITY = 12;
 export const GARRISON_SLOT_CAPACITY = 8;
 // Every tile holds this many garrison slots beyond its level, so capacity
 // runs 16/24/32 by level rather than 8/16/24 (see Tile.ts's garrisonSlots).
@@ -180,19 +179,23 @@ export const ABSORB_BASE = 0.2;
 export const MILITIA_ENERGY = 3;
 export const OTHER_KIND_ENERGY = 5;
 export const ENERGY_DEPLETED_DAMAGE_MULT = 0.3;
-export const MAX_ARMY_SLOTS = 5;
-// Fame thresholds for army slots: 0-2 fame -> 1 slot, 3-5 -> 2, 6-9 -> 3, 10+ -> 5
-// (the jump from 3 to 5 at the top bracket is deliberate, not a typo).
-// Uneven bracket widths, so this is a lookup table, not a uniform step size.
-// Slots cap future growth (gainMilitia/gainRiders) only -- a fame drop after
-// units were already raised under a higher bracket does NOT claw them back,
-// so a player can legitimately be seen holding more units than their
-// current fame's cap would allow.
-export const ARMY_SLOT_FAME_THRESHOLDS: { minFame: number; slots: number }[] = [
-  { minFame: 10, slots: MAX_ARMY_SLOTS },
-  { minFame: 6, slots: 3 },
-  { minFame: 3, slots: 2 },
-  { minFame: 0, slots: 1 },
+// Army caps by fame, per tier, highest fame first. They cap future growth
+// only -- a fame drop never claws back units already raised.
+export const MILITIA_CAP_BY_FAME: { minFame: number; cap: number }[] = [
+  { minFame: 10, cap: 60 },
+  { minFame: 6, cap: 36 },
+  { minFame: 3, cap: 24 },
+  { minFame: 0, cap: 12 },
+];
+// Knights only -- a non-knight's rider cap is always 0 (see Player.armyCapacity),
+// so the bottom row is what a fresh Knight gets right away.
+export const RIDER_CAP_BY_FAME: { minFame: number; cap: number }[] = [
+  { minFame: 20, cap: Infinity },
+  { minFame: 18, cap: 32 },
+  { minFame: 16, cap: 24 },
+  { minFame: 13, cap: 16 },
+  { minFame: 11, cap: 12 },
+  { minFame: 0, cap: 8 },
 ];
 
 export const SPRITE_SIZE = 96;

@@ -7,7 +7,6 @@ import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
 import StablesModal from '../components/screens/StablesModal';
-import { slotChunks } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
 import { planArmyPurchase } from '../ai/botPlans';
 import { narrate } from '../utils/say';
@@ -29,9 +28,7 @@ export function handleStables(
   console.log('Action: stables');
 
   const player = board.activePlayer;
-  const overrides = getOverrides();
-  const militiaPrice = overrides.militiaPrice;
-  const riderPrice = overrides.riderPrice;
+  const riderPrice = getOverrides().riderPrice;
   const rolled = rollStablesRiders();
   const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
 
@@ -44,40 +41,23 @@ export function handleStables(
     lines.push(t('stables.noKnight', { units: rolled, gold: goldGained, playerSpan }));
     narrate(t('stables.narrateSold', { playerName: player.name, units: rolled, gold: goldGained }));
   } else {
-    // Step 1: fit what we can directly into empty/rider slots
+    // Whatever the rider cap can't take is sold.
     const added = player.gainRiders(rolled);
-    let remainder = rolled - added;
+    const remainder = rolled - added;
 
     if (added > 0) {
       lines.push(t('stables.ridersJoined', { units: added, playerSpan }));
     }
 
-    // Step 2: sell the smallest militia slot, fill it with riders
-    let moreAdded = 0;
-    if (remainder > 0 && player.militia > 0) {
-      const chunks = slotChunks(player.militia);
-      const soldMilitia = Math.min(...chunks);
-      player.militia -= soldMilitia;
-      const militiaGold = soldMilitia * militiaPrice;
-      player.gold += militiaGold;
-
-      moreAdded = player.gainRiders(remainder);
-      remainder -= moreAdded;
-
-      lines.push(t('stables.upgradedSlot', { sold: soldMilitia, received: moreAdded, militiaGold, playerSpan }));
-    }
-
-    // Step 3: whatever still doesn't fit → gold
     if (remainder > 0) {
       const goldGained = remainder * riderPrice;
       player.gold += goldGained;
       lines.push(t('stables.overflow', { units: remainder, gold: goldGained }));
     }
 
-    const totalRiders = added + moreAdded;
     narrate(
-      totalRiders > 0
-        ? t('stables.narrateRiders', { playerName: player.name, units: totalRiders })
+      added > 0
+        ? t('stables.narrateRiders', { playerName: player.name, units: added })
         : t('stables.narrateNone', { playerName: player.name })
     );
   }

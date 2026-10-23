@@ -4,8 +4,8 @@ import { getOverrides } from '../utils/overridesStore';
 import { UnitTier } from '../game/army';
 import { t } from '../i18n';
 
-/** Disbands a squad for a full refund of its recruit price — the King's
- * Castle "✖️" sell button next to a squad. */
+/** Disbands `amount` units of a tier for a full refund of their recruit
+ * price — the "✖️" sell action next to an army tier. */
 export function sellUnits(
   board: GameState | null,
   amount: number,
@@ -28,6 +28,6 @@ export function sellUnits(
   player.gold += sold * unitPrice;
 
   const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
-  say(t('sellUnits.sold', { playerName: player.name, amount, tier: tierLabel, gold: amount * unitPrice }), 'info');
+  say(t('sellUnits.sold', { playerName: player.name, amount: sold, tier: tierLabel, gold: sold * unitPrice }), 'info');
   updateGameState(board);
 }

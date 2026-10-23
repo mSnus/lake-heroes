@@ -173,21 +173,23 @@
   "kingsCastle": {
     "title": "The King's Castle",
     "newContract": "📜 New contract: claim\n{tileName} for a reward of {award}🟡!",
-    "cannotRecruit": "Your gold and full squads\ndo not allow you to recruit more",
+    "cannotRecruit": "Your gold and full army\ndo not allow you to recruit more",
     "cannotRecruitNoMoney": "Your gold\nis not enough to recruit more",
     "iAmTheGreatest": "⚜️ I am the greatest!",
-    "moneyAndFame": "{gold}   {fame}   {squads}"
+    "moneyAndFame": "{gold}   {fame}"
   },
   "squadHirePanel": {
     "hireTitle": "Hire more (you have {gold}🟡):",
     "hireTitleMax": "Hire more (max: {max}):"
   },
-  "squadDisplay": {
-    "sellSquad": "Sell this squad",
+  "armyDisplay": {
+    "sellMilitia": "Sell militia",
+    "sellRiders": "Sell riders",
     "sell": "sell",
-    "upgradeSquad": "Upgrade this squad to Riders for {gold}🟡",
-    "upgraded": "{playerName} upgraded {amount}🧍 to Riders for {gold}🟡",
-    "youHaveSquads": "{squads} squads:"
+    "upgrade": "Upgrade militia to Riders, {gold}🟡 each",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "upgraded": "{playerName} upgraded {amount}🧍 to Riders for {gold}🟡"
   },
   "tileCard": {
     "confirmUpgrade": "Really upgrade {tileName} for {gold}🟡?",
@@ -312,12 +314,13 @@
     "fromPristineDiamond": "from the Pristine Diamond 💎",
     "wagesMessage": "Pass the King's Castle for {summary}",
     "artifactTooltip": "{name}: {description}",
-    "gainMoreFame": "Gain more fame 🏆 for more squads"
+    "gainMoreFame": "Gain more fame 🏆 for a bigger army"
   },
   "garrisonsScreen": {
     "title": "Garrisons",
-    "message": "Fame {fame}🏆 allows to have {slots} squads.\n +{units} per turn from {tiles} tiles",
-    "messageNoTiles": "Fame {fame}🏆 allows to have {slots} squads.",
+    "message": "Fame {fame}🏆 allows {militiaCap}🧍{ridersPart}.\n +{units} per turn from {tiles} tiles",
+    "messageNoTiles": "Fame {fame}🏆 allows {militiaCap}🧍{ridersPart}.",
+    "ridersPart": " and {ridersCap}🐎",
     "maxLabel": "max: {max}",
     "atMax": "At maximum",
     "noTiles": "You don't own any tiles yet",
@@ -362,9 +365,10 @@
       "title": "Gold 🟡 and units 🧍",
       "item1": "Gold 🟡 and units 🧍 are the basic resources used to buy tiles, fight or start a final battle",
       "item2": "Yearly income: more tiles you own, more you get each year",
-      "item3": "A hero's army can hold up to <strong>5 squads</strong>, each squad holding up to <strong>10 units</strong> of the same kind (🧍 or 🐎). Number of squads depends on your fame 🏆",
+      "item3": "Fame 🏆 limits your army. 🧍 militia: {militiaCaps}. 🐎 riders (Knights only): {riderCaps}",
+      "item3At": "{cap} at {fame}🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
-      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to a squad while at the King's Castle.",
+      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",
       "item6": "Each owned tile also brings +{flatUnitIncome}🧍 per turn — you can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 or Worker's Caravan (but for double price)"
     },
     "fame": {
@@ -372,7 +376,7 @@
       "item1": "It's your reputation. It depends on each battle won or lost and tiles owned.",
       "item2": "Fame {knightFame} or more makes you eligible for promotion — the King knights you (unlocking Rider recruiting) next time you cross his Castle. It also makes you more visible for a dragon - beware, it could attack!",
       "item3": "Knights are eligible to hire riders 🐎, more powerful and better suited to fight dragons or zombies",
-      "item4": "Higher fame gives more slots to your army and allows to own better tiles"
+      "item4": "Higher fame lets your army grow bigger and allows to own better tiles"
     },
     "tiles": {
       "title": "Tiles 🧩",
@@ -425,7 +429,7 @@
     "ruins": {
       "title": "Ancient Ruins 🏚️",
       "item1": "Landing on the Ruins tile always triggers a fight against its monster occupants — there's no way to decline.",
-      "item2": "The monster force is sized at <strong>90%-105%</strong> of your own squad, so it's always a close, unpredictable fight.",
+      "item2": "The monster force is sized at <strong>90%-105%</strong> of your own army, so it's always a close, unpredictable fight.",
       "item3": "Units lost in the battle are gone either way, win, tie, or defeat.",
       "item4": "A win or a tie has an <strong>80% chance</strong> of turning up an unowned artifact among the rubble, on top of the usual battle outcome."
     },
@@ -438,7 +442,7 @@
       "modifiers": "Attack can also be altered by artifacts 🪓, defence — by tile upgrades 🏯",
       "energy": "Energy is consumed by each attack. A completely tired unit's attack is weak (only {pct}%!), but it recovers fully if it doesn't move or attack for a turn. Swapping it out for a fresh reserve is a good strategy.",
       "unitsEquivalence": "Units like 👹🥷 are equal to 🧍, and mounted 🦬🐫 to 🐎",
-      "twoModes": "There are two modes: <strong>Brawl</strong> — manually controlled, for squads under {brawlThreshold} units — or <strong>automatic</strong>, for bigger armies",
+      "twoModes": "There are two modes: <strong>Brawl</strong> — manually controlled, for armies under {brawlThreshold} units — or <strong>automatic</strong>, for bigger armies",
       "controls": "A manual (Brawl) battle can be switched to automatic with the Auto ⚔️ button atop the battlefield. There are also Undo ⬅️ and Finish turn 🚩 buttons.",
       "heroHour": "Hero's Hour is a friendly brawl between two heroes and doesn't result in heavy casualties",
       "phasesTitle": "Battle phases",
@@ -954,8 +958,7 @@
     "joined": "{units}🧍 joined the mighty army<br />of {playerSpan}",
     "ranksFull": "{units}🧍 were about to join you, but your ranks are full",
     "horsesJoined": "{units}🧍 of generous {playerSpan} were given free horses 🐴<br />and become riders!",
-    "leftDrunk": "<br /><span style=\"font-size:0.8em\">(...and {units}🧍 were left drunk at the tavern)</span>",
-    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 {used}/{total} army squads full — {turnedAway}🧍 turned away)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 militia full {used}/{total} — {turnedAway}🧍 turned away)</span>",
     "newFolksWelcome": "🍻 To glory!",
     "hireAmount": "🧾 Hire {amount}",
     "moneyAndFame": "{gold}   {fame}",
@@ -1012,7 +1015,6 @@
     "rider": "Rider",
     "hp": "HP",
     "dmg": "dmg",
-    "armySlotCapacity": "Army squad capacity",
     "garrisonSlotCapacity": "Garrison tower capacity",
     "tileBasePrice": "Tile base price",
     "tileUpgradeMult": "Upgrade multiplier",
@@ -1075,7 +1077,6 @@
   "stables": {
     "title": "The Stables",
     "ridersJoined": "{units}🐎 joined {playerSpan}",
-    "upgradedSlot": "{sold}🧍→{received}🐎 (slot upgrade, {militiaGold}🟡 sold)",
     "overflow": "{units}🐎 overflow +{gold}🟡",
     "noKnight": "{units}🐎 sold +{gold}🟡 (not knight)",
     "leave": "Ride on",

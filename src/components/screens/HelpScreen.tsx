@@ -31,7 +31,10 @@ import {
   OTHER_KIND_ENERGY,
   ENERGY_DEPLETED_DAMAGE_MULT,
   BRAWL_THRESHOLD,
+  MILITIA_CAP_BY_FAME,
+  RIDER_CAP_BY_FAME,
 } from '../../game/constants';
+import { formatArmyCap } from '../../game/army';
 import { useAppVersion } from '../../utils/useAppVersion';
 import { getArtifacts } from '../../game/artifacts';
 import { useT } from '../../i18n';
@@ -50,6 +53,14 @@ const HtmlLi: React.FC<{ html: string }> = ({ html }) => (
 const HelpScreen: React.FC = () => {
   const t = useT();
   const version = useAppVersion();
+
+  // Ascending "cap at fame" lists; the rider table's bottom row is what a
+  // fresh Knight gets, so it reads as "at KNIGHT_FAME".
+  const capList = (table: { minFame: number; cap: number }[], floorFame: number) =>
+    [...table]
+      .reverse()
+      .map((r) => t('helpScreen.goldUnits.item3At', { cap: formatArmyCap(r.cap), fame: Math.max(r.minFame, floorFame) }))
+      .join(', ');
 
   // Re-built (and re-sorted) each render so a mid-session language switch
   // re-translates and re-alphabetizes the names immediately.
@@ -102,7 +113,12 @@ const HelpScreen: React.FC = () => {
           <ul>
             <HtmlLi html={t('helpScreen.goldUnits.item1')} />
             <HtmlLi html={t('helpScreen.goldUnits.item2')} />
-            <HtmlLi html={t('helpScreen.goldUnits.item3')} />
+            <HtmlLi
+              html={t('helpScreen.goldUnits.item3', {
+                militiaCaps: capList(MILITIA_CAP_BY_FAME, 0),
+                riderCaps: capList(RIDER_CAP_BY_FAME, KNIGHT_FAME),
+              })}
+            />
             <HtmlLi html={t('helpScreen.goldUnits.item4', { knightFame: KNIGHT_FAME })} />
             <HtmlLi html={t('helpScreen.goldUnits.item5')} />
             <HtmlLi

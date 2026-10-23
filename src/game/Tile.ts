@@ -215,8 +215,7 @@ export class Tile implements TileJSON {
     return tOptional(`tiles.${this.id}.description`);
   }
 
-  /** Garrison slots this tile can hold — scales with level, same as a
-   * player's army slots scale with fame (see game/army.ts), plus
+  /** Garrison slots this tile can hold — scales with level, plus
    * GARRISON_BONUS_SLOTS so capacity runs 16/24/32 by level. Uniform across
    * groups: a Tower's edge is its fortification bonus, not more room (see
    * getGarrisonAbsorbBonus). */

@@ -34,8 +34,7 @@ const HireRow: React.FC<HireRowProps> = ({
   registerBuy,
 }) => {
   const goldCap = Math.floor(player.gold / unitPrice);
-  const slotCap = player.remainingCapacity(tier);
-  const maxAmount = Math.min(goldCap, slotCap);
+  const maxAmount = Math.min(goldCap, player.armyRoom(tier));
 
   // Starts at 0, and returns to 0 after a hire: buying is opt-in, so the
   // panel never opens with a purchase already dialled in.
@@ -43,7 +42,7 @@ const HireRow: React.FC<HireRowProps> = ({
 
   // maxAmount can shrink after this row's own render — hiring on the OTHER
   // row spends the same shared gold, or a sale/purchase elsewhere changes
-  // slot capacity. Keep the slider from sitting above whatever's actually
+  // the army's room. Keep the slider from sitting above whatever's actually
   // still buyable.
   useEffect(() => {
     setAmount((a) => Math.min(a, maxAmount));
@@ -123,7 +122,7 @@ interface SquadHirePanelProps {
   riderPrice?: number;
   /** Tavern only: shows "Hire more (max: N):" instead of the default
    * "...(you have {gold}🟡):" -- the militia row's own max (gold, fame-
-   * driven slots, and current headcount all folded into one number) is
+   * driven cap, and current headcount all folded into one number) is
    * the more useful figure once you're already looking at the slider. */
   titleMax?: number;
   /** Tavern only: see HireRow's own doc comments -- threaded straight

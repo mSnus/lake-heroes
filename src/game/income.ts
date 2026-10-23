@@ -71,18 +71,18 @@ export function tileTurnIncome(
  * drift apart. Derives ownership from tile.owner (authoritative) rather than
  * player.ownedTiles, which can be stale after a reload.
  *
- * `units` is capped to the player's remaining militia slot capacity (income
- * always lands on militia -- see Player's `units` setter) so a full-or-
- * nearly-full squad's preview matches what will actually be granted, rather
- * than promising units the squad limit will silently swallow.
+ * `units` is capped to the player's remaining militia cap (income always
+ * lands on militia -- see Player's `units` setter) so a full-or-nearly-full
+ * army's preview matches what will actually be granted, rather
+ * than promising units the militia cap will silently swallow.
  */
 export function playerTurnIncome(board: GameState, player: Player): { gold: number; units: number } {
   const raw = playerRawTurnIncome(board, player);
-  return { gold: raw.gold, units: Math.min(raw.units, player.remainingCapacity('militia')) };
+  return { gold: raw.gold, units: Math.min(raw.units, player.armyRoom('militia')) };
 }
 
 /**
- * What the player's tiles actually produce per turn, BEFORE the squad-
+ * What the player's tiles actually produce per turn, BEFORE the army-
  * capacity clamp playerTurnIncome applies. Use this to judge how productive
  * an estate is (see ai/decisions.ts's garrison rules) -- the clamped figure
  * reads 0 for a full army, which would say "produces nothing" exactly when
