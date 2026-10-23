@@ -320,16 +320,13 @@
     "gainMoreFame": "Gain more fame 🏆 for a bigger army"
   },
   "garrisonsScreen": {
-    "title": "Garrisons",
-    "message": "Fame {fame}🏆 allows {militiaCap}🧍{ridersPart}.\n +{units} per turn from {tiles} tiles",
-    "messageNoTiles": "Fame {fame}🏆 allows {militiaCap}🧍{ridersPart}.",
-    "ridersPart": " and {ridersCap}🐎",
+    "title": "Guards",
     "maxLabel": "max: {max}",
     "atMax": "At maximum",
     "noTiles": "You don't own any tiles yet",
     "setGuards": "🛡️ Set guards",
     "neverMind": "✖️ Never mind",
-    "dismount": "🐎→🧍 +{gold}🟡"
+    "inArmy": "in the army:"
   },
   "botController": {
     "decided": "{name} will {decision}",
@@ -971,13 +968,12 @@
     "horsesJoined": "{units}🧍 of generous {playerSpan} were given free horses 🐴<br />and become riders!",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 militia full {used}/{total} — {turnedAway}🧍 turned away)</span>",
     "newFolksWelcome": "🍻 To glory!",
-    "hireAmount": "🧾 Hire {amount}",
     "moneyAndFame": "{gold}   {fame}",
     "title": "The Tavern",
-    "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units",
     "narrateHorses": "{playerName} visited the Tavern and {units}🐎 joined as riders",
     "narrateMilitia": "{playerName} visited the Tavern and {units}🧍 joined the ranks",
-    "narrateEmpty": "{playerName} visited the Tavern, but the ranks were full"
+    "narrateEmpty": "{playerName} visited the Tavern, but the ranks were full",
+    "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units"
   },
   "portal": {
     "title": "Whirlpool of lights",
@@ -1170,5 +1166,13 @@
     "trade": "Trade",
     "finish": "🌾 Finish harvest",
     "botSold": "{playerName} sold {food}🍞 and {arms}⚔️ at the Harvest"
+  },
+  "armyScreen": {
+    "title": "Army",
+    "capLine": "Fame {fame}: {militiaCap}max{ridersPart}",
+    "ridersPart": " {ridersCap}max",
+    "dismount": "Dismount:",
+    "hireAmount": "🧾 Hire {amount}",
+    "close": "✖️ Close"
   }
 }

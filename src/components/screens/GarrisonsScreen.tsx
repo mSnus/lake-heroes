@@ -1,4 +1,3 @@
-import { CostLabel } from '../snippets/CostLabel';
 import React, { useState } from 'react';
 import { Player } from '../../game/Player';
 import { GameState } from '../../game/GameState';
@@ -7,18 +6,12 @@ import { ScreenBackground } from './ScreenBackground';
 import { SpriteCircleIcon } from '../snippets/SpriteCircleIcon';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { DecoratedSlider } from '../ui/DecoratedSlider';
-import { ArmyDisplay } from '../ui/ArmyDisplay';
-import { Gold } from '../snippets/Gold';
+import { Army } from '../snippets/Army';
 import { Tower } from '../snippets/Tower';
 import { Militia } from '../snippets/Militia';
-import { Rider } from '../snippets/Rider';
 import { clearScreen } from '../../utils/screenStore';
 import { setTileGarrison } from '../../actions/garrisonTile';
-import { dismountSquad, dismountRefund, maxDismount } from '../../actions/dismountSquad';
-import { sellUnits } from '../../actions/sellUnits';
-import { upgradeSquad } from '../../actions/upgradeSquad';
-import { playerTurnIncome } from '../../game/income';
-import { remainingCapacity, garrisonSlotCapacity, formatArmyCap, UnitTier } from '../../game/army';
+import { remainingCapacity, garrisonSlotCapacity } from '../../game/army';
 import { useT } from '../../i18n';
 import '../../styles/TileCard.css';
 import '../../styles/TileClaim.css';
@@ -58,37 +51,9 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
     return initial;
   });
 
-  // How many riders the dismount slider is currently offering to convert.
-  // dismountSquad mutates `player` in place, so a committed dismount needs a
-  // forced re-render to redraw the army line and every row's headroom.
-  const [dismount, setDismount] = useState(0);
-  const [, forceRerender] = useState(0);
-  const dismountMax = maxDismount(player);
-  const dismountPick = Math.min(dismount, dismountMax);
-
-  const handleDismount = () => {
-    dismountSquad(gameState, dismountPick, updateGameState);
-    setDismount(0);
-    forceRerender((v) => v + 1);
-  };
-
-  const handleSellSquad = (tier: UnitTier, count: number) => {
-    sellUnits(gameState, count, updateGameState, tier);
-    forceRerender((v) => v + 1);
-  };
-
-  const handleUpgradeSquad = (count: number) => {
-    upgradeSquad(gameState, count, updateGameState);
-    forceRerender((v) => v + 1);
-  };
-
   const totalPool = player.militia + rows.reduce((sum, { tile }) => sum + tile.garrisonMilitia, 0);
   const allocated = rows.reduce((sum, { idx, tile }) => sum + (targets[idx] ?? tile.garrisonMilitia), 0);
   const unassigned = totalPool - allocated;
-  const turnIncome = playerTurnIncome(gameState, player);
-  const ridersPart = player.isKnight
-    ? t('garrisonsScreen.ridersPart', { ridersCap: formatArmyCap(player.armyCapacity.riders) })
-    : '';
 
   const setRowValue = (idx: number, value: number) =>
     setTargets((prev) => ({ ...prev, [idx]: value }));
@@ -117,78 +82,10 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
         {t('garrisonsScreen.title')}
       </div>
 
-      <ArmyDisplay
-        militia={player.militia}
-        riders={player.riders}
-        capacity={player.armyCapacity}
-          showRiders={player.isKnight || player.riders > 0}
-        onSell={handleSellSquad}
-        onUpgrade={handleUpgradeSquad}
-        canUpgradeToRiders={player.isKnight}
-        wallet={player}
-        spriteColor={player.image}
-        className="squad-display-large garrisons-army-display"
-      />
-
-      <div className="army-stats" style={{ lineHeight: '1.2' }}>
-        {rows.length === 0
-          ? t('garrisonsScreen.messageNoTiles', {
-              fame: player.fame,
-              militiaCap: player.armyCapacity.militia,
-              ridersPart,
-            })
-          : t('garrisonsScreen.message', {
-              fame: player.fame,
-              militiaCap: player.armyCapacity.militia,
-              ridersPart,
-              units: turnIncome.units,
-              tiles: rows.length,
-            })}
-      </div>
-
       <div className="garrisons-army">
-        {player.riders > 0 ? (
-          <div className="garrisons-dismount-block">
-            <div className="garrisons-army-side">Dismount:</div>
-            <div className="garrisons-army-dismount">
-              <div className="garrisons-army-side">
-                <Rider amount={player.riders - dismountPick} color={player.image} />
-              </div>
-              <DecoratedSlider
-                min={0}
-                max={dismountMax}
-                value={dismountPick}
-                onPreview={setDismount}
-                onCommit={setDismount}
-              />
-              <div className="garrisons-army-side">
-                <Militia amount={unassigned + dismountPick} color={player.image} />
-                {dismountPick > 0 && <CostLabel cost={dismountRefund(dismountPick)} sign="+" />}
-              </div>
-            </div>
-
-            <div
-              className={
-                'shield-button-container' +
-                (dismountPick > 0 ? '' : ' shield-button-container--disabled')
-              }
-            >
-              <button
-                className="shield-button hire-submit"
-                onClick={handleDismount}
-                disabled={dismountPick <= 0}
-              >
-                <span className="hire-submit-icon" style={{ fontSize: '1.2rem' }}>
-                  ➜<Militia amount="" color={player.image} />
-                </span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="garrisons-army-side">
-            {t('garrisonsScreen.available')}: <Militia amount={unassigned} color={player.image} />
-          </div>
-        )}
+        <div className="garrisons-army-side">
+          <Army /> {t('garrisonsScreen.inArmy')} <Militia amount={unassigned} color={player.image} />
+        </div>
       </div>
 
       {rows.length === 0 ? (

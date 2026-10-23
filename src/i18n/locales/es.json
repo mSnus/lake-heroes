@@ -333,17 +333,13 @@
     "gainMoreFame": "Gana más fama 🏆 para un ejército mayor"
   },
   "garrisonsScreen": {
-    "title": "Guarniciones",
-    "available": "Disponible",
-    "message": "Fama {fame}🏆 te permite tener {militiaCap}🧍{ridersPart}. +{units} por turno de {tiles} casillas",
-    "messageNoTiles": "Fama {fame}🏆 te permite tener {militiaCap}🧍{ridersPart}.",
-    "ridersPart": " y {ridersCap}🐎",
+    "title": "Guardias",
     "maxLabel": "máx: {max}",
     "atMax": "Ya al máximo",
     "noTiles": "Todavía no posees ninguna casilla",
     "setGuards": "🛡️ Colocar guarniciones",
     "neverMind": "✖️ Cancelar",
-    "dismount": "Desmontar:"
+    "inArmy": "en el ejército:"
   },
   "botController": {
     "decided": "{name} decidió {decision}",
@@ -1007,13 +1003,12 @@
     "horsesJoined": "¡{units}🧍 del generoso {playerSpan} recibieron caballos gratis 🐴<br />y se convirtieron en jinetes!",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 milicia completa {used}/{total} — {turnedAway}🧍 rechazados)</span>",
     "newFolksWelcome": "🍻 A la gloria!",
-    "hireAmount": "🧾 Contratar {amount}",
     "moneyAndFame": "{gold}   {fame}",
     "title": "La Taberna",
-    "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades",
     "narrateHorses": "{playerName} visitó la Taberna y {units}🐎 se unieron como jinetes",
     "narrateMilitia": "{playerName} visitó la Taberna y {units}🧍 se unieron a las filas",
-    "narrateEmpty": "{playerName} visitó la Taberna, pero las filas estaban llenas"
+    "narrateEmpty": "{playerName} visitó la Taberna, pero las filas estaban llenas",
+    "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades"
   },
   "portal": {
     "title": "Torbellino de luces",
@@ -1194,5 +1189,13 @@
     "trade": "Comerciar",
     "finish": "🌾 Terminar la cosecha",
     "botSold": "{playerName} vendió {food}🍞 y {arms}⚔️ en la Cosecha"
+  },
+  "armyScreen": {
+    "title": "Ejército",
+    "capLine": "Fama {fame}: {militiaCap}máx{ridersPart}",
+    "ridersPart": " {ridersCap}máx",
+    "dismount": "Desmontar:",
+    "hireAmount": "🧾 Contratar {amount}",
+    "close": "✖️ Cerrar"
   }
 }

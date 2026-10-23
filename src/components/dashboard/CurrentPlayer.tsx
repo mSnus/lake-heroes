@@ -12,11 +12,11 @@ import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { Tower } from '../snippets/Tower';
 import { GarrisonsScreen } from '../screens/GarrisonsScreen';
+import { ArmyScreen } from '../screens/ArmyScreen';
 import RealmOverviewScreen from '../screens/RealmOverviewScreen';
 import { gameEvent } from '../../utils/events';
 import { showScreen } from '../../utils/screenStore';
 import { handleKingCastle } from '../../actions/king';
-import { openTavernHireOnly } from '../../actions/tavern';
 import { openStablesHireOnly } from '../../actions/stables';
 import { useT } from '../../i18n';
 import Militia from '../snippets/Militia';
@@ -138,8 +138,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
   const handleTileNameClick = () => {
     if (gameState.activeTile.id === 'king-castle') {
       handleKingCastle(gameState, updateGameState);
-    } else if (gameState.activeTile.id === 'tavern') {
-      openTavernHireOnly(gameState, updateGameState);
     } else if (gameState.activeTile.id === 'stables') {
       openStablesHireOnly(gameState, updateGameState);
     } else {
@@ -209,39 +207,52 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
       <div className="player-pane">
         <div className="player-stats-main-row">
           <img src="assets/sprites/banner.svg" alt="🚩" className="banner-icon" />
-          <div
-            className="player-stats-data player-stats-army"
-            id="statsArmy"
-            onClick={() =>
-              showScreen({
-                content: React.createElement(GarrisonsScreen, {
-                  gameState,
-                  player: activePlayer,
-                  updateGameState,
-                }),
-              })
-            }
-          >
-            <div>
-              <ArmyDisplay
-                militia={revealed.militia}
-                riders={revealed.riders}
-                capacity={activePlayer.armyCapacity}
-                showRiders={activePlayer.isKnight || revealed.riders > 0}
-                spriteColor={activePlayer.image}
-                className="player-stats-army-slots"
-              />
+          <div className="player-stats-data player-stats-army" id="statsArmy">
+            <div
+              onClick={() =>
+                showScreen({
+                  content: React.createElement(ArmyScreen, {
+                    gameState,
+                    player: activePlayer,
+                    updateGameState,
+                  }),
+                })
+              }
+              style={{ cursor: 'pointer' }}
+            >
+              <div>
+                <ArmyDisplay
+                  militia={revealed.militia}
+                  riders={revealed.riders}
+                  capacity={activePlayer.armyCapacity}
+                  showRiders={activePlayer.isKnight || revealed.riders > 0}
+                  spriteColor={activePlayer.image}
+                  className="player-stats-army-slots"
+                />
+              </div>
+
+              {turnIncome.units > 0 && (
+                <div className="player-stats-income-row">
+                  <span className="player-stats-turn-income player-stats-army">
+                    <Militia amount={`+${turnIncome.units}`} color={activePlayer.image} />
+                  </span>
+                </div>
+              )}
             </div>
 
-            {turnIncome.units > 0 && (
-              <div className="player-stats-income-row">
-                <span className="player-stats-turn-income player-stats-army">
-                  <Militia amount={`+${turnIncome.units}`} color={activePlayer.image} />
-                </span>
-              </div>
-            )}
-
-            <div className="player-stats-garrison-row">
+            <div
+              className="player-stats-garrison-row"
+              onClick={() =>
+                showScreen({
+                  content: React.createElement(GarrisonsScreen, {
+                    gameState,
+                    player: activePlayer,
+                    updateGameState,
+                  }),
+                })
+              }
+              style={{ cursor: 'pointer' }}
+            >
               <span className="squad-chunk">
                 <span className="squad-badge">
                   <Tower where="before" />

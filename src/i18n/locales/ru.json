@@ -330,17 +330,13 @@
     "gainMoreFame": "Чем выше слава 🏆, тем больше армия"
   },
   "garrisonsScreen": {
-    "title": "Гарнизоны",
-    "available": "Доступно",
-    "message": "Слава {fame}🏆 позволяет иметь {militiaCap}🧍{ridersPart}. +{units} за ход с {tiles} клеток",
-    "messageNoTiles": "Слава {fame}🏆 позволяет иметь {militiaCap}🧍{ridersPart}.",
-    "ridersPart": " и {ridersCap}🐎",
+    "title": "Стража",
     "maxLabel": "макс: {max}",
     "atMax": "Уже максимум",
     "noTiles": "У вас пока нет клеток",
     "setGuards": "🛡️ Расставить гарнизоны",
     "neverMind": "✖️ Отмена",
-    "dismount": "Снять с коней:"
+    "inArmy": "в армии:"
   },
   "botController": {
     "decided": "{name} решил {decision}",
@@ -1004,13 +1000,12 @@
     "horsesJoined": "{units}🧍 щедрого {playerSpan} получили коней 🐴<br />и стали всадниками!",
     "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 пехота заполнена {used}/{total} — {turnedAway}🧍 отправлены восвояси)</span>",
     "newFolksWelcome": "🍻 За славные победы!",
-    "hireAmount": "🧾 Нанять {amount}",
     "moneyAndFame": "{gold}   {fame}",
     "title": "Таверна",
-    "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов",
     "narrateHorses": "{playerName} посетил Таверну, и {units}🐎 присоединились как всадники",
     "narrateMilitia": "{playerName} посетил Таверну, и {units}🧍 присоединились к войску",
-    "narrateEmpty": "{playerName} посетил Таверну, но ряды были полны"
+    "narrateEmpty": "{playerName} посетил Таверну, но ряды были полны",
+    "cannotRecruit": "Ваше золото и слава\nне позволяют нанять больше юнитов"
   },
   "portal": {
     "title": "Вихрь огней",
@@ -1191,5 +1186,13 @@
     "trade": "Обменять",
     "finish": "🌾 Завершить сбор урожая",
     "botSold": "{playerName} продаёт на сборе урожая {food}🍞 и {arms}⚔️"
+  },
+  "armyScreen": {
+    "title": "Армия",
+    "capLine": "Слава {fame}: {militiaCap}макс{ridersPart}",
+    "ridersPart": " {ridersCap}макс",
+    "dismount": "Снять с коней:",
+    "hireAmount": "🧾 Нанять {amount}",
+    "close": "✖️ Закрыть"
   }
 }

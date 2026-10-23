@@ -15,7 +15,6 @@ import { sayLocal } from '../../utils/say';
 import { useRemoteMove } from '../../online/remoteMoveStore';
 import { seatIndex } from '../../game/seats';
 import { handleKingCastle } from '../../actions/king';
-import { openTavernHireOnly } from '../../actions/tavern';
 import { openStablesHireOnly } from '../../actions/stables';
 import { challengeDragonFromBoard } from '../../actions/fightDragon';
 import { useT } from '../../i18n';
@@ -208,11 +207,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
       if (tile.id === 'king-castle' && isActivePlayerTile) {
         handleKingCastle(board, updateGameState);
-        return;
-      }
-
-      if (isActivePlayerTile && tile.id === 'tavern') {
-        openTavernHireOnly(board, updateGameState);
         return;
       }
 

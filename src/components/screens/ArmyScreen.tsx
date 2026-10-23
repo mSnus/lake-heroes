@@ -1,0 +1,207 @@
+import React, { useState } from 'react';
+import { CostLabel } from '../snippets/CostLabel';
+import { Player } from '../../game/Player';
+import { GameState } from '../../game/GameState';
+import { ScreenBackground } from './ScreenBackground';
+import { DecoratedButton } from '../ui/DecoratedButton';
+import { DecoratedSlider } from '../ui/DecoratedSlider';
+import { ArmyDisplay } from '../ui/ArmyDisplay';
+import { SquadHirePanel } from '../ui/SquadHirePanel';
+import { useHireFooter } from '../ui/useHireFooter';
+import { Militia } from '../snippets/Militia';
+import { Rider } from '../snippets/Rider';
+import { Fame } from '../snippets/Fame';
+import { clearScreen } from '../../utils/screenStore';
+import { dismountSquad, dismountRefund, maxDismount } from '../../actions/dismountSquad';
+import { sellUnits } from '../../actions/sellUnits';
+import { upgradeSquad } from '../../actions/upgradeSquad';
+import { buyUnits } from '../../actions/buyUnits';
+import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
+import { hireMax } from '../../game/resources';
+import { formatArmyCap, UnitTier } from '../../game/army';
+import { useT } from '../../i18n';
+import { tJsx } from '../../i18n/tJsx';
+import '../../styles/GameMenu.css';
+import '../../styles/GarrisonsScreen.css';
+import { Fade } from './Fade';
+
+interface ArmyScreenProps {
+  gameState: GameState;
+  player: Player;
+  updateGameState: (board: GameState) => void;
+}
+
+/**
+ * The player's own army: full detail (sell/upgrade existing units), the
+ * fame-based capacity, and a hire dialogue always open at the Tavern's
+ * premium rate -- no need to actually be standing on the Tavern tile for it
+ * (see actions/tavern.ts's tavernMilitiaPrice/tavernRiderPrice). Opened
+ * from the stats panel's army block (see CurrentPlayer.tsx) -- the
+ * adjoining defence/garrison block opens GarrisonsScreen instead.
+ */
+export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updateGameState }) => {
+  const t = useT();
+
+  const [, forceRerender] = useState(0);
+  const refresh = () => forceRerender((v) => v + 1);
+
+  const [dismount, setDismount] = useState(0);
+  const dismountMax = maxDismount(player);
+  const dismountPick = Math.min(dismount, dismountMax);
+
+  const handleDismount = () => {
+    dismountSquad(gameState, dismountPick, updateGameState);
+    setDismount(0);
+    refresh();
+  };
+
+  const handleSellSquad = (tier: UnitTier, count: number) => {
+    sellUnits(gameState, count, updateGameState, tier);
+    refresh();
+  };
+
+  const handleUpgradeSquad = (count: number) => {
+    upgradeSquad(gameState, count, updateGameState);
+    refresh();
+  };
+
+  const canRecruitRiders = player.isKnight;
+  const militiaPrice = tavernMilitiaPrice();
+  const riderPrice = tavernRiderPrice();
+  const militiaMax = hireMax(player, 'militia', militiaPrice);
+  const ridersMax = canRecruitRiders ? hireMax(player, 'riders', riderPrice) : 0;
+  const atMax = militiaMax <= 0 && ridersMax <= 0;
+
+  const footer = useHireFooter(!atMax);
+  const handleBuy = (amount: number, tier: UnitTier) => {
+    buyUnits(gameState, amount, updateGameState, tier, tier === 'riders' ? riderPrice : militiaPrice);
+    footer.clear(tier);
+    refresh();
+  };
+
+  const pendingTier: UnitTier | null =
+    footer.amountOf('militia') > 0 ? 'militia' : footer.amountOf('riders') > 0 ? 'riders' : null;
+
+  const ridersPart = player.isKnight
+    ? tJsx('armyScreen.ridersPart', {
+        ridersCap: <Rider amount={formatArmyCap(player.armyCapacity.riders)} color={player.image} />,
+      })
+    : '';
+
+  return (
+    <ScreenBackground
+      image="assets/screens/battle.jpg"
+      style={{ paddingTop: '1rem', justifyContent: 'space-evenly' }}
+    >
+      {/* Above the screen's Fade (z-index 5501, rendered last below) -- a
+          position:static element's own z-index is inert, so everything
+          interactive needs to sit inside one positioned, elevated box
+          rather than being individually patched. */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 5503,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          width: '100%',
+          gap: '0.5rem',
+        }}
+      >
+      <div className="text-title" style={{ marginBottom: '0' }}>
+        {t('armyScreen.title')}
+      </div>
+
+      <ArmyDisplay
+        militia={player.militia}
+        riders={player.riders}
+        capacity={player.armyCapacity}
+        showRiders={player.isKnight || player.riders > 0}
+        onSell={handleSellSquad}
+        onUpgrade={handleUpgradeSquad}
+        canUpgradeToRiders={player.isKnight}
+        wallet={player}
+        spriteColor={player.image}
+        className="squad-display-large garrisons-army-display"
+      />
+
+      <div className="army-stats" style={{ lineHeight: '1.2' }}>
+        {tJsx('armyScreen.capLine', {
+          fame: <Fame amount={player.fame} />,
+          militiaCap: <Militia amount={formatArmyCap(player.armyCapacity.militia)} color={player.image} />,
+          ridersPart,
+        })}
+      </div>
+
+      {player.riders > 0 && (
+        <div className="garrisons-army">
+          <div className="garrisons-dismount-block">
+            <div className="garrisons-army-side">{t('armyScreen.dismount')}</div>
+            <div className="garrisons-army-dismount">
+              <div className="garrisons-army-side">
+                <Rider amount={player.riders - dismountPick} color={player.image} />
+              </div>
+              <DecoratedSlider
+                min={0}
+                max={dismountMax}
+                value={dismountPick}
+                onPreview={setDismount}
+                onCommit={setDismount}
+              />
+              <div className="garrisons-army-side">
+                <Militia amount={player.militia + dismountPick} color={player.image} />
+                {dismountPick > 0 && <CostLabel cost={dismountRefund(dismountPick)} sign="+" />}
+              </div>
+            </div>
+
+            <div
+              className={
+                'shield-button-container' + (dismountPick > 0 ? '' : ' shield-button-container--disabled')
+              }
+            >
+              <button
+                className="shield-button hire-submit"
+                onClick={handleDismount}
+                disabled={dismountPick <= 0}
+              >
+                <span className="hire-submit-icon" style={{ fontSize: '1.2rem' }}>
+                  ➜<Militia amount="" color={player.image} />
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop: '1rem', width: '100%' }}>
+        {atMax ? (
+          <h3 style={{ whiteSpace: 'pre-line', color: 'wheat', textAlign: 'center' }}>
+            {t('tavern.cannotRecruit')}
+          </h3>
+        ) : (
+          <SquadHirePanel
+            player={player}
+            showRiders={canRecruitRiders}
+            onBuy={handleBuy}
+            militiaPrice={militiaPrice}
+            riderPrice={riderPrice}
+            onAmountChange={footer.onAmountChange}
+            registerBuy={footer.registerBuy}
+          />
+        )}
+      </div>
+
+      <div className="game-menu pay-or-fight-grid" style={{ '--pay-or-fight-cols': 1 } as React.CSSProperties}>
+        <DecoratedButton onClick={pendingTier ? () => footer.buy(pendingTier) : () => clearScreen()}>
+          {pendingTier ? t('armyScreen.hireAmount', { amount: footer.amountOf(pendingTier) }) : t('armyScreen.close')}
+        </DecoratedButton>
+      </div>
+      </div>
+
+      <Fade />
+    </ScreenBackground>
+  );
+};
+
+export default ArmyScreen;
