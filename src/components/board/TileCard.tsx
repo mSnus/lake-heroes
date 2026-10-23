@@ -34,9 +34,6 @@ export const fmtPrice = (gold: number, units: number, join: string = ''): string
   return '0';
 };
 
-// Upgrades only ever cost gold now (see priceCell) — slots are what levels
-// grant instead of a computed defence number, and slots == level by design.
-const slotsAtLevel = (level: number): number => level;
 
 const getBonusType = (tile: Tile): TileBonusType => tile.bonusType ?? 'gold';
 
@@ -594,7 +591,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class1}>{priceCell(1)}</td>
                       <td className={class1}>→</td>
                       <td className={class1}>+{bonusAmount(1)}</td>
-                      <td className={class1}><Tower amount={slotsAtLevel(1)} /></td>
                     </tr>
                     <tr
                       className={
@@ -605,7 +601,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class2}>{priceCell(2)}</td>
                       <td className={class2}>→</td>
                       <td className={class2}>+{bonusAmount(2)}</td>
-                      <td className={class2}><Tower amount={slotsAtLevel(2)} /></td>
                     </tr>
                     <tr
                       className={
@@ -616,7 +611,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                       <td className={class3}>{priceCell(3)}</td>
                       <td className={class3}>→</td>
                       <td className={class3}>+{bonusAmount(3)}</td>
-                      <td className={class3}><Tower amount={slotsAtLevel(3)} /></td>
                     </tr>
                   </tbody>
                 </table>
