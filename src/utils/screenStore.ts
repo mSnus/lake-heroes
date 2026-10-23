@@ -69,8 +69,6 @@ export interface ScreenConfig {
   caravanDefenceRiders?: number;
   caravanPrize?: CaravanPrize;
   buttons?: ScreenButton[];
-  sellMode?: boolean;
-  sellHeader?: string;
   content?: React.ReactNode;
   doNotPersist?: boolean;
   // Mirrors the same fields on SavedScreen — set alongside `content` for a

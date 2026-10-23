@@ -11,7 +11,6 @@ import { announce } from '../utils/announce';
 import { endTurn } from '../actions/endTurn';
 import { claimTile } from '../actions/claimTile';
 import { sellTile } from '../actions/sellTile';
-import { afterMoveLogic } from '../actions/afterMoveLogic';
 import { setTileGarrison } from '../actions/garrisonTile';
 import {
   getCharacterConfig,
@@ -19,8 +18,6 @@ import {
   pickUpgradeCandidate,
   shouldAttackCaravan,
   shouldChallengeDragon,
-  shouldSeekRevenge,
-  sortTilesBySacrifice,
   pickGarrisonAction,
   pickForkChoice,
 } from '../ai/decisions';
@@ -59,7 +56,7 @@ interface BotContext {
 }
 
 function pickGenericScreenAction(ctx: BotContext): BotAction | null {
-  const { screen, player, board } = ctx;
+  const { screen, player } = ctx;
   const buttons = screen?.buttons;
   if (!buttons || buttons.length === 0) return null;
 
@@ -68,40 +65,6 @@ function pickGenericScreenAction(ctx: BotContext): BotAction | null {
   if (claimUndefended) {
     announce(player, 'botController.takeUndefendedTile');
     return action(claimUndefended.onClick);
-  }
-
-  // Guards / toll encounter — identified by the `encounter` payload. By the
-  // time any such screen shows, the toll itself has already been auto-paid
-  // (or the player already sent to prison) inside showTileEncounterScreen --
-  // all that's left for a bot to decide is whether to sell toward a
-  // shortfall, or seek revenge once the toll is settled.
-  if (screen!.encounter && screen!.encounter.canFight !== undefined) {
-    const tile = board.activeTile;
-
-    // Sell-to-pay-or-POW: keep selling the least valuable tile until the
-    // toll is covered -- guaranteed to succeed, since this screen only ever
-    // shows when selling everything would be enough (see
-    // afterMoveLogic.ts's showTileEncounterScreen). One sale per tick,
-    // re-checking afterward exactly like a human's sell-mode UI does.
-    if (screen!.sellMode) {
-      const target = sortTilesBySacrifice(board, player)[0];
-      if (!target) {
-        return action(buttons.find((b) => b.action === 'accept-loss')?.onClick ?? (() => {}));
-      }
-
-      announce(player, 'botController.sellTilesToPayFee');
-      return action(() => {
-        sellTile(board, player, target);
-        afterMoveLogic(board, ctx.updateGameState);
-      });
-    }
-
-    // Peace or revenge -- the toll is already settled by now.
-    const revenge = shouldSeekRevenge(player, tile.defence);
-    if (revenge) announce(player, 'botController.fight', { tile: tile.shortName });
-    else announce(player, 'botController.noRevenge');
-    const button = buttons.find((b) => b.action === (revenge ? 'fight-tile' : 'go-with-peace'));
-    return button ? action(button.onClick) : null;
   }
 
   // Dragon challenge (proactive offer or random ambush) — screenType 'dragon'.

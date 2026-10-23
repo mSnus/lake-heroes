@@ -676,10 +676,14 @@
     "defencelessItsMine": "¿Indefensa? es mía",
     "goWithPeace": "🕊️ Ir en paz",
     "revenge": "🔥Venganza",
-    "becomePOW": "⛓️ Rendirse e ir encadenado",
-    "sellToPayOrPOW": "¡Vende o cede casillas para pagar {amount}🟡, o acabarás en prisión, avergonzado!",
     "tollShortfall": "{playerName} entrega todo lo que tiene ({paid}🟡) para el peaje de {tileName}, pero aún debe {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} disfruta visitando {tileName} mientras está cedida"
+  },
+  "tollScreen": {
+    "payMoreHeader": "paga {amount} más:",
+    "goToPrison": "⛓️ Ir a prisión, avergonzado",
+    "yieldFor": "Ceder por {gold}",
+    "sellFor": "Vender por {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "Un dragón aterrador custodia un montón de oro y joyas. ¿Se atreverá {playerSpan} a desafiarlo?",

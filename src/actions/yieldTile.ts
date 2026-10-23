@@ -6,6 +6,13 @@ import { t } from '../i18n';
 
 const TAKE_BACK_MULTIPLIER = 0.6;
 
+/** Half the tile's current price -- what yielding it refunds up front. The
+ * single source of truth shared by the actual yield (below), TileCard's own
+ * preview/confirm text, and TollScreen's yield button. */
+export function yieldRefund(tile: Tile): number {
+  return Math.floor(tile.currentPrice.gold / 2);
+}
+
 /**
  * Yield a tile to the King: ownership stays with the player, but the tile
  * stops producing its yearly/visit bonus, can't be attacked by a Rogue
@@ -13,7 +20,7 @@ const TAKE_BACK_MULTIPLIER = 0.6;
  * current price (including upgrades) up front.
  */
 export function yieldTile(gameState: GameState, player: Player, tile: Tile): number {
-  const refund = Math.floor(tile.currentPrice.gold / 2);
+  const refund = yieldRefund(tile);
 
   tile.isYielded = true;
   player.gold += refund;

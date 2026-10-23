@@ -678,10 +678,14 @@
     "defencelessItsMine": "Defenceless? it's mine",
     "goWithPeace": "🕊️ Go with peace",
     "revenge": "🔥Revenge",
-    "becomePOW": "⛓️ Give up and go in chains",
-    "sellToPayOrPOW": "Sell or yield tiles to pay {amount}🟡 or end up in jail, ashamed!",
     "tollShortfall": "{playerName} hands over everything they have ({paid}🟡) toward {tileName}'s toll, but still owes {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} enjoys visiting {tileName} while it's yielded"
+  },
+  "tollScreen": {
+    "payMoreHeader": "pay {amount} more:",
+    "goToPrison": "⛓️ Go to prison, ashamed",
+    "yieldFor": "Yield for {gold}",
+    "sellFor": "Sell for {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "A terrifying dragon guards a pile of gold and jewels. Will {playerSpan} dare to challenge it?",

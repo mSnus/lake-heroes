@@ -1,29 +1,22 @@
 import React from 'react';
 import { GameState } from '../../game/GameState';
 import { useScreen } from '../../utils/screenStore';
-import { afterMoveLogic } from '../../actions/afterMoveLogic';
 import { ScreenBackground } from './ScreenBackground';
 import { Fade } from './Fade';
-import { OwnedTiles } from '../dashboard/OwnedTiles';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
-import { Fame } from '../snippets/Fame';
-import { Militia } from '../snippets/Militia';
-import { Rider } from '../snippets/Rider';
-import { Tower } from '../snippets/Tower';
 import { SpriteCircleIcon } from '../snippets/SpriteCircleIcon';
 import { gameEvent } from '../../utils/events';
 import { formatArmy } from '../../utils/formatArmy';
 import { useT } from '../../i18n';
-import { tJsx } from '../../i18n/tJsx';
 
 interface ScreenRendererProps {
   gameState: GameState;
   updateGameState: (gs: GameState) => void;
 }
 
-export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updateGameState }) => {
+export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState }) => {
   const t = useT();
   const config = useScreen();
   if (!config) return null;
@@ -46,11 +39,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
     return isSelfDrivingModal ? <div style={hiddenStyle}>{config.content}</div> : <>{config.content}</>;
   }
 
-  const sellAndRecheck = (gs: GameState) => {
-    updateGameState(gs);
-    afterMoveLogic(gs, updateGameState);
-  };
-
   const buttons = config.buttons ?? [];
 
   // Follows whichever line names the tile's guard -- "belongs to OWNER" when
@@ -60,13 +48,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
   const guardedByNode = config.encounter?.tile && (
     <> {t('screenRenderer.andIsGuarded', { amount: config.encounter.tile.defence })}</>
   );
-
-  // The toll screen reads as the owner acting on the visitor, so it drops
-  // the visitor's own stat line and the "encounters ... belongs to" build-up.
-  const isToll = !!config.encounter?.ownerName && !!config.encounter?.fee;
-
-  // The revenge prompt takes the place of the standalone "guarded by" line.
-  const showsRevengePrompt = !!(config.encounter?.ownerName && config.encounter?.canFight && config.encounter?.tile);
 
   function handleButtonClick(onClick: () => void, action?: string) {
     if (action === 'end-turn') gameEvent('setPhase', 'before-move');
@@ -90,84 +71,35 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
         {config.spriteImage && <SpriteCircleIcon src={config.spriteImage} />}
         {config.encounter && (
           <div className="text-message">
-            {isToll ? (
+            <PlayerLabel
+              name={config.encounter.playerName}
+              color={config.encounter.playerColor}
+              bold
+            /><br/>
+            {config.encounter?.gold !== undefined && (
               <>
-                <PlayerLabel name={config.encounter.playerName} color={config.encounter.playerColor} bold />
-                <br />
-                <Militia amount={config.encounter.militia ?? 0} color={config.encounter.playerImage} />
-                {(config.encounter.riders ?? 0) > 0 && (
-                  <Rider amount={config.encounter.riders!} color={config.encounter.playerImage} />
-                )}
-                {config.encounter.fame !== undefined && <Fame amount={config.encounter.fame} />}
-                {config.encounter.goldBefore !== undefined && (
-                  <>
-                    <span className="gold-struck">
-                      <Gold amount={config.encounter.goldBefore} />
-                    </span>{' '}
-                    →{' '}
-                  </>
-                )}
-                <Gold amount={config.encounter.gold ?? 0} />
-                <br />
-                {tJsx('screenRenderer.wasForcedToPay', { amount: <Gold amount={config.encounter.fee ?? 0} /> })}
-                <br />
-                {tJsx('screenRenderer.toOwner', {
-                  owner: <PlayerLabel name={config.encounter.ownerName!} color={config.encounter.ownerColor} bold />,
-                })}
-                <br />
-                {tJsx('screenRenderer.forTheTile', {
-                  tile: (
-                    <strong style={{ color: config.encounter.tile?.groupTextColor }}>
-                      {config.encounter.tile?.name}
-                    </strong>
-                  ),
-                  towers: Array.from({ length: config.encounter.tile?.level ?? 0 }, (_, i) => <Tower key={i} />),
-                })}
-              </>
-            ) : (
-              <>
-                <PlayerLabel
-                  name={config.encounter.playerName}
-                  color={config.encounter.playerColor}
-                  bold
-                /><br/>
-                {config.encounter?.gold !== undefined && (
-                  <>
-                    <strong>
-                      <Gold amount={config.encounter.gold} />
-                    </strong>
-                    <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
-                  </>
-                )}
-                <br />
-                {t('screenRenderer.encounters')}{' '}
-                <strong style={{ color: config.encounter.tile?.groupTextColor }}>
-                  {config.encounter.tile?.name}
+                <strong>
+                  <Gold amount={config.encounter.gold} />
                 </strong>
-                {!config.encounter.ownerName && guardedByNode}
-                {config.encounter.ownerName && (
-                  <>
-                    <br />
-                    {t('screenRenderer.belongsTo')}{' '}
-                    <PlayerLabel
-                      name={config.encounter.ownerName}
-                      color={config.encounter.ownerColor}
-                      bold
-                    />
-                    {!showsRevengePrompt && guardedByNode}
-                  </>
-                )}
+                <strong>{formatArmy(config.encounter.militia ?? 0, config.encounter.riders ?? 0)}</strong>
               </>
             )}
-            {showsRevengePrompt && (
+            <br />
+            {t('screenRenderer.encounters')}{' '}
+            <strong style={{ color: config.encounter.tile?.groupTextColor }}>
+              {config.encounter.tile?.name}
+            </strong>
+            {!config.encounter.ownerName && guardedByNode}
+            {config.encounter.ownerName && (
               <>
                 <br />
-                <br />
-                {t('screenRenderer.riskOrPay')}
-                <br />
-                <span style={{ fontSize: '1rem', lineHeight: '1', color: 'wheat' ,opacity: 0.85 }}>
-                  {t('screenRenderer.razedSmokeCaveat')}
-                </span>
+                {t('screenRenderer.belongsTo')}{' '}
+                <PlayerLabel
+                  name={config.encounter.ownerName}
+                  color={config.encounter.ownerColor}
+                  bold
+                />
+                {guardedByNode}
               </>
             )}
             {config.encounter.outcomeText && (
@@ -195,7 +127,6 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
           <div className="text-message" dangerouslySetInnerHTML={{ __html: config.htmlMessage }} />
         )}
 
-        {!config.sellMode && (
         <div
           className={'game-menu' + (isGuardsFee ? ' pay-or-fight-grid' : '')}
           style={
@@ -226,50 +157,7 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState, updat
               )
             )}
         </div>
-      )}
       </ScreenBackground>
-
-      {config.sellMode && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 6000,
-            background: 'rgba(0,0,0,0.75)',
-            padding: '8px',
-          }}
-        >
-          <div
-            style={{
-              color: 'white',
-              fontSize: '1rem',
-              textAlign: 'center',
-              padding: '6px 12px 8px',
-              textShadow: '1px 1px 4px black',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              flexWrap: 'wrap',
-            }}
-          >
-            {config.sellHeader && <span>{config.sellHeader}</span>}
-            {(config.buttons ?? []).map((btn, i) => (
-              <button
-                key={i}
-                className="game-menu-button"
-                disabled={btn.disabled}
-                onClick={btn.onClick}
-              >
-                {btn.label}
-              </button>
-            ))}
-          </div>
-          <OwnedTiles gameState={gameState} updateGameState={sellAndRecheck} disableUpgradesScreen defaultExpanded />
-        </div>
-      )}
     </div>
   );
 };

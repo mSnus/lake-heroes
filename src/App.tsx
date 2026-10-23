@@ -839,9 +839,7 @@ function App() {
 
             {showLogModal && <GameLogModal messages={gameLog} onClose={handleCloseLog} />}
 
-            {!screen?.sellMode && (
-              <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
-            )}
+            <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
           </div>
         </div>
       )}

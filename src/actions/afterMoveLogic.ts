@@ -15,6 +15,7 @@ import { fightTile } from './fightTile';
 import { sellTile } from './sellTile';
 import { claimUndefendedTile } from './claimUndefendedTile';
 import { HeroHourScreen } from '../components/screens/HeroHourScreen';
+import { TollScreen } from '../components/screens/TollScreen';
 import { computeFeeOptions, FeeOptions } from './feeOptions';
 import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
 import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget } from '../ai/decisions';
@@ -141,7 +142,7 @@ export function afterMoveLogic(
  * cover it), so re-entering never charges the same toll twice. Returns the
  * amount still owed after this charge -- 0 means it's fully settled.
  */
-function chargeToll(player: Player, owner: Player | undefined, tile: Tile, fee: number): number {
+export function chargeToll(player: Player, owner: Player | undefined, tile: Tile, fee: number): number {
   const owed = player.owedToll > 0 ? player.owedToll : fee;
   const payNow = Math.min(player.gold, owed);
   if (payNow > 0) {
@@ -169,7 +170,7 @@ function chargeToll(player: Player, owner: Player | undefined, tile: Tile, fee: 
  * `owner` -- the tile owner whose toll bankrupted them -- earns a star for
  * taking them prisoner (see utils/stars.ts); undefined only for the
  * defensive case of a toll with no real owner left to credit. */
-function triggerPrisonerOfWar(
+export function triggerPrisonerOfWar(
   board: GameState,
   updateGameState: (board: GameState) => void,
   owner: Player | undefined
@@ -181,118 +182,6 @@ function triggerPrisonerOfWar(
   becomeBeggar(board, updateGameState);
   if (isHeadlessRun()) setEndTurn();
   else showPrisonScreen(board.gameMessage);
-}
-
-/** The toll is fully paid -- show the peace/revenge choice. Revenge (a
- * banzai attack) is now purely optional payback, never a way to dodge the
- * toll itself, which has already changed hands by the time this shows. */
-function showPeaceOrRevengeScreen(
-  board: GameState,
-  updateGameState: (board: GameState) => void,
-  tile: Tile,
-  owner: Player | undefined,
-  canFight: boolean,
-  fee: number,
-  goldBefore?: number
-): void {
-  const player = board.activePlayer;
-  player.hasSettledTollThisTurn = true;
-
-  const encounter = {
-    playerName: player.name,
-    playerColor: player.color,
-    tile,
-    ownerName: owner?.name ?? undefined,
-    ownerColor: owner?.color,
-    canFight,
-    fee,
-    goldBefore,
-    outcomeText: undefined,
-    gold: player.gold,
-    militia: player.militia,
-    riders: player.riders,
-    fame: player.fame,
-    playerImage: player.image,
-  };
-
-  showScreen({
-    background: 'assets/screens/guards.jpg',
-    fade: true,
-    spriteImage: tile.spriteImage,
-    encounter,
-    buttons: [
-      {
-        label: t('afterMoveLogic.goWithPeace'),
-        action: 'go-with-peace',
-        onClick: () => {
-          player.hasResolvedTileEncounterThisTurn = true;
-          clearScreen();
-          setEndTurn();
-        },
-      },
-      {
-        label: t('afterMoveLogic.revenge'),
-        action: 'fight-tile',
-        onClick: () => fightTile(board, updateGameState),
-        disabled: !canFight,
-      },
-    ],
-  });
-}
-
-/** Short of funds even after handing over everything -- offer to sell
- * tiles to make up the difference, since doing so is guaranteed to cover
- * it (that's exactly the condition that routes here; see
- * showTileEncounterScreen). Selling re-triggers afterMoveLogic (see
- * ScreenRenderer's sellAndRecheck), which re-enters this same encounter and
- * automatically advances to the peace/revenge screen the moment enough has
- * been raised -- the only button here is for giving up early instead. */
-function showSellToPayOrPOWScreen(
-  board: GameState,
-  updateGameState: (board: GameState) => void,
-  tile: Tile,
-  owner: Player | undefined,
-  fee: number,
-  remaining: number,
-  goldBefore?: number
-): void {
-  const player = board.activePlayer;
-  const encounter = {
-    playerName: player.name,
-    playerColor: player.color,
-    tile,
-    ownerName: owner?.name ?? undefined,
-    ownerColor: owner?.color,
-    canFight: false,
-    fee,
-    goldBefore,
-    outcomeText: undefined,
-    gold: player.gold,
-    militia: player.militia,
-    riders: player.riders,
-    fame: player.fame,
-    playerImage: player.image,
-  };
-
-  showScreen({
-    background: 'assets/screens/guards.jpg',
-    fade: true,
-    spriteImage: tile.spriteImage,
-    encounter,
-    sellMode: true,
-    // Rebuilt from the live shortfall every time this screen re-opens --
-    // each sale re-runs afterMoveLogic (ScreenRenderer's sellAndRecheck),
-    // which re-charges the toll from the new gold before landing back here,
-    // so the figure counts down as tiles are sold.
-    sellHeader: t('afterMoveLogic.sellToPayOrPOW', { amount: remaining }),
-    buttons: [
-      {
-        label: t('afterMoveLogic.becomePOW'),
-        action: 'accept-loss',
-        onClick: () => triggerPrisonerOfWar(board, updateGameState, owner),
-      },
-    ],
-  });
 }
 
 /** Show the guards / toll / revenge encounter for the active tile. */
@@ -316,7 +205,7 @@ export function showTileEncounterScreen(
   }
 
   const feeOptions = computeFeeOptions(board, player, tile);
-  const { fee, defence, canFight, sellable, hasSellableTiles } = feeOptions;
+  const { fee, defence, canFight } = feeOptions;
 
   if (isHeadlessRun()) {
     resolveGuardsHeadless(board, updateGameState, tile, feeOptions);
@@ -358,27 +247,29 @@ export function showTileEncounterScreen(
   }
 
   // A re-entry after the toll was already settled this turn (e.g. a lost
-  // revenge attack re-shows this encounter) -- go straight back to the
-  // peace/revenge choice without charging anything again.
-  if (player.hasSettledTollThisTurn) {
-    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight, fee);
-    return;
+  // revenge attack re-shows this encounter) -- TollScreen reads the live
+  // flag itself and goes straight to the peace/revenge choice, charging
+  // nothing again.
+  let goldBefore: number | undefined;
+  if (!player.hasSettledTollThisTurn) {
+    goldBefore = player.gold;
+    const remaining = chargeToll(player, owner, tile, fee);
+    if (remaining <= 0) player.hasSettledTollThisTurn = true;
+    updateGameState(board);
   }
 
-  const goldBefore = player.gold;
-  const remaining = chargeToll(player, owner, tile, fee);
-  updateGameState(board);
-
-  if (remaining <= 0) {
-    showPeaceOrRevengeScreen(board, updateGameState, tile, owner, canFight, fee, goldBefore);
-    return;
-  }
-
-  if (hasSellableTiles && sellable.gold >= remaining) {
-    showSellToPayOrPOWScreen(board, updateGameState, tile, owner, fee, remaining, goldBefore);
-  } else {
-    triggerPrisonerOfWar(board, updateGameState, owner);
-  }
+  showScreen({
+    content: React.createElement(TollScreen, {
+      gameState: board,
+      player,
+      tile,
+      owner,
+      fee,
+      canFight,
+      goldBefore,
+      updateGameState,
+    }),
+  });
 }
 
 /**

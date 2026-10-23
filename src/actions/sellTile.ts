@@ -5,6 +5,25 @@ import { say } from '../utils/say';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
 
+/**
+ * What selling `tile` right now would refund -- the single source of truth
+ * shared by the actual sale (below), TileCard's own preview/confirm text,
+ * and TollScreen's sell button. A yielded tile already cashed in half its
+ * price up front (yieldTile.ts); selling it on top of that refunds only
+ * 40% gold (not another 50%), so yielding then selling nets 90% total gold
+ * instead of the 100% a straight sale would give — a real 10% penalty for
+ * having yielded first. The garrison itself always comes back in full
+ * regardless: those are real troops still standing on the tile, not part
+ * of the gold penalty.
+ */
+export function sellRefund(tile: Tile): { gold: number; units: number } {
+  const goldRefundMultiplier = tile.isYielded ? 0.4 : 1;
+  return {
+    gold: Math.floor(tile.currentPrice.gold * goldRefundMultiplier),
+    units: Math.floor(tile.currentPrice.units),
+  };
+}
+
 export function sellTile(
   gameState: GameState,
   player: Player,
@@ -13,17 +32,7 @@ export function sellTile(
   if (!tile) return { gold: 0, units: 0 };
   if (tile.owner !== player.id) return { gold: 0, units: 0 };
 
-  // Refund = the tile's currentPrice (base level's units mirrors its
-  // defence, same as isAffordable(); upgrade levels refund their price).
-  // A yielded tile already cashed in half its price up front (yieldTile.ts);
-  // selling it on top of that refunds only 40% gold (not another 50%), so
-  // yielding then selling nets 90% total gold instead of the 100% a
-  // straight sale would give — a real 10% penalty for having yielded first.
-  // The garrison itself always comes back in full regardless: those are
-  // real troops still standing on the tile, not part of the gold penalty.
-  const goldRefundMultiplier = tile.isYielded ? 0.4 : 1;
-  const totalGold = Math.floor(tile.currentPrice.gold * goldRefundMultiplier);
-  const totalUnits = Math.floor(tile.currentPrice.units);
+  const { gold: totalGold, units: totalUnits } = sellRefund(tile);
 
   // Mutate tile and player
   tile.owner = null;

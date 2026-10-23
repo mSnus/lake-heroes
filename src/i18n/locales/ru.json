@@ -673,10 +673,14 @@
     "defencelessItsMine": "Беззащитно? Теперь моё",
     "goWithPeace": "🕊️ Уйти с миром",
     "revenge": "🔥Месть",
-    "becomePOW": "⛓️ Сдаться и уйти в цепях",
-    "sellToPayOrPOW": "Продайте или уступите постройки, чтобы заплатить {amount}🟡, иначе — в темницу, с позором!",
     "tollShortfall": "{playerName} отдаёт всё, что у него есть ({paid}🟡), в счёт пошлины за «{tileName}», но всё ещё должен {remaining}🟡",
     "enjoysYieldedVisit": "{playerName} с удовольствием посещает «{tileName}», пока та передана королю"
+  },
+  "tollScreen": {
+    "payMoreHeader": "заплатите ещё {amount}:",
+    "goToPrison": "⛓️ Отправиться в темницу, с позором",
+    "yieldFor": "Уступить за {gold}",
+    "sellFor": "Продать за {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "Ужасающий дракон охраняет груду золота и драгоценностей. Осмелится ли {playerSpan} бросить ему вызов?",

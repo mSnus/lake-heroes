@@ -3,9 +3,9 @@ import { Tile, TileBonusType } from '../../game/Tile';
 import '../../styles/TileCard.css';
 import { say, sayLocal } from '../../utils/say';
 import { GameState } from '../../game/GameState';
-import { sellTile } from '../../actions/sellTile';
+import { sellTile, sellRefund } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
-import { yieldTile, takeTileBack, takeBackCost } from '../../actions/yieldTile';
+import { yieldTile, yieldRefund, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { gameEvent } from '../../utils/events';
 import { isBanzaiAttack } from '../../game/army';
 import { UNIT_POWER } from '../../game/army';
@@ -208,16 +208,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
   const upgradeUnreachable = !canUpgrade || currentLevel === 1;
 
-  // A yielded tile already cashed in half its price up front (see
-  // yieldTile.ts) -- selling it on top of that only refunds 40% of the gold,
-  // a real penalty vs a straight sale (mirrored exactly in sellTile.ts). The
-  // garrison itself always comes back in full, yielded or not.
-  const sellPrice = tile.isYielded
-    ? {
-        gold: Math.floor(tile.currentPrice.gold * 0.4),
-        units: Math.floor(tile.currentPrice.units),
-      }
-    : tile.currentPrice;
+  const sellPrice = sellRefund(tile);
 
   const handleClose = () => {
     if (demoMode) return;
@@ -274,7 +265,7 @@ export const TileCard: React.FC<TileCardProps> = ({
         return;
       takeTileBack(gameState, activePlayer, tile);
     } else {
-      const refund = Math.floor(tile.currentPrice.gold / 2);
+      const refund = yieldRefund(tile);
       if (!window.confirm(t('tileCard.confirmYield', { tileName: tile.name, gold: refund })))
         return;
       yieldTile(gameState, activePlayer, tile);
