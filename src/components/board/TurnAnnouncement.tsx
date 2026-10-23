@@ -8,7 +8,8 @@ import { playerTurnIncome } from '../../game/income';
 import { gameEvent } from '../../utils/events';
 import { tJsx } from '../../i18n/tJsx';
 import { useT } from '../../i18n';
-import { FORK_START_INDEX } from '../../game/constants';
+import { FORK_START_INDEX, REAL_ADVENTURE_MIN_TURNS } from '../../game/constants';
+import { currentYear } from '../../game/year';
 import { setForkChoice } from '../../utils/forkChoiceStore';
 import { SELECTED_COLOR, ANGLE_LEFT, ANGLE_RIGHT } from './BoardCanvas';
 import '../../styles/TurnAnnouncement.css';
@@ -42,11 +43,16 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   // path picker instead, closing only once one of those is clicked. An AI at
   // the same spot picks its own path elsewhere (see ai/decisions.ts's
   // pickForkChoice, called from BotController) and gets the normal
-  // auto-closing announcement -- no buttons to click.
+  // auto-closing announcement -- no buttons to click. Hidden entirely early
+  // on (see REAL_ADVENTURE_MIN_TURNS), matching BoardCanvas's own fork
+  // arrows -- rollAndMove.ts forces the short path regardless then, so
+  // showing a choice that doesn't do anything (picking "right" silently
+  // still sent the player left) would just be confusing.
   const atFork =
     !player.isComputer &&
     gameState.turnPhase === 'before-move' &&
-    player.position === FORK_START_INDEX;
+    player.position === FORK_START_INDEX &&
+    currentYear(gameState) > REAL_ADVENTURE_MIN_TURNS;
 
   const hide = () => {
     clearTimeout(hideTimerRef.current);
