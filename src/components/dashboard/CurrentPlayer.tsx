@@ -234,7 +234,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             {turnIncome.units > 0 && (
               <div className="player-stats-income-row">
                 <span className="player-stats-turn-income player-stats-army">
-                  <Militia amount={`+${turnIncome.units}`} />
+                  <Militia amount={`+${turnIncome.units}`} color={activePlayer.image} />
                 </span>
               </div>
             )}
