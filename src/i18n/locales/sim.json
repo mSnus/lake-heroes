@@ -973,7 +973,7 @@
     "narrateHorses": "{playerName} visited the Tavern and {units}🐎 joined as riders",
     "narrateMilitia": "{playerName} visited the Tavern and {units}🧍 joined the ranks",
     "narrateEmpty": "{playerName} visited the Tavern, but the ranks were full",
-    "cannotRecruit": "Your money and fame\ndo not allow you to recruit more units"
+    "cannotRecruit": "Your gold, food, arms or full army\ndo not allow you to recruit more units"
   },
   "portal": {
     "title": "Whirlpool of lights",

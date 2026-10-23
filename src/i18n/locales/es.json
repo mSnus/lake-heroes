@@ -1012,7 +1012,7 @@
     "narrateHorses": "{playerName} visitó la Taberna y {units}🐎 se unieron como jinetes",
     "narrateMilitia": "{playerName} visitó la Taberna y {units}🧍 se unieron a las filas",
     "narrateEmpty": "{playerName} visitó la Taberna, pero las filas estaban llenas",
-    "cannotRecruit": "Tu dinero y tu fama\nno te permiten reclutar más unidades"
+    "cannotRecruit": "Tu oro, comida, armas o tu ejército lleno\nno te permiten reclutar más unidades"
   },
   "portal": {
     "title": "Torbellino de luces",
