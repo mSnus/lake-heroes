@@ -185,8 +185,9 @@
   "squadHirePanel": {
     "hireTitleMax": "Contratar más (máx: {max}):",
     "hireTitlePlain": "Contratar más:",
-    "ridersKnightOnly": "solo disponible para Caballeros",
-    "hireButton": "Contratar {army}"
+    "ridersKnightOnly": "solo para Caballeros",
+    "hireButton": "Contratar {army}",
+    "maxForFame": "Máximo para {fame} alcanzado"
   },
   "armyDisplay": {
     "sellMilitia": "Vender milicia",

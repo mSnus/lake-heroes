@@ -5,9 +5,11 @@ import { getOverrides } from '../../utils/overridesStore';
 import { DecoratedSlider } from './DecoratedSlider';
 import { Militia } from '../snippets/Militia';
 import { Rider } from '../snippets/Rider';
+import { Fame } from '../snippets/Fame';
 import { CostLabel } from '../snippets/CostLabel';
 import { hireMax, unitCost } from '../../game/resources';
 import { useT } from '../../i18n';
+import { tJsx } from '../../i18n/tJsx';
 import '../../styles/SquadHirePanel.css';
 
 interface HireRowProps {
@@ -37,6 +39,10 @@ const HireRow: React.FC<HireRowProps> = ({
 }) => {
   const UnitIcon = tier === 'riders' ? Rider : Militia;
   const maxAmount = hireMax(player, tier, unitPrice);
+  // Distinct from maxAmount hitting 0 for lack of gold/food/arms -- this is
+  // specifically "there's nowhere left to put one", the fame-driven army
+  // cap itself, which a slider can't do anything about.
+  const atFameCap = player.armyRoom(tier) <= 0;
 
   // Starts at 0, and returns to 0 after a hire: buying is opt-in, so the
   // panel never opens with a purchase already dialled in.
@@ -82,17 +88,25 @@ const HireRow: React.FC<HireRowProps> = ({
       <div className="hire-row-name">
         <UnitIcon amount="" color={player.image} />
       </div>
-      <DecoratedSlider
-        min={0}
-        max={maxAmount}
-        value={displayedAmount}
-        onPreview={setPreviewAmount}
-        onCommit={(v) => {
-          setAmount(v);
-          setPreviewAmount(null);
-        }}
-      />
-      <div className="hire-row-amount-label">{displayedAmount}</div>
+      {atFameCap ? (
+        <div className="hire-row-max-message">
+          {tJsx('squadHirePanel.maxForFame', { fame: <Fame amount={player.fame} /> })}
+        </div>
+      ) : (
+        <>
+          <DecoratedSlider
+            min={0}
+            max={maxAmount}
+            value={displayedAmount}
+            onPreview={setPreviewAmount}
+            onCommit={(v) => {
+              setAmount(v);
+              setPreviewAmount(null);
+            }}
+          />
+          <div className="hire-row-amount-label">{displayedAmount}</div>
+        </>
+      )}
     </div>
   );
 };

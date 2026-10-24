@@ -14,6 +14,7 @@ import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { useT } from '../../i18n';
+import '../../styles/GameMenu.css';
 import '../../styles/RealmOverviewScreen.css';
 
 interface RealmOverviewScreenProps {
@@ -91,10 +92,6 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
 
   return (
     <div className="realm-screen">
-      <div className="realm-close">
-        <DecoratedButton onClick={clearScreen}>{t('common.close')}</DecoratedButton>
-      </div>
-
       <div className="realm-inner">
         {ranked.map((player) => {
           const income = playerTurnIncome(gameState, player);
@@ -175,6 +172,10 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
             </div>
           );
         })}
+      </div>
+
+      <div className="game-menu" style={{ marginTop: '1rem' }}>
+        <DecoratedButton onClick={clearScreen}>{t('common.close')}</DecoratedButton>
       </div>
     </div>
   );

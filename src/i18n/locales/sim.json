@@ -182,8 +182,9 @@
   "squadHirePanel": {
     "hireTitleMax": "Hire more (max: {max}):",
     "hireTitlePlain": "Hire more:",
-    "ridersKnightOnly": "only available for Knights",
-    "hireButton": "Hire {army}"
+    "ridersKnightOnly": "only for Knights",
+    "hireButton": "Hire {army}",
+    "maxForFame": "Maximum for {fame} reached"
   },
   "armyDisplay": {
     "sellMilitia": "Sell militia",

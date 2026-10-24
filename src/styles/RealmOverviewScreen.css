@@ -5,24 +5,14 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(10, 6, 2, 0.96);
+  background: linear-gradient(rgba(10, 6, 2, 0.88), rgba(10, 6, 2, 0.88)), url('/assets/map13.jpg');
+  background-size: cover;
+  background-position: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 48px 12px 32px;
   color: #ebe5d5;
   font-family: 'Texturina';
-}
-
-.realm-close {
-  position: fixed;
-  top: 10px;
-  right: 12px;
-  z-index: 10001;
-}
-
-.realm-close button.decorated {
-  width: 140px;
-  scale: 0.75;
 }
 
 .realm-inner {

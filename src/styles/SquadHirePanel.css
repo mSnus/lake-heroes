@@ -18,7 +18,11 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  width: 100%;
+  width: 90%;
+  padding: 0.5rem 1rem;
+  border: solid 1px wheat;
+  background-color: #4334196b;
+  border-radius: 0.6rem;
 }
 
 .squad-hire-price-row {
@@ -39,13 +43,29 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   width: 100%;
 }
 
 .hire-row-name {
   font-size: 1.2rem;
   white-space: nowrap;
+}
+
+/* 20% narrower than a plain flex:1 fill, so the row always leaves visible
+   room for the amount label on its right instead of crowding the screen's
+   edge. */
+.hire-row .decorated-slider {
+  flex: 0 1 auto;
+  width: 80%;
+  min-width: 112px;
+}
+
+.hire-row-max-message {
+  flex: 1 1 auto;
+  font-size: 0.9rem;
+  color: wheat;
+  font-family: 'Texturina';
 }
 
 /* Hire button: wallet icon over the total price for the selected amount,
@@ -77,5 +97,6 @@
   font-size: 1rem;
   font-weight: 600;
   white-space: nowrap;
-  margin-left: 1rem;
+  color: wheat;
+  font-family: 'Texturina';
 }

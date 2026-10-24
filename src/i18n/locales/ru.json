@@ -182,8 +182,9 @@
   "squadHirePanel": {
     "hireTitleMax": "Нанять ещё (макс: {max}):",
     "hireTitlePlain": "Нанять ещё:",
-    "ridersKnightOnly": "доступно только рыцарям",
-    "hireButton": "Нанять {army}"
+    "ridersKnightOnly": "только для рыцарей",
+    "hireButton": "Нанять {army}",
+    "maxForFame": "Максимум для {fame} достигнут"
   },
   "armyDisplay": {
     "sellMilitia": "Продать пехоту",
