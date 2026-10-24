@@ -3,8 +3,6 @@ import { GameState } from '../../game/GameState';
 import { useModal, startDiceRoll } from '../../utils/diceStore';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { PlayerLabel } from '../snippets/PlayerLabel';
-import { IncomeLabel, hasIncome } from '../snippets/IncomeLabel';
-import { playerTurnIncome } from '../../game/income';
 import { gameEvent } from '../../utils/events';
 import { tJsx } from '../../i18n/tJsx';
 import { useT } from '../../i18n';
@@ -37,7 +35,6 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const unmountTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const player = gameState.activePlayer;
-  const turnIncome = playerTurnIncome(gameState, player);
   // A human standing on the fork's start tile, about to roll -- the
   // announcement stays up (no auto-hide) and grows a "Go left"/"Go right"
   // path picker instead, closing only once one of those is clicked. An AI at
@@ -113,12 +110,6 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
             playerName: <PlayerLabel player={player} />,
           })}
         </span>
-        {/* A Harvest turn collects no tile income. */}
-        {!gameState.harvest && hasIncome(turnIncome) && (
-          <span className="turn-announcement-income">
-            <IncomeLabel income={turnIncome} unitColor={player.image} unitKnight={player.isKnight} />
-          </span>
-        )}
       </DecoratedButton>
       {/* Own row below the (non-clickable) badge -- DecoratedButton renders a
           real <button>, and nesting these inside it would be invalid HTML

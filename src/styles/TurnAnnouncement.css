@@ -18,14 +18,6 @@
   cursor: default;
 }
 
-/* This turn's daily gold/unit bonus from owned tiles, under the player-name
-   line -- same small caption size as TileCard's "per turn" line. */
-.turn-announcement-income {
-  font-size: 1.2rem;
-  opacity: 0.85;
-  white-space: nowrap;
-}
-
 /* Fork path picker: shown instead of auto-hiding when a human player's turn
    starts on the fork's start tile (see TurnAnnouncement.tsx's atFork). The
    badge above stays non-interactive (.turn-announcement itself is
