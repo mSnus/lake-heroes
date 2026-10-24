@@ -89,6 +89,9 @@ const ROCK_EMOJIS = ['🪨', '🪨', '⛰️', '⛰️', '🗿'];
 // and rows step down by 3/4 of that height so hexes tessellate.
 const HEX_H_FACTOR = 1.1547; // hex box height / --bfg-cell (2/√3)
 const HEX_ROW_FACTOR = 0.866; // row vertical pitch / --bfg-cell (√3/2)
+// .bfg-grid's own `gap` (BattlefieldGrid.css) -- a real CSS grid, so every
+// column/row step is one of these wider than --bfg-cell/--bfg-row alone.
+const GRID_GAP_PX = 2;
 
 // Below this much pointer travel, a release counts as a click (select for
 // swap) rather than a drag (resolve as a drop) -- see the twin's onPointerUp.
@@ -231,8 +234,13 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const el = arenaRef.current;
     if (!el) return null;
     const rect = el.getBoundingClientRect();
-    const cell = rect.width / cols; // horizontal pitch (= --bfg-cell)
-    return { rect, cell, rowStep: cell * HEX_ROW_FACTOR, cellH: cell * HEX_H_FACTOR };
+    // Backs --bfg-cell out of the measured width (which includes cols-1
+    // gaps), then adds one gap back per step for colStep/rowStep -- see
+    // cellStyle()'s matching formula.
+    const cell = (rect.width - (cols - 1) * GRID_GAP_PX) / cols;
+    const colStep = cell + GRID_GAP_PX;
+    const rowStep = cell * HEX_ROW_FACTOR + GRID_GAP_PX;
+    return { rect, cell, colStep, rowStep, cellH: cell * HEX_H_FACTOR };
   };
 
   // The unit's final cell this turn — its placement if set, else where it
@@ -285,7 +293,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   ): DropResult | null => {
     const cr = cellAndRect();
     if (!cr) return null;
-    const { rect, cell, rowStep, cellH } = cr;
+    const { rect, cell, colStep, rowStep, cellH } = cr;
     const px = clientX - rect.left;
     const py = clientY - rect.top;
     const origin = { col: unit.col, row: unit.row };
@@ -294,7 +302,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     let target = origin;
     let bestD = Infinity;
     for (const c of cells) {
-      const cx = (c.col + colShiftFor(c.row) + 0.5) * cell;
+      const cx = (c.col + colShiftFor(c.row) + 0.5) * colStep;
       const cy = c.row * rowStep + cellH / 2;
       const d = (cx - px) ** 2 + (cy - py) ** 2;
       if (d < bestD) {
@@ -478,9 +486,12 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     return pl.attackTargetId ? 0.7 : 0;
   };
 
+  // .bfg-grid's own cells land one GRID_GAP_PX apart beyond --bfg-cell/
+  // --bfg-row (its CSS `gap`), so obstacles/units have to step by that much
+  // too to land on the same hex the grid itself rendered there.
   const cellStyle = (col: number, row: number): React.CSSProperties => ({
-    left: `calc((${col} + ${colShiftFor(row)}) * var(--bfg-cell))`,
-    top: `calc(${row} * var(--bfg-row))`,
+    left: `calc((${col} + ${colShiftFor(row)}) * (var(--bfg-cell) + ${GRID_GAP_PX}px))`,
+    top: `calc(${row} * (var(--bfg-row) + ${GRID_GAP_PX}px))`,
   });
 
   const enemiesById = new Map(enemies.map((e) => [e.id, e]));
