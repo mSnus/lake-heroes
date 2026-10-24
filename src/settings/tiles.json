@@ -302,12 +302,7 @@
       "2": 1,
       "3": 2
     },
-    "annualGoldMult": 3,
-    "annualUnits": {
-      "1": 2,
-      "2": 4,
-      "3": 6
-    }
+    "annualGoldMult": 3
   },
   {
     "id": "arquebus-tower",
@@ -327,12 +322,7 @@
       "2": 1,
       "3": 2
     },
-    "annualGoldMult": 4,
-    "annualUnits": {
-      "1": 2,
-      "2": 4,
-      "3": 6
-    }
+    "annualGoldMult": 4
   },
   {
     "id": "cannon-tower",
@@ -352,12 +342,7 @@
       "2": 1,
       "3": 2
     },
-    "annualGoldMult": 5,
-    "annualUnits": {
-      "1": 2,
-      "2": 5,
-      "3": 7
-    }
+    "annualGoldMult": 5
   },
   {
     "id": "treasure-chest",
