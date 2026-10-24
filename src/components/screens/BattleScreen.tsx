@@ -872,26 +872,28 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             manualSide={brawlManualSide ?? undefined}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
             instant={instantMove}
+            midControls={
+              escapeSide &&
+              phase === 'ongoing' && (
+                <div
+                  className={'shield-button-container' + (escapeArmed ? ' battle-escape-armed' : '')}
+                  title={t('battleScreen.escapeTitle', { units: escapeLoss })}
+                >
+                  <button className="shield-button" onClick={handleEscapeClick}>
+                    🏃
+                  </button>
+                </div>
+              )
+            }
             extraControls={
-              <>
-                {stepMode && phase === 'ongoing' && (
-                  <div className="shield-button-container" title={t('battleScreen.nextRound')}>
-                    <button className="shield-button" onClick={handleNextTurn}>
-                      ⏭️
-                    </button>
-                  </div>
-                )}
-                {escapeSide && phase === 'ongoing' && (
-                  <div
-                    className={'shield-button-container' + (escapeArmed ? ' battle-escape-armed' : '')}
-                    title={t('battleScreen.escapeTitle', { units: escapeLoss })}
-                  >
-                    <button className="shield-button" onClick={handleEscapeClick}>
-                      🏃
-                    </button>
-                  </div>
-                )}
-              </>
+              stepMode &&
+              phase === 'ongoing' && (
+                <div className="shield-button-container" title={t('battleScreen.nextRound')}>
+                  <button className="shield-button" onClick={handleNextTurn}>
+                    ⏭️
+                  </button>
+                </div>
+              )
             }
           />
         )}

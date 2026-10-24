@@ -220,7 +220,8 @@
   vertical-align: middle;
 }
 
-.bfg-unit-emoji .unit-militia {
+.bfg-unit-emoji .unit-militia,
+.bfg-unit-emoji .unit-footman {
   height: calc(var(--bfg-cell) * 0.9);
   max-height: calc(var(--bfg-cell) * 0.9);
   filter: saturate(1.1);

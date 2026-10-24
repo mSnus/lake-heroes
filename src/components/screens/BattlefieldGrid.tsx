@@ -56,8 +56,11 @@ interface BattlefieldGridProps {
    * units straight to where the twins already showed them, instead of
    * re-animating the moves the player just made. */
   instant?: boolean;
-  /** Always-visible buttons shown in the controls row next to Undo/Finish
-   * (escape, step-by-step). */
+  /** Buttons shown between Undo and Finish in the controls row (the escape
+   * button). */
+  midControls?: React.ReactNode;
+  /** Always-visible buttons shown in the controls row after Finish
+   * (step-by-step). */
   extraControls?: React.ReactNode;
 }
 
@@ -129,6 +132,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   manualSide,
   onManualComplete,
   instant = false,
+  midControls,
   extraControls,
 }) => {
   const t = useT();
@@ -720,6 +724,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
           ⬅️
         </button>
       </div>
+      {midControls}
       <div
         className={'shield-button-container' + (manualSide ? '' : ' bfg-manual-btn--hidden')}
         title={t('battleScreen.brawlGo')}

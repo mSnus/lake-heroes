@@ -14,12 +14,96 @@ const GROUP_SIZE_MIN = 2;
 const GROUP_SIZE_MAX = 4;
 // Columns at each edge kept clear: armies open and reinforce there.
 const CLEAR_EDGE_COLS = 2;
-const GENERATE_ATTEMPTS = 20;
+// Never let a placement drop the number of independent left-right routes
+// below this -- a single narrow choke point funnels every unit through one
+// cell, so there's always this many separate ways across.
+const MIN_PASSAGES = 3;
+// Alternate cells/seeds tried for one obstacle (or group) before it's
+// dropped rather than breaking the passage guarantee.
+const PLACEMENT_ATTEMPTS = 15;
 
 const randInt = (min: number, max: number, rng: () => number) => min + Math.floor(rng() * (max - min + 1));
 const key = (c: Cell) => `${c.col},${c.row}`;
 
-function tryGenerateObstacles(cols: number, rows: number, rng: () => number): BattleObstacle[] {
+/** Vertex-disjoint left-to-right routes around `obstacles`, via max-flow on
+ * a graph where each free cell is split into an in/out pair joined by a
+ * capacity-1 edge -- so a path can't reuse a cell another path already
+ * claimed. Stops as soon as `cap` is reached (all this ever needs to know
+ * is "at least MIN_PASSAGES", not the exact count). */
+function countDisjointPassages(cols: number, rows: number, obstacles: BattleObstacle[], cap: number): number {
+  const blocked = new Set(obstacles.map(key));
+  const SRC = 'S';
+  const SINK = 'T';
+  const inNode = (c: Cell) => `${key(c)}i`;
+  const outNode = (c: Cell) => `${key(c)}o`;
+
+  const adj = new Map<string, Map<string, number>>();
+  const addEdge = (a: string, b: string, capacity: number) => {
+    if (!adj.has(a)) adj.set(a, new Map());
+    if (!adj.has(b)) adj.set(b, new Map());
+    adj.get(a)!.set(b, (adj.get(a)!.get(b) ?? 0) + capacity);
+    if (!adj.get(b)!.has(a)) adj.get(b)!.set(a, 0);
+  };
+
+  for (let col = 0; col < cols; col++) {
+    for (let row = 0; row < rows; row++) {
+      const c = { col, row };
+      if (blocked.has(key(c))) continue;
+      addEdge(inNode(c), outNode(c), 1);
+      if (col === 0) addEdge(SRC, inNode(c), 1);
+      if (col === cols - 1) addEdge(outNode(c), SINK, 1);
+      for (const n of adjacentCells(col, row, cols, rows)) {
+        if (!blocked.has(key(n))) addEdge(outNode(c), inNode(n), 1);
+      }
+    }
+  }
+
+  let flow = 0;
+  while (flow < cap) {
+    const parent = new Map<string, string>();
+    const visited = new Set<string>([SRC]);
+    const queue: string[] = [SRC];
+    let reached = false;
+    while (queue.length && !reached) {
+      const u = queue.shift()!;
+      const edges = Array.from((adj.get(u) ?? new Map<string, number>()).entries());
+      for (const [v, c] of edges) {
+        if (c <= 0 || visited.has(v)) continue;
+        visited.add(v);
+        parent.set(v, u);
+        if (v === SINK) {
+          reached = true;
+          break;
+        }
+
+        queue.push(v);
+      }
+    }
+
+    if (!reached) break;
+    let v = SINK;
+    while (v !== SRC) {
+      const u = parent.get(v)!;
+      adj.get(u)!.set(v, adj.get(u)!.get(v)! - 1);
+      adj.get(v)!.set(u, adj.get(v)!.get(u)! + 1);
+      v = u;
+    }
+
+    flow++;
+  }
+
+  return flow;
+}
+
+/**
+ * Scatter obstacles before either army is placed: 1-5 grouped obstacles of
+ * 2-4 adjacent cells plus a few single cells, all clear of the starting
+ * columns at both edges. Each piece is only kept if it still leaves at
+ * least MIN_PASSAGES independent routes across the board -- otherwise it's
+ * tried again at a different spot (up to PLACEMENT_ATTEMPTS times), and
+ * dropped rather than ever narrowing the board to fewer passages.
+ */
+export function generateObstacles(cols: number, rows: number, rng: () => number = Math.random): BattleObstacle[] {
   const interior: Cell[] = [];
   for (let col = CLEAR_EDGE_COLS; col < cols - CLEAR_EDGE_COLS; col++) {
     for (let row = 0; row < rows; row++) interior.push({ col, row });
@@ -34,12 +118,25 @@ function tryGenerateObstacles(cols: number, rows: number, rng: () => number): Ba
     return free.length ? free[Math.floor(rng() * free.length)] : undefined;
   };
 
-  // Grouped: grown one random hex neighbour at a time from a seed cell.
-  const groups = randInt(OBSTACLE_GROUPS_MIN, OBSTACLE_GROUPS_MAX, rng);
-  for (let g = 0; g < groups; g++) {
-    const seed = randomFree();
-    if (!seed) break;
-    const size = randInt(GROUP_SIZE_MIN, GROUP_SIZE_MAX, rng);
+  // Tentatively commits `group`, but only keeps it if the board still has
+  // room for MIN_PASSAGES routes afterward -- otherwise undoes it.
+  const tryCommit = (group: Cell[], emoji: string): boolean => {
+    for (const c of group) {
+      taken.add(key(c));
+      obstacles.push({ ...c, emoji });
+    }
+
+    if (countDisjointPassages(cols, rows, obstacles, MIN_PASSAGES) >= MIN_PASSAGES) return true;
+
+    for (const c of group) {
+      taken.delete(key(c));
+      obstacles.pop();
+    }
+
+    return false;
+  };
+
+  const growGroup = (seed: Cell, size: number): Cell[] => {
     const group: Cell[] = [seed];
     const inGroup = new Set([key(seed)]);
     while (group.length < size) {
@@ -52,64 +149,30 @@ function tryGenerateObstacles(cols: number, rows: number, rng: () => number): Ba
       inGroup.add(key(next));
     }
 
-    if (group.length < GROUP_SIZE_MIN) continue;
-    const emoji = pickEmoji();
-    for (const c of group) {
-      taken.add(key(c));
-      obstacles.push({ ...c, emoji });
+    return group;
+  };
+
+  const groups = randInt(OBSTACLE_GROUPS_MIN, OBSTACLE_GROUPS_MAX, rng);
+  for (let g = 0; g < groups; g++) {
+    const size = randInt(GROUP_SIZE_MIN, GROUP_SIZE_MAX, rng);
+    for (let attempt = 0; attempt < PLACEMENT_ATTEMPTS; attempt++) {
+      const seed = randomFree();
+      if (!seed) break;
+      const group = growGroup(seed, size);
+      if (group.length >= GROUP_SIZE_MIN && tryCommit(group, pickEmoji())) break;
     }
   }
 
   const singles = Math.round(cols * rows * SINGLE_OBSTACLE_RATIO);
   for (let i = 0; i < singles; i++) {
-    const c = randomFree();
-    if (!c) break;
-    taken.add(key(c));
-    obstacles.push({ ...c, emoji: pickEmoji() });
+    for (let attempt = 0; attempt < PLACEMENT_ATTEMPTS; attempt++) {
+      const c = randomFree();
+      if (!c) break;
+      if (tryCommit([c], pickEmoji())) break;
+    }
   }
 
   return obstacles;
-}
-
-/** Whether the left edge can still reach the right edge around the obstacles. */
-function edgesConnected(cols: number, rows: number, obstacles: BattleObstacle[]): boolean {
-  const blocked = new Set(obstacles.map(key));
-  const queue: Cell[] = [];
-  const seen = new Set<string>();
-  for (let row = 0; row < rows; row++) {
-    const c = { col: 0, row };
-    if (!blocked.has(key(c))) {
-      queue.push(c);
-      seen.add(key(c));
-    }
-  }
-
-  while (queue.length) {
-    const c = queue.shift()!;
-    if (c.col === cols - 1) return true;
-    for (const n of adjacentCells(c.col, c.row, cols, rows)) {
-      const k = key(n);
-      if (seen.has(k) || blocked.has(k)) continue;
-      seen.add(k);
-      queue.push(n);
-    }
-  }
-
-  return false;
-}
-
-/**
- * Scatter obstacles before either army is placed: 1-5 grouped obstacles of
- * 2-4 adjacent cells plus a few single cells, all clear of the starting
- * columns at both edges, and never sealing one edge off from the other.
- */
-export function generateObstacles(cols: number, rows: number, rng: () => number = Math.random): BattleObstacle[] {
-  for (let attempt = 0; attempt < GENERATE_ATTEMPTS; attempt++) {
-    const obstacles = tryGenerateObstacles(cols, rows, rng);
-    if (edgesConnected(cols, rows, obstacles)) return obstacles;
-  }
-
-  return [];
 }
 
 /** A side's home edge column (where it opens and reinforces) and its forward step. */
