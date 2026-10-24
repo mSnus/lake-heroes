@@ -173,7 +173,8 @@
     "economySim": "Economy Simulator",
     "mapEditOn": "Map edit: ON (click a tile or player icon to adjust)",
     "mapEditOff": "Map edit: OFF",
-    "saveSlots": "Saved Games"
+    "saveSlots": "Saved Games",
+    "eruda": "Eruda (mobile devtools)"
   },
   "kingsCastle": {
     "title": "The King's Castle",

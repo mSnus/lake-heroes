@@ -27,6 +27,7 @@ import { t } from '../../i18n';
 import { isMobileLayout } from '../board/common';
 import { removeFromStorage } from '../../utils/storage';
 import SaveSlotsScreen from '../menu/SaveSlotsScreen';
+import { openEruda } from '../../utils/eruda';
 
 interface ShieldColumnProps {
   gameState: GameState;
@@ -325,6 +326,17 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   style={mapEdit.active ? { filter: 'drop-shadow(0 0 6px #ffe066)' } : undefined}
                 >
                   🗺️
+                </button>
+              </div>
+              <div className="shield-button-container" title={t('shieldColumn.eruda')}>
+                <button
+                  onClick={() => {
+                    closeMenu();
+                    openEruda();
+                  }}
+                  className="shield-button"
+                >
+                  🐛
                 </button>
               </div>
             </div>

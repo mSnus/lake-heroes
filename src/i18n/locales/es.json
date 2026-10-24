@@ -172,7 +172,8 @@
     "battleSim": "Simulador de Batallas",
     "mapEditOn": "Edición de mapa: ACTIVADA (haz clic en una casilla o icono de jugador para ajustar)",
     "mapEditOff": "Edición de mapa: DESACTIVADA",
-    "saveSlots": "Partidas Guardadas"
+    "saveSlots": "Partidas Guardadas",
+    "eruda": "Eruda (herramientas móviles)"
   },
   "kingsCastle": {
     "title": "El Castillo del Rey",

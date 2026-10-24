@@ -23,6 +23,10 @@ export default defineConfig({
         // playable offline. Assets live in public/assets and are copied verbatim
         // into the build output, where these globs pick them up.
         globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,ttf,ico,webmanifest}'],
+        // Eruda (godmode devtools, utils/eruda.ts) is dynamically imported
+        // on click so most players never fetch its ~500KB chunk -- don't
+        // undo that by precaching it for everyone anyway.
+        globIgnores: ['**/eruda-*.js'],
         // Largest asset is ~560KB; keep a comfortable cap.
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // SPA fallback so deep navigations work offline. Excludes plain files
