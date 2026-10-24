@@ -82,7 +82,7 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   if (turnIncome.gold > 0 || turnIncome.food > 0 || turnIncome.arms > 0 || turnIncome.units > 0) {
     const incomeParts: string[] = [];
     if (turnIncome.gold > 0) incomeParts.push(`${turnIncome.gold}🟡`);
-    if (turnIncome.food > 0) incomeParts.push(`${turnIncome.food}🥮`);
+    if (turnIncome.food > 0) incomeParts.push(`${turnIncome.food}🫓`);
     if (turnIncome.arms > 0) incomeParts.push(`${turnIncome.arms}⚔️`);
     if (turnIncome.units > 0) incomeParts.push(`${turnIncome.units}🧍`);
     say(

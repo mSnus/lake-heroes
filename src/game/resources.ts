@@ -77,11 +77,11 @@ export function unitGoldValue(tier: UnitTier): number {
   return c.gold + (c.food + c.arms) * HARVEST_SELL_PRICE;
 }
 
-/** "20🟡 10🥮 10⚔️", leaving out the zero parts ("0🟡" when all are zero). */
+/** "20🟡 10🫓 10⚔️", leaving out the zero parts ("0🟡" when all are zero). */
 export function formatCost(cost: Cost): string {
   const parts: string[] = [];
   if (cost.gold) parts.push(`${cost.gold}🟡`);
-  if (cost.food) parts.push(`${cost.food}🥮`);
+  if (cost.food) parts.push(`${cost.food}🫓`);
   if (cost.arms) parts.push(`${cost.arms}⚔️`);
   return parts.length ? parts.join(' ') : '0🟡';
 }

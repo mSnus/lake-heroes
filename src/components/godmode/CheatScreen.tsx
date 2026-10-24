@@ -189,7 +189,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             style={{ width: '4rem' }}
             onChange={(e) => clampedInput(e, GOLD_CAP, setFood)}
           />
-          🥮
+          🫓
           <input
             type="number"
             min={0}

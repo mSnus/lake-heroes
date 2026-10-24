@@ -9,7 +9,6 @@ import { Fame } from '../snippets/Fame';
 import { Gold } from '../snippets/Gold';
 import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
-import { CostLabel } from '../snippets/CostLabel';
 import { hireMax, unitCost } from '../../game/resources';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
@@ -135,7 +134,7 @@ interface SquadHirePanelProps {
    * player's gold itself, so the title never repeats it. */
   titleMax?: number;
   /** Food/arms cost zeroed on every row -- the Workers encounter, gold
-   * only. The price list still shows 0🥮 0⚔️ rather than hiding them, so
+   * only. The price list still shows 0🫓 0⚔️ rather than hiding them, so
    * it reads as "really free" rather than just omitted. */
   goldOnly?: boolean;
   /** See HireRow's own doc comments -- threaded straight through so a
@@ -164,16 +163,35 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   const resolvedMilitiaPrice = militiaPrice ?? ov.militiaPrice;
   const resolvedRiderPrice = riderPrice ?? ov.riderPrice;
 
-  const priceLabel = (tier: UnitTier, price: number) =>
-    goldOnly ? (
-      <>
-        <Gold amount={price} />
-        <Food amount={0} />
-        <Arms amount={0} />
-      </>
-    ) : (
-      <CostLabel cost={unitCost(tier, price)} />
-    );
+  // A part the player can't afford shows ❌ (in red) instead of its number
+  // -- not just "this one unit is pricier than you'd like", but "you
+  // cannot buy even one right now because of this specific resource".
+  const pricePart = (
+    amount: number,
+    have: number,
+    Icon: React.FC<{ amount: number | string }>
+  ): React.ReactNode => {
+    if (amount <= 0 && !goldOnly) return null;
+    if (have < amount) {
+      return (
+        <span style={{ color: '#ff4444', fontWeight: 'bold' }}>
+          <Icon amount="❌" />
+        </span>
+      );
+    }
+
+    return <Icon amount={amount} />;
+  };
+
+  const priceLabel = (tier: UnitTier, price: number) => {
+    const cost = unitCost(tier, price, goldOnly);
+    const parts = [
+      pricePart(cost.gold, player.gold, Gold),
+      pricePart(cost.food, player.food, Food),
+      pricePart(cost.arms, player.arms, Arms),
+    ].filter(Boolean);
+    return parts.length ? parts : <Gold amount={0} />;
+  };
 
   return (
     <div className="squad-hire-panel">

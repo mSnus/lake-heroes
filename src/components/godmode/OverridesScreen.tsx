@@ -73,7 +73,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.militiaDmgMin, (n) => set({ militiaDmgMin: n }))}–
           {numInput(form.militiaDmgMax, (n) => set({ militiaDmgMax: n }))} {t('overridesScreen.dmg')}
           {numInput(form.militiaPrice, (n) => set({ militiaPrice: n }), '3rem')}🟡
-          {numInput(form.militiaFood, (n) => set({ militiaFood: n }), '3rem')}🥮
+          {numInput(form.militiaFood, (n) => set({ militiaFood: n }), '3rem')}🫓
           {numInput(form.militiaArms, (n) => set({ militiaArms: n }), '3rem')}⚔️
         </div>
 
@@ -83,7 +83,7 @@ const OverridesScreen: React.FC<OverridesScreenProps> = ({ gameState, updateGame
           {numInput(form.riderDmgMin, (n) => set({ riderDmgMin: n }))}–
           {numInput(form.riderDmgMax, (n) => set({ riderDmgMax: n }))} {t('overridesScreen.dmg')}
           {numInput(form.riderPrice, (n) => set({ riderPrice: n }), '3rem')}🟡
-          {numInput(form.riderFood, (n) => set({ riderFood: n }), '3rem')}🥮
+          {numInput(form.riderFood, (n) => set({ riderFood: n }), '3rem')}🫓
           {numInput(form.riderArms, (n) => set({ riderArms: n }), '3rem')}⚔️
         </div>
 
