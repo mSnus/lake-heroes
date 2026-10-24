@@ -40,6 +40,8 @@ export interface ScreenConfig {
   fade?: boolean;
   title?: string;
   spriteImage?: string;
+  /** See SpriteCircleIcon's own prop -- skips its gilded ring overlay. */
+  spriteNoRing?: boolean;
   screenType?: string;
   encounter?: {
     playerName: string;

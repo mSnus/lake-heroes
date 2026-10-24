@@ -119,6 +119,9 @@ export function checkCaravanEncounter(
     screenType: 'caravan',
     background: 'assets/screens/caravan.jpg',
     spriteImage: getPlayerImageSrc(player.image, player.isKnight),
+    // The caravan art is busy enough without SpriteCircleIcon's gilded ring
+    // on top of the sprite.
+    spriteNoRing: true,
     caravanDefence: defendingUnits,
     caravanDefenceRiders: defendingRiders,
     caravanPrize: prize,

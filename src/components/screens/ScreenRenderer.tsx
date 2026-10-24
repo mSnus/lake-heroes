@@ -68,7 +68,9 @@ export const ScreenRenderer: React.FC<ScreenRendererProps> = ({ gameState }) => 
       >
         {config.fade && <Fade />}
         {config.title && <div className="text-title">{config.title.trim()}</div>}
-        {config.spriteImage && <SpriteCircleIcon src={config.spriteImage} />}
+        {config.spriteImage && (
+          <SpriteCircleIcon src={config.spriteImage} noRing={config.spriteNoRing} />
+        )}
         {config.encounter && (
           <div className="text-message">
             <PlayerLabel

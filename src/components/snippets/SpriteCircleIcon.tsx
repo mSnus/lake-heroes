@@ -5,6 +5,9 @@ interface SpriteCircleIconProps {
   src: string;
   size?: string;
   style?: React.CSSProperties;
+  /** Skips the gilded ring overlay -- for a screen whose own art already
+   * frames the sprite (e.g. the caravan screen's circle backdrop). */
+  noRing?: boolean;
 }
 
 /**
@@ -15,6 +18,7 @@ export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({
   src,
   size = isMobileLayout() ? '30vw' : '6rem',
   style = null,
+  noRing = false,
 }) => (
   <div
     style={{
@@ -24,8 +28,8 @@ export const SpriteCircleIcon: React.FC<SpriteCircleIconProps> = ({
       marginBottom: '16px',
       flexShrink: 0,
       zIndex: 6000,
-      backgroundImage: `url('assets/sprites/ring.png'), url(${src})`,
-      backgroundBlendMode: 'luminosity',
+      backgroundImage: noRing ? `url(${src})` : `url('assets/sprites/ring.png'), url(${src})`,
+      backgroundBlendMode: noRing ? 'normal' : 'luminosity',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       ...style,
