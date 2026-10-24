@@ -20,7 +20,7 @@ export function canPillage(player: Player): boolean {
 
 const formatIncome = (income: TileIncome): string => {
   if (income.gold) return `${income.gold}🟡`;
-  if (income.food) return `${income.food}🍞`;
+  if (income.food) return `${income.food}🥮`;
   if (income.arms) return `${income.arms}⚔️`;
   if (income.units) return `${income.units}🧍`;
   return '0🟡';

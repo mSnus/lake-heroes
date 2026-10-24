@@ -7,7 +7,7 @@ interface FoodProps {
 }
 
 export const Food: React.FC<FoodProps> = ({ amount, where = 'after' }) => {
-  const icon = <span className="resource-icon">🍞</span>;
+  const icon = <span className="resource-icon">🥮</span>;
   return (
     <div className="food-inline">
       {where === 'before' && icon}

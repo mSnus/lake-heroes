@@ -117,7 +117,7 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
                   {delta(income.gold)}
                 </span>
                 <span>
-                  {player.food}🍞{delta(income.food)}
+                  {player.food}🥮{delta(income.food)}
                 </span>
                 <span>
                   {player.arms}⚔️{delta(income.arms)}

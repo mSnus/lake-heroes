@@ -222,8 +222,8 @@
     "claimIt": "Claim it!",
     "pillage": "Pillage",
     "pillageGain": "{playerName} pillaged {tileName} and gained {reward}",
-    "pillageSoldiersLost": "{playerName} pillaged {tileName} but lost {amount}🧍",
-    "pillageFameLost": "{playerName} pillaged {tileName} in desperation, losing {amount}🏆",
+    "pillageSoldiersLost": "{playerName} failed to pillage {tileName}, {amount}🧍 lost",
+    "pillageFameLost": "{playerName} failed to pillage {tileName}, {amount}🏆 lost",
     "razed": "razed",
     "upgradable": "upgradable",
     "yieldToKing": "yield",
@@ -385,10 +385,10 @@
       "step5": "Every player gets a Yearly Bonus when the shared calendar year ends — or land exactly on 🏰 King's Castle for the same reward as King's Grace, right away"
     },
     "goldUnits": {
-      "title": "Resources 🟡🍞⚔️ and units 🧍",
-      "item1": "Gold 🟡 buys tiles and upgrades. Food 🍞 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
-      "item2": "Owned tiles pay at the start of each of your turns: Traders 🟡, Fields and Farms 🍞, Camps and Mills ⚔️, Towers 🧍. Everyone also collects a Yearly Bonus when the calendar year ends — land exactly on the King's Castle for the same reward as King's Grace, right away.",
-      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn of its own when nobody moves: see the year's income, then buy 🍞/⚔️ for {buy}🟡 or sell them for {sell}🟡 each.",
+      "title": "Resources 🟡🥮⚔️ and units 🧍",
+      "item1": "Gold 🟡 buys tiles and upgrades. Food 🥮 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
+      "item2": "Owned tiles pay at the start of each of your turns: Traders 🟡, Fields and Farms 🥮, Camps and Mills ⚔️, Towers 🧍. Everyone also collects a Yearly Bonus when the calendar year ends — land exactly on the King's Castle for the same reward as King's Grace, right away.",
+      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn of its own when nobody moves: see the year's income, then buy 🥮/⚔️ for {buy}🟡 or sell them for {sell}🟡 each.",
       "item3": "Fame 🏆 limits your army. 🧍 militia: {militiaCaps}. 🐎 riders (Knights only): {riderCaps}",
       "item3At": "{cap} at {fame}🏆",
       "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
@@ -1228,7 +1228,7 @@
     "sellMode": "Sell, {price}🟡 each",
     "trade": "Trade",
     "finish": "🌾 Finish harvest",
-    "botSold": "{playerName} sold {food}🍞 and {arms}⚔️ at the Harvest"
+    "botSold": "{playerName} sold {food}🥮 and {arms}⚔️ at the Harvest"
   },
   "armyScreen": {
     "title": "Warriors Company",

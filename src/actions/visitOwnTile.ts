@@ -6,7 +6,7 @@ import { setGameMessage } from '../utils/gameMessage';
 import { VISIT_GOLD_MULT, VISIT_UNITS_SHARE } from '../game/constants';
 import { t } from '../i18n';
 
-const RESOURCE_EMOJI = { gold: '🟡', food: '🍞', arms: '⚔️' };
+const RESOURCE_EMOJI = { gold: '🟡', food: '🥮', arms: '⚔️' };
 export function handleVisitOwnTile(
   board: GameState | null,
   updateGameState: (board: GameState) => void

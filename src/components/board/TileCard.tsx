@@ -697,7 +697,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   gap: '0.1rem',
                 }}
               >
-                <div>🏴‍☠️ {t('tileCard.pillage')}</div>
+                <div>⚒️ {t('tileCard.pillage')}</div>
               </div>
             </DecoratedButton>
           )}

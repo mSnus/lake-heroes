@@ -135,7 +135,7 @@ interface SquadHirePanelProps {
    * player's gold itself, so the title never repeats it. */
   titleMax?: number;
   /** Food/arms cost zeroed on every row -- the Workers encounter, gold
-   * only. The price list still shows 0🍞 0⚔️ rather than hiding them, so
+   * only. The price list still shows 0🥮 0⚔️ rather than hiding them, so
    * it reads as "really free" rather than just omitted. */
   goldOnly?: boolean;
   /** See HireRow's own doc comments -- threaded straight through so a

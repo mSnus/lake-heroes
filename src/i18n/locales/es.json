@@ -221,8 +221,8 @@
     "claimIt": "¡Reclamarla!",
     "pillage": "Saquear",
     "pillageGain": "{playerName} saqueó {tileName} y ganó {reward}",
-    "pillageSoldiersLost": "{playerName} saqueó {tileName} pero perdió {amount}🧍",
-    "pillageFameLost": "{playerName} saqueó {tileName} con desesperación, perdiendo {amount}🏆",
+    "pillageSoldiersLost": "{playerName} no logró saquear {tileName}, {amount}🧍 perdidos",
+    "pillageFameLost": "{playerName} no logró saquear {tileName}, {amount}🏆 perdido",
     "razed": "arrasada",
     "upgradable": "mejorable",
     "yieldToKing": "ceder",
@@ -383,10 +383,10 @@
       "step5": "Cada jugador recibe una Bonificación Anual cuando termina el año compartido del calendario — o cae exactamente en el 🏰 Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante"
     },
     "goldUnits": {
-      "title": "Recursos 🟡🍞⚔️ y unidades 🧍",
-      "item1": "El oro 🟡 compra casillas y mejoras. La comida 🍞 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
-      "item2": "Las casillas que posees pagan al inicio de cada uno de tus turnos: Comerciantes 🟡, Campos y Granjas 🍞, Campamentos y Molinos ⚔️, Torres 🧍. Todos reciben también una Bonificación Anual cuando termina el año — cae exactamente en el Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante.",
-      "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno propio en el que nadie se mueve: mira los ingresos del año y compra 🍞/⚔️ a {buy}🟡 o véndelos a {sell}🟡 cada uno.",
+      "title": "Recursos 🟡🥮⚔️ y unidades 🧍",
+      "item1": "El oro 🟡 compra casillas y mejoras. La comida 🥮 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
+      "item2": "Las casillas que posees pagan al inicio de cada uno de tus turnos: Comerciantes 🟡, Campos y Granjas 🥮, Campamentos y Molinos ⚔️, Torres 🧍. Todos reciben también una Bonificación Anual cuando termina el año — cae exactamente en el Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante.",
+      "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno propio en el que nadie se mueve: mira los ingresos del año y compra 🥮/⚔️ a {buy}🟡 o véndelos a {sell}🟡 cada uno.",
       "item3": "La fama 🏆 limita tu ejército. 🧍 milicia: {militiaCaps}. 🐎 jinetes (solo Caballeros): {riderCaps}",
       "item3At": "{cap} con {fame}🏆",
       "item4": "Cuando la fama alcanza <strong>{knightFame}🏆</strong>, el héroe se convierte en Caballero y puede contratar unidades de Jinetes 🐎, más caras pero más poderosas, en el Castillo del Rey.",
@@ -1201,7 +1201,7 @@
     "sellMode": "Vender, {price}🟡 cada uno",
     "trade": "Comerciar",
     "finish": "🌾 Terminar la cosecha",
-    "botSold": "{playerName} vendió {food}🍞 y {arms}⚔️ en la Cosecha"
+    "botSold": "{playerName} vendió {food}🥮 y {arms}⚔️ en la Cosecha"
   },
   "armyScreen": {
     "title": "Compañía de Guerreros",
