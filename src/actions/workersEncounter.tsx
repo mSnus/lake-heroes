@@ -29,8 +29,8 @@ const LONG_TERM_ZERO_MULT = 2;
  * outplayed into irrelevance. Also just another source of units generally.
  *
  * Unlike caravans/ambushes this never fights -- it's a pure hire dialogue
- * (same mechanics and prices as the Tavern's), so there's nothing to force
- * a kind of, only whether it fires at all.
+ * at the Tavern's prices, but gold only (no food/arms), so there's nothing
+ * to force a kind of, only whether it fires at all.
  */
 export function checkWorkersEncounter(
   board: GameState,
@@ -77,7 +77,7 @@ export function checkWorkersEncounter(
     for (const step of steps) {
       if (step.kind === 'sell') sellUnits(board, step.count, updateGameState, step.tier);
       else if (step.kind === 'upgrade') upgradeSquad(board, step.count, updateGameState, tavernUpgradePricePerUnit());
-      else buyUnits(board, step.count, updateGameState, step.tier, step.tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice());
+      else buyUnits(board, step.count, updateGameState, step.tier, step.tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice(), true);
     }
 
     setEndTurn();
@@ -91,7 +91,7 @@ export function checkWorkersEncounter(
     content: React.createElement(WorkersModal, {
       gameState: board,
       onBuy: (amount, tier) => {
-        buyUnits(board, amount, updateGameState, tier, tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice());
+        buyUnits(board, amount, updateGameState, tier, tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice(), true);
       },
       onSell: (tier, amount) => {
         sellUnits(board, amount, updateGameState, tier);

@@ -6,6 +6,9 @@ import { DecoratedSlider } from './DecoratedSlider';
 import { Militia } from '../snippets/Militia';
 import { Rider } from '../snippets/Rider';
 import { Fame } from '../snippets/Fame';
+import { Gold } from '../snippets/Gold';
+import { Food } from '../snippets/Food';
+import { Arms } from '../snippets/Arms';
 import { CostLabel } from '../snippets/CostLabel';
 import { hireMax, unitCost } from '../../game/resources';
 import { useT } from '../../i18n';
@@ -16,6 +19,8 @@ interface HireRowProps {
   player: Player;
   tier: UnitTier;
   unitPrice: number;
+  /** Food/arms cost zeroed -- the Workers encounter, gold only. */
+  goldOnly?: boolean;
   onBuy: (amount: number, tier: UnitTier) => void;
   /** Mirrors this row's live (pre-commit) slider amount up to the parent, so
    * a hire button elsewhere on the screen can reflect it (e.g. turn into
@@ -33,12 +38,13 @@ const HireRow: React.FC<HireRowProps> = ({
   player,
   tier,
   unitPrice,
+  goldOnly,
   onBuy,
   onAmountChange,
   registerBuy,
 }) => {
   const UnitIcon = tier === 'riders' ? Rider : Militia;
-  const maxAmount = hireMax(player, tier, unitPrice);
+  const maxAmount = hireMax(player, tier, unitPrice, goldOnly);
   // Distinct from maxAmount hitting 0 for lack of gold/food/arms -- this is
   // specifically "there's nowhere left to put one", the fame-driven army
   // cap itself, which a slider can't do anything about.
@@ -128,6 +134,10 @@ interface SquadHirePanelProps {
    * headcount all folded into one number). Every hire dialogue shows the
    * player's gold itself, so the title never repeats it. */
   titleMax?: number;
+  /** Food/arms cost zeroed on every row -- the Workers encounter, gold
+   * only. The price list still shows 0🍞 0⚔️ rather than hiding them, so
+   * it reads as "really free" rather than just omitted. */
+  goldOnly?: boolean;
   /** See HireRow's own doc comments -- threaded straight through so a
    * footer button can mirror/drive the sliders (see useHireFooter). */
   onAmountChange?: (tier: UnitTier, amount: number) => void;
@@ -145,6 +155,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   militiaPrice,
   riderPrice,
   titleMax,
+  goldOnly,
   onAmountChange,
   registerBuy,
 }) => {
@@ -153,19 +164,30 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   const resolvedMilitiaPrice = militiaPrice ?? ov.militiaPrice;
   const resolvedRiderPrice = riderPrice ?? ov.riderPrice;
 
+  const priceLabel = (tier: UnitTier, price: number) =>
+    goldOnly ? (
+      <>
+        <Gold amount={price} />
+        <Food amount={0} />
+        <Arms amount={0} />
+      </>
+    ) : (
+      <CostLabel cost={unitCost(tier, price)} />
+    );
+
   return (
     <div className="squad-hire-panel">
       <div className="squad-hire-prices">
         {showMilitia && (
           <div className="squad-hire-price-row">
             <Militia amount="" color={player.image} knight={player.isKnight} />
-            <CostLabel cost={unitCost('militia', resolvedMilitiaPrice)} />
+            {priceLabel('militia', resolvedMilitiaPrice)}
           </div>
         )}
         <div className="squad-hire-price-row">
           <Rider amount="" color={player.image} />
           {showRiders ? (
-            <CostLabel cost={unitCost('riders', resolvedRiderPrice)} />
+            priceLabel('riders', resolvedRiderPrice)
           ) : (
             <span className="squad-hire-price-note">{t('squadHirePanel.ridersKnightOnly')}</span>
           )}
@@ -182,6 +204,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
           player={player}
           tier="militia"
           unitPrice={resolvedMilitiaPrice}
+          goldOnly={goldOnly}
           onBuy={onBuy}
           onAmountChange={onAmountChange}
           registerBuy={registerBuy}
@@ -192,6 +215,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
           player={player}
           tier="riders"
           unitPrice={resolvedRiderPrice}
+          goldOnly={goldOnly}
           onAmountChange={onAmountChange}
           registerBuy={registerBuy}
           onBuy={onBuy}

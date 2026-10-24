@@ -13,12 +13,15 @@ export interface Cost {
 }
 
 /** One unit of `tier` at the King's Castle -- `goldOverride` replaces only
- * the gold part (the Tavern's premium, see tavern.ts). */
-export function unitCost(tier: UnitTier, goldOverride?: number): Cost {
+ * the gold part (the Tavern's premium, see tavern.ts). `goldOnly` zeroes the
+ * food/arms parts (the Workers encounter, which only ever asks for gold). */
+export function unitCost(tier: UnitTier, goldOverride?: number, goldOnly?: boolean): Cost {
   const ov = getOverrides();
-  return tier === 'riders'
-    ? { gold: goldOverride ?? ov.riderPrice, food: ov.riderFood, arms: ov.riderArms }
-    : { gold: goldOverride ?? ov.militiaPrice, food: ov.militiaFood, arms: ov.militiaArms };
+  const cost =
+    tier === 'riders'
+      ? { gold: goldOverride ?? ov.riderPrice, food: ov.riderFood, arms: ov.riderArms }
+      : { gold: goldOverride ?? ov.militiaPrice, food: ov.militiaFood, arms: ov.militiaArms };
+  return goldOnly ? { ...cost, food: 0, arms: 0 } : cost;
 }
 
 /** Turning one militia into a rider: the difference between the two
@@ -84,8 +87,8 @@ export function formatCost(cost: Cost): string {
 }
 
 /** Most units of `tier` the player can hire now: resources and army room. */
-export function hireMax(player: Player, tier: UnitTier, goldOverride?: number): number {
-  return Math.min(maxAffordable(player, unitCost(tier, goldOverride)), player.armyRoom(tier));
+export function hireMax(player: Player, tier: UnitTier, goldOverride?: number, goldOnly?: boolean): number {
+  return Math.min(maxAffordable(player, unitCost(tier, goldOverride, goldOnly)), player.armyRoom(tier));
 }
 
 /** Buy (positive `amount`) or sell (negative) food or arms for gold at the

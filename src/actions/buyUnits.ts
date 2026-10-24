@@ -13,12 +13,14 @@ export function buyUnits(
   tier: UnitTier = 'militia',
   // Overrides the gold part of the price -- the Tavern charges a premium
   // over the King's Castle's own (see tavern.ts).
-  priceOverride?: number
+  priceOverride?: number,
+  // Zeroes the food/arms cost -- the Workers encounter, gold only.
+  goldOnly?: boolean
 ) {
   if (!board) return;
 
   const player = board.activePlayer;
-  const unit = unitCost(tier, priceOverride);
+  const unit = unitCost(tier, priceOverride, goldOnly);
 
   if (canPay(player, scaleCost(unit, amount))) {
     const gained = tier === 'riders' ? player.gainRiders(amount) : player.gainMilitia(amount);

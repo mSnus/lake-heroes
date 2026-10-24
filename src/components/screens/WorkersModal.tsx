@@ -29,10 +29,10 @@ interface WorkersModalProps {
 }
 
 /**
- * Workers' hire dialogue -- same mechanics and prices as the Tavern's (see
- * actions/tavern.ts's tavernMilitiaPrice/tavernRiderPrice), just reached as
- * a random encounter instead of a tile. The footer button hires whatever the
- * sliders show (see useHireFooter), or passes by when they're at 0.
+ * Workers' hire dialogue -- the Tavern's prices (see actions/tavern.ts's
+ * tavernMilitiaPrice/tavernRiderPrice), but gold only, no food/arms. The
+ * footer button hires whatever the sliders show (see useHireFooter), or
+ * passes by when they're at 0.
  */
 const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, onUpgrade, onSkip }) => {
   const t = useT();
@@ -64,9 +64,9 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
 
   const canRecruitRiders = player.isKnight;
 
-  const militiaMax = hireMax(player, 'militia', militiaPrice);
+  const militiaMax = hireMax(player, 'militia', militiaPrice, true);
   const ridersMax = canRecruitRiders
-    ? hireMax(player, 'riders', riderPrice)
+    ? hireMax(player, 'riders', riderPrice, true)
     : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
@@ -75,8 +75,8 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
   const footer = useHireFooter(!atMax);
   const pendingMilitia = footer.amountOf('militia');
   const pendingRiders = footer.amountOf('riders');
-  const pendingMilitiaCost = scaleCost(unitCost('militia', militiaPrice), pendingMilitia);
-  const pendingRidersCost = scaleCost(unitCost('riders', riderPrice), pendingRiders);
+  const pendingMilitiaCost = scaleCost(unitCost('militia', militiaPrice, true), pendingMilitia);
+  const pendingRidersCost = scaleCost(unitCost('riders', riderPrice, true), pendingRiders);
   const bothAffordable = canPay(player, {
     gold: pendingMilitiaCost.gold + pendingRidersCost.gold,
     food: pendingMilitiaCost.food + pendingRidersCost.food,
@@ -169,6 +169,7 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
               onBuy={handleBuy}
               militiaPrice={militiaPrice}
               riderPrice={riderPrice}
+              goldOnly
               onAmountChange={footer.onAmountChange}
               registerBuy={footer.registerBuy}
             />
