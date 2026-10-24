@@ -28,6 +28,12 @@ interface ArmyDisplayProps {
   wallet?: { gold: number; food: number; arms: number };
   /** Overrides the per-unit upgrade price (the Tavern's premium). */
   upgradePricePerUnit?: number;
+  /** Not-yet-bought units dialled into a hire slider elsewhere on the same
+   * screen -- added to the badge's shown count (not to `militia`/`riders`
+   * themselves, which stay the real, actually-ownable totals every sell/
+   * upgrade max here is computed from). */
+  pendingMilitia?: number;
+  pendingRiders?: number;
   className?: string;
 }
 
@@ -44,6 +50,8 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
   canUpgradeToRiders = false,
   wallet = { gold: 0, food: 0, arms: 0 },
   upgradePricePerUnit,
+  pendingMilitia = 0,
+  pendingRiders = 0,
   className,
 }) => {
   const t = useT();
@@ -90,7 +98,8 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
 
   const badge = (tier: UnitTier) => {
     const count = tier === 'riders' ? riders : militia;
-    const label = `${count}`;
+    const pending = tier === 'riders' ? pendingRiders : pendingMilitia;
+    const label = `${count + pending}`;
     const labelMax = `/ ${formatArmyCap(capacity[tier])}`;
 
     return (

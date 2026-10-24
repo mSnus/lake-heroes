@@ -13,6 +13,28 @@
   font-family: 'Texturina';
 }
 
+.squad-hire-prices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.squad-hire-price-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: wheat;
+  font-family: 'Texturina';
+}
+
+.squad-hire-price-note {
+  font-style: italic;
+  opacity: 0.8;
+}
+
 .hire-row {
   display: flex;
   flex-direction: row;

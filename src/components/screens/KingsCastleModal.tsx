@@ -1,16 +1,17 @@
-import { hireMax } from '../../game/resources';
+import { canPay, hireMax, scaleCost, unitCost } from '../../game/resources';
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
 import GameModal from './GameModal';
-import { getOverrides } from '../../utils/overridesStore';
 import { UnitTier } from '../../game/army';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
+import { useHireFooter } from '../ui/useHireFooter';
 import { Gold } from '../snippets/Gold';
 import { KingsContract } from '../../game/kingsContracts';
+import { formatArmy } from '../../utils/formatArmy';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
@@ -45,6 +46,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   const [, forceRerender] = useState(0);
   const handleBuy = (amount: number, tier: UnitTier) => {
     onBuy(amount, tier);
+    footer.clear(tier);
     forceRerender((v) => v + 1);
   };
 
@@ -75,6 +77,34 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   // Recruiting can also be blocked purely by empty pockets — only mention
   // a full army when no recruitable tier has room left.
   const armyFull = player.armyRoom('militia') <= 0 && (!canRecruitRiders || player.armyRoom('riders') <= 0);
+
+  // Both tiers' dialled-in amounts at once when the gold covers them
+  // together; otherwise militia first (same priority order the rows render
+  // in), matching WorkersModal's footer.
+  const footer = useHireFooter(!atMax);
+  const pendingMilitia = footer.amountOf('militia');
+  const pendingRiders = footer.amountOf('riders');
+  const pendingMilitiaCost = scaleCost(unitCost('militia'), pendingMilitia);
+  const pendingRidersCost = scaleCost(unitCost('riders'), pendingRiders);
+  const bothAffordable = canPay(player, {
+    gold: pendingMilitiaCost.gold + pendingRidersCost.gold,
+    food: pendingMilitiaCost.food + pendingRidersCost.food,
+    arms: pendingMilitiaCost.arms + pendingRidersCost.arms,
+  });
+  const toHire = {
+    militia: pendingMilitia,
+    riders: bothAffordable || pendingMilitia === 0 ? pendingRiders : 0,
+  };
+
+  const hirePending = () => {
+    if (toHire.militia > 0) footer.buy('militia');
+    if (toHire.riders > 0) footer.buy('riders');
+  };
+
+  const isHiring = toHire.militia + toHire.riders > 0;
+  const footerLabel = isHiring
+    ? t('squadHirePanel.hireButton', { army: formatArmy(toHire.militia, toHire.riders) })
+    : t('kingsCastle.iAmTheGreatest');
 
   useEffect(() => {
     if (!player.isComputer) return;
@@ -125,6 +155,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
         <ArmyDisplay
           militia={player.militia}
           riders={player.riders}
+          pendingMilitia={pendingMilitia}
+          pendingRiders={pendingRiders}
           capacity={player.armyCapacity}
           showRiders={player.isKnight || player.riders > 0}
           onSell={handleSell}
@@ -139,14 +171,20 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
             {t(armyFull ? 'kingsCastle.cannotRecruit' : 'kingsCastle.cannotRecruitNoMoney')}
           </h3>
         ) : (
-          <SquadHirePanel player={player} showRiders={canRecruitRiders} onBuy={handleBuy} />
+          <SquadHirePanel
+            player={player}
+            showRiders={canRecruitRiders}
+            onBuy={handleBuy}
+            onAmountChange={footer.onAmountChange}
+            registerBuy={footer.registerBuy}
+          />
         )}
 
         <div
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
         >
-          <DecoratedButton onClick={onSkip}>{t('kingsCastle.iAmTheGreatest')}</DecoratedButton>
+          <DecoratedButton onClick={isHiring ? hirePending : onSkip}>{footerLabel}</DecoratedButton>
         </div>
       </div>
     </GameModal>

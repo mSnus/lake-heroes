@@ -5,7 +5,8 @@ import { getOverrides } from '../../utils/overridesStore';
 import { DecoratedSlider } from './DecoratedSlider';
 import { Militia } from '../snippets/Militia';
 import { Rider } from '../snippets/Rider';
-import { hireMax } from '../../game/resources';
+import { CostLabel } from '../snippets/CostLabel';
+import { hireMax, unitCost } from '../../game/resources';
 import { useT } from '../../i18n';
 import '../../styles/SquadHirePanel.css';
 
@@ -14,14 +15,15 @@ interface HireRowProps {
   tier: UnitTier;
   unitPrice: number;
   onBuy: (amount: number, tier: UnitTier) => void;
-  /** Tavern only: mirrors this row's live (pre-commit) slider amount up to
-   * the parent, so a footer button elsewhere can reflect it (e.g. turn into
-   * "Hire {amount}"). */
+  /** Mirrors this row's live (pre-commit) slider amount up to the parent, so
+   * a hire button elsewhere on the screen can reflect it (e.g. turn into
+   * "Hire {amount}"). There's no buy control on the row itself -- every
+   * caller needs this (and registerBuy) to actually let a purchase happen. */
   onAmountChange?: (tier: UnitTier, amount: number) => void;
-  /** Tavern only: hands the parent a way to trigger this row's own buy
-   * button remotely -- stored in a ref there (not state), since it's a
-   * closure that changes every render and would never settle if compared
-   * for a state update. */
+  /** Hands the parent a way to buy this row's dialled-in amount -- stored in
+   * a ref there (not state), since it's a closure that changes every render
+   * and would never settle if compared for a state update. The row has no
+   * buy button of its own, so this is the only way a hire actually happens. */
   registerBuy?: (tier: UnitTier, buy: () => void) => void;
 }
 
@@ -49,12 +51,16 @@ const HireRow: React.FC<HireRowProps> = ({
   }, [maxAmount]);
 
   // Live value while the slider is being dragged, before it's actually
-  // committed on release -- null when not dragging, so the price/labels
-  // fall back to the real `amount`.
+  // committed on release -- null when not dragging, so the resources/labels
+  // elsewhere fall back to the real (committed) `amount`.
   const [previewAmount, setPreviewAmount] = useState<number | null>(null);
   const displayedAmount = previewAmount ?? amount;
 
+  // Dragging only picks the amount -- there's no per-row buy control
+  // anymore, so the only way it's actually bought is the hire button
+  // elsewhere on the screen (see registerBuy below).
   const handleBuy = () => {
+    if (displayedAmount <= 0) return;
     onBuy(displayedAmount, tier);
     setAmount(0);
     setPreviewAmount(null);
@@ -70,12 +76,6 @@ const HireRow: React.FC<HireRowProps> = ({
   useEffect(() => {
     registerBuy?.(tier, handleBuy);
   });
-
-  // Keyed off the displayed (live) amount, not the committed one, so the
-  // button enables and prices itself as the thumb moves rather than waiting
-  // for release -- it already shows the live total, so gating it on the
-  // committed value made the two disagree mid-drag.
-  const canBuy = displayedAmount > 0 && displayedAmount <= maxAmount;
 
   return (
     <div className="hire-row">
@@ -93,11 +93,6 @@ const HireRow: React.FC<HireRowProps> = ({
         }}
       />
       <div className="hire-row-amount-label">{displayedAmount}</div>
-      <div className={'shield-button-container' + (canBuy ? '' : ' shield-button-container--disabled')}>
-        <button className="shield-button hire-submit" onClick={handleBuy} disabled={!canBuy}>
-          <span className="hire-submit-icon">👛</span>
-        </button>
-      </div>
     </div>
   );
 };
@@ -141,9 +136,28 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
 }) => {
   const t = useT();
   const ov = getOverrides();
+  const resolvedMilitiaPrice = militiaPrice ?? ov.militiaPrice;
+  const resolvedRiderPrice = riderPrice ?? ov.riderPrice;
 
   return (
     <div className="squad-hire-panel">
+      <div className="squad-hire-prices">
+        {showMilitia && (
+          <div className="squad-hire-price-row">
+            <Militia amount="" color={player.image} />
+            <CostLabel cost={unitCost('militia', resolvedMilitiaPrice)} />
+          </div>
+        )}
+        <div className="squad-hire-price-row">
+          <Rider amount="" color={player.image} />
+          {showRiders ? (
+            <CostLabel cost={unitCost('riders', resolvedRiderPrice)} />
+          ) : (
+            <span className="squad-hire-price-note">{t('squadHirePanel.ridersKnightOnly')}</span>
+          )}
+        </div>
+      </div>
+
       <div className="squad-hire-panel-title">
         {titleMax !== undefined
           ? t('squadHirePanel.hireTitleMax', { max: titleMax })
@@ -153,7 +167,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
         <HireRow
           player={player}
           tier="militia"
-          unitPrice={militiaPrice ?? ov.militiaPrice}
+          unitPrice={resolvedMilitiaPrice}
           onBuy={onBuy}
           onAmountChange={onAmountChange}
           registerBuy={registerBuy}
@@ -163,7 +177,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
         <HireRow
           player={player}
           tier="riders"
-          unitPrice={riderPrice ?? ov.riderPrice}
+          unitPrice={resolvedRiderPrice}
           onAmountChange={onAmountChange}
           registerBuy={registerBuy}
           onBuy={onBuy}

@@ -141,6 +141,8 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
       <ArmyDisplay
         militia={player.militia}
         riders={player.riders}
+        pendingMilitia={pendingMilitia}
+        pendingRiders={pendingRiders}
         capacity={player.armyCapacity}
         showRiders={player.isKnight || player.riders > 0}
         onSell={handleSellSquad}

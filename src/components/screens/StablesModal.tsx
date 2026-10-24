@@ -7,9 +7,11 @@ import { UnitTier } from '../../game/army';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
+import { useHireFooter } from '../ui/useHireFooter';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
 import { Fame } from '../snippets/Fame';
+import { formatArmy } from '../../utils/formatArmy';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
@@ -41,6 +43,7 @@ const StablesModal: React.FC<StablesModalProps> = ({
   const [, forceRerender] = useState(0);
   const handleBuy = (amount: number, tier: UnitTier) => {
     onBuy(amount, tier);
+    footer.clear(tier);
     forceRerender((v) => v + 1);
   };
 
@@ -60,6 +63,13 @@ const StablesModal: React.FC<StablesModalProps> = ({
     ? hireMax(player, 'riders', riderPrice)
     : 0;
   const atMax = ridersMax <= 0;
+
+  const footer = useHireFooter(canRecruitRiders && !atMax);
+  const pendingRiders = footer.amountOf('riders');
+  const isHiring = pendingRiders > 0;
+  const footerLabel = isHiring
+    ? t('squadHirePanel.hireButton', { army: formatArmy(0, pendingRiders) })
+    : t('stables.leave');
 
   useEffect(() => {
     if (!player.isComputer) return;
@@ -109,6 +119,7 @@ const StablesModal: React.FC<StablesModalProps> = ({
         <ArmyDisplay
           militia={player.militia}
           riders={player.riders}
+          pendingRiders={pendingRiders}
           capacity={player.armyCapacity}
           showRiders={player.isKnight || player.riders > 0}
           onSell={handleSell}
@@ -132,6 +143,8 @@ const StablesModal: React.FC<StablesModalProps> = ({
             onBuy={handleBuy}
             militiaPrice={militiaPrice}
             riderPrice={riderPrice}
+            onAmountChange={footer.onAmountChange}
+            registerBuy={footer.registerBuy}
           />
           ))}
 
@@ -139,7 +152,9 @@ const StablesModal: React.FC<StablesModalProps> = ({
           className="button-group"
           style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
         >
-          <DecoratedButton onClick={onSkip}>{t('stables.leave')}</DecoratedButton>
+          <DecoratedButton onClick={isHiring ? () => footer.buy('riders') : onSkip}>
+            {footerLabel}
+          </DecoratedButton>
         </div>
       </div>
     </GameModal>

@@ -181,7 +181,9 @@
   },
   "squadHirePanel": {
     "hireTitleMax": "Hire more (max: {max}):",
-    "hireTitlePlain": "Hire more:"
+    "hireTitlePlain": "Hire more:",
+    "ridersKnightOnly": "only available for Knights",
+    "hireButton": "Hire {army}"
   },
   "armyDisplay": {
     "sellMilitia": "Sell militia",
