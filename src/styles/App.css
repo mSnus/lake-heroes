@@ -164,10 +164,24 @@ body.screen-open {
 }
 
 @media screen and (max-width: 768px) {
+  /* The map stays put and only .side-pane scrolls, instead of the whole
+     page scrolling the board out of view to reach it. */
+  #mainContainer {
+    height: 100vh;
+    overflow: hidden;
+  }
+
   .board-section {
     width: 100vw;
     aspect-ratio: var(--board-aspect-ratio);
     height: auto;
+    flex-shrink: 0;
+  }
+
+  .side-pane {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
   }
 }
 
