@@ -9,15 +9,17 @@ interface IncomeLabelProps {
   income: Partial<TileIncome>;
   /** Player color key for the militia sprite. */
   unitColor?: string;
+  /** Owner is a Knight -- the militia sprite shows as a footman. */
+  unitKnight?: boolean;
 }
 
 /** "+N" for every nonzero part of an income, in gold/food/arms/units order. */
-export const IncomeLabel: React.FC<IncomeLabelProps> = ({ income, unitColor }) => (
+export const IncomeLabel: React.FC<IncomeLabelProps> = ({ income, unitColor, unitKnight }) => (
   <>
     {(income.gold ?? 0) > 0 && <Gold amount={`+${income.gold}`} />}
     {(income.food ?? 0) > 0 && <Food amount={`+${income.food}`} />}
     {(income.arms ?? 0) > 0 && <Arms amount={`+${income.arms}`} />}
-    {(income.units ?? 0) > 0 && <Militia amount={`+${income.units}`} color={unitColor} />}
+    {(income.units ?? 0) > 0 && <Militia amount={`+${income.units}`} color={unitColor} knight={unitKnight} />}
   </>
 );
 

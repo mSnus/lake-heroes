@@ -158,7 +158,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
         {graceReceived && (graceReceived.gold > 0 || graceReceived.militia > 0 || graceReceived.riders > 0) && (
           <h3 className="king-contract">
             {graceReceived.gold > 0 && <>+<Gold amount={graceReceived.gold} /> </>}
-            {graceReceived.militia > 0 && <>+<Militia amount={graceReceived.militia} color={player.image} /> </>}
+            {graceReceived.militia > 0 && <>+<Militia amount={graceReceived.militia} color={player.image} knight={player.isKnight} /> </>}
             {graceReceived.riders > 0 && <>+<Rider amount={graceReceived.riders} color={player.image} /></>}
           </h3>
         )}
@@ -179,6 +179,8 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
           pendingRiders={pendingRiders}
           capacity={player.armyCapacity}
           showRiders={player.isKnight || player.riders > 0}
+          spriteColor={player.image}
+          isKnight={canRecruitRiders}
           onSell={handleSell}
           onUpgrade={handleUpgrade}
           canUpgradeToRiders={canRecruitRiders}

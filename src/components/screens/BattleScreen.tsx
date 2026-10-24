@@ -65,7 +65,7 @@ const BRAWL_SNAP_HOLD_MS = 260;
 // drawn as snippets with the number first.
 const RESULT_TOKEN = /🧍(\d+)|(\d+)🧍|🐎(\d+)|(\d+)🐎|(\d+)🟡/gu;
 
-function renderResultText(text: string, color?: string): React.ReactNode[] {
+function renderResultText(text: string, color?: string, knight?: boolean): React.ReactNode[] {
   const out: React.ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
@@ -74,7 +74,7 @@ function renderResultText(text: string, color?: string): React.ReactNode[] {
     out.push(text.slice(last, m.index));
     const [, m1, m2, r1, r2, gold] = m;
     const key = m.index;
-    if (m1 ?? m2) out.push(<Militia key={key} amount={m1 ?? m2} color={color} />);
+    if (m1 ?? m2) out.push(<Militia key={key} amount={m1 ?? m2} color={color} knight={knight} />);
     else if (r1 ?? r2) out.push(<Rider key={key} amount={r1 ?? r2} color={color} />);
     else out.push(<Gold key={key} amount={gold} />);
     last = m.index + m[0].length;
@@ -344,6 +344,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
   // in the grid's defender role there, not attacker.
   const attackerFieldColor = attacker.image;
   const defenderFieldColor = isAmbush ? attacker.image : defender?.image;
+  const attackerFieldKnight = attacker.isKnight;
+  const defenderFieldKnight = isAmbush ? attacker.isKnight : defender?.isKnight;
 
   // ── Initial log ──
   const loggedRef = useRef(false);
@@ -865,6 +867,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             defenderIcon={defenderFieldIcon}
             attackerColor={attackerFieldColor}
             defenderColor={defenderFieldColor}
+            attackerKnight={attackerFieldKnight}
+            defenderKnight={defenderFieldKnight}
             manualSide={brawlManualSide ?? undefined}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
             instant={instantMove}
@@ -916,7 +920,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
               </span>
             </div>
             <div className="battle-result-message" style={{ whiteSpace: 'pre-line' }}>
-              {renderResultText(resultMsg, isRogue ? defender?.image : attacker.image)}
+              {renderResultText(
+                resultMsg,
+                isRogue ? defender?.image : attacker.image,
+                isRogue ? defender?.isKnight : attacker.isKnight
+              )}
             </div>
             <DecoratedButton onClick={handleClose}>
               {isAmbush ? t('battleScreen.keepCalmCarryOn') : t('battleScreen.wasItWorthIt')}

@@ -84,7 +84,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
 
       <div className="garrisons-army">
         <div className="garrisons-army-side">
-          <Army /> {t('garrisonsScreen.inArmy')} <Militia amount={unassigned} color={player.image} />
+          <Army /> {t('garrisonsScreen.inArmy')} <Militia amount={unassigned} color={player.image} knight={player.isKnight} />
         </div>
       </div>
 
@@ -148,7 +148,7 @@ export const GarrisonsScreen: React.FC<GarrisonsScreenProps> = ({ gameState, pla
 
                 <div className="garrisons-row-value">
                   <div>
-                    <Militia amount={value} color={player.image} />
+                    <Militia amount={value} color={player.image} knight={player.isKnight} />
                   </div>
                 </div>
               </React.Fragment>

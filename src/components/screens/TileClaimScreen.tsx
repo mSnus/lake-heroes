@@ -52,7 +52,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // one -- levels 2/3 preview an upgrade not yet taken), same format as
   // TileCard's own preview.
   const turnIncomeLabel = (level: number) => (
-    <IncomeLabel income={tileTurnIncome(tile, 1, level, gameState, player)} unitColor={player.image} />
+    <IncomeLabel income={tileTurnIncome(tile, 1, level, gameState, player)} unitColor={player.image} unitKnight={player.isKnight} />
   );
 
   // Some units-type tiles' (Camps/Towers) extra per-level toll (see
@@ -449,7 +449,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
             <div className="guards-hire-scroll" style={{}}>
               <div className="big-icon-hint">
                 <div>
-                  <Militia amount={totalMilitiaPool - displayedGarrison} color={player.image} />
+                  <Militia amount={totalMilitiaPool - displayedGarrison} color={player.image} knight={player.isKnight} />
                   <Army />
                 </div>
                 <div>{t('tileClaimScreen.army')}</div>
@@ -468,7 +468,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
               <div className="big-icon-hint">
                 <div>
-                  <Militia amount={displayedGarrison} color={player.image} />
+                  <Militia amount={displayedGarrison} color={player.image} knight={player.isKnight} />
                   <Tower />
                 </div>
                 <div>{t('garrisonsScreen.maxLabel', { max: defenceCapacity(tile.level) })}</div>

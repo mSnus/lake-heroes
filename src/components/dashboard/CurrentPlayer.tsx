@@ -229,6 +229,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
                   capacity={activePlayer.armyCapacity}
                   showRiders={activePlayer.isKnight || revealed.riders > 0}
                   spriteColor={activePlayer.image}
+                  isKnight={activePlayer.isKnight}
                   className="player-stats-army-slots"
                 />
               </div>
@@ -236,7 +237,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               {turnIncome.units > 0 && (
                 <div className="player-stats-income-row">
                   <span className="player-stats-turn-income player-stats-army">
-                    <Militia amount={`+${turnIncome.units}`} color={activePlayer.image} />
+                    <Militia amount={`+${turnIncome.units}`} color={activePlayer.image} knight={activePlayer.isKnight} />
                   </span>
                 </div>
               )}
@@ -258,7 +259,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
               <span className="squad-chunk">
                 <span className="squad-badge">
                   <Tower where="before" />
-                  <Militia amount={totalGarrison} color={activePlayer.image} />
+                  <Militia amount={totalGarrison} color={activePlayer.image} knight={activePlayer.isKnight} />
                 </span>
               </span>
             </div>

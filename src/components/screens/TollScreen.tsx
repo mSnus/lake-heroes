@@ -172,7 +172,7 @@ export const TollScreen: React.FC<TollScreenProps> = ({
         <div className="text-message">
           <PlayerLabel name={player.name} color={player.color} bold />
           <br />
-          <Militia amount={player.militia} color={player.image} />
+          <Militia amount={player.militia} color={player.image} knight={player.isKnight} />
           {player.riders > 0 && <Rider amount={player.riders} color={player.image} />}
           <Fame amount={player.fame} />
           {goldBefore !== undefined && (

@@ -116,7 +116,7 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
         {/* A Harvest turn collects no tile income. */}
         {!gameState.harvest && hasIncome(turnIncome) && (
           <span className="turn-announcement-income">
-            <IncomeLabel income={turnIncome} unitColor={player.image} />
+            <IncomeLabel income={turnIncome} unitColor={player.image} unitKnight={player.isKnight} />
           </span>
         )}
       </DecoratedButton>

@@ -152,6 +152,7 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
         canUpgradeToRiders={player.isKnight}
         wallet={player}
         spriteColor={player.image}
+        isKnight={player.isKnight}
         className="squad-display-large garrisons-army-display"
       />
 
@@ -171,7 +172,7 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
                 onCommit={setDismount}
               />
               <div className="garrisons-army-side">
-                <Militia amount={player.militia + dismountPick} color={player.image} />
+                <Militia amount={player.militia + dismountPick} color={player.image} knight={player.isKnight} />
                 {dismountPick > 0 && <CostLabel cost={dismountRefund(dismountPick)} sign="+" />}
               </div>
             </div>
@@ -187,7 +188,7 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
                 disabled={dismountPick <= 0}
               >
                 <span className="hire-submit-icon" style={{ fontSize: '1.2rem' }}>
-                  ➜<Militia amount="" color={player.image} />
+                  ➜<Militia amount="" color={player.image} knight={player.isKnight} />
                 </span>
               </button>
             </div>

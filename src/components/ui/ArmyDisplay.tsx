@@ -18,6 +18,8 @@ interface ArmyDisplayProps {
   showRiders: boolean;
   /** Player color key for the Militia/Rider sprites; omit for plain 🧍/🐎. */
   spriteColor?: string;
+  /** A Knight's militia badge shows footmen instead -- riders unaffected. */
+  isKnight?: boolean;
   /** When provided, a ✖️ next to each tier opens a slider to sell some. */
   onSell?: (tier: UnitTier, count: number) => void;
   /** When provided (with `canUpgradeToRiders`), a 🆙🐎 next to the militia
@@ -45,6 +47,7 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
   capacity,
   showRiders,
   spriteColor,
+  isKnight = false,
   onSell,
   onUpgrade,
   canUpgradeToRiders = false,
@@ -107,7 +110,7 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
         {tier === 'riders' ? (
           <Rider amount={label} color={spriteColor} maxAmount={labelMax} />
         ) : (
-          <Militia amount={label} color={spriteColor} maxAmount={labelMax} />
+          <Militia amount={label} color={spriteColor} maxAmount={labelMax} knight={isKnight} />
         )}
       </>
     );

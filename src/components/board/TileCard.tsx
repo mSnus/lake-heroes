@@ -104,7 +104,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   const hasTurnIncome = hasIncome(turnIncome);
   const turnIncomeLabel = (
     <>
-      <IncomeLabel income={turnIncome} unitColor={ownerPlayer?.image} />
+      <IncomeLabel income={turnIncome} unitColor={ownerPlayer?.image} unitKnight={ownerPlayer?.isKnight} />
       {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}
     </>
   );
@@ -459,7 +459,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                       {Array.from({ length: tile.level }, (_, i) => (
                         <Tower key={i}/>
                       ))}
-                      <Militia amount={tile.garrison} color={ownerPlayer?.image} />
+                      <Militia amount={tile.garrison} color={ownerPlayer?.image} knight={ownerPlayer?.isKnight} />
                     </div>
                   </div>
                 </div>

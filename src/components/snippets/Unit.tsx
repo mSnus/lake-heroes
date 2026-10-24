@@ -7,14 +7,25 @@ export interface UnitProps {
   color?: string;
   spriteType?: string;
   altEmoji?: string;
+  /** A Knight's militia are footmen, not militia -- riders are unaffected. */
+  knight?: boolean;
 }
 
-export const Unit: React.FC<UnitProps> = ({ amount, where = 'after', maxAmount, color, altEmoji = '🧍', spriteType = 'militia' }) => {
+export const Unit: React.FC<UnitProps> = ({
+  amount,
+  where = 'after',
+  maxAmount,
+  color,
+  altEmoji = '🧍',
+  spriteType = 'militia',
+  knight = false,
+}) => {
+  const effectiveSpriteType = knight && spriteType === 'militia' ? 'footman' : spriteType;
   const icon = (
     <img
-      src={`assets/sprites/${spriteType}-${color ?? 'red'}.png`}
+      src={`assets/sprites/${effectiveSpriteType}-${color ?? 'grey'}.png`}
       alt={altEmoji}
-      className={`unit-icon unit-${spriteType}`}
+      className={`unit-icon unit-${effectiveSpriteType}`}
     />
   );
 

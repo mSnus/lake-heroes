@@ -38,6 +38,9 @@ interface BattlefieldGridProps {
    * own default. */
   attackerColor?: string;
   defenderColor?: string;
+  /** That side's militia show as footmen if its player is a Knight. */
+  attackerKnight?: boolean;
+  defenderKnight?: boolean;
   /** When set, this side is being manually controlled: a shadow layer of
    * draggable "twin" units appears over that side's units and the caller is
    * handed the chosen destinations via onManualComplete once every unit is
@@ -121,6 +124,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   defenderIcon,
   attackerColor,
   defenderColor,
+  attackerKnight,
+  defenderKnight,
   manualSide,
   onManualComplete,
   instant = false,
@@ -452,7 +457,8 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     const override = typeof icon === 'string' ? icon : icon?.[u.kind];
     if (override) return override;
     const sideColor = u.side === 'attacker' ? attackerColor : defenderColor;
-    if (u.kind === 'militia') return <Militia amount="" color={sideColor} />;
+    const sideKnight = u.side === 'attacker' ? attackerKnight : defenderKnight;
+    if (u.kind === 'militia') return <Militia amount="" color={sideColor} knight={sideKnight} />;
     if (u.kind === 'rider') return <Rider amount="" color={sideColor} />;
 
     return UNIT_EMOJI[`${u.side}-${u.kind}`];

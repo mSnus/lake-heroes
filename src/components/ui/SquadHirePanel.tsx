@@ -86,7 +86,7 @@ const HireRow: React.FC<HireRowProps> = ({
   return (
     <div className="hire-row">
       <div className="hire-row-name">
-        <UnitIcon amount="" color={player.image} />
+        <UnitIcon amount="" color={player.image} knight={player.isKnight} />
       </div>
       {atFameCap ? (
         <div className="hire-row-max-message">
@@ -158,7 +158,7 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
       <div className="squad-hire-prices">
         {showMilitia && (
           <div className="squad-hire-price-row">
-            <Militia amount="" color={player.image} />
+            <Militia amount="" color={player.image} knight={player.isKnight} />
             <CostLabel cost={unitCost('militia', resolvedMilitiaPrice)} />
           </div>
         )}
