@@ -113,6 +113,10 @@ export class Player {
    * screen) go straight back to the peace/revenge choice instead of
    * charging the toll a second time. */
   hasSettledTollThisTurn: boolean;
+  /** Set once this player has pillaged any tile this turn -- a raid attempt
+   * on an unowned tile, see actions/pillageTile.ts. Only one per turn,
+   * regardless of which tile. */
+  hasPillagedThisTurn: boolean;
   isComputer: boolean;
   character?: CharacterId;
   artifacts: string[];
@@ -154,6 +158,7 @@ export class Player {
     this.garrisonSpentThisTurn = 0;
     this.owedToll = 0;
     this.hasSettledTollThisTurn = false;
+    this.hasPillagedThisTurn = false;
     this.isComputer = params.isComputer ?? false;
     this.character = params.character;
     this.artifacts = [];

@@ -215,6 +215,10 @@
     "stillSmoldering": "ещё дымится",
     "banzai": "Банзай!",
     "claimIt": "Забрать!",
+    "pillage": "Грабёж",
+    "pillageGain": "{playerName} разграбил {tileName} и получил {reward}",
+    "pillageSoldiersLost": "{playerName} попытался разграбить {tileName}, но потерял {amount}🧍",
+    "pillageFameLost": "{playerName} в отчаянии разграбил {tileName}, потеряв {amount}🏆",
     "razed": "разрушено",
     "upgradable": "можно улучшить",
     "yieldToKing": "передать",
@@ -798,7 +802,7 @@
     "failedGameMessage": "{attackerName} не смог совершить набег на караван!",
     "gotAway": "Каравану удалось скрыться!",
     "caravanGuards": "Стража каравана",
-    "haulGold": "{gold}🟡",
+    "haulGold": "{reward}",
     "haulSlaves": "{units}🧍 освобождено",
     "haulHorses": "{units}🧍 пересели на 🐎",
     "haulRecruits": "{units} охранников примкнули к вам",
@@ -1196,7 +1200,7 @@
     "botSold": "{playerName} продаёт на сборе урожая {food}🍞 и {arms}⚔️"
   },
   "armyScreen": {
-    "title": "Армия",
+    "title": "Дружина воинов",
     "dismount": "Снять с коней:",
     "hireAmount": "🧾 Нанять {amount}",
     "close": "✖️ Закрыть"

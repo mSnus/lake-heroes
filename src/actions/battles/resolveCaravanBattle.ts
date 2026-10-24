@@ -1,7 +1,8 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
-import { CaravanPrize, quarterPrize, mountHorses, rollGuardsJoining } from '../../game/caravanPrize';
+import { CaravanPrize, quarterPrize, mountHorses, rollGuardsJoining, splitCaravanGold } from '../../game/caravanPrize';
+import { formatCost } from '../../game/resources';
 import { setGameMessage } from '../../utils/gameMessage';
 import { say } from '../../utils/say';
 import { changeKarma } from '../../utils/karma';
@@ -54,8 +55,11 @@ export function resolveCaravanBattle(
   const collect = (won: CaravanPrize): string[] => {
     const parts: string[] = [];
     if (won.gold > 0) {
-      attacker.gold += won.gold;
-      parts.push(t('resolveCaravanBattle.haulGold', { gold: won.gold }));
+      const split = splitCaravanGold(won.gold);
+      attacker.gold += split.gold;
+      attacker.food += split.food;
+      attacker.arms += split.arms;
+      parts.push(t('resolveCaravanBattle.haulGold', { reward: formatCost(split) }));
     }
 
     const freed = attacker.gainMilitia(won.slaves);

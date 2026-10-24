@@ -762,7 +762,7 @@
     "failedGameMessage": "{attackerName} failed to raid the caravan!",
     "gotAway": "The caravan got away!",
     "caravanGuards": "Caravan Guards",
-    "haulGold": "{gold}🟡",
+    "haulGold": "{reward}",
     "haulSlaves": "{units}🧍 freed",
     "haulHorses": "{units}🧍 mounted as 🐎",
     "haulRecruits": "{units} guards joined you",
@@ -1171,7 +1171,7 @@
     "botSold": "{playerName} sold {food}🍞 and {arms}⚔️ at the Harvest"
   },
   "armyScreen": {
-    "title": "Army",
+    "title": "Warriors Company",
     "dismount": "Dismount:",
     "hireAmount": "🧾 Hire {amount}",
     "close": "✖️ Close"

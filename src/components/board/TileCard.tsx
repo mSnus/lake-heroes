@@ -5,6 +5,8 @@ import { say, sayLocal } from '../../utils/say';
 import { GameState } from '../../game/GameState';
 import { sellTile, sellRefund } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
+import { canPillage, pillageTile } from '../../actions/pillageTile';
+import { showDice, startDiceRoll } from '../../utils/diceStore';
 import { yieldTile, yieldRefund, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { gameEvent } from '../../utils/events';
 import { isBanzaiAttack } from '../../game/army';
@@ -45,6 +47,11 @@ export type TileCardProps = {
   gameState?: GameState;
   updateGameState?: (board: GameState) => void;
   couldBuy?: boolean;
+  /** Unowned, this is the active tile, and it's the player's move -- the
+   * same "right place, right time" gate couldBuy uses. Whether a raid is
+   * actually possible right now (once per turn, something to lose on a
+   * failed roll) is TileCard's own call, via canPillage. */
+  couldPillage?: boolean;
   defaultExpanded?: boolean;
   demoMode?: boolean;
   /** True when this card is rendered inside a forced pay-or-fight/sell-to-
@@ -61,6 +68,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   gameState,
   updateGameState,
   couldBuy = false,
+  couldPillage = false,
   defaultExpanded = false,
   demoMode = false,
   disableUpgradesScreen = false,
@@ -311,6 +319,20 @@ export const TileCard: React.FC<TileCardProps> = ({
     if (!gameState || !updateGameState) return;
 
     claimTile(gameState, updateGameState);
+  };
+
+  const pillageAvailable = couldPillage && !!activePlayer && canPillage(activePlayer);
+
+  const handlePillageClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (demoMode) return;
+    if (!gameState || !updateGameState || !activePlayer) return;
+
+    showDice((roll: number) => {
+      pillageTile(gameState, activePlayer, tile, roll);
+      updateGameState(gameState);
+    });
+    startDiceRoll();
   };
 
   return (
@@ -655,6 +677,30 @@ export const TileCard: React.FC<TileCardProps> = ({
                 </div>
               </DecoratedButton>
             )}
+
+          {pillageAvailable && (
+            <DecoratedButton
+              onClick={(e) => handlePillageClick(e)}
+              style={{
+                width: '100%',
+                marginBottom: '0',
+                height: '80px',
+                filter: 'drop-shadow(2px 2px 3px #00000050)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.1rem',
+                }}
+              >
+                <div>🏴‍☠️ {t('tileCard.pillage')}</div>
+              </div>
+            </DecoratedButton>
+          )}
         </div>
       )}
     </div>

@@ -218,6 +218,10 @@
     "stillSmoldering": "aún humeante",
     "banzai": "¡Banzai!",
     "claimIt": "¡Reclamarla!",
+    "pillage": "Saquear",
+    "pillageGain": "{playerName} saqueó {tileName} y ganó {reward}",
+    "pillageSoldiersLost": "{playerName} saqueó {tileName} pero perdió {amount}🧍",
+    "pillageFameLost": "{playerName} saqueó {tileName} con desesperación, perdiendo {amount}🏆",
     "razed": "arrasada",
     "upgradable": "mejorable",
     "yieldToKing": "ceder",
@@ -801,7 +805,7 @@
     "failedGameMessage": "¡{attackerName} no logró asaltar la caravana!",
     "gotAway": "¡La caravana escapó!",
     "caravanGuards": "Guardias de la Caravana",
-    "haulGold": "{gold}🟡",
+    "haulGold": "{reward}",
     "haulSlaves": "{units}🧍 liberados",
     "haulHorses": "{units}🧍 montados como 🐎",
     "haulRecruits": "{units} guardias se te unieron",
@@ -1199,7 +1203,7 @@
     "botSold": "{playerName} vendió {food}🍞 y {arms}⚔️ en la Cosecha"
   },
   "armyScreen": {
-    "title": "Ejército",
+    "title": "Compañía de Guerreros",
     "dismount": "Desmontar:",
     "hireAmount": "🧾 Contratar {amount}",
     "close": "✖️ Cerrar"
