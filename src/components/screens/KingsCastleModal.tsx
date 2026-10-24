@@ -10,16 +10,27 @@ import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
 import { useHireFooter } from '../ui/useHireFooter';
 import { Gold } from '../snippets/Gold';
+import { Militia } from '../snippets/Militia';
+import { Rider } from '../snippets/Rider';
 import { KingsContract } from '../../game/kingsContracts';
 import { formatArmy } from '../../utils/formatArmy';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
 
+interface GraceReceived {
+  gold: number;
+  militia: number;
+  riders: number;
+}
+
 interface BuyUnitsModalProps {
   gameState: GameState;
   /** Only a contract issued on THIS visit is shown; carried-over ones are not. */
   newContract?: KingsContract | null;
+  /** What King's Grace just granted on THIS visit (null once it's already
+   * been paid and the screen is only being reopened). */
+  graceReceived?: GraceReceived | null;
   onBuy: (amount: number, tier: UnitTier) => void;
   onSell: (tier: UnitTier, amount: number) => void;
   onUpgrade: (count: number) => void;
@@ -29,6 +40,7 @@ interface BuyUnitsModalProps {
 const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
   gameState,
   newContract,
+  graceReceived,
   onBuy,
   onSell,
   onUpgrade,
@@ -142,6 +154,14 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
             fame: <span className="value">{player.fame}🏆</span>,
           })}
         </h3>
+
+        {graceReceived && (graceReceived.gold > 0 || graceReceived.militia > 0 || graceReceived.riders > 0) && (
+          <h3 className="king-contract">
+            {graceReceived.gold > 0 && <>+<Gold amount={graceReceived.gold} /> </>}
+            {graceReceived.militia > 0 && <>+<Militia amount={graceReceived.militia} color={player.image} /> </>}
+            {graceReceived.riders > 0 && <>+<Rider amount={graceReceived.riders} color={player.image} /></>}
+          </h3>
+        )}
 
         {contract && contractTile && (
           <h3 className='king-contract' style={{ whiteSpace: 'pre-line' }}>

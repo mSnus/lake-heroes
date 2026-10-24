@@ -29,6 +29,7 @@ export function handleKingCastle(
   // the King's Castle tile would keep re-rolling the contract and re-paying
   // the grace for free.
   let contract = null as ReturnType<typeof issueKingsContract>;
+  let graceReceived: { gold: number; militia: number; riders: number } | null = null;
   if (!player.hasCheckedKingsContractThisTurn) {
     player.hasCheckedKingsContractThisTurn = true;
     contract = issueKingsContract(board, player);
@@ -52,6 +53,7 @@ export function handleKingCastle(
     const graceUnitsGranted = graceMilitiaGranted + grace.kingsRiders;
     addYearIncome(player, { gold: grace.totalGold, units: graceUnitsGranted });
     board.kingRewardMessage = t('king.kingsGrace');
+    graceReceived = { gold: grace.totalGold, militia: graceMilitiaGranted, riders: grace.kingsRiders };
     if (grace.totalGold > 0 || graceUnitsGranted > 0) {
       const parts: string[] = [];
       if (grace.totalGold > 0) parts.push(`${grace.totalGold}🟡`);
@@ -81,6 +83,7 @@ export function handleKingCastle(
       <KingsCastleModal
         gameState={board}
         newContract={contract}
+        graceReceived={graceReceived}
         onBuy={(amount, tier) => {
           buyUnits(board, amount, updateGameState, tier);
         }}
