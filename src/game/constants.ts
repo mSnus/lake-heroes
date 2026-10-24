@@ -188,9 +188,11 @@ export const ENERGY_DEPLETED_DAMAGE_MULT = 0.3;
 // Army caps by fame, per tier, highest fame first. They cap future growth
 // only -- a fame drop never claws back units already raised.
 export const MILITIA_CAP_BY_FAME: { minFame: number; cap: number }[] = [
-  { minFame: 10, cap: 60 },
-  { minFame: 6, cap: 36 },
-  { minFame: 3, cap: 24 },
+  { minFame: 16, cap: 60 },
+  { minFame: 13, cap: 40 },
+  { minFame: 10, cap: 32 },
+  { minFame: 6, cap: 20 },
+  { minFame: 3, cap: 16 },
   { minFame: 0, cap: 12 },
 ];
 // Knights only -- a non-knight's rider cap is always 0 (see Player.armyCapacity),
