@@ -44,10 +44,9 @@ const HireRow: React.FC<HireRowProps> = ({
 }) => {
   const UnitIcon = tier === 'riders' ? Rider : Militia;
   const maxAmount = hireMax(player, tier, unitPrice, goldOnly);
-  // Distinct from maxAmount hitting 0 for lack of gold/food/arms -- this is
-  // specifically "there's nowhere left to put one", the fame-driven army
-  // cap itself, which a slider can't do anything about.
   const atFameCap = player.armyRoom(tier) <= 0;
+  // armyRoom > 0 but still can't afford one: blocked by resources, not fame.
+  const blockedByResources = !atFameCap && maxAmount === 0;
 
   // Starts at 0, and returns to 0 after a hire: buying is opt-in, so the
   // panel never opens with a purchase already dialled in.
@@ -109,7 +108,13 @@ const HireRow: React.FC<HireRowProps> = ({
               setPreviewAmount(null);
             }}
           />
-          <div className="hire-row-amount-label">{displayedAmount}</div>
+          <div className="hire-row-amount-label">
+            {blockedByResources ? (
+              <span style={{ color: '#ff4444', fontWeight: 'bold' }}>❌</span>
+            ) : (
+              displayedAmount
+            )}
+          </div>
         </>
       )}
     </div>
@@ -163,32 +168,20 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   const resolvedMilitiaPrice = militiaPrice ?? ov.militiaPrice;
   const resolvedRiderPrice = riderPrice ?? ov.riderPrice;
 
-  // A part the player can't afford shows ❌ (in red) instead of its number
-  // -- not just "this one unit is pricier than you'd like", but "you
-  // cannot buy even one right now because of this specific resource".
   const pricePart = (
     amount: number,
-    have: number,
     Icon: React.FC<{ amount: number | string }>
   ): React.ReactNode => {
     if (amount <= 0 && !goldOnly) return null;
-    if (have < amount) {
-      return (
-        <span style={{ color: '#ff4444', fontWeight: 'bold' }}>
-          <Icon amount="❌" />
-        </span>
-      );
-    }
-
     return <Icon amount={amount} />;
   };
 
   const priceLabel = (tier: UnitTier, price: number) => {
     const cost = unitCost(tier, price, goldOnly);
     const parts = [
-      pricePart(cost.gold, player.gold, Gold),
-      pricePart(cost.food, player.food, Food),
-      pricePart(cost.arms, player.arms, Arms),
+      pricePart(cost.gold, Gold),
+      pricePart(cost.food, Food),
+      pricePart(cost.arms, Arms),
     ].filter(Boolean);
     return parts.length ? parts : <Gold amount={0} />;
   };
