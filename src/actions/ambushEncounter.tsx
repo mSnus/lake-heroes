@@ -69,6 +69,7 @@ export function checkAmbushEncounter(
     title: t('ambushEncounter.title'),
     fade: true,
     spriteImage: 'assets/figures/npc-saracen.png',
+    spriteNoRing: true,
     htmlMessage: t('ambushEncounter.message', {
       playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
       squad: formatArmy(attackerMilitia, attackerRiders, HORDE_EMOJI),
