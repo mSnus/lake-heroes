@@ -46,7 +46,6 @@ export function resolveAmbush(
 
     const rewardStr = reward > 0 ? t('resolveAmbush.receivingGold', { reward }) : '';
     const killLossStr = killed ? t('resolveAmbush.unitsLostSuffix', { army: killed }) : '';
-    setGameMessage(board, t('resolveAmbush.repelsGameMessage', { playerName: player.name, rewardStr, lossStr: killLossStr }));
     message =
       reward > 0
         ? t('resolveAmbush.repelledWithReward', { reward, lossStr: killLossStr })
