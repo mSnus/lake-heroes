@@ -116,15 +116,17 @@ export const VISIT_UNITS_SHARE = 5;
 // A unit costs gold, food and arms (King's Castle prices; the Tavern doubles
 // only the gold part -- see TAVERN_PRICE_MULT).
 export const UNIT_PRICE = 20; // gold per militia unit
-export const MILITIA_FOOD = 10;
+export const MILITIA_FOOD = 5;
 // Each player's opening stock, enough to hire a few militia before their
 // own tiles produce any.
 export const FOOD_START = 30;
 export const ARMS_START = 30;
-export const MILITIA_ARMS = 10;
-// Food/arms trade at the yearly Harvest (see components/screens/HarvestModal.tsx).
-export const HARVEST_BUY_PRICE = 2; // gold per food/arms bought
-export const HARVEST_SELL_PRICE = 1; // gold per food/arms sold
+export const MILITIA_ARMS = 3;
+// Food/arms trade at the yearly Harvest -- food and arms have different rates.
+export const FOOD_BUY_PRICE = 6;
+export const FOOD_SELL_PRICE = 4;
+export const ARMS_BUY_PRICE = 8;
+export const ARMS_SELL_PRICE = 6;
 // The Tavern charges a premium over the King's Castle's own prices, for both
 // hiring and squad upgrades -- a night of drinking recruits costs more than
 // the crown's standing offer.
@@ -142,8 +144,8 @@ export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the atta
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
 export const RIDER_UNIT_PRICE = 40; // gold per rider
-export const RIDER_FOOD = 20;
-export const RIDER_ARMS = 30;
+export const RIDER_FOOD = 10;
+export const RIDER_ARMS = 9;
 // How much one unit of each kind is worth on a single strength scale, in
 // militia. Everything that rates a force -- AI decisions, the Banzai
 // threshold, the tile-card strength readout -- measures with these, so the

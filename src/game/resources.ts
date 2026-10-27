@@ -1,9 +1,14 @@
 import { Player } from './Player';
 import { UnitTier } from './army';
-import { HARVEST_BUY_PRICE, HARVEST_SELL_PRICE } from './constants';
+import { FOOD_BUY_PRICE, FOOD_SELL_PRICE, ARMS_BUY_PRICE, ARMS_SELL_PRICE } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 
 export type Resource = 'food' | 'arms';
+
+/** Gold price per unit of a resource at the Harvest. */
+export function harvestBuyPrice(r: Resource): number { return r === 'food' ? FOOD_BUY_PRICE : ARMS_BUY_PRICE; }
+
+export function harvestSellPrice(r: Resource): number { return r === 'food' ? FOOD_SELL_PRICE : ARMS_SELL_PRICE; }
 
 /** What one unit (or one upgrade) costs. */
 export interface Cost {
@@ -68,13 +73,13 @@ export function refund(player: Player, cost: Cost): void {
 
 /** Food and arms valued in gold, at what the Harvest pays for them. */
 export function resourcesGoldValue(player: Pick<Player, 'food' | 'arms'>): number {
-  return ((player.food ?? 0) + (player.arms ?? 0)) * HARVEST_SELL_PRICE;
+  return (player.food ?? 0) * FOOD_SELL_PRICE + (player.arms ?? 0) * ARMS_SELL_PRICE;
 }
 
 /** A unit's full recipe valued in gold (food and arms at the Harvest's sell price). */
 export function unitGoldValue(tier: UnitTier): number {
   const c = unitCost(tier);
-  return c.gold + (c.food + c.arms) * HARVEST_SELL_PRICE;
+  return c.gold + c.food * FOOD_SELL_PRICE + c.arms * ARMS_SELL_PRICE;
 }
 
 /** "20🟡 10🫓 10⚔️", leaving out the zero parts ("0🟡" when all are zero). */
@@ -94,15 +99,18 @@ export function hireMax(player: Player, tier: UnitTier, goldOverride?: number, g
 /** Buy (positive `amount`) or sell (negative) food or arms for gold at the
  * Harvest's fixed prices -- clamped to what the player can pay or holds. */
 export function tradeResource(player: Player, resource: Resource, amount: number): number {
+  const buyPrice = harvestBuyPrice(resource);
+  const sellPrice = harvestSellPrice(resource);
+
   if (amount > 0) {
-    const bought = Math.min(amount, Math.floor(player.gold / HARVEST_BUY_PRICE));
-    player.gold -= bought * HARVEST_BUY_PRICE;
+    const bought = Math.min(amount, Math.floor(player.gold / buyPrice));
+    player.gold -= bought * buyPrice;
     player[resource] += bought;
     return bought;
   }
 
   const sold = Math.min(-amount, player[resource]);
   player[resource] -= sold;
-  player.gold += sold * HARVEST_SELL_PRICE;
+  player.gold += sold * sellPrice;
   return -sold;
 }

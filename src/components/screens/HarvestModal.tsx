@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { GameState } from '../../game/GameState';
-import { HARVEST_BUY_PRICE, HARVEST_SELL_PRICE } from '../../game/constants';
-import { Resource, tradeResource } from '../../game/resources';
+import { Resource, tradeResource, harvestBuyPrice, harvestSellPrice } from '../../game/resources';
 import { currentYear } from '../../game/year';
 import GameModal from './GameModal';
 import { DecoratedButton } from '../ui/DecoratedButton';
@@ -51,10 +50,13 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const maxFor = (r: Resource) =>
     mode === 'sell'
       ? player[r]
-      : Math.max(0, Math.floor((player.gold - shown(other(r)) * HARVEST_BUY_PRICE) / HARVEST_BUY_PRICE));
+      : Math.max(0, Math.floor((player.gold - shown(other(r)) * harvestBuyPrice(other(r))) / harvestBuyPrice(r)));
 
   const total = shown('food') + shown('arms');
-  const goldDelta = mode === 'sell' ? total * HARVEST_SELL_PRICE : -total * HARVEST_BUY_PRICE;
+  const goldDelta =
+    mode === 'sell'
+      ? shown('food') * harvestSellPrice('food') + shown('arms') * harvestSellPrice('arms')
+      : -(shown('food') * harvestBuyPrice('food') + shown('arms') * harvestBuyPrice('arms'));
 
   const exTotalF2A = shownEx('foodToArms');
   const exTotalA2F = shownEx('armsToFood');
@@ -132,9 +134,9 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
               onClick={() => switchMode(m)}
             >
               {m === 'buy'
-                ? t('harvest.buyMode', { price: HARVEST_BUY_PRICE })
+                ? t('harvest.buyMode')
                 : m === 'sell'
-                ? t('harvest.sellMode', { price: HARVEST_SELL_PRICE })
+                ? t('harvest.sellMode')
                 : t('harvest.exchangeMode')}
             </button>
           ))}
