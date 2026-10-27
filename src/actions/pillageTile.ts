@@ -4,6 +4,7 @@ import { Tile } from '../game/Tile';
 import { TileIncome, tileTurnIncome } from '../game/income';
 import { rollDice } from '../game/Dice';
 import { changeFame } from '../utils/fame';
+import { changeKarma } from '../utils/karma';
 import { say } from '../utils/say';
 import { t } from '../i18n';
 
@@ -41,6 +42,7 @@ export function pillageTile(
   roll: number
 ): void {
   player.hasPillagedThisTurn = true;
+  changeKarma(player, -1);
 
   if (roll <= 2) {
     if (player.units > 0) {
