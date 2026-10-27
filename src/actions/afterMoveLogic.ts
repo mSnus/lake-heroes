@@ -18,6 +18,7 @@ import { HeroHourScreen } from '../components/screens/HeroHourScreen';
 import { TollScreen } from '../components/screens/TollScreen';
 import { computeFeeOptions, FeeOptions } from './feeOptions';
 import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
+import { setGameMessage } from '../utils/gameMessage';
 import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget } from '../ai/decisions';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { announce } from '../utils/announce';
@@ -189,6 +190,7 @@ export function showTileEncounterScreen(
   board: GameState,
   updateGameState: (board: GameState) => void
 ) {
+  setGameMessage(board, '');
   const player = board.activePlayer;
   const tile = board.activeTile;
   const owner = board.players.find((p) => p.id === tile.owner);
