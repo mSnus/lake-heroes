@@ -5,6 +5,7 @@ import { Player } from '../game/Player';
  * is a clandestine mechanic: it must never announce itself, only quietly
  * bias odds elsewhere (see game/constants.ts's KARMA_* knobs).
  */
-export function changeKarma(player: Player, delta: number): void {
-  player.karma = (player.karma ?? 0) + delta;
+export function changeKarma(player: Player, delta: number, cap?: number): void {
+  const next = (player.karma ?? 0) + delta;
+  player.karma = cap !== undefined ? Math.min(next, cap) : next;
 }
