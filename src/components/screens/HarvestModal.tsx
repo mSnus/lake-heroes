@@ -199,22 +199,24 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
         )}
 
         <div className="harvest-trade">
-          {mode !== 'exchange' ? (
-            <div className={'shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
-              <button className="shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
-                <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
-                <span className="hire-row-caption">
-                  <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
-                </span>
-              </button>
-            </div>
-          ) : (
-            <div className={'shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}>
-              <button className="shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
-                <span className="hire-submit-icon">🔄</span>
-              </button>
-            </div>
-          )}
+          <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
+            {mode !== 'exchange' ? (
+              <div className={'big-shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
+                <button className="big-shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
+                  <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
+                  <span className="hire-row-caption">
+                    <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
+                  </span>
+                </button>
+              </div>
+            ) : (
+              <div className={'big-shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}>
+                <button className="big-shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
+                  <span className="hire-submit-icon">🔄</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>

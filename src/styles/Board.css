@@ -461,6 +461,32 @@
   text-shadow: 5px 5px 5px #00000050;
 }
 
+.big-shield-button-container {
+  width: 62px;
+  height: 62px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/assets/shield.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
+}
+
+.big-shield-button {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #b1a772;
+  font-weight: 600;
+  font-size: 26px;
+  text-shadow: 5px 5px 5px #00000050;
+}
+
 @media screen and (max-width: 768px) {
   .tile-title {
     height: 10px;
