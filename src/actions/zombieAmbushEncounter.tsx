@@ -51,6 +51,7 @@ export function checkZombieAmbushEncounter(
     title: t('zombieAmbush.title'),
     fade: true,
     spriteImage: 'assets/figures/npc-skeleton.png',
+    spriteNoRing: true,
     htmlMessage: t('zombieAmbush.message', {
       playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
       units: attackerUnits,
