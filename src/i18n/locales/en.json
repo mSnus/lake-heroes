@@ -1187,7 +1187,7 @@
     "yearlyBonus": "All players collect their Yearly Bonus.",
     "yearlyBonusLabel": "Yearly Bonus",
     "tileHarvestBonus": "All players collect a bonus harvest from their tiles.",
-    "doubleIncomeAnnounce": "This year is promising, {groups} will provide double income!",
+    "doubleIncomeAnnounce": "Next year is promising: {groups} will provide double income!",
     "groupName": {
       "Mills": "Mills",
       "Farms": "Farms",
@@ -1221,7 +1221,8 @@
     "cancelHint": "(tap to cancel)"
   },
   "harvest": {
-    "title": "🌾 Harvest of year {year}",
+    "title": "The Harvest",
+    "subtitle": "year ({year})",
     "yearIncome": "This year's income:",
     "noIncome": "nothing this year",
     "buyMode": "Buy",

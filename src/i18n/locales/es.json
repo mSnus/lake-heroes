@@ -1160,7 +1160,7 @@
     "yearlyBonus": "Todos los jugadores cobran su Bonificación Anual.",
     "yearlyBonusLabel": "Bonificación Anual",
     "tileHarvestBonus": "Todos los jugadores cobran una cosecha extra de sus casillas.",
-    "doubleIncomeAnnounce": "Este año se presenta prometedor: {groups} darán el doble de ingresos.",
+    "doubleIncomeAnnounce": "El próximo año es prometedor: {groups} darán el doble de ingresos.",
     "groupName": {
       "Mills": "los Molinos",
       "Farms": "las Granjas",
@@ -1194,7 +1194,8 @@
     "cancelHint": "(toca para cancelar)"
   },
   "harvest": {
-    "title": "🌾 Cosecha del año {year}",
+    "title": "La Cosecha",
+    "subtitle": "año ({year})",
     "yearIncome": "Ingresos de este año:",
     "noIncome": "nada este año",
     "buyMode": "Comprar",

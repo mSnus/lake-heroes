@@ -28,6 +28,9 @@ export const FORK_ROLL_RANGE = 6;
 // once the last player's turn ends) rather than laps of the board, so a
 // turn spent in prison still passes the time. See game/year.ts.
 export const TURNS_PER_YEAR = 8;
+// The real-world calendar year the game starts in -- used wherever a
+// realistic in-world date is shown (e.g. Harvest screen subtitle).
+export const GAME_START_YEAR = 1450;
 // This year's lucky groups: each rolled independently at DOUBLE_INCOME_CHANCE
 // in startNewYear, capped at DOUBLE_INCOME_MAX_GROUPS. Only gold-producing
 // groups -- doubling a Camp/Tower's unit income isn't the same kind of

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { Resource, tradeResource, harvestBuyPrice, harvestSellPrice } from '../../game/resources';
-import { currentYear } from '../../game/year';
+import { currentYear, GROUP_EMOJI } from '../../game/year';
+import { DOUBLE_INCOME_EFFECT } from '../../game/yearCore';
+import { GAME_START_YEAR } from '../../game/constants';
 import GameModal from './GameModal';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { DecoratedSlider } from '../ui/DecoratedSlider';
@@ -36,6 +38,14 @@ const RESOURCES: Resource[] = ['food', 'arms'];
 const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState, onClose }) => {
   const t = useT();
   const player = gameState.activePlayer;
+  const year = currentYear(gameState);
+  const calendarYear = GAME_START_YEAR + year;
+  const doubleGroups = gameState.yearEffects
+    .filter((e) => e.id === DOUBLE_INCOME_EFFECT && e.untilYear === year)
+    .map((e) => `${GROUP_EMOJI[e.group ?? ''] ?? ''} ${t(`year.groupName.${e.group}`)}`);
+  const doubleIncomeNote = doubleGroups.length > 0
+    ? t('year.doubleIncomeAnnounce', { groups: doubleGroups.join(` ${t('common.and')} `) })
+    : null;
   const [mode, setMode] = useState<Mode>('sell');
   const [amounts, setAmounts] = useState<Record<Resource, number>>({ food: 0, arms: 0 });
   const [preview, setPreview] = useState<Partial<Record<Resource, number>>>({});
@@ -104,7 +114,9 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
       <div className="modal-content tavern-screen harvest-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
-        <h2 className="game-title">{t('harvest.title', { year: currentYear(gameState) })}</h2>
+        <h2 className="game-title">{t('harvest.title')}</h2>
+        <div className="harvest-subtitle">{t('harvest.subtitle', { year: calendarYear })}</div>
+        {doubleIncomeNote && <div className="harvest-double-income-note">{doubleIncomeNote}</div>}
         <h3>
           <PlayerLabel player={player} bold />
         </h3>
@@ -199,24 +211,28 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
         )}
 
         <div className="harvest-trade">
-          <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
-            {mode !== 'exchange' ? (
-              <div className={'big-shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
-                <button className="big-shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
-                  <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
-                  <span className="hire-row-caption">
-                    <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
-                  </span>
-                </button>
+          {mode !== 'exchange' ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
+                <div className={'big-shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
+                  <button className="big-shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
+                    <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
+                  </button>
+                </div>
               </div>
-            ) : (
+              <span className="hire-row-caption">
+                <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
+              </span>
+            </div>
+          ) : (
+            <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
               <div className={'big-shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}>
                 <button className="big-shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
                   <span className="hire-submit-icon">🔄</span>
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>

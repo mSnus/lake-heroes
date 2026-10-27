@@ -54,7 +54,7 @@ export type { YearEffect };
 // This year's lucky groups (if any) flash a 🟨/🟪/🟩 badge, chosen per
 // group here so income.ts's tileTurnIncome and this announcement can't
 // name a group differently.
-const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪', Fields: '🟩' };
+export const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪', Fields: '🟩' };
 
 /**
  * Year end, as the Harvest round begins: the year's payouts -- the Yearly
@@ -127,10 +127,4 @@ export function startNewYear(board: GameState): void {
     addYearEffect(board, { id: DOUBLE_INCOME_EFFECT, untilYear: currentYear(board), group });
   }
 
-  if (promoted.length > 0) {
-    const groups = promoted
-      .map((g) => `${GROUP_EMOJI[g]} ${t(`year.groupName.${g}`)}`)
-      .join(` ${t('common.and')} `);
-    say(t('year.doubleIncomeAnnounce', { groups }), 'info');
-  }
 }

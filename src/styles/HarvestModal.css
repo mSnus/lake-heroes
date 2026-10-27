@@ -1,3 +1,19 @@
+.harvest-subtitle {
+  font-family: 'Texturina', serif;
+  color: #c9a35a;
+  font-size: 0.95rem;
+  margin-top: -0.4rem;
+  margin-bottom: 0.4rem;
+  opacity: 0.9;
+}
+
+.harvest-double-income-note {
+  font-size: 0.85rem;
+  color: #f0d080;
+  margin-bottom: 0.5rem;
+  opacity: 0.95;
+}
+
 .harvest-stats {
   display: flex;
   justify-content: center;
