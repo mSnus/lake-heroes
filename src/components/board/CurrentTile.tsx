@@ -76,7 +76,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     !playerShown &&
     !isMoving &&
     shouldDisplay &&
-    (displayedTile !== null || gameState.turnPhase === 'after-move');
+    (displayedTile !== null || (gameState.turnPhase === 'after-move' && currentTile.isOwnable));
   // A turn-phase change lets the tile card reclaim the spotlight from a
   // lingering player card.
   React.useEffect(() => {

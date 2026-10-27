@@ -1010,7 +1010,7 @@
     "joined": "{units}🧍 присоединились к могучей армии<br />игрока {playerSpan}",
     "ranksFull": "{units}🧍 хотели присоединиться, но в ваших рядах не осталось места",
     "horsesJoined": "{units}🧍 щедрого {playerSpan} получили коней 🐴<br />и стали всадниками!",
-    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 пехота заполнена {used}/{total} — {turnedAway}🧍 отправлены восвояси)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(теперь ряды заполнены)</span>",
     "newFolksWelcome": "🍻 За славные победы!",
     "moneyAndFame": "{gold}   {fame}",
     "title": "Таверна",

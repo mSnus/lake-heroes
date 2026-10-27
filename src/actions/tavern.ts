@@ -79,7 +79,7 @@ export function handleTavern(
     if (gained > 0) {
       joinedMsg = t('tavern.joined', { units: gained, playerSpan });
       if (turnedAway > 0) {
-        fullNote = t('tavern.fullNote', { used: player.militia, total: player.armyCapacity.militia, turnedAway });
+        fullNote = t('tavern.fullNote');
       }
 
       narrate(t('tavern.narrateMilitia', { playerName: player.name, units: gained }));

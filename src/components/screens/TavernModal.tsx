@@ -3,7 +3,6 @@ import { GameState } from '../../game/GameState';
 import '../../styles/modal.css';
 import GameModal from './GameModal';
 import { DecoratedButton } from '../ui/DecoratedButton';
-import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
 import { Fame } from '../snippets/Fame';
 import { useT } from '../../i18n';
@@ -43,10 +42,6 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onSkip
       <div className="modal-content tavern-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
         <h2 className="game-title">{t('tavern.title')}</h2>
         <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
-
-        <h3>
-          <PlayerLabel player={player} bold />
-        </h3>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
           {tJsx('tavern.moneyAndFame', {
             gold: (

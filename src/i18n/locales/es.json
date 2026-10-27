@@ -1013,7 +1013,7 @@
     "joined": "{units}🧍 se unieron al poderoso ejército<br />de {playerSpan}",
     "ranksFull": "{units}🧍 estaban a punto de unirse a ti, pero tus filas están llenas",
     "horsesJoined": "¡{units}🧍 del generoso {playerSpan} recibieron caballos gratis 🐴<br />y se convirtieron en jinetes!",
-    "fullNote": "<br /><span style=\"font-size:0.8em\">(🏯 milicia completa {used}/{total} — {turnedAway}🧍 rechazados)</span>",
+    "fullNote": "<br /><span style=\"font-size:0.8em\">(ahora las filas están llenas)</span>",
     "newFolksWelcome": "🍻 A la gloria!",
     "moneyAndFame": "{gold}   {fame}",
     "title": "La Taberna",
