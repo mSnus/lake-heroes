@@ -13,6 +13,8 @@ import { Fame } from '../snippets/Fame';
 import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { IncomeLabel, hasIncome } from '../snippets/IncomeLabel';
+import { Militia } from '../snippets/Militia';
+import { computeAnnualReward } from '../../game/kingsGrace';
 import { useT } from '../../i18n';
 import '../../styles/modal.css';
 import '../../styles/SquadHirePanel.css';
@@ -40,6 +42,7 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const player = gameState.activePlayer;
   const year = currentYear(gameState);
   const calendarYear = GAME_START_YEAR + year;
+  const annual = computeAnnualReward(gameState, player);
   const doubleGroups = gameState.yearEffects
     .filter((e) => e.id === DOUBLE_INCOME_EFFECT && e.untilYear === year)
     .map((e) => `${GROUP_EMOJI[e.group ?? ''] ?? ''} ${t(`year.groupName.${e.group}`)}`);
@@ -135,6 +138,14 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
             ) : (
               t('harvest.noIncome')
             )}
+          </div>
+        </div>
+
+        <div className="harvest-income">
+          <div className="harvest-caption">{t('harvest.kingsGrace')}</div>
+          <div className="harvest-stats">
+            {annual.totalGold > 0 && <Gold amount={`+${annual.totalGold}`} />}
+            {annual.totalUnits > 0 && <Militia amount={`+${annual.totalUnits}`} color={player.image} knight={player.isKnight} />}
           </div>
         </div>
 

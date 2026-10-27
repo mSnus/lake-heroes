@@ -1224,6 +1224,7 @@
     "title": "The Harvest",
     "subtitle": "year ({year})",
     "yearIncome": "This year's income:",
+    "kingsGrace": "The King's Grace:",
     "noIncome": "nothing this year",
     "buyMode": "Buy",
     "sellMode": "Sell",
