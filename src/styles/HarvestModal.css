@@ -47,6 +47,17 @@
   font-weight: bold;
 }
 
+.harvest-exchange-from {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.harvest-exchange-rate {
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+
 .harvest-trade {
   display: flex;
   justify-content: center;

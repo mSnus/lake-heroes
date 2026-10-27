@@ -24,7 +24,9 @@ interface HarvestModalProps {
   onClose: () => void;
 }
 
-type Mode = 'buy' | 'sell';
+type Mode = 'buy' | 'sell' | 'exchange';
+
+const EXCHANGE_RATE = 2; // give EXCHANGE_RATE of source to get 1 of target
 
 const RESOURCES: Resource[] = ['food', 'arms'];
 
@@ -38,8 +40,11 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const [mode, setMode] = useState<Mode>('sell');
   const [amounts, setAmounts] = useState<Record<Resource, number>>({ food: 0, arms: 0 });
   const [preview, setPreview] = useState<Partial<Record<Resource, number>>>({});
+  const [exAmounts, setExAmounts] = useState({ foodToArms: 0, armsToFood: 0 });
+  const [exPreview, setExPreview] = useState<Partial<{ foodToArms: number; armsToFood: number }>>({});
 
   const shown = (r: Resource) => preview[r] ?? amounts[r];
+  const shownEx = (k: 'foodToArms' | 'armsToFood') => exPreview[k] ?? exAmounts[k];
   const other = (r: Resource): Resource => (r === 'food' ? 'arms' : 'food');
   // Buying shares one purse between both rows, so each row's max leaves
   // room for what the other has dialled in.
@@ -51,10 +56,16 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const total = shown('food') + shown('arms');
   const goldDelta = mode === 'sell' ? total * HARVEST_SELL_PRICE : -total * HARVEST_BUY_PRICE;
 
+  const exTotalF2A = shownEx('foodToArms');
+  const exTotalA2F = shownEx('armsToFood');
+  const exActive = exTotalF2A > 0 || exTotalA2F > 0;
+
   const switchMode = (next: Mode) => {
     setMode(next);
     setAmounts({ food: 0, arms: 0 });
     setPreview({});
+    setExAmounts({ foodToArms: 0, armsToFood: 0 });
+    setExPreview({});
   };
 
   const trade = () => {
@@ -65,6 +76,18 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
 
     setAmounts({ food: 0, arms: 0 });
     setPreview({});
+    updateGameState(gameState);
+  };
+
+  const doExchange = () => {
+    const fa = exAmounts.foodToArms;
+    const af = exAmounts.armsToFood;
+    if (fa > 0) { player.food -= fa * EXCHANGE_RATE; player.arms += fa; }
+
+    if (af > 0) { player.arms -= af * EXCHANGE_RATE; player.food += af; }
+
+    setExAmounts({ foodToArms: 0, armsToFood: 0 });
+    setExPreview({});
     updateGameState(gameState);
   };
 
@@ -102,7 +125,7 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
         </div>
 
         <div className="harvest-mode">
-          {(['buy', 'sell'] as const).map((m) => (
+          {(['buy', 'sell', 'exchange'] as const).map((m) => (
             <button
               key={m}
               className={'harvest-mode-button' + (mode === m ? ' harvest-mode-button--active' : '')}
@@ -110,12 +133,14 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
             >
               {m === 'buy'
                 ? t('harvest.buyMode', { price: HARVEST_BUY_PRICE })
-                : t('harvest.sellMode', { price: HARVEST_SELL_PRICE })}
+                : m === 'sell'
+                ? t('harvest.sellMode', { price: HARVEST_SELL_PRICE })
+                : t('harvest.exchangeMode')}
             </button>
           ))}
         </div>
 
-        {RESOURCES.map((r) => (
+        {mode !== 'exchange' && RESOURCES.map((r) => (
           <div key={r} className="hire-row">
             <div className="hire-row-name">{resourceLabel(r, '')}</div>
             <DecoratedSlider
@@ -132,15 +157,62 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
           </div>
         ))}
 
+        {mode === 'exchange' && (
+          <>
+            <div className="hire-row">
+              <div className="hire-row-name harvest-exchange-from">
+                <Food amount="" />
+                <span className="harvest-exchange-rate">×{EXCHANGE_RATE}</span>
+              </div>
+              <DecoratedSlider
+                min={0}
+                max={Math.floor(player.food / EXCHANGE_RATE)}
+                value={Math.min(shownEx('foodToArms'), Math.floor(player.food / EXCHANGE_RATE))}
+                onPreview={(v) => setExPreview((p) => ({ ...p, foodToArms: v }))}
+                onCommit={(v) => {
+                  setExAmounts((a) => ({ ...a, foodToArms: v }));
+                  setExPreview((p) => ({ ...p, foodToArms: undefined }));
+                }}
+              />
+              <div className="hire-row-amount-label"><Arms amount={shownEx('foodToArms')} /></div>
+            </div>
+            <div className="hire-row">
+              <div className="hire-row-name harvest-exchange-from">
+                <Arms amount="" />
+                <span className="harvest-exchange-rate">×{EXCHANGE_RATE}</span>
+              </div>
+              <DecoratedSlider
+                min={0}
+                max={Math.floor(player.arms / EXCHANGE_RATE)}
+                value={Math.min(shownEx('armsToFood'), Math.floor(player.arms / EXCHANGE_RATE))}
+                onPreview={(v) => setExPreview((p) => ({ ...p, armsToFood: v }))}
+                onCommit={(v) => {
+                  setExAmounts((a) => ({ ...a, armsToFood: v }));
+                  setExPreview((p) => ({ ...p, armsToFood: undefined }));
+                }}
+              />
+              <div className="hire-row-amount-label"><Food amount={shownEx('armsToFood')} /></div>
+            </div>
+          </>
+        )}
+
         <div className="harvest-trade">
-          <div className={'shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
-            <button className="shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
-              <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
-              <span className="hire-row-caption">
-                <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
-              </span>
-            </button>
-          </div>
+          {mode !== 'exchange' ? (
+            <div className={'shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
+              <button className="shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
+                <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
+                <span className="hire-row-caption">
+                  <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div className={'shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}>
+              <button className="shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
+                <span className="hire-submit-icon">🔄</span>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>

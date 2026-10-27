@@ -1165,8 +1165,9 @@
     "title": "🌾 Harvest of year {year}",
     "yearIncome": "This year's income:",
     "noIncome": "nothing this year",
-    "buyMode": "Buy, {price}🟡 each",
-    "sellMode": "Sell, {price}🟡 each",
+    "buyMode": "Buy {price}🟡",
+    "sellMode": "Sell {price}🟡",
+    "exchangeMode": "Exchange",
     "trade": "Trade",
     "finish": "🌾 Finish harvest",
     "botSold": "{playerName} sold {food}🫓 and {arms}⚔️ at the Harvest"

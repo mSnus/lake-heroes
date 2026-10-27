@@ -1197,8 +1197,9 @@
     "title": "🌾 Cosecha del año {year}",
     "yearIncome": "Ingresos de este año:",
     "noIncome": "nada este año",
-    "buyMode": "Comprar, {price}🟡 cada uno",
-    "sellMode": "Vender, {price}🟡 cada uno",
+    "buyMode": "Comprar {price}🟡",
+    "sellMode": "Vender {price}🟡",
+    "exchangeMode": "Intercambiar",
     "trade": "Comerciar",
     "finish": "🌾 Terminar la cosecha",
     "botSold": "{playerName} vendió {food}🫓 y {arms}⚔️ en la Cosecha"

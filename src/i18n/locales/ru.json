@@ -1194,8 +1194,9 @@
     "title": "🌾 Урожай {year}-го года",
     "yearIncome": "Доход за год:",
     "noIncome": "в этом году ничего",
-    "buyMode": "Купить, {price}🟡 за штуку",
-    "sellMode": "Продать, {price}🟡 за штуку",
+    "buyMode": "Купить {price}🟡",
+    "sellMode": "Продать {price}🟡",
+    "exchangeMode": "Обмен",
     "trade": "Обменять",
     "finish": "🌾 Завершить сбор урожая",
     "botSold": "{playerName} продаёт на сборе урожая {food}🫓 и {arms}⚔️"
