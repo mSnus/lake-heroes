@@ -641,6 +641,8 @@
     "enoughToChallengeDragon": "У {playerName} {army} — достаточно, чтобы бросить вызов Дракону!",
     "dragonGuardsGold": "Ужасающий дракон охраняет груду золота и драгоценностей",
     "prisonGoldFine": "{playerSpan} подкупает стражу {fine}🟡, чтобы сбежать из темницы",
+    "prisonConvinces": "{playerSpan} убеждает стражников отпустить его на свободу",
+    "prisonConvincesToast": "{playerName} убеждает стражников отпустить его на свободу",
     "prisonGoldFineToast": "{playerName} подкупает стражу {fine}🟡, чтобы сбежать из темницы",
     "prisonFameFine": "{playerSpan} с позором покидает темницу, теряя 1🏆",
     "prisonFameFineToast": "{playerName} не может заплатить и теряет 1 славу, чтобы выйти из темницы",

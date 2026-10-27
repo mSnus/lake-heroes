@@ -644,6 +644,8 @@
     "enoughToChallengeDragon": "¡{playerName} tiene {army} — suficiente para desafiar al Dragón!",
     "dragonGuardsGold": "Un dragón aterrador custodia un montón de oro y joyas",
     "prisonGoldFine": "{playerSpan} soborna a los guardias con {fine}🟡 para escapar de la prisión",
+    "prisonConvinces": "{playerSpan} convence a los guardias de dejarlo ir libre",
+    "prisonConvincesToast": "{playerName} convence a los guardias de dejarlo ir libre",
     "prisonGoldFineToast": "{playerName} soborna a los guardias con {fine}🟡 para escapar de la prisión",
     "prisonFameFine": "{playerSpan} abandona la prisión avergonzado, perdiendo 1🏆",
     "prisonFameFineToast": "{playerName} no tiene oro para pagar y pierde 1 de fama para salir de la prisión",

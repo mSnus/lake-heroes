@@ -122,12 +122,17 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
         say(t('endTurn.prisonFameFineToast', { playerName: player.name }), 'info');
       } else {
         const fine = Math.round(player.gold / 4 / 10) * 10;
-        player.gold -= fine;
-        setGameMessage(board, t('endTurn.prisonGoldFine', { playerSpan, fine }));
-        say(t('endTurn.prisonGoldFineToast', { playerName: player.name, fine }), 'info');
+        if (fine === 0) {
+          setGameMessage(board, t('endTurn.prisonConvinces', { playerSpan }));
+          say(t('endTurn.prisonConvincesToast', { playerName: player.name }), 'info');
+        } else {
+          player.gold -= fine;
+          setGameMessage(board, t('endTurn.prisonGoldFine', { playerSpan, fine }));
+          say(t('endTurn.prisonGoldFineToast', { playerName: player.name, fine }), 'info');
+        }
       }
     } else {
-      setGameMessage(board, t('endTurn.prisonIsWetAndCold', { playerName: player.name }));
+      setGameMessage(board, t('endTurn.dwellsInPrison', { playerName: player.name }));
       say(t('endTurn.dwellsInPrison', { playerName: player.name }), 'info');
     }
 
