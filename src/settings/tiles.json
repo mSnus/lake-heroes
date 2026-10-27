@@ -23,7 +23,7 @@
     "group": "Mills",
     "spriteImage": "assets/sprites/windmill.png",
     "isOwnable": true,
-    "bonusType": "arms",
+    "bonusType": "food",
     "requiredFame": 0,
     "garrison": 12,
     "prices": {
