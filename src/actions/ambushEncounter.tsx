@@ -19,6 +19,9 @@ export function checkAmbushEncounter(
   // No ambushes during the game's first year
   if (currentYear(board) <= 1) return false;
 
+  // No ambushes while the player is at (or leaving) the prison tile
+  if (board.tiles[player.position]?.id === 'prison') return false;
+
   if (player.fame <= KNIGHT_FAME) return false;
   if (player.armyPower <= 15) return false;
 

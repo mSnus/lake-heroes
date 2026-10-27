@@ -32,6 +32,9 @@ export function checkCaravanEncounter(
     // No caravans during the game's first year
     if (currentYear(board) <= 1) return false;
 
+    // No caravans while the player is at (or leaving) the prison tile
+    if (board.tiles[player.position]?.id === 'prison') return false;
+
     // Not enough units to threaten a caravan -- needs at least half the
     // militia cap filled, not just some flat minimum.
     if (player.units < player.armyCapacity.militia / 2) return false;
