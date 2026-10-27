@@ -719,7 +719,7 @@
     "overwhelmedGameMessage": "{playerName} разгромлен в засаде{lossStr}",
     "lost": "Потеряно {loss}",
     "overwhelmed": "Разгромлен",
-    "lostUnitsPart": ", потеряно {units}🧍",
+    "lostUnitsPart": ", потеряно {army}🧍",
     "gainedGoldPart": ", получено {gold}🟡",
     "lostGoldPart": ", потеряно {gold}🟡",
     "repelsVerb": "отражает засаду",

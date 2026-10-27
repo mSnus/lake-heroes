@@ -722,7 +722,7 @@
     "overwhelmedGameMessage": "{playerName} es abrumado por la emboscada{lossStr}",
     "lost": "Perdió {loss}",
     "overwhelmed": "Abrumado",
-    "lostUnitsPart": ", perdió {units}🧍",
+    "lostUnitsPart": ", perdió {army}🧍",
     "gainedGoldPart": ", ganó {gold}🟡",
     "lostGoldPart": ", perdió {gold}🟡",
     "repelsVerb": "repele una emboscada",

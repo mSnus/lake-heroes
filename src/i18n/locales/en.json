@@ -724,7 +724,7 @@
     "overwhelmedGameMessage": "{playerName} is overwhelmed by the ambush{lossStr}",
     "lost": "Lost {loss}",
     "overwhelmed": "Overwhelmed",
-    "lostUnitsPart": ", lost {units}🧍",
+    "lostUnitsPart": ", lost {army}🧍",
     "gainedGoldPart": ", gained {gold}🟡",
     "lostGoldPart": ", lost {gold}🟡",
     "repelsVerb": "repels an ambush",
