@@ -118,8 +118,8 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
         <div className="harvest-income">
           <div className="harvest-caption">{t('harvest.yearIncome')}</div>
           <div className="harvest-stats">
-            {hasIncome(player.lastYearIncome ?? {}) ? (
-              <IncomeLabel income={player.lastYearIncome} unitColor={player.image} unitKnight={player.isKnight} />
+            {hasIncome({ ...player.lastYearIncome, units: 0 } ?? {}) ? (
+              <IncomeLabel income={{ ...player.lastYearIncome, units: 0 }} unitColor={player.image} unitKnight={player.isKnight} />
             ) : (
               t('harvest.noIncome')
             )}
