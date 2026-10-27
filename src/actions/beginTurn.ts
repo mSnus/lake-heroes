@@ -40,6 +40,7 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   // players (online/stream.ts decides whether it is actually ours to narrate).
   openStream(board);
 
+  setGameMessage(board, '');
   board.activePlayer.hasClaimedThisTurn = false;
   board.activePlayer.hasConsideredClaimThisTurn = false;
   board.activePlayer.hasResolvedTileEncounterThisTurn = false;
