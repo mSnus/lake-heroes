@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { playerScore } from '../game/score';
-import { DRAGON_MERCY_SCORE_RATIO, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { DRAGON_MERCY_SCORE_RATIO, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER, KARMA_CURSED_ENCOUNTER_MULTIPLIER } from '../game/constants';
 import { currentYear } from '../game/year';
 import {
   showDragonSkyScreen,
@@ -53,7 +53,8 @@ export function checkDragonEncounter(
       return false;
     }
 
-    if (Math.random() >= ENCOUNTER_CHANCE) {
+    const encounterChance = ENCOUNTER_CHANCE * (player.karma < 0 ? KARMA_CURSED_ENCOUNTER_MULTIPLIER : 1);
+    if (Math.random() >= encounterChance) {
       return false;
     }
   }

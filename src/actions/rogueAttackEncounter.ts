@@ -5,7 +5,7 @@ import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { razeTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
-import { KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { KARMA_HOSTILE_ENCOUNTER_MULTIPLIER, KARMA_CURSED_ENCOUNTER_MULTIPLIER } from '../game/constants';
 import { currentYear } from '../game/year';
 import { t } from '../i18n';
 
@@ -46,7 +46,7 @@ export function checkRogueAttackEncounter(
   const eligibleTiles = player.ownedTiles.filter((idx) => !board.tiles[idx]?.isYielded);
   if (eligibleTiles.length < 1) return false;
   const encounterChance =
-    BASE_ENCOUNTER_CHANCE * (player.karma < 0 ? KARMA_HOSTILE_ENCOUNTER_MULTIPLIER : 1);
+    BASE_ENCOUNTER_CHANCE * (player.karma < 0 ? KARMA_CURSED_ENCOUNTER_MULTIPLIER : 1);
   if (!force && Math.random() >= encounterChance) return false;
 
   const tileIdx = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];

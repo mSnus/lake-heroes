@@ -69,6 +69,10 @@ export const KARMA_LONG_PATH_CHANCE = 0.75;
 // multiplied by this -- a +125% increase over the normal odds (see
 // rogueAttackEncounter.ts, ambushEncounter.tsx).
 export const KARMA_HOSTILE_ENCOUNTER_MULTIPLIER = 2.25;
+// A cursed player's chance of a dragon or roaming-horde *encounter* (i.e.
+// the event firing at all) is doubled (see dragonEncounter.ts,
+// rogueAttackEncounter.ts).
+export const KARMA_CURSED_ENCOUNTER_MULTIPLIER = 2;
 
 // ── Tile economy scale ──
 // tiles.json authors prices and income as small coefficients of these bases,
