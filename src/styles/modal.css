@@ -96,7 +96,7 @@ button.decorated {
   font-weight: bold;
   text-shadow: 3px 1px 5px black;
   filter: drop-shadow(2px 4px 6px black);
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
   line-height: 1;
   text-align: center;
   scale: 0.9;
@@ -137,7 +137,7 @@ button.decorated:disabled {
   font-size: 20px;
   border-radius: 0;
   color: wheat;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .modal-content select {

@@ -39,7 +39,7 @@ const TavernModal: React.FC<TavernModalProps> = ({ gameState, joinedHtml, onSkip
       noBorder={true}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
-      <div className="modal-content tavern-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content tavern-screen" style={{ color: 'white', fontFamily: 'HeroesTextured' }}>
         <h2 className="game-title">{t('tavern.title')}</h2>
         <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>

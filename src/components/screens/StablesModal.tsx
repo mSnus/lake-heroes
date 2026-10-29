@@ -92,7 +92,7 @@ const StablesModal: React.FC<StablesModalProps> = ({
       backgroundImage="assets/screens/stables.jpg"
       noBorder={true}
     >
-      <div className="modal-content" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content" style={{ color: 'white', fontFamily: 'HeroesTextured' }}>
         <h2 className="game-title">{t('stables.title')}</h2>
         {joinedHtml && (
           <h3 style={{ whiteSpace: 'pre-line' }} dangerouslySetInnerHTML={{ __html: joinedHtml }} />

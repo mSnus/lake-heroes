@@ -5,29 +5,14 @@ import { TURNS_PER_YEAR } from '../../game/constants';
 import { sayLocal } from '../../utils/say';
 import { useT } from '../../i18n';
 
-/** One color per turn of the year, in order -- the wedge for that turn's
- * position on the dial. Indexed modulo its own length, same reasoning as
- * the emoji list this replaced: a change to TURNS_PER_YEAR can't land on an
- * undefined. */
-const SECTOR_COLORS = [
-  '#38A9D6',
-  '#3C9992',
-  '#4BB28B',
-  '#57C785',
-  '#A4D26B',
-  '#EDDD53',
-  '#53EDBF',
-  '#53D6ED',
-];
+/** Two dial sectors per season, in order -- seasonKey's input is still
+ * counted in eighths of the year, as it was for the pie this replaced. */
+const SECTORS_PER_YEAR = 8;
+const SECTORS_PER_TURN = SECTORS_PER_YEAR / TURNS_PER_YEAR;
 
-const SIZE = 24; // px -- 1.5rem at the default 16px root
-const CENTER = SIZE / 2;
-const STROKE_WIDTH = 1;
-const RADIUS = CENTER - STROKE_WIDTH / 2; // inset so the 1px outline isn't clipped
-const SECTOR_DEG = 360 / SECTOR_COLORS.length;
-const SECTORS_PER_TURN = SECTOR_COLORS.length / TURNS_PER_YEAR;
+/** The sprite turns a quarter per turn of the year. */
+const DEG_PER_TURN = 90;
 
-/** Two sectors of the dial per season, in order. */
 function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
   if (sectors <= 2) return 'winter';
   if (sectors <= 4) return 'spring';
@@ -35,31 +20,17 @@ function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
   return 'autumn';
 }
 
-function polarPoint(angleDeg: number): [number, number] {
-  // -90 so 0deg lands at 12 o'clock (SVG's own 0deg is 3 o'clock) --
-  // increasing angleDeg from there sweeps clockwise.
-  const rad = (Math.PI / 180) * (angleDeg - 90);
-  return [CENTER + RADIUS * Math.cos(rad), CENTER + RADIUS * Math.sin(rad)];
-}
-
-/** One pie wedge from startDeg to endDeg (0deg = 12 o'clock, increasing
- * clockwise) -- every wedge here spans well under 180deg, so the arc's
- * large-arc-flag is always 0. */
-function sectorPath(startDeg: number, endDeg: number): string {
-  const [x1, y1] = polarPoint(startDeg);
-  const [x2, y2] = polarPoint(endDeg);
-  return `M ${CENTER} ${CENTER} L ${x1} ${y1} A ${RADIUS} ${RADIUS} 0 0 1 ${x2} ${y2} Z`;
-}
-
 /** Where the shared calendar stands, shown over the map's corner -- see
- * game/year.ts. A circular gauge: one wedge per turn of the year, filled in
- * clockwise from the top as the year progresses, resetting bare at rollover.
- * The dial itself is wordless (the tooltip's "year · turn/total" is the
- * only text on hover); a click announces the season as a local toast. */
+ * game/year.ts. A gold disc with a quarter cut out, turned a further quarter
+ * clockwise each turn of the year. The rotation is cumulative across years
+ * (never wraps back) so the disc doesn't spin backwards at rollover. The
+ * dial itself is wordless (the tooltip's "year · turn/total" is the only
+ * text on hover); a click announces the season as a local toast. */
 export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   const t = useT();
   const turn = currentYearTurn(gameState);
-  const elapsed = Math.min(turn * SECTORS_PER_TURN, SECTOR_COLORS.length);
+  const elapsed = Math.min(turn * SECTORS_PER_TURN, SECTORS_PER_YEAR);
+  const rotation = (currentYear(gameState) * TURNS_PER_YEAR + turn) * DEG_PER_TURN;
 
   return (
     <div
@@ -72,27 +43,12 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
         )
       }
     >
-      <svg viewBox={`0 0 ${SIZE} ${SIZE}`}>
-        <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="#abab9344" />
-        {Array.from({ length: elapsed }, (_, i) => (
-          <path
-            key={i}
-            d={sectorPath(i * SECTOR_DEG, (i + 1) * SECTOR_DEG)}
-            fill={SECTOR_COLORS[i % SECTOR_COLORS.length]}
-          />
-        ))}
-        {/* Drawn last, fill="none", so the outline stays crisp over every
-            wedge rather than being half-covered by whichever one is filled
-            right up to the same radius. */}
-        <circle
-          cx={CENTER}
-          cy={CENTER}
-          r={RADIUS}
-          fill="none"
-          stroke="#3b402cc4"
-          strokeWidth={STROKE_WIDTH}
-        />
-      </svg>
+      <img
+        src="/assets/sprites/year_indicator.png"
+        alt=""
+        draggable={false}
+        style={{ transform: `rotate(${rotation}deg)` }}
+      />
     </div>
   );
 };

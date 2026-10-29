@@ -22,12 +22,12 @@
 .army-screen-resources .food-inline,
 .army-screen-resources .arms-inline {
   color: wheat;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .garrisons-army-side {
   font-size: 1.2rem;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
   font-weight: bold;
   color: rgb(255, 255, 255);
   text-shadow: 2px 2px 6px black;
@@ -48,7 +48,7 @@
 
 .garrison-towers {
   color: white;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
   font-size: 1.2rem;
 }
 
@@ -89,7 +89,7 @@
 
 .garrisons-row-name {
   color: wheat;
-  font-family: 'Encode';
+  font-family: 'HeroesPlain';
   font-weight: bold;
   font-size: 0.8rem;
 }
@@ -102,7 +102,7 @@
   align-items: center;
   color: wheat;
   gap: 1rem;
-  font-family: 'Encode';
+  font-family: 'HeroesPlain';
   font-weight: bold;
   font-size: 1rem;
 }
@@ -110,7 +110,7 @@
 
 .garrisons-row-atmax {
   color: wheat;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
   font-size: 0.85rem;
   font-style: italic;
   opacity: 0.85;
@@ -122,7 +122,7 @@
   margin-left: 0.5rem;
   min-width: 3.2rem;
   color: wheat;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
   text-shadow: 2px 2px 6px black;
 }
 

@@ -140,7 +140,7 @@ const KingsCastleModal: React.FC<BuyUnitsModalProps> = ({
       noBorder={true}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
-      <div className="modal-content" style={{ color: `white`, fontFamily: 'Texturina' }}>
+      <div className="modal-content" style={{ color: `white`, fontFamily: 'HeroesTextured' }}>
         <h2 className="game-title">{t('kingsCastle.title')}</h2>
         <h3>{gameState.kingRewardMessage}, <PlayerLabel player={player} /></h3>
 

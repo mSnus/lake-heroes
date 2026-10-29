@@ -198,7 +198,7 @@
   color: #ffffffea;
   font-weight: bold;
   width: 100%;
-  font-family: 'Texturina', serif;
+  font-family: 'HeroesTextured', serif;
   font-weight: bold;
   text-shadow: 1px 1px 3px #00000060;
   filter: drop-shadow(0 0 3px #00000030);
@@ -468,7 +468,7 @@
   font-size: 20px;
   border-radius: 0;
   color: wheat;
-  font-family: 'Texturina', serif;
+  font-family: 'HeroesTextured', serif;
 }
 
 .tile-card-attack-emoji {

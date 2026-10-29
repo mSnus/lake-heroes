@@ -116,7 +116,7 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
       noBorder={true}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
-      <div className="modal-content tavern-screen harvest-screen" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content tavern-screen harvest-screen" style={{ color: 'white', fontFamily: 'HeroesTextured' }}>
         <h2 className="game-title">{t('harvest.title')}</h2>
         <div className="harvest-subtitle">{t('harvest.subtitle', { year: calendarYear })}</div>
         {doubleIncomeNote && <div className="harvest-double-income-note">{doubleIncomeNote}</div>}

@@ -11,7 +11,7 @@
    "which player to challenge" screen shown before BattleScreen itself
    mounts) — BattleScreen no longer renders a title of its own. */
 .battle-header {
-  font-family: 'StyleScript', serif;
+  font-family: 'HeroesBigTitle', serif;
   color: #fff;
   font-size: 3rem;
   line-height: 1;
@@ -143,7 +143,7 @@
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .battle-result-verdict {
@@ -154,7 +154,7 @@
 }
 
 .battle-result-message {
-  font-family: 'Encode';
+  font-family: 'HeroesPlain';
   color: #eee;
   font-size: 1.2rem;
   margin: 0;

@@ -33,7 +33,7 @@
 }
 
 body {
-  font-family: 'Roboto Condensed', sans-serif;
+  font-family: 'HeroesPlain', sans-serif;
 }
 
 /* Locks the page in place while any screenStore screen is showing (see
@@ -44,21 +44,21 @@ body.screen-open {
 }
 
 @font-face {
-  font-family: 'Texturina';
-  src: url('/assets/fonts/Texturina/Texturina-VariableFont_opsz,wght.ttf') format('truetype');
+  font-family: 'HeroesTextured';
+  src: url('/assets/fonts/Kurale-Regular.ttf') format('truetype');
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Encode';
-  src: url('/assets/fonts/Encode_Sans/EncodeSans-VariableFont_wdth,wght.ttf') format('truetype');
+  font-family: 'HeroesPlain';
+  src: url('/assets/fonts/Murecho-VariableFont_wght.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'StyleScript';
-  src: url('/assets/fonts/StyleScript-Regular.ttf') format('truetype');
+  font-family: 'HeroesBigTitle';
+  src: url('/assets/fonts/Kurale-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -74,10 +74,10 @@ body.screen-open {
 }
 
 .game-title {
-  font-family: 'StyleScript', serif;
+  font-family: 'HeroesBigTitle', serif;
   font-weight: 100;
   color: wheat;
-  font-size: 4rem;
+  font-size: 2.8rem;
   line-height: 1;
   margin-bottom: 4rem;
   text-shadow: #000 1px 1px 2px;
@@ -147,20 +147,16 @@ body.screen-open {
   left: 1rem;
   z-index: 90;
   cursor: pointer;
-  background-image: url('/assets/sprites/ring.png');
-  background-position: center center;
-  background-size: contain;
-  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.year-indicator svg {
+.year-indicator img {
   display: block;
   width: 2.5rem;
   height: 2.5rem;
-  opacity: 0.7;
+  transition: transform 0.6s ease-in-out;
 }
 
 @media screen and (max-width: 768px) {

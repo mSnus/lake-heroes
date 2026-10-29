@@ -30,7 +30,7 @@ export const VersionMismatchBanner: React.FC = () => {
         textAlign: 'center',
         padding: '6px 12px',
         fontSize: '0.9rem',
-        fontFamily: 'Texturina, sans-serif',
+        fontFamily: 'HeroesTextured, sans-serif',
         cursor: 'pointer',
         boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
       }}

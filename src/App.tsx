@@ -748,7 +748,7 @@ function App() {
                   maxWidth: '640px',
                   lineHeight: 1.5,
                   textShadow: '1px 1px 6px #000',
-                  fontFamily: 'Texturina',
+                  fontFamily: 'HeroesTextured',
                 }}
               >
                 {isDragonWin ? (
@@ -756,7 +756,7 @@ function App() {
                     Oh mighty <PlayerLabel player={winner} />,<br />
                     it took you {years} years to slain that dragon!
                     <br />
-                    <i style={{ fontSize: '0.8rem', fontFamily: 'Texturina' }}>
+                    <i style={{ fontSize: '0.8rem', fontFamily: 'HeroesTextured' }}>
                       Boromir would do it in only {years - 1}...
                     </i>
                   </>

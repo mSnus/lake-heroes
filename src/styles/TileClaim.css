@@ -7,7 +7,7 @@
   font-size: 0.8rem;
   display: flex;
   text-align: center;
-  font-family: 'Encode', sans-serif;
+  font-family: 'HeroesPlain', sans-serif;
   font-weight: 600;
   z-index: 5502;
   opacity: 0.8;
@@ -17,7 +17,7 @@
 
 .tile-guards-dialogue {
   font-size: 1.1rem;
-  font-family: 'Encode', sans-serif;
+  font-family: 'HeroesPlain', sans-serif;
   color: wheat;
   margin-top: 1rem;
   background-color: unset;
@@ -53,7 +53,7 @@
   justify-content: space-between;
 
   font-size: 1.1rem;
-  font-family: Encode,sans-serif;
+  font-family: HeroesPlain,sans-serif;
   color: wheat;
 
   text-shadow: 4px 4px 12px black;

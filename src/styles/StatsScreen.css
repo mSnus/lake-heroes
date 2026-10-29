@@ -29,7 +29,7 @@
   margin: 0;
   color: #ffe066;
   font-size: 1.4rem;
-  font-family: 'Encode';
+  font-family: 'HeroesPlain';
 }
 
 .stats-screen-close {
@@ -50,7 +50,7 @@
   font-size: 0.9rem;
   opacity: 0.85;
   margin-bottom: 24px;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .stats-screen-legend-item {
@@ -61,7 +61,7 @@
   text-align: center;
   opacity: 0.7;
   margin-top: 40px;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .stats-chart {
@@ -90,7 +90,7 @@
 .stats-chart-axis-label {
   fill: #ccc;
   font-size: 11px;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .stats-chart-legend {
@@ -99,7 +99,7 @@
   gap: 14px;
   margin-bottom: 8px;
   font-size: 0.85rem;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 .stats-chart-legend-item {

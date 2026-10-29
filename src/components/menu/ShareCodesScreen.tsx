@@ -56,7 +56,7 @@ const ShareCodesScreen: React.FC<ShareCodesScreenProps> = ({ gameState }) => {
 
   return (
     <GameModal className="game-modal" backgroundImage="assets/screens/king.jpg" noBorder>
-      <div className="modal-content" style={{ color: 'white', fontFamily: 'Texturina' }}>
+      <div className="modal-content" style={{ color: 'white', fontFamily: 'HeroesTextured' }}>
         <h2 className="game-title">{t('online.shareTitle')}</h2>
         <h3 style={{ whiteSpace: 'pre-line' }}>
           {isHost ? t('online.shareHint') : t('online.yourLinkOnly')}

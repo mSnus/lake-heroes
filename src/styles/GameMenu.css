@@ -109,9 +109,10 @@
 }
 
 .text-title {
-  font-family: 'StyleScript', serif;
+  font-family: 'HeroesBigTitle', serif;
   color: white;
-  font-size: 2.5rem;
+  font-size: 2.3rem;
+  letter-spacing: -0.1rem;
   line-height: 1;
   margin-bottom: 4rem;
   text-shadow: #000 1px 1px 2px;
@@ -130,7 +131,7 @@
   z-index: 6001;
   box-shadow: 1px 1px 20px 17px #04040460;
   background-color: #00000060;
-  font-family: 'Texturina';
+  font-family: 'HeroesTextured';
 }
 
 @media (min-width: 769px) {
