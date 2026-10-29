@@ -4,6 +4,8 @@ import { changeKarma } from '../utils/karma';
 import { collectTileTurnIncome } from './income';
 import { grantYearlyBonusToAll } from './kingsGrace';
 import { say } from '../utils/say';
+import { isHeadlessRun } from '../utils/headlessStore';
+import { recordSimIncome } from '../utils/simLogStore';
 import { t } from '../i18n';
 import {
   currentYear,
@@ -65,15 +67,7 @@ export const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪
  * actions/king.tsx).
  */
 export function endYear(board: GameState): void {
-  // A one-time bonus from every tile each player owns, on top of whatever
-  // they already collected this turn -- same formula as the regular
-  // per-turn payout (collectTileTurnIncome), just granted once more for
-  // the whole table at once. Silent per player; one shared toast covers
-  // the lot, and only if it actually paid out anything (a tileless player,
-  // or a table with nobody owning anything yet, pays out nothing to
-  // announce). Named "tileHarvestBonus" rather than "yearlyBonus" so it
-  // doesn't read as the same thing as the Yearly Bonus below -- this is a
-  // second helping of ordinary tile income, not the King's Grace formula.
+  // Tiles pay their owner once a year, here, for the whole table at once.
   let anyHarvestBonus = false;
   for (const player of board.players) {
     player.dragonEncounters = 0;
@@ -84,6 +78,7 @@ export function endYear(board: GameState): void {
     else if (player.karma > 0) changeKarma(player, -1);
 
     const bonus = collectTileTurnIncome(board, player);
+    if (isHeadlessRun()) recordSimIncome(bonus.gold, bonus.units, player);
     if (bonus.gold > 0 || bonus.food > 0 || bonus.arms > 0 || bonus.units > 0) anyHarvestBonus = true;
   }
 

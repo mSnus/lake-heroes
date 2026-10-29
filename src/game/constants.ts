@@ -27,7 +27,7 @@ export const FORK_ROLL_RANGE = 6;
 // moves along at the same rate, counted in go-rounds (board.round, bumped
 // once the last player's turn ends) rather than laps of the board, so a
 // turn spent in prison still passes the time. See game/year.ts.
-export const TURNS_PER_YEAR = 8;
+export const TURNS_PER_YEAR = 4;
 // The real-world calendar year the game starts in -- used wherever a
 // realistic in-world date is shown (e.g. Harvest screen subtitle).
 export const GAME_START_YEAR = 1450;

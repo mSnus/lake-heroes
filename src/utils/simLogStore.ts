@@ -70,13 +70,14 @@ export function getSimLog(playerId: number, circle: number): string[] {
   return entries.get(key(playerId, circle)) ?? [];
 }
 
-/** Tile income is collected every turn, not toasted per-turn like other
- * events -- accumulated per circle instead of logged line by line, so a
- * player who owns tiles for a whole lap gets one running total rather than
- * a repeat of "collects Ngold" once per turn (see endTurn.ts). */
-export function recordSimIncome(gold: number, units: number): void {
+/** Tile income, accumulated per circle as one running total. */
+export function recordSimIncome(
+  gold: number,
+  units: number,
+  forPlayer?: SimLogBoard['activePlayer']
+): void {
   if (!board || (gold <= 0 && units <= 0)) return;
-  const player = board.activePlayer;
+  const player = forPlayer ?? board.activePlayer;
   if (!player) return;
 
   const k = key(player.id, player.circles);

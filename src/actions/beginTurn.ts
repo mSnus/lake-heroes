@@ -8,10 +8,8 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { releasePrisonerOfWar } from './releasePrisonerOfWar';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
-import { collectTileTurnIncome } from '../game/income';
 import { endYear, startNewYear, yearForRound } from '../game/year';
 import { beginHarvestTurn } from './harvest';
-import { recordSimIncome } from '../utils/simLogStore';
 import { formatArmy } from '../utils/formatArmy';
 import { announce } from '../utils/announce';
 import { setGameMessage } from '../utils/gameMessage';
@@ -73,26 +71,6 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   if (board.harvest) {
     beginHarvestTurn(board, updateGameState);
     return;
-  }
-
-  // Tiles pay their owner at the start of every turn now, not once a lap --
-  // applies even to a player about to skip their turn in prison, since it's
-  // their tiles earning it, not them personally taking an action.
-  const turnIncome = collectTileTurnIncome(board, board.activePlayer);
-  if (isHeadlessRun()) recordSimIncome(turnIncome.gold, turnIncome.units);
-  if (turnIncome.gold > 0 || turnIncome.food > 0 || turnIncome.arms > 0 || turnIncome.units > 0) {
-    const incomeParts: string[] = [];
-    if (turnIncome.gold > 0) incomeParts.push(`${turnIncome.gold}🟡`);
-    if (turnIncome.food > 0) incomeParts.push(`${turnIncome.food}🫓`);
-    if (turnIncome.arms > 0) incomeParts.push(`${turnIncome.arms}⚔️`);
-    if (turnIncome.units > 0) incomeParts.push(`${turnIncome.units}🧍`);
-    say(
-      t('endTurn.turnIncome', {
-        playerName: board.activePlayer.name,
-        summary: incomeParts.join(` ${t('common.and')} `),
-      }),
-      'debug'
-    );
   }
 
   if (board.activePlayer.turnsToSkip > 0) {

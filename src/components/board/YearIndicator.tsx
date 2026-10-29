@@ -1,6 +1,7 @@
 import React from 'react';
 import { GameState } from '../../game/GameState';
 import { currentYear, currentYearTurn } from '../../game/year';
+import { TURNS_PER_YEAR } from '../../game/constants';
 import { sayLocal } from '../../utils/say';
 import { useT } from '../../i18n';
 
@@ -24,12 +25,13 @@ const CENTER = SIZE / 2;
 const STROKE_WIDTH = 1;
 const RADIUS = CENTER - STROKE_WIDTH / 2; // inset so the 1px outline isn't clipped
 const SECTOR_DEG = 360 / SECTOR_COLORS.length;
+const SECTORS_PER_TURN = SECTOR_COLORS.length / TURNS_PER_YEAR;
 
-/** Two turns of the year per season, in order. */
-function seasonKey(yearTurn: number): 'winter' | 'spring' | 'summer' | 'autumn' {
-  if (yearTurn <= 2) return 'winter';
-  if (yearTurn <= 4) return 'spring';
-  if (yearTurn <= 6) return 'summer';
+/** Two sectors of the dial per season, in order. */
+function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
+  if (sectors <= 2) return 'winter';
+  if (sectors <= 4) return 'spring';
+  if (sectors <= 6) return 'summer';
   return 'autumn';
 }
 
@@ -57,15 +59,15 @@ function sectorPath(startDeg: number, endDeg: number): string {
 export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   const t = useT();
   const turn = currentYearTurn(gameState);
-  const elapsed = Math.min(turn, SECTOR_COLORS.length);
+  const elapsed = Math.min(turn * SECTORS_PER_TURN, SECTOR_COLORS.length);
 
   return (
     <div
       className="year-indicator"
-      title={`${currentYear(gameState)} · ${turn}/${SECTOR_COLORS.length}`}
+      title={`${currentYear(gameState)} · ${turn}/${TURNS_PER_YEAR}`}
       onClick={() =>
         sayLocal(
-          t('yearIndicator.season', { season: t(`yearIndicator.${seasonKey(turn)}`) }),
+          t('yearIndicator.season', { season: t(`yearIndicator.${seasonKey(elapsed)}`) }),
           'info'
         )
       }
