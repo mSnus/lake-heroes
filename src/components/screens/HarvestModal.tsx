@@ -116,8 +116,13 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
       noBorder={true}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
-      <div className="modal-content tavern-screen harvest-screen" style={{ color: 'white', fontFamily: 'HeroesTextured' }}>
-        <h2 className="game-title">{t('harvest.title')}</h2>
+      <div
+        className="modal-content tavern-screen harvest-screen"
+        style={{ color: 'white', fontFamily: 'HeroesTextured' }}
+      >
+        <h2 className="text-title" style={{ marginBottom: 0}}>
+          {t('harvest.title')}
+        </h2>
         <div className="harvest-subtitle">{t('harvest.subtitle', { year: calendarYear })}</div>
         {doubleIncomeNote && <div className="harvest-double-income-note">{doubleIncomeNote}</div>}
         <h3>
@@ -134,7 +139,11 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
           <div className="harvest-caption">{t('harvest.yearIncome')}</div>
           <div className="harvest-stats">
             {hasIncome({ ...player.lastYearIncome, units: 0 } ?? {}) ? (
-              <IncomeLabel income={{ ...player.lastYearIncome, units: 0 }} unitColor={player.image} unitKnight={player.isKnight} />
+              <IncomeLabel
+                income={{ ...player.lastYearIncome, units: 0 }}
+                unitColor={player.image}
+                unitKnight={player.isKnight}
+              />
             ) : (
               t('harvest.noIncome')
             )}
@@ -145,7 +154,13 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
           <div className="harvest-caption">{t('harvest.kingsGrace')}</div>
           <div className="harvest-stats">
             {annual.totalGold > 0 && <Gold amount={`+${annual.totalGold}`} />}
-            {annual.totalUnits > 0 && <Militia amount={`+${annual.totalUnits}`} color={player.image} knight={player.isKnight} />}
+            {annual.totalUnits > 0 && (
+              <Militia
+                amount={`+${annual.totalUnits}`}
+                color={player.image}
+                knight={player.isKnight}
+              />
+            )}
           </div>
         </div>
 
@@ -159,35 +174,36 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
               {m === 'buy'
                 ? t('harvest.buyMode')
                 : m === 'sell'
-                ? t('harvest.sellMode')
-                : t('harvest.exchangeMode')}
+                  ? t('harvest.sellMode')
+                  : t('harvest.exchangeMode')}
             </button>
           ))}
         </div>
 
-        {mode !== 'exchange' && RESOURCES.map((r) => (
-          <div key={r} className="hire-row">
-            <div className="hire-row-name">{resourceLabel(r, '')}</div>
-            <DecoratedSlider
-              min={0}
-              max={maxFor(r)}
-              value={Math.min(shown(r), maxFor(r))}
-              onPreview={(v) => setPreview((p) => ({ ...p, [r]: v }))}
-              onCommit={(v) => {
-                setAmounts((a) => ({ ...a, [r]: v }));
-                setPreview((p) => ({ ...p, [r]: undefined }));
-              }}
-            />
-            <div className="hire-row-amount-label">{shown(r)}</div>
-          </div>
-        ))}
+        {mode !== 'exchange' &&
+          RESOURCES.map((r) => (
+            <div key={r} className="hire-row">
+              <div className="hire-row-name">{resourceLabel(r, '')}</div>
+              <DecoratedSlider
+                min={0}
+                max={maxFor(r)}
+                value={Math.min(shown(r), maxFor(r))}
+                onPreview={(v) => setPreview((p) => ({ ...p, [r]: v }))}
+                onCommit={(v) => {
+                  setAmounts((a) => ({ ...a, [r]: v }));
+                  setPreview((p) => ({ ...p, [r]: undefined }));
+                }}
+              />
+              <div className="hire-row-amount-label">{shown(r)}</div>
+            </div>
+          ))}
 
         {mode === 'exchange' && (
           <>
             <div className="hire-row">
               <div className="hire-row-name harvest-exchange-from">
                 <Food amount="" />
-                <span className="harvest-exchange-rate">×{EXCHANGE_RATE}</span>
+                <span className="harvest-exchange-rate">1:{EXCHANGE_RATE}</span>
               </div>
               <DecoratedSlider
                 min={0}
@@ -199,12 +215,14 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
                   setExPreview((p) => ({ ...p, foodToArms: undefined }));
                 }}
               />
-              <div className="hire-row-amount-label"><Arms amount={shownEx('foodToArms')} /></div>
+              <div className="hire-row-amount-label">
+                <Arms amount={shownEx('foodToArms')} />
+              </div>
             </div>
             <div className="hire-row">
               <div className="hire-row-name harvest-exchange-from">
                 <Arms amount="" />
-                <span className="harvest-exchange-rate">×{EXCHANGE_RATE}</span>
+                <span className="harvest-exchange-rate">1:{EXCHANGE_RATE}</span>
               </div>
               <DecoratedSlider
                 min={0}
@@ -216,7 +234,9 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
                   setExPreview((p) => ({ ...p, armsToFood: undefined }));
                 }}
               />
-              <div className="hire-row-amount-label"><Food amount={shownEx('armsToFood')} /></div>
+              <div className="hire-row-amount-label">
+                <Food amount={shownEx('armsToFood')} />
+              </div>
             </div>
           </>
         )}
@@ -225,8 +245,18 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
           {mode !== 'exchange' ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
-                <div className={'big-shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')}>
-                  <button className="big-shield-button hire-submit" onClick={trade} disabled={total <= 0} title={t('harvest.trade')}>
+                <div
+                  className={
+                    'big-shield-button-container' +
+                    (total > 0 ? '' : ' shield-button-container--disabled')
+                  }
+                >
+                  <button
+                    className="big-shield-button hire-submit"
+                    onClick={trade}
+                    disabled={total <= 0}
+                    title={t('harvest.trade')}
+                  >
                     <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
                   </button>
                 </div>
@@ -237,8 +267,17 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
             </div>
           ) : (
             <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
-              <div className={'big-shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}>
-                <button className="big-shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
+              <div
+                className={
+                  'big-shield-button-container' +
+                  (exActive ? '' : ' shield-button-container--disabled')
+                }
+              >
+                <button
+                  className="big-shield-button hire-submit"
+                  onClick={doExchange}
+                  disabled={!exActive}
+                >
                   <span className="hire-submit-icon">🔄</span>
                 </button>
               </div>
@@ -246,7 +285,10 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
           )}
         </div>
 
-        <div className="button-group" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>
+        <div
+          className="button-group"
+          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
+        >
           <DecoratedButton onClick={onClose}>{t('harvest.finish')}</DecoratedButton>
         </div>
       </div>

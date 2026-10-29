@@ -43,8 +43,9 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
-  width: 100%;
+  gap: 1rem;
+  width: 95vw;
+  margin: 0 auto;
 }
 
 .hire-row-name {
@@ -84,10 +85,8 @@
   line-height: 1;
 }
 
-/* Unit/total price captions -- same small size as TileCard's "defence"
-   caption -- live, updates while dragging. */
 .hire-row-caption {
-  font-size: 9px;
+  font-size: 1rem;
   white-space: nowrap;
 }
 

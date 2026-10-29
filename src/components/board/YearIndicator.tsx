@@ -43,7 +43,9 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
         )
       }
     >
+      <img className="year-indicator-seasons" src="/assets/sprites/seasons.png" alt="" draggable={false} />
       <img
+        className="year-indicator-dial"
         src="/assets/sprites/year_indicator.png"
         alt=""
         draggable={false}

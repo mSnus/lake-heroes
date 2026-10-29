@@ -120,7 +120,7 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
     >
       <div className="modal-content tavern-screen" style={{ color: 'white', fontFamily: 'HeroesTextured' }}>
-        <h2 className="game-title">{t('workersEncounter.title')}</h2>
+        <h2 className="text-title">{t('workersEncounter.title')}</h2>
         <h3
           style={{ whiteSpace: 'pre-line' }}
           dangerouslySetInnerHTML={{

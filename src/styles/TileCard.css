@@ -15,8 +15,14 @@
 }
 
 .current-tile-card-wrapper .current-tile {
-  scale: calc(1vw / 1vh * 1.5);
+  scale: calc(1vw / 1vh * 1.3);
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+
+.current-tile-card-wrapper .tile-card-base-level {
+  padding-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  scale: 1.5;
 }
 
 .tile-card {
@@ -310,6 +316,7 @@
   border-collapse: collapse;
   overflow: hidden;
   display: flex;
+  justify-content: center;
 }
 
 .tc-th {
