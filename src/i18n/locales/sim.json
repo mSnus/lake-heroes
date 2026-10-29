@@ -1174,7 +1174,7 @@
     "exchangeMode": "Exchange",
     "trade": "Trade",
     "finish": "🌾 Finish harvest",
-    "botSold": "{playerName} sold {food}🫓 and {arms}⚔️ at the Harvest"
+    "botTraded": "{playerName} trades at the Harvest: {summary}"
   },
   "armyScreen": {
     "title": "Warriors Company",

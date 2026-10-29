@@ -10,6 +10,8 @@ import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { endYear, startNewYear, yearForRound } from '../game/year';
 import { beginHarvestTurn } from './harvest';
+import { buyUnits } from './buyUnits';
+import { planTurnHire } from '../ai/botPlans';
 import { formatArmy } from '../utils/formatArmy';
 import { announce } from '../utils/announce';
 import { setGameMessage } from '../utils/gameMessage';
@@ -127,6 +129,12 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   if (board.activePlayer.isPrisonerOfWar) {
     releasePrisonerOfWar(board);
     updateGameState(board);
+  }
+
+  if (board.activePlayer.isComputer) {
+    const hire = planTurnHire(board.activePlayer);
+    if (hire.riders > 0) buyUnits(board, hire.riders, updateGameState, 'riders');
+    if (hire.militia > 0) buyUnits(board, hire.militia, updateGameState, 'militia');
   }
 
   if (

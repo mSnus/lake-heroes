@@ -8,6 +8,7 @@ interface DecoratedSliderProps {
   /** Caps how far the thumb can be dragged, independent of `max` (the
    * track/scale still spans min..max). Defaults to `max`. */
   maxPosition?: number;
+  disabled?: boolean;
   /** Fires continuously while dragging (and on a plain click-to-jump), for
    * live label updates — not yet validated against game rules, that only
    * happens on commit. */
@@ -29,6 +30,7 @@ export const DecoratedSlider: React.FC<DecoratedSliderProps> = ({
   max,
   value,
   maxPosition = max,
+  disabled = false,
   onPreview,
   onCommit,
 }) => {
@@ -46,6 +48,7 @@ export const DecoratedSlider: React.FC<DecoratedSliderProps> = ({
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
+    if (disabled) return;
     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
     setDragging(true);
     onPreview(valueFromClientX(e.clientX));
@@ -66,7 +69,11 @@ export const DecoratedSlider: React.FC<DecoratedSliderProps> = ({
 
   return (
     <div
-      className={'decorated-slider' + (dragging ? ' decorated-slider-dragging' : '')}
+      className={
+        'decorated-slider' +
+        (dragging ? ' decorated-slider-dragging' : '') +
+        (disabled ? ' decorated-slider-disabled' : '')
+      }
       ref={trackRef}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

@@ -1,6 +1,13 @@
 import { Player } from './Player';
 import { UnitTier } from './army';
-import { FOOD_BUY_PRICE, FOOD_SELL_PRICE, ARMS_BUY_PRICE, ARMS_SELL_PRICE } from './constants';
+import {
+  FOOD_BUY_PRICE,
+  FOOD_SELL_PRICE,
+  ARMS_BUY_PRICE,
+  ARMS_SELL_PRICE,
+  EXCHANGE_FOOD,
+  EXCHANGE_ARMS,
+} from './constants';
 import { getOverrides } from '../utils/overridesStore';
 
 export type Resource = 'food' | 'arms';
@@ -98,7 +105,11 @@ export function hireMax(player: Player, tier: UnitTier, goldOverride?: number, g
 
 /** Buy (positive `amount`) or sell (negative) food or arms for gold at the
  * Harvest's fixed prices -- clamped to what the player can pay or holds. */
-export function tradeResource(player: Player, resource: Resource, amount: number): number {
+export function tradeResource(
+  player: Pick<Player, 'gold' | 'food' | 'arms'>,
+  resource: Resource,
+  amount: number
+): number {
   const buyPrice = harvestBuyPrice(resource);
   const sellPrice = harvestSellPrice(resource);
 
@@ -113,4 +124,27 @@ export function tradeResource(player: Player, resource: Resource, amount: number
   player[resource] -= sold;
   player.gold += sold * sellPrice;
   return -sold;
+}
+
+/** How much of `from` one exchange batch takes, and how much of the other it gives. */
+export function exchangeBatch(from: Resource): { give: number; get: number } {
+  return from === 'food' ? { give: EXCHANGE_FOOD, get: EXCHANGE_ARMS } : { give: EXCHANGE_ARMS, get: EXCHANGE_FOOD };
+}
+
+export function maxExchangeBatches(player: Pick<Player, 'food' | 'arms'>, from: Resource): number {
+  return Math.floor(player[from] / exchangeBatch(from).give);
+}
+
+/** Swap whole batches of `from` for the other resource at the Harvest's
+ * fixed ratio -- clamped to what the player holds. Returns batches done. */
+export function exchangeResource(
+  player: Pick<Player, 'food' | 'arms'>,
+  from: Resource,
+  batches: number
+): number {
+  const done = Math.max(0, Math.min(batches, maxExchangeBatches(player, from)));
+  const { give, get } = exchangeBatch(from);
+  player[from] -= done * give;
+  player[from === 'food' ? 'arms' : 'food'] += done * get;
+  return done;
 }

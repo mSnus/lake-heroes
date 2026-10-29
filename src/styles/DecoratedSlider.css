@@ -44,3 +44,8 @@
 .decorated-slider-dragging .decorated-slider-thumb {
   scale: 1.15;
 }
+
+.decorated-slider-disabled {
+  opacity: 0.4;
+  cursor: default;
+}

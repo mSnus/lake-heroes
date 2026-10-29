@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { GameState } from '../../game/GameState';
-import { Resource, tradeResource, harvestBuyPrice, harvestSellPrice } from '../../game/resources';
+import {
+  Resource,
+  tradeResource,
+  harvestBuyPrice,
+  harvestSellPrice,
+  exchangeBatch,
+  exchangeResource,
+  maxExchangeBatches,
+} from '../../game/resources';
 import { currentYear, GROUP_EMOJI } from '../../game/year';
 import { DOUBLE_INCOME_EFFECT } from '../../game/yearCore';
 import { GAME_START_YEAR } from '../../game/constants';
@@ -29,9 +37,8 @@ interface HarvestModalProps {
 
 type Mode = 'buy' | 'sell' | 'exchange';
 
-const EXCHANGE_RATE = 2; // give EXCHANGE_RATE of source to get 1 of target
-
 const RESOURCES: Resource[] = ['food', 'arms'];
+const EX_KEY = { food: 'foodToArms', arms: 'armsToFood' } as const;
 
 /**
  * A player's Harvest turn (see actions/harvest.ts): the year's income, and
@@ -95,12 +102,8 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   };
 
   const doExchange = () => {
-    const fa = exAmounts.foodToArms;
-    const af = exAmounts.armsToFood;
-    if (fa > 0) { player.food -= fa * EXCHANGE_RATE; player.arms += fa; }
-
-    if (af > 0) { player.arms -= af * EXCHANGE_RATE; player.food += af; }
-
+    exchangeResource(player, 'food', exAmounts.foodToArms);
+    exchangeResource(player, 'arms', exAmounts.armsToFood);
     setExAmounts({ foodToArms: 0, armsToFood: 0 });
     setExPreview({});
     updateGameState(gameState);
@@ -198,48 +201,34 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
             </div>
           ))}
 
-        {mode === 'exchange' && (
-          <>
-            <div className="hire-row">
-              <div className="hire-row-name harvest-exchange-from">
-                <Food amount="" />
-                <span className="harvest-exchange-rate">1:{EXCHANGE_RATE}</span>
+        {mode === 'exchange' &&
+          RESOURCES.map((from) => {
+            const key = EX_KEY[from];
+            const { give, get } = exchangeBatch(from);
+            const max = maxExchangeBatches(player, from);
+            return (
+              <div key={from} className="hire-row">
+                <div className="hire-row-name harvest-exchange-from">
+                  {resourceLabel(from, '')}
+                  <span className="harvest-exchange-rate">
+                    {give}:{get}
+                  </span>
+                </div>
+                <DecoratedSlider
+                  min={0}
+                  max={max}
+                  value={Math.min(shownEx(key), max)}
+                  disabled={max === 0}
+                  onPreview={(v) => setExPreview((p) => ({ ...p, [key]: v }))}
+                  onCommit={(v) => {
+                    setExAmounts((a) => ({ ...a, [key]: v }));
+                    setExPreview((p) => ({ ...p, [key]: undefined }));
+                  }}
+                />
+                <div className="hire-row-amount-label">{resourceLabel(other(from), shownEx(key) * get)}</div>
               </div>
-              <DecoratedSlider
-                min={0}
-                max={Math.floor(player.food / EXCHANGE_RATE)}
-                value={Math.min(shownEx('foodToArms'), Math.floor(player.food / EXCHANGE_RATE))}
-                onPreview={(v) => setExPreview((p) => ({ ...p, foodToArms: v }))}
-                onCommit={(v) => {
-                  setExAmounts((a) => ({ ...a, foodToArms: v }));
-                  setExPreview((p) => ({ ...p, foodToArms: undefined }));
-                }}
-              />
-              <div className="hire-row-amount-label">
-                <Arms amount={shownEx('foodToArms')} />
-              </div>
-            </div>
-            <div className="hire-row">
-              <div className="hire-row-name harvest-exchange-from">
-                <Arms amount="" />
-                <span className="harvest-exchange-rate">1:{EXCHANGE_RATE}</span>
-              </div>
-              <DecoratedSlider
-                min={0}
-                max={Math.floor(player.arms / EXCHANGE_RATE)}
-                value={Math.min(shownEx('armsToFood'), Math.floor(player.arms / EXCHANGE_RATE))}
-                onPreview={(v) => setExPreview((p) => ({ ...p, armsToFood: v }))}
-                onCommit={(v) => {
-                  setExAmounts((a) => ({ ...a, armsToFood: v }));
-                  setExPreview((p) => ({ ...p, armsToFood: undefined }));
-                }}
-              />
-              <div className="hire-row-amount-label">
-                <Food amount={shownEx('armsToFood')} />
-              </div>
-            </div>
-          </>
-        )}
+            );
+          })}
 
         <div className="harvest-trade">
           {mode !== 'exchange' ? (

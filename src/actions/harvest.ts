@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
-import { tradeResource } from '../game/resources';
+import { planHarvestTrades, applyHarvestTrade } from '../ai/harvestPlan';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { showScreen, clearScreen } from '../utils/screenStore';
@@ -11,13 +11,21 @@ import { t } from '../i18n';
 import { endTurn } from './endTurn';
 import HarvestModal from '../components/screens/HarvestModal';
 
-/** Placeholder bot rule until real ones exist: sell half of each. */
 function botHarvest(player: Player): void {
-  const food = tradeResource(player, 'food', -Math.floor(player.food / 2));
-  const arms = tradeResource(player, 'arms', -Math.floor(player.arms / 2));
-  if (food || arms) {
-    say(t('harvest.botSold', { playerName: player.name, food: -food, arms: -arms }), 'debug');
-  }
+  const before = { gold: player.gold, food: player.food, arms: player.arms };
+  for (const trade of planHarvestTrades(player)) applyHarvestTrade(player, trade);
+
+  const parts = (
+    [
+      ['gold', '🟡'],
+      ['food', '🫓'],
+      ['arms', '⚔️'],
+    ] as const
+  )
+    .map(([k, emoji]) => [player[k] - before[k], emoji] as const)
+    .filter(([d]) => d !== 0)
+    .map(([d, emoji]) => `${d > 0 ? '+' : ''}${d}${emoji}`);
+  if (parts.length > 0) say(t('harvest.botTraded', { playerName: player.name, summary: parts.join(' ') }), 'debug');
 }
 
 /** Ends a Harvest turn -- the screen's close button. */

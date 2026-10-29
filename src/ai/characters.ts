@@ -16,6 +16,8 @@ export interface CharacterConfig {
   revenge: { powerRatio: number; minPower: number };
   dragonThreshold: number;
   kingsCastleHireFraction: number; // unused by 'wizard' strategy, see pickKingsCastleHireAmount
+  /** Share of gold kept back for tiles when the bot hires at the start of every turn. */
+  turnHireGoldReserve: number;
   buildsSyndicates: boolean;
   /** When (and how hard) the bot tops up its under-garrisoned owned tiles
    * each turn -- see pickGarrisonAction. Garrisoning only starts once the
@@ -58,6 +60,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     // Same flat threshold as DRAGON_UNITS_THRESHOLD (see fightDragon.ts).
     dragonThreshold: 120,
     kingsCastleHireFraction: 0.5,
+    turnHireGoldReserve: 2 / 3,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: false,
     garrison: { minMilitia: 3 },
@@ -72,6 +75,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     revenge: { powerRatio: 1.5, minPower: 20 },
     dragonThreshold: 120,
     kingsCastleHireFraction: 2 / 3,
+    turnHireGoldReserve: 0,
     buildsSyndicates: false,
     skipBuyingNearDragonGoal: true,
     garrison: { minMilitia: 8, budgetFraction: 2 / 3 },
@@ -86,6 +90,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     revenge: { powerRatio: 2.2, minPower: 20 },
     dragonThreshold: 120,
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
+    turnHireGoldReserve: 1 / 2,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: true,
     garrison: { minUnitIncome: 2 },

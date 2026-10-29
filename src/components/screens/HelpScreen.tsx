@@ -16,6 +16,8 @@ import {
   FOOD_SELL_PRICE,
   ARMS_BUY_PRICE,
   ARMS_SELL_PRICE,
+  EXCHANGE_FOOD,
+  EXCHANGE_ARMS,
   VISIT_GOLD_MULT,
   VISIT_UNITS_SHARE,
   MILITIA_HP,
@@ -123,7 +125,7 @@ const HelpScreen: React.FC = () => {
             />
             <HtmlLi html={t('helpScreen.goldUnits.item2')} />
             <HtmlLi
-              html={t('helpScreen.goldUnits.itemHarvest', { buyFood: FOOD_BUY_PRICE, sellFood: FOOD_SELL_PRICE, buyArms: ARMS_BUY_PRICE, sellArms: ARMS_SELL_PRICE })}
+              html={t('helpScreen.goldUnits.itemHarvest', { buyFood: FOOD_BUY_PRICE, sellFood: FOOD_SELL_PRICE, buyArms: ARMS_BUY_PRICE, sellArms: ARMS_SELL_PRICE, exchangeFood: EXCHANGE_FOOD, exchangeArms: EXCHANGE_ARMS })}
             />
             <HtmlLi
               html={t('helpScreen.goldUnits.item3', {

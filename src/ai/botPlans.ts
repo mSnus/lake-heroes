@@ -1,7 +1,7 @@
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import { getOverrides } from '../utils/overridesStore';
-import { hireMax, maxAffordable, scaleCost, unitCost, upgradeCost } from '../game/resources';
+import { Cost, hireMax, maxAffordable, scaleCost, unitCost, upgradeCost } from '../game/resources';
 import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
 
 /**
@@ -100,6 +100,49 @@ export function planArmyPurchase(
 
   const { tier, amount } = planUnitHire(player, 'militia', resolvedPrices.militiaPrice);
   return amount > 0 ? [{ kind: 'hire', tier, count: amount }] : [];
+}
+
+export type Wallet = Pick<Player, 'gold' | 'food' | 'arms'>;
+
+export interface TurnHire {
+  riders: number;
+  militia: number;
+  cost: Cost;
+}
+
+/**
+ * What a bot hires at the start of every turn, at King's Castle prices:
+ * riders first (Knights), then militia, each up to its own Fame cap, out of
+ * the gold left after the character's turnHireGoldReserve.
+ */
+export function planTurnHire(player: Player, wallet: Wallet = player): TurnHire {
+  const cfg = getCharacterConfig(player);
+  const none: TurnHire = { riders: 0, militia: 0, cost: { gold: 0, food: 0, arms: 0 } };
+  if (!cfg) return none;
+
+  const left = {
+    gold: Math.floor(wallet.gold * (1 - cfg.turnHireGoldReserve) + 1e-9),
+    food: wallet.food,
+    arms: wallet.arms,
+  };
+  const take = (tier: UnitTier): number => {
+    const cost = unitCost(tier);
+    const n = Math.min(maxAffordable(left, cost), player.armyRoom(tier));
+    const paid = scaleCost(cost, n);
+    left.gold -= paid.gold;
+    left.food -= paid.food;
+    left.arms -= paid.arms;
+    return n;
+  };
+
+  const riders = player.isKnight ? take('riders') : 0;
+  const militia = take('militia');
+  const cost = addCosts(scaleCost(unitCost('riders'), riders), scaleCost(unitCost('militia'), militia));
+  return { riders, militia, cost };
+}
+
+function addCosts(a: Cost, b: Cost): Cost {
+  return { gold: a.gold + b.gold, food: a.food + b.food, arms: a.arms + b.arms };
 }
 
 /** How many militia a bot leaves guarding a tile it has just claimed. */
