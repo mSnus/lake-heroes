@@ -63,6 +63,25 @@
   font-weight: bold;
 }
 
+/* Fit the slider rows to the screen's padded width, not the viewport. */
+.harvest-screen .hire-row {
+  width: 100%;
+  box-sizing: border-box;
+  gap: 0.6rem;
+}
+
+.harvest-screen .hire-row .decorated-slider {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.harvest-screen .hire-row-amount-label {
+  min-width: 2.5rem;
+  text-align: right;
+  padding-left: 0;
+}
+
 .harvest-exchange-from {
   display: flex;
   align-items: center;
