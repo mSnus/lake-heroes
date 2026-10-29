@@ -1,6 +1,6 @@
 {
   "turnAnnouncement": {
-    "text": "Ход игрока {playerName}",
+    "text": "Ход {playerName}",
     "goLeft": "Налево",
     "goRight": "Направо",
     "harvestText": "Урожай: {playerName}"
@@ -1194,7 +1194,7 @@
   },
   "harvest": {
     "title": "Урожай",
-    "subtitle": "год ({year})",
+    "subtitle": "год {year}",
     "yearIncome": "Доход за год:",
     "kingsGrace": "Милость Короля:",
     "noIncome": "в этом году ничего",
@@ -1202,12 +1202,12 @@
     "sellMode": "Продать",
     "exchangeMode": "Обмен",
     "trade": "Обменять",
-    "finish": "🌾 Завершить сбор урожая",
+    "finish": "🌾 Завершить сбор",
     "botSold": "{playerName} продаёт на сборе урожая {food}🫓 и {arms}⚔️"
   },
   "armyScreen": {
-    "title": "Дружина воинов",
-    "dismount": "Снять с коней:",
+    "title": "Дружина",
+    "dismount": "Спешить:",
     "hireAmount": "🧾 Нанять {amount}",
     "close": "✖️ Закрыть"
   }
