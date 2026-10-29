@@ -1197,7 +1197,7 @@
   },
   "harvest": {
     "title": "La Cosecha",
-    "subtitle": "año ({year})",
+    "subtitle": "año {year}",
     "yearIncome": "Ingresos de este año:",
     "kingsGrace": "La Gracia del Rey:",
     "noIncome": "nada este año",
