@@ -16,8 +16,8 @@ export function checkAmbushEncounter(
   const ENCOUNTER_CHANCE =
     (1 / 14) * (player.karma < 0 ? KARMA_HOSTILE_ENCOUNTER_MULTIPLIER : 1);
 
-  // No ambushes during the game's first year
-  if (currentYear(board) <= 1) return false;
+  // No ambushes during the game's first two years
+  if (currentYear(board) <= 2) return false;
 
   // No ambushes while the player is at (or leaving) the prison tile
   if (board.tiles[player.position]?.id === 'prison') return false;

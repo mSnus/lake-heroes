@@ -59,6 +59,7 @@ export class Player {
   caravanEncounters: number;
   caravanEncounteredLastTurn: boolean;
   ambushEncounters: number;
+  rogueAttackEncounters: number;
   workersEncounters: number;
   /** The year this player's units first dropped to (and have stayed at) 0,
    * or undefined while they hold any -- see actions/workersEncounter.tsx,
@@ -146,6 +147,7 @@ export class Player {
     this.caravanEncounters = 0;
     this.caravanEncounteredLastTurn = false;
     this.ambushEncounters = 0;
+    this.rogueAttackEncounters = 0;
     this.workersEncounters = 0;
     this.isPrisonerOfWar = false;
     this.hasClaimedThisTurn = false;

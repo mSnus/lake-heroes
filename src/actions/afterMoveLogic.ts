@@ -44,9 +44,9 @@ export function afterMoveLogic(
   // Hero's Hour: other players at the same tile with enough units to fight
   // (not at King's Castle — it's neutral ground). Players with 0 units can
   // neither attack nor be attacked. Nobody duels at all before the game's
-  // third year -- everyone is too green for it, so it's one check on the
+  // fifth year -- everyone is too green for it, so it's one check on the
   // shared calendar rather than one per hero.
-  const heroHourOpen = currentYear(board) > 2;
+  const heroHourOpen = currentYear(board) > 4;
   const playersHere = board.players.filter(
     (p) => p.id !== player.id && p.position === player.position && p.units > 0
   );

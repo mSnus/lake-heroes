@@ -33,8 +33,11 @@ export function checkRogueAttackEncounter(
   const player = board.activePlayer;
 
   if (!force) {
-    // No rogue attacks during the game's first year.
-    if (currentYear(board) <= 1) return false;
+    // No rogue attacks during the game's first two years.
+    if (currentYear(board) <= 2) return false;
+
+    // Max 1 per year
+    if ((player.rogueAttackEncounters ?? 0) >= 1) return false;
 
     // Gated on fame alone -- this raids the tile's own garrison, not the
     // player's personal army, so the player's own armyPower/units aren't a
@@ -48,6 +51,7 @@ export function checkRogueAttackEncounter(
   const encounterChance =
     BASE_ENCOUNTER_CHANCE * (player.karma < 0 ? KARMA_CURSED_ENCOUNTER_MULTIPLIER : 1);
   if (!force && Math.random() >= encounterChance) return false;
+  player.rogueAttackEncounters = (player.rogueAttackEncounters ?? 0) + 1;
 
   const tileIdx = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];
   const tile = board.tiles[tileIdx];

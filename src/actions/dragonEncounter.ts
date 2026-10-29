@@ -18,7 +18,7 @@ import { announce } from '../utils/announce';
 import { t } from '../i18n';
 
 const ENCOUNTER_CHANCE = 1 / 12;
-const MAX_ENCOUNTERS_PER_YEAR = 2;
+const MAX_ENCOUNTERS_PER_YEAR = 1;
 const FAME_THRESHOLD_ENCOUNTER = 4;
 const FAME_THRESHOLD_ATTACK = 5;
 const YEAR_THRESHOLD = 3;
@@ -40,7 +40,7 @@ export function checkDragonEncounter(
     player.karma < 0 ? Math.min(1, baseAttackChance * KARMA_HOSTILE_ENCOUNTER_MULTIPLIER) : baseAttackChance;
 
   if (!force) {
-    if (currentYear(board) <= 2) {
+    if (currentYear(board) <= 4) {
       return false;
     }
 

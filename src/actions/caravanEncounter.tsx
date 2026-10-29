@@ -29,8 +29,8 @@ export function checkCaravanEncounter(
   const ENCOUNTER_CHANCE = 1 / 12;
 
   if (!force) {
-    // No caravans during the game's first year
-    if (currentYear(board) <= 1) return false;
+    // No caravans during the game's first two years
+    if (currentYear(board) <= 2) return false;
 
     // No caravans while the player is at (or leaving) the prison tile
     if (board.tiles[player.position]?.id === 'prison') return false;
@@ -45,8 +45,8 @@ export function checkCaravanEncounter(
       return false;
     }
 
-    // Max 2 per year
-    if ((player.caravanEncounters ?? 0) >= 2) return false;
+    // Max 1 per year
+    if ((player.caravanEncounters ?? 0) >= 1) return false;
     // 1/12 chance
     if (Math.random() >= ENCOUNTER_CHANCE) return false;
   }

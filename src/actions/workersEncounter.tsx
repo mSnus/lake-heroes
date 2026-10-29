@@ -51,8 +51,8 @@ export function checkWorkersEncounter(
   }
 
   if (!force) {
-    // No workers during the game's first year.
-    if (currentYear(board) <= 1) return false;
+    // No workers during the game's first two years.
+    if (currentYear(board) <= 2) return false;
 
     // Max 1 per year.
     if ((player.workersEncounters ?? 0) >= 1) return false;
