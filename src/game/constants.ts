@@ -74,6 +74,17 @@ export const KARMA_HOSTILE_ENCOUNTER_MULTIPLIER = 2.25;
 // rogueAttackEncounter.ts).
 export const KARMA_CURSED_ENCOUNTER_MULTIPLIER = 2;
 
+// ── Bot raid decision (see ai/decisions.ts's shouldRaidTile) ──
+// A raid is worth it once its prize is this big a fraction of what the bot
+// already holds of that same resource -- gold needs a smaller edge since
+// it's the more liquid resource.
+export const RAID_GOLD_THRESHOLD_FRACTION = 1 / 5;
+export const RAID_RESOURCE_THRESHOLD_FRACTION = 1 / 3;
+// Warrior/Wizard won't risk a raid below this many units in hand (raw
+// headcount, not armyPower) -- Explorer has no such floor.
+export const RAID_WARRIOR_MIN_ARMY = 4;
+export const RAID_WIZARD_MIN_ARMY = 6;
+
 // ── Tile economy scale ──
 // tiles.json authors prices and income as small coefficients of these bases,
 // materialised into real gold in the Tile constructor. Change one number here

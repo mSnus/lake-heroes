@@ -219,6 +219,7 @@
     "raid": "Рейд",
     "raidGain": "{playerName} совершил рейд на {tileName} и получил {reward}",
     "raidSoldiersLost": "{playerName} не смог совершить рейд на {tileName}, потеряно {amount}🧍",
+    "raidSoldiersAndFameLost": "{playerName} не смог совершить рейд на {tileName}, потерял всех {amount}🧍 и 1🏆",
     "raidFameLost": "{playerName} не смог совершить рейд на {tileName}, потеряно {amount}🏆",
     "razed": "разрушено",
     "upgradable": "можно улучшить",
@@ -360,6 +361,7 @@
     "attackTheCaravan": "напасть на караван",
     "sellForSyndicate": "продать «{saleName}», чтобы собрать синдикат с «{tileName}»",
     "claimTile": "захватить «{tileName}»",
+    "raidTile": "совершить набег на «{tileName}»",
     "garrisonTile": "разместить {amount}🧍 в гарнизоне «{tileName}»",
     "hireWorkers": "нанять рабочих"
   },

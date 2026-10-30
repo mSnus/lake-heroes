@@ -34,6 +34,11 @@ const formatIncome = (income: TileIncome): string => {
  * 3 half the tile's per-turn income, 4-5 the income in full, 6 double.
  * `roll` is the already-rolled die (see TileCard's visible DiceModal roll);
  * the soldier-loss amount on a 1-2 is its own separate, unseen roll.
+ *
+ * A failed raid that calls for more units than the raider actually has
+ * (the loss roll beats their headcount) costs them every unit they have
+ * left, plus 1 fame on top -- not a bigger unit debt than they can pay.
+ * Militia are spared before riders either way (Player's `units` setter).
  */
 export function raidTile(
   board: GameState,
@@ -48,12 +53,21 @@ export function raidTile(
     if (player.units > 0) {
       const lossRoll = rollDice();
       const before = player.units;
-      player.units -= lossRoll;
+      const overpaid = lossRoll > before;
+      player.units -= Math.min(lossRoll, before);
       const lost = before - player.units;
-      say(
-        t('tileCard.raidSoldiersLost', { playerName: player.name, tileName: tile.name, amount: lost }),
-        'error'
-      );
+      if (overpaid) {
+        changeFame(player, -1, 1, true);
+        say(
+          t('tileCard.raidSoldiersAndFameLost', { playerName: player.name, tileName: tile.name, amount: lost }),
+          'error'
+        );
+      } else {
+        say(
+          t('tileCard.raidSoldiersLost', { playerName: player.name, tileName: tile.name, amount: lost }),
+          'error'
+        );
+      }
     } else {
       const before = player.fame;
       changeFame(player, -1, 1, true);

@@ -223,6 +223,7 @@
     "raid": "Raid",
     "raidGain": "{playerName} raided {tileName} and gained {reward}",
     "raidSoldiersLost": "{playerName} failed to raid {tileName}, {amount}🧍 lost",
+    "raidSoldiersAndFameLost": "{playerName} failed to raid {tileName}, lost all {amount}🧍 and 1🏆",
     "raidFameLost": "{playerName} failed to raid {tileName}, {amount}🏆 lost",
     "razed": "razed",
     "upgradable": "upgradable",
@@ -365,6 +366,7 @@
     "attackTheCaravan": "attack the caravan",
     "sellForSyndicate": "sell {saleName} to complete a syndicate with {tileName}",
     "claimTile": "claim {tileName}",
+    "raidTile": "raid {tileName}",
     "garrisonTile": "garrison {amount}🧍 at {tileName}",
     "hireWorkers": "hire the workers"
   },

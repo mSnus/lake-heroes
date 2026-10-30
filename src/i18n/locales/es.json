@@ -222,6 +222,7 @@
     "raid": "Incursión",
     "raidGain": "{playerName} asaltó {tileName} y ganó {reward}",
     "raidSoldiersLost": "{playerName} no logró asaltar {tileName}, {amount}🧍 perdidos",
+    "raidSoldiersAndFameLost": "{playerName} no logró asaltar {tileName}, perdió todos sus {amount}🧍 y 1🏆",
     "raidFameLost": "{playerName} no logró asaltar {tileName}, {amount}🏆 perdido",
     "razed": "arrasada",
     "upgradable": "mejorable",
@@ -363,6 +364,7 @@
     "attackTheCaravan": "atacar la caravana",
     "sellForSyndicate": "vender {saleName} para completar un sindicato con {tileName}",
     "claimTile": "reclamar {tileName}",
+    "raidTile": "asaltar {tileName}",
     "garrisonTile": "guarnecer {amount}🧍 en {tileName}",
     "hireWorkers": "contratar a los trabajadores"
   },

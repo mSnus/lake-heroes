@@ -346,6 +346,7 @@
     "attackTheCaravan": "attack the caravan",
     "sellForSyndicate": "sell {saleName} to complete a syndicate with {tileName}",
     "claimTile": "claim {tileName}",
+    "raidTile": "raid {tileName}",
     "garrisonTile": "garrison {amount}🧍 at {tileName}",
     "hireWorkers": "hire the workers"
   },
