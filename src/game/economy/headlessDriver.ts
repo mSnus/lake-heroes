@@ -3,7 +3,7 @@ import { rollDice } from '../Dice';
 import { rollAndMove } from '../../actions/rollAndMove';
 import { endTurn } from '../../actions/endTurn';
 import { claimTile } from '../../actions/claimTile';
-import { canRaid, raidTile } from '../../actions/raidTile';
+import { canLoot, lootTile } from '../../actions/lootTile';
 import { sellTile } from '../../actions/sellTile';
 import { setTileGarrison } from '../../actions/garrisonTile';
 import { setHeadlessRun } from '../../utils/headlessStore';
@@ -13,7 +13,7 @@ import { announce } from '../../utils/announce';
 import {
   getCharacterConfig,
   shouldClaimTile,
-  shouldRaidTile,
+  shouldLootTile,
   pickUpgradeCandidate,
   pickGarrisonAction,
 } from '../../ai/decisions';
@@ -63,9 +63,9 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
     if (shouldClaimTile(player, tile, board)) {
       announce(player, 'botController.claimTile', { tileName: tile.name });
       claimTile(board, updateGameState);
-    } else if (canRaid(player) && shouldRaidTile(player, tile, board)) {
-      announce(player, 'botController.raidTile', { tileName: tile.name });
-      raidTile(board, player, tile, rollDice());
+    } else if (canLoot(player) && shouldLootTile(player, tile, board)) {
+      announce(player, 'botController.lootTile', { tileName: tile.name });
+      lootTile(board, player, tile, rollDice());
     }
 
     updateGameState(board);

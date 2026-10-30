@@ -216,11 +216,11 @@
     "stillSmoldering": "ещё дымится",
     "banzai": "Банзай!",
     "claimIt": "Забрать!",
-    "raid": "Рейд",
-    "raidGain": "{playerName} совершил рейд на {tileName} и получил {reward}",
-    "raidSoldiersLost": "{playerName} не смог совершить рейд на {tileName}, потеряно {amount}🧍",
-    "raidSoldiersAndFameLost": "{playerName} не смог совершить рейд на {tileName}, потерял всех {amount}🧍 и 1🏆",
-    "raidFameLost": "{playerName} не смог совершить рейд на {tileName}, потеряно {amount}🏆",
+    "loot": "Грабёж",
+    "lootGain": "{playerName} разграбил {tileName} и получил {reward}",
+    "lootSoldiersLost": "{playerName} не смог разграбить {tileName}, потеряно {amount}🧍",
+    "lootSoldiersAndFameLost": "{playerName} не смог разграбить {tileName}, потерял всех {amount}🧍 и 1🏆",
+    "lootFameLost": "{playerName} не смог разграбить {tileName}, потеряно {amount}🏆",
     "razed": "разрушено",
     "upgradable": "можно улучшить",
     "yieldToKing": "передать",
@@ -361,7 +361,7 @@
     "attackTheCaravan": "напасть на караван",
     "sellForSyndicate": "продать «{saleName}», чтобы собрать синдикат с «{tileName}»",
     "claimTile": "захватить «{tileName}»",
-    "raidTile": "совершить набег на «{tileName}»",
+    "lootTile": "разграбить «{tileName}»",
     "garrisonTile": "разместить {amount}🧍 в гарнизоне «{tileName}»",
     "hireWorkers": "нанять рабочих"
   },
@@ -1158,9 +1158,7 @@
     "narrateVisit": "{playerName} встретил вольных работников, ищущих, к кому присоединиться 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "Все игроки получают свою Годовую премию.",
     "yearlyBonusLabel": "Годовая премия",
-    "tileHarvestBonus": "Все игроки получают дополнительный урожай со своих клеток.",
     "doubleIncomeAnnounce": "Следующий год многообещающий: {groups} будут приносить двойной доход!",
     "groupName": {
       "Mills": "Мельницы",

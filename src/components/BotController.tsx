@@ -10,14 +10,14 @@ import { gameEvent } from '../utils/events';
 import { announce } from '../utils/announce';
 import { endTurn } from '../actions/endTurn';
 import { claimTile } from '../actions/claimTile';
-import { canRaid, raidTile } from '../actions/raidTile';
+import { canLoot, lootTile } from '../actions/lootTile';
 import { sellTile } from '../actions/sellTile';
 import { setTileGarrison } from '../actions/garrisonTile';
 import { rollDice } from '../game/Dice';
 import {
   getCharacterConfig,
   shouldClaimTile,
-  shouldRaidTile,
+  shouldLootTile,
   pickUpgradeCandidate,
   shouldAttackCaravan,
   shouldChallengeDragon,
@@ -152,9 +152,9 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
       if (shouldClaimTile(player, tile, board)) {
         announce(player, 'botController.claimTile', { tileName: tile.name });
         claimTile(board, updateGameState);
-      } else if (canRaid(player) && shouldRaidTile(player, tile, board)) {
-        announce(player, 'botController.raidTile', { tileName: tile.name });
-        raidTile(board, player, tile, rollDice());
+      } else if (canLoot(player) && shouldLootTile(player, tile, board)) {
+        announce(player, 'botController.lootTile', { tileName: tile.name });
+        lootTile(board, player, tile, rollDice());
       }
 
       updateGameState(board);

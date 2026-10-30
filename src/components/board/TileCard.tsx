@@ -5,7 +5,7 @@ import { say, sayLocal } from '../../utils/say';
 import { GameState } from '../../game/GameState';
 import { sellTile, sellRefund } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
-import { canRaid, raidTile } from '../../actions/raidTile';
+import { canLoot, lootTile } from '../../actions/lootTile';
 import { showDice, startDiceRoll } from '../../utils/diceStore';
 import { yieldTile, yieldRefund, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { gameEvent } from '../../utils/events';
@@ -48,10 +48,10 @@ export type TileCardProps = {
   updateGameState?: (board: GameState) => void;
   couldBuy?: boolean;
   /** Unowned, this is the active tile, and it's the player's move -- the
-   * same "right place, right time" gate couldBuy uses. Whether a raid is
+   * same "right place, right time" gate couldBuy uses. Whether looting is
    * actually possible right now (once per turn, something to lose on a
-   * failed roll) is TileCard's own call, via canRaid. */
-  couldRaid?: boolean;
+   * failed roll) is TileCard's own call, via canLoot. */
+  couldLoot?: boolean;
   defaultExpanded?: boolean;
   demoMode?: boolean;
   /** True when this card is rendered inside a forced pay-or-fight/sell-to-
@@ -68,7 +68,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   gameState,
   updateGameState,
   couldBuy = false,
-  couldRaid = false,
+  couldLoot = false,
   defaultExpanded = false,
   demoMode = false,
   disableUpgradesScreen = false,
@@ -321,15 +321,15 @@ export const TileCard: React.FC<TileCardProps> = ({
     claimTile(gameState, updateGameState);
   };
 
-  const raidAvailable = couldRaid && !!activePlayer && canRaid(activePlayer);
+  const lootAvailable = couldLoot && !!activePlayer && canLoot(activePlayer);
 
-  const handleRaidClick = (e: React.MouseEvent) => {
+  const handleLootClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (demoMode) return;
     if (!gameState || !updateGameState || !activePlayer) return;
 
     showDice((roll: number) => {
-      raidTile(gameState, activePlayer, tile, roll);
+      lootTile(gameState, activePlayer, tile, roll);
       updateGameState(gameState);
     });
     startDiceRoll();
@@ -678,9 +678,9 @@ export const TileCard: React.FC<TileCardProps> = ({
               </DecoratedButton>
             )}
 
-          {raidAvailable && (
+          {lootAvailable && (
             <DecoratedButton
-              onClick={(e) => handleRaidClick(e)}
+              onClick={(e) => handleLootClick(e)}
               style={{
                 width: '100%',
                 marginBottom: '0',
@@ -697,7 +697,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                   gap: '0.1rem',
                 }}
               >
-                <div>⚒️ {t('tileCard.raid')}</div>
+                <div>⚒️ {t('tileCard.loot')}</div>
               </div>
             </DecoratedButton>
           )}

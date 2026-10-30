@@ -3,10 +3,8 @@ import { emptyYearIncome } from './Player';
 import { changeKarma } from '../utils/karma';
 import { collectTileTurnIncome } from './income';
 import { grantYearlyBonusToAll } from './kingsGrace';
-import { say } from '../utils/say';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { recordSimIncome } from '../utils/simLogStore';
-import { t } from '../i18n';
 import {
   currentYear,
   currentYearTurn,
@@ -68,7 +66,6 @@ export const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪
  */
 export function endYear(board: GameState): void {
   // Tiles pay their owner once a year, here, for the whole table at once.
-  let anyHarvestBonus = false;
   for (const player of board.players) {
     player.dragonEncounters = 0;
     player.caravanEncounters = 0;
@@ -80,26 +77,20 @@ export function endYear(board: GameState): void {
 
     const bonus = collectTileTurnIncome(board, player);
     if (isHeadlessRun()) recordSimIncome(bonus.gold, bonus.units, player);
-    if (bonus.gold > 0 || bonus.food > 0 || bonus.arms > 0 || bonus.units > 0) anyHarvestBonus = true;
   }
 
   // The Yearly Bonus: King's Grace's own formula, paid to every player at
   // once (see grantYearlyBonusToAll's own doc comment for why it has to be
   // computed as one snapshot across the whole table rather than player by
-  // player).
-  const yearlyRewards = grantYearlyBonusToAll(board);
-  const anyYearlyBonus = yearlyRewards.some((r) => r.totalGold > 0 || r.totalUnits > 0);
+  // player). Both this and the tile income above now show on each player's
+  // own Harvest screen, so there's no separate table-wide announcement.
+  grantYearlyBonusToAll(board);
 
   // The year's income is complete -- the Harvest shows it.
   for (const player of board.players) {
     player.lastYearIncome = player.yearIncome ?? emptyYearIncome();
     player.yearIncome = emptyYearIncome();
   }
-
-  const announcements: string[] = [];
-  if (anyYearlyBonus) announcements.push(t('year.yearlyBonus'));
-  if (anyHarvestBonus) announcements.push(t('year.tileHarvestBonus'));
-  if (announcements.length > 0) say(announcements.join(' '), 'info');
 }
 
 /**

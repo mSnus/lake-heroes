@@ -219,11 +219,11 @@
     "stillSmoldering": "aún humeante",
     "banzai": "¡Banzai!",
     "claimIt": "¡Reclamarla!",
-    "raid": "Incursión",
-    "raidGain": "{playerName} asaltó {tileName} y ganó {reward}",
-    "raidSoldiersLost": "{playerName} no logró asaltar {tileName}, {amount}🧍 perdidos",
-    "raidSoldiersAndFameLost": "{playerName} no logró asaltar {tileName}, perdió todos sus {amount}🧍 y 1🏆",
-    "raidFameLost": "{playerName} no logró asaltar {tileName}, {amount}🏆 perdido",
+    "loot": "Saqueo",
+    "lootGain": "{playerName} saqueó {tileName} y ganó {reward}",
+    "lootSoldiersLost": "{playerName} no logró saquear {tileName}, {amount}🧍 perdidos",
+    "lootSoldiersAndFameLost": "{playerName} no logró saquear {tileName}, perdió todos sus {amount}🧍 y 1🏆",
+    "lootFameLost": "{playerName} no logró saquear {tileName}, {amount}🏆 perdido",
     "razed": "arrasada",
     "upgradable": "mejorable",
     "yieldToKing": "ceder",
@@ -364,7 +364,7 @@
     "attackTheCaravan": "atacar la caravana",
     "sellForSyndicate": "vender {saleName} para completar un sindicato con {tileName}",
     "claimTile": "reclamar {tileName}",
-    "raidTile": "asaltar {tileName}",
+    "lootTile": "saquear {tileName}",
     "garrisonTile": "guarnecer {amount}🧍 en {tileName}",
     "hireWorkers": "contratar a los trabajadores"
   },
@@ -1161,9 +1161,7 @@
     "narrateVisit": "{playerName} se encontró con trabajadores libres buscando una causa a la que unirse 🧑‍🌾"
   },
   "year": {
-    "yearlyBonus": "Todos los jugadores cobran su Bonificación Anual.",
     "yearlyBonusLabel": "Bonificación Anual",
-    "tileHarvestBonus": "Todos los jugadores cobran una cosecha extra de sus casillas.",
     "doubleIncomeAnnounce": "El próximo año es prometedor: {groups} darán el doble de ingresos.",
     "groupName": {
       "Mills": "los Molinos",

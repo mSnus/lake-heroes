@@ -10,10 +10,10 @@ import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army'
 import { ForkChoice } from '../utils/forkChoiceStore';
 import { syndicateMultiplier } from '../game/syndicate';
 import {
-  RAID_GOLD_THRESHOLD_FRACTION,
-  RAID_RESOURCE_THRESHOLD_FRACTION,
-  RAID_WARRIOR_MIN_ARMY,
-  RAID_WIZARD_MIN_ARMY,
+  LOOT_GOLD_THRESHOLD_FRACTION,
+  LOOT_RESOURCE_THRESHOLD_FRACTION,
+  LOOT_WARRIOR_MIN_ARMY,
+  LOOT_WIZARD_MIN_ARMY,
 } from '../game/constants';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
@@ -85,28 +85,28 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
 }
 
 /**
- * Should this bot raid the unowned tile it's standing on (see
- * actions/raidTile.ts)? Character-blind on the core math: worth it once
- * the tile's raid prize is a big enough fraction of what the bot already
+ * Should this bot loot the unowned tile it's standing on (see
+ * actions/lootTile.ts)? Character-blind on the core math: worth it once
+ * the tile's loot prize is a big enough fraction of what the bot already
  * holds of that same resource -- gold needs a smaller edge (1/5) than
  * food/arms/units (1/3), since gold is the more liquid of the two. A
- * Wizard also raids regardless of that ratio whenever it currently has no
+ * Wizard also loots regardless of that ratio whenever it currently has no
  * income of the prize's resource at all (see game/income.ts's
  * playerRawTurnIncome) -- it has no other way to come by that resource.
- * Warrior and Wizard additionally won't risk a raid below a minimum army;
+ * Warrior and Wizard additionally won't risk looting below a minimum army;
  * Explorer has no such floor.
  */
-export function shouldRaidTile(player: Player, tile: Tile, board: GameState): boolean {
+export function shouldLootTile(player: Player, tile: Tile, board: GameState): boolean {
   const cfg = getCharacterConfig(player);
   if (!cfg) return false;
-  if (cfg.id === 'warrior' && player.units <= RAID_WARRIOR_MIN_ARMY) return false;
-  if (cfg.id === 'wizard' && player.units <= RAID_WIZARD_MIN_ARMY) return false;
+  if (cfg.id === 'warrior' && player.units <= LOOT_WARRIOR_MIN_ARMY) return false;
+  if (cfg.id === 'wizard' && player.units <= LOOT_WIZARD_MIN_ARMY) return false;
 
   const prize = tileTurnIncome(tile, 1, undefined, board);
   const resource = (['gold', 'food', 'arms', 'units'] as const).find((r) => prize[r] > 0);
   if (!resource) return false;
 
-  const fraction = resource === 'gold' ? RAID_GOLD_THRESHOLD_FRACTION : RAID_RESOURCE_THRESHOLD_FRACTION;
+  const fraction = resource === 'gold' ? LOOT_GOLD_THRESHOLD_FRACTION : LOOT_RESOURCE_THRESHOLD_FRACTION;
   if (prize[resource] >= fraction * player[resource]) return true;
 
   return cfg.id === 'wizard' && playerRawTurnIncome(board, player)[resource] === 0;
