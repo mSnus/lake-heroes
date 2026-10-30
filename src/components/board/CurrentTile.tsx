@@ -54,11 +54,11 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
     !gameState.activePlayer.hasClaimedThisTurn &&
     gameState.turnPhase === 'after-move';
 
-  // Pillaging is a separate once-per-turn action from claiming (its own
-  // hasPillagedThisTurn flag, checked inside TileCard alongside whether the
+  // Raiding is a separate once-per-turn action from claiming (its own
+  // hasRaidedThisTurn flag, checked inside TileCard alongside whether the
   // player has anything left to lose on a failed roll) -- only the "is this
   // even the right tile, at the right time" part is shared with couldBuy.
-  const couldPillage =
+  const couldRaid =
     showingActiveTile &&
     currentTile.isOwnable &&
     !currentTile.isOwned() &&
@@ -113,7 +113,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
             gameState={gameState}
             updateGameState={updateGameState}
             couldBuy={couldBuy}
-            couldPillage={couldPillage}
+            couldRaid={couldRaid}
           />
         )}
       </div>

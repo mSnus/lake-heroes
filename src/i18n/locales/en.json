@@ -220,10 +220,10 @@
     "stillSmoldering": "still smoldering",
     "banzai": "Banzai!",
     "claimIt": "Claim it!",
-    "pillage": "Pillage",
-    "pillageGain": "{playerName} pillaged {tileName} and gained {reward}",
-    "pillageSoldiersLost": "{playerName} failed to pillage {tileName}, {amount}🧍 lost",
-    "pillageFameLost": "{playerName} failed to pillage {tileName}, {amount}🏆 lost",
+    "raid": "Raid",
+    "raidGain": "{playerName} raided {tileName} and gained {reward}",
+    "raidSoldiersLost": "{playerName} failed to raid {tileName}, {amount}🧍 lost",
+    "raidFameLost": "{playerName} failed to raid {tileName}, {amount}🏆 lost",
     "razed": "razed",
     "upgradable": "upgradable",
     "yieldToKing": "yield",
@@ -464,7 +464,7 @@
     "caravan": {
       "title": "Caravan 🐪",
       "item1": "After rolling, before movement, you may encounter a caravan carrying gold, slaves, or—for a Knight—horses.",
-      "item2": "Defeat the caravan guards to free the slaves (they join your army) or pillage the treasures!"
+      "item2": "Defeat the caravan guards to free the slaves (they join your army) or loot the treasures!"
     },
     "dangers": {
       "title": "Road and realm dangers ⚠️",

@@ -49,7 +49,7 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   board.activePlayer.garrisonSpentThisTurn = 0;
   board.activePlayer.owedToll = 0;
   board.activePlayer.hasSettledTollThisTurn = false;
-  board.activePlayer.hasPillagedThisTurn = false;
+  board.activePlayer.hasRaidedThisTurn = false;
 
   if (board.activePlayerIndex === 0) {
     // The last player's turn just ended, so this is also where the shared

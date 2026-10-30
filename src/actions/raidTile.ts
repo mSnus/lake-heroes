@@ -14,8 +14,8 @@ import { t } from '../i18n';
  * cost them something: soldiers to lose, or fame above the floor to lose
  * instead once they have none left.
  */
-export function canPillage(player: Player): boolean {
-  if (player.hasPillagedThisTurn) return false;
+export function canRaid(player: Player): boolean {
+  if (player.hasRaidedThisTurn) return false;
   return player.units > 0 || player.fame > 1;
 }
 
@@ -35,13 +35,13 @@ const formatIncome = (income: TileIncome): string => {
  * `roll` is the already-rolled die (see TileCard's visible DiceModal roll);
  * the soldier-loss amount on a 1-2 is its own separate, unseen roll.
  */
-export function pillageTile(
+export function raidTile(
   board: GameState,
   player: Player,
   tile: Tile,
   roll: number
 ): void {
-  player.hasPillagedThisTurn = true;
+  player.hasRaidedThisTurn = true;
   changeKarma(player, -1);
 
   if (roll <= 2) {
@@ -51,7 +51,7 @@ export function pillageTile(
       player.units -= lossRoll;
       const lost = before - player.units;
       say(
-        t('tileCard.pillageSoldiersLost', { playerName: player.name, tileName: tile.name, amount: lost }),
+        t('tileCard.raidSoldiersLost', { playerName: player.name, tileName: tile.name, amount: lost }),
         'error'
       );
     } else {
@@ -59,7 +59,7 @@ export function pillageTile(
       changeFame(player, -1, 1, true);
       const lost = before - player.fame;
       say(
-        t('tileCard.pillageFameLost', { playerName: player.name, tileName: tile.name, amount: lost }),
+        t('tileCard.raidFameLost', { playerName: player.name, tileName: tile.name, amount: lost }),
         'error'
       );
     }
@@ -82,7 +82,7 @@ export function pillageTile(
   player.units += income.units;
 
   say(
-    t('tileCard.pillageGain', { playerName: player.name, tileName: tile.name, reward: formatIncome(income) }),
+    t('tileCard.raidGain', { playerName: player.name, tileName: tile.name, reward: formatIncome(income) }),
     'success'
   );
 }
