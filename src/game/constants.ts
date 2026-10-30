@@ -149,6 +149,10 @@ export const DRAGON_GOLD = 10000; // dragon's hoard, awarded on victory
 // tile-burning attack is skipped; a weakest player strong enough to fight
 // is still offered the challenge (see actions/dragonEncounter.ts).
 export const DRAGON_MERCY_SCORE_RATIO = 1.5;
+// A bot's second hiring priority, once it can already beat the weakest
+// available tile's garrison -- fill each tier toward this share of its own
+// Fame cap before banking gold for a tile (see ai/botPlans.ts's planTurnHire).
+export const BOT_ARMY_FILL_FRACTION = 2 / 3;
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 

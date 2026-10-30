@@ -132,7 +132,7 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
   }
 
   if (board.activePlayer.isComputer) {
-    const hire = planTurnHire(board.activePlayer);
+    const hire = planTurnHire(board.activePlayer, board);
     if (hire.riders > 0) buyUnits(board, hire.riders, updateGameState, 'riders');
     if (hire.militia > 0) buyUnits(board, hire.militia, updateGameState, 'militia');
   }

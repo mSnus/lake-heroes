@@ -1,5 +1,8 @@
+import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
-import { UnitTier } from '../game/army';
+import { Tile } from '../game/Tile';
+import { UnitTier, UNIT_POWER, computeArmyPower } from '../game/army';
+import { BOT_ARMY_FILL_FRACTION } from '../game/constants';
 import { getOverrides } from '../utils/overridesStore';
 import { Cost, hireMax, maxAffordable, scaleCost, unitCost, upgradeCost } from '../game/resources';
 import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
@@ -110,39 +113,64 @@ export interface TurnHire {
   cost: Cost;
 }
 
-/**
- * What a bot hires at the start of every turn, at King's Castle prices:
- * riders first (Knights), then militia, each up to its own Fame cap, out of
- * the gold left after the character's turnHireGoldReserve.
- */
-export function planTurnHire(player: Player, wallet: Wallet = player): TurnHire {
-  const cfg = getCharacterConfig(player);
-  const none: TurnHire = { riders: 0, militia: 0, cost: { gold: 0, food: 0, arms: 0 } };
-  if (!cfg) return none;
+/** The weakest garrison among tiles any player could claim right now
+ * (ownable, discovered, unowned) -- 0 if there are none left. Same number
+ * `tile.isAffordable`/`shouldClaimTile` compare armyPower against for that
+ * tile (getDefence() ignores its level argument for an unowned tile, so
+ * there's no level-2/3 case to worry about here). */
+function weakestAvailableTileDefence(board: GameState): number {
+  const available = board.tiles.filter(
+    (t): t is Tile => !!t && t.isOwnable && !t.isOwned() && !t.fog
+  );
+  return available.length > 0 ? Math.min(...available.map((t) => t.getDefence())) : 0;
+}
 
-  const left = {
-    gold: Math.floor(wallet.gold * (1 - cfg.turnHireGoldReserve) + 1e-9),
-    food: wallet.food,
-    arms: wallet.arms,
-  };
-  const take = (tier: UnitTier): number => {
+/**
+ * What a bot hires at the start of every turn, at King's Castle prices, by
+ * priority (same for every character -- no personality split here):
+ *
+ * 1. Enough army power to beat the weakest tile still up for grabs anywhere
+ *    on the map, riders first (better power per gold for a Knight) then
+ *    militia for the rest.
+ * 2. Short of that, fill each tier toward BOT_ARMY_FILL_FRACTION of its own
+ *    Fame cap -- riders, then militia.
+ * 3. Nothing further: whatever gold is left banks toward the cheapest
+ *    available tile (see decisions.ts's shouldClaimTile, which spends it).
+ */
+export function planTurnHire(player: Player, board: GameState, wallet: Wallet = player): TurnHire {
+  const left = { gold: wallet.gold, food: wallet.food, arms: wallet.arms };
+  const held = { militia: player.militia, riders: player.riders };
+  const cap = player.armyCapacity;
+  const hired = { militia: 0, riders: 0 };
+
+  const buy = (tier: UnitTier, desired: number): void => {
+    if (desired <= 0) return;
     const cost = unitCost(tier);
-    const n = Math.min(maxAffordable(left, cost), player.armyRoom(tier));
+    const room = Math.max(0, cap[tier] - held[tier] - hired[tier]);
+    const n = Math.min(Math.ceil(desired), room, maxAffordable(left, cost));
+    if (n <= 0) return;
     const paid = scaleCost(cost, n);
     left.gold -= paid.gold;
     left.food -= paid.food;
     left.arms -= paid.arms;
-    return n;
+    hired[tier] += n;
   };
 
-  const riders = player.isKnight ? take('riders') : 0;
-  const militia = take('militia');
-  const cost = addCosts(scaleCost(unitCost('riders'), riders), scaleCost(unitCost('militia'), militia));
-  return { riders, militia, cost };
-}
+  const powerGap = () =>
+    Math.max(0, weakestAvailableTileDefence(board) - computeArmyPower(held.militia + hired.militia, held.riders + hired.riders));
 
-function addCosts(a: Cost, b: Cost): Cost {
-  return { gold: a.gold + b.gold, food: a.food + b.food, arms: a.arms + b.arms };
+  if (player.isKnight) buy('riders', powerGap() / UNIT_POWER.riders);
+  buy('militia', powerGap() / UNIT_POWER.militia);
+
+  if (player.isKnight) buy('riders', Math.floor(cap.riders * BOT_ARMY_FILL_FRACTION) - held.riders - hired.riders);
+  buy('militia', Math.floor(cap.militia * BOT_ARMY_FILL_FRACTION) - held.militia - hired.militia);
+
+  const cost = {
+    gold: wallet.gold - left.gold,
+    food: wallet.food - left.food,
+    arms: wallet.arms - left.arms,
+  };
+  return { riders: hired.riders, militia: hired.militia, cost };
 }
 
 /** How many militia a bot leaves guarding a tile it has just claimed. */

@@ -1,3 +1,4 @@
+import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { UnitTier } from '../game/army';
 import {
@@ -38,7 +39,7 @@ export function applyHarvestTrade(wallet: Wallet, t: HarvestTrade): void {
  * Food and arms move between each other by exchange, which beats selling
  * and buying both ways.
  */
-export function planHarvestTrades(player: Player): HarvestTrade[] {
+export function planHarvestTrades(player: Player, board: GameState): HarvestTrade[] {
   const cfg = getCharacterConfig(player);
   if (!cfg) return [];
 
@@ -51,9 +52,9 @@ export function planHarvestTrades(player: Player): HarvestTrade[] {
     }
   };
 
-  run(tradesToHireMore(player, wallet, cfg.turnHireGoldReserve));
-  if (cfg.id !== 'explorer') run(balanceTrades(wallet, planTurnHire(player, wallet).cost));
-  if (cfg.id === 'wizard') run(wizardIncomeTrades(player, wallet, planTurnHire(player, wallet).cost));
+  run(tradesToHireMore(player, board, wallet));
+  if (cfg.id !== 'explorer') run(balanceTrades(wallet, planTurnHire(player, board, wallet).cost));
+  if (cfg.id === 'wizard') run(wizardIncomeTrades(player, wallet, planTurnHire(player, board, wallet).cost));
   return trades;
 }
 
@@ -68,25 +69,27 @@ function costOf(riders: number, militia: number): Cost {
 }
 
 /** Adds one unit at a time (riders, then militia) for as long as some
- * trades make it affordable on the next turn's hire. */
-function tradesToHireMore(player: Player, wallet: Wallet, reserve: number): HarvestTrade[] {
+ * trades make it affordable on the next turn's hire. Stops on its own once
+ * past planTurnHire's own priority target (see botPlans.ts) -- this never
+ * pushes a bot to hire more than that, it only funds reaching it sooner. */
+function tradesToHireMore(player: Player, board: GameState, wallet: Wallet): HarvestTrade[] {
   let w = { ...wallet };
   const done: HarvestTrade[] = [];
   const tiers: UnitTier[] = player.isKnight ? ['riders', 'militia'] : ['militia'];
 
   for (const tier of tiers) {
     for (let guard = 0; guard < 500; guard++) {
-      const hire = planTurnHire(player, w);
+      const hire = planTurnHire(player, board, w);
       if (hire[tier] >= player.armyRoom(tier)) break;
 
       const riders = hire.riders + (tier === 'riders' ? 1 : 0);
       const militia = hire.militia + (tier === 'militia' ? 1 : 0);
-      const plan = tradesToFund(w, costOf(riders, militia), reserve);
+      const plan = tradesToFund(w, costOf(riders, militia));
       if (!plan) break;
 
       const trial = { ...w };
       plan.forEach((t) => applyHarvestTrade(trial, t));
-      if (units(planTurnHire(player, trial)) < riders + militia) break;
+      if (units(planTurnHire(player, board, trial)) < riders + militia) break;
 
       w = trial;
       plan.forEach((t) => pushMerged(done, t));
@@ -105,9 +108,8 @@ function pushMerged(list: HarvestTrade[], t: HarvestTrade): void {
   else list.push({ ...t });
 }
 
-/** The fewest trades after which `need` fits the next turn's hire budget
- * (gold after the character's reserve), or null if nothing can. */
-function tradesToFund(wallet: Wallet, need: Cost, reserve: number): HarvestTrade[] | null {
+/** The fewest trades after which `need` fits the wallet, or null if nothing can. */
+function tradesToFund(wallet: Wallet, need: Cost): HarvestTrade[] | null {
   const w = { ...wallet };
   const list: HarvestTrade[] = [];
   const push = (t: HarvestTrade) => {
@@ -126,8 +128,7 @@ function tradesToFund(wallet: Wallet, need: Cost, reserve: number): HarvestTrade
   }
 
   const buyCost = short('food') * harvestBuyPrice('food') + short('arms') * harvestBuyPrice('arms');
-  const needGold = reserve < 1 ? Math.ceil(need.gold / (1 - reserve) - 1e-9) : Infinity;
-  let gap = needGold + buyCost - w.gold;
+  let gap = need.gold + buyCost - w.gold;
 
   const sellOrder = (['food', 'arms'] as Resource[]).sort(
     (a, b) => excess(b) * harvestSellPrice(b) - excess(a) * harvestSellPrice(a)

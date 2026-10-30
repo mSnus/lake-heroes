@@ -11,9 +11,9 @@ import { t } from '../i18n';
 import { endTurn } from './endTurn';
 import HarvestModal from '../components/screens/HarvestModal';
 
-function botHarvest(player: Player): void {
+function botHarvest(player: Player, board: GameState): void {
   const before = { gold: player.gold, food: player.food, arms: player.arms };
-  for (const trade of planHarvestTrades(player)) applyHarvestTrade(player, trade);
+  for (const trade of planHarvestTrades(player, board)) applyHarvestTrade(player, trade);
 
   const parts = (
     [
@@ -56,7 +56,7 @@ export function beginHarvestTurn(board: GameState, updateGameState: (board: Game
   board.skippingTurn = false;
 
   if (player.isComputer || isHeadlessRun()) {
-    botHarvest(player);
+    botHarvest(player, board);
     updateGameState(board);
     setEndTurn();
     return;
