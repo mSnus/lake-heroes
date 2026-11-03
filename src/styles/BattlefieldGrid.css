@@ -76,6 +76,17 @@
   user-select: none;
 }
 
+/* Pushed further away from the arena, each a fifth of its own row height,
+   so they don't crowd the grid now that individual emojis can scale up
+   to 150% (see randomDecorScale in BattlefieldGrid.tsx). */
+.bfg-rocks-top {
+  transform: translateY(-20%);
+}
+
+.bfg-rocks-bottom {
+  transform: translateY(20%);
+}
+
 /* Shared positioned box for .bfg-grid and .bfg-units — .bfg-units is
    position:absolute; inset:0, which needs to match the grid's own
    rendered box exactly (not .bfg-battlefield's, which is wider) for units
@@ -200,6 +211,16 @@
   filter: drop-shadow(0 0 3px currentColor);
 }
 
+/* The Unit snippet renders `{amount}{icon}` inside an inline-flex box with
+   its own gap -- amount is always "" here (see emojiFor), but the empty
+   text node still counts as a flex item, so the gap still reserves space
+   before the icon and pushes it off-center within .bfg-unit's centering.
+   Zeroed here rather than on the shared .unit-inline rule, which other
+   (real-amount) callers still rely on. */
+.bfg-unit-emoji .unit-inline {
+  gap: 0;
+}
+
 /* The Militia/Rider snippets' own .unit-icon is a fixed rem size everywhere
    else it's used -- here it has to track the hex cell size instead
    (brawl/large boards use different --bfg-cell values). Sized directly off
@@ -209,12 +230,13 @@
    size). Height (not width) is the capped dimension and width is left to
    scale -- these sprites are portrait-oriented (not the ~square emoji glyphs
    they replace), so capping width alone let the scaled height blow past the
-   row's fixed height and squeeze the HP/energy bars below it down to 0. */
+   row's fixed height and squeeze the HP/energy bars below it down to 0.
+   1.21/0.99 = the previous 1.1/0.9 scaled up a further 110% on request. */
 .bfg-unit-emoji .unit-icon,
 .bfg-twin .bfg-unit-emoji .unit-icon {
   width: auto;
-  height: calc(var(--bfg-cell) * 1.1);
-  max-height: calc(var(--bfg-cell) * 1.1);
+  height: calc(var(--bfg-cell) * 1.21);
+  max-height: calc(var(--bfg-cell) * 1.21);
   object-fit: contain;
   margin-bottom: 0;
   vertical-align: middle;
@@ -222,8 +244,8 @@
 
 .bfg-unit-emoji .unit-militia,
 .bfg-unit-emoji .unit-footman {
-  height: calc(var(--bfg-cell) * 0.9);
-  max-height: calc(var(--bfg-cell) * 0.9);
+  height: calc(var(--bfg-cell) * 0.99);
+  max-height: calc(var(--bfg-cell) * 0.99);
   filter: saturate(1.1);
 }
 

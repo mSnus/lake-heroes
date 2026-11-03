@@ -84,6 +84,23 @@ const colShiftFor = (row: number) => (row % 2 === 0 ? 0.7 : 0.2);
 // The corridor's rocky walls above and below the field -- cosmetic only.
 const ROCK_EMOJIS = ['🪨', '🪨', '⛰️', '⛰️', '🗿'];
 
+/** Random scale for a border/obstacle emoji, 100-150% -- cosmetic size
+ * variety so a wall or a cluster of obstacles doesn't read as a uniform
+ * grid of identical glyphs. */
+const randomDecorScale = () => 1 + Math.random() * 0.5;
+
+/** Deterministic pseudo-random in [0,1) from an integer seed -- used for an
+ * obstacle's scale instead of Math.random() so it doesn't reshuffle every
+ * re-render as the battle state updates turn to turn (battle.obstacles
+ * itself is stable in content but not necessarily in object identity, so a
+ * useMemo keyed on it would be fragile). */
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+const obstacleScale = (col: number, row: number) => 1 + seededRandom(col * 31 + row * 17 + 1) * 0.5;
+
 // Pointy-top hex geometry, kept in sync with BattlefieldGrid.css's
 // --bfg-cell-h / --bfg-row: the hex box is taller than the horizontal pitch,
 // and rows step down by 3/4 of that height so hexes tessellate.
@@ -146,13 +163,19 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   const hexFilterId = 'bfg-hex-border-' + useId().replace(/[^a-zA-Z0-9]/g, '');
   // Picked once per battle, so the walls don't reshuffle every render.
   const rockRows = useMemo(() => {
-    const row = () => Array.from({ length: cols + 1 }, () => ROCK_EMOJIS[Math.floor(Math.random() * ROCK_EMOJIS.length)]);
+    const row = () =>
+      Array.from({ length: cols + 1 }, () => ({
+        emoji: ROCK_EMOJIS[Math.floor(Math.random() * ROCK_EMOJIS.length)],
+        scale: randomDecorScale(),
+      }));
     return { top: row(), bottom: row() };
   }, [cols]);
-  const rocks = (items: string[]) => (
-    <div className="bfg-rocks" aria-hidden>
+  const rocks = (items: { emoji: string; scale: number }[], side: 'top' | 'bottom') => (
+    <div className={`bfg-rocks bfg-rocks-${side}`} aria-hidden>
       {items.map((r, i) => (
-        <span key={i}>{r}</span>
+        <span key={i} style={{ display: 'inline-block', transform: `scale(${r.scale})` }}>
+          {r.emoji}
+        </span>
       ))}
     </div>
   );
@@ -521,7 +544,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
     </svg>
     <div className={'bfg-battlefield' + (instant ? ' bfg-instant' : '')}>
       <div className="bfg-corridor">
-      {rocks(rockRows.top)}
+      {rocks(rockRows.top, 'top')}
       <div className="bfg-arena" ref={arenaRef} onClick={handleArenaClick}>
         <div
           className="bfg-grid"
@@ -547,7 +570,11 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         </div>
         <div className="bfg-obstacles">
           {battle.obstacles.map((o) => (
-            <div key={`obs-${o.col}-${o.row}`} className="bfg-obstacle" style={cellStyle(o.col, o.row)}>
+            <div
+              key={`obs-${o.col}-${o.row}`}
+              className="bfg-obstacle"
+              style={{ ...cellStyle(o.col, o.row), transform: `scale(${obstacleScale(o.col, o.row)})` }}
+            >
               {o.emoji}
             </div>
           ))}
@@ -715,7 +742,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
           </div>
         )}
       </div>
-      {rocks(rockRows.bottom)}
+      {rocks(rockRows.bottom, 'bottom')}
       </div>
     </div>
 
