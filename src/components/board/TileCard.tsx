@@ -441,7 +441,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                             {hasTurnIncome && (
                               <div className="big-icon-hint">
                                 <div>{turnIncomeLabel}</div>
-                                <div>{t('tileCard.perTurn')}</div>
+                                <div>{t('tileCard.perYear')}</div>
                               </div>
                             )}
                             {isTower && (
@@ -474,7 +474,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     {hasTurnIncome && (
                       <div className="big-icon-hint">
                         {turnIncomeLabel}
-                        <div>{t('tileCard.perTurn')}</div>
+                        <div>{t('tileCard.perYear')}</div>
                       </div>
                     )}
                     {isTower && (

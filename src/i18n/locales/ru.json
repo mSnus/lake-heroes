@@ -204,7 +204,6 @@
     "garrisonMilitiaPrompt": "Сколько оставить охранять «{tileName}»? (у вас {militia}🧍 в армии{ridersNote})",
     "garrisonRidersNote": ", 🐎 не могут стоять в гарнизоне",
     "fee": "плата",
-    "perTurn": "за ход",
     "perYear": "в год",
     "defence": "защита",
     "defenceInfo": "Защита: {value}",

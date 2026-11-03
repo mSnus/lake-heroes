@@ -428,7 +428,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
               <div className="big-icon-hint">
                 <div>{turnIncomeLabel(i)}</div>
-                <div>{t('tileCard.perTurn')}</div>
+                <div>{t('tileCard.perYear')}</div>
               </div>
 
               {isTower && (

@@ -204,7 +204,6 @@
     "garrisonMilitiaPrompt": "How much to leave guarding {tileName}? (you have {militia}🧍 in your army{ridersNote})",
     "garrisonRidersNote": ", 🐎 can't be on guard",
     "fee": "fee",
-    "perTurn": "per turn",
     "perYear": "per year",
     "defence": "defence",
     "defenceInfo": "Defence: {value}",

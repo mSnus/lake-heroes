@@ -207,7 +207,6 @@
     "garrisonMilitiaPrompt": "¿Cuántos dejar defendiendo {tileName}? (tienes {militia}🧍 en tu ejército{ridersNote})",
     "garrisonRidersNote": ", los 🐎 no pueden estar de guardia",
     "fee": "tarifa",
-    "perTurn": "por turno",
     "perYear": "por año",
     "defence": "defensa",
     "defenceInfo": "Defensa: {value}",
