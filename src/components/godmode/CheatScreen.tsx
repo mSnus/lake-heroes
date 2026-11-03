@@ -254,6 +254,7 @@ const CheatScreen: React.FC<CheatScreenProps> = ({ gameState, updateGameState })
             <option value="rogue">{t('cheatScreen.encRogue')}</option>
             <option value="dragon">{t('cheatScreen.encDragon')}</option>
             <option value="workers">{t('cheatScreen.encWorkers')}</option>
+            <option value="joker">{t('cheatScreen.encJoker')}</option>
           </select>
           <button className="game-menu-button" onClick={handleForceEncounter}>
             {t('cheatScreen.force')}

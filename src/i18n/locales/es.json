@@ -1065,6 +1065,7 @@
     "forcedRollSet": "Próxima tirada de dado forzada a {value}.",
     "encCaravanHorses": "🐫 Caravana (caballos)",
     "encWorkers": "Trabajadores",
+    "encJoker": "Bufón",
     "setResources": "Fijar comida/armas"
   },
   "overridesScreen": {

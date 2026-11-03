@@ -1062,6 +1062,7 @@
     "forcedRollSet": "Следующий бросок кубика форсирован на {value}.",
     "encCaravanHorses": "🐫 Караван (кони)",
     "encWorkers": "Рабочие",
+    "encJoker": "Джокер",
     "setResources": "Установить еду/оружие"
   },
   "overridesScreen": {

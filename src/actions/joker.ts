@@ -1,7 +1,8 @@
 import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
-import { showJokerScreen } from '../utils/screenStore';
+import { showJokerScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
+import { isHeadlessRun } from '../utils/headlessStore';
 import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
@@ -58,7 +59,15 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
 const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor', 'Rust'];
 const GOOD_EVENTS: JokerEvent[] = ['Blessing', "Queen's Gift", "King's Gift"];
 
-export function handleJoker(board: GameState, updateGameState: (board: GameState) => void) {
+export function handleJoker(
+  board: GameState,
+  updateGameState: (board: GameState) => void,
+  // Set only when the Joker struck as a random encounter mid-roll (see
+  // jokerEncounter.ts) rather than from landing on its own tile -- that
+  // detour resumes the roll's own movement once the screen closes, instead
+  // of ending the turn right away the way a tile landing always has.
+  onContinue?: () => void
+) {
   const badChance = board.activePlayer.karma < 0 ? KARMA_JOKER_BAD_CHANCE : 0.5;
   // Rust (global rider->militia conversion) is only ever drawable when
   // someone on the board actually has Riders to lose -- otherwise it would
@@ -303,6 +312,22 @@ export function handleJoker(board: GameState, updateGameState: (board: GameState
   setGameMessage(board, t('joker.eventLogLine', { eventName, message }));
   recordStatEvent(board, board.activePlayer, 'joker');
   updateGameState(board);
+
+  if (onContinue) {
+    // Headless: nothing ever clicks the screen's own button, so resume the
+    // move directly -- same as every other random encounter's headless branch.
+    if (isHeadlessRun()) {
+      onContinue();
+      return;
+    }
+
+    showJokerScreen(message, `${EVENT_EMOJI[event]} ${eventName}`, () => {
+      clearScreen();
+      onContinue();
+    });
+    return;
+  }
+
   setEndTurn();
   showJokerScreen(message, `${EVENT_EMOJI[event]} ${eventName}`);
 }

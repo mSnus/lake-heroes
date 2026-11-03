@@ -1067,6 +1067,7 @@
     "forcedRollSet": "Next dice roll forced to {value}.",
     "encCaravanHorses": "🐫 Caravan (horses)",
     "encWorkers": "Workers",
+    "encJoker": "Joker",
     "setResources": "Set food/arms"
   },
   "overridesScreen": {

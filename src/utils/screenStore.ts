@@ -193,13 +193,13 @@ export function showSphynxScreen(handler: (roll: number) => void): void {
   });
 }
 
-export function showJokerScreen(message: string, title?: string): void {
+export function showJokerScreen(message: string, title?: string, onClose: () => void = clearScreen): void {
   showScreen({
     screenType: 'joker',
     background: 'assets/screens/joker.jpg',
     title,
     htmlMessage: message,
-    buttons: [{ label: t('screenStore.acceptYourDestiny'), action: 'end-turn', onClick: clearScreen }],
+    buttons: [{ label: t('screenStore.acceptYourDestiny'), action: 'end-turn', onClick: onClose }],
   });
 }
 
