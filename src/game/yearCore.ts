@@ -74,12 +74,12 @@ export function expireYearEffects(board: GameState): void {
   board.yearEffects = board.yearEffects.filter((e) => e.untilYear >= year);
 }
 
-// Board-wide: Joker's Unjust Taxes/Plague, in force for the rest of the
-// year they fire in -- including that year's own Harvest payout, since
-// board.round doesn't advance into the next year (clearing it, via
-// expireYearEffects in startNewYear) until the Harvest round is over (see
-// actions/joker.ts, income.ts's tileTurnIncome).
-export const NO_INCOME_EFFECT = 'no-income'; // Unjust Taxes: blocks every kind of tile income at once
-export const NO_UNIT_INCOME_EFFECT = 'no-unit-income'; // Plague: units only
+// Board-wide: Joker's Unjust Taxes, in force for the rest of the year it
+// fires in -- including that year's own Harvest payout, since board.round
+// doesn't advance into the next year (clearing it, via expireYearEffects in
+// startNewYear) until the Harvest round is over (see actions/joker.ts,
+// income.ts's tileTurnIncome). Plague, by contrast, is immediate -- no
+// year effect of its own, see actions/joker.ts's Plague case.
+export const NO_INCOME_EFFECT = 'no-income';
 // Group-targeted: this year's lucky groups, rolled fresh in startNewYear.
 export const DOUBLE_INCOME_EFFECT = 'double-income';

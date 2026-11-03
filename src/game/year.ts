@@ -15,7 +15,6 @@ import {
   expireYearEffects,
   YearEffect,
   NO_INCOME_EFFECT,
-  NO_UNIT_INCOME_EFFECT,
   DOUBLE_INCOME_EFFECT,
 } from './yearCore';
 import { DOUBLE_INCOME_GROUPS, DOUBLE_INCOME_CHANCE, DOUBLE_INCOME_MAX_GROUPS } from './constants';
@@ -46,7 +45,6 @@ export {
   hasYearEffect,
   expireYearEffects,
   NO_INCOME_EFFECT,
-  NO_UNIT_INCOME_EFFECT,
   DOUBLE_INCOME_EFFECT,
 };
 export type { YearEffect };

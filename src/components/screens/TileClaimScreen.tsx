@@ -52,7 +52,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // one -- levels 2/3 preview an upgrade not yet taken), same format as
   // TileCard's own preview.
   const turnIncomeLabel = (level: number) => (
-    <IncomeLabel income={tileTurnIncome(tile, 1, level, gameState, player)} unitColor={player.image} unitKnight={player.isKnight} />
+    <IncomeLabel income={tileTurnIncome(tile, 1, level, gameState)} unitColor={player.image} unitKnight={player.isKnight} />
   );
 
   // Some units-type tiles' (Camps/Towers) extra per-level toll (see

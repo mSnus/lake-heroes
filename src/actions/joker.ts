@@ -6,10 +6,10 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
-import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact, hasArtifact, getArtifact } from '../game/artifacts';
+import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS, KARMA_JOKER_BAD_CHANCE } from '../game/constants';
-import { currentYear, addYearEffect, NO_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT } from '../game/year';
+import { currentYear, addYearEffect, NO_INCOME_EFFECT } from '../game/year';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
@@ -90,33 +90,33 @@ export function handleJoker(
       break;
 
     case 'Plague': {
-      addYearEffect(board, { id: NO_UNIT_INCOME_EFFECT, untilYear: currentYear(board) });
-      message = t('joker.plagueMessage');
-
-      // Pipe of Hamelin exempts its holder for as long as the effect lasts
-      // (checked live, every turn -- see income.ts's tileTurnIncome).
-      // Divine Beads gets its usual 50% roll, but taken once here rather
-      // than every turn (which would make the protection flicker) --
-      // stamped onto plagueImmuneUntilYear so tileTurnIncome can read it
-      // without re-rolling. Either way, named here so it doesn't just
-      // happen silently.
+      // Immediate, not a year-long effect: halves every player's own tiles'
+      // garrisons on the spot, each tier on its own (militia and riders
+      // separately), never below 1 if that tier held any -- the field army
+      // itself (a player's own militia/riders, not stationed anywhere) is
+      // untouched. Yielded tiles are under the King's protection, same as
+      // every other hostile event.
+      const halve = (n: number) => (n > 0 ? Math.max(1, Math.floor(n / 2)) : 0);
       const immuneMsgs: string[] = [];
       for (const p of board.players) {
-        let artifactId: string | null = null;
-        if (hasArtifact(p, 'pipe-of-hamelin')) {
-          artifactId = 'pipe-of-hamelin';
-        } else if (hasArtifact(p, 'divine-beads') && Math.random() < 0.5) {
-          p.plagueImmuneUntilYear = currentYear(board);
-          artifactId = 'divine-beads';
+        const protection = checkArtifactProtection(p, 'plague');
+        if (protection.saved) {
+          immuneMsgs.push(
+            t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji })
+          );
+          continue;
         }
 
-        if (!artifactId) continue;
-        const artifact = getArtifact(artifactId)!;
-        immuneMsgs.push(
-          t('joker.savedByArtifact', { playerName: p.name, artifactName: artifact.name, emoji: artifact.emoji })
-        );
+        // tile.owner, not p.ownedTiles, which can be stale after a reload
+        // (see income.ts's own comment on the same tradeoff).
+        for (const tile of board.tiles) {
+          if (!tile || tile.owner !== p.id || tile.isYielded) continue;
+          tile.garrisonMilitia = halve(tile.garrisonMilitia);
+          tile.garrisonRiders = halve(tile.garrisonRiders);
+        }
       }
 
+      message = t('joker.plagueMessage');
       if (immuneMsgs.length > 0) message += ` ${immuneMsgs.join('; ')}`;
       break;
     }

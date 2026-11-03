@@ -2,8 +2,7 @@ import { GameState } from './GameState';
 import { Player } from './Player';
 import { Tile } from './Tile';
 import { syndicateMultiplier } from './syndicate';
-import { hasArtifact } from './artifacts';
-import { hasYearEffect, currentYear, NO_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
+import { hasYearEffect, DOUBLE_INCOME_EFFECT, NO_INCOME_EFFECT } from './yearCore';
 
 export interface TileIncome {
   gold: number;
@@ -25,27 +24,19 @@ export interface TileIncome {
  *
  * `board`, when given, folds in the shared calendar (see game/year.ts):
  * this year's lucky groups double the tile's own bonus, and a live Joker
- * Unjust Taxes zeroes every kind of income outright (Plague, separately,
- * zeroes units only), overriding everything else including the double.
- * Omitted entirely by the one caller with no live game to check
- * (HelpScreen's static demo tile card), which then behaves exactly as if
- * no year effect were ever in force.
+ * Unjust Taxes zeroes every kind of income outright, overriding everything
+ * else including the double. Omitted entirely by the one caller with no
+ * live game to check (HelpScreen's static demo tile card), which then
+ * behaves exactly as if no year effect were ever in force.
  *
- * `player`, when given alongside `board`, is checked for the two artifacts
- * that exempt a holder from a live Plague (NO_UNIT_INCOME_EFFECT)
- * specifically -- Unjust Taxes has no artifact protection and never did, so
- * its suppression is unconditional. Pipe of Hamelin protects live, every
- * turn, for as long as it's held. Divine Beads is a one-shot 50% roll taken
- * once when Plague fires (see actions/joker.ts), stamped onto
- * player.plagueImmuneUntilYear rather than re-rolled here -- re-rolling
- * every turn would make the protection flicker on and off.
+ * Plague is unrelated to this function -- it's an immediate, one-time hit
+ * to owned tiles' garrisons (see actions/joker.ts), not an income effect.
  */
 export function tileTurnIncome(
   tile: Tile,
   mult: number = 1,
   level: number = tile.level,
-  board?: GameState,
-  player?: Player
+  board?: GameState
 ): TileIncome {
   const result: TileIncome = { gold: 0, food: 0, arms: 0, units: 0 };
   if (tile.isYielded) return result;
@@ -59,13 +50,6 @@ export function tileTurnIncome(
     result.units = 0;
   }
 
-  const plagueImmune =
-    !!player &&
-    (hasArtifact(player, 'pipe-of-hamelin') ||
-      (!!board &&
-        player.plagueImmuneUntilYear !== undefined &&
-        player.plagueImmuneUntilYear >= currentYear(board)));
-  if (board && hasYearEffect(board, NO_UNIT_INCOME_EFFECT) && !plagueImmune) result.units = 0;
   return result;
 }
 
@@ -97,7 +81,7 @@ export function playerRawTurnIncome(board: GameState, player: Player): TileIncom
   const total: TileIncome = { gold: 0, food: 0, arms: 0, units: 0 };
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id) continue;
-    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group), undefined, board, player);
+    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group), undefined, board);
     total.gold += income.gold;
     total.food += income.food;
     total.arms += income.arms;

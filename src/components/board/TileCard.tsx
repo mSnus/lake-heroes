@@ -92,13 +92,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // this year's lucky groups include this tile's own (see game/year.ts) --
   // the badge is purely an annotation explaining why, not a second
   // multiplier applied here.
-  const turnIncome = tileTurnIncome(
-    tile,
-    syndicateMult,
-    undefined,
-    gameState,
-    ownerPlayer ?? undefined
-  );
+  const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState);
   const doubleIncomeActive =
     !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
   const hasTurnIncome = hasIncome(turnIncome);
