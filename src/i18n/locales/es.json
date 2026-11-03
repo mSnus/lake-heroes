@@ -1160,6 +1160,12 @@
     "passByButton": "⚜️ Seguir de largo, con orgullo",
     "narrateVisit": "{playerName} se encontró con trabajadores libres buscando una causa a la que unirse 🧑‍🌾"
   },
+  "travelingTraders": {
+    "title": "Una feria ambulante 🎪 llegó a tu vista",
+    "demand": "Tienen demanda de {resource} y están dispuestos a negociar un buen precio por ello",
+    "close": "Despedirse de ellos",
+    "narrateVisit": "{playerName} se encontró con una feria ambulante 🎪"
+  },
   "year": {
     "yearlyBonusLabel": "Bonificación Anual",
     "doubleIncomeAnnounce": "El próximo año es prometedor: {groups} darán el doble de ingresos.",

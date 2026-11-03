@@ -9,10 +9,17 @@ import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
 import { tavernMilitiaPrice, tavernRiderPrice, tavernUpgradePricePerUnit } from './tavern';
+import { Resource } from '../game/resources';
 import WorkersModal from '../components/screens/WorkersModal';
+import TravelingTradersModal from '../components/screens/TravelingTradersModal';
 import { announce } from '../utils/announce';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';
+
+/** Once the encounter fires, this likely a Traveling Traders fair instead
+ * of the usual Workers hire opportunity (see TravelingTradersModal) --
+ * same trigger, same once-a-year cap, just a coin flip on which screen. */
+const TRADING_FAIR_CHANCE = 0.5;
 
 /** Same base odds as a caravan. */
 const ENCOUNTER_CHANCE = 1 / 12;
@@ -68,6 +75,39 @@ export function checkWorkersEncounter(
   // Encounter!
   player.workersEncounters = (player.workersEncounters ?? 0) + 1;
   updateGameState(board);
+
+  if (Math.random() < TRADING_FAIR_CHANCE) {
+    const demandResource: Resource = Math.random() < 0.5 ? 'food' : 'arms';
+    narrate(t('travelingTraders.narrateVisit', { playerName: player.name }));
+
+    // No bot logic here -- bots already hire every turn through their own
+    // regular budget (planTurnHire), so there's nothing for them to do at
+    // a resource-trading fair. Headless skips the screen outright; a live
+    // bot still shows it, then dismisses itself (see the modal's own
+    // self-drive effect).
+    if (isHeadlessRun()) {
+      setEndTurn();
+      return true;
+    }
+
+    showScreenWithFog({
+      screenType: 'traveling-traders',
+      background: 'assets/screens/caravan.jpg',
+      fade: true,
+      content: React.createElement(TravelingTradersModal, {
+        gameState: board,
+        updateGameState,
+        demandResource,
+        onClose: () => {
+          clearScreen();
+          onContinue();
+        },
+      }),
+    });
+
+    return true;
+  }
+
   narrate(t('workersEncounter.narrateVisit', { playerName: player.name }));
 
   // Same decision WorkersModal's own self-drive effect makes.

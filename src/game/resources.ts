@@ -17,6 +17,23 @@ export function harvestBuyPrice(r: Resource): number { return r === 'food' ? FOO
 
 export function harvestSellPrice(r: Resource): number { return r === 'food' ? FOOD_SELL_PRICE : ARMS_SELL_PRICE; }
 
+/** Traveling Traders (see actions/workersEncounter.tsx): bargains on one
+ * resource at a time -- half its usual buy price, double its usual sell
+ * price. The other resource trades at the ordinary Harvest rates. */
+export function tradersBuyPrice(demand: Resource, r: Resource): number {
+  return r === demand ? harvestBuyPrice(r) / 2 : harvestBuyPrice(r);
+}
+
+export function tradersSellPrice(demand: Resource, r: Resource): number {
+  return r === demand ? harvestSellPrice(r) * 2 : harvestSellPrice(r);
+}
+
+/** Traveling Traders' own exchange rate -- flat 1:1 both ways, instead of
+ * the Harvest's 3:2, regardless of which resource is in demand. */
+export function tradersExchangeBatch(): { give: number; get: number } {
+  return { give: 1, get: 1 };
+}
+
 /** What one unit (or one upgrade) costs. */
 export interface Cost {
   gold: number;
@@ -104,15 +121,17 @@ export function hireMax(player: Player, tier: UnitTier, goldOverride?: number, g
 }
 
 /** Buy (positive `amount`) or sell (negative) food or arms for gold at the
- * Harvest's fixed prices -- clamped to what the player can pay or holds. */
+ * Harvest's fixed prices -- clamped to what the player can pay or holds.
+ * `buyPrice`/`sellPrice` default to the Harvest's own rates; Traveling
+ * Traders (see actions/workersEncounter.tsx) passes its own halved/doubled
+ * rate for whichever resource it's bargaining on. */
 export function tradeResource(
   player: Pick<Player, 'gold' | 'food' | 'arms'>,
   resource: Resource,
-  amount: number
+  amount: number,
+  buyPrice: number = harvestBuyPrice(resource),
+  sellPrice: number = harvestSellPrice(resource)
 ): number {
-  const buyPrice = harvestBuyPrice(resource);
-  const sellPrice = harvestSellPrice(resource);
-
   if (amount > 0) {
     const bought = Math.min(amount, Math.floor(player.gold / buyPrice));
     player.gold -= bought * buyPrice;
@@ -131,20 +150,26 @@ export function exchangeBatch(from: Resource): { give: number; get: number } {
   return from === 'food' ? { give: EXCHANGE_FOOD, get: EXCHANGE_ARMS } : { give: EXCHANGE_ARMS, get: EXCHANGE_FOOD };
 }
 
-export function maxExchangeBatches(player: Pick<Player, 'food' | 'arms'>, from: Resource): number {
-  return Math.floor(player[from] / exchangeBatch(from).give);
+export function maxExchangeBatches(
+  player: Pick<Player, 'food' | 'arms'>,
+  from: Resource,
+  batch: { give: number; get: number } = exchangeBatch(from)
+): number {
+  return Math.floor(player[from] / batch.give);
 }
 
 /** Swap whole batches of `from` for the other resource at the Harvest's
- * fixed ratio -- clamped to what the player holds. Returns batches done. */
+ * fixed ratio -- clamped to what the player holds. Returns batches done.
+ * `batch` defaults to the Harvest's own 3:2 rate; Traveling Traders passes
+ * its own 1:1 rate (see actions/workersEncounter.tsx). */
 export function exchangeResource(
   player: Pick<Player, 'food' | 'arms'>,
   from: Resource,
-  batches: number
+  batches: number,
+  batch: { give: number; get: number } = exchangeBatch(from)
 ): number {
-  const done = Math.max(0, Math.min(batches, maxExchangeBatches(player, from)));
-  const { give, get } = exchangeBatch(from);
-  player[from] -= done * give;
-  player[from === 'food' ? 'arms' : 'food'] += done * get;
+  const done = Math.max(0, Math.min(batches, maxExchangeBatches(player, from, batch)));
+  player[from] -= done * batch.give;
+  player[from === 'food' ? 'arms' : 'food'] += done * batch.get;
   return done;
 }

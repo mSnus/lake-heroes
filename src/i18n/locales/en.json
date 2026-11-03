@@ -1187,6 +1187,12 @@
     "passByButton": "⚜️ Pass by, proudly",
     "narrateVisit": "{playerName} came across free workers looking for a cause to join 🧑‍🌾"
   },
+  "travelingTraders": {
+    "title": "A traveling fair 🎪 came to your sight",
+    "demand": "They are in demand of {resource} and are willing to have a bargain on it",
+    "close": "Bid them farewell",
+    "narrateVisit": "{playerName} came across a traveling fair 🎪"
+  },
   "year": {
     "yearlyBonusLabel": "Yearly Bonus",
     "doubleIncomeAnnounce": "Next year is promising: {groups} will provide double income!",
