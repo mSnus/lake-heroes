@@ -3,7 +3,7 @@ import { Player } from './Player';
 import { Tile } from './Tile';
 import { syndicateMultiplier } from './syndicate';
 import { hasArtifact } from './artifacts';
-import { hasYearEffect, currentYear, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
+import { hasYearEffect, currentYear, NO_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT, DOUBLE_INCOME_EFFECT } from './yearCore';
 
 export interface TileIncome {
   gold: number;
@@ -24,18 +24,19 @@ export interface TileIncome {
  * TileClaimScreen's level-2/3 preview rows).
  *
  * `board`, when given, folds in the shared calendar (see game/year.ts):
- * this year's lucky groups double the tile's own bonus, and a live
- * Joker Taxes/Plague zeroes gold/units outright, overriding everything
- * else including the double. Omitted entirely by the one caller with no
- * live game to check (HelpScreen's static demo tile card), which then
- * behaves exactly as if no year effect were ever in force.
+ * this year's lucky groups double the tile's own bonus, and a live Joker
+ * Unjust Taxes zeroes every kind of income outright (Plague, separately,
+ * zeroes units only), overriding everything else including the double.
+ * Omitted entirely by the one caller with no live game to check
+ * (HelpScreen's static demo tile card), which then behaves exactly as if
+ * no year effect were ever in force.
  *
  * `player`, when given alongside `board`, is checked for the two artifacts
  * that exempt a holder from a live Plague (NO_UNIT_INCOME_EFFECT)
- * specifically -- Taxes has no artifact protection and never did, so gold
- * suppression is unconditional. Pipe of Hamelin protects live, every turn,
- * for as long as it's held. Divine Beads is a one-shot 50% roll taken once
- * when Plague fires (see actions/joker.ts), stamped onto
+ * specifically -- Unjust Taxes has no artifact protection and never did, so
+ * its suppression is unconditional. Pipe of Hamelin protects live, every
+ * turn, for as long as it's held. Divine Beads is a one-shot 50% roll taken
+ * once when Plague fires (see actions/joker.ts), stamped onto
  * player.plagueImmuneUntilYear rather than re-rolled here -- re-rolling
  * every turn would make the protection flicker on and off.
  */
@@ -51,7 +52,13 @@ export function tileTurnIncome(
   const groupBoost = board && hasYearEffect(board, DOUBLE_INCOME_EFFECT, tile.group) ? 2 : 1;
   result[tile.bonusType ?? 'gold'] = (tile.bonuses[level] ?? 0) * mult * groupBoost;
 
-  if (board && hasYearEffect(board, NO_GOLD_INCOME_EFFECT)) result.gold = 0;
+  if (board && hasYearEffect(board, NO_INCOME_EFFECT)) {
+    result.gold = 0;
+    result.food = 0;
+    result.arms = 0;
+    result.units = 0;
+  }
+
   const plagueImmune =
     !!player &&
     (hasArtifact(player, 'pipe-of-hamelin') ||

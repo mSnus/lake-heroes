@@ -14,7 +14,7 @@ import {
   hasYearEffect,
   expireYearEffects,
   YearEffect,
-  NO_GOLD_INCOME_EFFECT,
+  NO_INCOME_EFFECT,
   NO_UNIT_INCOME_EFFECT,
   DOUBLE_INCOME_EFFECT,
 } from './yearCore';
@@ -45,7 +45,7 @@ export {
   addYearEffect,
   hasYearEffect,
   expireYearEffects,
-  NO_GOLD_INCOME_EFFECT,
+  NO_INCOME_EFFECT,
   NO_UNIT_INCOME_EFFECT,
   DOUBLE_INCOME_EFFECT,
 };

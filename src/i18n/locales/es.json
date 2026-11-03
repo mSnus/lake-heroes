@@ -435,7 +435,7 @@
     "joker": {
       "title": "Comodín 🃏",
       "intro": "Caer en la casilla del Comodín desencadena un evento aleatorio, que afecta a todos (o, en algunos casos, a un solo jugador):",
-      "taxes": "🧾 <strong>Impuestos</strong> — todos los jugadores pierden la mitad de su oro.",
+      "taxes": "🧾 <strong>Impuestos Injustos</strong> — bloquea todo tipo de ingreso de casillas (oro, comida, armas, unidades) durante el resto del año, en todo el tablero, incluido el pago de la Cosecha de ese año.",
       "plague": "🦠 <strong>Peste</strong> — todos los jugadores pierden la mitad de sus unidades.",
       "hurricane": "🌪️ <strong>Huracán</strong> — golpea la casilla más cara del jugador más rico, arrasándola, pero solo si es al menos 1.5 veces más rico que el segundo.",
       "blessing": "✨ <strong>Bendición</strong> — todas las casillas en propiedad suben un nivel.",
@@ -744,7 +744,7 @@
   },
   "joker": {
     "eventName": {
-      "taxes": "Impuestos",
+      "taxes": "Impuestos Injustos",
       "plague": "Peste",
       "hurricane": "Huracán",
       "blessing": "Bendición",
@@ -754,7 +754,7 @@
       "kingsGift": "Regalo del Rey",
       "rust": "Óxido"
     },
-    "taxesMessage": "Sin ingresos de oro durante 1 año.",
+    "taxesMessage": "Ningún ingreso de ningún tipo durante 1 año, incluida la Cosecha de este año.",
     "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
     "plagueMessage": "Sin ingresos de unidades durante 1 año.",
     "playerLosesTile": "{playerName} pierde {tileName}",

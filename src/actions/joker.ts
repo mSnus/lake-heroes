@@ -9,7 +9,7 @@ import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
 import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact, hasArtifact, getArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS, KARMA_JOKER_BAD_CHANCE } from '../game/constants';
-import { currentYear, addYearEffect, NO_GOLD_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT } from '../game/year';
+import { currentYear, addYearEffect, NO_INCOME_EFFECT, NO_UNIT_INCOME_EFFECT } from '../game/year';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
 
@@ -80,10 +80,12 @@ export function handleJoker(
 
   switch (event) {
     case 'Taxes':
-      // Board-wide, for the rest of this year rather than an instant hit --
-      // see game/year.ts and income.ts's tileTurnIncome, which is what
-      // actually withholds it turn by turn.
-      addYearEffect(board, { id: NO_GOLD_INCOME_EFFECT, untilYear: currentYear(board) });
+      // Unjust Taxes: every kind of tile income, gold/food/arms/units
+      // alike, withheld board-wide for the rest of this year -- including
+      // that year's own Harvest payout, since expireYearEffects only clears
+      // it once the Harvest round is over (see game/year.ts and
+      // income.ts's tileTurnIncome, which actually applies it).
+      addYearEffect(board, { id: NO_INCOME_EFFECT, untilYear: currentYear(board) });
       message = t('joker.taxesMessage');
       break;
 

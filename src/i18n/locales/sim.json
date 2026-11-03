@@ -416,7 +416,7 @@
     "joker": {
       "title": "Joker 🃏",
       "intro": "Landing on the Joker tile triggers one random event, affecting everyone (or, in some cases, just one player):",
-      "taxes": "🧾 <strong>Taxes</strong> — all players lose half of their gold.",
+      "taxes": "🧾 <strong>Unjust Taxes</strong> — blocks every kind of tile income (gold, food, arms, units) for the rest of the year, board-wide, including that year's own Harvest payout.",
       "plague": "🦠 <strong>Plague</strong> — all players lose half of their units.",
       "hurricane": "🌪️ <strong>Hurricane</strong> — strikes the richest player's most expensive tile, razing it, but only if they're at least 1.5x wealthier than whoever ranks second.",
       "blessing": "✨ <strong>Blessing</strong> — all owned tiles are upgraded one level.",
@@ -700,7 +700,7 @@
   },
   "joker": {
     "eventName": {
-      "taxes": "Taxes",
+      "taxes": "Unjust Taxes",
       "plague": "Plague",
       "hurricane": "Hurricane",
       "blessing": "Blessing",
@@ -710,7 +710,7 @@
       "kingsGift": "King's Gift",
       "rust": "Rust"
     },
-    "taxesMessage": "No gold income for 1 year.",
+    "taxesMessage": "No income of any kind for 1 year, including this year's Harvest.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
     "plagueMessage": "No unit income for 1 year.",
     "playerLosesTile": "{playerName} loses {tileName}",

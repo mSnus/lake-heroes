@@ -58,7 +58,7 @@ export function addYearEffect(board: GameState, effect: YearEffect): void {
  * be exactly this -- for a group-targeted effect like DOUBLE_INCOME_EFFECT,
  * which can be in force for some groups and not others at once. Omit it to
  * match any effect with this id regardless of group (board-wide effects
- * like NO_GOLD_INCOME_EFFECT never set one). */
+ * like NO_INCOME_EFFECT never set one). */
 export function hasYearEffect(board: GameState, id: string, group?: string): boolean {
   const year = currentYear(board);
   return board.yearEffects.some(
@@ -74,9 +74,12 @@ export function expireYearEffects(board: GameState): void {
   board.yearEffects = board.yearEffects.filter((e) => e.untilYear >= year);
 }
 
-// Board-wide: Joker's Taxes/Plague, in force for the rest of the year they
-// fire in (see actions/joker.ts, income.ts's tileTurnIncome).
-export const NO_GOLD_INCOME_EFFECT = 'no-gold-income';
-export const NO_UNIT_INCOME_EFFECT = 'no-unit-income';
+// Board-wide: Joker's Unjust Taxes/Plague, in force for the rest of the
+// year they fire in -- including that year's own Harvest payout, since
+// board.round doesn't advance into the next year (clearing it, via
+// expireYearEffects in startNewYear) until the Harvest round is over (see
+// actions/joker.ts, income.ts's tileTurnIncome).
+export const NO_INCOME_EFFECT = 'no-income'; // Unjust Taxes: blocks every kind of tile income at once
+export const NO_UNIT_INCOME_EFFECT = 'no-unit-income'; // Plague: units only
 // Group-targeted: this year's lucky groups, rolled fresh in startNewYear.
 export const DOUBLE_INCOME_EFFECT = 'double-income';

@@ -4,6 +4,24 @@ import { ANNUAL_DEFAULT_UNITS, GRACE_TOTAL_UNITS_MULT, GRACE_TOTAL_GOLD_MULT } f
 import { getOverrides } from '../utils/overridesStore';
 import { getArtifactGoldBonus } from './artifacts';
 import { playerScore } from './score';
+import { hasYearEffect, NO_INCOME_EFFECT } from './yearCore';
+
+const EMPTY_REWARD: KingsGraceReward = {
+  tileGold: 0,
+  tileUnits: 0,
+  towerUnits: 0,
+  kingsGold: 0,
+  kingsUnits: 0,
+  kingsMilitia: 0,
+  kingsRiders: 0,
+  graceMilitiaOffered: 0,
+  graceRidersOffered: 0,
+  graceUnitsOffered: 0,
+  arifactGold: 0,
+  kingsHandicap: 0,
+  totalGold: 0,
+  totalUnits: 0,
+};
 
 export interface KingsGraceReward {
   tileGold: number;
@@ -167,6 +185,14 @@ function fitGraceUnits(
  * actually receives.
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
+  // Unjust Taxes withholds every kind of income for the year, King's Grace
+  // included -- both the Harvest-time Yearly Bonus and a King's Castle
+  // visit's own grant go through this same formula (see its own doc
+  // comment below), so gating it here keeps the grant and every preview of
+  // it (CurrentPlayer.tsx, the Harvest screen) in sync instead of showing a
+  // figure that was never actually paid.
+  if (hasYearEffect(board, NO_INCOME_EFFECT)) return { ...EMPTY_REWARD };
+
   const ranking = rankByScore(board);
   const kingsHandicap =
     board.players.length < 2
