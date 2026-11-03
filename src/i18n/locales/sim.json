@@ -366,8 +366,8 @@
       "step5": "Each circle makes a year — pass the 🏰 King's Castle to receive the rewards"
     },
     "goldUnits": {
-      "title": "Resources 🟡🫓⚔️ and units 🧍",
-      "item1": "Gold 🟡 buys tiles and upgrades. Food 🫓 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
+      "title": "Resources 🟡🥙⚔️ and units 🧍",
+      "item1": "Gold 🟡 buys tiles and upgrades. Food 🥙 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
       "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn when everybody collects the income from owned tiles. Resources could be bought, sold or exchanged. Also on that day the King in his grace sends his help to those who are weaker.",
       "itemLoot": "Unowned tiles can be <strong>looted</strong>: roll a die for a risky share of its daily income — 4-5 steals it, 3 gets half, 6 doubles it. On a 1-2 your squad is caught: you lose units (a second hidden roll), or Fame once you have none left to lose, or both if the loss outruns what you had.",
       "item3": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",

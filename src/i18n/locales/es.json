@@ -384,8 +384,8 @@
       "step5": "Cada jugador recibe una Bonificación Anual cuando termina el año compartido del calendario — o cae exactamente en el 🏰 Castillo del Rey para recibir la misma recompensa como Gracia del Rey, al instante"
     },
     "goldUnits": {
-      "title": "Recursos 🟡🫓⚔️ y unidades 🧍",
-      "item1": "El oro 🟡 compra casillas y mejoras. La comida 🫓 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
+      "title": "Recursos 🟡🥙⚔️ y unidades 🧍",
+      "item1": "El oro 🟡 compra casillas y mejoras. La comida 🥙 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
       "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno en el que todos cobran los ingresos de sus casillas. Los recursos se pueden comprar, vender o intercambiar. Ese mismo día, el Rey en su gracia envía ayuda a los más débiles.",
       "itemLoot": "Las casillas sin dueño se pueden <strong>saquear</strong>: tira un dado para arriesgarte a una parte de su ingreso diario — 4-5 te lo llevas todo, 3 la mitad, 6 el doble. Con 1-2 tu escuadrón es descubierto: pierdes unidades (otra tirada oculta), o Fama si ya no te quedan, o ambas cosas si la pérdida supera lo que tenías.",
       "item3": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a tus 🧍 mientras estés en el Castillo del Rey.",

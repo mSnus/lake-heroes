@@ -18,7 +18,7 @@ function botHarvest(player: Player, board: GameState): void {
   const parts = (
     [
       ['gold', '🟡'],
-      ['food', '🫓'],
+      ['food', '🥙'],
       ['arms', '⚔️'],
     ] as const
   )

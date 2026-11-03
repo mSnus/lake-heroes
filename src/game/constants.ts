@@ -145,7 +145,7 @@ export const FOOD_BUY_PRICE = 6;
 export const FOOD_SELL_PRICE = 4;
 export const ARMS_BUY_PRICE = 8;
 export const ARMS_SELL_PRICE = 6;
-// Harvest exchange, either way: EXCHANGE_FOOD 🫓 ⇄ EXCHANGE_ARMS ⚔️, whole batches only.
+// Harvest exchange, either way: EXCHANGE_FOOD 🥙 ⇄ EXCHANGE_ARMS ⚔️, whole batches only.
 export const EXCHANGE_FOOD = 3;
 export const EXCHANGE_ARMS = 2;
 // The Tavern charges a premium over the King's Castle's own prices, for both
