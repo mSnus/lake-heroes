@@ -428,7 +428,7 @@
     },
     "caravan": {
       "title": "Caravan 🐪",
-      "item1": "At the <em>start</em> of your turn you have a chance to encounter a caravan bringing treasures or slaves",
+      "item1": "It is possible to rob caravans. Encounter caravans with gold and resources to be pillaged, slaves to be freed, horses to mount and workers to be hired.",
       "item2": "Defeat the caravan guards to free the slaves (they join your army) or loot the treasures!"
     },
     "ruins": {

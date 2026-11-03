@@ -464,7 +464,7 @@
     },
     "caravan": {
       "title": "Caravan 🐪",
-      "item1": "After rolling, before movement, you may encounter a caravan carrying gold, slaves, or—for a Knight—horses.",
+      "item1": "It is possible to rob caravans. Encounter caravans with gold and resources to be pillaged, slaves to be freed, horses to mount and workers to be hired.",
       "item2": "Defeat the caravan guards to free the slaves (they join your army) or loot the treasures!"
     },
     "dangers": {

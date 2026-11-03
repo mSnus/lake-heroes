@@ -462,7 +462,7 @@
     },
     "caravan": {
       "title": "Caravana 🐪",
-      "item1": "Después de tirar y antes de moverte, puedes encontrar una caravana con oro, esclavos o —si eres Caballero— caballos.",
+      "item1": "Es posible asaltar caravanas. Encuentra caravanas con oro y recursos para saquear, esclavos para liberar, caballos para montar y trabajadores para contratar.",
       "item2": "¡Derrota a los guardias de la caravana para liberar a los esclavos (se unen a tu ejército) o saquear los tesoros!"
     },
     "dangers": {
