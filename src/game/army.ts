@@ -85,7 +85,7 @@ function capForFame(table: { minFame: number; cap: number }[], fame: number): nu
   return (table.find((t) => fame >= t.minFame) ?? table[table.length - 1]).cap;
 }
 
-/** A cap for display -- the unlimited top rider bracket reads as ∞. */
+/** A cap for display -- an unlimited bracket (none currently) would read as ∞. */
 export function formatArmyCap(cap: number): string {
   return Number.isFinite(cap) ? String(cap) : '∞';
 }

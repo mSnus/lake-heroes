@@ -225,7 +225,7 @@ export const MILITIA_CAP_BY_FAME: { minFame: number; cap: number }[] = [
 // Knights only -- a non-knight's rider cap is always 0 (see Player.armyCapacity),
 // so the bottom row is what a fresh Knight gets right away.
 export const RIDER_CAP_BY_FAME: { minFame: number; cap: number }[] = [
-  { minFame: 20, cap: Infinity },
+  { minFame: 20, cap: 40 },
   { minFame: 18, cap: 32 },
   { minFame: 16, cap: 24 },
   { minFame: 13, cap: 16 },

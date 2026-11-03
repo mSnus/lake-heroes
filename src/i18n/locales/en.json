@@ -391,18 +391,17 @@
       "item1": "Gold 🟡 buys tiles and upgrades. Food 🫓 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
       "item2": "Owned tiles pay at the start of each of your turns: Traders 🟡, Fields and Farms 🫓, Camps and Mills ⚔️, Towers 🧍. Everyone also collects a Yearly Bonus when the calendar year ends — land exactly on the King's Castle for the same reward as King's Grace, right away.",
       "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn of its own when nobody moves: see the year's income, buy or sell 🫓 at {buyFood}/{sellFood}🟡 and ⚔️ at {buyArms}/{sellArms}🟡 (buy/sell), or exchange {exchangeFood}🫓 ⇄ {exchangeArms}⚔️.",
-      "item3": "Fame 🏆 limits your army. 🧍 militia: {militiaCaps}. 🐎 riders (Knights only): {riderCaps}",
-      "item3At": "{cap} at {fame}🏆",
-      "item4": "Once fame reaches <strong>{knightFame}🏆</strong>, the hero becomes a Knight and can hire pricier but more powerful Rider units 🐎 at the King's Castle.",
-      "item5": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",
-      "item6": "You can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 or Worker's Caravan (paying double gold)"
+      "itemLoot": "Unowned tiles can be <strong>looted</strong>: roll a die for a risky share of its daily income — 4-5 steals it, 3 gets half, 6 doubles it. On a 1-2 your squad is caught: you lose units (a second hidden roll), or Fame once you have none left to lose, or both if the loss outruns what you had.",
+      "item3": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",
+      "item4": "You can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 or Worker's Caravan (paying double gold)"
     },
     "fame": {
       "title": "Fame 🏆",
       "item1": "It's your reputation. It depends on each battle won or lost and tiles owned.",
       "item2": "Fame {knightFame} or more makes you eligible for promotion — the King knights you (unlocking Rider recruiting) next time you cross his Castle. It also makes you more visible for a dragon - beware, it could attack!",
       "item3": "Knights are eligible to hire riders 🐎, more powerful and better suited to fight dragons or zombies",
-      "item4": "Higher fame lets your army grow bigger and allows to own better tiles"
+      "item4": "Higher fame lets your army grow bigger and allows to own better tiles",
+      "item5": "Fame 🏆 limits your army: from {minMilitia}🧍 to {maxMilitia}🧍 at {maxMilitiaFame}🏆, {maxRider}🐎 at {maxRiderFame}🏆."
     },
     "tiles": {
       "title": "Tiles 🧩",
