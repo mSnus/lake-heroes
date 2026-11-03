@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { showScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
+import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
 
 const RUINS_FORCE_RATIO_MIN = 0.6;
@@ -20,6 +21,10 @@ export function showRuinsEncounter(
   onContinue: () => void
 ): void {
   const player = board.activePlayer;
+  // Showing up with no army at all to fight a dungeon's monsters costs 1
+  // Fame -- the lone-hero stand-in (the floor of 1 below) is a desperate
+  // showing, not a real one.
+  if (player.units === 0) changeFame(player, -1, 1);
   const ratio = RUINS_FORCE_RATIO_MIN + Math.random() * (RUINS_FORCE_RATIO_MAX - RUINS_FORCE_RATIO_MIN);
   const attackerUnits = Math.max(1, Math.round(player.units * ratio));
 
