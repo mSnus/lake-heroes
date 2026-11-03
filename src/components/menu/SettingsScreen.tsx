@@ -46,14 +46,25 @@ const SettingsScreen: React.FC = () => {
         </div>
 
         <div className="settings-field">
-          <label className="settings-toggle-label">
-            <input
-              type="checkbox"
-              checked={settings.doNotDisplayBattles}
-              onChange={(e) => setSettings({ doNotDisplayBattles: e.target.checked })}
-            />
-            {t('settingsScreen.doNotDisplayBattles')}
-          </label>
+          <div className="settings-toggle-row">
+            <label className="settings-toggle-label">
+              <input
+                type="checkbox"
+                checked={settings.doNotDisplayBattles}
+                onChange={(e) => setSettings({ doNotDisplayBattles: e.target.checked })}
+              />
+              {t('settingsScreen.doNotDisplayBattles')}
+            </label>
+            <label className="settings-toggle-label">
+              <input
+                type="checkbox"
+                checked={settings.onlyAiBattles}
+                disabled={!settings.doNotDisplayBattles}
+                onChange={(e) => setSettings({ onlyAiBattles: e.target.checked })}
+              />
+              {t('settingsScreen.onlyAiBattles')}
+            </label>
+          </div>
           <span className="settings-hint">{t('settingsScreen.doNotDisplayBattlesHint')}</span>
         </div>
 

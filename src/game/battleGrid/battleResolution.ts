@@ -165,7 +165,15 @@ export function showBattleScreen(
     | 'caravanPrize'
   >
 ): void {
-  if (isHeadlessRun() || getOverrides().headlessCombats || getSettings().doNotDisplayBattles) {
+  const { doNotDisplayBattles, onlyAiBattles } = getSettings();
+  // onlyAiBattles narrows doNotDisplayBattles to battles with no human on
+  // either side -- one a human attacks or is attacked in still shows,
+  // regardless of the setting.
+  const defender = 'defender' in props ? props.defender : undefined;
+  const involvesHuman = !props.attacker.isComputer || (!!defender && !defender.isComputer);
+  const skipDisplay = doNotDisplayBattles && (!onlyAiBattles || !involvesHuman);
+
+  if (isHeadlessRun() || getOverrides().headlessCombats || skipDisplay) {
     clearScreen();
     const { setup, resolution } = runHeadlessBattle(props);
     // A real BattleScreen refreshes state as the animation plays out --

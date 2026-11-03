@@ -11,6 +11,10 @@ import { useSyncExternalStore } from 'react';
 export interface AppSettings {
   autoEndTurn: boolean;
   doNotDisplayBattles: boolean;
+  /** Narrows doNotDisplayBattles to only battles with no human on either
+   * side -- a battle a human attacks or defends in still shows normally.
+   * No effect by itself when doNotDisplayBattles is off. */
+  onlyAiBattles: boolean;
   mapAutoZoom: boolean;
   /** Fog of war: tiles start undiscovered (Tile.fog) until a player lands
    * on them. Disabling this reveals every tile from the start of a new
@@ -24,6 +28,7 @@ export interface AppSettings {
 export const SETTINGS_DEFAULTS: AppSettings = {
   autoEndTurn: true,
   doNotDisplayBattles: false,
+  onlyAiBattles: false,
   mapAutoZoom: true,
   disableFogOfWar: false,
 };
@@ -35,6 +40,7 @@ function sanitize(raw: Partial<AppSettings> | null | undefined): AppSettings {
   return {
     autoEndTurn: !!merged.autoEndTurn,
     doNotDisplayBattles: !!merged.doNotDisplayBattles,
+    onlyAiBattles: !!merged.onlyAiBattles,
     mapAutoZoom: !!merged.mapAutoZoom,
     disableFogOfWar: !!merged.disableFogOfWar,
   };

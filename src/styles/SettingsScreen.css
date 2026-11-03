@@ -8,6 +8,17 @@
   margin-bottom: 14px;
 }
 
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.settings-toggle-row .settings-toggle-label:has(input:disabled) {
+  opacity: 0.5;
+}
+
 .settings-toggle-label {
   display: flex;
   align-items: center;

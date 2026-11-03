@@ -1093,6 +1093,7 @@
     "autoEndTurnHint": "Automatically ends your turn after a short idle period once there's nothing left to decide.",
     "doNotDisplayBattles": "Do not display battles",
     "doNotDisplayBattlesHint": "Battles resolve instantly in the background instead of showing the battle screen.",
+    "onlyAiBattles": "only AI",
     "mapAutoZoom": "Map auto-zoom",
     "mapAutoZoomHint": "The map camera zooms in on the active player at the start of their turn.",
     "fogOfWar": "Fog of war",

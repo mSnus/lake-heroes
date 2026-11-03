@@ -1089,6 +1089,7 @@
     "autoEndTurnHint": "Termina tu turno automáticamente tras un breve periodo de inactividad cuando ya no queda nada por decidir.",
     "doNotDisplayBattles": "No mostrar batallas",
     "doNotDisplayBattlesHint": "Las batallas se resuelven al instante en segundo plano, sin mostrar la pantalla de combate.",
+    "onlyAiBattles": "solo IA",
     "mapAutoZoom": "Zoom automático del mapa",
     "mapAutoZoomHint": "La cámara del mapa se acerca al jugador activo al inicio de su turno.",
     "fogOfWar": "Niebla de guerra",
