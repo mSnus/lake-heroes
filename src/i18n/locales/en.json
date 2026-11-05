@@ -195,7 +195,10 @@
     "sellMilitia": "Sell militia",
     "sellRiders": "Sell riders",
     "sell": "sell",
+    "mount": "mount",
+    "dismount": "dismount",
     "upgrade": "Upgrade militia to Riders, {cost} each",
+    "dismountTitle": "Dismount riders to militia, refunds {cost} each",
     "confirm": "Confirm",
     "cancel": "Cancel",
     "upgraded": "{playerName} upgraded {amount}🧍 to Riders for {cost}"
@@ -1243,7 +1246,6 @@
   },
   "armyScreen": {
     "title": "Warriors Company",
-    "dismount": "Dismount:",
     "hireAmount": "🧾 Hire {amount}",
     "close": "✖️ Close"
   }

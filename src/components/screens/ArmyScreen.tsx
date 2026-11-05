@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
-import { CostLabel } from '../snippets/CostLabel';
 import { Player } from '../../game/Player';
 import { GameState } from '../../game/GameState';
 import { ScreenBackground } from './ScreenBackground';
 import { DecoratedButton } from '../ui/DecoratedButton';
-import { DecoratedSlider } from '../ui/DecoratedSlider';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
 import { SquadHirePanel } from '../ui/SquadHirePanel';
 import { useHireFooter } from '../ui/useHireFooter';
-import { Militia } from '../snippets/Militia';
-import { Rider } from '../snippets/Rider';
 import { Fame } from '../snippets/Fame';
 import { Gold } from '../snippets/Gold';
 import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { clearScreen } from '../../utils/screenStore';
-import { dismountSquad, dismountRefund, maxDismount } from '../../actions/dismountSquad';
+import { dismountSquad } from '../../actions/dismountSquad';
 import { sellUnits } from '../../actions/sellUnits';
 import { upgradeSquad } from '../../actions/upgradeSquad';
 import { buyUnits } from '../../actions/buyUnits';
@@ -48,13 +44,8 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
   const [, forceRerender] = useState(0);
   const refresh = () => forceRerender((v) => v + 1);
 
-  const [dismount, setDismount] = useState(0);
-  const dismountMax = maxDismount(player);
-  const dismountPick = Math.min(dismount, dismountMax);
-
-  const handleDismount = () => {
-    dismountSquad(gameState, dismountPick, updateGameState);
-    setDismount(0);
+  const handleDismount = (count: number) => {
+    dismountSquad(gameState, count, updateGameState);
     refresh();
   };
 
@@ -150,51 +141,12 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
         onSell={handleSellSquad}
         onUpgrade={handleUpgradeSquad}
         canUpgradeToRiders={player.isKnight}
+        onDismount={handleDismount}
         wallet={player}
         spriteColor={player.image}
         isKnight={player.isKnight}
         className="squad-display-large garrisons-army-display"
       />
-
-      {player.riders > 0 && (
-        <div className="garrisons-army">
-          <div className="garrisons-dismount-block">
-            <div className="garrisons-army-side">{t('armyScreen.dismount')}</div>
-            <div className="garrisons-army-dismount">
-              <div className="garrisons-army-side">
-                <Rider amount={player.riders - dismountPick} color={player.image} />
-              </div>
-              <DecoratedSlider
-                min={0}
-                max={dismountMax}
-                value={dismountPick}
-                onPreview={setDismount}
-                onCommit={setDismount}
-              />
-              <div className="garrisons-army-side">
-                <Militia amount={player.militia + dismountPick} color={player.image} knight={player.isKnight} />
-                {dismountPick > 0 && <CostLabel cost={dismountRefund(dismountPick)} sign="+" />}
-              </div>
-            </div>
-
-            <div
-              className={
-                'shield-button-container' + (dismountPick > 0 ? '' : ' shield-button-container--disabled')
-              }
-            >
-              <button
-                className="shield-button hire-submit"
-                onClick={handleDismount}
-                disabled={dismountPick <= 0}
-              >
-                <span className="hire-submit-icon" style={{ fontSize: '1.2rem' }}>
-                  ➜<Militia amount="" color={player.image} knight={player.isKnight} />
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
         <SquadHirePanel

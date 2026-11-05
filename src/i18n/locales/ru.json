@@ -191,7 +191,10 @@
     "sellMilitia": "Продать пехоту",
     "sellRiders": "Продать всадников",
     "sell": "продать",
+    "mount": "посадить",
+    "dismount": "спешить",
     "upgrade": "Улучшить пехоту до всадников, {cost} за каждого",
+    "dismountTitle": "Спешить всадников в пехоту, возврат {cost} за каждого",
     "confirm": "Подтвердить",
     "cancel": "Отмена",
     "upgraded": "{playerName} улучшил {amount}🧍 до рыцарей за {cost}"
@@ -1213,7 +1216,6 @@
   },
   "armyScreen": {
     "title": "Дружина",
-    "dismount": "Спешить:",
     "hireAmount": "🧾 Нанять {amount}",
     "close": "✖️ Закрыть"
   }

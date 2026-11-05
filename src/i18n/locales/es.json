@@ -194,7 +194,10 @@
     "sellMilitia": "Vender milicia",
     "sellRiders": "Vender jinetes",
     "sell": "vender",
+    "mount": "montar",
+    "dismount": "desmontar",
     "upgrade": "Mejorar milicia a Jinetes, {cost} cada uno",
+    "dismountTitle": "Desmontar jinetes a milicia, reembolsa {cost} cada uno",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
     "upgraded": "{playerName} mejoró {amount}🧍 a Jinetes por {cost}"
@@ -1216,7 +1219,6 @@
   },
   "armyScreen": {
     "title": "Compañía de Guerreros",
-    "dismount": "Desmontar:",
     "hireAmount": "🧾 Contratar {amount}",
     "close": "✖️ Cerrar"
   }

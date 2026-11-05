@@ -249,6 +249,13 @@
   filter: saturate(1.1);
 }
 
+/* Riders 120% bigger than the base .unit-icon sizing on request. */
+.bfg-unit-emoji .unit-rider {
+  width: auto;
+  height: calc(var(--bfg-cell) * 1.452);
+  max-height: calc(var(--bfg-cell) * 1.452);
+}
+
 /* Sprite art faces right (the attacker's own facing, toward the defender on
    the opposite side) -- mirror it for the defender side so both sides face
    each other instead of the defender appearing to face away. */
