@@ -98,6 +98,19 @@
   font-size: 0.72em;
 }
 
+.army-action-slider-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 2px;
+}
+
+.army-action-cost {
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
 .army-action-cancel {
   border: none;
   background: none;

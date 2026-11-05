@@ -164,16 +164,23 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
           <div className="hire-row-name">
             {pending.kind === 'upgrade' ? '🧍→🐎' : `✖️${pending.tier === 'riders' ? '🐎' : '🧍'}`}
           </div>
-          <DecoratedSlider
-            min={0}
-            max={max}
-            value={shown}
-            onPreview={setPreviewAmount}
-            onCommit={(v) => {
-              setAmount(v);
-              setPreviewAmount(null);
-            }}
-          />
+          <div className="army-action-slider-col">
+            <DecoratedSlider
+              min={0}
+              max={max}
+              value={shown}
+              onPreview={setPreviewAmount}
+              onCommit={(v) => {
+                setAmount(v);
+                setPreviewAmount(null);
+              }}
+            />
+            {delta && (
+              <div className="army-action-cost">
+                <CostLabel cost={delta} sign={pending?.kind === 'upgrade' ? '-' : '+'} />
+              </div>
+            )}
+          </div>
           <div className="hire-row-amount-label">{shown}</div>
           <div className={'shield-button-container' + (shown > 0 ? '' : ' shield-button-container--disabled')}>
             <button
@@ -183,9 +190,6 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
               disabled={shown <= 0}
             >
               <span className="hire-submit-icon">✔️</span>
-              <span className="hire-row-caption">
-                {delta && <CostLabel cost={delta} sign={pending?.kind === 'upgrade' ? '-' : '+'} />}
-              </span>
             </button>
           </div>
           <button className="army-action-cancel" title={t('armyDisplay.cancel')} onClick={() => setPending(null)}>
