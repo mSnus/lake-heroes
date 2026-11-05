@@ -164,7 +164,7 @@ export function handleJoker(
 
     case 'Blessing':
       for (const tile of board.tiles) {
-        if (tile?.isOwned() && tile.level < 3) tile._level = tile.level + 1;
+        if (tile?.isOwned() && !tile.isYielded && tile.level < 3) tile._level = tile.level + 1;
       }
 
       message = t('joker.blessingMessage');
