@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { currentYear, GROUP_EMOJI } from '../../game/year';
 import { DOUBLE_INCOME_EFFECT } from '../../game/yearCore';
@@ -37,6 +37,9 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const year = currentYear(gameState);
   const calendarYear = GAME_START_YEAR + year;
   const annual = computeAnnualReward(gameState, player);
+  // Static `content:` element handed to screenStore once at mount -- nothing
+  // re-invokes it on trade, so force a re-render to show it immediately.
+  const [, forceRerender] = useState(0);
   const doubleGroups = gameState.yearEffects
     .filter((e) => e.id === DOUBLE_INCOME_EFFECT && e.untilYear === year)
     .map((e) => `${GROUP_EMOJI[e.group ?? ''] ?? ''} ${t(`year.groupName.${e.group}`)}`);
@@ -99,7 +102,13 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
           </div>
         </div>
 
-        <ResourceTradeBlock player={player} onTrade={() => updateGameState(gameState)} />
+        <ResourceTradeBlock
+          player={player}
+          onTrade={() => {
+            updateGameState(gameState);
+            forceRerender((v) => v + 1);
+          }}
+        />
 
         <div
           className="button-group"

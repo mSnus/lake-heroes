@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { Resource, tradersBuyPrice, tradersSellPrice, tradersExchangeBatch } from '../../game/resources';
 import GameModal from './GameModal';
@@ -43,6 +43,10 @@ const TravelingTradersModal: React.FC<TravelingTradersModalProps> = ({
   const buyPrice = (r: Resource) => tradersBuyPrice(demandResource, r);
   const sellPrice = (r: Resource) => tradersSellPrice(demandResource, r);
 
+  // Static `content:` element handed to screenStore once at mount -- nothing
+  // re-invokes it on trade, so force a re-render to show it immediately.
+  const [, forceRerender] = useState(0);
+
   // A live bot doesn't shop here -- it already hires every turn through its
   // own regular budget (see ai/botPlans.ts's planTurnHire) -- so this just
   // moves it along, same delay as every other self-driving bot screen.
@@ -82,7 +86,10 @@ const TravelingTradersModal: React.FC<TravelingTradersModalProps> = ({
 
         <ResourceTradeBlock
           player={player}
-          onTrade={() => updateGameState(gameState)}
+          onTrade={() => {
+            updateGameState(gameState);
+            forceRerender((v) => v + 1);
+          }}
           buyPrice={buyPrice}
           sellPrice={sellPrice}
           exchangeBatch={tradersExchangeBatch}
