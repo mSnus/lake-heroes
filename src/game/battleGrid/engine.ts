@@ -845,7 +845,11 @@ export function resolveBrawlCombat(
     if (!movedIds.has(u.id) && !attackedIds.has(u.id)) u.energy = energyFor(u.kind);
   }
 
-  const status = battleStatus(alive, state.reserves);
+  let status = battleStatus(alive, state.reserves);
+  // Both sides wiped in the same round: no battle in this game ends
+  // undecided, so a hidden coin flip picks a winner instead of a draw.
+  if (status === 'tie') status = rng() < 0.5 ? 'attacker-win' : 'defender-win';
+
   return { state: { ...state, units: alive, turn: state.turn + 1, status }, events };
 }
 
