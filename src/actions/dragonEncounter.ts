@@ -171,7 +171,7 @@ function handleWeakPlayerAttack(
   let maxGold = -1;
   for (const idx of player.ownedTiles) {
     const tile = board.tiles[idx];
-    if (!tile || tile.owner !== player.id) continue;
+    if (!tile || tile.owner !== player.id || tile.isYielded) continue;
     const gold = tile.currentPrice.gold;
     if (gold > maxGold) {
       maxGold = gold;
@@ -181,10 +181,10 @@ function handleWeakPlayerAttack(
 
   let message: string;
 
-  // Defensive only -- the real "owns nothing" case is caught before this
-  // function is ever called (see checkDragonEncounter). This only still
-  // fires if ownedTiles held a stale/invalid index (a tile gone, or no
-  // longer this player's), which the loop above skips over.
+  // Also reached when every owned tile is yielded (under the King's
+  // protection, same as Plague) and so skipped by the loop above, not just
+  // a stale/invalid ownedTiles index (a tile gone, or no longer this
+  // player's).
   if (mostExpensiveIdx === null) {
     message = t('dragonEncounter.attacksYou');
     say(t('dragonEncounter.attackedNothingToBurn', { playerName: player.name }), 'error');
