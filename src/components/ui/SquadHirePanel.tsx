@@ -9,7 +9,7 @@ import { Fame } from '../snippets/Fame';
 import { Gold } from '../snippets/Gold';
 import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
-import { hireMax, unitCost } from '../../game/resources';
+import { Cost, hireMax, scaleCost, unitCost } from '../../game/resources';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import '../../styles/SquadHirePanel.css';
@@ -31,6 +31,10 @@ interface HireRowProps {
    * and would never settle if compared for a state update. The row has no
    * buy button of its own, so this is the only way a hire actually happens. */
   registerBuy?: (tier: UnitTier, buy: () => void) => void;
+  /** The sibling row's own dialled-in cost, reserved out of the wallet
+   * before this row's max/❌ is computed -- both rows spend the same
+   * gold/food/arms, so one can't ignore what the other has picked. */
+  reserved?: Cost;
 }
 
 const HireRow: React.FC<HireRowProps> = ({
@@ -41,9 +45,17 @@ const HireRow: React.FC<HireRowProps> = ({
   onBuy,
   onAmountChange,
   registerBuy,
+  reserved,
 }) => {
   const UnitIcon = tier === 'riders' ? Rider : Militia;
-  const maxAmount = hireMax(player, tier, unitPrice, goldOnly);
+  const wallet = reserved
+    ? {
+        gold: Math.max(0, player.gold - reserved.gold),
+        food: Math.max(0, player.food - reserved.food),
+        arms: Math.max(0, player.arms - reserved.arms),
+      }
+    : player;
+  const maxAmount = hireMax(player, tier, unitPrice, goldOnly, wallet);
   const atFameCap = player.armyRoom(tier) <= 0;
   // armyRoom > 0 but still can't afford one: blocked by resources, not fame.
   const blockedByResources = !atFameCap && maxAmount === 0;
@@ -168,6 +180,21 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
   const resolvedMilitiaPrice = militiaPrice ?? ov.militiaPrice;
   const resolvedRiderPrice = riderPrice ?? ov.riderPrice;
 
+  // Both rows spend the same wallet -- tracked here (not just bubbled up via
+  // onAmountChange) so each row can reserve the other's dialled-in cost out
+  // of its own max/❌ check.
+  const [amounts, setAmounts] = useState<Partial<Record<UnitTier, number>>>({});
+  const handleAmountChange = (tier: UnitTier, amount: number) => {
+    setAmounts((a) => (a[tier] === amount ? a : { ...a, [tier]: amount }));
+    onAmountChange?.(tier, amount);
+  };
+
+  const reservedFor = (tier: UnitTier): Cost => {
+    const other: UnitTier = tier === 'militia' ? 'riders' : 'militia';
+    const otherPrice = other === 'riders' ? resolvedRiderPrice : resolvedMilitiaPrice;
+    return scaleCost(unitCost(other, otherPrice, goldOnly), amounts[other] ?? 0);
+  };
+
   const pricePart = (
     amount: number,
     Icon: React.FC<{ amount: number | string }>
@@ -217,8 +244,9 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
           unitPrice={resolvedMilitiaPrice}
           goldOnly={goldOnly}
           onBuy={onBuy}
-          onAmountChange={onAmountChange}
+          onAmountChange={handleAmountChange}
           registerBuy={registerBuy}
+          reserved={reservedFor('militia')}
         />
       )}
       {showRiders && (
@@ -227,9 +255,10 @@ export const SquadHirePanel: React.FC<SquadHirePanelProps> = ({
           tier="riders"
           unitPrice={resolvedRiderPrice}
           goldOnly={goldOnly}
-          onAmountChange={onAmountChange}
+          onAmountChange={handleAmountChange}
           registerBuy={registerBuy}
           onBuy={onBuy}
+          reserved={reservedFor('riders')}
         />
       )}
     </div>

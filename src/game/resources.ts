@@ -116,8 +116,17 @@ export function formatCost(cost: Cost): string {
 }
 
 /** Most units of `tier` the player can hire now: resources and army room. */
-export function hireMax(player: Player, tier: UnitTier, goldOverride?: number, goldOnly?: boolean): number {
-  return Math.min(maxAffordable(player, unitCost(tier, goldOverride, goldOnly)), player.armyRoom(tier));
+export function hireMax(
+  player: Player,
+  tier: UnitTier,
+  goldOverride?: number,
+  goldOnly?: boolean,
+  /** Affordability only -- `player.armyRoom` still drives the fame cap.
+   * Lets a sibling row's already-dialled-in amount be reserved out of the
+   * wallet before this tier's own max is computed. */
+  wallet: Pick<Player, 'gold' | 'food' | 'arms'> = player
+): number {
+  return Math.min(maxAffordable(wallet, unitCost(tier, goldOverride, goldOnly)), player.armyRoom(tier));
 }
 
 /** Buy (positive `amount`) or sell (negative) food or arms for gold at the
