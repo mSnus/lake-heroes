@@ -46,6 +46,11 @@ interface BattlefieldGridProps {
    * handed the chosen destinations via onManualComplete once every unit is
    * placed. */
   manualSide?: BattleSide;
+  /** Whether the human has manual control toggled on for this battle at all
+   * (not just this round's active side, see manualSide) -- units only get
+   * their per-side colored glow while this is on; auto-played battles stay
+   * glow-free. */
+  manualControl?: boolean;
   /** Called when the human finishes placing: `plan` is the destination per
    * unit, and `attacks` maps a unit to the specific enemy it was pointed at.
    * Any unit not in `attacks` — including one that simply moved and ended up
@@ -150,6 +155,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   attackerKnight,
   defenderKnight,
   manualSide,
+  manualControl = false,
   onManualComplete,
   instant = false,
   midControls,
@@ -542,7 +548,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         </filter>
       </defs>
     </svg>
-    <div className={'bfg-battlefield' + (instant ? ' bfg-instant' : '')}>
+    <div className={'bfg-battlefield' + (instant ? ' bfg-instant' : '') + (manualControl ? ' bfg-manual-mode' : '')}>
       <div className="bfg-corridor">
       {rocks(rockRows.top, 'top')}
       <div className="bfg-arena" ref={arenaRef} onClick={handleArenaClick}>

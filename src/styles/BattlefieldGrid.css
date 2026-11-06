@@ -208,6 +208,11 @@
   font-size: calc(var(--bfg-cell) * 0.55);
   line-height: 1;
   text-shadow: 1px 1px 3px #000;
+}
+
+/* Per-side colored glow -- manual control only; auto-played battles stay
+   glow-free. */
+.bfg-manual-mode .bfg-unit-emoji {
   filter: drop-shadow(0 0 3px currentColor);
 }
 

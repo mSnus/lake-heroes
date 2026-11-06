@@ -870,6 +870,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             attackerKnight={attackerFieldKnight}
             defenderKnight={defenderFieldKnight}
             manualSide={brawlManualSide ?? undefined}
+            manualControl={manualControl}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
             instant={instantMove}
             midControls={
