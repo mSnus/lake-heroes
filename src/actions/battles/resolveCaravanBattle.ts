@@ -72,11 +72,9 @@ export function resolveCaravanBattle(
   };
 
   if (outcome === 'attacker') {
-    // Karma only judges the two unambiguous cases -- a caravan carrying
-    // nothing but gold (pure robbery) or nothing but slaves (pure rescue).
-    // A mixed cargo is left unjudged.
-    if (prize.gold > 0 && prize.slaves <= 0 && prize.horses <= 0) changeKarma(attacker, -1);
-    else if (prize.slaves > 0 && prize.gold <= 0 && prize.horses <= 0) changeKarma(attacker, 1);
+    // Raiding a caravan for its gold is fair game, unjudged -- only freeing
+    // a caravan of nothing but slaves is rewarded.
+    if (prize.slaves > 0 && prize.gold <= 0 && prize.horses <= 0) changeKarma(attacker, 1);
 
     const parts = collect(prize);
 
