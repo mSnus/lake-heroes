@@ -379,7 +379,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
       {!tile.isYielded && (
         <div className="upgrades-table">
-          {Array.from([currentLevel, nextLevel], (i) => (
+          {Array.from(new Set([currentLevel, nextLevel]), (i) => (
             <div
               className={
                 'upgrade-level' + (canUpgrade() || i === currentLevel ? '' : ' upgrade-unreachable')
