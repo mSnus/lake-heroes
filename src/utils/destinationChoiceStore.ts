@@ -2,7 +2,6 @@ import { useSyncExternalStore } from 'react';
 
 export interface DestinationChoice {
   options: number[];
-  selected: number | null;
 }
 
 let state: DestinationChoice | null = null;
@@ -13,24 +12,18 @@ function emit(): void {
   listeners.forEach((l) => l());
 }
 
-/** Shows the reachable slots on the board and resolves with the one the player confirms. */
+/** Shows the reachable slots on the board and resolves with the one the player taps. */
 export function requestDestination(options: number[]): Promise<number> {
   return new Promise((resolve) => {
-    state = { options, selected: null };
+    state = { options };
     resolveChoice = resolve;
     emit();
   });
 }
 
-/** First tap selects a slot, tapping the selected slot again confirms it. */
+/** Tapping a highlighted slot moves there straight away. */
 export function tapDestination(slot: number): void {
   if (!state || !state.options.includes(slot)) return;
-  if (state.selected !== slot) {
-    state = { ...state, selected: slot };
-    emit();
-    return;
-  }
-
   const resolve = resolveChoice;
   clearDestinationChoice();
   resolve?.(slot);

@@ -1,4 +1,5 @@
 import { DIRS, opposite, ringDist, canAddExit, dirBetween, diagonalVertex, exitsOf, isValidPiece } from './roads';
+import { inDegrees, lapLengths, stepsAfterCastle } from './analyzeMap';
 
 export interface BoardMap {
   cols: number;
@@ -18,6 +19,12 @@ export const MAP_COLS = 10;
 export const MAP_ROWS = 8;
 const ROAD_SHARE = 0.5;
 const MIN_SIDE_ROAD_GAP = 3;
+// Each side road adds one fork (a 3-exit cell with a choice of way).
+export const MAX_FORKS = 3;
+// No fork in the first this many steps after the castle (no quick way back to it).
+export const CASTLE_CLEAR_STEPS = 3;
+// The shortest lap must be at least this share of the longest one.
+const MIN_LAP_RATIO = 0.85;
 const MAX_SIDE_ROAD_CELLS = 8;
 const CORNER_CUT_CHANCE = 0.6;
 const SEARCH_BUDGET = 3000;
@@ -224,7 +231,7 @@ class Builder {
 }
 
 function tryGenerate(cols: number, rows: number): GeneratedMap | null {
-  const outline = blobOutline(cols, rows, 24 + randInt(7));
+  const outline = blobOutline(cols, rows, 28 + randInt(7));
   if (!outline) return null;
   const loop = cutCorners(outline);
   const b = new Builder(cols, rows);
@@ -243,10 +250,12 @@ function tryGenerate(cols: number, rows: number): GeneratedMap | null {
   loop.forEach((c, k) => b.rank.set(b.idx(c), (k - castleAt + loop.length) % loop.length));
 
   const target = Math.round(cols * rows * ROAD_SHARE);
-  for (let attempt = 0; attempt < 400 && b.roadCount() < target; attempt++) {
+  let sideRoads = 0;
+  for (let attempt = 0; attempt < 400 && b.roadCount() < target && sideRoads < MAX_FORKS; attempt++) {
     const plain = b.masks
-      .map((m, i) => (exitsOf(m).length === 2 ? i : -1))
+      .map((m, i) => (exitsOf(m).length === 2 && b.rank.get(i)! > CASTLE_CLEAR_STEPS ? i : -1))
       .filter((i) => i >= 0);
+    if (!plain.length) break;
     const startIdx = plain[randInt(plain.length)];
     const road = b.carveSideRoad({ x: startIdx % cols, y: Math.floor(startIdx / cols) });
     if (!road) continue;
@@ -254,7 +263,10 @@ function tryGenerate(cols: number, rows: number): GeneratedMap | null {
 
     const r0 = b.rank.get(b.idx(road[0]))!;
     const r1 = b.rank.get(b.idx(road[road.length - 1]))!;
+    // A side road much shorter or longer than the stretch it bypasses would make laps uneven.
+    if (Math.abs(r1 - r0 - (road.length - 1)) > (1 - MIN_LAP_RATIO) * loop.length) continue;
     for (let k = 0; k < road.length - 1; k++) b.link(road[k], road[k + 1]);
+    sideRoads++;
     for (let k = 1; k < road.length - 1; k++) b.rank.set(b.idx(road[k]), r0 + ((r1 - r0) * k) / (road.length - 1));
   }
 
@@ -328,6 +340,12 @@ export function validateMap({ map, links }: GeneratedMap): string[] {
 
   const reverse: number[][] = slots.map(() => []);
   links.forEach((outs, s) => outs.forEach((t) => reverse[t].push(s)));
+  if (links.filter((outs) => outs.length > 1).length > MAX_FORKS) problems.push('too many forks');
+  if (links[0].length !== 1 || inDegrees(links)[0] !== 1) problems.push('the castle is a junction');
+  if (stepsAfterCastle(links, CASTLE_CLEAR_STEPS).some((s) => links[s].length > 1)) {
+    problems.push('a fork right after the castle');
+  }
+
   if (reach(links) !== slots.length) problems.push('not every slot reachable from the castle');
   if (reach(reverse) !== slots.length) problems.push('not every slot leads back to the castle');
 
@@ -345,5 +363,10 @@ export function validateMap({ map, links }: GeneratedMap): string[] {
   };
 
   if (links[0].some((t) => state[t] === 0 && cyclic(t))) problems.push('a loop that skips the castle');
+  else {
+    const laps = lapLengths(links);
+    if (laps.shortest < MIN_LAP_RATIO * laps.longest) problems.push('a short lap back to the castle');
+  }
+
   return problems;
 }

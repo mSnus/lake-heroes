@@ -110,6 +110,34 @@
   }
 }
 
+/* Generated boards draw tiles and player icons 1.5x the classic size. */
+.board-wrapper.board-generated {
+  --sprite-size: 26.4cqi;
+}
+
+.board-generated .tile,
+.board-generated .tile-emoji-overlay,
+.board-generated .destination-circle {
+  width: 22.2cqi;
+  height: 22.2cqi;
+}
+
+.board-generated .player-image {
+  width: 16.5cqi;
+  min-height: 16.5cqi;
+}
+
+.board-generated .player-marker {
+  width: 11.4cqi;
+  height: 11.4cqi;
+}
+
+/* Empty road slot: just its faint ring, no shadow or fade. */
+.tile-road .tile-sprite {
+  filter: none;
+  opacity: 1;
+}
+
 /* Generated board sketch (RoadMap.tsx), under every other layer. */
 .road-map {
   position: absolute;
@@ -138,12 +166,12 @@
 
 .road-map-edge {
   stroke: #5b4326;
-  stroke-width: 0.36;
+  stroke-width: 0.18;
 }
 
 .road-map-road {
   stroke: #d2b07a;
-  stroke-width: 0.26;
+  stroke-width: 0.13;
 }
 
 /* The dragon's lair on a generated board: a visible, clickable icon. */
@@ -177,18 +205,9 @@
   border: 5px solid #e6b422;
   border-radius: 50%;
   background: rgba(230, 180, 34, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
-}
-
-.destination-circle--selected {
-  background: rgba(230, 180, 34, 0.6);
-  box-shadow: 0 0 12px #e6b422;
 }
 
 @supports (container-type: inline-size) {

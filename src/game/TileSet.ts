@@ -29,9 +29,13 @@ export interface BuiltBoard {
 
 /** A freshly generated road map with the tile templates placed on its slots. */
 export function buildBoardFromTemplates(allTemplates: TileJSON[]): BuiltBoard {
-  const { map, links } = generateMap();
-  const tiles = placeTiles(allTemplates, map.slots.length).map((t) => new Tile(t as Tile));
-  return { tiles, map, links };
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const { map, links } = generateMap();
+    const placed = placeTiles(allTemplates, links);
+    if (placed) return { tiles: placed.map((t) => new Tile(t as Tile)), map, links };
+  }
+
+  throw new Error('Could not place tiles on a generated map');
 }
 
 const tileTemplatesById = new Map<string, TileJSON>(
@@ -80,6 +84,7 @@ export function rehydrateSavedTiles(savedRaw: SavedGameState): Tile[] {
         bonuses: fresh.bonuses,
         annualGoldMult: fresh.annualGoldMult,
         annualUnits: fresh.annualUnits,
+        spriteImage: fresh.spriteImage,
       };
     }
 

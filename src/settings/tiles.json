@@ -438,6 +438,7 @@
   {
     "id": "road",
     "group": "Special",
+    "spriteImage": "assets/sprites/road.svg",
     "isOwnable": false,
     "fog": false,
     "prices": {

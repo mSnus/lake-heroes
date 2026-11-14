@@ -450,7 +450,7 @@
     },
     "travel": {
       "title": "Viaje 🧭",
-      "fork": "<strong>Elegir el camino</strong> — tras la tirada, cada lugar al que puedes llegar se ilumina con un círculo dorado. Toca uno para seleccionarlo y vuelve a tocarlo para ir. Si solo hay un lugar posible, vas allí automáticamente.",
+      "fork": "<strong>Elegir el camino</strong> — tras la tirada, cada lugar al que puedes llegar se ilumina con un círculo dorado; toca uno para ir allí. Si solo hay un lugar posible, vas allí automáticamente.",
       "emptyRoad": "<strong>Camino vacío</strong> — no todos los tramos del camino tienen una casilla. En un camino vacío no pasa nada, salvo que solo allí se encuentran caravanas y emboscadas.",
       "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
     },

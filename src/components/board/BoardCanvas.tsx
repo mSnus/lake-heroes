@@ -4,7 +4,7 @@ import groupsData from '../../settings/groups.json';
 
 import { TILE_LEVEL_SCALE } from '../../game/constants';
 import type { BoardMap } from '../../game/mapgen/generateMap';
-import { cqiToPct, dragonCell, layerSizeCqi, slotPosition, CELL_CQI } from './mapGeometry';
+import { cqiToPct, dragonCell, layerSizeCqi, slotPosition, CELL_CQI, TILE_CQI } from './mapGeometry';
 import { RoadMap } from './RoadMap';
 import { getTilePosition, isMobileLayout, parseTileName } from './common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../../utils/mapEditStore';
@@ -30,6 +30,11 @@ interface BoardCanvasProps {
 // On a turn change it zooms out to 1x, pauses, then zooms back in on
 // whoever's turn it is now — see the zoomLevel effect below.
 const ZOOM_SCALE = 1.33;
+// Zoom scale per fixed level; 0 means "fit the whole board".
+const CLASSIC_ZOOM_SCALES = [0, ZOOM_SCALE];
+const GENERATED_ZOOM_SCALES = [0, 0.6, 1];
+// How far two fingers must spread (or close, inverted) to step one zoom level.
+const PINCH_STEP_RATIO = 1.15;
 const ZOOM_TRANSITION_MS = 600;
 const ZOOM_OUT_PAUSE_MS = 400;
 
@@ -49,10 +54,10 @@ function clusterOffset(index: number, count: number, stepPct: number): { dx: num
   return { dx, dy };
 }
 
-// The classic offsets were tuned in % of a 100cqi-wide board (11cqi, 12.5cqi, 4cqi).
+// The classic offsets (11cqi, 12.5cqi, 4cqi on a 100cqi board), 1.5x like the tiles.
 function generatedIconOffset(map: BoardMap) {
-  const anchor = cqiToPct(map, 11, 12.5);
-  return { anchorXPct: anchor.x, anchorYPct: anchor.y, clusterStepPct: cqiToPct(map, 4, 0).x };
+  const anchor = cqiToPct(map, 16.5, 18.75);
+  return { anchorXPct: anchor.x, anchorYPct: anchor.y, clusterStepPct: cqiToPct(map, 6, 0).x };
 }
 
 function lairStyle(map: BoardMap): React.CSSProperties {
@@ -78,7 +83,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   // Generated road map, or undefined for a save from the classic painted board.
   const map = board.map;
   const posOf = (slot: number) => (map ? slotPosition(map, slot) : getTilePosition(slot));
-  const zoomInScale = map ? 1 : ZOOM_SCALE;
 
   const [imageReady, setImageReady] = React.useState(false);
   const mapReady = !!map || imageReady;
@@ -94,7 +98,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const bgLayerRef = React.useRef<HTMLDivElement>(null);
-  const [zoomLevel, setZoomLevel] = React.useState<1 | 2>(1);
+  // Fixed zoom levels: 0 fits the whole board, higher levels follow the active player.
+  const zoomScales = map ? GENERATED_ZOOM_SCALES : CLASSIC_ZOOM_SCALES;
+  const maxZoom = zoomScales.length - 1;
+  const [zoomLevel, setZoomLevel] = React.useState(0);
+  const zoomScale = zoomScales[Math.min(zoomLevel, maxZoom)];
   const [resizeTick, setResizeTick] = React.useState(0);
 
   // Manual pan while zoomed in -- added on top of the auto-centering
@@ -114,6 +122,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const draggingRef = React.useRef(false);
   const suppressClickRef = React.useRef(false);
   const PAN_DRAG_THRESHOLD_PX = 6;
+  // Touch points currently down on the board, and the pinch they form (if two).
+  const pointersRef = React.useRef(new Map<number, { x: number; y: number }>());
+  const pinchRef = React.useRef<{ startDist: number; dist: number } | null>(null);
 
   // Map-edit tile drag: pointer position and the tile's own %-position at
   // drag start, so every subsequent pointermove can compute an absolute new
@@ -137,10 +148,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const activePlayerId = board.activePlayer.id;
   const lastZoomPositionRef = React.useRef<number | null>(null);
 
-  // "Use map auto-zoom" (Settings screen) -- 1 leaves the camera at rest, 2
-  // is the normal zoom-in-on-active-player behavior.
+  // "Use map auto-zoom" (Settings screen): off leaves the camera zoomed out.
   const mapAutoZoom = useSettings().mapAutoZoom;
-  const ZOOM_MAX_LEVEL = mapAutoZoom ? 2 : 1;
+  const ZOOM_MAX_LEVEL = mapAutoZoom ? maxZoom : 0;
 
   useEffect(() => {
     const newPosition = board.activePlayer.position;
@@ -154,7 +164,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       return;
     }
 
-    setZoomLevel(1);
+    setZoomLevel(0);
     const t = setTimeout(() => {
       setZoomLevel(ZOOM_MAX_LEVEL);
       setPanOffset({ x: 0, y: 0 });
@@ -166,42 +176,33 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     return () => clearTimeout(t);
   }, [activePlayerId, ZOOM_MAX_LEVEL]);
 
-  // The camera's own translate before any manual pan is folded in -- where
-  // zoomTransform centers on the active player, and what a drag's start
-  // offset is measured against (see handlePanPointerMove). Reads
-  // offsetWidth/Height (layout-based) rather than getBoundingClientRect
-  // (paint-based) so it isn't circularly affected by the transform it's
-  // computing. Null once zoomed out, or before layout is ready.
-  const baseCameraOffset = (): { dx: number; dy: number; layerW: number; layerH: number; wrapperW: number; wrapperH: number } | null => {
-    if (zoomLevel === 1) return null;
+  // Layout sizes (offsetWidth, so not affected by the transform being computed).
+  const measure = () => {
     const layerEl = bgLayerRef.current;
     const wrapperEl = wrapperRef.current;
     if (!layerEl || !wrapperEl) return null;
+    const sizes = {
+      layerW: layerEl.offsetWidth,
+      layerH: layerEl.offsetHeight,
+      wrapperW: wrapperEl.offsetWidth,
+      wrapperH: wrapperEl.offsetHeight,
+    };
+    return sizes.layerW && sizes.layerH && sizes.wrapperW && sizes.wrapperH ? sizes : null;
+  };
 
-    const layerW = layerEl.offsetWidth;
-    const layerH = layerEl.offsetHeight;
-    const wrapperW = wrapperEl.offsetWidth;
-    const wrapperH = wrapperEl.offsetHeight;
-    if (!layerW || !layerH || !wrapperW || !wrapperH) return null;
+  // The camera's translate at `scale` with the active player centred, before
+  // any manual pan. Null at the fit level or before layout is ready.
+  const baseCameraOffset = (scale: number = zoomScale) => {
+    const m = measure();
+    if (!scale || !m) return null;
 
     const activePos = posOf(board.activePlayer.position);
     // A generated map centres on the tile itself rather than its top-left corner.
-    const half = map ? cqiToPct(map, 7.4, 7.4) : { x: 0, y: 0 };
-    const localX = ((activePos.x + half.x) / 100) * layerW;
-    const localY = ((activePos.y + half.y) / 100) * layerH;
+    const half = map ? cqiToPct(map, TILE_CQI / 2, TILE_CQI / 2) : { x: 0, y: 0 };
+    const localX = ((activePos.x + half.x) / 100) * m.layerW;
+    const localY = ((activePos.y + half.y) / 100) * m.layerH;
 
-    return { dx: wrapperW / 2 - localX * zoomInScale, dy: wrapperH / 2 - localY * zoomInScale, layerW, layerH, wrapperW, wrapperH };
-  };
-
-  // Zoomed out, a generated map is scaled down to fit the viewport whole.
-  const fitTransform = (): string => {
-    const layerEl = bgLayerRef.current;
-    const wrapperEl = wrapperRef.current;
-    if (!map || !layerEl || !wrapperEl || !layerEl.offsetWidth) return 'none';
-    const scale = Math.min(wrapperEl.offsetWidth / layerEl.offsetWidth, wrapperEl.offsetHeight / layerEl.offsetHeight);
-    const dx = (wrapperEl.offsetWidth - layerEl.offsetWidth * scale) / 2;
-    const dy = (wrapperEl.offsetHeight - layerEl.offsetHeight * scale) / 2;
-    return `translate(${dx}px, ${dy}px) scale(${scale})`;
+    return { dx: m.wrapperW / 2 - localX * scale, dy: m.wrapperH / 2 - localY * scale, ...m };
   };
 
   // Clamp so zooming/panning near an edge never reveals empty space beyond
@@ -210,31 +211,87 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const clampAxis = (scaled: number, wrapper: number, value: number): number =>
     scaled > wrapper ? Math.min(0, Math.max(wrapper - scaled, value)) : Math.min(0, value);
 
-  // Recomputed every render (cheap arithmetic) so the camera keeps tracking
-  // the active player as they move step-by-step during their turn, with
-  // panOffset (manual drag, see below) folded in on top before clamping.
-  const zoomTransform = React.useMemo(() => {
+  // Current camera: scale plus translate. The fit level shows a generated
+  // map whole and centred, and the classic board unscaled.
+  const view = (): { s: number; tx: number; ty: number } | null => {
     const base = baseCameraOffset();
-    if (!base) return fitTransform();
+    if (base) {
+      return {
+        s: zoomScale,
+        tx: clampAxis(base.layerW * zoomScale, base.wrapperW, base.dx + panOffset.x),
+        ty: clampAxis(base.layerH * zoomScale, base.wrapperH, base.dy + panOffset.y),
+      };
+    }
 
-    const dx = clampAxis(base.layerW * zoomInScale, base.wrapperW, base.dx + panOffset.x);
-    const dy = clampAxis(base.layerH * zoomInScale, base.wrapperH, base.dy + panOffset.y);
-    return `translate(${dx}px, ${dy}px) scale(${zoomInScale})`;
+    const m = measure();
+    if (!map || !m) return null;
+    const s = Math.min(m.wrapperW / m.layerW, m.wrapperH / m.layerH);
+    return { s, tx: (m.wrapperW - m.layerW * s) / 2, ty: (m.wrapperH - m.layerH * s) / 2 };
+  };
+
+  // Recomputed every render (cheap arithmetic) so the camera keeps tracking
+  // the active player as they move step-by-step during their turn.
+  const zoomTransform = React.useMemo(() => {
+    const v = view();
+    return v ? `translate(${v.tx}px, ${v.ty}px) scale(${v.s})` : 'none';
   }, [zoomLevel, board.activePlayer.position, resizeTick, mapReady, panOffset]);
 
-  // Manual pan: drag the zoomed-in map around. Gated to zoomLevel 2 and off
-  // while map-edit is active (which has its own, unrelated per-tile drag).
-  // A drag is distinguished from a tap by crossing PAN_DRAG_THRESHOLD_PX --
-  // below that, pointerup leaves the tap's own onClick to fire normally.
+  // Steps to another fixed level, keeping the board point under (clientX, clientY) in place.
+  const zoomTo = (level: number, clientX: number, clientY: number) => {
+    const next = Math.max(0, Math.min(maxZoom, level));
+    if (next === zoomLevel) return;
+    const cur = view();
+    const base = baseCameraOffset(zoomScales[next]);
+    const rect = wrapperRef.current?.getBoundingClientRect();
+    setZoomLevel(next);
+    if (!cur || !base || !rect) {
+      setPanOffset({ x: 0, y: 0 });
+      return;
+    }
+
+    const fx = clientX - rect.left;
+    const fy = clientY - rect.top;
+    const s = zoomScales[next];
+    setPanOffset({
+      x: fx - ((fx - cur.tx) / cur.s) * s - base.dx,
+      y: fy - ((fy - cur.ty) / cur.s) * s - base.dy,
+    });
+  };
+
+  // Drag pans while zoomed in; two fingers pinch one fixed zoom level in or out.
+  // A drag is told from a tap by crossing PAN_DRAG_THRESHOLD_PX. Off while
+  // map-edit is active (it has its own per-tile drag).
   const handlePanPointerDown = (e: React.PointerEvent) => {
-    if (zoomLevel !== 2 || mapEdit.active) return;
+    if (mapEdit.active) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+
+    if (pointersRef.current.size === 2) {
+      const [a, b] = Array.from(pointersRef.current.values());
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      pinchRef.current = { startDist: dist, dist };
+      panStartRef.current = null;
+      draggingRef.current = true;
+      setIsPanning(false);
+      return;
+    }
+
+    if (!zoomLevel) return;
     panStartRef.current = { x: e.clientX, y: e.clientY, panX: panOffset.x, panY: panOffset.y };
     draggingRef.current = false;
   };
 
   const handlePanPointerMove = (e: React.PointerEvent) => {
+    if (pointersRef.current.has(e.pointerId)) pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const pinch = pinchRef.current;
+    if (pinch) {
+      const [a, b] = Array.from(pointersRef.current.values());
+      if (a && b) pinch.dist = Math.hypot(a.x - b.x, a.y - b.y);
+      e.preventDefault();
+      return;
+    }
+
     const start = panStartRef.current;
     const base = baseCameraOffset();
     if (!start || !base) return;
@@ -251,18 +308,26 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     // Clamp the pan value itself (not just the rendered transform) so a
     // drag that overshoots the edge doesn't need to "catch up" before the
     // view responds again once the drag reverses direction.
-    const scaledW = base.layerW * zoomInScale;
-    const scaledH = base.layerH * zoomInScale;
-    const nextDx = clampAxis(scaledW, base.wrapperW, base.dx + start.panX + movedX);
-    const nextDy = clampAxis(scaledH, base.wrapperH, base.dy + start.panY + movedY);
+    const nextDx = clampAxis(base.layerW * zoomScale, base.wrapperW, base.dx + start.panX + movedX);
+    const nextDy = clampAxis(base.layerH * zoomScale, base.wrapperH, base.dy + start.panY + movedY);
     setPanOffset({ x: nextDx - base.dx, y: nextDy - base.dy });
   };
 
   const handlePanPointerUp = (e: React.PointerEvent) => {
+    const pinch = pinchRef.current;
+    if (pinch && pointersRef.current.size === 2) {
+      const [a, b] = Array.from(pointersRef.current.values());
+      const ratio = pinch.dist / pinch.startDist;
+      const step = ratio > PINCH_STEP_RATIO ? 1 : ratio < 1 / PINCH_STEP_RATIO ? -1 : 0;
+      if (step) zoomTo(zoomLevel + step, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      pinchRef.current = null;
+    }
+
+    pointersRef.current.delete(e.pointerId);
     panStartRef.current = null;
     setIsPanning(false);
     if (draggingRef.current) suppressClickRef.current = true;
-    draggingRef.current = false;
+    if (!pointersRef.current.size) draggingRef.current = false;
     (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
   };
 
@@ -278,14 +343,14 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   };
 
   // Manual zoom-out: double-clicking the map itself (not a tile or the
-  // dragon island, which have their own click handlers) resets to 1x even
+  // dragon, which have their own click handlers) fits the whole board even
   // mid-turn. The auto zoom-in-on-turn-change effect only re-fires on an
   // activePlayerId change, so this stays put until the next turn.
   const handleBoardDoubleClick = (e: React.MouseEvent) => {
-    if (zoomLevel !== 2) return;
+    if (!zoomLevel) return;
     const target = e.target as HTMLElement;
-    if (target.closest('.tile, .dragon-center-icon')) return;
-    setZoomLevel(1);
+    if (target.closest('.tile, .dragon-center-icon, .dragon-lair-icon')) return;
+    setZoomLevel(0);
   };
 
   // groups lookup
@@ -299,7 +364,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     }, []);
 
   const renderTile = (tile: any, i: number) => {
-    if (tile?.id === 'road') return null;
     const grp = tile?.group ? groupsByName[tile.group] : undefined;
 
     const pos = posOf(i);
@@ -307,6 +371,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     if (pos?.textPos === 'left') tileClass += ' tile-left';
     if (pos?.textPos === 'right') tileClass += ' tile-right';
     if (!tile.isOwnable) tileClass += ' tile-sprite-special';
+    if (tile.id === 'road') tileClass += ' tile-road';
 
     const handleTileClick = () => {
       if (!tile) return;
@@ -567,24 +632,19 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     );
   };
 
-  // After a roll with more than one reachable slot: tap to select, tap again to go.
+  // After a roll with more than one reachable slot: tapping one moves there.
   const renderDestinations = () =>
-    destinationChoice!.options.map((slot) => {
-      const selected = destinationChoice!.selected === slot;
-      return (
-        <div
-          key={`dest-${slot}`}
-          className={'destination-circle' + (selected ? ' destination-circle--selected' : '')}
-          style={cellStyleFor(posOf(slot))}
-          onClick={(e) => {
-            e.stopPropagation();
-            tapDestination(slot);
-          }}
-        >
-          {selected && '✔️'}
-        </div>
-      );
-    });
+    destinationChoice!.options.map((slot) => (
+      <div
+        key={`dest-${slot}`}
+        className="destination-circle"
+        style={cellStyleFor(posOf(slot))}
+        onClick={(e) => {
+          e.stopPropagation();
+          tapDestination(slot);
+        }}
+      />
+    ));
 
   // Render nothing until map loaded so BG is first layer and tiles render after it
   if (!mapReady) {
@@ -595,7 +655,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
   return (
     <div
-      className="board-wrapper"
+      className={'board-wrapper' + (map ? ' board-generated' : '')}
       id="layerWrapper"
       ref={wrapperRef}
       onDoubleClick={handleBoardDoubleClick}
@@ -605,9 +665,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       onPointerUp={handlePanPointerUp}
       onPointerCancel={handlePanPointerUp}
       style={
-        zoomLevel === 2 && !mapEdit.active
-          ? { cursor: isPanning ? 'grabbing' : 'grab', touchAction: 'none' }
-          : undefined
+        mapEdit.active
+          ? undefined
+          : { touchAction: 'none', ...(zoomLevel ? { cursor: isPanning ? 'grabbing' : 'grab' } : {}) }
       }
     >
       <div
