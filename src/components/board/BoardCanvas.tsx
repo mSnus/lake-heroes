@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 import { GameState } from '../../game/GameState';
 import groupsData from '../../settings/groups.json';
 
-import { TILE_COUNT, FORK_START_INDEX, TILE_LEVEL_SCALE, REAL_ADVENTURE_MIN_TURNS } from '../../game/constants';
-import { currentYear } from '../../game/year';
+import { TILE_LEVEL_SCALE } from '../../game/constants';
+import type { BoardMap } from '../../game/mapgen/generateMap';
+import { cqiToPct, dragonCell, layerSizeCqi, slotPosition, CELL_CQI } from './mapGeometry';
+import { RoadMap } from './RoadMap';
 import { getTilePosition, isMobileLayout, parseTileName } from './common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../../utils/mapEditStore';
-import { useForkChoice, setForkChoice } from '../../utils/forkChoiceStore';
-import { startDiceRoll } from '../../utils/diceStore';
+import { useDestinationChoice, tapDestination } from '../../utils/destinationChoiceStore';
 import '../../styles/Board.css';
 import { getPlayerImageSrc } from '../../game/PlayerOptions';
 import { gameEvent } from '../../utils/events';
@@ -34,14 +35,6 @@ const ZOOM_OUT_PAUSE_MS = 400;
 
 const PLAYER_CLUSTER_COLUMNS = 2;
 
-// Fork picker arrow look, shared with TurnAnnouncement's own left/right
-// buttons (see showForkChoice/renderForkChoice below) so both pickers read
-// as the same visual language.
-export const SELECTED_COLOR = '#e6cc68';
-const UNSELECTED_COLOR = '#81a585ad';
-export const ANGLE_LEFT = 135; // short path
-export const ANGLE_RIGHT = 57; // long path
-
 /** Small non-overlapping grid offset (in % of the board) for the `index`-th
  * of `count` players sharing a tile, centered on the anchor point rather
  * than trailing off to one side. */
@@ -56,11 +49,23 @@ function clusterOffset(index: number, count: number, stepPct: number): { dx: num
   return { dx, dy };
 }
 
+// The classic offsets were tuned in % of a 100cqi-wide board (11cqi, 12.5cqi, 4cqi).
+function generatedIconOffset(map: BoardMap) {
+  const anchor = cqiToPct(map, 11, 12.5);
+  return { anchorXPct: anchor.x, anchorYPct: anchor.y, clusterStepPct: cqiToPct(map, 4, 0).x };
+}
+
+function lairStyle(map: BoardMap): React.CSSProperties {
+  const { x, y } = dragonCell(map);
+  const pct = cqiToPct(map, (x + 0.5) * CELL_CQI, (y + 0.5) * CELL_CQI);
+  return { left: pct.x + '%', top: pct.y + '%' };
+}
+
 export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState }) => {
   const t = useT();
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
-  const forkChoice = useForkChoice();
+  const destinationChoice = useDestinationChoice();
   const remoteMove = useRemoteMove();
 
   // While a remote player's move is being replayed hop-by-hop (see
@@ -70,14 +75,21 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const displayPosition = (p: any) =>
     remoteMove && remoteMove.seat === seatIndex(p) ? remoteMove.position : p.position;
 
-  const [mapReady, setMapReady] = React.useState(false);
+  // Generated road map, or undefined for a save from the classic painted board.
+  const map = board.map;
+  const posOf = (slot: number) => (map ? slotPosition(map, slot) : getTilePosition(slot));
+  const zoomInScale = map ? 1 : ZOOM_SCALE;
+
+  const [imageReady, setImageReady] = React.useState(false);
+  const mapReady = !!map || imageReady;
   const mapUrl = 'assets/map13.jpg';
 
-  // Preload map so tiles render only after background is ready
+  // Preload the classic map so tiles render only after its background is ready
   useEffect(() => {
+    if (map) return;
     const img = new Image();
     img.src = mapUrl;
-    img.onload = () => setMapReady(true);
+    img.onload = () => setImageReady(true);
   }, [isMobile]);
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -112,8 +124,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   useEffect(() => {
     const onResize = () => setResizeTick((t) => t + 1);
     window.addEventListener('resize', onResize);
+    // Re-measure once the layer exists, so the zoomed-out fit applies straight away.
+    onResize();
     return () => window.removeEventListener('resize', onResize);
-  }, []);
+  }, [mapReady]);
 
   // Zoom out on a turn change, pause at 1x, then zoom back in on whoever's
   // active now. Also plays once on mount (zooms in on the opening player).
@@ -170,12 +184,24 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const wrapperH = wrapperEl.offsetHeight;
     if (!layerW || !layerH || !wrapperW || !wrapperH) return null;
 
-    const activeTileNumber = board.activePlayer.position % TILE_COUNT;
-    const activePos = getTilePosition(activeTileNumber);
-    const localX = (activePos.x / 100) * layerW;
-    const localY = (activePos.y / 100) * layerH;
+    const activePos = posOf(board.activePlayer.position);
+    // A generated map centres on the tile itself rather than its top-left corner.
+    const half = map ? cqiToPct(map, 7.4, 7.4) : { x: 0, y: 0 };
+    const localX = ((activePos.x + half.x) / 100) * layerW;
+    const localY = ((activePos.y + half.y) / 100) * layerH;
 
-    return { dx: wrapperW / 2 - localX * ZOOM_SCALE, dy: wrapperH / 2 - localY * ZOOM_SCALE, layerW, layerH, wrapperW, wrapperH };
+    return { dx: wrapperW / 2 - localX * zoomInScale, dy: wrapperH / 2 - localY * zoomInScale, layerW, layerH, wrapperW, wrapperH };
+  };
+
+  // Zoomed out, a generated map is scaled down to fit the viewport whole.
+  const fitTransform = (): string => {
+    const layerEl = bgLayerRef.current;
+    const wrapperEl = wrapperRef.current;
+    if (!map || !layerEl || !wrapperEl || !layerEl.offsetWidth) return 'none';
+    const scale = Math.min(wrapperEl.offsetWidth / layerEl.offsetWidth, wrapperEl.offsetHeight / layerEl.offsetHeight);
+    const dx = (wrapperEl.offsetWidth - layerEl.offsetWidth * scale) / 2;
+    const dy = (wrapperEl.offsetHeight - layerEl.offsetHeight * scale) / 2;
+    return `translate(${dx}px, ${dy}px) scale(${scale})`;
   };
 
   // Clamp so zooming/panning near an edge never reveals empty space beyond
@@ -189,11 +215,11 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   // panOffset (manual drag, see below) folded in on top before clamping.
   const zoomTransform = React.useMemo(() => {
     const base = baseCameraOffset();
-    if (!base) return 'none';
+    if (!base) return fitTransform();
 
-    const dx = clampAxis(base.layerW * ZOOM_SCALE, base.wrapperW, base.dx + panOffset.x);
-    const dy = clampAxis(base.layerH * ZOOM_SCALE, base.wrapperH, base.dy + panOffset.y);
-    return `translate(${dx}px, ${dy}px) scale(${ZOOM_SCALE})`;
+    const dx = clampAxis(base.layerW * zoomInScale, base.wrapperW, base.dx + panOffset.x);
+    const dy = clampAxis(base.layerH * zoomInScale, base.wrapperH, base.dy + panOffset.y);
+    return `translate(${dx}px, ${dy}px) scale(${zoomInScale})`;
   }, [zoomLevel, board.activePlayer.position, resizeTick, mapReady, panOffset]);
 
   // Manual pan: drag the zoomed-in map around. Gated to zoomLevel 2 and off
@@ -225,8 +251,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     // Clamp the pan value itself (not just the rendered transform) so a
     // drag that overshoots the edge doesn't need to "catch up" before the
     // view responds again once the drag reverses direction.
-    const scaledW = base.layerW * ZOOM_SCALE;
-    const scaledH = base.layerH * ZOOM_SCALE;
+    const scaledW = base.layerW * zoomInScale;
+    const scaledH = base.layerH * zoomInScale;
     const nextDx = clampAxis(scaledW, base.wrapperW, base.dx + start.panX + movedX);
     const nextDy = clampAxis(scaledH, base.wrapperH, base.dy + start.panY + movedY);
     setPanOffset({ x: nextDx - base.dx, y: nextDy - base.dy });
@@ -240,7 +266,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
   };
 
-  // Capture phase, so this runs before any tile/player/fork-arrow onClick
+  // Capture phase, so this runs before any tile/player/destination onClick
   // (all bubble-phase) -- swallows the click a drag's pointerup generates
   // on whatever it ends over, without every one of those handlers needing
   // to know about panning.
@@ -273,9 +299,10 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     }, []);
 
   const renderTile = (tile: any, i: number) => {
+    if (tile?.id === 'road') return null;
     const grp = tile?.group ? groupsByName[tile.group] : undefined;
 
-    const pos = getTilePosition(i);
+    const pos = posOf(i);
     let tileClass = 'tile';
     if (pos?.textPos === 'left') tileClass += ' tile-left';
     if (pos?.textPos === 'right') tileClass += ' tile-right';
@@ -288,7 +315,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         return;
       }
 
-      const isActivePlayerTile = board.activePlayer.position % TILE_COUNT === i;
+      const isActivePlayerTile = board.activePlayer.position === i;
       if (tile.id === 'king-castle' && isActivePlayerTile) {
         handleKingCastle(board, updateGameState);
         return;
@@ -473,7 +500,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   // overlay kinds to this same layer/function rather than bolting them onto
   // renderTile directly.
   const renderOverlay = (tile: any, i: number) => {
-    const pos = getTilePosition(i);
+    const pos = posOf(i);
     const emoji = tile.isOnFire(board.round) ? '🔥' : tile.abandoned ? '🧟‍♀️' : tile.isYielded ? '👑' : null;
     if (!emoji) return null;
     return (
@@ -484,19 +511,23 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   };
 
   const renderPlayer = (player: any, i: number) => {
-    const tileNumber = displayPosition(player) % TILE_COUNT;
-    const pos = getTilePosition(tileNumber);
+    const tileNumber = displayPosition(player);
+    const pos = posOf(tileNumber);
 
     const src = getPlayerImageSrc(player.image, player.isKnight);
 
     // Tiles with their title laid out to the side (textPos 'left'/'right')
     // need their own anchor offset -- the art sits differently within the
     // tile box than a normal (title-below) tile.
-    const offset = pos.textPos === 'left' || pos.textPos === 'right' ? playerIconOffsetH : playerIconOffset;
+    const offset = map
+      ? generatedIconOffset(map)
+      : pos.textPos === 'left' || pos.textPos === 'right'
+        ? playerIconOffsetH
+        : playerIconOffset;
 
     const sameTilePlayers = board.players
       .map((p, idx) => ({ p, idx }))
-      .filter(({ p }) => displayPosition(p) % TILE_COUNT === tileNumber);
+      .filter(({ p }) => displayPosition(p) === tileNumber);
     const indexInCluster = sameTilePlayers.findIndex(({ idx }) => idx === i);
     const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length, offset.clusterStepPct);
 
@@ -536,61 +567,24 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     );
   };
 
-  // Fork path picker (map13): shown only while the active player is a human
-  // actually standing on the fork's start tile, about to roll -- disappears
-  // the instant a roll begins (turnPhase leaves 'before-move'), matching the
-  // "choose before rolling" requirement. The choice itself lives in
-  // forkChoiceStore, read once by rollAndMove.ts right before movement.
-  // Hidden entirely early on (see REAL_ADVENTURE_MIN_TURNS) -- rollAndMove
-  // forces the short path regardless then, so showing a choice that doesn't
-  // do anything would just be confusing.
-  const showForkChoice =
-    !board.activePlayer.isComputer &&
-    board.turnPhase === 'before-move' &&
-    board.activePlayer.position === FORK_START_INDEX &&
-    currentYear(board) > REAL_ADVENTURE_MIN_TURNS;
-
-  const renderForkChoice = () => {
-    const pos = getTilePosition(FORK_START_INDEX);
-
-    const arrowStyle = (rotation: number, color: string, offsetXPct: number, offsetYPct: number = 0): React.CSSProperties => ({
-      top: pos.y + offsetYPct + '%',
-      left: pos.x + offsetXPct + '%',
-      transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-      color,
+  // After a roll with more than one reachable slot: tap to select, tap again to go.
+  const renderDestinations = () =>
+    destinationChoice!.options.map((slot) => {
+      const selected = destinationChoice!.selected === slot;
+      return (
+        <div
+          key={`dest-${slot}`}
+          className={'destination-circle' + (selected ? ' destination-circle--selected' : '')}
+          style={cellStyleFor(posOf(slot))}
+          onClick={(e) => {
+            e.stopPropagation();
+            tapDestination(slot);
+          }}
+        >
+          {selected && '✔️'}
+        </div>
+      );
     });
-
-    return (
-      <>
-        <div
-          className="fork-arrow"
-          style={arrowStyle(ANGLE_LEFT, forkChoice === 'short' ? SELECTED_COLOR : UNSELECTED_COLOR, -1)}
-          onClick={(e) => {
-            e.stopPropagation();
-            setForkChoice('short');
-            // Picking a path is also the roll -- startDiceRoll is a no-op
-            // if the dice modal isn't already open and waiting (it always
-            // is here: showForkChoice itself requires 'before-move'), so
-            // this is safe to call unconditionally.
-            startDiceRoll();
-          }}
-        >
-          ➜
-        </div>
-        <div
-          className="fork-arrow"
-          style={arrowStyle(ANGLE_RIGHT, forkChoice === 'long' ? SELECTED_COLOR : UNSELECTED_COLOR, 14, 1)}
-          onClick={(e) => {
-            e.stopPropagation();
-            setForkChoice('long');
-            startDiceRoll();
-          }}
-        >
-          ➜
-        </div>
-      </>
-    );
-  };
 
   // Render nothing until map loaded so BG is first layer and tiles render after it
   if (!mapReady) {
@@ -620,6 +614,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         className="bg-layer"
         ref={bgLayerRef}
         style={{
+          ...(map ? { width: `${layerSizeCqi(map).w}cqi`, height: `${layerSizeCqi(map).h}cqi` } : {}),
           transform: zoomTransform,
           transformOrigin: '0 0',
           // No eased transition while actively panning -- the view should
@@ -637,16 +632,32 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           {board.tiles.map((tile, i) => renderOverlay(tile, i))}
         </div>
 
-        {showForkChoice && <div className="layer-fork-choice">{renderForkChoice()}</div>}
+        {destinationChoice && <div className="layer-destinations">{renderDestinations()}</div>}
 
-        <div
-          className="dragon-center-icon"
-          role="button"
-          aria-label={t('boardCanvas.challengeDragon')}
-          onClick={() => challengeDragonFromBoard(board, updateGameState)}
-        />
-
-        <img className="bg-image" src={mapUrl} alt={'Map bg'}></img>
+        {map ? (
+          <>
+            <div
+              className="dragon-lair-icon"
+              role="button"
+              aria-label={t('boardCanvas.challengeDragon')}
+              style={lairStyle(map)}
+              onClick={() => challengeDragonFromBoard(board, updateGameState)}
+            >
+              🐉
+            </div>
+            <RoadMap map={map} />
+          </>
+        ) : (
+          <>
+            <div
+              className="dragon-center-icon"
+              role="button"
+              aria-label={t('boardCanvas.challengeDragon')}
+              onClick={() => challengeDragonFromBoard(board, updateGameState)}
+            />
+            <img className="bg-image" src={mapUrl} alt={'Map bg'}></img>
+          </>
+        )}
       </div>
     </div>
   );

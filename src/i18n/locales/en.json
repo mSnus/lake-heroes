@@ -1,8 +1,6 @@
 {
   "turnAnnouncement": {
     "text": "{playerName}'s turn",
-    "goLeft": "Go left",
-    "goRight": "Go right",
     "harvestText": "{playerName}'s harvest"
   },
   "common": {
@@ -115,6 +113,9 @@
     "ruins": {
       "name": "Ruins",
       "description": "Ancient monsters guard them"
+    },
+    "road": {
+      "name": "Road"
     },
     "stables": {
       "name": "Stables",
@@ -451,7 +452,8 @@
     },
     "travel": {
       "title": "Travel 🧭",
-      "fork": "<strong>Fork in the road</strong> — when standing on the fork, choose the short or long route before rolling. If you can reach it during a roll, the route is chosen at random.",
+      "fork": "<strong>Choosing your way</strong> — after the roll, every place it can reach lights up with a golden circle. Tap one to select it, tap it again to go there. If only one place is reachable, you go there automatically.",
+      "emptyRoad": "<strong>Empty road</strong> — not every step of the road holds a tile. Nothing happens on a stretch of empty road, except that caravans and ambushes are only ever met there.",
       "portal": "A Portal can send you directly to any other tile, including the King's Castle; that tile's normal effect then applies."
     },
     "overviewControls": {

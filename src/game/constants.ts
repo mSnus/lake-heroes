@@ -10,19 +10,6 @@ export const MAX_PLAYERS = 6;
 // visible at a glance. Purely visual: nothing reads it but BoardCanvas.
 export const TILE_LEVEL_SCALE: Record<number, number> = { 1: 0.8, 2: 1, 3: 1.2 };
 export const REVEAL_GOLD_PER_YEAR = 25; // discovery bonus scales with how many years the game has run
-// Board fork: leaving FORK_START_INDEX branches onto either the short or the
-// long path, which rejoin the main loop at FORK_MERGE_INDEX -- see
-// game/boardPath.ts (movement), utils/forkChoiceStore.ts (the pending
-// per-turn choice), and BoardCanvas.tsx (the on-tile arrow picker).
-export const FORK_START_INDEX = 3;
-export const FORK_MERGE_INDEX = 13;
-export const FORK_SHORT_PATH = [4, 5, 6];
-export const FORK_LONG_PATH = [7, 8, 9, 10, 11, 12];
-// Approaching the fork, the branch is a hidden coin flip rather than a
-// choice -- rolled in rollAndMove.ts whenever the fork start is this many
-// steps away or fewer, i.e. whenever a single die could still reach it. A
-// player standing exactly ON the fork tile picks by hand instead.
-export const FORK_ROLL_RANGE = 6;
 // A year is this many turns per player -- the shared clock every player
 // moves along at the same rate, counted in go-rounds (board.round, bumped
 // once the last player's turn ends) rather than laps of the board, so a
@@ -38,12 +25,8 @@ export const GAME_START_YEAR = 1450;
 export const DOUBLE_INCOME_GROUPS = ['Mills', 'Farms', 'Fields'];
 export const DOUBLE_INCOME_CHANCE = 0.25;
 export const DOUBLE_INCOME_MAX_GROUPS = 2;
-// While the game is still in its first this many years, it counts as a
-// "getting started" phase -- the long path's hidden coin flip
-// (rollAndMove.ts) is forced short rather than risk stranding a brand-new
-// player on the longer route, and Joker's Queen's Gift (joker.ts) falls
-// back to gold instead of a Camp/Tower for the same reason. Reused
-// wherever "is this still early game" needs an answer.
+// The game's first this many years count as early game (Joker's Queen's
+// Gift gives gold instead of a Camp/Tower then).
 export const REAL_ADVENTURE_MIN_TURNS = 3;
 // Joker's Hurricane only strikes the richest player, and only when they're
 // this many times wealthier than whoever ranks second -- a check on a
@@ -62,9 +45,6 @@ export const KARMA_PRISON_CHANCE = 0.05;
 // A cursed player's Joker draw is this likely to come from the bad half of
 // the event table instead of the normal 50/50 (see joker.ts).
 export const KARMA_JOKER_BAD_CHANCE = 0.8;
-// A cursed player's hidden fork coin flip favours the long path at this
-// rate instead of the normal 50/50 (see rollAndMove.ts).
-export const KARMA_LONG_PATH_CHANCE = 0.75;
 // A cursed player's chance of a roaming-horde (rogue) attack or an ambush is
 // multiplied by this -- a +125% increase over the normal odds (see
 // rogueAttackEncounter.ts, ambushEncounter.tsx).

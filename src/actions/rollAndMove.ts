@@ -14,16 +14,10 @@ import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
 import { say, narrate, narrateMove } from '../utils/say';
-import { advanceBoardPosition, nextBoardPosition, stepsToFork, stepsToTile } from '../game/boardPath';
-import { currentYear } from '../game/year';
-import { ForkChoice, getForkChoice, resetForkChoice } from '../utils/forkChoiceStore';
-import {
-  FORK_START_INDEX,
-  FORK_ROLL_RANGE,
-  REAL_ADVENTURE_MIN_TURNS,
-  KARMA_LONG_PATH_CHANCE,
-  KARMA_PRISON_CHANCE,
-} from '../game/constants';
+import { Route, routesFor, shortestSteps } from '../game/boardPath';
+import { requestDestination } from '../utils/destinationChoiceStore';
+import { pickDestination } from '../ai/decisions';
+import { KARMA_PRISON_CHANCE } from '../game/constants';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
@@ -53,84 +47,70 @@ export async function rollAndMove(
   let roll = preRolledValue !== undefined ? preRolledValue : rollDice();
   const player = board.activePlayer;
 
-  // Standing ON the fork tile, the branch is the player's (or bot's) own
-  // pick -- the arrow picker in BoardCanvas.tsx, read once here since it
-  // hides itself the moment a roll begins. Approaching it, nobody chooses:
-  // the branch is a hidden coin flip, re-rolled every turn the fork is
-  // still within a single die's reach -- cursed (negative-karma) players get
-  // a coin weighted toward the long path instead of a fair one. Either way,
-  // early on -- the game's first REAL_ADVENTURE_MIN_TURNS years -- the long
-  // path is off the table altogether (see the constant's own comment): a
-  // brand-new player isn't stranded on the longer route by a coin flip, nor
-  // a bot steered onto it by its own pick.
-  const isEarlyGame = currentYear(board) <= REAL_ADVENTURE_MIN_TURNS;
-  const longPathChance = player.karma < 0 ? KARMA_LONG_PATH_CHANCE : 0.5;
-  const forkChoice: ForkChoice = isEarlyGame
-    ? 'short'
-    : player.position === FORK_START_INDEX
-      ? getForkChoice()
-      : stepsToFork(player.position) <= FORK_ROLL_RANGE && Math.random() < longPathChance
-        ? 'long'
-        : 'short';
-  resetForkChoice();
-
   // A cursed player's die is quietly loaded whenever Prison sits within a
-  // single roll -- reusing the Portal's own prison-pull chance rather than
-  // inventing a second knob. This deliberately overrides whatever face the
-  // dice widget already showed: karma is meant to be felt, never explained.
+  // single roll, and Prison is then the only destination offered.
+  let forcedDest: number | null = null;
   if (player.karma < 0) {
     const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
     if (prisonIdx >= 0) {
-      const distance = stepsToTile(player.position, prisonIdx, forkChoice);
+      const distance = shortestSteps(board, player.position, prisonIdx);
       if (distance >= 1 && distance <= 6 && Math.random() < KARMA_PRISON_CHANCE) {
         roll = distance;
+        forcedDest = prisonIdx;
       }
     }
   }
 
-  const { finalIndex: nextTileIdx, crossedStart: willCrossStart } = advanceBoardPosition(
-    player.position,
-    roll,
-    forkChoice
-  );
-  const nextTile = board.tiles[nextTileIdx];
+  const allRoutes = routesFor(board, player.position, roll);
+  const routes = forcedDest !== null ? allRoutes.filter((r) => r.dest === forcedDest) : allRoutes;
 
   gameEvent('setPhase', 'rolling');
-
   setGameMessage(board, '');
-
-  let tileMessage = t('rollAndMove.rolledAndWentTo', { playerName: player.name, roll, tileName: nextTile.name });
-
-  if (!nextTile.isOwned()) {
-    const cannotBuy =
-      player.gold < nextTile.currentPrice.gold || player.fame < nextTile.requiredFame;
-    const defenceTooStrong = player.armyPower < nextTile.getDefence(1);
-
-    if (cannotBuy || defenceTooStrong) {
-      const reasons = [
-        ...(cannotBuy ? [t('rollAndMove.cannotBuyIt')] : []),
-        ...(defenceTooStrong ? [t('rollAndMove.defenceTooStrong')] : []),
-      ];
-      tileMessage += t('rollAndMove.butReasons', { reasons: reasons.join(` ${t('common.and')} `) });
-    }
-  }
-
-  say(tileMessage, 'debug');
-  // Level stays 'debug' -- it is chatter to the player who just watched their
-  // own token move, but to everyone else it is the only sign anything is
-  // happening, so it is broadcast explicitly rather than through the level.
-  narrate(tileMessage);
-
   gameEvent('displayTile', {});
 
+  const chooseRoute = async (): Promise<Route> => {
+    if (routes.length === 1) return routes[0];
+    if (player.isComputer || isHeadlessRun()) return pickDestination(board, player, routes);
+    const dest = await requestDestination(routes.map((r) => r.dest));
+    return routes.find((r) => r.dest === dest)!;
+  };
+
+  const announceDestination = (dest: number) => {
+    const nextTile = board.tiles[dest];
+    let tileMessage = t('rollAndMove.rolledAndWentTo', { playerName: player.name, roll, tileName: nextTile.name });
+
+    if (!nextTile.isOwned()) {
+      const cannotBuy =
+        player.gold < nextTile.currentPrice.gold || player.fame < nextTile.requiredFame;
+      const defenceTooStrong = player.armyPower < nextTile.getDefence(1);
+
+      if (cannotBuy || defenceTooStrong) {
+        const reasons = [
+          ...(cannotBuy ? [t('rollAndMove.cannotBuyIt')] : []),
+          ...(defenceTooStrong ? [t('rollAndMove.defenceTooStrong')] : []),
+        ];
+        tileMessage += t('rollAndMove.butReasons', { reasons: reasons.join(` ${t('common.and')} `) });
+      }
+    }
+
+    say(tileMessage, 'debug');
+    // Logged as 'debug' locally but broadcast: to other players it's the only sign of the move.
+    narrate(tileMessage);
+  };
+
   const proceedWithMove = async () => {
+    const route = await chooseRoute();
+    if (isHalted()) return;
+    const willCrossStart = route.crossesStart;
+    announceDestination(route.dest);
+
     // Step-by-step move with 0.2s delay per tile
-    for (let step = 1; step <= roll; step++) {
+    for (let step = 1; step <= route.path.length; step++) {
       // The game was torn down (new game) while this loop was awaiting --
       // stop rather than keep mutating a board that nothing owns any more.
       if (isHalted()) return;
 
-      const nextPos = nextBoardPosition(player.position, forkChoice);
+      const nextPos = route.path[step - 1];
       const willWrap = nextPos === 0;
 
       gameEvent('setPhase', 'moving');
@@ -248,6 +228,19 @@ export async function rollAndMove(
         return;
       }
 
+      // Caravans and ambushes only ever meet a player on empty road.
+      if (tile.id === 'road') {
+        const finish = () => {
+          consumeBattleWon();
+          afterMoveLogic(board, updateGameState);
+        };
+
+        if (checkCaravanEncounter(board, updateGameState, finish)) return;
+        if (checkAmbushEncounter(board, updateGameState, finish)) return;
+        finish();
+        return;
+      }
+
       if (tile.isOwned() && tile.owner === player.id) {
         handleVisitOwnTile(board, updateGameState);
         return;
@@ -292,8 +285,6 @@ export async function rollAndMove(
   }
 
   if (checkDragonEncounter(board, updateGameState, continueFn)) return;
-  if (checkCaravanEncounter(board, updateGameState, continueFn)) return;
-  if (checkAmbushEncounter(board, updateGameState, continueFn)) return;
   if (checkRogueAttackEncounter(board, updateGameState, continueFn)) return;
   if (checkWorkersEncounter(board, updateGameState, continueFn)) return;
   if (checkJokerEncounter(board, updateGameState, continueFn)) return;

@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GameState } from '../../game/GameState';
-import { useModal, startDiceRoll } from '../../utils/diceStore';
+import { useModal } from '../../utils/diceStore';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { tJsx } from '../../i18n/tJsx';
 import { useT } from '../../i18n';
-import { FORK_START_INDEX, REAL_ADVENTURE_MIN_TURNS } from '../../game/constants';
-import { currentYear } from '../../game/year';
-import { setForkChoice } from '../../utils/forkChoiceStore';
-import { SELECTED_COLOR, ANGLE_LEFT, ANGLE_RIGHT } from './BoardCanvas';
 import '../../styles/TurnAnnouncement.css';
 
 const VISIBLE_MS = 2000;
@@ -34,21 +30,6 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const unmountTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const player = gameState.activePlayer;
-  // A human standing on the fork's start tile, about to roll -- the
-  // announcement stays up (no auto-hide) and grows a "Go left"/"Go right"
-  // path picker instead, closing only once one of those is clicked. An AI at
-  // the same spot picks its own path elsewhere (see ai/decisions.ts's
-  // pickForkChoice, called from BotController) and gets the normal
-  // auto-closing announcement -- no buttons to click. Hidden entirely early
-  // on (see REAL_ADVENTURE_MIN_TURNS), matching BoardCanvas's own fork
-  // arrows -- rollAndMove.ts forces the short path regardless then, so
-  // showing a choice that doesn't do anything (picking "right" silently
-  // still sent the player left) would just be confusing.
-  const atFork =
-    !player.isComputer &&
-    gameState.turnPhase === 'before-move' &&
-    player.position === FORK_START_INDEX &&
-    currentYear(gameState) > REAL_ADVENTURE_MIN_TURNS;
 
   const hide = () => {
     clearTimeout(hideTimerRef.current);
@@ -58,16 +39,6 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
     }, TRANSITION_MS);
   };
 
-  const choosePath = (choice: 'short' | 'long') => {
-    setForkChoice(choice);
-    hide();
-    // The dice modal is already active by the time the fork buttons can show
-    // (beginTurn fires 'showDice' before the player ever reaches this screen)
-    // -- picking a path rolls immediately instead of waiting for a tap on
-    // the die.
-    startDiceRoll();
-  };
-
   useEffect(() => {
     if (lastPlayerIdRef.current === player.id) return;
     lastPlayerIdRef.current = player.id;
@@ -75,9 +46,7 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
     clearTimeout(unmountTimerRef.current);
     setMounted(true);
     const raf = requestAnimationFrame(() => setActive(true));
-    // Non-autoclosing at the fork -- stays up until the player picks a path
-    // (see choosePath) instead of disappearing on its own.
-    if (!atFork) hideTimerRef.current = setTimeout(hide, VISIBLE_MS);
+    hideTimerRef.current = setTimeout(hide, VISIBLE_MS);
     return () => cancelAnimationFrame(raf);
   }, [player.id]);
 
@@ -105,40 +74,6 @@ export const TurnAnnouncement: React.FC<TurnAnnouncementProps> = ({ gameState })
           })}
         </span>
       </DecoratedButton>
-      {/* Own row below the (non-clickable) badge -- DecoratedButton renders a
-          real <button>, and nesting these inside it would be invalid HTML
-          (button-in-button) as well as visually cramped, so these are plain
-          buttons rather than DecoratedButtons. */}
-      {atFork && (
-        <div className="turn-announcement-fork-buttons">
-          <button
-            type="button"
-            className="turn-announcement-fork-button"
-            onClick={() => choosePath('short')}
-          >
-            <span
-              className="turn-announcement-fork-arrow"
-              style={{ color: SELECTED_COLOR, transform: `rotate(${ANGLE_LEFT}deg)` }}
-            >
-              ➜
-            </span>
-            {t('turnAnnouncement.goLeft')}
-          </button>
-          <button
-            type="button"
-            className="turn-announcement-fork-button"
-            onClick={() => choosePath('long')}
-          >
-            <span
-              className="turn-announcement-fork-arrow"
-              style={{ color: SELECTED_COLOR, transform: `rotate(${ANGLE_RIGHT}deg)` }}
-            >
-              ➜
-            </span>
-            {t('turnAnnouncement.goRight')}
-          </button>
-        </div>
-      )}
     </div>
   );
 };

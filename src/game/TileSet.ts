@@ -1,7 +1,8 @@
 import { Tile, TileJSON } from './Tile';
 import { PlayerParams } from './Player';
 import { TurnPhase } from './GameState';
-import { buildTileLayoutFromTemplates } from '../components/board/layout';
+import { generateMap, BoardMap } from './mapgen/generateMap';
+import { placeTiles } from './mapgen/placeTiles';
 import tilesData from '../settings/tiles.json';
 import enLocale from '../i18n/locales/en.json';
 
@@ -20,11 +21,17 @@ export interface SavedGameState {
   gameOver?: boolean;
 }
 
-// Build Tile instances from the raw templates list by running the existing layout algorithm
-export function buildTilesFromTemplates(allTemplates: TileJSON[]): Tile[] {
-  // buildTileLayoutFromTemplates expects the raw templates array and returns placed templates (may contain undefined)
-  const placedTemplates = buildTileLayoutFromTemplates(allTemplates as any);
-  return placedTemplates.map((t) => new Tile(t as Tile));
+export interface BuiltBoard {
+  tiles: Tile[];
+  map: BoardMap;
+  links: number[][];
+}
+
+/** A freshly generated road map with the tile templates placed on its slots. */
+export function buildBoardFromTemplates(allTemplates: TileJSON[]): BuiltBoard {
+  const { map, links } = generateMap();
+  const tiles = placeTiles(allTemplates, map.slots.length).map((t) => new Tile(t as Tile));
+  return { tiles, map, links };
 }
 
 const tileTemplatesById = new Map<string, TileJSON>(

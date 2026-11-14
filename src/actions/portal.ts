@@ -1,6 +1,6 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
-import { TILE_COUNT, KARMA_PRISON_CHANCE } from '../game/constants';
+import { KARMA_PRISON_CHANCE } from '../game/constants';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
 import { isHeadlessRun } from '../utils/headlessStore';
@@ -25,7 +25,7 @@ export function handlePortal(
     newPos = prisonIdx;
   } else {
     do {
-      newPos = Math.floor(Math.random() * TILE_COUNT);
+      newPos = Math.floor(Math.random() * board.tiles.length);
     } while (newPos === portalPos);
   }
 

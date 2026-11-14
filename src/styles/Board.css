@@ -75,7 +75,7 @@
    see BoardCanvas.tsx's renderOverlay) drawn on top of the tile art -- a
    dedicated layer rather than piggybacking on .layer-tiles, so future
    overlay kinds have one obvious place to render into. Above .tile's own
-   z-index (5000) but below the fork picker's, and never intercepts clicks --
+   z-index (5000) but below the destination picker's, and never intercepts clicks --
    .tile underneath still handles them. */
 .layer-overlays {
   position: absolute;
@@ -110,10 +110,55 @@
   }
 }
 
-/* Fork path picker (map13): two arrows near the fork's start tile, letting
-   the active player choose short vs long before rolling. Own layer, on top
-   of everything else on the board (see .fork-arrow's z-index vs .tile's). */
-.layer-fork-choice {
+/* Generated board sketch (RoadMap.tsx), under every other layer. */
+.road-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.road-map-grass {
+  fill: #5d8a43;
+}
+
+.road-map-scenery {
+  font-size: 0.5px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0.85;
+}
+
+.road-map-edge,
+.road-map-road {
+  stroke-linecap: round;
+  fill: none;
+}
+
+.road-map-edge {
+  stroke: #5b4326;
+  stroke-width: 0.36;
+}
+
+.road-map-road {
+  stroke: #d2b07a;
+  stroke-width: 0.26;
+}
+
+/* The dragon's lair on a generated board: a visible, clickable icon. */
+.dragon-lair-icon {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 9cqi;
+  line-height: 1;
+  z-index: 4;
+  cursor: pointer;
+  filter: drop-shadow(0 0 4px #000);
+}
+
+/* Destination picker: one circle per slot the roll can reach, above tiles. */
+.layer-destinations {
   position: absolute;
   top: 0;
   left: 0;
@@ -123,15 +168,34 @@
   pointer-events: none;
 }
 
-.fork-arrow {
+/* Same box as .tile, so the circle sits right over the tile art. */
+.destination-circle {
   position: absolute;
-  font-size: 2.2rem;
-  line-height: 1;
-  text-shadow: 0 0 4px #000, 0 0 4px #000, 0 0 6px #000;
+  width: 14.8vmin;
+  height: 14.8vmin;
+  box-sizing: border-box;
+  border: 5px solid #e6b422;
+  border-radius: 50%;
+  background: rgba(230, 180, 34, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
-  transition: color 0.15s ease;
+}
+
+.destination-circle--selected {
+  background: rgba(230, 180, 34, 0.6);
+  box-shadow: 0 0 12px #e6b422;
+}
+
+@supports (container-type: inline-size) {
+  .destination-circle {
+    width: 14.8cqi;
+    height: 14.8cqi;
+  }
 }
 
 .dragon-center-icon {

@@ -7,7 +7,7 @@ import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeAnnualReward } from '../game/kingsGrace';
 import { playerRawTurnIncome, tileTurnIncome } from '../game/income';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
-import { ForkChoice } from '../utils/forkChoiceStore';
+import type { Route } from '../game/boardPath';
 import { syndicateMultiplier } from '../game/syndicate';
 import {
   LOOT_GOLD_THRESHOLD_FRACTION,
@@ -20,18 +20,35 @@ export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
 }
 
-// Chance a bot takes the fork's short/left path rather than the long/right
-// one -- stands in for a human's manual "Go left"/"Go right" pick (see
-// TurnAnnouncement.tsx), since a bot never sees those buttons.
-const FORK_LEFT_CHANCE: Record<CharacterId, number> = {
-  explorer: 0.8,
-  warrior: 0.2,
-  wizard: 0.6,
+const SPECIAL_TILE_SCORE: Record<string, number> = {
+  'king-castle': 20,
+  'treasure-chest': 15,
+  tavern: 10,
+  stables: 5,
+  sphynx: -5,
+  prison: -100,
 };
 
-export function pickForkChoice(character: CharacterId | undefined): ForkChoice {
-  const chance = FORK_LEFT_CHANCE[character ?? 'explorer'];
-  return Math.random() < chance ? 'short' : 'long';
+function destinationScore(player: Player, tile: Tile | undefined): number {
+  if (!tile) return 0;
+  if (!tile.isOwnable) return SPECIAL_TILE_SCORE[tile.id] ?? 0;
+  if (tile.owner === player.id) return 10;
+  if (tile.isOwned()) return -tile.fee / 10;
+  const canTake =
+    player.gold >= tile.currentPrice.gold &&
+    player.fame >= tile.requiredFame &&
+    player.armyPower >= tile.getDefence(1);
+  return canTake ? 30 : 5;
+}
+
+/** A bot's pick among the slots its roll can reach. */
+export function pickDestination(board: GameState, player: Player, routes: Route[]): Route {
+  const scored = routes.map((r) => ({
+    r,
+    score: destinationScore(player, board.tiles[r.dest]) + (r.crossesStart ? 25 : 0) + Math.random() * 5,
+  }));
+  scored.sort((a, b) => b.score - a.score);
+  return scored[0].r;
 }
 
 function wouldFormSyndicate(board: GameState, tile: Tile): boolean {

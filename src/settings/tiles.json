@@ -434,5 +434,15 @@
       "1": 0
     },
     "bonuses": {}
+  },
+  {
+    "id": "road",
+    "group": "Special",
+    "isOwnable": false,
+    "fog": false,
+    "prices": {
+      "1": 0
+    },
+    "bonuses": {}
   }
 ]

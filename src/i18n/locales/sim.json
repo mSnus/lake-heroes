@@ -1,8 +1,6 @@
 {
   "turnAnnouncement": {
     "text": "{playerName}'s turn",
-    "goLeft": "Go left",
-    "goRight": "Go right",
     "harvestText": "{playerName}'s harvest"
   },
   "common": {
@@ -112,6 +110,9 @@
     "ruins": {
       "name": "Ruins",
       "description": "Ancient monsters guard them"
+    },
+    "road": {
+      "name": "Road"
     },
     "stables": {
       "name": "Stables",

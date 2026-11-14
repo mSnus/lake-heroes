@@ -1,8 +1,6 @@
 {
   "turnAnnouncement": {
     "text": "Turno de {playerName}",
-    "goLeft": "Ir a la izquierda",
-    "goRight": "Ir a la derecha",
     "harvestText": "Cosecha de {playerName}"
   },
   "common": {
@@ -115,6 +113,9 @@
     "ruins": {
       "name": "Ruinas",
       "description": "Antiguos monstruos las custodian"
+    },
+    "road": {
+      "name": "Camino"
     },
     "stables": {
       "name": "Establos",
@@ -449,7 +450,8 @@
     },
     "travel": {
       "title": "Viaje 🧭",
-      "fork": "<strong>Bifurcación del camino</strong> — si estás en la bifurcación, elige la ruta corta o larga antes de tirar. Si puedes alcanzarla durante una tirada, la ruta se elige al azar.",
+      "fork": "<strong>Elegir el camino</strong> — tras la tirada, cada lugar al que puedes llegar se ilumina con un círculo dorado. Toca uno para seleccionarlo y vuelve a tocarlo para ir. Si solo hay un lugar posible, vas allí automáticamente.",
+      "emptyRoad": "<strong>Camino vacío</strong> — no todos los tramos del camino tienen una casilla. En un camino vacío no pasa nada, salvo que solo allí se encuentran caravanas y emboscadas.",
       "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
     },
     "overviewControls": {

@@ -228,6 +228,7 @@ const HelpScreen: React.FC = () => {
           <h3>{t('helpScreen.travel.title')}</h3>
           <ul>
             <HtmlLi html={t('helpScreen.travel.fork')} />
+            <HtmlLi html={t('helpScreen.travel.emptyRoad')} />
             <HtmlLi html={t('helpScreen.travel.portal')} />
           </ul>
 

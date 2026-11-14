@@ -1,73 +1,59 @@
-import { TILE_COUNT, FORK_START_INDEX, FORK_MERGE_INDEX, FORK_SHORT_PATH, FORK_LONG_PATH } from './constants';
-import { ForkChoice } from '../utils/forkChoiceStore';
+import type { GameState } from './GameState';
+import { TILE_COUNT } from './constants';
 
-const SHORT_LAST = FORK_SHORT_PATH[FORK_SHORT_PATH.length - 1];
-const LONG_LAST = FORK_LONG_PATH[FORK_LONG_PATH.length - 1];
+/** The classic hand-drawn board: one loop with a single fork at slot 3 that
+ * rejoins at 13 (short branch 4-6, long branch 7-12). */
+export function classicLinks(): number[][] {
+  return Array.from({ length: TILE_COUNT }, (_, i) => {
+    if (i === 3) return [4, 7];
+    if (i === 6 || i === 12) return [13];
+    return [(i + 1) % TILE_COUNT];
+  });
+}
 
-/**
- * One step of board movement, aware of the map's fork: leaving
- * FORK_START_INDEX branches onto the short or long path per `forkChoice`,
- * and the last tile of either path jumps straight to FORK_MERGE_INDEX
- * instead of falling through into the other path's tile numbers. Every
- * other tile just increments normally, wrapping at TILE_COUNT back to 0 --
- * same as the plain board before the fork existed.
- */
-export function nextBoardPosition(from: number, forkChoice: ForkChoice): number {
-  if (from === FORK_START_INDEX) return forkChoice === 'long' ? FORK_LONG_PATH[0] : FORK_SHORT_PATH[0];
-  if (from === SHORT_LAST || from === LONG_LAST) return FORK_MERGE_INDEX;
-  return (from + 1) % TILE_COUNT;
+/** One way to spend a roll: the slots stepped onto, in order, ending on `dest`. */
+export interface Route {
+  dest: number;
+  path: number[];
+  /** Whether the route steps onto the King's Castle (slot 0), landing included. */
+  crossesStart: boolean;
 }
 
 /**
- * How many steps of nextBoardPosition it takes to reach the fork's start
- * tile from `from` -- 0 when already standing on it. Either branch reaches
- * it identically (the fork start sits on the loop's common trunk), so the
- * walk arbitrarily takes the short one. Returns TILE_COUNT if it somehow
- * never arrives, which no reachable position does.
+ * Every slot exactly `steps` moves ahead of `from`, one route per slot. When
+ * two routes reach the same slot, the one passing the King's Castle wins, so
+ * picking a slot never costs its income.
  */
-export function stepsToFork(from: number): number {
-  let pos = from;
-  for (let steps = 0; steps < TILE_COUNT; steps++) {
-    if (pos === FORK_START_INDEX) return steps;
-    pos = nextBoardPosition(pos, 'short');
-  }
+export function routesFor(board: GameState, from: number, steps: number): Route[] {
+  const best = new Map<number, Route>();
+  const walk = (pos: number, path: number[]) => {
+    if (path.length === steps) {
+      const crossesStart = path.includes(0);
+      const prev = best.get(pos);
+      if (!prev || (crossesStart && !prev.crossesStart)) best.set(pos, { dest: pos, path, crossesStart });
+      return;
+    }
 
-  return TILE_COUNT;
+    for (const next of board.links[pos] ?? []) walk(next, [...path, next]);
+  };
+
+  walk(from, []);
+  return Array.from(best.values());
 }
 
-/**
- * Generic form of stepsToFork -- how many steps of nextBoardPosition it
- * takes to reach `targetIdx` from `from` along the given fork branch (0 when
- * already standing on it). Returns TILE_COUNT if it somehow never arrives
- * within a full lap, which no reachable target does.
- */
-export function stepsToTile(from: number, targetIdx: number, forkChoice: ForkChoice): number {
-  let pos = from;
-  for (let steps = 0; steps < TILE_COUNT; steps++) {
-    if (pos === targetIdx) return steps;
-    pos = nextBoardPosition(pos, forkChoice);
+/** Fewest moves from `from` to `target` (0 when already there), Infinity if unreachable. */
+export function shortestSteps(board: GameState, from: number, target: number): number {
+  const dist = new Map<number, number>([[from, 0]]);
+  const queue = [from];
+  while (queue.length) {
+    const pos = queue.shift()!;
+    if (pos === target) return dist.get(pos)!;
+    for (const next of board.links[pos] ?? []) {
+      if (dist.has(next)) continue;
+      dist.set(next, dist.get(pos)! + 1);
+      queue.push(next);
+    }
   }
 
-  return TILE_COUNT;
-}
-
-/**
- * Simulates `roll` steps of nextBoardPosition from `from`, returning the
- * final landing tile and whether King's Castle (index 0) was passed or
- * landed on along the way -- the fork-aware generalization of the old
- * pure-modulo `position + roll >= TILE_COUNT` check.
- */
-export function advanceBoardPosition(
-  from: number,
-  roll: number,
-  forkChoice: ForkChoice
-): { finalIndex: number; crossedStart: boolean } {
-  let pos = from;
-  let crossedStart = false;
-  for (let i = 0; i < roll; i++) {
-    pos = nextBoardPosition(pos, forkChoice);
-    if (pos === 0) crossedStart = true;
-  }
-
-  return { finalIndex: pos, crossedStart };
+  return Infinity;
 }

@@ -8,9 +8,15 @@ import { Tile } from './Tile';
 import { KingsContract } from './kingsContracts';
 import type { YearEffect } from './yearCore';
 import type { PlayerTurnStat, PlayerStatEvent } from './statistics';
+import { classicLinks } from './boardPath';
+import type { BoardMap } from './mapgen/generateMap';
 
 export class GameState {
   tiles: Tile[];
+  /** Board graph: the slots each slot leads to (more than one = a fork). */
+  links: number[][] = classicLinks();
+  /** Generated road map; absent on saves from the classic hand-drawn board. */
+  map?: BoardMap;
   players: Player[];
   playerOrder: number[];
   activePlayerIndex: number;

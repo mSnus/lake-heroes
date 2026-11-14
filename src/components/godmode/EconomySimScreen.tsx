@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import { buildTilesFromTemplates } from '../../game/TileSet';
+import { buildBoardFromTemplates } from '../../game/TileSet';
 import tilesData from '../../settings/tiles.json';
 import { TileJSON } from '../../game/Tile';
 import { gameStart } from '../../actions/gameStart';
@@ -175,7 +175,7 @@ const EconomySimScreen: React.FC = () => {
         riderPrice,
       });
 
-      const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
+      const { tiles, map, links } = buildBoardFromTemplates(tilesData as TileJSON[]);
       const players = Array.from(
         { length: playerCount },
         (_, i) =>
@@ -191,7 +191,7 @@ const EconomySimScreen: React.FC = () => {
             id: i + 1,
           })
       );
-      const board = new GameState(tiles, players);
+      const board = Object.assign(new GameState(tiles, players), { map, links });
       board.playerOrder = players.map((_, i) => i);
       board.activePlayerIndex = 0;
       gameStart(board, () => {});

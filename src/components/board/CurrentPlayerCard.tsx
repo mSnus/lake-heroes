@@ -5,7 +5,6 @@ import { computeAnnualReward } from '../../game/kingsGrace';
 import { useModal } from '../../utils/diceStore';
 import { PlayerCard } from './PlayerCard';
 import { PlayerStats } from './PlayerStats';
-import { TILE_COUNT } from '../../game/constants';
 import { gameEvent } from '../../utils/events';
 import { sayLocal } from '../../utils/say';
 import { useT } from '../../i18n';
@@ -55,7 +54,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
     .map((idx) => gameState.tiles[idx])
     .filter(Boolean);
 
-  const currentTile = gameState.tiles[player.position % TILE_COUNT];
+  const currentTile = gameState.tiles[player.position];
   const { totalGold, totalUnits } = computeAnnualReward(gameState, player);
   const contracts = gameState.kingsContracts.filter((c) => c.playerId === player.id);
 

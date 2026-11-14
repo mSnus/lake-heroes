@@ -8,7 +8,7 @@ import { beginTurn } from '../actions/beginTurn';
 import { clearScreen } from '../utils/screenStore';
 import { closeModal } from '../utils/diceStore';
 import { resetEndTurn } from '../utils/endTurnStore';
-import { resetForkChoice } from '../utils/forkChoiceStore';
+import { clearDestinationChoice } from '../utils/destinationChoiceStore';
 import { sayLocal, showToast, SayLevel } from '../utils/say';
 import { fetchState, fetchVersion } from './api';
 import { appVersionMismatch, parseEnvelope } from './envelope';
@@ -128,12 +128,12 @@ export function useOnlineSync({
       const board = rehydrateGameState(parsed.raw as SavedGameState);
 
       // Everything below is this client's own UI state, not the game's: a
-      // screen left over from our last turn, a dice modal, a half-made fork
+      // screen left over from our last turn, a dice modal, a pending destination
       // choice. None of it belongs to the board we just received.
       clearScreen();
       closeModal();
       resetEndTurn();
-      resetForkChoice();
+      clearDestinationChoice();
       clearLogDelta();
 
       // The turn's narration has normally already arrived live, line by line,

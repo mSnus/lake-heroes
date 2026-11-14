@@ -17,7 +17,7 @@ import { resetFogTransition } from './utils/transitionStore';
 import { say, sayLocal } from './utils/say';
 import { OwnedTiles } from './components/dashboard/OwnedTiles';
 import tilesData from './settings/tiles.json';
-import { buildTilesFromTemplates, SavedGameState } from './game/TileSet';
+import { buildBoardFromTemplates, SavedGameState } from './game/TileSet';
 import { rehydrateGameState } from './game/rehydrate';
 import { isLocalTurn, isLocalHuman } from './game/seats';
 import { showHarvestScreen } from './actions/harvest';
@@ -627,7 +627,7 @@ function App() {
 
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[], online?: boolean) => {
-      const tiles = buildTilesFromTemplates(tilesData as TileJSON[]);
+      const { tiles, map, links } = buildBoardFromTemplates(tilesData as TileJSON[]);
       // "Fog of war" setting: reveal every tile from the start instead of
       // the default, where each is hidden until a player lands on it.
       if (getSettings().disableFogOfWar) {
@@ -641,7 +641,7 @@ function App() {
           p.isComputer && p.character ? `${p.name} ${CHARACTER_EMOJI[p.character]}` : p.name;
         return new Player({ ...p, name, id: i + 1 });
       });
-      const initialGameState = new GameState(tiles, players);
+      const initialGameState = Object.assign(new GameState(tiles, players), { map, links });
       // Fresh session -- let loops run again (New Game halts them first).
       resumeAfterHalt();
       gameStart(initialGameState, updateGameState);
