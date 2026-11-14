@@ -450,7 +450,7 @@
     },
     "travel": {
       "title": "Viaje 🧭",
-      "fork": "<strong>Elegir el camino</strong> — tras la tirada, cada lugar al que puedes llegar se ilumina con un círculo dorado; toca uno para ir allí. Si solo hay un lugar posible, vas allí automáticamente.",
+      "fork": "<strong>Elegir el camino</strong> — antes de tirar, el camino de delante (6 pasos) se dibuja en dorado y sus posibles finales se marcan con un círculo; se elige uno al azar. Toca otro final para tomar el camino que lleva allí, y vuelve a tocarlo para alternar entre los caminos que llegan a él. Después avanzas por el camino dorado tantos pasos como diga el dado.",
       "emptyRoad": "<strong>Camino vacío</strong> — no todos los tramos del camino tienen una casilla. En un camino vacío no pasa nada, salvo que solo allí se encuentran caravanas y emboscadas.",
       "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
     },

@@ -5,10 +5,12 @@ import groupsData from '../../settings/groups.json';
 import { TILE_LEVEL_SCALE } from '../../game/constants';
 import type { BoardMap } from '../../game/mapgen/generateMap';
 import { cqiToPct, dragonCell, layerSizeCqi, slotPosition, CELL_CQI, TILE_CQI } from './mapGeometry';
-import { RoadMap } from './RoadMap';
+import { RoadMap, RouteOverlay } from './RoadMap';
 import { getTilePosition, isMobileLayout, parseTileName } from './common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../../utils/mapEditStore';
-import { useDestinationChoice, tapDestination } from '../../utils/destinationChoiceStore';
+import { routeChoice, tapRouteEnd, useRouteChoiceVersion } from '../../utils/routeChoiceStore';
+import { useModal } from '../../utils/diceStore';
+import { isLocalTurn } from '../../game/seats';
 import '../../styles/Board.css';
 import { getPlayerImageSrc } from '../../game/PlayerOptions';
 import { gameEvent } from '../../utils/events';
@@ -70,7 +72,8 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const t = useT();
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
-  const destinationChoice = useDestinationChoice();
+  useRouteChoiceVersion();
+  const { active: diceActive, rolling } = useModal();
   const remoteMove = useRemoteMove();
 
   // While a remote player's move is being replayed hop-by-hop (see
@@ -331,7 +334,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     (e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
   };
 
-  // Capture phase, so this runs before any tile/player/destination onClick
+  // Capture phase, so this runs before any tile/player/road-end onClick
   // (all bubble-phase) -- swallows the click a drag's pointerup generates
   // on whatever it ends over, without every one of those handlers needing
   // to know about panning.
@@ -632,19 +635,38 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     );
   };
 
-  // After a roll with more than one reachable slot: tapping one moves there.
-  const renderDestinations = () =>
-    destinationChoice!.options.map((slot) => (
-      <div
-        key={`dest-${slot}`}
-        className="destination-circle"
-        style={cellStyleFor(posOf(slot))}
-        onClick={(e) => {
-          e.stopPropagation();
-          tapDestination(slot);
-        }}
-      />
-    ));
+  // Before the roll: the roads ahead, one picked (golden). Tapping a road's end
+  // picks it; tapping it again switches between roads that end there too.
+  const routePicker =
+    diceActive &&
+    !rolling &&
+    board.turnPhase === 'before-move' &&
+    !board.harvest &&
+    !board.activePlayer.isComputer &&
+    isLocalTurn(board)
+      ? routeChoice(board)
+      : null;
+
+  const renderRouteEnds = () => {
+    const { routes, selected } = routePicker!;
+    const ends = Array.from(new Set(routes.map((r) => r.dest)));
+    return ends.map((slot) => {
+      const count = routes.filter((r) => r.dest === slot).length;
+      return (
+        <div
+          key={`end-${slot}`}
+          className={'route-end' + (routes[selected].dest === slot ? ' route-end--selected' : '')}
+          style={cellStyleFor(posOf(slot))}
+          onClick={(e) => {
+            e.stopPropagation();
+            tapRouteEnd(board, slot);
+          }}
+        >
+          {count > 1 && '⇄'}
+        </div>
+      );
+    });
+  };
 
   // Render nothing until map loaded so BG is first layer and tiles render after it
   if (!mapReady) {
@@ -692,7 +714,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           {board.tiles.map((tile, i) => renderOverlay(tile, i))}
         </div>
 
-        {destinationChoice && <div className="layer-destinations">{renderDestinations()}</div>}
+        {routePicker && <div className="layer-route-ends">{renderRouteEnds()}</div>}
 
         {map ? (
           <>
@@ -706,6 +728,13 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
               🐉
             </div>
             <RoadMap map={map} />
+            {routePicker && (
+              <RouteOverlay
+                map={map}
+                from={board.activePlayer.position}
+                path={routePicker.routes[routePicker.selected].path}
+              />
+            )}
           </>
         ) : (
           <>

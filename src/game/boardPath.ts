@@ -11,26 +11,21 @@ export function classicLinks(): number[][] {
   });
 }
 
-/** One way to spend a roll: the slots stepped onto, in order, ending on `dest`. */
+/** How far ahead the road picker looks: the most a die can move. */
+export const ROUTE_STEPS = 6;
+
+/** One road ahead: the slots stepped onto, in order, ending on `dest`. */
 export interface Route {
   dest: number;
   path: number[];
-  /** Whether the route steps onto the King's Castle (slot 0), landing included. */
-  crossesStart: boolean;
 }
 
-/**
- * Every slot exactly `steps` moves ahead of `from`, one route per slot. When
- * two routes reach the same slot, the one passing the King's Castle wins, so
- * picking a slot never costs its income.
- */
-export function routesFor(board: GameState, from: number, steps: number): Route[] {
-  const best = new Map<number, Route>();
+/** Every distinct road exactly `steps` moves ahead of `from` -- two roads may end on the same slot. */
+export function routesAhead(board: GameState, from: number, steps: number = ROUTE_STEPS): Route[] {
+  const routes: Route[] = [];
   const walk = (pos: number, path: number[]) => {
     if (path.length === steps) {
-      const crossesStart = path.includes(0);
-      const prev = best.get(pos);
-      if (!prev || (crossesStart && !prev.crossesStart)) best.set(pos, { dest: pos, path, crossesStart });
+      routes.push({ dest: pos, path });
       return;
     }
 
@@ -38,22 +33,5 @@ export function routesFor(board: GameState, from: number, steps: number): Route[
   };
 
   walk(from, []);
-  return Array.from(best.values());
-}
-
-/** Fewest moves from `from` to `target` (0 when already there), Infinity if unreachable. */
-export function shortestSteps(board: GameState, from: number, target: number): number {
-  const dist = new Map<number, number>([[from, 0]]);
-  const queue = [from];
-  while (queue.length) {
-    const pos = queue.shift()!;
-    if (pos === target) return dist.get(pos)!;
-    for (const next of board.links[pos] ?? []) {
-      if (dist.has(next)) continue;
-      dist.set(next, dist.get(pos)! + 1);
-      queue.push(next);
-    }
-  }
-
-  return Infinity;
+  return routes;
 }

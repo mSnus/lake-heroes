@@ -75,7 +75,7 @@
    see BoardCanvas.tsx's renderOverlay) drawn on top of the tile art -- a
    dedicated layer rather than piggybacking on .layer-tiles, so future
    overlay kinds have one obvious place to render into. Above .tile's own
-   z-index (5000) but below the destination picker's, and never intercepts clicks --
+   z-index (5000) but below the road picker's, and never intercepts clicks --
    .tile underneath still handles them. */
 .layer-overlays {
   position: absolute;
@@ -117,7 +117,7 @@
 
 .board-generated .tile,
 .board-generated .tile-emoji-overlay,
-.board-generated .destination-circle {
+.board-generated .route-end {
   width: 22.2cqi;
   height: 22.2cqi;
 }
@@ -185,8 +185,8 @@
   filter: drop-shadow(0 0 4px #000);
 }
 
-/* Destination picker: one circle per slot the roll can reach, above tiles. */
-.layer-destinations {
+/* Road picker: one circle per end of the roads ahead, above tiles. */
+.layer-route-ends {
   position: absolute;
   top: 0;
   left: 0;
@@ -197,24 +197,52 @@
 }
 
 /* Same box as .tile, so the circle sits right over the tile art. */
-.destination-circle {
+.route-end {
   position: absolute;
   width: 14.8vmin;
   height: 14.8vmin;
   box-sizing: border-box;
-  border: 5px solid #e6b422;
+  border: 3px solid rgba(230, 180, 34, 0.7);
   border-radius: 50%;
-  background: rgba(230, 180, 34, 0.3);
+  background: rgba(230, 180, 34, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #fff6d0;
+  text-shadow: 0 0 4px #000;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
 }
 
+.route-end--selected {
+  border: 5px solid #e6b422;
+  background: rgba(230, 180, 34, 0.3);
+}
+
 @supports (container-type: inline-size) {
-  .destination-circle {
+  .route-end {
     width: 14.8cqi;
     height: 14.8cqi;
   }
+}
+
+/* The picked road ahead (RouteOverlay): a golden band over the drawn road. */
+.route-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.route-overlay-road {
+  stroke: #e6b422;
+  stroke-opacity: 0.5;
+  stroke-width: 0.22;
+  stroke-linecap: round;
 }
 
 .dragon-center-icon {

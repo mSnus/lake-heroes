@@ -8,7 +8,7 @@ import { beginTurn } from '../actions/beginTurn';
 import { clearScreen } from '../utils/screenStore';
 import { closeModal } from '../utils/diceStore';
 import { resetEndTurn } from '../utils/endTurnStore';
-import { clearDestinationChoice } from '../utils/destinationChoiceStore';
+import { resetRouteChoice } from '../utils/routeChoiceStore';
 import { sayLocal, showToast, SayLevel } from '../utils/say';
 import { fetchState, fetchVersion } from './api';
 import { appVersionMismatch, parseEnvelope } from './envelope';
@@ -133,7 +133,7 @@ export function useOnlineSync({
       clearScreen();
       closeModal();
       resetEndTurn();
-      clearDestinationChoice();
+      resetRouteChoice();
       clearLogDelta();
 
       // The turn's narration has normally already arrived live, line by line,

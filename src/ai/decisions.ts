@@ -41,12 +41,12 @@ function destinationScore(player: Player, tile: Tile | undefined): number {
   return canTake ? 30 : 5;
 }
 
-/** A bot's pick among the slots its roll can reach. */
-export function pickDestination(board: GameState, player: Player, routes: Route[]): Route {
-  const scored = routes.map((r) => ({
-    r,
-    score: destinationScore(player, board.tiles[r.dest]) + (r.crossesStart ? 25 : 0) + Math.random() * 5,
-  }));
+/** A bot's pick among the roads ahead, made before rolling: the best average landing. */
+export function pickRoute(board: GameState, player: Player, routes: Route[]): Route {
+  const scored = routes.map((r) => {
+    const landings = r.path.reduce((sum, slot) => sum + destinationScore(player, board.tiles[slot]), 0) / r.path.length;
+    return { r, score: landings + (r.path.includes(0) ? 15 : 0) + Math.random() * 5 };
+  });
   scored.sort((a, b) => b.score - a.score);
   return scored[0].r;
 }

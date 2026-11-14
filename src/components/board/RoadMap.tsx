@@ -44,4 +44,23 @@ export const RoadMap: React.FC<{ map: BoardMap }> = ({ map }) => {
   );
 };
 
+/** The picked road ahead, drawn over the map as a golden band (roads only, no background). */
+export const RouteOverlay: React.FC<{ map: BoardMap; from: number; path: number[] }> = ({ map, from, path }) => {
+  const cells = [from, ...path].map((slot) => map.slots[slot]);
+  return (
+    <svg className="route-overlay" viewBox={`0 0 ${map.cols} ${map.rows}`} preserveAspectRatio="none" aria-hidden>
+      {cells.slice(1).map((c, k) => (
+        <line
+          key={k}
+          className="route-overlay-road"
+          x1={cells[k].x + 0.5}
+          y1={cells[k].y + 0.5}
+          x2={c.x + 0.5}
+          y2={c.y + 0.5}
+        />
+      ))}
+    </svg>
+  );
+};
+
 export default RoadMap;

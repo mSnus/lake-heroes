@@ -14,9 +14,9 @@ import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
 import { say, narrate, narrateMove } from '../utils/say';
-import { Route, routesFor, shortestSteps } from '../game/boardPath';
-import { requestDestination } from '../utils/destinationChoiceStore';
-import { pickDestination } from '../ai/decisions';
+import { routesAhead } from '../game/boardPath';
+import { chosenRoute, resetRouteChoice } from '../utils/routeChoiceStore';
+import { pickRoute } from '../ai/decisions';
 import { KARMA_PRISON_CHANCE } from '../game/constants';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
@@ -47,33 +47,25 @@ export async function rollAndMove(
   let roll = preRolledValue !== undefined ? preRolledValue : rollDice();
   const player = board.activePlayer;
 
-  // A cursed player's die is quietly loaded whenever Prison sits within a
-  // single roll, and Prison is then the only destination offered.
-  let forcedDest: number | null = null;
+  // The road was picked before rolling (bots pick theirs now); the move follows it.
+  const road = player.isComputer || isHeadlessRun()
+    ? pickRoute(board, player, routesAhead(board, player.position))
+    : chosenRoute(board);
+
+  // A cursed player's die is quietly loaded whenever Prison sits on the picked road.
   if (player.karma < 0) {
-    const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
-    if (prisonIdx >= 0) {
-      const distance = shortestSteps(board, player.position, prisonIdx);
-      if (distance >= 1 && distance <= 6 && Math.random() < KARMA_PRISON_CHANCE) {
-        roll = distance;
-        forcedDest = prisonIdx;
-      }
-    }
+    const prisonStep = road.path.findIndex((slot) => board.tiles[slot]?.id === 'prison') + 1;
+    if (prisonStep >= 1 && Math.random() < KARMA_PRISON_CHANCE) roll = prisonStep;
   }
 
-  const allRoutes = routesFor(board, player.position, roll);
-  const routes = forcedDest !== null ? allRoutes.filter((r) => r.dest === forcedDest) : allRoutes;
+  const path = road.path.slice(0, roll);
+  while (path.length < roll) path.push(board.links[path[path.length - 1]][0]);
+  const route = { dest: path[path.length - 1], path };
+  resetRouteChoice();
 
   gameEvent('setPhase', 'rolling');
   setGameMessage(board, '');
   gameEvent('displayTile', {});
-
-  const chooseRoute = async (): Promise<Route> => {
-    if (routes.length === 1) return routes[0];
-    if (player.isComputer || isHeadlessRun()) return pickDestination(board, player, routes);
-    const dest = await requestDestination(routes.map((r) => r.dest));
-    return routes.find((r) => r.dest === dest)!;
-  };
 
   const announceDestination = (dest: number) => {
     const nextTile = board.tiles[dest];
@@ -99,9 +91,8 @@ export async function rollAndMove(
   };
 
   const proceedWithMove = async () => {
-    const route = await chooseRoute();
     if (isHalted()) return;
-    const willCrossStart = route.crossesStart;
+    const willCrossStart = route.path.includes(0);
     announceDestination(route.dest);
 
     // Step-by-step move with 0.2s delay per tile
