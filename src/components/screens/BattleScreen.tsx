@@ -12,7 +12,7 @@ import { SpriteCircleIcon } from '../snippets/SpriteCircleIcon';
 import { PlayerCard } from '../board/PlayerCard';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { BattlefieldGrid } from './BattlefieldGrid';
-import { CARAVAN_EMOJI, HORDE_EMOJI, toSideIcon } from '../../utils/formatArmy';
+import { CARAVAN_EMOJI, HORDE_EMOJI, formatArmy, toSideIcon } from '../../utils/formatArmy';
 import { CaravanPrize } from '../../game/caravanPrize';
 import { BattleOutcome, BattleResolution } from '../../actions/battles/common';
 import { useT } from '../../i18n';
@@ -226,6 +226,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     caravanPrize,
     battlefieldUnits,
     ambushAttackerUnits,
+    ambushAttackerRiders,
     isZombieAmbush,
     isZombieFlavored,
     isRuins,
@@ -353,11 +354,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     if (loggedRef.current) return;
     loggedRef.current = true;
     if (isAmbush) {
-      const key = isRuins
-        ? 'battleScreen.ruinsAttackMessage'
-        : isZombieAmbush
-          ? 'battleScreen.zombieAttackMessage'
-          : 'battleScreen.ambushedMessage';
+      if (!isRuins && !isZombieAmbush) {
+        const riders = ambushAttackerRiders ?? 0;
+        const squad = formatArmy(ambushAttackerUnits! - riders, riders, HORDE_EMOJI);
+        say(t('battleScreen.ambushedMessage', { name: attacker.name, squad }), 'warning');
+        return;
+      }
+
+      const key = isRuins ? 'battleScreen.ruinsAttackMessage' : 'battleScreen.zombieAttackMessage';
       say(t(key, { name: attacker.name, units: ambushAttackerUnits! }), 'warning');
       return;
     }

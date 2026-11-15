@@ -256,7 +256,7 @@
     "caravanGuards": "Охрана каравана",
     "guards": "Стража",
     "garrisonOf": "Гарнизон: {tileName}",
-    "ambushedMessage": "{name} попадает в засаду {units}👹!",
+    "ambushedMessage": "{name} попадает в засаду {squad}!",
     "zombieAttackMessage": "На {name} нападают {units}🧟‍♀️!",
     "ruinsAttackMessage": "На {name} среди руин нападают {units}🧟!",
     "heroHour": "Час героя",

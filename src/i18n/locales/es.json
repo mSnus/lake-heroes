@@ -259,7 +259,7 @@
     "caravanGuards": "Guardias de la Caravana",
     "guards": "Guardias",
     "garrisonOf": "Guarnición de {tileName}",
-    "ambushedMessage": "¡{name} cae en una emboscada de {units}👹!",
+    "ambushedMessage": "¡{name} cae en una emboscada de {squad}!",
     "zombieAttackMessage": "¡{name} es atacado por {units}🧟‍♀️!",
     "ruinsAttackMessage": "¡{name} es atacado por {units}🧟 entre las ruinas!",
     "heroHour": "La Hora del Héroe",

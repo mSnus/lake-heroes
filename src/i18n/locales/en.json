@@ -260,7 +260,7 @@
     "caravanGuards": "Caravan Guards",
     "guards": "Guards",
     "garrisonOf": "Garrison of {tileName}",
-    "ambushedMessage": "{name} is ambushed by {units}👹!",
+    "ambushedMessage": "{name} is ambushed by {squad}!",
     "zombieAttackMessage": "{name} is attacked by {units}🧟‍♀️!",
     "ruinsAttackMessage": "{name} is attacked by {units}🧟 among the ruins!",
     "heroHour": "Hero's Hour",
