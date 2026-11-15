@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UnitTier, formatArmyCap } from '../../game/army';
 import { upgradeSquadCost } from '../../actions/upgradeSquad';
 import { dismountRefund } from '../../actions/dismountSquad';
@@ -43,6 +43,8 @@ interface ArmyDisplayProps {
   pendingMilitia?: number;
   pendingRiders?: number;
   className?: string;
+  /** Told when a sell/mount/dismount picker opens or closes. */
+  onActionOpenChange?: (open: boolean) => void;
 }
 
 type PendingAction = { kind: 'sell'; tier: UnitTier } | { kind: 'upgrade' } | { kind: 'dismount' };
@@ -63,11 +65,16 @@ export const ArmyDisplay: React.FC<ArmyDisplayProps> = ({
   pendingMilitia = 0,
   pendingRiders = 0,
   className,
+  onActionOpenChange,
 }) => {
   const t = useT();
   const [pending, setPending] = useState<PendingAction | null>(null);
   const [amount, setAmount] = useState(0);
   const [previewAmount, setPreviewAmount] = useState<number | null>(null);
+
+  useEffect(() => {
+    onActionOpenChange?.(pending !== null);
+  }, [pending !== null]);
 
   const upgradeMax = Math.max(
     0,

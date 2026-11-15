@@ -66,7 +66,9 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
   const ridersMax = canRecruitRiders ? hireMax(player, 'riders', riderPrice) : 0;
   const atMax = militiaMax <= 0 && ridersMax <= 0;
 
-  const footer = useHireFooter(!atMax);
+  // A sell/mount/dismount picker takes the hire dialogue's place until it's confirmed or cancelled.
+  const [armyActionOpen, setArmyActionOpen] = useState(false);
+  const footer = useHireFooter(!atMax && !armyActionOpen);
   const handleBuy = (amount: number, tier: UnitTier) => {
     buyUnits(gameState, amount, updateGameState, tier, tier === 'riders' ? riderPrice : militiaPrice);
     footer.clear(tier);
@@ -142,23 +144,26 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
         onUpgrade={handleUpgradeSquad}
         canUpgradeToRiders={player.isKnight}
         onDismount={handleDismount}
+        onActionOpenChange={setArmyActionOpen}
         wallet={player}
         spriteColor={player.image}
         isKnight={player.isKnight}
         className="squad-display-large garrisons-army-display"
       />
 
-      <div style={{ marginTop: '0.5rem', width: '100%' }}>
-        <SquadHirePanel
-          player={player}
-          showRiders={canRecruitRiders}
-          onBuy={handleBuy}
-          militiaPrice={militiaPrice}
-          riderPrice={riderPrice}
-          onAmountChange={footer.onAmountChange}
-          registerBuy={footer.registerBuy}
-        />
-      </div>
+      {!armyActionOpen && (
+        <div style={{ marginTop: '0.5rem', width: '100%' }}>
+          <SquadHirePanel
+            player={player}
+            showRiders={canRecruitRiders}
+            onBuy={handleBuy}
+            militiaPrice={militiaPrice}
+            riderPrice={riderPrice}
+            onAmountChange={footer.onAmountChange}
+            registerBuy={footer.registerBuy}
+          />
+        </div>
+      )}
 
       <div
         className="player-stats-data player-stats-gold army-screen-resources"
