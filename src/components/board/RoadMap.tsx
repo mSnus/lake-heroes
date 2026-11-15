@@ -48,7 +48,7 @@ export const RoadMap: React.FC<{ map: BoardMap }> = ({ map }) => {
           : x === lair.x && y === lair.y
             ? DRAGON_LAIR_SPRITE
             : scenerySprite(cellRandom(i, salt));
-        const turns = piece ? piece.quarterTurns : Math.floor(cellRandom(i, salt + 1) * 4);
+        const turns = piece ? piece.quarterTurns : 0;
         const step = 100 / (SHEET_COLS - 1);
         return (
           <div

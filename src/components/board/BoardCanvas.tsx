@@ -34,7 +34,7 @@ interface BoardCanvasProps {
 const ZOOM_SCALE = 1.33;
 // Zoom scale per fixed level; 0 means "fit the whole board".
 const CLASSIC_ZOOM_SCALES = [0, ZOOM_SCALE];
-const GENERATED_ZOOM_SCALES = [0, 0.6, 1];
+const GENERATED_ZOOM_SCALES = [0.6, 1];
 // How far two fingers must spread (or close, inverted) to step one zoom level.
 const PINCH_STEP_RATIO = 1.15;
 const ZOOM_TRANSITION_MS = 600;
@@ -101,7 +101,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const bgLayerRef = React.useRef<HTMLDivElement>(null);
-  // Fixed zoom levels: 0 fits the whole board, higher levels follow the active player.
+  // Fixed zoom levels; a scale of 0 fits the whole board, others follow the active player.
   const zoomScales = map ? GENERATED_ZOOM_SCALES : CLASSIC_ZOOM_SCALES;
   const maxZoom = zoomScales.length - 1;
   const [zoomLevel, setZoomLevel] = React.useState(0);
@@ -280,7 +280,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       return;
     }
 
-    if (!zoomLevel) return;
+    if (!zoomScale) return;
     panStartRef.current = { x: e.clientX, y: e.clientY, panX: panOffset.x, panY: panOffset.y };
     draggingRef.current = false;
   };
@@ -346,7 +346,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   };
 
   // Manual zoom-out: double-clicking the map itself (not a tile or the
-  // dragon, which have their own click handlers) fits the whole board even
+  // dragon, which have their own click handlers) zooms all the way out even
   // mid-turn. The auto zoom-in-on-turn-change effect only re-fires on an
   // activePlayerId change, so this stays put until the next turn.
   const handleBoardDoubleClick = (e: React.MouseEvent) => {
@@ -689,7 +689,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       style={
         mapEdit.active
           ? undefined
-          : { touchAction: 'none', ...(zoomLevel ? { cursor: isPanning ? 'grabbing' : 'grab' } : {}) }
+          : { touchAction: 'none', ...(zoomScale ? { cursor: isPanning ? 'grabbing' : 'grab' } : {}) }
       }
     >
       <div
