@@ -47,3 +47,44 @@ export function diagonalVertex(x: number, y: number, d: number): string | null {
   const [dx, dy] = DIRS[d];
   return `${Math.max(x, x + dx)},${Math.max(y, y + dy)}`;
 }
+
+/** Painted road pieces in assets/map-squares.jpg (4×4 sheet), by sprite index, with the exits each one has. */
+const ROAD_SPRITES: [number, number[]][] = [
+  [0, [0, 4]],
+  [1, [1, 5]],
+  [2, [0, 2]],
+  [3, [1, 3]],
+  [4, [0, 5]],
+  [5, [0, 2, 4]],
+  [6, [1, 3, 5]],
+  [7, [0, 2, 5]],
+  [8, [1, 3, 6]],
+];
+
+export interface PieceSprite {
+  sprite: number;
+  /** Clockwise quarter turns, applied after the mirror. */
+  quarterTurns: number;
+  mirror: boolean;
+}
+
+const mirrored = (d: number) => (8 - d) % 8;
+
+/** Every legal road mask -> the painted piece that draws it once mirrored and/or rotated. */
+const PIECE_BY_MASK = (() => {
+  const table = new Map<number, PieceSprite>();
+  for (const [sprite, exits] of ROAD_SPRITES) {
+    for (const mirror of [false, true]) {
+      for (let quarterTurns = 0; quarterTurns < 4; quarterTurns++) {
+        const mask = exits.reduce((m, d) => m | (1 << (((mirror ? mirrored(d) : d) + 2 * quarterTurns) % 8)), 0);
+        if (!table.has(mask)) table.set(mask, { sprite, quarterTurns, mirror });
+      }
+    }
+  }
+
+  return table;
+})();
+
+export function pieceFor(mask: number): PieceSprite | undefined {
+  return PIECE_BY_MASK.get(mask);
+}

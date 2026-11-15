@@ -724,9 +724,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
               aria-label={t('boardCanvas.challengeDragon')}
               style={lairStyle(map)}
               onClick={() => challengeDragonFromBoard(board, updateGameState)}
-            >
-              🐉
-            </div>
+            />
             <RoadMap map={map} />
             {routePicker && (
               <RouteOverlay
