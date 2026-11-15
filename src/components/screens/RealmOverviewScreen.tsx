@@ -1,4 +1,5 @@
 import React from 'react';
+import { karmaEmoji } from '../../utils/karma';
 import { GameState } from '../../game/GameState';
 import { Tower } from '../snippets/Tower';
 import { Player } from '../../game/Player';
@@ -101,8 +102,11 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
           return (
             <div key={player.id} className="realm-player">
               <div className="realm-player-name">
-                {player.karma < 0 && '🕷️'}
-                <PlayerLabel player={player} showImage bold />
+                <PlayerLabel player={player} showImage bold />{' '}
+                <span className="realm-karma">
+                  {karmaEmoji(player.karma)}
+                  {player.karma}
+                </span>
               </div>
               {player.artifacts.length > 0 && (
                 <div className="realm-artifacts" title={artifactNames(player)}>

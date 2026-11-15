@@ -34,10 +34,9 @@ export const REAL_ADVENTURE_MIN_TURNS = 3;
 export const HURRICANE_WEALTH_RATIO = 1.5;
 
 // ── Karma ──
-// A clandestine per-player moral-standing counter (see utils/karma.ts) --
-// never announced, shown only as a 🕷️ marker beside a player's name once it
-// goes negative. Only negative karma biases anything; these are the shared
-// knobs every biasing site reads.
+// A per-player moral-standing counter (see utils/karma.ts), shown in the
+// Kingdom Overview. Only negative karma biases anything; these are the
+// shared knobs every biasing site reads.
 // Chance the Portal drops a cursed player straight into Prison instead of a
 // random tile, and the same chance a die roll within Prison's reach is
 // quietly overridden to land exactly on it (see portal.ts, rollAndMove.ts).

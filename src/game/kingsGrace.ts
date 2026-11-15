@@ -292,9 +292,15 @@ export function grantYearlyBonusToAll(board: GameState): KingsGraceReward[] {
   const rewards = board.players.map((player) => computeAnnualReward(board, player));
   board.players.forEach((player, i) => {
     const reward = rewards[i];
+    const before = { militia: player.militia, riders: player.riders };
     player.gold += reward.totalGold;
     player.units += reward.tileUnits + reward.kingsMilitia;
     player.gainRiders(reward.kingsRiders);
+    player.lastGrace = {
+      gold: reward.totalGold,
+      militia: player.militia - before.militia,
+      riders: player.riders - before.riders,
+    };
   });
 
   return rewards;

@@ -9,3 +9,8 @@ export function changeKarma(player: Player, delta: number, cap?: number): void {
   const next = (player.karma ?? 0) + delta;
   player.karma = cap !== undefined ? Math.min(next, cap) : next;
 }
+
+/** 🕷️ when cursed (negative), 🕊️ below 3, 🌈 from 3 up. */
+export function karmaEmoji(karma: number): string {
+  return karma < 0 ? '🕷️' : karma < 3 ? '🕊️' : '🌈';
+}

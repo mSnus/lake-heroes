@@ -36,6 +36,11 @@
   margin-bottom: 4px;
 }
 
+.realm-karma {
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+
 .realm-artifacts {
   margin-bottom: 4px;
   font-size: 0.95em;

@@ -75,6 +75,9 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
   const exTotalF2A = shownEx('foodToArms');
   const exTotalA2F = shownEx('armsToFood');
   const exActive = exTotalF2A > 0 || exTotalA2F > 0;
+  const foodDelta = exTotalA2F * exchangeBatch('arms').get - exTotalF2A * exchangeBatch('food').give;
+  const armsDelta = exTotalF2A * exchangeBatch('food').get - exTotalA2F * exchangeBatch('arms').give;
+  const signed = (n: number) => (n > 0 ? `+${n}` : n);
 
   const switchMode = (next: Mode) => {
     setMode(next);
@@ -195,14 +198,20 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
             </span>
           </div>
         ) : (
-          <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
-            <div
-              className={'big-shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}
-            >
-              <button className="big-shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
-                <span className="hire-submit-icon">🔄</span>
-              </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
+              <div
+                className={'big-shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}
+              >
+                <button className="big-shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
+                  <span className="hire-submit-icon">🔄</span>
+                </button>
+              </div>
             </div>
+            <span className="hire-row-caption" style={{ display: 'flex', gap: '0.5rem' }}>
+              <Food amount={signed(foodDelta)} />
+              <Arms amount={signed(armsDelta)} />
+            </span>
           </div>
         )}
       </div>

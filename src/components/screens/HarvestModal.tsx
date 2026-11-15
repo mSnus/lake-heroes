@@ -13,7 +13,7 @@ import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { IncomeLabel, hasIncome } from '../snippets/IncomeLabel';
 import { Militia } from '../snippets/Militia';
-import { computeAnnualReward } from '../../game/kingsGrace';
+import { Rider } from '../snippets/Rider';
 import { useT } from '../../i18n';
 import '../../styles/modal.css';
 import '../../styles/SquadHirePanel.css';
@@ -36,7 +36,8 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const player = gameState.activePlayer;
   const year = currentYear(gameState);
   const calendarYear = GAME_START_YEAR + year;
-  const annual = computeAnnualReward(gameState, player);
+  // Already paid when the Harvest began (see game/year.ts's endYear) -- what was actually received.
+  const grace = player.lastGrace ?? { gold: 0, militia: 0, riders: 0 };
   // Static `content:` element handed to screenStore once at mount -- nothing
   // re-invokes it on trade, so force a re-render to show it immediately.
   const [, forceRerender] = useState(0);
@@ -91,14 +92,15 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
         <div className="harvest-income">
           <div className="harvest-caption">{t('harvest.kingsGrace')}</div>
           <div className="harvest-stats">
-            {annual.totalGold > 0 && <Gold amount={`+${annual.totalGold}`} />}
-            {annual.totalUnits > 0 && (
+            {grace.gold > 0 && <Gold amount={`+${grace.gold}`} />}
+            {grace.militia > 0 && (
               <Militia
-                amount={`+${annual.totalUnits}`}
+                amount={`+${grace.militia}`}
                 color={player.image}
                 knight={player.isKnight}
               />
             )}
+            {grace.riders > 0 && <Rider amount={`+${grace.riders}`} color={player.image} />}
           </div>
         </div>
 

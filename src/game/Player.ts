@@ -37,6 +37,8 @@ export class Player {
    * year so far; moved to lastYearIncome when the year ends. */
   yearIncome: YearIncome;
   lastYearIncome: YearIncome;
+  /** What the King's Grace actually paid at this year's Harvest (shown on the Harvest screen). */
+  lastGrace: { gold: number; militia: number; riders: number };
   /** Cheap, always-recruitable tier. */
   militia: number;
   /** Pricier tier unlocked at KNIGHT_FAME — see game/army.ts. */
@@ -46,8 +48,8 @@ export class Player {
   image: string;
   turnsToSkip: number;
   fame: number;
-  /** Clandestine moral-standing counter -- see utils/karma.ts. Signed, 0 at
-   * start, never shown directly (only a 🕷️ marker once it goes negative). */
+  /** Moral-standing counter -- see utils/karma.ts. Signed, 0 at start;
+   * shown in the Kingdom Overview (see karmaEmoji). */
   karma: number;
   /** One per prisoner of war this player has taken (see utils/stars.ts,
    * credited to the tile owner whose toll bankrupted the prisoner) --
@@ -124,6 +126,7 @@ export class Player {
     this.arms = 0;
     this.yearIncome = emptyYearIncome();
     this.lastYearIncome = emptyYearIncome();
+    this.lastGrace = { gold: 0, militia: 0, riders: 0 };
     this.militia = params.units;
     this.riders = 0;
     this.position = params.position;
