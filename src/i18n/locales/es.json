@@ -282,9 +282,9 @@
     "controlToggleTitle": "Cambia tu bando entre control automático y manual (desde su próximo movimiento)",
     "controlAuto": "auto",
     "controlManual": "manual",
-    "escapeTitle": "Huir: pierdes las {units} unidades en el campo y salvas la reserva",
-    "escapeConfirm": "Pulsa 🏃 otra vez para huir — se perderán las {units} unidades en el campo",
-    "escaped": "{name} huyó de la batalla, abandonando {units} unidades en el campo",
+    "escapeTitle": "Huir: pierdes la mitad de las unidades en el campo ({units}) y salvas el resto y la reserva",
+    "escapeConfirm": "Pulsa 🏃 otra vez para huir — se perderán {units} de las unidades en el campo",
+    "escaped": "{name} huyó de la batalla, perdiendo {units} unidades en el campo",
     "nextRound": "Siguiente ronda"
   },
   "heroHourScreen": {
@@ -494,7 +494,7 @@
       "reinforcements": "Cada bando empieza con <strong>{startUnits} unidades</strong> en su propio borde. El resto espera en reserva y entra por ese borde cuando hay una casilla libre.",
       "controls": "Toda batalla empieza en automático. El botón ⚔️ cambia tu bando entre control automático y manual, desde su próximo movimiento. En modo manual también hay botones de Deshacer ⬅️ y Terminar turno 🚩.",
       "fromBehind": "Un golpe por la espalda (desde el lado del borde inicial del objetivo) tiene <strong>el doble de probabilidad</strong> de ser crítico.",
-      "escape": "El jugador que inició la lucha puede 🏃 <strong>huir</strong> (pulsa dos veces): cuenta como derrota y se pierden todas las unidades en el campo, pero la reserva se salva.",
+      "escape": "El jugador que inició la lucha puede 🏃 <strong>huir</strong> (pulsa dos veces): cuenta como derrota y se pierde la mitad de las unidades en el campo; el resto y la reserva se salvan.",
       "heroHour": "La Hora del Héroe es un combate amistoso entre dos héroes y no provoca grandes bajas",
       "phasesTitle": "Fases de la batalla",
       "phase": {

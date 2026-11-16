@@ -274,9 +274,9 @@
     "controlToggleTitle": "Switch your side between automatic and manual control (from its next move)",
     "controlAuto": "auto",
     "controlManual": "manual",
-    "escapeTitle": "Escape: lose the {units} units on the field, save the reserves",
-    "escapeConfirm": "Tap 🏃 again to escape — the {units} units on the field will be lost",
-    "escaped": "{name} fled the battle, abandoning {units} units on the field",
+    "escapeTitle": "Escape: lose half the units on the field ({units}), save the rest and the reserves",
+    "escapeConfirm": "Tap 🏃 again to escape — {units} of the units on the field will be lost",
+    "escaped": "{name} fled the battle, losing {units} units on the field",
     "nextRound": "Next round"
   },
   "heroHourScreen": {
@@ -453,7 +453,7 @@
       "reinforcements": "Each side opens with <strong>{startUnits} units</strong> at its own edge. The rest wait in reserve and march in at that edge whenever a cell there is free.",
       "controls": "Every battle starts automatic. The ⚔️ button switches your side between automatic and manual control, from its next move. In manual mode there are also Undo ⬅️ and Finish turn 🚩 buttons.",
       "fromBehind": "A hit from behind (from the side of the target's own starting edge) is <strong>twice as likely</strong> to be critical.",
-      "escape": "The player who started the fight can 🏃 <strong>escape</strong> (tap twice): it counts as a defeat and every unit on the field is lost, but the reserves are saved.",
+      "escape": "The player who started the fight can 🏃 <strong>escape</strong> (tap twice): it counts as a defeat and half the units on the field are lost; the rest and the reserves are saved.",
       "heroHour": "Hero's Hour is a friendly brawl between two heroes and doesn't result in heavy casualties",
       "phasesTitle": "Battle phases",
       "phase": {

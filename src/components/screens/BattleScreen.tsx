@@ -31,7 +31,7 @@ import {
 import { realLossFromGridLoss } from '../../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../../game/battleGrid/battleSetup';
 import { dispatchBattleResolution, handleBattleClose } from '../../game/battleGrid/battleResolution';
-import { GridBattleState, TurnEvent, BattleSide } from '../../game/battleGrid/types';
+import { GridBattleState, GridUnit, TurnEvent, BattleSide } from '../../game/battleGrid/types';
 import '../../styles/BattleScreen.css';
 import Tower from '../snippets/Tower';
 import Militia from '../snippets/Militia';
@@ -672,12 +672,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     }
   };
 
-  // Units of the escaping side that are on the field right now -- lost on escape.
-  const escapeLoss = escapeSide ? battle.units.filter((u) => u.side === escapeSide).length : 0;
+  // Half the escaping side's units on the field (rounded up) are lost on escape.
+  const escapeLossOf = (units: GridUnit[]) => Math.ceil(units.filter((u) => u.side === escapeSide).length / 2);
+  const escapeLoss = escapeSide ? escapeLossOf(battle.units) : 0;
 
   // First tap arms (with a warning), a second tap within ESCAPE_ARM_MS escapes:
-  // the escaping side loses the battle and every unit on the field, but keeps
-  // its reserves.
+  // the escaping side loses the battle and half its units on the field, but
+  // keeps the rest and its reserves.
   const handleEscapeClick = () => {
     if (phase !== 'ongoing' || !escapeSide || finishedRef.current) return;
     if (!escapeArmed) {
@@ -694,7 +695,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setAnimPhase('idle');
     setLastEvents([]);
     const cur = battleRef.current;
-    const lost = cur.units.filter((u) => u.side === escapeSide).length;
+    const lost = escapeLossOf(cur.units);
     const atkGridKilled = attackerGridTotal - sideRemaining(cur, 'attacker') + (escapeSide === 'attacker' ? lost : 0);
     const defGridKilled = defenderGridTotal - sideRemaining(cur, 'defender') + (escapeSide === 'defender' ? lost : 0);
     setBattle({ ...cur, units: cur.units.filter((u) => u.side !== escapeSide) });
