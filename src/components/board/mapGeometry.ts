@@ -2,8 +2,8 @@ import type { BoardMap } from '../../game/mapgen/generateMap';
 
 /** One grid cell's side, in units of the board viewport's width (cqi): 4 cells across when zoomed in. */
 export const CELL_CQI = 25;
-/** Matches .board-generated .tile's own box (1.5x the classic 14.8cqi). */
-export const TILE_CQI = 22.2;
+/** Matches .board-generated .tile's own box (1.875x the classic 14.8cqi). */
+export const TILE_CQI = 27.75;
 
 export function layerSizeCqi(map: BoardMap): { w: number; h: number } {
   return { w: map.cols * CELL_CQI, h: map.rows * CELL_CQI };

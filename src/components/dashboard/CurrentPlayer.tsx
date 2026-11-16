@@ -3,6 +3,7 @@ import { GameState } from '../../game/GameState';
 import '../../styles/CurrentPlayer.css';
 import { sayLocal } from '../../utils/say';
 import { PlayerLabel } from '../snippets/PlayerLabel';
+import { Karma } from '../snippets/Karma';
 import { playerTurnIncome, playerRawTurnIncome } from '../../game/income';
 import { getArtifact } from '../../game/artifacts';
 import { ArmyDisplay } from '../ui/ArmyDisplay';
@@ -13,10 +14,7 @@ import { Tower } from '../snippets/Tower';
 import { GarrisonsScreen } from '../screens/GarrisonsScreen';
 import { ArmyScreen } from '../screens/ArmyScreen';
 import RealmOverviewScreen from '../screens/RealmOverviewScreen';
-import { gameEvent } from '../../utils/events';
 import { showScreen } from '../../utils/screenStore';
-import { handleKingCastle } from '../../actions/king';
-import { openStablesHireOnly } from '../../actions/stables';
 import { useT } from '../../i18n';
 import Militia from '../snippets/Militia';
 import Fame from '../snippets/Fame';
@@ -32,16 +30,6 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
 
   const openKingdomOverview = () =>
     showScreen({ content: <RealmOverviewScreen gameState={gameState} /> });
-
-  const handleTileNameClick = () => {
-    if (gameState.activeTile.id === 'king-castle') {
-      handleKingCastle(gameState, updateGameState);
-    } else if (gameState.activeTile.id === 'stables') {
-      openStablesHireOnly(gameState, updateGameState);
-    } else {
-      gameEvent('displayTile', gameState.activeTile);
-    }
-  };
 
   const turnIncome = playerTurnIncome(gameState, activePlayer);
   // playerTurnIncome clamps units to remaining militia capacity (income
@@ -93,13 +81,7 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             <PlayerLabel player={activePlayer} />
           </span>
 
-          <span>{t('currentPlayer.isAt')}</span>
-          <span
-            style={{ color: gameState.activeTile.groupTextColor, cursor: 'pointer' }}
-            onClick={handleTileNameClick}
-          >
-            {gameState.activeTile.name}{' '}
-          </span>
+          <Karma karma={activePlayer.karma} />
         </div>
       </div>
 

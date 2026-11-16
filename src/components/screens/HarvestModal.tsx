@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { currentYear, GROUP_EMOJI } from '../../game/year';
-import { DOUBLE_INCOME_EFFECT } from '../../game/yearCore';
+import { DOUBLE_INCOME_EFFECT, NO_INCOME_EFFECT, hasYearEffect } from '../../game/yearCore';
 import { GAME_START_YEAR } from '../../game/constants';
 import GameModal from './GameModal';
 import { DecoratedButton } from '../ui/DecoratedButton';
@@ -101,6 +101,9 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
               />
             )}
             {grace.riders > 0 && <Rider amount={`+${grace.riders}`} color={player.image} />}
+            {grace.gold + grace.militia + grace.riders === 0 &&
+              // Unjust Taxes withholds the grace too -- only otherwise is it down to wealth.
+              (hasYearEffect(gameState, NO_INCOME_EFFECT) ? t('harvest.noIncome') : t('harvest.tooWealthy'))}
           </div>
         </div>
 

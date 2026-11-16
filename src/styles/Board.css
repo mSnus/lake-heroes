@@ -110,16 +110,17 @@
   }
 }
 
-/* Generated boards draw tiles and player icons 1.5x the classic size. */
+/* Generated boards draw tiles 1.875x and player icons 1.5x the classic size. */
 .board-wrapper.board-generated {
-  --sprite-size: 26.4cqi;
+  --sprite-size: 33cqi;
 }
 
 .board-generated .tile,
 .board-generated .tile-emoji-overlay,
-.board-generated .route-end {
-  width: 22.2cqi;
-  height: 22.2cqi;
+.board-generated .route-end,
+.board-generated .route-dot-box {
+  width: 27.75cqi;
+  height: 27.75cqi;
 }
 
 .board-generated .player-image {
@@ -204,21 +205,29 @@
   }
 }
 
-/* The picked road ahead (RouteOverlay): a golden band over the drawn road. */
-.route-overlay {
+/* The picked road: a box the size of a tile, with a dot 1/10 of it at the centre. */
+.route-dot-box {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
+  width: 14.8vmin;
+  height: 14.8vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 
-.route-overlay-road {
-  stroke: #e6b422;
-  stroke-opacity: 0.5;
-  stroke-width: 0.22;
-  stroke-linecap: round;
+@supports (container-type: inline-size) {
+  .route-dot-box {
+    width: 14.8cqi;
+    height: 14.8cqi;
+  }
+}
+
+.route-dot {
+  width: 10%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow: 0 0 2px #000;
 }
 
 .dragon-center-icon {

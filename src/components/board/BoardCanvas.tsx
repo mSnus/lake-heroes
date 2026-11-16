@@ -5,7 +5,7 @@ import groupsData from '../../settings/groups.json';
 import { TILE_LEVEL_SCALE } from '../../game/constants';
 import type { BoardMap } from '../../game/mapgen/generateMap';
 import { cqiToPct, dragonCell, layerSizeCqi, slotPosition, CELL_CQI, TILE_CQI } from './mapGeometry';
-import { RoadMap, RouteOverlay } from './RoadMap';
+import { RoadMap } from './RoadMap';
 import { getTilePosition, isMobileLayout, parseTileName } from './common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../../utils/mapEditStore';
 import { routeChoice, tapRouteEnd, useRouteChoiceVersion } from '../../utils/routeChoiceStore';
@@ -56,9 +56,9 @@ function clusterOffset(index: number, count: number, stepPct: number): { dx: num
   return { dx, dy };
 }
 
-// The classic offsets (11cqi, 12.5cqi, 4cqi on a 100cqi board), 1.5x like the tiles.
+// The classic anchor (11cqi, 12.5cqi on a 14.8cqi tile) scaled with the tile; 6cqi cluster step.
 function generatedIconOffset(map: BoardMap) {
-  const anchor = cqiToPct(map, 16.5, 18.75);
+  const anchor = cqiToPct(map, TILE_CQI * (11 / 14.8), TILE_CQI * (12.5 / 14.8));
   return { anchorXPct: anchor.x, anchorYPct: anchor.y, clusterStepPct: cqiToPct(map, 6, 0).x };
 }
 
@@ -647,6 +647,14 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       ? routeChoice(board)
       : null;
 
+  // The picked road: a dot in the player's colour centred on each of its tiles.
+  const renderRouteDots = () =>
+    routePicker!.routes[routePicker!.selected].path.map((slot, k) => (
+      <div key={`dot-${k}`} className="route-dot-box" style={cellStyleFor(posOf(slot))}>
+        <div className="route-dot" style={{ background: board.activePlayer.color }} />
+      </div>
+    ));
+
   const renderRouteEnds = () => {
     const { routes, selected } = routePicker!;
     const ends = Array.from(new Set(routes.map((r) => r.dest)));
@@ -714,7 +722,12 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           {board.tiles.map((tile, i) => renderOverlay(tile, i))}
         </div>
 
-        {routePicker && <div className="layer-route-ends">{renderRouteEnds()}</div>}
+        {routePicker && (
+          <div className="layer-route-ends">
+            {renderRouteDots()}
+            {renderRouteEnds()}
+          </div>
+        )}
 
         {map ? (
           <>
@@ -726,13 +739,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
               onClick={() => challengeDragonFromBoard(board, updateGameState)}
             />
             <RoadMap map={map} />
-            {routePicker && (
-              <RouteOverlay
-                map={map}
-                from={board.activePlayer.position}
-                path={routePicker.routes[routePicker.selected].path}
-              />
-            )}
           </>
         ) : (
           <>

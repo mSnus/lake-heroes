@@ -699,7 +699,16 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     const atkGridKilled = attackerGridTotal - sideRemaining(cur, 'attacker') + (escapeSide === 'attacker' ? lost : 0);
     const defGridKilled = defenderGridTotal - sideRemaining(cur, 'defender') + (escapeSide === 'defender' ? lost : 0);
     setBattle({ ...cur, units: cur.units.filter((u) => u.side !== escapeSide) });
-    say(t('battleScreen.escaped', { name: attacker.name, units: lost }), 'warning');
+    const sized = escapeSide === 'attacker' ? attackerSized : defenderSized;
+    const gridTotal = escapeSide === 'attacker' ? attackerGridTotal : defenderGridTotal;
+    const fought = realLossFromGridLoss(gridTotal - sideRemaining(cur, escapeSide), sized.scale);
+    const fled = realLossFromGridLoss(lost, sized.scale);
+    say(
+      fought > 0
+        ? t('battleScreen.escapedAfterFight', { name: attacker.name, fought, fled })
+        : t('battleScreen.escaped', { name: attacker.name, units: fled }),
+      'warning'
+    );
     finishBattle(escapeSide === 'attacker' ? 'defender' : 'attacker', atkGridKilled, defGridKilled);
   };
 

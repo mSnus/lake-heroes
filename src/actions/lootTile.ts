@@ -19,19 +19,25 @@ export function canLoot(player: Player): boolean {
   return player.units > 0 || player.fame > 1;
 }
 
+// Share of the tile's price a successful loot also carries off, in gold.
+const LOOT_PRICE_SHARE = 0.25;
+
 const formatIncome = (income: TileIncome): string => {
-  if (income.gold) return `${income.gold}🟡`;
-  if (income.food) return `${income.food}🥙`;
-  if (income.arms) return `${income.arms}⚔️`;
-  if (income.units) return `${income.units}🧍`;
-  return '0🟡';
+  const parts = [
+    income.gold ? `${income.gold}🟡` : '',
+    income.food ? `${income.food}🥙` : '',
+    income.arms ? `${income.arms}⚔️` : '',
+    income.units ? `${income.units}🧍` : '',
+  ].filter(Boolean);
+  return parts.length ? parts.join(' ') : '0🟡';
 };
 
 /**
  * Looting an unowned tile -- doesn't touch its ownership or garrison at
  * all, just a dice-roll gamble against the looter's own army/gold/fame:
  * 1-2 a failed loot (soldiers lost, or fame if there are none left to lose),
- * 3 half the tile's per-turn income, 4-5 the income in full, 6 double.
+ * 3 half the tile's per-turn income, 4-5 the income in full, 6 double --
+ * each success also carries off LOOT_PRICE_SHARE of the tile's price in gold.
  * `roll` is the already-rolled die (see TileCard's visible DiceModal roll);
  * the soldier-loss amount on a 1-2 is its own separate, unseen roll.
  *
@@ -84,7 +90,7 @@ export function lootTile(
   const mult = roll === 3 ? 0.5 : roll === 6 ? 2 : 1;
   const base = tileTurnIncome(tile, 1, undefined, board);
   const income: TileIncome = {
-    gold: Math.round(base.gold * mult),
+    gold: Math.round(base.gold * mult) + Math.floor(tile.currentPrice.gold * LOOT_PRICE_SHARE),
     food: Math.round(base.food * mult),
     arms: Math.round(base.arms * mult),
     units: Math.round(base.units * mult),
