@@ -36,14 +36,15 @@ export function tileTurnIncome(
   tile: Tile,
   mult: number = 1,
   level: number = tile.level,
-  board?: GameState
+  board?: GameState,
+  ignoreTaxes = false
 ): TileIncome {
   const result: TileIncome = { gold: 0, food: 0, arms: 0, units: 0 };
   if (tile.isYielded) return result;
   const groupBoost = board && hasYearEffect(board, DOUBLE_INCOME_EFFECT, tile.group) ? 2 : 1;
   result[tile.bonusType ?? 'gold'] = (tile.bonuses[level] ?? 0) * mult * groupBoost;
 
-  if (board && hasYearEffect(board, NO_INCOME_EFFECT)) {
+  if (board && !ignoreTaxes && hasYearEffect(board, NO_INCOME_EFFECT)) {
     result.gold = 0;
     result.food = 0;
     result.arms = 0;

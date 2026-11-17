@@ -14,7 +14,7 @@ import { UNIT_POWER } from '../../game/army';
 import { claimAffordability } from '../../game/tileOwnership';
 import { syndicateMultiplier } from '../../game/syndicate';
 import { tileTurnIncome } from '../../game/income';
-import { hasYearEffect, DOUBLE_INCOME_EFFECT } from '../../game/year';
+import { hasYearEffect, DOUBLE_INCOME_EFFECT, NO_INCOME_EFFECT } from '../../game/year';
 import DecoratedButton from '../ui/DecoratedButton';
 import { TileUpgradesScreen } from '../screens/TileUpgradesScreen';
 import { Gold } from '../snippets/Gold';
@@ -92,14 +92,19 @@ export const TileCard: React.FC<TileCardProps> = ({
   // this year's lucky groups include this tile's own (see game/year.ts) --
   // the badge is purely an annotation explaining why, not a second
   // multiplier applied here.
-  const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState);
+  // Under Unjust Taxes the usual income is shown struck through.
+  const taxed = !!gameState && hasYearEffect(gameState, NO_INCOME_EFFECT);
+  const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState, true);
   const doubleIncomeActive =
     !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
   const hasTurnIncome = hasIncome(turnIncome);
   const turnIncomeLabel = (
     <>
-      <IncomeLabel income={turnIncome} unitColor={ownerPlayer?.image} unitKnight={ownerPlayer?.isKnight} />
+      <span className={taxed ? 'tile-card-taxed' : undefined}>
+        <IncomeLabel income={turnIncome} unitColor={ownerPlayer?.image} unitKnight={ownerPlayer?.isKnight} />
+      </span>
       {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}
+      {taxed && '🃏'}
     </>
   );
 
@@ -109,7 +114,13 @@ export const TileCard: React.FC<TileCardProps> = ({
   // year" block alongside the per-turn one.
   const yearlyUnitsBonus = tile.annualUnits[tile.level] ?? 0;
   const isTower = yearlyUnitsBonus > 0;
-  const towerYearlyLabel = <>+{yearlyUnitsBonus}👬</>;
+  const towerYearlyLabel = taxed ? (
+    <>
+      <span className="tile-card-taxed">+{yearlyUnitsBonus}👬</span>🃏
+    </>
+  ) : (
+    <>+{yearlyUnitsBonus}👬</>
+  );
 
   const bonusType = getBonusType(tile);
 

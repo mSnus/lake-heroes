@@ -415,6 +415,15 @@
 
 /* This year's lucky-group doubling (see game/year.ts) -- a small badge
    right after the gold figure it explains, not a separate value. */
+.tile-card-taxed,
+.tile-card-taxed * {
+  text-decoration: line-through;
+}
+
+.tile-card-taxed {
+  opacity: 0.7;
+}
+
 .tile-card-double-income {
   color: #ffbb00;
   font-weight: 700;
