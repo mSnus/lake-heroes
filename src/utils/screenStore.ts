@@ -8,6 +8,7 @@ import { playFogTransition } from './transitionStore';
 import { removeFromStorage } from './storage';
 import { Tile } from '../game/Tile';
 import { t } from '../i18n';
+import { escapeHtml, playerSpanHtml } from './html';
 
 export interface ScreenButton {
   label: string;
@@ -145,7 +146,7 @@ export function showPrisonScreen(message: string): void {
     screenType: 'prison',
     background: 'assets/screens/prison.jpg',
     title: t('prison.title'),
-    htmlMessage: `${t('prison.flavorText')}<br /><br />${message}`,
+    htmlMessage: `${t('prison.flavorText')}<br /><br />${escapeHtml(message)}`,
     buttons: [
       {
         label: t('common.continue'),
@@ -209,7 +210,7 @@ export function showDragonSkyScreen(
   playerColor?: string
 ): void {
   const who = playerName
-    ? `<span style="color:${playerColor ?? 'inherit'}">${playerName}</span>`
+    ? playerSpanHtml(playerName, playerColor)
     : t('screenStore.you');
   showScreenWithFog({
     screenType: 'dragon-sky',
@@ -288,7 +289,7 @@ export function showKnightPromotionScreen(
     fade: true,
     title: t('screenStore.promotionTitle'),
     htmlMessage: t('screenStore.promotionMessage', {
-      playerSpan: `<span style="color:${playerColor}">${playerName}</span>`,
+      playerSpan: playerSpanHtml(playerName, playerColor),
     }),
     buttons: [
       {

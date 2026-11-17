@@ -4,6 +4,7 @@ import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { ZOMBIE_AMBUSH_CHANCE, ZOMBIE_AMBUSH_FORCE_RATIO } from '../game/constants';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 /**
  * An abandoned (zombie-guarded) tile has a chance to ambush the player the
@@ -53,7 +54,7 @@ export function checkZombieAmbushEncounter(
     spriteImage: 'assets/figures/npc-skeleton.png',
     spriteNoRing: true,
     htmlMessage: t('zombieAmbush.message', {
-      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      playerSpan: playerSpanHtml(player.name, player.color),
       units: attackerUnits,
       tileName: tile.name,
     }),

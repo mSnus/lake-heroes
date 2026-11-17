@@ -10,6 +10,7 @@ import { announce } from '../utils/announce';
 import { currentYear } from '../game/year';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 /** Share of the escort its cargo is worth that actually stands and fights.
  * 0.765 is 15% below the 0.9 this started at -- the prize is unaffected,
@@ -130,7 +131,7 @@ export function checkCaravanEncounter(
     caravanPrize: prize,
     fade: true,
     htmlMessage: t('caravanEncounter.message', {
-      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      playerSpan: playerSpanHtml(player.name, player.color),
       gold: player.gold,
       army: formatArmy(player.militia, player.riders),
       guards: formatArmy(defendingMilitia, defendingRiders, CARAVAN_EMOJI),

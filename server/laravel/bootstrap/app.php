@@ -15,7 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Every request comes through the site's nginx and the compose nginx, so
+        // without this every player shares the Docker gateway's IP (and its rate
+        // limits). Only the Docker network is trusted to set X-Forwarded-For.
+        $middleware->trustProxies(
+            at: '172.16.0.0/12',
+            headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PROTO,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

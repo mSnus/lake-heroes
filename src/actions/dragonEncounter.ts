@@ -16,6 +16,7 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { shouldChallengeDragon } from '../ai/decisions';
 import { announce } from '../utils/announce';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 const ENCOUNTER_CHANCE = 1 / 12;
 const MAX_ENCOUNTERS_PER_YEAR = 1;
@@ -110,7 +111,7 @@ export function checkDragonEncounter(
     updateGameState(board);
     showDragonChallengeScreen(
       t('dragonEncounter.descends', {
-        playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+        playerSpan: playerSpanHtml(player.name, player.color),
       }),
       () => fightDragon(board, updateGameState),
       onContinue,

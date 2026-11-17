@@ -6,6 +6,7 @@ import { formatArmy, HORDE_EMOJI } from '../utils/formatArmy';
 import { KNIGHT_FAME, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
 import { currentYear } from '../game/year';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 export function checkAmbushEncounter(
   board: GameState,
@@ -74,7 +75,7 @@ export function checkAmbushEncounter(
     spriteImage: 'assets/figures/npc-saracen.png',
     spriteNoRing: true,
     htmlMessage: t('ambushEncounter.message', {
-      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      playerSpan: playerSpanHtml(player.name, player.color),
       squad: formatArmy(attackerMilitia, attackerRiders, HORDE_EMOJI),
     }),
     buttons: [{ label: t('ambushEncounter.defend'), onClick: startBattle }],

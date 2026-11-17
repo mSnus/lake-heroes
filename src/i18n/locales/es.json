@@ -406,7 +406,7 @@
     "claimTile": "reclamar {tileName}",
     "lootTile": "saquear {tileName}",
     "garrisonTile": "guarnecer {amount}🧍 en {tileName}",
-    "hireWorkers": "contratar a los trabajadores"
+    "hireWorkers": "contratar a la gente libre"
   },
   "boardCanvas": {
     "challengeDragon": "Desafiar al Dragón"
@@ -430,7 +430,7 @@
       "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno en el que todos cobran los ingresos de sus casillas. Los recursos se pueden comprar, vender o intercambiar. Ese mismo día, el Rey en su gracia envía ayuda a los más débiles.",
       "itemLoot": "🦇 Las casillas sin dueño se pueden <strong>saquear</strong>: tira un dado por una parte de su ingreso anual más una cuarta parte de su precio en oro — con 4-5 te lo llevas todo, con 3 la mitad, con 6 el doble. Con 1-2 tu escuadrón es descubierto: pierdes unidades (otra tirada oculta), o Fama si ya no te quedan, o ambas cosas si la pérdida supera lo que tenías.",
       "item3": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a tus 🧍 mientras estés en el Castillo del Rey.",
-      "item4": "Puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o la Caravana de Trabajadores (pagando el doble de oro)",
+      "item4": "Puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o con la Gente Libre (pagando el doble de oro)",
       "item5": "Envía unidades a guarnecer tus casillas para liberar espacio en tu ejército, de cara a las nuevas unidades que puedan unirse en la Taberna o llegar como Gracia del Rey."
     },
     "fame": {
@@ -503,7 +503,7 @@
     },
     "caravan": {
       "title": "Caravana 🐪",
-      "item1": "Es posible asaltar caravanas. Encuentra caravanas con oro y recursos para saquear, esclavos para liberar, caballos para montar y trabajadores para contratar.",
+      "item1": "Es posible asaltar caravanas. Encuentra caravanas con oro y recursos para saquear, esclavos para liberar, caballos para montar y gente libre para contratar.",
       "item2": "¡Derrota a los guardias de la caravana para liberar a los esclavos (se unen a tu ejército) o saquear los tesoros!"
     },
     "dangers": {
@@ -1105,7 +1105,7 @@
     "forceRoll": "Forzar próxima tirada",
     "forcedRollSet": "Próxima tirada de dado forzada a {value}.",
     "encCaravanHorses": "🐫 Caravana (caballos)",
-    "encWorkers": "Trabajadores",
+    "encWorkers": "Gente Libre",
     "encJoker": "Bufón",
     "setResources": "Fijar comida/armas"
   },
@@ -1195,12 +1195,12 @@
     "unbundleLast": "Devolver al último jugador su propio enlace"
   },
   "workersEncounter": {
-    "title": "Trabajadores",
+    "title": "Gente Libre",
     "message": "{playerSpan} se encuentra con un grupo de hombres buscando cualquier trabajo bien pagado. Puede que quieras contratarlos.",
     "fameAndGold": "{fame}   {gold}",
     "hireButton": "Contratar {army}",
     "passByButton": "⚜️ Seguir de largo, con orgullo",
-    "narrateVisit": "{playerName} se encontró con trabajadores libres buscando una causa a la que unirse 🧑‍🌾"
+    "narrateVisit": "{playerName} se encontró con gente libre buscando una causa a la que unirse 🧑‍🌾"
   },
   "travelingTraders": {
     "title": "Una feria ambulante 🎪 llegó a tu vista",

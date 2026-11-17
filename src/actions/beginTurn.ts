@@ -17,6 +17,7 @@ import { announce } from '../utils/announce';
 import { setGameMessage } from '../utils/gameMessage';
 import { openStream } from '../online/stream';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 /**
  * Everything that belongs to the player whose turn is STARTING: their per-turn
@@ -85,7 +86,7 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
     // War's release, which already has its own separate ransom ritual right
     // after this block.
     if (player.turnsToSkip === 0 && !player.isPrisonerOfWar) {
-      const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
+      const playerSpan = playerSpanHtml(player.name, player.color);
       const prisonArtifact = getPrisonProtectionArtifact(player);
       if (prisonArtifact) {
         setGameMessage(

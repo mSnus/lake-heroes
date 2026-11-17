@@ -3,6 +3,7 @@ import { say } from '../utils/say';
 import { showDragonChallengeScreen, clearScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 // Army power (see Player.armyPower) at which a player is even OFFERED the
 // challenge. The Dragon's true strength on the same scale is far higher
@@ -30,7 +31,7 @@ export function offerDragonChallenge(
   const p = board.activePlayer;
   showDragonChallengeScreen(
     t('fightDragon.willDareChallenge', {
-      playerSpan: `<span style="color:${p.color}">${p.name}</span>`,
+      playerSpan: playerSpanHtml(p.name, p.color),
     }),
     () => fightDragon(board, updateGameState),
     onDecline,

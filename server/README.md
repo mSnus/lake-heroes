@@ -88,6 +88,23 @@ curl -s -X PUT 127.0.0.1:8091/api/games/<CODE>/state -H 'Content-Type: applicati
 # → {"version":2}   (re-PUT with stale version → 409)
 ```
 
+## Security notes
+- **`laravel/.env` must stay** `APP_ENV=production`, `APP_DEBUG=false`, `LOG_LEVEL=warning`.
+  With debug on, every error (even a 404) returns a full stack trace to the internet.
+  After editing it: `docker compose exec app php artisan config:clear`.
+- **Real client IPs:** `bootstrap/app.php` trusts the Docker network (`172.16.0.0/12`) for
+  `X-Forwarded-For`. Without it every request appears to come from the compose gateway,
+  so all players share one rate-limit bucket.
+- **State validation:** the state is relayed to every player's browser, so
+  `GameController::checkedState` rejects (422) more than 6 players, a changed player
+  count, names containing `<`/`>`, colours other than `#hex`/plain names, and
+  `<`/`>` in `gameMessage`/`kingRewardMessage`. The client escapes names on its side too.
+- **Dependencies:** `docker compose exec app composer audit` -- update with
+  `docker compose exec app composer update --no-dev --with-all-dependencies`.
+- **Trust model:** any holder of a seat's join code can read the game and write a new
+  state at any time; the server does not check whose turn it is (each browser writes
+  with one code, even for hot-seat and host-driven bot seats).
+
 ## Production wiring
 
 The API is served **same-origin** from the main site, at

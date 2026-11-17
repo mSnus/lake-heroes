@@ -24,6 +24,9 @@ class GameController extends Controller
      * and the full history already lives in each client's own game log. */
     private const EVENTS_RETAINED = 200;
 
+    /** Matches the client's MAX_PLAYERS. */
+    private const MAX_PLAYERS = 6;
+
     // GET /api/games/{code}/version[?after=N]
     // The clients' poll loop -- see routes/api.php. Answers "anything new?"
     // from the single row it already reads, and carries any narration the
@@ -63,7 +66,7 @@ class GameController extends Controller
         $data = $req->validate([
             'events' => 'required|array|max:20',
             'events.*.kind' => 'required|string|in:toast,banner',
-            'events.*.level' => 'required|string|max:8',
+            'events.*.level' => 'required|string|in:default,info,success,warning,error,debug',
             'events.*.message' => 'required|string|max:1000',
         ]);
 
@@ -112,12 +115,7 @@ class GameController extends Controller
     {
         $data = $req->validate(['state' => 'required|string|max:' . self::MAX_STATE_BYTES]);
 
-        $parsed = json_decode($data['state'], true);
-        abort_unless(
-            isset($parsed['players']) && is_array($parsed['players']) && count($parsed['players']) > 0,
-            422,
-            'state.players missing or empty'
-        );
+        $parsed = $this->checkedState($data['state']);
 
         return DB::transaction(function () use ($data, $parsed) {
             $game = Game::create([
@@ -127,21 +125,18 @@ class GameController extends Controller
             ]);
 
             $codes = [];
-            foreach ($parsed['players'] as $i => $p) {
+            foreach (array_values($parsed['players']) as $i => $p) {
                 $code = $this->uniqueCode();
+                $color = $p['color'] ?? '';
+                $name = $p['name'] ?? "Player $i";
                 GamePlayer::create([
                     'code' => $code,
                     'game_id' => $game->id,
                     'player_index' => $i,
-                    'color' => $p['color'] ?? '',
-                    'name' => $p['name'] ?? "Player $i",
+                    'color' => $color,
+                    'name' => $name,
                 ]);
-                $codes[] = [
-                    'code' => $code,
-                    'playerIndex' => $i,
-                    'color' => $p['color'] ?? '',
-                    'name' => $p['name'] ?? "Player $i",
-                ];
+                $codes[] = ['code' => $code, 'playerIndex' => $i, 'color' => $color, 'name' => $name];
             }
 
             return response()->json(['codes' => $codes, 'version' => 1]);
@@ -174,16 +169,20 @@ class GameController extends Controller
             'version' => 'required|integer',
         ]);
 
-        return DB::transaction(function () use ($data, $code) {
+        $parsed = $this->checkedState($data['state']);
+
+        return DB::transaction(function () use ($data, $code, $parsed) {
             $slot = $this->slot($code);
             $game = Game::whereKey($slot->game_id)->lockForUpdate()->first();
+
+            // The seats are fixed when the game is created.
+            abort_unless(count($parsed['players']) === $game->players()->count(), 422, 'player count changed');
 
             // Optimistic concurrency: reject stale writes so two clients can't clobber.
             if ((int) $data['version'] !== (int) $game->version) {
                 return response()->json(['error' => 'stale', 'version' => $game->version], 409);
             }
 
-            $parsed = json_decode($data['state'], true);
             $game->update([
                 'state' => $data['state'],
                 'version' => $game->version + 1,
@@ -194,9 +193,54 @@ class GameController extends Controller
         });
     }
 
+    /**
+     * The state is stored and relayed to every other player's browser, which
+     * renders names and colours into HTML -- so they are held to a strict shape.
+     */
+    private function checkedState(string $state): array
+    {
+        $parsed = json_decode($state, true);
+        abort_unless(is_array($parsed), 422, 'state is not a JSON object');
+
+        $players = $parsed['players'] ?? null;
+        abort_unless(
+            is_array($players) && count($players) > 0 && count($players) <= self::MAX_PLAYERS,
+            422,
+            'state.players missing or out of range'
+        );
+
+        foreach ($players as $p) {
+            abort_unless(is_array($p), 422, 'invalid player');
+            $name = $p['name'] ?? '';
+            abort_unless(
+                is_string($name) && mb_strlen($name) <= 48 && !preg_match('/[<>]/', $name),
+                422,
+                'invalid player name'
+            );
+            foreach (['color', 'lightColor'] as $key) {
+                $value = $p[$key] ?? '';
+                abort_unless(
+                    is_string($value) && ($value === '' || preg_match('/^(#[0-9a-fA-F]{3,8}|[a-z]{3,20})$/', $value)),
+                    422,
+                    "invalid player $key"
+                );
+            }
+
+            $image = $p['image'] ?? '';
+            abort_unless(is_string($image) && preg_match('/^[a-z]{0,16}$/', $image), 422, 'invalid player image');
+        }
+
+        foreach (['gameMessage', 'kingRewardMessage'] as $key) {
+            $value = $parsed[$key] ?? '';
+            abort_unless(is_string($value) && !preg_match('/[<>]/', $value), 422, "invalid $key");
+        }
+
+        return $parsed;
+    }
+
     private function slot(string $code): GamePlayer
     {
-        return GamePlayer::with('game')->findOrFail(strtoupper($code));
+        return GamePlayer::with('game')->find(strtoupper($code)) ?? abort(404, 'Game not found');
     }
 
     private function uniqueCode(): string

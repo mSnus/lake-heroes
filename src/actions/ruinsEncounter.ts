@@ -4,6 +4,7 @@ import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 const RUINS_FORCE_RATIO_MIN = 0.6;
 const RUINS_FORCE_RATIO_MAX = 0.8;
@@ -57,7 +58,7 @@ export function showRuinsEncounter(
     fade: true,
     spriteImage: 'assets/sprites/ruins.png',
     htmlMessage: t('ruinsEncounter.message', {
-      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      playerSpan: playerSpanHtml(player.name, player.color),
     }),
     buttons: [{ label: t('ruinsEncounter.fight'), onClick: startBattle }],
   });

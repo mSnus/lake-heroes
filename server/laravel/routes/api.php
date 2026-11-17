@@ -3,7 +3,7 @@
 use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/games', [GameController::class, 'store'])->middleware('throttle:100,1');
+Route::post('/games', [GameController::class, 'store'])->middleware('throttle:20,1');
 
 // Polled every few seconds by every client that isn't taking its turn, so it
 // answers with the version counter alone -- fetching the whole state on that

@@ -12,6 +12,7 @@ import { planArmyPurchase } from '../ai/botPlans';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';
 import { tavernMilitiaPrice, tavernRiderPrice, tavernUpgradePricePerUnit } from './tavern';
+import { playerSpanHtml } from '../utils/html';
 
 export const STABLES_RIDERS_MIN = 3;
 export const STABLES_RIDERS_MAX = 12;
@@ -30,7 +31,7 @@ export function handleStables(
   const player = board.activePlayer;
   const riderPrice = getOverrides().riderPrice;
   const rolled = rollStablesRiders();
-  const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
+  const playerSpan = playerSpanHtml(player.name, player.color);
 
   let lines: string[] = [];
 

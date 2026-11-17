@@ -13,6 +13,7 @@ import { TAVERN_PRICE_MULT } from '../game/constants';
 import { currentYear } from '../game/year';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 // A Knight's tavern luck sometimes comes as free horses instead of foot
 // soldiers — converting existing militia to riders rather than granting new
@@ -55,7 +56,7 @@ export function handleTavern(
   const baseRoll = Math.floor(Math.random() * (TAVERN_UNITS_MAX - TAVERN_UNITS_MIN + 1)) + TAVERN_UNITS_MIN;
   const unitsReward = Math.round(baseRoll * yearMultiplier);
   void roll; // dice animation still plays for atmosphere
-  const playerSpan = `<span style="color:${player.color}">${player.name}</span>`;
+  const playerSpan = playerSpanHtml(player.name, player.color);
 
   // Free horses turn militia already in the army into riders, as far as the
   // rider cap allows.

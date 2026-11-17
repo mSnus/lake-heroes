@@ -15,6 +15,7 @@ import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
+import { playerSpanHtml } from '../../utils/html';
 
 /** Workers reuse 🧍🏾 rather than the army's own 🧍, so the close button
  * never reads as reporting on the traveling army itself. */
@@ -125,7 +126,7 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
           style={{ whiteSpace: 'pre-line' }}
           dangerouslySetInnerHTML={{
             __html: t('workersEncounter.message', {
-              playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+              playerSpan: playerSpanHtml(player.name, player.color),
             }),
           }}
         />

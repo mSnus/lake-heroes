@@ -7,6 +7,7 @@ import { setEndTurn } from '../utils/endTurnStore';
 import { grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
+import { playerSpanHtml } from '../utils/html';
 
 type TreasureSize = 'small' | 'medium' | 'large';
 
@@ -61,7 +62,7 @@ export function handleTreasureBox(
       background: 'assets/screens/treasure.jpg',
       title: t('treasureBox.treasureFound'),
       htmlMessage: t('treasureBox.foundArtifactHtml', {
-        playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+        playerSpan: playerSpanHtml(player.name, player.color),
         size: sizeLabel,
         artifactName: foundArtifact.name,
         emoji: foundArtifact.emoji,
@@ -108,7 +109,7 @@ export function handleTreasureBox(
     background: 'assets/screens/treasure.jpg',
     title: t('treasureBox.treasureFound'),
     htmlMessage: t('treasureBox.foundGoldHtml', {
-      playerSpan: `<span style="color:${player.color}">${player.name}</span>`,
+      playerSpan: playerSpanHtml(player.name, player.color),
       size: sizeLabel,
       gold: goldReward,
     }),
