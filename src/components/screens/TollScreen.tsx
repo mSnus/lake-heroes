@@ -21,6 +21,7 @@ import { yieldTile, yieldRefund } from '../../actions/yieldTile';
 import { shouldSeekRevenge, sortTilesBySacrifice } from '../../ai/decisions';
 import { fmtPrice } from '../board/TileCard';
 import { announce } from '../../utils/announce';
+import { closeTopic } from '../../utils/say';
 import { changeKarma } from '../../utils/karma';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
@@ -109,6 +110,7 @@ export const TollScreen: React.FC<TollScreenProps> = ({
 
   const handleGoWithPeace = () => {
     player.hasResolvedTileEncounterThisTurn = true;
+    closeTopic();
     changeKarma(player, 1, 3);
     clearScreen();
     setEndTurn();

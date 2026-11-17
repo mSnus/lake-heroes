@@ -7,7 +7,7 @@ import { becomeBeggar } from './becomeBeggar';
 import { showScreen, showPrisonScreen, clearScreen } from '../utils/screenStore';
 import { setEndTurn } from '../utils/endTurnStore';
 import { isHeadlessRun } from '../utils/headlessStore';
-import { say } from '../utils/say';
+import { say, sayInTopic, closeTopic } from '../utils/say';
 import { currentYear } from '../game/year';
 import { changeKarma } from '../utils/karma';
 import { changeStars } from '../utils/stars';
@@ -149,15 +149,22 @@ export function chargeToll(player: Player, owner: Player | undefined, tile: Tile
   if (payNow > 0) {
     player.gold -= payNow;
     if (owner) owner.gold += payNow;
-    say(t('payFee.paid', { playerName: player.name, fee: payNow, ownerName: owner?.name ?? '', tileName: tile.name }), 'info');
+    sayInTopic(
+      t('topics.paidToll', { fee: payNow, ownerName: owner?.name ?? '' }),
+      t('payFee.paid', { playerName: player.name, fee: payNow, ownerName: owner?.name ?? '', tileName: tile.name }),
+      'info',
+      { actor: player.name, subject: tile.name }
+    );
   }
 
   const remaining = owed - payNow;
   player.owedToll = remaining;
   if (remaining > 0) {
-    say(
+    sayInTopic(
+      t('topics.tollShortfall', { remaining }),
       t('afterMoveLogic.tollShortfall', { playerName: player.name, paid: payNow, remaining, tileName: tile.name }),
-      'warning'
+      'warning',
+      { actor: player.name, subject: tile.name }
     );
   }
 
@@ -325,6 +332,7 @@ function resolveGuardsHeadless(
   } else {
     announce(player, 'botController.noRevenge');
     player.hasResolvedTileEncounterThisTurn = true;
+    closeTopic();
     setEndTurn();
   }
 }

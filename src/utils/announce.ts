@@ -2,6 +2,16 @@ import { Player } from '../game/Player';
 import { say, sayInTopic, topicSubject } from './say';
 import { t } from '../i18n';
 
+// Decisions that only ever come up while visiting the topic's tile.
+const TILE_VISIT_DECISIONS = new Set([
+  'botController.sellTilesToPayFee',
+  'botController.noRevenge',
+  'botController.goWithPeace',
+  'botController.acceptTheLoss',
+  'botController.fight',
+  'botController.takeUndefendedTile',
+]);
+
 /** `decisionKey` is an i18n key, translated fresh at call time (no React
  * render cycle to subscribe to language changes here, but these are
  * one-shot toasts fired in direct response to a bot action, always reading
@@ -15,9 +25,10 @@ export function announce(
 ): void {
   const full = t('botController.decided', { name: player.name, decision: t(decisionKey, params) });
   const tileName = params?.tileName;
-  if (typeof tileName === 'string' && topicSubject(player.name) === tileName) {
-    const part = t('topics.decided', { decision: t(decisionKey, { ...params, tileName: t('topics.it') }) });
-    sayInTopic(part, full, 'info', { actor: player.name, subject: tileName });
+  const subject = topicSubject(player.name);
+  if (subject && (tileName === subject || TILE_VISIT_DECISIONS.has(decisionKey))) {
+    const shortParams = typeof tileName === 'string' ? { ...params, tileName: t('topics.it') } : params;
+    sayInTopic(t('topics.decided', { decision: t(decisionKey, shortParams) }), full, 'info', { actor: player.name });
     return;
   }
 

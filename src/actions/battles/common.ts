@@ -1,5 +1,5 @@
 import { Player } from '../../game/Player';
-import { say, sayInTopic } from '../../utils/say';
+import { say, sayInTopic, closeTopic } from '../../utils/say';
 import { formatArmy } from '../../utils/formatArmy';
 import { t } from '../../i18n';
 
@@ -136,4 +136,5 @@ export function logBattleSummary(
     logLevel,
     { actor: attacker.name }
   );
+  if (outcome !== 'attacker') closeTopic();
 }

@@ -49,13 +49,6 @@ export function showToast(message: ToastContent, level: SayLevel = 'info'): void
  * - Dispatches a 'logMessage' event for history tracking
  */
 export function say(message: ToastContent, level: SayLevel = 'info'): void {
-  // Anything outside the open topic ends it first, so the log keeps its order.
-  // Debug chatter doesn't, or every bot musing would split a group.
-  if (level !== 'debug') closeTopic();
-  emitSay(message, level);
-}
-
-function emitSay(message: ToastContent, level: SayLevel): void {
   // A headless sim plays thousands of turns against its own board -- toasting
   // (or console-mirroring) all of that would flood the real app and slow the
   // run down. Collect the meaningful messages into the per-circle sim log for
@@ -146,7 +139,7 @@ export function sayLocal(message: ToastContent, level: SayLevel = 'info'): void 
 // A turn spent on one tile (arriving, discovering, claiming, fighting,
 // garrisoning) would otherwise toast once per step. Its messages are held as
 // short parts and shown as one line when the topic ends: another topic opens,
-// an unrelated message arrives, or the turn ends (see endTurn).
+// the visit is over (loot, garrison, lost battle, peace) or the turn ends.
 
 const LEVEL_RANK: Record<SayLevel, number> = { debug: 0, default: 1, info: 2, success: 3, warning: 4, error: 5 };
 
@@ -198,7 +191,7 @@ export function closeTopic(): void {
 
   const { opening, parts } = done;
   if (!parts.length) {
-    emitSay(opening.message, opening.level);
+    say(opening.message, opening.level);
     if (opening.narrated) narrate(opening.message, opening.level);
     return;
   }
@@ -209,7 +202,7 @@ export function closeTopic(): void {
     tileName: done.subject,
     details: parts.map((p) => p.text).join(', '),
   });
-  emitSay(message, level);
+  say(message, level);
   // Debug-only groups don't reach the other players through say(), so tell them directly.
   if (level === 'debug') narrate(message, 'info');
 }

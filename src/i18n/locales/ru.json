@@ -1273,6 +1273,10 @@
     "lootGain": "награбил {reward}",
     "lootSoldiersLost": "пойман на грабеже, потерял {amount}🧍",
     "lootSoldiersAndFameLost": "пойман на грабеже, потерял всех {amount}🧍 и 1🏆",
-    "lootFameLost": "пойман на грабеже, потерял {amount}🏆"
+    "lootFameLost": "пойман на грабеже, потерял {amount}🏆",
+    "paidToll": "заплатил {fee}🟡 пошлины игроку {ownerName}",
+    "tollShortfall": "ещё должен {remaining}🟡",
+    "soldTile": "продал {tileName} за {gold}🟡 и {units}🧍",
+    "portalArrival": "{playerName} прошёл через Портал к {tileName}"
   }
 }

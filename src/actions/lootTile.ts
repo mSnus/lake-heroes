@@ -5,7 +5,7 @@ import { TileIncome, tileTurnIncome } from '../game/income';
 import { rollDice } from '../game/Dice';
 import { changeFame } from '../utils/fame';
 import { changeKarma } from '../utils/karma';
-import { sayInTopic } from '../utils/say';
+import { closeTopic, sayInTopic } from '../utils/say';
 import { t } from '../i18n';
 
 /**
@@ -46,12 +46,13 @@ const formatIncome = (income: TileIncome): string => {
  * left, plus 1 fame on top -- not a bigger unit debt than they can pay.
  * Militia are spared before riders either way (Player's `units` setter).
  */
-export function lootTile(
-  board: GameState,
-  player: Player,
-  tile: Tile,
-  roll: number
-): void {
+export function lootTile(board: GameState, player: Player, tile: Tile, roll: number): void {
+  lootOutcome(board, player, tile, roll);
+  // Nothing more can be done with the tile, so its messages go out now.
+  closeTopic();
+}
+
+function lootOutcome(board: GameState, player: Player, tile: Tile, roll: number): void {
   player.hasLootedThisTurn = true;
   const about = { actor: player.name, subject: tile.name };
   changeKarma(player, -1);

@@ -7,7 +7,8 @@ import { isHeadlessRun } from '../utils/headlessStore';
 import { revealTile } from './revealTile';
 import { passStart } from './passStart';
 import { PortalScreen } from '../components/screens/PortalScreen';
-import { narrateMove } from '../utils/say';
+import { narrateMove, openTopic } from '../utils/say';
+import { t } from '../i18n';
 
 export function handlePortal(
   board: GameState,
@@ -33,6 +34,11 @@ export function handlePortal(
   narrateMove(newPos);
 
   const landedTile = board.tiles[newPos];
+  if (landedTile.isOwnable) {
+    const message = t('topics.portalArrival', { playerName: player.name, tileName: landedTile.name });
+    openTopic(player.name, landedTile.name, message, 'debug', true);
+  }
+
   const wasFogged = landedTile.fog;
   landedTile.fog = false;
 

@@ -2,7 +2,7 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
-import { say, sayInTopic } from '../utils/say';
+import { say, sayInTopic, topicSubject, closeTopic } from '../utils/say';
 import { t } from '../i18n';
 
 function moveTier(player: Player, tile: Tile, tier: UnitTier, requestedDelta: number): void {
@@ -69,4 +69,6 @@ export function setTileGarrison(
     'debug',
     { actor: player.name, subject: tile.name }
   );
+  // Garrisoning is the last step of a claim.
+  if (topicSubject(player.name) === tile.name) closeTopic();
 }

@@ -2,7 +2,7 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { UNIT_PRICE, RIDER_UNIT_PRICE } from '../game/constants';
-import { say } from '../utils/say';
+import { sayInTopic } from '../utils/say';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
 
@@ -73,7 +73,12 @@ export function sellTile(
   player.gold += soldForGold;
 
   const totalUnits = gm + gr;
-  say(t('sellTile.sold', { playerName: player.name, tileName: tile.name, gold: totalGold, units: totalUnits }), 'info');
+  sayInTopic(
+    t('topics.soldTile', { tileName: tile.name, gold: totalGold, units: totalUnits }),
+    t('sellTile.sold', { playerName: player.name, tileName: tile.name, gold: totalGold, units: totalUnits }),
+    'info',
+    { actor: player.name }
+  );
 
   return { gold: totalGold, units: totalUnits, soldForGold };
 }

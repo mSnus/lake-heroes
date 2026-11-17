@@ -1276,6 +1276,10 @@
     "lootGain": "saqueó {reward}",
     "lootSoldiersLost": "descubierto saqueando, perdió {amount}🧍",
     "lootSoldiersAndFameLost": "descubierto saqueando, perdió sus {amount}🧍 y 1🏆",
-    "lootFameLost": "descubierto saqueando, perdió {amount}🏆"
+    "lootFameLost": "descubierto saqueando, perdió {amount}🏆",
+    "paidToll": "pagó {fee}🟡 de peaje a {ownerName}",
+    "tollShortfall": "aún debe {remaining}🟡",
+    "soldTile": "vendió {tileName} por {gold}🟡 y {units}🧍",
+    "portalArrival": "{playerName} llegó por el Portal a {tileName}"
   }
 }

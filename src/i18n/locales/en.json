@@ -1303,6 +1303,10 @@
     "lootGain": "looted {reward}",
     "lootSoldiersLost": "caught looting, lost {amount}🧍",
     "lootSoldiersAndFameLost": "caught looting, lost all {amount}🧍 and 1🏆",
-    "lootFameLost": "caught looting, lost {amount}🏆"
+    "lootFameLost": "caught looting, lost {amount}🏆",
+    "paidToll": "paid {fee}🟡 toll to {ownerName}",
+    "tollShortfall": "still owes {remaining}🟡",
+    "soldTile": "sold {tileName} for {gold}🟡 and {units}🧍",
+    "portalArrival": "{playerName} came through the Portal to {tileName}"
   }
 }
