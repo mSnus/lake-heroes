@@ -36,7 +36,7 @@ import { AutoEndTurnNotice } from './components/board/AutoEndTurnNotice';
 import { Gold } from './components/snippets/Gold';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/snippets/GameMessage';
-import { PlayerSetup } from './utils/playerSetup';
+import { PlayerSetup, setupFromPlayers } from './utils/playerSetup';
 import GameLogModal, { LogMessage } from './components/menu/GameLogModal';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
@@ -784,6 +784,7 @@ function App() {
                 </DecoratedButton>
                 <DecoratedButton
                   onClick={() => {
+                    const previousPlayers = gameState ? setupFromPlayers(gameState.players) : undefined;
                     halt();
       resetFogTransition();
                     removeFromStorage('game-state');
@@ -795,7 +796,9 @@ function App() {
                     resetRemoteMove();
                     setGameState(null);
                     setGameLog([]);
-                    showScreen({ content: <NewGameModal onStart={handleStartGame} /> });
+                    showScreen({
+                      content: <NewGameModal onStart={handleStartGame} initialPlayers={previousPlayers} />,
+                    });
                   }}
                 >
                   New Game

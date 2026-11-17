@@ -28,14 +28,17 @@ const CHARACTER_NAME_SUFFIX_KEY: Record<CharacterId, string> = {
 interface NewGameModalProps {
   /** `online` publishes the game and mints a join code per seat. */
   onStart: (players: PlayerSetup[], online?: boolean) => void;
+  /** The previous game's seats (names, colours, bots), when starting over from one. */
+  initialPlayers?: PlayerSetup[];
 }
 
-const NewGameModal: React.FC<NewGameModalProps> = ({ onStart }) => {
+const NewGameModal: React.FC<NewGameModalProps> = ({ onStart, initialPlayers: previousPlayers }) => {
   const t = useT();
   const version = useAppVersion();
-  const [numPlayers, setNumPlayers] = useState(2);
+  const [numPlayers, setNumPlayers] = useState(previousPlayers?.length || 2);
   const [openColorIndex, setOpenColorIndex] = useState<number | null>(null);
   const [players, setPlayers] = useState<PlayerSetup[]>(() => {
+    if (previousPlayers?.length) return previousPlayers.map((p) => ({ ...p }));
     const initialPlayers: PlayerSetup[] = [];
     for (let i = 0; i < numPlayers; i++) {
       initialPlayers.push({

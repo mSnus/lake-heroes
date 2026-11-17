@@ -501,9 +501,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
             (() => {
               const { textPart1, textPart2 } = parseTileName(tile.name);
               const isKingTile = tile.id === 'king-castle';
-              const tileSizeClass = ['king-castle'].includes(tile.id)
-                ? 'tile-sprite-container tile-big'
-                : 'tile-sprite-container';
 
               return (
                 <>
@@ -519,7 +516,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
                   )}
                   {(tile.spriteImage || isFogged) && (
                     <div
-                      className={tileSizeClass}
+                      className="tile-sprite-container"
                       // Only ownable tiles have a level; specials stay full size.
                       style={
                         tile.isOwnable

@@ -37,7 +37,7 @@ const formatIncome = (income: TileIncome): string => {
  * all, just a dice-roll gamble against the looter's own army/gold/fame:
  * 1-2 a failed loot (soldiers lost, or fame if there are none left to lose),
  * 3 half the tile's per-turn income, 4-5 the income in full, 6 double --
- * each success also carries off LOOT_PRICE_SHARE of the tile's price in gold.
+ * plus LOOT_PRICE_SHARE of the tile's price in gold, scaled by the same roll.
  * `roll` is the already-rolled die (see TileCard's visible DiceModal roll);
  * the soldier-loss amount on a 1-2 is its own separate, unseen roll.
  *
@@ -90,7 +90,7 @@ export function lootTile(
   const mult = roll === 3 ? 0.5 : roll === 6 ? 2 : 1;
   const base = tileTurnIncome(tile, 1, undefined, board);
   const income: TileIncome = {
-    gold: Math.round(base.gold * mult) + Math.floor(tile.currentPrice.gold * LOOT_PRICE_SHARE),
+    gold: Math.round((base.gold + tile.currentPrice.gold * LOOT_PRICE_SHARE) * mult),
     food: Math.round(base.food * mult),
     arms: Math.round(base.arms * mult),
     units: Math.round(base.units * mult),

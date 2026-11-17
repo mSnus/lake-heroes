@@ -17,7 +17,7 @@ export interface GeneratedMap {
 
 export const MAP_COLS = 10;
 export const MAP_ROWS = 8;
-const ROAD_SHARE = 0.5;
+const ROAD_SHARE = 0.65;
 const MIN_SIDE_ROAD_GAP = 3;
 // Each side road adds one fork (a 3-exit cell with a choice of way).
 export const MAX_FORKS = 3;
@@ -25,7 +25,7 @@ export const MAX_FORKS = 3;
 export const CASTLE_CLEAR_STEPS = 3;
 // The shortest lap must be at least this share of the longest one.
 const MIN_LAP_RATIO = 0.85;
-const MAX_SIDE_ROAD_CELLS = 8;
+const MAX_SIDE_ROAD_CELLS = 10;
 const CORNER_CUT_CHANCE = 0.6;
 const SEARCH_BUDGET = 3000;
 
@@ -60,23 +60,31 @@ function blobOutline(cols: number, rows: number, targetLen: number): Cell[] | nu
     return p;
   };
 
-  // Grown from 2×2 squares, so it's never one cell thin -- a thin part would
-  // put two roads side by side. Holes and pinches are rejected by the trace below.
-  const square = (i: number, j: number) => [j * W + i, j * W + i + 1, (j + 1) * W + i, (j + 1) * W + i + 1];
-  square(Math.floor(W / 2) - 1 + randInt(2), Math.floor(H / 2) - 1 + randInt(2)).forEach((k) => inBlob.add(k));
-  while (perimeter() < targetLen) {
+  // Adding a cell keeps the blob hole-free and pinch-free when its blob
+  // neighbours form one unbroken arc that touches it on a side.
+  const canGrow = (i: number, j: number) => {
+    const ring = DIRS.map(([dx, dy]) => has(i + dx, j + dy));
+    const runs = ring.filter((b, k) => b && !ring[(k + 7) % 8]).length;
+    return runs === 1 && ring.some((b, k) => b && k % 2 === 0);
+  };
+
+  // The outline must reach every edge of the grid, so the blob spans the whole coarse grid.
+  const spans = () => {
+    const is = Array.from(inBlob, (k) => k % W);
+    const js = Array.from(inBlob, (k) => Math.floor(k / W));
+    return Math.min(...is) === 0 && Math.max(...is) === W - 1 && Math.min(...js) === 0 && Math.max(...js) === H - 1;
+  };
+
+  inBlob.add((Math.floor(H / 2) + randInt(2)) * W + Math.floor(W / 2) - 1 + randInt(3));
+  while (perimeter() < targetLen || !spans()) {
     const candidates: [number, number][] = [];
-    for (let j = 0; j < H - 1; j++) {
-      for (let i = 0; i < W - 1; i++) {
-        const cells = square(i, j);
-        const inside = cells.filter((k) => inBlob.has(k)).length;
-        if (inside === 2) candidates.push([i, j]);
-      }
+    for (let j = 0; j < H; j++) {
+      for (let i = 0; i < W; i++) if (!has(i, j) && canGrow(i, j)) candidates.push([i, j]);
     }
 
     if (!candidates.length) return null;
     const [i, j] = candidates[randInt(candidates.length)];
-    square(i, j).forEach((k) => inBlob.add(k));
+    inBlob.add(j * W + i);
   }
 
   // Clockwise outline: each blob side not shared with the blob is an edge
@@ -165,28 +173,6 @@ class Builder {
     return true;
   }
 
-  /** Whether making `c` road would fill a 2×2 block of road cells. */
-  closesSquare(c: Cell, path: Cell[]): boolean {
-    const road = (x: number, y: number) =>
-      this.inside(x, y) && (this.masks[y * this.cols + x] !== 0 || path.some((p) => p.x === x && p.y === y));
-    return [
-      [-1, -1],
-      [0, -1],
-      [-1, 0],
-      [0, 0],
-    ].some(([ox, oy]) => {
-      const x = c.x + ox;
-      const y = c.y + oy;
-      const others = [
-        [x, y],
-        [x + 1, y],
-        [x, y + 1],
-        [x + 1, y + 1],
-      ].filter(([px, py]) => px !== c.x || py !== c.y);
-      return others.every(([px, py]) => road(px, py));
-    });
-  }
-
   /** A forward side road from `a` (a plain 2-exit road cell) through empty
    * cells to a later 2-exit road cell, or null if none fits. */
   carveSideRoad(a: Cell): Cell[] | null {
@@ -214,7 +200,6 @@ class Builder {
         }
 
         if (path.length >= MAX_SIDE_ROAD_CELLS || path.some((c) => c.x === nx && c.y === ny)) continue;
-        if (this.closesSquare(next, path)) continue;
         path.push(next);
         if (v) usedV.add(v);
         const found = search(next, d);
@@ -231,7 +216,7 @@ class Builder {
 }
 
 function tryGenerate(cols: number, rows: number): GeneratedMap | null {
-  const outline = blobOutline(cols, rows, 28 + randInt(7));
+  const outline = blobOutline(cols, rows, 40 + randInt(6));
   if (!outline) return null;
   const loop = cutCorners(outline);
   const b = new Builder(cols, rows);
@@ -325,10 +310,10 @@ export function validateMap({ map, links }: GeneratedMap): string[] {
   });
 
   if (slots.length !== cells.filter((m) => m).length) problems.push('slot count != road cells');
-  for (let y = 0; y < rows - 1; y++) {
-    for (let x = 0; x < cols - 1; x++) {
-      if ([0, 1, cols, cols + 1].every((o) => cells[y * cols + x + o])) problems.push(`2x2 road block at ${x},${y}`);
-    }
+  const xs = slots.map((s) => s.x);
+  const ys = slots.map((s) => s.y);
+  if (Math.min(...xs) > 0 || Math.max(...xs) < cols - 1 || Math.min(...ys) > 0 || Math.max(...ys) < rows - 1) {
+    problems.push('roads do not span the whole map');
   }
 
   const reach = (adj: number[][]) => {

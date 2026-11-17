@@ -57,6 +57,63 @@
     }
   },
   {
+    "id": "copper-mine",
+    "group": "Mines",
+    "spriteImage": "assets/sprites/copper_mine.png",
+    "isOwnable": true,
+    "bonusType": "gold",
+    "requiredFame": 0,
+    "garrison": 8,
+    "prices": {
+      "1": 6,
+      "2": 6,
+      "3": 11
+    },
+    "bonuses": {
+      "1": 4,
+      "2": 8,
+      "3": 12
+    }
+  },
+  {
+    "id": "silver-mine",
+    "group": "Mines",
+    "spriteImage": "assets/sprites/silver_mine.png",
+    "isOwnable": true,
+    "bonusType": "gold",
+    "requiredFame": 0,
+    "garrison": 12,
+    "prices": {
+      "1": 7,
+      "2": 7,
+      "3": 12
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 9,
+      "3": 14
+    }
+  },
+  {
+    "id": "gold-mine",
+    "group": "Mines",
+    "spriteImage": "assets/sprites/gold_mine.png",
+    "isOwnable": true,
+    "bonusType": "gold",
+    "requiredFame": 3,
+    "garrison": 18,
+    "prices": {
+      "1": 8,
+      "2": 8.5,
+      "3": 15
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 9,
+      "3": 14
+    }
+  },
+  {
     "id": "pigs-farm",
     "group": "Farms",
     "spriteImage": "assets/sprites/pigs.png",
@@ -111,6 +168,25 @@
       "1": 4,
       "2": 8,
       "3": 14
+    }
+  },
+  {
+    "id": "chicken-farm",
+    "group": "Farms",
+    "spriteImage": "assets/sprites/chickens.png",
+    "isOwnable": true,
+    "bonusType": "food",
+    "requiredFame": 0,
+    "garrison": 6,
+    "prices": {
+      "1": 4,
+      "2": 3,
+      "3": 6
+    },
+    "bonuses": {
+      "1": 3,
+      "2": 6,
+      "3": 12
     }
   },
   {
@@ -269,6 +345,101 @@
     "id": "swords",
     "group": "Camps",
     "spriteImage": "assets/sprites/swords.png",
+    "isOwnable": true,
+    "bonusType": "arms",
+    "requiredFame": 7,
+    "garrison": 40,
+    "prices": {
+      "1": 12,
+      "2": 7.5,
+      "3": 15
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 10,
+      "3": 15
+    }
+  },
+  {
+    "id": "lumber-factory",
+    "group": "Technology",
+    "spriteImage": "assets/sprites/lumber.png",
+    "isOwnable": true,
+    "bonusType": "arms",
+    "requiredFame": 3,
+    "garrison": 24,
+    "prices": {
+      "1": 8,
+      "2": 7.5,
+      "3": 15
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 10,
+      "3": 15
+    }
+  },
+  {
+    "id": "pottery-workshop",
+    "group": "Technology",
+    "spriteImage": "assets/sprites/pottery.png",
+    "isOwnable": true,
+    "bonusType": "arms",
+    "requiredFame": 3,
+    "garrison": 24,
+    "prices": {
+      "1": 8,
+      "2": 7.5,
+      "3": 15
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 10,
+      "3": 15
+    }
+  },
+  {
+    "id": "charcoal-burners",
+    "group": "Technology",
+    "spriteImage": "assets/sprites/charcoal.png",
+    "isOwnable": true,
+    "bonusType": "arms",
+    "requiredFame": 6,
+    "garrison": 32,
+    "prices": {
+      "1": 10,
+      "2": 7.5,
+      "3": 15
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 10,
+      "3": 15
+    }
+  },
+  {
+    "id": "iron-forge",
+    "group": "Technology",
+    "spriteImage": "assets/sprites/iron_forge.png",
+    "isOwnable": true,
+    "bonusType": "arms",
+    "requiredFame": 7,
+    "garrison": 40,
+    "prices": {
+      "1": 12,
+      "2": 7.5,
+      "3": 15
+    },
+    "bonuses": {
+      "1": 5,
+      "2": 10,
+      "3": 15
+    }
+  },
+  {
+    "id": "gunpowder-depot",
+    "group": "Technology",
+    "spriteImage": "assets/sprites/gunpowder.png",
     "isOwnable": true,
     "bonusType": "arms",
     "requiredFame": 7,

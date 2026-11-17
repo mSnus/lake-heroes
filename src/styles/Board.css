@@ -362,24 +362,6 @@
   align-items: center;
 }
 
-.tile-sprite-container.tile-big {
-  height: var(--sprite-size);
-  width: var(--sprite-size);
-}
-
-.tile-big .tile-sprite {
-  width: var(--sprite-size);
-  height: var(--sprite-size);
-  min-height: var(--sprite-size);
-  border-radius: 0;
-  transform: scale(calc(var(--sprite-scale) * 1.6)) translateY(-20px);
-  opacity: 0.9;
-}
-
-.tile-big .tile-sprite-special {
-  border-radius: 0;
-}
-
 .tile-title {
   font-family: 'HeroesTextured', serif;
   font-weight: 600;
