@@ -311,7 +311,7 @@ export function handleJoker(
 
   const eventName = t(EVENT_NAME_KEY[event]);
   say(t('joker.eventLogLine', { eventName, message }), 'info');
-  setGameMessage(board, t('joker.eventLogLine', { eventName, message }));
+  setGameMessage(board, t('joker.eventLogLine', { eventName, message }), true);
   recordStatEvent(board, board.activePlayer, 'joker');
   updateGameState(board);
 

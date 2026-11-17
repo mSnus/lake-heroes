@@ -7,7 +7,9 @@ import { gameEvent } from './events';
  * per-circle sim log during a headless run -- same treatment say() already
  * gives toasts, so important game-message-only events aren't invisible to
  * the economy simulator's results table. */
-export function setGameMessage(board: GameState, message: string): void {
+export function setGameMessage(board: GameState, message: string, sticky = false): void {
+  if (!message && board.stickyMessageOwner != null) return;
+  board.stickyMessageOwner = sticky ? board.activePlayer.id : null;
   board.gameMessage = message;
   if (message && isHeadlessRun()) recordSimLog(message);
 

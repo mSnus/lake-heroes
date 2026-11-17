@@ -76,6 +76,7 @@ export function rehydrateGameState(savedRaw: SavedGameState): GameState {
 
   if (!restored.turnPhase) restored.turnPhase = 'before-move';
   restored.gameMessage = '';
+  restored.stickyMessageOwner = null;
 
   return restored;
 }

@@ -26,6 +26,9 @@ export class GameState {
   gameStarted: boolean = false;
   turnPhase: TurnPhase;
   gameMessage: string = '';
+  // Set while a sticky banner (a Joker result) stays up: blanking is ignored
+  // until this player's next turn begins or another message replaces it.
+  stickyMessageOwner: number | null = null;
   kingRewardMessage: string = '';
   kingsContracts: KingsContract[] = [];
   // Decrees and other calendar-scoped effects currently in force -- see
