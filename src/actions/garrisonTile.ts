@@ -2,7 +2,7 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
-import { say } from '../utils/say';
+import { say, sayInTopic } from '../utils/say';
 import { t } from '../i18n';
 
 function moveTier(player: Player, tile: Tile, tier: UnitTier, requestedDelta: number): void {
@@ -58,13 +58,15 @@ export function setTileGarrison(
   moveTier(player, tile, 'militia', Math.max(0, Math.floor(targetMilitia)) - tile.garrisonMilitia);
   moveTier(player, tile, 'riders', Math.max(0, Math.floor(targetRiders)) - tile.garrisonRiders);
 
-  say(
+  sayInTopic(
+    t('topics.garrison', { militia: tile.garrisonMilitia, riders: tile.garrisonRiders }),
     t('garrisonTile.setGarrison', {
       playerName: player.name,
       tileName: tile.name,
       militia: tile.garrisonMilitia,
       riders: tile.garrisonRiders,
     }),
-    'debug'
+    'debug',
+    { actor: player.name, subject: tile.name }
   );
 }

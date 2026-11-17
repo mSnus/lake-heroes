@@ -1,5 +1,6 @@
 import { Player } from '../game/Player';
-import { say } from './say';
+import { sayInTopic } from './say';
+import { t } from '../i18n';
 import { KNIGHT_FAME } from '../game/constants';
 
 export { KNIGHT_FAME };
@@ -23,15 +24,19 @@ export function changeFame(player: Player, delta: number, floor = 1, silent = fa
   // Fold any knighthood threshold crossing into the same fame-change message.
   if (after > before) {
     const knighted = before < KNIGHT_FAME && after >= KNIGHT_FAME;
-    say(
+    sayInTopic(
+      t(knighted ? 'topics.fameKnighted' : 'topics.fame', { fame: after }),
       `${player.name} is now of fame ${after}🏆${knighted ? ' and was promoted to a Knight!' : ''}`,
-      'debug'
+      'debug',
+      { actor: player.name }
     );
   } else {
     const demoted = before >= KNIGHT_FAME && after < KNIGHT_FAME;
-    say(
+    sayInTopic(
+      t(demoted ? 'topics.fameDemoted' : 'topics.fame', { fame: after }),
       `${player.name} is now of fame ${after}🏆${demoted ? ' and was demoted from knights' : ''}`,
-      'warning'
+      'warning',
+      { actor: player.name }
     );
   }
 }

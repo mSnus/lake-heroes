@@ -15,7 +15,7 @@ export interface GeneratedMap {
   links: number[][];
 }
 
-export const MAP_COLS = 10;
+export const MAP_COLS = 12;
 export const MAP_ROWS = 8;
 const ROAD_SHARE = 0.65;
 const MIN_SIDE_ROAD_GAP = 3;

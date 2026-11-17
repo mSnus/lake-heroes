@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { grantTile } from '../game/tileOwnership';
 import { changeFame } from '../utils/fame';
-import { say } from '../utils/say';
+import { say, sayInTopic } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { showTileClaimScreen } from './showTileClaimScreen';
 import { setGameMessage } from '../utils/gameMessage';
@@ -33,7 +33,12 @@ export function claimUndefendedTile(
   if (defender) changeFame(defender, -1);
 
   setGameMessage(board, t('claimUndefendedTile.findsDefenceless', { attackerName: attacker.name, tileName: tile.name }));
-  say(t('claimUndefendedTile.claimsWithoutFight', { attackerName: attacker.name, tileName: tile.name }), 'success');
+  sayInTopic(
+    t('topics.claimedFree'),
+    t('claimUndefendedTile.claimsWithoutFight', { attackerName: attacker.name, tileName: tile.name }),
+    'success',
+    { actor: attacker.name, subject: tile.name }
+  );
 
   setEndTurn();
   updateGameState(board);

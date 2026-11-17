@@ -1,5 +1,5 @@
 import { Player } from '../game/Player';
-import { say } from './say';
+import { say, sayInTopic, topicSubject } from './say';
 import { t } from '../i18n';
 
 /** `decisionKey` is an i18n key, translated fresh at call time (no React
@@ -13,5 +13,13 @@ export function announce(
   decisionKey: string,
   params?: Record<string, string | number>
 ): void {
-  say(t('botController.decided', { name: player.name, decision: t(decisionKey, params) }), 'info');
+  const full = t('botController.decided', { name: player.name, decision: t(decisionKey, params) });
+  const tileName = params?.tileName;
+  if (typeof tileName === 'string' && topicSubject(player.name) === tileName) {
+    const part = t('topics.decided', { decision: t(decisionKey, { ...params, tileName: t('topics.it') }) });
+    sayInTopic(part, full, 'info', { actor: player.name, subject: tileName });
+    return;
+  }
+
+  say(full, 'info');
 }

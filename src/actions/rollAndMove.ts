@@ -13,7 +13,7 @@ import { passStart } from './passStart';
 import { afterMoveLogic } from './afterMoveLogic';
 import { revealTile } from './revealTile';
 import { showRuinsEncounter } from './ruinsEncounter';
-import { say, narrate, narrateMove } from '../utils/say';
+import { say, narrate, narrateMove, openTopic } from '../utils/say';
 import { routesAhead } from '../game/boardPath';
 import { chosenRoute, resetRouteChoice } from '../utils/routeChoiceStore';
 import { pickRoute } from '../ai/decisions';
@@ -85,15 +85,20 @@ export async function rollAndMove(
       }
     }
 
-    say(tileMessage, 'debug');
     // Logged as 'debug' locally but broadcast: to other players it's the only sign of the move.
-    narrate(tileMessage);
+    // An ownable tile's message instead opens a topic once the token lands (see below).
+    if (!nextTile.isOwnable) {
+      say(tileMessage, 'debug');
+      narrate(tileMessage);
+    }
+
+    return tileMessage;
   };
 
   const proceedWithMove = async () => {
     if (isHalted()) return;
     const willCrossStart = route.path.includes(0);
-    announceDestination(route.dest);
+    const arrivalMessage = announceDestination(route.dest);
 
     // Step-by-step move with 0.2s delay per tile
     for (let step = 1; step <= route.path.length; step++) {
@@ -126,6 +131,11 @@ export async function rollAndMove(
     }
 
     if (isHalted()) return;
+
+    // The rest of the visit (discovery, claim, battle, garrison) joins this as one line.
+    if (board.tiles[route.dest].isOwnable) {
+      openTopic(player.name, board.tiles[route.dest].name, arrivalMessage, 'debug', true);
+    }
 
     board.setPhase('after-move');
     board.incTurns();

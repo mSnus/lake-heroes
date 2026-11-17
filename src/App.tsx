@@ -14,7 +14,7 @@ import { CurrentPlayerCard } from './components/board/CurrentPlayerCard';
 import { loadFromStorage, saveToStorage, removeFromStorage } from './utils/storage';
 import { halt, isHalted, resumeAfterHalt } from './utils/haltStore';
 import { resetFogTransition } from './utils/transitionStore';
-import { say, sayLocal } from './utils/say';
+import { say, sayLocal, discardTopic } from './utils/say';
 import { OwnedTiles } from './components/dashboard/OwnedTiles';
 import tilesData from './settings/tiles.json';
 import { buildBoardFromTemplates, SavedGameState } from './game/TileSet';
@@ -794,6 +794,7 @@ function App() {
                     clearOnlineSession();
                     resetLiveFeed();
                     resetRemoteMove();
+                    discardTopic();
                     setGameState(null);
                     setGameLog([]);
                     showScreen({

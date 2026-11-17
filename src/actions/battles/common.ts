@@ -1,5 +1,5 @@
 import { Player } from '../../game/Player';
-import { say } from '../../utils/say';
+import { say, sayInTopic } from '../../utils/say';
 import { formatArmy } from '../../utils/formatArmy';
 import { t } from '../../i18n';
 
@@ -87,14 +87,16 @@ export function logBattleSummary(
   if (outcome === 'attacker' && claimed && capturedTileName) {
     const unitsPart = lostArmy ? t('battleCommon.losingUnitsPart', { army: lostArmy }) : '';
     const paidPart = goldDiff < 0 ? t('battleCommon.paidToOwnPart', { gold: -goldDiff }) : '';
-    say(
+    sayInTopic(
+      t('topics.wonBattle', { unitsPart, paidPart }),
       t('battleCommon.wonBattleForTile', {
         attackerName: attacker.name,
         tileName: capturedTileName,
         unitsPart,
         paidPart,
       }),
-      'success'
+      'success',
+      { actor: attacker.name, subject: capturedTileName }
     );
     return;
   }
@@ -121,7 +123,8 @@ export function logBattleSummary(
         ? t('battleCommon.lostGoldPart', { gold: -goldDiff, before: goldBefore, after: goldAfter })
         : '';
   const logLevel = outcome === 'attacker' ? 'success' : outcome === 'defender' ? 'error' : 'info';
-  say(
+  sayInTopic(
+    `${outcomeVerb}${capturePart}${unitsPart}${goldPart}`,
     t('battleCommon.logLine', {
       attackerName: attacker.name,
       outcomeVerb,
@@ -130,6 +133,7 @@ export function logBattleSummary(
       unitsPart,
       goldPart,
     }),
-    logLevel
+    logLevel,
+    { actor: attacker.name }
   );
 }

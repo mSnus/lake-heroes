@@ -3,6 +3,7 @@ import { gameEvent } from './events';
 import { getOverrides } from './overridesStore';
 import { isHeadlessRun } from './headlessStore';
 import { recordSimLog } from './simLogStore';
+import { t } from '../i18n';
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
@@ -48,6 +49,13 @@ export function showToast(message: ToastContent, level: SayLevel = 'info'): void
  * - Dispatches a 'logMessage' event for history tracking
  */
 export function say(message: ToastContent, level: SayLevel = 'info'): void {
+  // Anything outside the open topic ends it first, so the log keeps its order.
+  // Debug chatter doesn't, or every bot musing would split a group.
+  if (level !== 'debug') closeTopic();
+  emitSay(message, level);
+}
+
+function emitSay(message: ToastContent, level: SayLevel): void {
   // A headless sim plays thousands of turns against its own board -- toasting
   // (or console-mirroring) all of that would flood the real app and slow the
   // run down. Collect the meaningful messages into the per-circle sim log for
@@ -132,4 +140,81 @@ export function sayLocal(message: ToastContent, level: SayLevel = 'info'): void 
   if (typeof message === 'string') {
     gameEvent('logMessageLocal', { message, level, timestamp: Date.now() });
   }
+}
+
+// ── Topics ──
+// A turn spent on one tile (arriving, discovering, claiming, fighting,
+// garrisoning) would otherwise toast once per step. Its messages are held as
+// short parts and shown as one line when the topic ends: another topic opens,
+// an unrelated message arrives, or the turn ends (see endTurn).
+
+const LEVEL_RANK: Record<SayLevel, number> = { debug: 0, default: 1, info: 2, success: 3, warning: 4, error: 5 };
+
+interface Topic {
+  actor: string;
+  subject: string;
+  /** Shown as it was when nothing else joins the topic. */
+  opening: { message: string; level: SayLevel; narrated: boolean };
+  parts: { text: string; level: SayLevel }[];
+}
+
+let topic: Topic | null = null;
+
+/** Starts a topic about `actor` at `subject` (e.g. a tile), opened by `message`. */
+export function openTopic(actor: string, subject: string, message: string, level: SayLevel, narrated = false): void {
+  closeTopic();
+  topic = { actor, subject, opening: { message, level, narrated }, parts: [] };
+}
+
+/**
+ * A message that belongs to the open topic when it is about the same actor
+ * (and subject, if given): held as the short `part`. Otherwise `full` is said
+ * as usual.
+ */
+export function sayInTopic(
+  part: string,
+  full: string,
+  level: SayLevel,
+  about: { actor: string; subject?: string }
+): void {
+  if (topic && topic.actor === about.actor && (!about.subject || about.subject === topic.subject)) {
+    topic.parts.push({ text: part, level });
+    return;
+  }
+
+  say(full, level);
+}
+
+/** The open topic's subject, when it is about `actor` -- lets a message refer to it as "it". */
+export function topicSubject(actor: string): string | null {
+  return topic && topic.actor === actor ? topic.subject : null;
+}
+
+/** Shows the open topic as one line (or its opening alone) and ends it. */
+export function closeTopic(): void {
+  const done = topic;
+  topic = null;
+  if (!done) return;
+
+  const { opening, parts } = done;
+  if (!parts.length) {
+    emitSay(opening.message, opening.level);
+    if (opening.narrated) narrate(opening.message, opening.level);
+    return;
+  }
+
+  const level = parts.reduce<SayLevel>((top, p) => (LEVEL_RANK[p.level] > LEVEL_RANK[top] ? p.level : top), 'debug');
+  const message = t('topics.atTile', {
+    playerName: done.actor,
+    tileName: done.subject,
+    details: parts.map((p) => p.text).join(', '),
+  });
+  emitSay(message, level);
+  // Debug-only groups don't reach the other players through say(), so tell them directly.
+  if (level === 'debug') narrate(message, 'info');
+}
+
+/** Drops an open topic unshown (a new game started mid-turn). */
+export function discardTopic(): void {
+  topic = null;
 }

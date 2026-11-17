@@ -1225,5 +1225,21 @@
     "title": "Warriors Company",
     "hireAmount": "🧾 Hire {amount}",
     "close": "✖️ Close"
+  },
+  "topics": {
+    "atTile": "{playerName} at {tileName}: {details}",
+    "discovered": "{reward}🟡 for discovery",
+    "decided": "decided to {decision}",
+    "it": "it",
+    "fame": "fame now {fame}🏆",
+    "fameKnighted": "fame now {fame}🏆 and knighted",
+    "fameDemoted": "fame down to {fame}🏆 and no longer a Knight",
+    "wonBattle": "won the battle{unitsPart}{paidPart}",
+    "garrison": "set {militia}🧍/{riders}🐎 as garrison",
+    "claimedFree": "claimed it without a fight",
+    "lootGain": "looted {reward}",
+    "lootSoldiersLost": "caught looting, lost {amount}🧍",
+    "lootSoldiersAndFameLost": "caught looting, lost all {amount}🧍 and 1🏆",
+    "lootFameLost": "caught looting, lost {amount}🏆"
   }
 }

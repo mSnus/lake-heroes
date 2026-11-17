@@ -1258,5 +1258,21 @@
     "title": "Дружина",
     "hireAmount": "🧾 Нанять {amount}",
     "close": "✖️ Закрыть"
+  },
+  "topics": {
+    "atTile": "{playerName} — {tileName}: {details}",
+    "discovered": "{reward}🟡 за открытие",
+    "decided": "решил {decision}",
+    "it": "её",
+    "fame": "слава теперь {fame}🏆",
+    "fameKnighted": "слава теперь {fame}🏆, посвящён в рыцари",
+    "fameDemoted": "слава упала до {fame}🏆, больше не рыцарь",
+    "wonBattle": "выиграл битву{unitsPart}{paidPart}",
+    "garrison": "оставил {militia}🧍/{riders}🐎 в гарнизоне",
+    "claimedFree": "занял без боя",
+    "lootGain": "награбил {reward}",
+    "lootSoldiersLost": "пойман на грабеже, потерял {amount}🧍",
+    "lootSoldiersAndFameLost": "пойман на грабеже, потерял всех {amount}🧍 и 1🏆",
+    "lootFameLost": "пойман на грабеже, потерял {amount}🏆"
   }
 }

@@ -1261,5 +1261,21 @@
     "title": "Compañía de Guerreros",
     "hireAmount": "🧾 Contratar {amount}",
     "close": "✖️ Cerrar"
+  },
+  "topics": {
+    "atTile": "{playerName} en {tileName}: {details}",
+    "discovered": "{reward}🟡 por descubrirla",
+    "decided": "decidió {decision}",
+    "it": "la casilla",
+    "fame": "fama ahora {fame}🏆",
+    "fameKnighted": "fama ahora {fame}🏆 y nombrado Caballero",
+    "fameDemoted": "fama baja a {fame}🏆 y deja de ser Caballero",
+    "wonBattle": "ganó la batalla{unitsPart}{paidPart}",
+    "garrison": "dejó {militia}🧍/{riders}🐎 de guarnición",
+    "claimedFree": "la tomó sin luchar",
+    "lootGain": "saqueó {reward}",
+    "lootSoldiersLost": "descubierto saqueando, perdió {amount}🧍",
+    "lootSoldiersAndFameLost": "descubierto saqueando, perdió sus {amount}🧍 y 1🏆",
+    "lootFameLost": "descubierto saqueando, perdió {amount}🏆"
   }
 }

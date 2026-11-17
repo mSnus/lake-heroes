@@ -5,7 +5,7 @@ import { TileIncome, tileTurnIncome } from '../game/income';
 import { rollDice } from '../game/Dice';
 import { changeFame } from '../utils/fame';
 import { changeKarma } from '../utils/karma';
-import { say } from '../utils/say';
+import { sayInTopic } from '../utils/say';
 import { t } from '../i18n';
 
 /**
@@ -53,6 +53,7 @@ export function lootTile(
   roll: number
 ): void {
   player.hasLootedThisTurn = true;
+  const about = { actor: player.name, subject: tile.name };
   changeKarma(player, -1);
 
   if (roll <= 2) {
@@ -64,23 +65,29 @@ export function lootTile(
       const lost = before - player.units;
       if (overpaid) {
         changeFame(player, -1, 1, true);
-        say(
+        sayInTopic(
+          t('topics.lootSoldiersAndFameLost', { amount: lost }),
           t('tileCard.lootSoldiersAndFameLost', { playerName: player.name, tileName: tile.name, amount: lost }),
-          'error'
+          'error',
+          about
         );
       } else {
-        say(
+        sayInTopic(
+          t('topics.lootSoldiersLost', { amount: lost }),
           t('tileCard.lootSoldiersLost', { playerName: player.name, tileName: tile.name, amount: lost }),
-          'error'
+          'error',
+          about
         );
       }
     } else {
       const before = player.fame;
       changeFame(player, -1, 1, true);
       const lost = before - player.fame;
-      say(
+      sayInTopic(
+        t('topics.lootFameLost', { amount: lost }),
         t('tileCard.lootFameLost', { playerName: player.name, tileName: tile.name, amount: lost }),
-        'error'
+        'error',
+        about
       );
     }
 
@@ -101,8 +108,10 @@ export function lootTile(
   player.arms += income.arms;
   player.units += income.units;
 
-  say(
+  sayInTopic(
+    t('topics.lootGain', { reward: formatIncome(income) }),
     t('tileCard.lootGain', { playerName: player.name, tileName: tile.name, reward: formatIncome(income) }),
-    'success'
+    'success',
+    about
   );
 }
