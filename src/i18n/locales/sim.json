@@ -403,12 +403,12 @@
       "step2": "Take action based on the tile you land on",
       "step3": "Upgrade or sell your tiles if needed",
       "step4": "End your turn ⏳",
-      "step5": "Each circle makes a year — pass the 🏰 King's Castle to receive the rewards"
+      "step5": "Every time you pass or land on 🏰 King's Castle, the King sends you his Grace — gold and units, more generous to those who are weaker"
     },
     "goldUnits": {
       "title": "Resources 🟡🥙⚔️ and units 🧍",
       "item1": "Gold 🟡 buys tiles and upgrades. Food 🥙 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
-      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn when everybody collects the income from owned tiles. Resources could be bought, sold or exchanged. Also on that day the King in his grace sends his help to those who are weaker.",
+      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn when everybody collects the income from owned tiles. Resources could be bought, sold or exchanged.",
       "itemLoot": "🦇 Unowned tiles can be <strong>looted</strong>: roll a die for a share of the tile's yearly income plus a quarter of its price in gold — 4-5 takes it all, 3 half, 6 double. On a 1-2 your squad is caught: you lose units (a second hidden roll), or Fame once you have none left to lose, or both if the loss outruns what you had.",
       "item3": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",
       "item4": "You can hire units at the King's Castle, and also at the Tavern🧍/Stables🐎 or from the Free Folk (paying double gold)",
@@ -443,7 +443,7 @@
     },
     "specialTiles": {
       "title": "Special tiles 🃏",
-      "kingsCastle": "🏰 <strong>King's Castle</strong> — visit to recruit 🧍 units for gold, the amount is limited by your fame. Passing the King's Castle grants base income plus bonuses from all your properties.",
+      "kingsCastle": "🏰 <strong>King's Castle</strong> — visit to recruit 🧍 units for gold, the amount is limited by your fame. Passing or landing here grants King's Grace: gold and units, more for those who are weaker.",
       "treasureChest": "🪎 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.",
       "tavern": "🍺 <strong>Tavern</strong> — recruit units",
       "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
@@ -455,7 +455,7 @@
     "joker": {
       "title": "Joker 🃏",
       "intro": "Landing on the Joker tile triggers one random event, affecting everyone (or, in some cases, just one player):",
-      "taxes": "🧾 <strong>Unjust Taxes</strong> — blocks every kind of tile income (gold, food, arms, units) for the rest of the year, board-wide, including that year's own Harvest payout.",
+      "taxes": "🧾 <strong>Unjust Taxes</strong> — blocks every kind of tile income (gold, food, arms, units) for the rest of the year, board-wide, including that year's own Harvest payout. The King's Grace is still paid.",
       "plague": "🦠 <strong>Plague</strong> — every player's tile garrisons immediately lose half their defenders (never below 1), board-wide. Field armies are untouched.",
       "hurricane": "🌪️ <strong>Hurricane</strong> — strikes the richest player's most expensive tile, razing it, but only if they're at least 1.5x wealthier than whoever ranks second.",
       "blessing": "✨ <strong>Blessing</strong> — all owned tiles are upgraded one level.",
@@ -749,7 +749,7 @@
       "kingsGift": "King's Gift",
       "rust": "Rust"
     },
-    "taxesMessage": "No income of any kind for 1 year, including this year's Harvest.",
+    "taxesMessage": "No tile income for 1 year, including this year's Harvest.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
     "plagueMessage": "Every garrison loses half its defenders, board-wide.",
     "playerLosesTile": "{playerName} loses {tileName}",
@@ -1173,7 +1173,7 @@
     "narrateVisit": "{playerName} came across a traveling fair 🎪"
   },
   "year": {
-    "yearlyBonusLabel": "Yearly Bonus",
+    "yearlyBonusLabel": "King's Grace",
     "doubleIncomeAnnounce": "Next year is promising: {groups} will provide double income!",
     "groupName": {
       "Mills": "Mills",
@@ -1211,9 +1211,7 @@
     "title": "The Harvest",
     "subtitle": "year {year}",
     "yearIncome": "This year's income:",
-    "kingsGrace": "The King's Grace:",
     "noIncome": "nothing this year",
-    "tooWealthy": "already too wealthy",
     "buyMode": "Buy",
     "sellMode": "Sell",
     "exchangeMode": "Exchange",

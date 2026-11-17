@@ -8,7 +8,13 @@ import { changeFame } from '../utils/fame';
 import { strongestPlayer, weakestPlayer, playerScore } from '../game/score';
 import { checkArtifactProtection, grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
-import { HURRICANE_WEALTH_RATIO, REAL_ADVENTURE_MIN_TURNS, KARMA_JOKER_BAD_CHANCE } from '../game/constants';
+import {
+  HURRICANE_WEALTH_RATIO,
+  REAL_ADVENTURE_MIN_TURNS,
+  KARMA_JOKER_BAD_CHANCE,
+  KARMA_BLESSED_JOKER_BAD_CHANCE,
+} from '../game/constants';
+import { isCursed, isBlessed } from '../utils/karma';
 import { currentYear, addYearEffect, NO_INCOME_EFFECT } from '../game/year';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
@@ -68,7 +74,8 @@ export function handleJoker(
   // of ending the turn right away the way a tile landing always has.
   onContinue?: () => void
 ) {
-  const badChance = board.activePlayer.karma < 0 ? KARMA_JOKER_BAD_CHANCE : 0.5;
+  const lander = board.activePlayer;
+  const badChance = isCursed(lander) ? KARMA_JOKER_BAD_CHANCE : isBlessed(lander) ? KARMA_BLESSED_JOKER_BAD_CHANCE : 0.5;
   // Rust (global rider->militia conversion) is only ever drawable when
   // someone on the board actually has Riders to lose -- otherwise it would
   // "fire" as a no-op, wasting a bad-event turn on nothing.

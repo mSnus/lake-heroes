@@ -6,6 +6,7 @@ import { GameState } from '../../game/GameState';
 import { sellTile, sellRefund } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
 import { canLoot, lootTile } from '../../actions/lootTile';
+import { provokeZombiesByLoot } from '../../actions/zombieAmbushEncounter';
 import { showDice, startDiceRoll } from '../../utils/diceStore';
 import { yieldTile, yieldRefund, takeTileBack, takeBackCost } from '../../actions/yieldTile';
 import { gameEvent } from '../../utils/events';
@@ -339,6 +340,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     showDice((roll: number) => {
       lootTile(gameState, activePlayer, tile, roll);
       updateGameState(gameState);
+      provokeZombiesByLoot(gameState, updateGameState);
     });
     startDiceRoll();
   };

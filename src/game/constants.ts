@@ -52,6 +52,13 @@ export const KARMA_HOSTILE_ENCOUNTER_MULTIPLIER = 2.25;
 // the event firing at all) is doubled (see dragonEncounter.ts,
 // rogueAttackEncounter.ts).
 export const KARMA_CURSED_ENCOUNTER_MULTIPLIER = 2;
+// Karma at or below this is cursed, at or above KARMA_BLESSED is blessed; in between does nothing.
+export const KARMA_CURSED = -3;
+export const KARMA_BLESSED = 3;
+// Blessed: Joker bad-event chance, hostile odds (ambush, rogue, dragon attack), caravan odds.
+export const KARMA_BLESSED_JOKER_BAD_CHANCE = 0.15;
+export const KARMA_BLESSED_HOSTILE_MULTIPLIER = 0.85;
+export const KARMA_BLESSED_CARAVAN_MULTIPLIER = 1.25;
 
 // ── Bot loot decision (see ai/decisions.ts's shouldLootTile) ──
 // Looting is worth it once its prize is this big a fraction of what the bot

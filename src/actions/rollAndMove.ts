@@ -18,6 +18,7 @@ import { routesAhead } from '../game/boardPath';
 import { chosenRoute, resetRouteChoice } from '../utils/routeChoiceStore';
 import { pickRoute } from '../ai/decisions';
 import { KARMA_PRISON_CHANCE } from '../game/constants';
+import { isCursed } from '../utils/karma';
 import { setEndTurn } from '../utils/endTurnStore';
 import { gameEvent } from '../utils/events';
 import { isHalted } from '../utils/haltStore';
@@ -53,7 +54,7 @@ export async function rollAndMove(
     : chosenRoute(board);
 
   // A cursed player's die is quietly loaded whenever Prison sits on the picked road.
-  if (player.karma < 0) {
+  if (isCursed(player)) {
     const prisonStep = road.path.findIndex((slot) => board.tiles[slot]?.id === 'prison') + 1;
     if (prisonStep >= 1 && Math.random() < KARMA_PRISON_CHANCE) roll = prisonStep;
   }

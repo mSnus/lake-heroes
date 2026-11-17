@@ -2,7 +2,6 @@ import { GameState } from './GameState';
 import { emptyYearIncome } from './Player';
 import { changeKarma } from '../utils/karma';
 import { collectTileTurnIncome } from './income';
-import { grantYearlyBonusToAll } from './kingsGrace';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { recordSimIncome } from '../utils/simLogStore';
 import {
@@ -76,13 +75,6 @@ export function endYear(board: GameState): void {
     const bonus = collectTileTurnIncome(board, player);
     if (isHeadlessRun()) recordSimIncome(bonus.gold, bonus.units, player);
   }
-
-  // The Yearly Bonus: King's Grace's own formula, paid to every player at
-  // once (see grantYearlyBonusToAll's own doc comment for why it has to be
-  // computed as one snapshot across the whole table rather than player by
-  // player). Both this and the tile income above now show on each player's
-  // own Harvest screen, so there's no separate table-wide announcement.
-  grantYearlyBonusToAll(board);
 
   // The year's income is complete -- the Harvest shows it.
   for (const player of board.players) {

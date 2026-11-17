@@ -11,6 +11,8 @@ import { currentYear } from '../game/year';
 import { narrate } from '../utils/say';
 import { t } from '../i18n';
 import { playerSpanHtml } from '../utils/html';
+import { isBlessed } from '../utils/karma';
+import { KARMA_BLESSED_CARAVAN_MULTIPLIER } from '../game/constants';
 
 /** Share of the escort its cargo is worth that actually stands and fights.
  * 0.765 is 15% below the 0.9 this started at -- the prize is unaffected,
@@ -27,7 +29,7 @@ export function checkCaravanEncounter(
   force?: 'gold' | 'slaves' | 'horses'
 ): boolean {
   const player = board.activePlayer;
-  const ENCOUNTER_CHANCE = 1 / 12;
+  const ENCOUNTER_CHANCE = (1 / 12) * (isBlessed(player) ? KARMA_BLESSED_CARAVAN_MULTIPLIER : 1);
 
   if (!force) {
     // No caravans during the game's first two years
@@ -48,7 +50,6 @@ export function checkCaravanEncounter(
 
     // Max 1 per year
     if ((player.caravanEncounters ?? 0) >= 1) return false;
-    // 1/12 chance
     if (Math.random() >= ENCOUNTER_CHANCE) return false;
   }
 

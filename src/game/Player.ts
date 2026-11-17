@@ -37,7 +37,7 @@ export class Player {
    * year so far; moved to lastYearIncome when the year ends. */
   yearIncome: YearIncome;
   lastYearIncome: YearIncome;
-  /** What the King's Grace actually paid at this year's Harvest (shown on the Harvest screen). */
+  /** What the King's Grace actually paid on the last King's Castle visit. */
   lastGrace: { gold: number; militia: number; riders: number };
   /** Cheap, always-recruitable tier. */
   militia: number;

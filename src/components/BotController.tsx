@@ -24,6 +24,7 @@ import {
   pickGarrisonAction,
 } from '../ai/decisions';
 import { findSyndicateSaleCandidate } from '../ai/syndicate';
+import { provokeZombiesByLoot } from '../actions/zombieAmbushEncounter';
 
 // Matches the ~600ms auto-roll delay BattleScreen already uses for NPC sides.
 const BOT_ACTION_DELAY_MS = 600;
@@ -142,6 +143,7 @@ function computeNextBotAction(ctx: BotContext): BotAction | null {
       } else if (canLoot(player) && shouldLootTile(player, tile, board)) {
         announce(player, 'botController.lootTile', { tileName: tile.name });
         lootTile(board, player, tile, rollDice());
+        provokeZombiesByLoot(board, updateGameState);
       }
 
       updateGameState(board);

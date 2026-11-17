@@ -1,4 +1,8 @@
 import { Player } from '../game/Player';
+import { KARMA_CURSED, KARMA_BLESSED } from '../game/constants';
+
+export const isCursed = (player: Player): boolean => (player.karma ?? 0) <= KARMA_CURSED;
+export const isBlessed = (player: Player): boolean => (player.karma ?? 0) >= KARMA_BLESSED;
 
 /**
  * Adjust a player's karma -- deliberately silent (no say/log/toast). Karma

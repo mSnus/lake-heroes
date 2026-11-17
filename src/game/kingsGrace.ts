@@ -6,23 +6,6 @@ import { getArtifactGoldBonus } from './artifacts';
 import { playerScore } from './score';
 import { hasYearEffect, NO_INCOME_EFFECT } from './yearCore';
 
-const EMPTY_REWARD: KingsGraceReward = {
-  tileGold: 0,
-  tileUnits: 0,
-  towerUnits: 0,
-  kingsGold: 0,
-  kingsUnits: 0,
-  kingsMilitia: 0,
-  kingsRiders: 0,
-  graceMilitiaOffered: 0,
-  graceRidersOffered: 0,
-  graceUnitsOffered: 0,
-  arifactGold: 0,
-  kingsHandicap: 0,
-  totalGold: 0,
-  totalUnits: 0,
-};
-
 export interface KingsGraceReward {
   tileGold: number;
   tileUnits: number;
@@ -175,24 +158,10 @@ function fitGraceUnits(
  * per-level unit toll on top of that trickle, plus any artifact gold bonus
  * (Pristine Diamond).
  *
- * Two different triggers pay this same formula out: the shared calendar
- * year ending grants it to every player at once as the "Yearly Bonus" (see
- * grantYearlyBonusToAll below, called from game/year.ts's startNewYear),
- * and landing directly on King's Castle grants it to that one player
- * immediately as "King's Grace" (see actions/king.tsx). Both call this
- * same function, and CurrentPlayer.tsx/CurrentPlayerCard.tsx preview it the
- * same way, so none of the three can drift apart from what a player
- * actually receives.
+ * Paid to one player each time they cross or land on King's Castle (see
+ * grantKingsGrace below, called from actions/passStart.ts).
  */
 export function computeAnnualReward(board: GameState, player: Player): KingsGraceReward {
-  // Unjust Taxes withholds every kind of income for the year, King's Grace
-  // included -- both the Harvest-time Yearly Bonus and a King's Castle
-  // visit's own grant go through this same formula (see its own doc
-  // comment below), so gating it here keeps the grant and every preview of
-  // it (CurrentPlayer.tsx, the Harvest screen) in sync instead of showing a
-  // figure that was never actually paid.
-  if (hasYearEffect(board, NO_INCOME_EFFECT)) return { ...EMPTY_REWARD };
-
   const ranking = rankByScore(board);
   const kingsHandicap =
     board.players.length < 2
@@ -230,8 +199,10 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
 
   // Derive ownership from tile.owner (authoritative) rather than
   // player.ownedTiles, which can be stale after a reload.
+  // Unjust Taxes withholds this tile part, never the King's own grace.
+  const taxed = hasYearEffect(board, NO_INCOME_EFFECT);
   for (const tile of board.tiles) {
-    if (!tile || tile.owner !== player.id || tile.isYielded) continue;
+    if (taxed || !tile || tile.owner !== player.id || tile.isYielded) continue;
     if ((tile.bonusType || 'gold') === 'units') {
       tileGold += tile.annualGold;
       const bonus = tile.annualUnits[tile.level] ?? 0;
@@ -273,35 +244,17 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   };
 }
 
-/**
- * The Yearly Bonus: computeAnnualReward's gold/units, paid out to every
- * player at once when the shared calendar year ends (see game/year.ts's
- * startNewYear). The identical formula also pays out as King's Grace to a
- * single player landing directly on King's Castle (see actions/king.tsx) --
- * that path calls computeAnnualReward itself instead of this one, since it
- * only ever grants to the one player who just landed.
- *
- * Every player's reward is computed from a single snapshot of the board
- * BEFORE any of them are granted, not one at a time -- computeAnnualReward
- * averages gold/militia/riders across every player's CURRENT holdings
- * (graceBase) and ranks by CURRENT power score (kingsHandicap), so granting
- * player 1's reward before computing player 2's would skew player 2's
- * numbers by player 1's own payout.
- */
-export function grantYearlyBonusToAll(board: GameState): KingsGraceReward[] {
-  const rewards = board.players.map((player) => computeAnnualReward(board, player));
-  board.players.forEach((player, i) => {
-    const reward = rewards[i];
-    const before = { militia: player.militia, riders: player.riders };
-    player.gold += reward.totalGold;
-    player.units += reward.tileUnits + reward.kingsMilitia;
-    player.gainRiders(reward.kingsRiders);
-    player.lastGrace = {
-      gold: reward.totalGold,
-      militia: player.militia - before.militia,
-      riders: player.riders - before.riders,
-    };
-  });
-
-  return rewards;
+/** Pays `player` their King's Grace and returns what actually arrived (caps can swallow units). */
+export function grantKingsGrace(board: GameState, player: Player): { gold: number; militia: number; riders: number } {
+  const reward = computeAnnualReward(board, player);
+  const before = { militia: player.militia, riders: player.riders };
+  player.gold += reward.totalGold;
+  player.units += reward.tileUnits + reward.kingsMilitia;
+  player.gainRiders(reward.kingsRiders);
+  player.lastGrace = {
+    gold: reward.totalGold,
+    militia: player.militia - before.militia,
+    riders: player.riders - before.riders,
+  };
+  return player.lastGrace;
 }

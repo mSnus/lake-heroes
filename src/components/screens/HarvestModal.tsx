@@ -36,8 +36,6 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
   const player = gameState.activePlayer;
   const year = currentYear(gameState);
   const calendarYear = GAME_START_YEAR + year;
-  // Already paid when the Harvest began (see game/year.ts's endYear) -- what was actually received.
-  const grace = player.lastGrace ?? { gold: 0, militia: 0, riders: 0 };
   // Static `content:` element handed to screenStore once at mount -- nothing
   // re-invokes it on trade, so force a re-render to show it immediately.
   const [, forceRerender] = useState(0);
@@ -86,24 +84,6 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
             ) : (
               t('harvest.noIncome')
             )}
-          </div>
-        </div>
-
-        <div className="harvest-income">
-          <div className="harvest-caption">{t('harvest.kingsGrace')}</div>
-          <div className="harvest-stats">
-            {grace.gold > 0 && <Gold amount={`+${grace.gold}`} />}
-            {grace.militia > 0 && (
-              <Militia
-                amount={`+${grace.militia}`}
-                color={player.image}
-                knight={player.isKnight}
-              />
-            )}
-            {grace.riders > 0 && <Rider amount={`+${grace.riders}`} color={player.image} />}
-            {grace.gold + grace.militia + grace.riders === 0 &&
-              // Unjust Taxes withholds the grace too -- only otherwise is it down to wealth.
-              (hasYearEffect(gameState, NO_INCOME_EFFECT) ? t('harvest.noIncome') : t('harvest.tooWealthy'))}
           </div>
         </div>
 

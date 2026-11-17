@@ -1,6 +1,7 @@
 import React from 'react';
 import { GameState } from '../game/GameState';
 import { KARMA_PRISON_CHANCE } from '../game/constants';
+import { isCursed } from '../utils/karma';
 import { showScreen, clearScreen } from '../utils/screenStore';
 import { gameEvent } from '../utils/events';
 import { isHeadlessRun } from '../utils/headlessStore';
@@ -22,7 +23,7 @@ export function handlePortal(
   // has a small clandestine chance of landing squarely on Prison instead.
   const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
   let newPos: number;
-  if (player.karma < 0 && prisonIdx >= 0 && prisonIdx !== portalPos && Math.random() < KARMA_PRISON_CHANCE) {
+  if (isCursed(player) && prisonIdx >= 0 && prisonIdx !== portalPos && Math.random() < KARMA_PRISON_CHANCE) {
     newPos = prisonIdx;
   } else {
     do {

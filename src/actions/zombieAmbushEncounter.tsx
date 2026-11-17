@@ -2,8 +2,10 @@ import { GameState } from '../game/GameState';
 import { showScreen } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
-import { ZOMBIE_AMBUSH_CHANCE, ZOMBIE_AMBUSH_FORCE_RATIO } from '../game/constants';
+import { ZOMBIE_AMBUSH_CHANCE, ZOMBIE_AMBUSH_FORCE_RATIO, KARMA_CURSED_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { isCursed } from '../utils/karma';
 import { t } from '../i18n';
+import { setEndTurn } from '../utils/endTurnStore';
 import { playerSpanHtml } from '../utils/html';
 
 /**
@@ -31,7 +33,8 @@ export function checkZombieAmbushEncounter(
   // a garrison much bigger than their whole army.
   if (player.units < attackerUnits) return false;
 
-  if (Math.random() >= ZOMBIE_AMBUSH_CHANCE) return false;
+  const chance = ZOMBIE_AMBUSH_CHANCE * (isCursed(player) ? KARMA_CURSED_ENCOUNTER_MULTIPLIER : 1);
+  if (Math.random() >= chance) return false;
 
   const startBattle = () => {
     showBattleScreen(
@@ -62,4 +65,9 @@ export function checkZombieAmbushEncounter(
   });
 
   return true;
+}
+
+/** Looting an abandoned tile stirs its zombies, at the same odds as landing on it. */
+export function provokeZombiesByLoot(board: GameState, updateGameState: (board: GameState) => void): void {
+  checkZombieAmbushEncounter(board, updateGameState, () => setEndTurn());
 }

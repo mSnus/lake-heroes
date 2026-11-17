@@ -18,6 +18,7 @@ import {
   pickGarrisonAction,
 } from '../../ai/decisions';
 import { findSyndicateSaleCandidate } from '../../ai/syndicate';
+import { provokeZombiesByLoot } from '../../actions/zombieAmbushEncounter';
 
 export interface HeadlessGameOptions {
   /** Hard cap on the highest circle count reached by any player. */
@@ -66,6 +67,7 @@ function driveBotPostMoveDecisions(board: GameState, updateGameState: (board: Ga
     } else if (canLoot(player) && shouldLootTile(player, tile, board)) {
       announce(player, 'botController.lootTile', { tileName: tile.name });
       lootTile(board, player, tile, rollDice());
+      provokeZombiesByLoot(board, updateGameState);
     }
 
     updateGameState(board);

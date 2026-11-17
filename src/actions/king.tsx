@@ -9,7 +9,6 @@ import { upgradeSquad } from './upgradeSquad';
 import KingsCastleModal from '../components/screens/KingsCastleModal';
 import { say, narrate } from '../utils/say';
 import { issueKingsContract } from '../game/kingsContracts';
-import { computeAnnualReward } from '../game/kingsGrace';
 import { planArmyPurchase } from '../ai/botPlans';
 import { t } from '../i18n';
 
@@ -23,10 +22,8 @@ export function handleKingCastle(
   console.log('Action: king castle for', board.activePlayer);
 
   const player = board.activePlayer;
-  // Only roll for a contract, and grant King's Grace, the first time this
-  // screen opens per turn -- otherwise closing the modal and re-clicking
-  // the King's Castle tile would keep re-rolling the contract and re-paying
-  // the grace for free.
+  // Only roll for a contract the first time this screen opens per turn --
+  // otherwise re-clicking the King's Castle tile would keep re-rolling it.
   let contract = null as ReturnType<typeof issueKingsContract>;
   let graceReceived: { gold: number; militia: number; riders: number } | null = null;
   if (!player.hasCheckedKingsContractThisTurn) {
@@ -40,25 +37,9 @@ export function handleKingCastle(
       narrate(t('king.narrateVisit', { playerName: player.name }));
     }
 
-    // King's Grace: the same Yearly Bonus formula (see game/kingsGrace.ts),
-    // but paid to this one player immediately for landing directly on the
-    // Castle, rather than to everyone at the next calendar year end.
-    const grace = computeAnnualReward(board, player);
-    const graceMilitiaGranted = grace.tileUnits + grace.kingsMilitia;
-    player.gold += grace.totalGold;
-    player.units += graceMilitiaGranted;
-    player.gainRiders(grace.kingsRiders);
-
-    const graceUnitsGranted = graceMilitiaGranted + grace.kingsRiders;
+    // Already paid on arriving here (see passStart); shown again on the screen.
     board.kingRewardMessage = t('king.kingsGrace');
-    graceReceived = { gold: grace.totalGold, militia: graceMilitiaGranted, riders: grace.kingsRiders };
-    if (grace.totalGold > 0 || graceUnitsGranted > 0) {
-      const parts: string[] = [];
-      if (grace.totalGold > 0) parts.push(`${grace.totalGold}🟡`);
-      if (graceUnitsGranted > 0) parts.push(`${graceUnitsGranted}👬`);
-      const summary = parts.join(` ${t('common.and')} `);
-      say(t('king.kingsGraceReceived', { playerName: player.name, summary }), 'success');
-    }
+    graceReceived = player.lastGrace;
 
     updateGameState(board);
   }

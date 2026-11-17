@@ -3,7 +3,8 @@ import { showScreenWithFog } from '../utils/screenStore';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { isHeadlessRun } from '../utils/headlessStore';
 import { formatArmy, HORDE_EMOJI } from '../utils/formatArmy';
-import { KNIGHT_FAME, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER } from '../game/constants';
+import { KNIGHT_FAME, KARMA_HOSTILE_ENCOUNTER_MULTIPLIER, KARMA_BLESSED_HOSTILE_MULTIPLIER } from '../game/constants';
+import { isCursed, isBlessed } from '../utils/karma';
 import { currentYear } from '../game/year';
 import { t } from '../i18n';
 import { playerSpanHtml } from '../utils/html';
@@ -15,7 +16,8 @@ export function checkAmbushEncounter(
 ): boolean {
   const player = board.activePlayer;
   const ENCOUNTER_CHANCE =
-    (1 / 14) * (player.karma < 0 ? KARMA_HOSTILE_ENCOUNTER_MULTIPLIER : 1);
+    (1 / 14) *
+    (isCursed(player) ? KARMA_HOSTILE_ENCOUNTER_MULTIPLIER : isBlessed(player) ? KARMA_BLESSED_HOSTILE_MULTIPLIER : 1);
 
   // No ambushes during the game's first two years
   if (currentYear(board) <= 2) return false;
