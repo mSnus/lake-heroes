@@ -81,7 +81,15 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
             <PlayerLabel player={activePlayer} />
           </span>
 
-          <Karma karma={activePlayer.karma} />
+          <span
+            style={{ cursor: activePlayer.karma ? 'pointer' : undefined }}
+            onClick={() =>
+              activePlayer.karma &&
+              sayLocal(t(activePlayer.karma < 0 ? 'currentPlayer.karmaBad' : 'currentPlayer.karmaGood'), 'info')
+            }
+          >
+            <Karma karma={activePlayer.karma} />
+          </span>
         </div>
       </div>
 

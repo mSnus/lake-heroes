@@ -259,6 +259,7 @@
     "banzai": "¡Banzai!",
     "claimIt": "¡Reclamarla!",
     "loot": "Saqueo",
+    "pass": "Pasar",
     "lootGain": "{playerName} saqueó {tileName} y ganó {reward}",
     "lootSoldiersLost": "{playerName} no logró saquear {tileName}, {amount}🧍 perdidos",
     "lootSoldiersAndFameLost": "{playerName} no logró saquear {tileName}, perdió todos sus {amount}🧍 y 1🏆",
@@ -371,6 +372,8 @@
   },
   "currentPlayer": {
     "isAt": "está en",
+    "karmaBad": "Veamos adónde te lleva el mal karma",
+    "karmaGood": "El buen karma trae buena suerte",
     "kingsContractTooltip": "Contrato del Rey: ¡reclama {tileName} por {award}🟡!",
     "maxCapacityReached": "capacidad máxima alcanzada para {fame}🏆",
     "asKingsGrace": "como gracia del Rey",
@@ -428,7 +431,7 @@
       "title": "Recursos 🟡🥙⚔️ y unidades 🧍",
       "item1": "El oro 🟡 compra casillas y mejoras. La comida 🥙 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
       "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno en el que todos cobran los ingresos de sus casillas. Los recursos se pueden comprar, vender o intercambiar. Ese mismo día, el Rey en su gracia envía ayuda a los más débiles.",
-      "itemLoot": "Las casillas sin dueño se pueden <strong>saquear</strong>: tira un dado para arriesgarte a una parte de su ingreso diario — 4-5 te lo llevas todo, 3 la mitad, 6 el doble; cualquier éxito además se lleva una cuarta parte del precio de la casilla en oro, reducida a la mitad o duplicada igual. Con 1-2 tu escuadrón es descubierto: pierdes unidades (otra tirada oculta), o Fama si ya no te quedan, o ambas cosas si la pérdida supera lo que tenías.",
+      "itemLoot": "🦇 Las casillas sin dueño se pueden <strong>saquear</strong>: tira un dado por una parte de su ingreso anual más una cuarta parte de su precio en oro — con 4-5 te lo llevas todo, con 3 la mitad, con 6 el doble. Con 1-2 tu escuadrón es descubierto: pierdes unidades (otra tirada oculta), o Fama si ya no te quedan, o ambas cosas si la pérdida supera lo que tenías.",
       "item3": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a tus 🧍 mientras estés en el Castillo del Rey.",
       "item4": "Puedes contratar unidades en el Castillo del Rey, y también en la Taberna🧍/Establos🐎 o la Caravana de Trabajadores (pagando el doble de oro)",
       "item5": "Envía unidades a guarnecer tus casillas para liberar espacio en tu ejército, de cara a las nuevas unidades que puedan unirse en la Taberna o llegar como Gracia del Rey."

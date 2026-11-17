@@ -316,6 +316,9 @@ export const TileCard: React.FC<TileCardProps> = ({
   };
 
   const lootAvailable = couldLoot && !!activePlayer && canLoot(activePlayer);
+  const claimAvailable =
+    couldBuy &&
+    tile.isAffordable(activePlayer?.gold ?? 0, activePlayer?.armyPower ?? 0, activePlayer?.fame ?? 1, gameState?.round ?? 0);
 
   const handleLootClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -634,13 +637,7 @@ export const TileCard: React.FC<TileCardProps> = ({
 
       {!tile.owner && (
         <div>
-          {couldBuy &&
-            tile.isAffordable(
-              activePlayer?.gold ?? 0,
-              activePlayer?.armyPower ?? 0,
-              activePlayer?.fame ?? 1,
-              gameState?.round ?? 0
-            ) && (
+          {claimAvailable && (
               <DecoratedButton
                 onClick={(e) => handleBuyClick(e)}
                 style={{
@@ -689,6 +686,20 @@ export const TileCard: React.FC<TileCardProps> = ({
               >
                 <div>🦇 {t('tileCard.loot')}</div>
               </div>
+            </DecoratedButton>
+          )}
+
+          {lootAvailable && !claimAvailable && (
+            <DecoratedButton
+              onClick={handleClose}
+              style={{
+                width: '100%',
+                marginBottom: '0',
+                height: '80px',
+                filter: 'drop-shadow(2px 2px 3px #00000050)',
+              }}
+            >
+              <div>🕊️ {t('tileCard.pass')}</div>
             </DecoratedButton>
           )}
         </div>
