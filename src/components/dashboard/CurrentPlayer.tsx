@@ -2,6 +2,7 @@ import React from 'react';
 import { GameState } from '../../game/GameState';
 import '../../styles/CurrentPlayer.css';
 import { sayLocal } from '../../utils/say';
+import { gameEvent } from '../../utils/events';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Karma } from '../snippets/Karma';
 import { playerTurnIncome, playerRawTurnIncome } from '../../game/income';
@@ -77,7 +78,13 @@ export const CurrentPlayer: React.FC<CurrentPlayerProps> = ({ gameState, updateG
         </div>
 
         <div className="player-position">
-          <span onClick={openKingdomOverview} style={{ cursor: 'pointer' }}>
+          <span
+            onClick={() => {
+              gameEvent('focusActivePlayer');
+              openKingdomOverview();
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             <PlayerLabel player={activePlayer} />
           </span>
 

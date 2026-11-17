@@ -143,6 +143,17 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     return () => window.removeEventListener('resize', onResize);
   }, [mapReady]);
 
+  // 'focusActivePlayer' (the stats panel's player name): zoom out, centred on the active player.
+  useEffect(() => {
+    const onFocus = () => {
+      setZoomLevel(0);
+      setPanOffset({ x: 0, y: 0 });
+    };
+
+    window.addEventListener('focusActivePlayer', onFocus);
+    return () => window.removeEventListener('focusActivePlayer', onFocus);
+  }, []);
+
   // Zoom out on a turn change, pause at 1x, then zoom back in on whoever's
   // active now. Also plays once on mount (zooms in on the opening player).
   // Skipped when the new active player is already standing on the same tile

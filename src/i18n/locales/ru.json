@@ -357,9 +357,6 @@
   "gameLogModal": {
     "noMessages": "Сообщений пока нет."
   },
-  "playerStats": {
-    "incomePerYear": "Годовая премия"
-  },
   "yearIndicator": {
     "season": "Сейчас {season}, сударь.",
     "winter": "зима",

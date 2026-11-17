@@ -15,20 +15,6 @@
   width: 100%;
 }
 
-.player-stats-income {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: baseline;
-  justify-content: center;
-  white-space: nowrap;
-  font-size: 0.85rem;
-}
-
-.player-stats-income-label {
-  font-style: italic;
-}
-
 .player-stat {
   font-size: 1rem;
 }

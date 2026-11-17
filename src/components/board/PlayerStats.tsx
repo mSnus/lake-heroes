@@ -2,7 +2,6 @@ import React from 'react';
 import { Player } from '../../game/Player';
 import { formatArmy } from '../../utils/formatArmy';
 import { Gold } from '../snippets/Gold';
-import { useT } from '../../i18n';
 import '../../styles/PlayerStats.css';
 
 interface PlayerStatsProps {
@@ -10,8 +9,6 @@ interface PlayerStatsProps {
   showFame?: boolean;
   showGold?: boolean;
   showUnits?: boolean;
-  /** When provided, a per-year income row is shown beneath the core stats. */
-  income?: { gold: number; units: number };
   className?: string;
 }
 
@@ -20,10 +17,8 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
   showFame = true,
   showGold = true,
   showUnits = true,
-  income,
   className,
 }) => {
-  const t = useT();
   return (
     <div className={'player-stats-wrapper' + (className ? ' ' + className : '')}>
       {showFame && (
@@ -50,17 +45,6 @@ export const PlayerStats: React.FC<PlayerStatsProps> = ({
           </span>
         )}
       </div>
-      {income && (
-        <div className="player-stats-income" title={t('playerStats.incomePerYear')}>
-          <div className="player-stats-hint" style={{ backgroundColor: player.color }}>
-            🏰
-          </div>
-          <span className="player-stat">
-            +<Gold amount={income.gold} />
-          </span>
-          <span className="player-stat">+{income.units}👬</span>
-        </div>
-      )}
     </div>
   );
 };

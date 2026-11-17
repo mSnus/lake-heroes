@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Player } from '../../game/Player';
 import { GameState } from '../../game/GameState';
-import { computeAnnualReward } from '../../game/kingsGrace';
 import { useModal } from '../../utils/diceStore';
 import { PlayerCard } from './PlayerCard';
 import { PlayerStats } from './PlayerStats';
@@ -55,7 +54,6 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
     .filter(Boolean);
 
   const currentTile = gameState.tiles[player.position];
-  const { totalGold, totalUnits } = computeAnnualReward(gameState, player);
   const contracts = gameState.kingsContracts.filter((c) => c.playerId === player.id);
 
   return (
@@ -98,7 +96,7 @@ export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState 
             </span>
           </div>
         )}
-        <PlayerStats player={player} income={{ gold: totalGold, units: totalUnits }} />
+        <PlayerStats player={player} />
         {ownedTiles.length > 0 && (
           <div className="cpc-owned-tiles">
             {ownedTiles.map((tile) => (

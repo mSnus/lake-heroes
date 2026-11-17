@@ -360,9 +360,6 @@
   "gameLogModal": {
     "noMessages": "Aún no hay mensajes."
   },
-  "playerStats": {
-    "incomePerYear": "Bonificación anual"
-  },
   "yearIndicator": {
     "season": "Es {season}, señor.",
     "winter": "invierno",

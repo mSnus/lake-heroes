@@ -347,9 +347,6 @@
   "gameLogModal": {
     "noMessages": "No messages yet."
   },
-  "playerStats": {
-    "incomePerYear": "Yearly Bonus"
-  },
   "currentPlayer": {
     "isAt": "is at",
     "karmaBad": "Let's see where bad karma leads you",

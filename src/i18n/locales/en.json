@@ -361,9 +361,6 @@
   "gameLogModal": {
     "noMessages": "No messages yet."
   },
-  "playerStats": {
-    "incomePerYear": "Yearly Bonus"
-  },
   "yearIndicator": {
     "season": "It's {season}, Sir.",
     "winter": "winter",
