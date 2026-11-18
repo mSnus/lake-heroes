@@ -35,7 +35,7 @@ export function showTileClaimScreen(params: TileClaimScreenParams): void {
         remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia', garrisonSlotCapacity()),
       totalMilitiaPool
     );
-    const amount = planClaimGarrison(player, maxGarrison, totalMilitiaPool);
+    const amount = planClaimGarrison(player, maxGarrison, totalMilitiaPool, tile.level);
     if (amount > 0) {
       setTileGarrison(gameState, player, tile, amount);
       updateGameState(gameState);

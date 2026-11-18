@@ -83,7 +83,6 @@ export function resolveTileBattle(
       razeTile(board, tile);
       attacker.gold += plunder;
 
-      changeFame(attacker, 1);
       changeKarma(attacker, -1);
       if (defender) changeFame(defender, -1);
 

@@ -26,10 +26,9 @@ export interface CharacterConfig {
     /** Requires MORE than this many traveling militia, and doubles as a
      * reserve: only militia held above this floor is ever committed. */
     minMilitia?: number;
-    /** Requires at least this many units of per-turn tile income (uncapped
-     * by squad room -- see game/income.ts's playerRawTurnIncome). */
-    minUnitIncome?: number;
     budgetFraction?: number;
+    /** Gold kept back for tiles, in Wheat Fields, before hiring units to garrison (see planGarrisonRecruits). */
+    goldReserveFields: number;
   };
   // Fraction of Militia left behind (capped by the tile's slot capacity) the
   // moment a bot claims a tile — see TileClaimScreen's bot auto-dismiss effect.
@@ -60,7 +59,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: false,
-    garrison: { minMilitia: 3 },
+    garrison: { minMilitia: 3, goldReserveFields: 2.5 },
     claimGarrisonFraction: 0.7,
   },
   warrior: {
@@ -74,7 +73,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
     skipBuyingNearDragonGoal: true,
-    garrison: { minMilitia: 8, budgetFraction: 2 / 3 },
+    garrison: { minMilitia: 8, budgetFraction: 2 / 3, goldReserveFields: 1 },
     claimGarrisonFraction: 0.3,
   },
   wizard: {
@@ -88,7 +87,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: true,
-    garrison: { minUnitIncome: 2 },
+    garrison: { minMilitia: 4, budgetFraction: 1 / 2, goldReserveFields: 1.5 },
     claimGarrisonFraction: 0.5,
   },
 };

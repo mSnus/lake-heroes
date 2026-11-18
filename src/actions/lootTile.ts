@@ -1,7 +1,7 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
-import { TileIncome, tileTurnIncome } from '../game/income';
+import { lootPrize, TileIncome } from '../game/income';
 import { rollDice } from '../game/Dice';
 import { changeFame } from '../utils/fame';
 import { changeKarma } from '../utils/karma';
@@ -20,7 +20,6 @@ export function canLoot(player: Player): boolean {
 }
 
 // Share of the tile's price a successful loot also carries off, in gold.
-const LOOT_PRICE_SHARE = 0.25;
 
 const formatIncome = (income: TileIncome): string => {
   const parts = [
@@ -96,13 +95,7 @@ function lootOutcome(board: GameState, player: Player, tile: Tile, roll: number)
   }
 
   const mult = roll === 3 ? 0.5 : roll === 6 ? 2 : 1;
-  const base = tileTurnIncome(tile, 1, undefined, board);
-  const income: TileIncome = {
-    gold: Math.round((base.gold + tile.currentPrice.gold * LOOT_PRICE_SHARE) * mult),
-    food: Math.round(base.food * mult),
-    arms: Math.round(base.arms * mult),
-    units: Math.round(base.units * mult),
-  };
+  const income = lootPrize(tile, board, mult);
 
   player.gold += income.gold;
   player.food += income.food;

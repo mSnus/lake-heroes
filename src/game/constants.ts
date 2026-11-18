@@ -53,6 +53,9 @@ export const KARMA_HOSTILE_ENCOUNTER_MULTIPLIER = 2.25;
 // the event firing at all) is doubled (see dragonEncounter.ts,
 // rogueAttackEncounter.ts).
 export const KARMA_CURSED_ENCOUNTER_MULTIPLIER = 2;
+// Karma never leaves this range.
+export const KARMA_MIN = -5;
+export const KARMA_MAX = 5;
 // Karma at or below this is cursed, at or above KARMA_BLESSED is blessed; in between does nothing.
 export const KARMA_CURSED = -3;
 export const KARMA_BLESSED = 3;
@@ -61,12 +64,9 @@ export const KARMA_BLESSED_JOKER_BAD_CHANCE = 0.15;
 export const KARMA_BLESSED_HOSTILE_MULTIPLIER = 0.85;
 export const KARMA_BLESSED_CARAVAN_MULTIPLIER = 1.25;
 
-// ── Bot loot decision (see ai/decisions.ts's shouldLootTile) ──
-// Looting is worth it once its prize is this big a fraction of what the bot
-// already holds of that same resource -- gold needs a smaller edge since
-// it's the more liquid resource.
-export const LOOT_GOLD_THRESHOLD_FRACTION = 1 / 5;
-export const LOOT_RESOURCE_THRESHOLD_FRACTION = 1 / 3;
+// ── Looting (see game/income.ts's lootPrize, ai/decisions.ts's shouldLootTile) ──
+// A loot also takes this share of the tile's current price in gold.
+export const LOOT_PRICE_SHARE = 0.25;
 // Warrior/Wizard won't risk looting below this many units in hand (raw
 // headcount, not armyPower) -- Explorer has no such floor.
 export const LOOT_WARRIOR_MIN_ARMY = 4;
@@ -153,6 +153,10 @@ export const DRAGON_MERCY_SCORE_RATIO = 1.5;
 // available tile's garrison -- fill each tier toward this share of its own
 // Fame cap before banking gold for a tile (see ai/botPlans.ts's planTurnHire).
 export const BOT_ARMY_FILL_FRACTION = 2 / 3;
+// Bots garrison their tiles up to this share of each tile's capacity.
+export const BOT_GARRISON_TARGET_FRACTION = 3 / 4;
+// A freshly claimed tile keeps at least this share of its capacity as garrison.
+export const BOT_CLAIM_GARRISON_MIN_FRACTION = 1 / 2;
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 

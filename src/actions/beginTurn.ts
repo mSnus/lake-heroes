@@ -11,7 +11,8 @@ import { changeFame, KNIGHT_FAME } from '../utils/fame';
 import { endYear, startNewYear, yearForRound } from '../game/year';
 import { beginHarvestTurn } from './harvest';
 import { buyUnits } from './buyUnits';
-import { planTurnHire } from '../ai/botPlans';
+import { planTurnHire, planGarrisonRecruits } from '../ai/botPlans';
+import { setTileGarrison } from './garrisonTile';
 import { formatArmy } from '../utils/formatArmy';
 import { announce } from '../utils/announce';
 import { setGameMessage } from '../utils/gameMessage';
@@ -137,6 +138,14 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
     const hire = planTurnHire(board.activePlayer, board);
     if (hire.riders > 0) buyUnits(board, hire.riders, updateGameState, 'riders');
     if (hire.militia > 0) buyUnits(board, hire.militia, updateGameState, 'militia');
+
+    const recruits = planGarrisonRecruits(board, board.activePlayer);
+    for (const { tile, amount } of recruits) {
+      setTileGarrison(board, board.activePlayer, tile, tile.garrisonMilitia + amount);
+    }
+
+    const recruited = recruits.reduce((sum, r) => sum + r.amount, 0);
+    if (recruited > 0) buyUnits(board, recruited, updateGameState, 'militia');
   }
 
   if (

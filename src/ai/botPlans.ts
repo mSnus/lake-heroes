@@ -1,11 +1,11 @@
 import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
-import { UnitTier, UNIT_POWER, computeArmyPower } from '../game/army';
-import { BOT_ARMY_FILL_FRACTION } from '../game/constants';
+import { UnitTier, UNIT_POWER, computeArmyPower, garrisonCapacityForLevel, remainingCapacity, garrisonSlotCapacity } from '../game/army';
+import { BOT_ARMY_FILL_FRACTION, BOT_CLAIM_GARRISON_MIN_FRACTION } from '../game/constants';
 import { getOverrides } from '../utils/overridesStore';
 import { Cost, hireMax, maxAffordable, scaleCost, unitCost, upgradeCost } from '../game/resources';
-import { getCharacterConfig, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
+import { getCharacterConfig, garrisonShortfall, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
 
 /**
  * Bot plans that used to live inside screen components' useEffects, which made
@@ -177,8 +177,44 @@ export function planTurnHire(player: Player, board: GameState, wallet: Wallet = 
 export function planClaimGarrison(
   player: Player,
   maxGarrison: number,
-  totalMilitiaPool: number
+  totalMilitiaPool: number,
+  tileLevel = 1
 ): number {
-  const fraction = getCharacterConfig(player)?.claimGarrisonFraction ?? 0;
-  return Math.min(maxGarrison, Math.floor(fraction * totalMilitiaPool));
+  const cfg = getCharacterConfig(player);
+  const byFraction = Math.floor((cfg?.claimGarrisonFraction ?? 0) * totalMilitiaPool);
+  const floor = Math.ceil(BOT_CLAIM_GARRISON_MIN_FRACTION * garrisonCapacityForLevel(tileLevel));
+  const keep = cfg?.garrison.minMilitia ?? 0;
+  return Math.min(maxGarrison, Math.max(byFraction, Math.min(floor, totalMilitiaPool - keep)));
+}
+
+/**
+ * Once its army is filled, a bot hires extra militia for its garrisons with
+ * the gold above its tile reserve: the army sends that many to its thinnest
+ * tiles, and the same number is bought back.
+ */
+export function planGarrisonRecruits(board: GameState, player: Player): { tile: Tile; amount: number }[] {
+  const cfg = getCharacterConfig(player);
+  if (!cfg) return [];
+  const militiaTarget = Math.floor(player.armyCapacity.militia * BOT_ARMY_FILL_FRACTION);
+  if (player.militia < militiaTarget) return [];
+
+  const wheat = board.tiles.find((t) => t?.id === 'wheat-field');
+  const reserve = Math.round((wheat?.prices[1] ?? 0) * cfg.garrison.goldReserveFields);
+  const wallet = { gold: Math.max(0, player.gold - reserve), food: player.food, arms: player.arms };
+  let budget = Math.min(maxAffordable(wallet, unitCost('militia')), player.militia - (cfg.garrison.minMilitia ?? 0));
+
+  const tiles = board.tiles
+    .filter((t): t is Tile => !!t && t.owner === player.id && !t.isYielded && garrisonShortfall(t) > 0)
+    .sort((a, b) => garrisonShortfall(b) - garrisonShortfall(a));
+  const plan: { tile: Tile; amount: number }[] = [];
+  for (const tile of tiles) {
+    if (budget <= 0) break;
+    const room = remainingCapacity(tile.garrisonMilitia, tile.garrisonRiders, tile.garrisonSlots, 'militia', garrisonSlotCapacity());
+    const amount = Math.min(budget, garrisonShortfall(tile), room);
+    if (amount <= 0) continue;
+    plan.push({ tile, amount });
+    budget -= amount;
+  }
+
+  return plan;
 }

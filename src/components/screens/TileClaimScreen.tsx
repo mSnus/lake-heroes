@@ -120,7 +120,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
 
   useEffect(() => {
     if (variant !== 'claimed' || !player.isComputer) return;
-    const amount = planClaimGarrison(player, maxGarrison, totalMilitiaPool);
+    const amount = planClaimGarrison(player, maxGarrison, totalMilitiaPool, tile.level);
     const timer = setTimeout(() => {
       if (amount > 0) {
         setTileGarrison(gameState, player, tile, amount);

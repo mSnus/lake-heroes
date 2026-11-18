@@ -5,16 +5,18 @@ import { CHARACTERS, CharacterConfig, CharacterId } from './characters';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
 import { computeAnnualReward } from '../game/kingsGrace';
-import { playerRawTurnIncome, tileTurnIncome } from '../game/income';
-import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
+import { playerRawTurnIncome, lootPrize, TileIncome } from '../game/income';
+import { UnitTier, remainingCapacity, garrisonSlotCapacity, garrisonCapacityForLevel } from '../game/army';
 import type { Route } from '../game/boardPath';
 import { syndicateMultiplier } from '../game/syndicate';
 import {
-  LOOT_GOLD_THRESHOLD_FRACTION,
-  LOOT_RESOURCE_THRESHOLD_FRACTION,
   LOOT_WARRIOR_MIN_ARMY,
   LOOT_WIZARD_MIN_ARMY,
+  BOT_GARRISON_TARGET_FRACTION,
+  TURNS_PER_YEAR,
 } from '../game/constants';
+import { karmaWillingness } from '../utils/karma';
+import { resourcesGoldValue, unitGoldValue } from '../game/resources';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
@@ -101,17 +103,15 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
   return armyOk && goldOk;
 }
 
+/** Gold value of an income, with food and arms at the Harvest's sell price and units at a militia's recipe. */
+const incomeValue = (x: Partial<TileIncome>): number =>
+  (x.gold ?? 0) + resourcesGoldValue({ food: x.food ?? 0, arms: x.arms ?? 0 }) + (x.units ?? 0) * unitGoldValue('militia');
+
 /**
- * Should this bot loot the unowned tile it's standing on (see
- * actions/lootTile.ts)? Character-blind on the core math: worth it once
- * the tile's loot prize is a big enough fraction of what the bot already
- * holds of that same resource -- gold needs a smaller edge (1/5) than
- * food/arms/units (1/3), since gold is the more liquid of the two. A
- * Wizard also loots regardless of that ratio whenever it currently has no
- * income of the prize's resource at all (see game/income.ts's
- * playerRawTurnIncome) -- it has no other way to come by that resource.
- * Warrior and Wizard additionally won't risk looting below a minimum army;
- * Explorer has no such floor.
+ * Should this bot loot the unowned tile it's standing on? Only when the
+ * expected haul (lootPrize at the die's 1x) is worth more than a year of its
+ * own income and no less than what it already holds, both counted as gold
+ * plus the lootable resource. Negative karma then makes it less likely.
  */
 export function shouldLootTile(player: Player, tile: Tile, board: GameState): boolean {
   const cfg = getCharacterConfig(player);
@@ -119,14 +119,22 @@ export function shouldLootTile(player: Player, tile: Tile, board: GameState): bo
   if (cfg.id === 'warrior' && player.units <= LOOT_WARRIOR_MIN_ARMY) return false;
   if (cfg.id === 'wizard' && player.units <= LOOT_WIZARD_MIN_ARMY) return false;
 
-  const prize = tileTurnIncome(tile, 1, undefined, board);
-  const resource = (['gold', 'food', 'arms', 'units'] as const).find((r) => prize[r] > 0);
-  if (!resource) return false;
+  const prize = lootPrize(tile, board);
+  const resource = (['food', 'arms', 'units'] as const).find((r) => prize[r] > 0);
+  const pick = (x: TileIncome): Partial<TileIncome> => ({ gold: x.gold, ...(resource ? { [resource]: x[resource] } : {}) });
 
-  const fraction = resource === 'gold' ? LOOT_GOLD_THRESHOLD_FRACTION : LOOT_RESOURCE_THRESHOLD_FRACTION;
-  if (prize[resource] >= fraction * player[resource]) return true;
+  const income = playerRawTurnIncome(board, player);
+  const yearly = pick({
+    gold: income.gold * TURNS_PER_YEAR,
+    food: income.food * TURNS_PER_YEAR,
+    arms: income.arms * TURNS_PER_YEAR,
+    units: income.units * TURNS_PER_YEAR,
+  });
+  const held = pick({ gold: player.gold, food: player.food, arms: player.arms, units: player.militia });
+  const worth = incomeValue(prize);
+  if (worth <= incomeValue(yearly) || worth < incomeValue(held)) return false;
 
-  return cfg.id === 'wizard' && playerRawTurnIncome(board, player)[resource] === 0;
+  return Math.random() < karmaWillingness(player);
 }
 
 /**
@@ -228,7 +236,10 @@ export function shouldSeekRevenge(player: Player, defence: number): boolean {
   const { powerRatio, minPower } = cfg.revenge;
   if (player.armyPower <= minPower) return false;
 
-  return player.armyPower >= powerRatio * defence;
+  if (player.armyPower < powerRatio * defence) return false;
+
+  // A won revenge razes the tile, which costs karma.
+  return Math.random() < karmaWillingness(player);
 }
 
 /** Dragon: same threshold for both the proactive challenge and a random ambush. */
@@ -247,6 +258,15 @@ export function shouldChallengeDragon(player: Player): boolean {
  * re-checked after every top-up and a bot naturally stops the moment it
  * drops back under its own threshold.
  */
+/** Units a bot still wants on this tile to reach BOT_GARRISON_TARGET_FRACTION of its capacity. */
+export function garrisonShortfall(tile: Tile): number {
+  const target = Math.floor(BOT_GARRISON_TARGET_FRACTION * garrisonCapacityForLevel(tile.level));
+  return Math.max(0, target - tile.garrisonMilitia - tile.garrisonRiders);
+}
+
+const garrisonFill = (tile: Tile) =>
+  (tile.garrisonMilitia + tile.garrisonRiders) / garrisonCapacityForLevel(tile.level);
+
 export function pickGarrisonAction(
   board: GameState,
   player: Player
@@ -256,17 +276,14 @@ export function pickGarrisonAction(
 
   const rule = cfg.garrison;
   if (rule.minMilitia !== undefined && player.militia <= rule.minMilitia) return null;
-  if (rule.minUnitIncome !== undefined && playerRawTurnIncome(board, player).units < rule.minUnitIncome) {
-    return null;
-  }
 
   const candidates = player.ownedTiles
     .map((idx) => board.tiles[idx])
-    .filter((t): t is Tile => !!t && t.owner === player.id && t.garrisonMilitia < t.baseGarrison);
+    .filter((t): t is Tile => !!t && t.owner === player.id && !t.isYielded && garrisonShortfall(t) > 0);
   if (candidates.length === 0) return null;
 
-  const target = candidates.sort((a, b) => a.garrisonMilitia - b.garrisonMilitia)[0];
-  const desired = target.baseGarrison - target.garrisonMilitia;
+  const target = candidates.sort((a, b) => garrisonFill(a) - garrisonFill(b))[0];
+  const desired = garrisonShortfall(target);
 
   // minMilitia is a reserve the bot keeps travelling with, not just an entry
   // trigger -- it garrisons only what it holds ABOVE that floor, so topping
