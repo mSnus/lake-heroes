@@ -257,6 +257,8 @@
     "claimIt": "Забрать!",
     "loot": "Грабёж",
     "pass": "Пропустить",
+    "raze": "Разорить",
+    "raze": "Разорить",
     "lootGain": "{playerName} разграбил {tileName} и получил {reward}",
     "lootSoldiersLost": "{playerName} не смог разграбить {tileName}, потеряно {amount}🧍",
     "lootSoldiersAndFameLost": "{playerName} не смог разграбить {tileName}, потерял всех {amount}🧍 и 1🏆",
@@ -721,7 +723,7 @@
     "logLine": "⚔️ Час героя: {attackerName} vs {defenderName} — {outcomeLabel} ({unitsBefore}→{unitsAfter}🧍{goldPart})"
   },
   "afterMoveLogic": {
-    "ownerInPrison": "{ownerName} в темнице, поэтому остальные просто шлют ему цветы 🌹, посещая его владения",
+    "ownerInPrison": "{ownerName} в тюрьме, поэтому пошлину здесь не берут — но клетку всё ещё можно разорить",
     "defencelessItsMine": "Беззащитно? Теперь моё",
     "goWithPeace": "🕊️ Уйти с миром",
     "revenge": "🔥Месть",

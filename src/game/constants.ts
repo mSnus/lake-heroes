@@ -2,7 +2,8 @@ export const MONEY_START = 150;
 export const UNITS_START = 12;
 export const MONEY_PASS_START = 200;
 export const UNITS_PASS_START = 6;
-export const FEE_MULTIPLIER = 5;
+// Tolls are this share of the tile's price at its current level (see Tile.fee).
+export const FEE_MULTIPLIER = 0.5;
 export const TREASURE_BOX_MULTIPLIER = 20;
 export const TILE_COUNT = 28;
 export const MAX_PLAYERS = 6;
@@ -94,6 +95,8 @@ export const BONUS_GOLD_RATIO = 0.8;
 // BONUS_GOLD_RATIO, with the rounding step shrinking from 100 to 50 to
 // match (see Tile.ts's `bonuses` getter).
 export const TURN_INCOME_RATIO = 0.1;
+// Gold-producing tiles pay this many times their base scale (food/arms tiles don't).
+export const GOLD_TILE_INCOME_MULT = 5;
 // Flat per-tile bonus each owned tile grants the King's-grace reward (once a
 // lap, on top of its own per-turn income -- see kingsGrace.ts's
 // computeAnnualReward), in whichever resource its own bonus ISN'T: a
@@ -119,18 +122,18 @@ export const VISIT_UNITS_SHARE = 5;
 
 // A unit costs gold, food and arms (King's Castle prices; the Tavern doubles
 // only the gold part -- see TAVERN_PRICE_MULT).
-export const UNIT_PRICE = 20; // gold per militia unit
-export const MILITIA_FOOD = 5;
+export const UNIT_PRICE = 30; // gold per militia unit
+export const MILITIA_FOOD = 3;
 // Each player's opening stock, enough to hire a few militia before their
 // own tiles produce any.
 export const FOOD_START = 30;
 export const ARMS_START = 30;
-export const MILITIA_ARMS = 3;
+export const MILITIA_ARMS = 1;
 // Food/arms trade at the yearly Harvest -- food and arms have different rates.
-export const FOOD_BUY_PRICE = 6;
-export const FOOD_SELL_PRICE = 4;
-export const ARMS_BUY_PRICE = 8;
-export const ARMS_SELL_PRICE = 6;
+export const FOOD_BUY_PRICE = 10;
+export const FOOD_SELL_PRICE = 7;
+export const ARMS_BUY_PRICE = 15;
+export const ARMS_SELL_PRICE = 11;
 // Harvest exchange, either way: EXCHANGE_FOOD 🥙 ⇄ EXCHANGE_ARMS ⚔️, whole batches only.
 export const EXCHANGE_FOOD = 3;
 export const EXCHANGE_ARMS = 2;
@@ -154,9 +157,9 @@ export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible f
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
-export const RIDER_UNIT_PRICE = 40; // gold per rider
-export const RIDER_FOOD = 10;
-export const RIDER_ARMS = 9;
+export const RIDER_UNIT_PRICE = 60; // gold per rider
+export const RIDER_FOOD = 6;
+export const RIDER_ARMS = 2;
 // How much one unit of each kind is worth on a single strength scale, in
 // militia. Everything that rates a force -- AI decisions, the Banzai
 // threshold, the tile-card strength readout -- measures with these, so the

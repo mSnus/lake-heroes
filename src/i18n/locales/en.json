@@ -261,6 +261,8 @@
     "claimIt": "Claim it!",
     "loot": "Loot",
     "pass": "Pass",
+    "raze": "Raze",
+    "raze": "Raze",
     "lootGain": "{playerName} looted {tileName} and gained {reward}",
     "lootSoldiersLost": "{playerName} failed to loot {tileName}, {amount}🧍 lost",
     "lootSoldiersAndFameLost": "{playerName} failed to loot {tileName}, lost all {amount}🧍 and 1🏆",
@@ -726,7 +728,7 @@
     "logLine": "⚔️ Hero's Hour: {attackerName} vs {defenderName} — {outcomeLabel} ({unitsBefore}→{unitsAfter}🧍{goldPart})"
   },
   "afterMoveLogic": {
-    "ownerInPrison": "{ownerName} is in prison, so others just send him the flowers 🌹 while visiting his property",
+    "ownerInPrison": "{ownerName} is in prison, so no toll is collected here — but the tile can still be razed",
     "defencelessItsMine": "Defenceless? it's mine",
     "goWithPeace": "🕊️ Go with peace",
     "revenge": "🔥Revenge",

@@ -1,4 +1,4 @@
-import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, FORTIFIED_TILE_GROUPS } from './constants';
+import { BONUS_GOLD_RATIO, TURN_INCOME_RATIO, GOLD_TILE_INCOME_MULT, FEE_MULTIPLIER, LEVEL_3_UPGRADE_MULT, ANNUAL_DEFAULT_GOLD_MULT, FORTIFIED_TILE_GROUPS } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, garrisonSlotsForLevel, UNIT_POWER, isBanzaiAttack } from './army';
@@ -199,7 +199,8 @@ export class Tile implements TileJSON {
     for (const key of Object.keys(this._bonusCoeffs)) {
       const lvl = Number(key);
       const raw = this._bonusCoeffs[lvl] * incomeBase;
-      out[lvl] = isGold ? Math.round((raw * BONUS_GOLD_RATIO * TURN_INCOME_RATIO) / 5) * 5 : raw;
+      const goldMult = this.bonusType === 'gold' ? GOLD_TILE_INCOME_MULT : 1;
+      out[lvl] = isGold ? Math.round((raw * BONUS_GOLD_RATIO * TURN_INCOME_RATIO) / 5) * 5 * goldMult : raw;
     }
 
     return out;
@@ -289,7 +290,7 @@ export class Tile implements TileJSON {
   /** Toll a visitor owes: the current level's own price or the tile's base
    * price, whichever is larger -- not the two summed. */
   get fee(): number {
-    return Math.max(this.prices[this.level] || 0, this.prices[1] || 0);
+    return Math.round(Math.max(this.prices[this.level] || 0, this.prices[1] || 0) * FEE_MULTIPLIER);
   }
 
   isOwned(): boolean {

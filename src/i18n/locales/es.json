@@ -260,6 +260,8 @@
     "claimIt": "¡Reclamarla!",
     "loot": "Saqueo",
     "pass": "Pasar",
+    "raze": "Arrasar",
+    "raze": "Arrasar",
     "lootGain": "{playerName} saqueó {tileName} y ganó {reward}",
     "lootSoldiersLost": "{playerName} no logró saquear {tileName}, {amount}🧍 perdidos",
     "lootSoldiersAndFameLost": "{playerName} no logró saquear {tileName}, perdió todos sus {amount}🧍 y 1🏆",
@@ -724,7 +726,7 @@
     "logLine": "⚔️ La Hora del Héroe: {attackerName} vs {defenderName} — {outcomeLabel} ({unitsBefore}→{unitsAfter}🧍{goldPart})"
   },
   "afterMoveLogic": {
-    "ownerInPrison": "{ownerName} está en prisión, así que otros solo le envían flores 🌹 al visitar su propiedad",
+    "ownerInPrison": "{ownerName} está en prisión, así que aquí no se cobra peaje — pero la casilla aún puede ser arrasada",
     "defencelessItsMine": "¿Indefensa? es mía",
     "goWithPeace": "🕊️ Ir en paz",
     "revenge": "🔥Venganza",

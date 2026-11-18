@@ -6,6 +6,7 @@ import { GameState } from '../../game/GameState';
 import { sellTile, sellRefund } from '../../actions/sellTile';
 import { claimTile } from '../../actions/claimTile';
 import { canLoot, lootTile } from '../../actions/lootTile';
+import { razeJailedTile } from '../../actions/razeJailedTile';
 import { provokeZombiesByLoot } from '../../actions/zombieAmbushEncounter';
 import { showDice, startDiceRoll } from '../../utils/diceStore';
 import { yieldTile, yieldRefund, takeTileBack, takeBackCost } from '../../actions/yieldTile';
@@ -53,6 +54,8 @@ export type TileCardProps = {
    * actually possible right now (once per turn, something to lose on a
    * failed roll) is TileCard's own call, via canLoot. */
   couldLoot?: boolean;
+  /** The active tile's owner is jailed, so it can be attacked from here (see razeJailedTile). */
+  couldRaze?: boolean;
   defaultExpanded?: boolean;
   demoMode?: boolean;
   /** True when this card is rendered inside a forced pay-or-fight/sell-to-
@@ -70,6 +73,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   updateGameState,
   couldBuy = false,
   couldLoot = false,
+  couldRaze = false,
   defaultExpanded = false,
   demoMode = false,
   disableUpgradesScreen = false,
@@ -331,6 +335,12 @@ export const TileCard: React.FC<TileCardProps> = ({
   const claimAvailable =
     couldBuy &&
     tile.isAffordable(activePlayer?.gold ?? 0, activePlayer?.armyPower ?? 0, activePlayer?.fame ?? 1, gameState?.round ?? 0);
+
+  const handleRazeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!gameState || !updateGameState) return;
+    razeJailedTile(gameState, updateGameState);
+  };
 
   const handleLootClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -716,6 +726,20 @@ export const TileCard: React.FC<TileCardProps> = ({
             </DecoratedButton>
           )}
         </div>
+      )}
+
+      {couldRaze && tile.owner && !activePlayer?.isComputer && (
+        <DecoratedButton
+          onClick={handleRazeClick}
+          style={{
+            width: '100%',
+            marginBottom: '0',
+            height: '80px',
+            filter: 'drop-shadow(2px 2px 3px #00000050)',
+          }}
+        >
+          <div>{tile.garrison > 0 ? `⚔️ ${t('tileCard.raze')}` : `🏴 ${t('afterMoveLogic.defencelessItsMine')}`}</div>
+        </DecoratedButton>
       )}
     </div>
   );

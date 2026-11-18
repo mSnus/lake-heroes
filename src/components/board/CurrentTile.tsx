@@ -3,6 +3,7 @@ import { GameState } from '../../game/GameState';
 import { TileCard } from './TileCard';
 import { Tile } from '../../game/Tile';
 import { gameEvent } from '../../utils/events';
+import { canRazeJailedTile } from '../../actions/razeJailedTile';
 
 interface CurrentTileProps {
   gameState: GameState;
@@ -114,6 +115,7 @@ export const CurrentTile: React.FC<CurrentTileProps> = ({ gameState, updateGameS
             updateGameState={updateGameState}
             couldBuy={couldBuy}
             couldLoot={couldLoot}
+            couldRaze={showingActiveTile && canRazeJailedTile(gameState)}
           />
         )}
       </div>

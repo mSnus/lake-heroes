@@ -22,6 +22,7 @@ import { setGameMessage } from '../utils/gameMessage';
 import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget } from '../ai/decisions';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { announce } from '../utils/announce';
+import { isJailed, canRazeJailedTile, razeJailedTile } from './razeJailedTile';
 import { t } from '../i18n';
 
 export function afterMoveLogic(
@@ -202,13 +203,17 @@ export function showTileEncounterScreen(
   const tile = board.activeTile;
   const owner = board.players.find((p) => p.id === tile.owner);
 
-  // A jailed owner can't collect a fee or defend their land.
-  const ownerInPrison =
-    !!owner &&
-    ((owner.turnsToSkip ?? 0) > 0 || board.tiles[owner.position]?.id === 'prison');
+  // A jailed owner collects no fee; the tile can still be razed from its Tile Card.
+  if (owner && isJailed(board, owner)) {
+    if (player.isComputer && canRazeJailedTile(board) && shouldSeekRevenge(player, tile.defence)) {
+      announce(player, tile.garrison > 0 ? 'botController.fight' : 'botController.takeUndefendedTile', {
+        tile: tile.shortName,
+      });
+      razeJailedTile(board, updateGameState);
+      return;
+    }
 
-  if (ownerInPrison) {
-    say(t('afterMoveLogic.ownerInPrison', { ownerName: owner!.name }), 'info');
+    say(t('afterMoveLogic.ownerInPrison', { ownerName: owner.name }), 'info');
     setEndTurn();
     return;
   }
