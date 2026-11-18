@@ -366,7 +366,7 @@
     "spriteImage": "assets/sprites/lumber.png",
     "isOwnable": true,
     "bonusType": "arms",
-    "requiredFame": 3,
+    "requiredFame": 2,
     "garrison": 24,
     "prices": {
       "1": 8,
@@ -404,7 +404,7 @@
     "spriteImage": "assets/sprites/charcoal.png",
     "isOwnable": true,
     "bonusType": "arms",
-    "requiredFame": 6,
+    "requiredFame": 1,
     "garrison": 32,
     "prices": {
       "1": 10,
@@ -423,7 +423,7 @@
     "spriteImage": "assets/sprites/iron_forge.png",
     "isOwnable": true,
     "bonusType": "arms",
-    "requiredFame": 7,
+    "requiredFame": 3,
     "garrison": 40,
     "prices": {
       "1": 12,
@@ -442,7 +442,7 @@
     "spriteImage": "assets/sprites/gunpowder.png",
     "isOwnable": true,
     "bonusType": "arms",
-    "requiredFame": 7,
+    "requiredFame": 4,
     "garrison": 40,
     "prices": {
       "1": 12,

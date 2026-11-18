@@ -4,6 +4,7 @@ import { Tile } from '../game/Tile';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity } from '../game/army';
 import { say, sayInTopic, topicSubject, closeTopic } from '../utils/say';
 import { t } from '../i18n';
+import { formatArmy } from '../utils/formatArmy';
 
 function moveTier(player: Player, tile: Tile, tier: UnitTier, requestedDelta: number): void {
   if (requestedDelta === 0) return;
@@ -59,12 +60,11 @@ export function setTileGarrison(
   moveTier(player, tile, 'riders', Math.max(0, Math.floor(targetRiders)) - tile.garrisonRiders);
 
   sayInTopic(
-    t('topics.garrison', { militia: tile.garrisonMilitia, riders: tile.garrisonRiders }),
+    t('topics.garrison', { army: formatArmy(tile.garrisonMilitia, tile.garrisonRiders) }),
     t('garrisonTile.setGarrison', {
       playerName: player.name,
       tileName: tile.name,
-      militia: tile.garrisonMilitia,
-      riders: tile.garrisonRiders,
+      army: formatArmy(tile.garrisonMilitia, tile.garrisonRiders),
     }),
     'debug',
     { actor: player.name, subject: tile.name }

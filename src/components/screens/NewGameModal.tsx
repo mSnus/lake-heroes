@@ -4,6 +4,7 @@ import { MAX_PLAYERS, MONEY_START, UNITS_START } from '../board/common';
 import GameModal from './GameModal';
 import '../../styles/modal.css';
 import { PlayerSetup } from '../../utils/playerSetup';
+import { loadFromStorage } from '../../utils/storage';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import { CharacterId } from '../../ai/characters';
 import { useAppVersion } from '../../utils/useAppVersion';
@@ -32,7 +33,18 @@ interface NewGameModalProps {
   initialPlayers?: PlayerSetup[];
 }
 
-const NewGameModal: React.FC<NewGameModalProps> = ({ onStart, initialPlayers: previousPlayers }) => {
+export const LAST_SETUP_KEY = 'last-setup';
+
+/** The seats of the last game started on this device, fresh gold and units included. */
+function lastSetup(): PlayerSetup[] | undefined {
+  const saved = loadFromStorage<PlayerSetup[] | null>(LAST_SETUP_KEY, null);
+  if (!Array.isArray(saved) || !saved.length || saved.length > MAX_PLAYERS) return undefined;
+  if (!saved.every((p) => typeof p?.name === 'string' && typeof p?.color === 'string')) return undefined;
+  return saved.map((p) => ({ ...p, gold: MONEY_START, units: UNITS_START, position: 0 }));
+}
+
+const NewGameModal: React.FC<NewGameModalProps> = ({ onStart, initialPlayers }) => {
+  const [previousPlayers] = useState(() => initialPlayers ?? lastSetup());
   const t = useT();
   const version = useAppVersion();
   const [numPlayers, setNumPlayers] = useState(previousPlayers?.length || 2);

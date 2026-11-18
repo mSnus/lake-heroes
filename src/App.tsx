@@ -65,7 +65,7 @@ import { handleTreasureBox } from './actions/treasureBox';
 import { fightDragon } from './actions/fightDragon';
 import { t } from './i18n';
 import { BattleScreen } from './components/screens/BattleScreen';
-import NewGameModal from './components/screens/NewGameModal';
+import NewGameModal, { LAST_SETUP_KEY } from './components/screens/NewGameModal';
 import { rollAndMove } from './actions/rollAndMove';
 import { DRAGON_GOLD } from './game/constants';
 import { STARS_TO_WIN } from './utils/stars';
@@ -627,6 +627,8 @@ function App() {
 
   const handleStartGame = useCallback(
     (playersSetup: PlayerSetup[], online?: boolean) => {
+      // The New Game screen prefills from this, however it's opened (the 🏆 button reloads the page).
+      saveToStorage(LAST_SETUP_KEY, playersSetup);
       const { tiles, map, links } = buildBoardFromTemplates(tilesData as TileJSON[]);
       // "Fog of war" setting: reveal every tile from the start instead of
       // the default, where each is hidden until a player lands on it.

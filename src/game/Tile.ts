@@ -56,6 +56,8 @@ export interface TileJSON {
   /** Turn (GameState.turns) since this tile went unowned, or undefined if it
    * was never razed — drives the wild-garrison regrowth timer. */
   unclaimedSinceTurn?: number;
+  /** Where a razed tile's wild garrison regrows from, when not its baseGarrison (see wildGarrison.ts). */
+  wildBase?: number;
   /** GameState.round the tile was last razed in — gates re-claiming until
    * the round advances ("on fire"). */
   razedInRound?: number;
@@ -100,6 +102,8 @@ export class Tile implements TileJSON {
   /** Immutable authored baseline this tile's wild garrison regrows toward. */
   baseGarrison: number;
   unclaimedSinceTurn?: number;
+  /** Where a razed tile's wild garrison regrows from, when not its baseGarrison (see wildGarrison.ts). */
+  wildBase?: number;
   razedInRound?: number;
   abandoned: boolean;
   isYielded: boolean;
@@ -148,6 +152,7 @@ export class Tile implements TileJSON {
     }
 
     this.unclaimedSinceTurn = data.unclaimedSinceTurn;
+    this.wildBase = data.wildBase;
     this.razedInRound = data.razedInRound;
     this.abandoned = data.abandoned ?? false;
     this.isYielded = data.isYielded ?? false;
@@ -210,7 +215,9 @@ export class Tile implements TileJSON {
    * kingsGrace.ts's computeAnnualReward, the only consumer. Rescales with a
    * live tileBasePrice override, same as prices/bonuses. */
   get annualGold(): number {
-    return (this._annualGoldMult ?? ANNUAL_DEFAULT_GOLD_MULT) * getOverrides().tileBasePrice;
+    // Half the income base (20🟡), so the King's-grace gold didn't halve with tile prices.
+    const ov = getOverrides();
+    return (this._annualGoldMult ?? ANNUAL_DEFAULT_GOLD_MULT) * ((ov.tileBasePrice * ov.tileIncomeMult) / 2);
   }
 
   /** Only some tiles (the non-ownable "special" ones) have flavor text —
@@ -401,6 +408,7 @@ export class Tile implements TileJSON {
       garrisonRiders: this.garrisonRiders,
       baseGarrison: this.baseGarrison,
       unclaimedSinceTurn: this.unclaimedSinceTurn,
+      wildBase: this.wildBase,
       razedInRound: this.razedInRound,
       abandoned: this.abandoned,
       isYielded: this.isYielded,

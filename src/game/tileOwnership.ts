@@ -27,6 +27,7 @@ export function razeTile(board: GameState, tile: Tile): void {
   tile.garrisonRiders = 0;
   tile.garrison = tile.baseGarrison;
   tile.unclaimedSinceTurn = board.turns;
+  tile.wildBase = undefined;
   tile.razedInRound = board.round;
   tile.abandoned = true;
 }
@@ -53,6 +54,7 @@ export function grantTile(board: GameState, tile: Tile, player: Player): void {
   tile.abandoned = false;
   tile.razedInRound = undefined;
   tile.unclaimedSinceTurn = undefined;
+  tile.wildBase = undefined;
   tile.garrisonMilitia = 0;
   tile.garrisonRiders = 0;
   player.ownedTiles.push(tileIdx);

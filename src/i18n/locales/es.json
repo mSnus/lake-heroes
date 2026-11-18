@@ -709,7 +709,7 @@
     "spentYearsWandering": "{playerName} pasó {circles} años vagando, buscando la gloria"
   },
   "garrisonTile": {
-    "setGarrison": "{playerName} fija la guarnición de {tileName} en {militia}🧍/{riders}🐎"
+    "setGarrison": "{playerName} fija la guarnición de {tileName} en {army}"
   },
   "resolvePlayerBattle": {
     "losingUnits": "\nperdiendo {army}",
@@ -1271,7 +1271,7 @@
     "fameKnighted": "fama ahora {fame}🏆 y nombrado Caballero",
     "fameDemoted": "fama baja a {fame}🏆 y deja de ser Caballero",
     "wonBattle": "ganó la batalla{unitsPart}{paidPart}",
-    "garrison": "dejó {militia}🧍/{riders}🐎 de guarnición",
+    "garrison": "dejó {army} de guarnición",
     "claimedFree": "la tomó sin luchar",
     "lootGain": "saqueó {reward}",
     "lootSoldiersLost": "descubierto saqueando, perdió {amount}🧍",

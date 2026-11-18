@@ -665,7 +665,7 @@
     "spentYearsWandering": "{playerName} spent {circles} years wandering, looking for a glory"
   },
   "garrisonTile": {
-    "setGarrison": "{playerName} sets {tileName}'s garrison to {militia}🧍/{riders}🐎"
+    "setGarrison": "{playerName} sets {tileName}'s garrison to {army}"
   },
   "resolvePlayerBattle": {
     "losingUnits": "\nlosing {army}",
@@ -1233,7 +1233,7 @@
     "fameKnighted": "fame now {fame}🏆 and knighted",
     "fameDemoted": "fame down to {fame}🏆 and no longer a Knight",
     "wonBattle": "won the battle{unitsPart}{paidPart}",
-    "garrison": "set {militia}🧍/{riders}🐎 as garrison",
+    "garrison": "set {army} as garrison",
     "claimedFree": "claimed it without a fight",
     "lootGain": "looted {reward}",
     "lootSoldiersLost": "caught looting, lost {amount}🧍",

@@ -88,7 +88,17 @@ function resolveBattle(
     const res = resolveAmbush(gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome);
     // "Defeating the zombies" -- a won ambush specifically against an
     // abandoned tile's zombie guard, not an ordinary bandit ambush.
-    if (isZombieAmbush && ambushOutcome === 'win') changeKarma(attacker, 1);
+    if (isZombieAmbush && ambushOutcome === 'win') {
+      changeKarma(attacker, 1);
+      // Repelled zombies leave their tile half-guarded, regrowing from there.
+      const tile = gameState.activeTile;
+      if (tile && !tile.isOwned() && tile.abandoned) {
+        tile.wildBase = Math.floor(tile.garrison / 2);
+        tile.garrison = tile.wildBase;
+        tile.unclaimedSinceTurn = gameState.turns;
+      }
+    }
+
     return {
       outcome: battleOutcome,
       message: res.message,

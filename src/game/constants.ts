@@ -82,9 +82,10 @@ export const LOOT_WIZARD_MIN_ARMY = 6;
 // to rescale the whole economy. TILE_BASE_PRICE scales a tile's purchase price
 // (level-1 gold), TILE_BASE_UPGRADE its upgrade costs (level-2/3 gold), and
 // TILE_BASE_INCOME its per-turn gold income (bonuses on gold-type tiles).
-export const TILE_BASE_PRICE = 20;
+export const TILE_BASE_PRICE = 10;
 export const TILE_BASE_UPGRADE = TILE_BASE_PRICE * 2;
-export const TILE_BASE_INCOME = TILE_BASE_PRICE * 2;
+// Fixed, so halving tile prices left income untouched.
+export const TILE_BASE_INCOME = 40;
 // Multiplier on TILE_BASE_UPGRADE's normal rate for the final upgrade (to
 // level 3). At 1 the last upgrade costs the same rate as level 2.
 export const LEVEL_3_UPGRADE_MULT = 1;

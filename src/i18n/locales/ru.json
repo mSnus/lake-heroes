@@ -706,7 +706,7 @@
     "spentYearsWandering": "{playerName} провёл {circles} лет в странствиях в поисках славы"
   },
   "garrisonTile": {
-    "setGarrison": "{playerName} устанавливает гарнизон «{tileName}»: {militia}🧍/{riders}🐎"
+    "setGarrison": "{playerName} устанавливает гарнизон «{tileName}»: {army}"
   },
   "resolvePlayerBattle": {
     "losingUnits": "\nтеряя {army}",
@@ -1268,7 +1268,7 @@
     "fameKnighted": "слава теперь {fame}🏆, посвящён в рыцари",
     "fameDemoted": "слава упала до {fame}🏆, больше не рыцарь",
     "wonBattle": "выиграл битву{unitsPart}{paidPart}",
-    "garrison": "оставил {militia}🧍/{riders}🐎 в гарнизоне",
+    "garrison": "оставил {army} в гарнизоне",
     "claimedFree": "занял без боя",
     "lootGain": "награбил {reward}",
     "lootSoldiersLost": "пойман на грабеже, потерял {amount}🧍",

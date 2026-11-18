@@ -21,7 +21,8 @@ export function tickWildGarrisons(board: GameState): void {
     if (!tile || tile.owner || tile.unclaimedSinceTurn === undefined) continue;
 
     const years = Math.floor((board.turns - tile.unclaimedSinceTurn) / turnsPerYear);
-    const grown = Math.ceil(tile.baseGarrison * Math.pow(1 + GROWTH_PER_YEAR, years));
-    tile.garrison = Math.min(grown, Math.max(tile.baseGarrison, cap));
+    const base = tile.wildBase ?? tile.baseGarrison;
+    const grown = Math.ceil(base * Math.pow(1 + GROWTH_PER_YEAR, years));
+    tile.garrison = Math.min(grown, Math.max(base, cap));
   }
 }
