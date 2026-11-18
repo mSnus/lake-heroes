@@ -3,6 +3,7 @@ import { changeFame } from '../utils/fame';
 import { say } from '../utils/say';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
+import { resetKarma } from '../utils/karma';
 
 export function becomeBeggar(board: GameState, updateGameState: (board: GameState) => void) {
   const player = board.activePlayer;
@@ -41,6 +42,7 @@ export function becomeBeggar(board: GameState, updateGameState: (board: GameStat
   const prisonIdx = board.tiles.findIndex((t) => t?.id === 'prison');
   if (prisonIdx >= 0) player.position = prisonIdx;
   player.turnsToSkip = 1;
+  resetKarma(player);
 
   // One combined toast rather than four separate ones (capture, fame,
   // units-leave, becomes-a-beggar) -- the unit tally reports what's

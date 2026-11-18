@@ -17,6 +17,14 @@ export const isBlessed = (player: Player): boolean => (player.karma ?? 0) >= KAR
 export function changeKarma(player: Player, delta: number, cap?: number): void {
   const next = Math.max(KARMA_MIN, Math.min(KARMA_MAX, (player.karma ?? 0) + delta));
   player.karma = cap !== undefined ? Math.min(next, cap) : next;
+  if (player.karma <= KARMA_MIN) player.lootBanned = true;
+  else if (player.karma >= 0) player.lootBanned = false;
+}
+
+/** Prison wipes the slate: karma back to 0, and any loot ban with it. */
+export function resetKarma(player: Player): void {
+  player.karma = 0;
+  player.lootBanned = false;
 }
 
 /** 🕷️ when cursed (negative), 🕊️ below 3, 🌈 from 3 up. */

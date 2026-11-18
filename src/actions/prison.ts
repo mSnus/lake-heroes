@@ -3,6 +3,7 @@ import { showPrisonScreen } from '../utils/screenStore';
 import { getPrisonProtectionArtifact } from '../game/artifacts';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
+import { resetKarma } from '../utils/karma';
 
 export function handlePrison(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
@@ -11,6 +12,7 @@ export function handlePrison(board: GameState | null, updateGameState: (board: G
   const player = board.players[board.playerOrder[playerIdx]];
 
   console.log('Action: prison for', player.name);
+  resetKarma(player);
 
   // Not board.gameMessage — that may still hold an unrelated earlier event's
   // text from the same turn (e.g. an ambush resolved during this move), which

@@ -30,6 +30,10 @@ Raiding a caravan for gold or horses does not change karma.
 
 **Yearly drift:** at every Harvest, karma moves 1 step back toward 0 (`game/year.ts`).
 
+**Prison resets it:** landing on Prison, or being taken there as a prisoner of war, sets karma back to 0 (`resetKarma`).
+
+**Loot ban:** reaching −5 bars the player from looting until their karma is back at 0 or above (`Player.lootBanned`, checked by `canLoot`). Prison lifts the ban too.
+
 Every change is clamped to the −5…+5 range (`changeKarma` in `src/utils/karma.ts`), so an old save with lower karma snaps to −5 on its next change.
 
 ## Effects
@@ -38,7 +42,7 @@ Every change is clamped to the −5…+5 range (`changeKarma` in `src/utils/karm
 |---|---|---|---|
 | Joker draws a bad event | 50% | 80% | 15% |
 | Bandit ambush chance | 1/14 | ×2.25 | ×0.85 |
-| Roaming horde (rogue) attack chance | base | ×2 | ×0.85 |
+| Roaming horde (rogue) attack chance | 1/28 | ×2 | ×0.85 |
 | Dragon encounter chance | 1/12 | ×2 | — |
 | Dragon attacks (rather than flying over) | 1/3, or 1/2 above fame 5 | ×2.25, capped at certain | ×0.85 |
 | Zombie ambush on an abandoned tile (landing or looting) | 30% | ×2 | — |

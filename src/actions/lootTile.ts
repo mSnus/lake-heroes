@@ -15,7 +15,7 @@ import { t } from '../i18n';
  * instead once they have none left.
  */
 export function canLoot(player: Player): boolean {
-  if (player.hasLootedThisTurn) return false;
+  if (player.hasLootedThisTurn || player.lootBanned) return false;
   return player.units > 0 || player.fame > 1;
 }
 

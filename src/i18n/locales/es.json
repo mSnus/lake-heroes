@@ -1281,5 +1281,8 @@
     "tollShortfall": "aún debe {remaining}🟡",
     "soldTile": "vendió {tileName} por {gold}🟡 y {units}🧍",
     "portalArrival": "{playerName} llegó por el Portal a {tileName}"
+  },
+  "goldFame": {
+    "reached": "La riqueza de {playerName} alcanza {gold}🟡: +{fame}🏆"
   }
 }

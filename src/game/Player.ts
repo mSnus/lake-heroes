@@ -1,3 +1,4 @@
+import { GOLD_FAME_FIRST } from './constants';
 import { CharacterId } from '../ai/characters';
 import { UnitTier, armyCapacityForFame, computeArmyPower } from './army';
 
@@ -51,6 +52,10 @@ export class Player {
   /** Moral-standing counter -- see utils/karma.ts. Signed, 0 at start;
    * shown in the Kingdom Overview (see karmaEmoji). */
   karma: number;
+  /** Set on reaching KARMA_MIN; looting stays barred until karma is back at 0. */
+  lootBanned: boolean;
+  /** Next gold amount whose first crossing earns +1 fame (see utils/goldFame.ts). */
+  nextGoldMilestone: number;
   /** One per prisoner of war this player has taken (see utils/stars.ts,
    * credited to the tile owner whose toll bankrupted the prisoner) --
    * reaching STARS_TO_WIN ends the game, same as slaying the Dragon. */
@@ -135,6 +140,8 @@ export class Player {
     this.turnsToSkip = 0;
     this.fame = params.fame ?? 1;
     this.karma = 0;
+    this.lootBanned = false;
+    this.nextGoldMilestone = GOLD_FAME_FIRST;
     this.stars = 0;
     this.circles = 0;
     this.dragonEncounters = 0;

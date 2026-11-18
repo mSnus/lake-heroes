@@ -53,6 +53,10 @@ export const KARMA_HOSTILE_ENCOUNTER_MULTIPLIER = 2.25;
 // the event firing at all) is doubled (see dragonEncounter.ts,
 // rogueAttackEncounter.ts).
 export const KARMA_CURSED_ENCOUNTER_MULTIPLIER = 2;
+// +1 fame the first time a player's gold reaches GOLD_FAME_FIRST, then every GOLD_FAME_STEP above it.
+export const GOLD_FAME_FIRST = 1000;
+export const GOLD_FAME_STEP = 500;
+
 // Karma never leaves this range.
 export const KARMA_MIN = -5;
 export const KARMA_MAX = 5;

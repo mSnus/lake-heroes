@@ -1278,5 +1278,8 @@
     "tollShortfall": "ещё должен {remaining}🟡",
     "soldTile": "продал {tileName} за {gold}🟡 и {units}🧍",
     "portalArrival": "{playerName} прошёл через Портал к {tileName}"
+  },
+  "goldFame": {
+    "reached": "Богатство игрока {playerName} достигло {gold}🟡: +{fame}🏆"
   }
 }

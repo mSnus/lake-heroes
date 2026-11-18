@@ -10,7 +10,7 @@ import { isCursed, isBlessed } from '../utils/karma';
 import { currentYear } from '../game/year';
 import { t } from '../i18n';
 
-const BASE_ENCOUNTER_CHANCE = 1 / 14;
+const BASE_ENCOUNTER_CHANCE = 1 / 28;
 
 /**
  * Rogue Attack: a roaming horde raids one of the player's own tiles.

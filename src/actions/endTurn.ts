@@ -5,12 +5,14 @@ import { beginTurn } from './beginTurn';
 import { pushTurn } from '../online/sync';
 import { closeStream } from '../online/stream';
 import { closeTopic } from '../utils/say';
+import { checkGoldFame } from '../utils/goldFame';
 
 export function endTurn(board: GameState | null, updateGameState: (board: GameState) => void) {
   if (!board) return;
 
   console.log('Action: end turn for', board.activePlayer.name);
   closeTopic();
+  checkGoldFame(board.activePlayer);
 
   // Snapshot the outgoing player's stats -- but only if they actually took a
   // real turn. board.skippingTurn still reflects the PREVIOUS call's outcome
