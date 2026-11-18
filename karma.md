@@ -1,14 +1,14 @@
 # Karma
 
-Karma is a hidden moral score for each player. It starts at 0, changes silently with no toast or log line, and only shows as an icon next to the player's name.
+Karma is a hidden moral score for each player. It starts at 0, always stays between **−5 and +5** (`KARMA_MIN`, `KARMA_MAX`), changes silently with no toast or log line, and only shows as an icon next to the player's name.
 
 | Karma | Icon | State |
 |---|---|---|
-| −3 and below | 🕷️ | **cursed**: hostile odds go up |
+| −5 to −3 | 🕷️ | **cursed**: hostile odds go up |
 | −2 to −1 | 🕷️ | no effect yet (warning sign) |
 | 0 | (hidden) | neutral |
 | 1–2 | 🕊️ | no effect yet |
-| 3 and up | 🌈 | **blessed**: luck improves |
+| 3 to 5 | 🌈 | **blessed**: luck improves |
 
 Tapping the icon in the stats panel shows a short toast: "Let's see where bad karma leads you" or "Good karma brings good luck".
 
@@ -29,6 +29,8 @@ The thresholds are `KARMA_CURSED` (−3) and `KARMA_BLESSED` (3), checked by `is
 Raiding a caravan for gold or horses does not change karma.
 
 **Yearly drift:** at every Harvest, karma moves 1 step back toward 0 (`game/year.ts`).
+
+Every change is clamped to the −5…+5 range (`changeKarma` in `src/utils/karma.ts`), so an old save with lower karma snaps to −5 on its next change.
 
 ## Effects
 
@@ -56,3 +58,19 @@ The constants live in `src/game/constants.ts`:
 | `KARMA_BLESSED_HOSTILE_MULTIPLIER` | 0.85 |
 | `KARMA_BLESSED_CARAVAN_MULTIPLIER` | 1.25 |
 | `ZOMBIE_AMBUSH_CHANCE` | 0.3 |
+
+## Bots and karma
+
+Bots weigh karma before the two acts that cost it, looting and revenge (which razes the tile on a win). After their usual checks pass, they go through with it only with this chance (`karmaWillingness`):
+
+| Karma | 0 and up | −1 | −2 | −3 | −4 | −5 |
+|---|---|---|---|---|---|---|
+| Chance to loot or take revenge | 100% | 80% | 60% | 40% | 20% | never |
+
+On top of that, a bot loots only when the expected haul at a normal roll (the tile's turn income plus a quarter of its price in gold, see `lootPrize`) is worth:
+- more than a year of the bot's own income of gold and that resource, and
+- at least as much as the gold and that resource it already holds.
+
+Everything is counted in gold: food and arms at the Harvest sell price, units at a militia's recipe. See `shouldLootTile` and `shouldSeekRevenge` in `src/ai/decisions.ts`.
+
+Hero Hour attacks also cost karma, but bots don't weigh karma for them yet.

@@ -153,8 +153,8 @@ export const DRAGON_MERCY_SCORE_RATIO = 1.5;
 // available tile's garrison -- fill each tier toward this share of its own
 // Fame cap before banking gold for a tile (see ai/botPlans.ts's planTurnHire).
 export const BOT_ARMY_FILL_FRACTION = 2 / 3;
-// Bots garrison their tiles up to this share of each tile's capacity.
-export const BOT_GARRISON_TARGET_FRACTION = 3 / 4;
+// Bots garrison their tiles up to this share of each tile's capacity (1 = full).
+export const BOT_GARRISON_TARGET_FRACTION = 1;
 // A freshly claimed tile keeps at least this share of its capacity as garrison.
 export const BOT_CLAIM_GARRISON_MIN_FRACTION = 1 / 2;
 export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible for knighthood, granted on next King's Castle crossing (Player.isKnight) — which is what actually switches the rider sprite and unlocks Rider recruiting
