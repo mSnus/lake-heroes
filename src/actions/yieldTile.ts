@@ -3,6 +3,7 @@ import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { say } from '../utils/say';
 import { t } from '../i18n';
+import { roundGold } from '../game/resources';
 
 const TAKE_BACK_MULTIPLIER = 0.6;
 
@@ -10,7 +11,7 @@ const TAKE_BACK_MULTIPLIER = 0.6;
  * single source of truth shared by the actual yield (below), TileCard's own
  * preview/confirm text, and TollScreen's yield button. */
 export function yieldRefund(tile: Tile): number {
-  return Math.floor(tile.currentPrice.gold / 2);
+  return roundGold(tile.currentPrice.gold / 2);
 }
 
 /**
@@ -31,7 +32,7 @@ export function yieldTile(gameState: GameState, player: Player, tile: Tile): num
 }
 
 export function takeBackCost(tile: Tile): number {
-  return Math.ceil(tile.currentPrice.gold * TAKE_BACK_MULTIPLIER);
+  return roundGold(tile.currentPrice.gold * TAKE_BACK_MULTIPLIER);
 }
 
 /** Reverts a yield, at 60% of the tile's current price. Returns false (and

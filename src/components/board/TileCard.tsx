@@ -372,9 +372,11 @@ export const TileCard: React.FC<TileCardProps> = ({
             borderBottom: `solid 4px ${groupColor}`,
           }}
           onClick={
-            tile.owner === activePlayer?.id && !disableUpgradesScreen
-              ? openUpgradesScreen
-              : handleInfoClick
+            mode === 'display' && !demoMode
+              ? handleClose
+              : tile.owner === activePlayer?.id && !disableUpgradesScreen
+                ? openUpgradesScreen
+                : handleInfoClick
           }
         >
           <div className="tile-card-title">

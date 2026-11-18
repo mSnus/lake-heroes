@@ -136,9 +136,9 @@ export const ARMS_START = 30;
 export const MILITIA_ARMS = 1;
 // Food/arms trade at the yearly Harvest -- food and arms have different rates.
 export const FOOD_BUY_PRICE = 10;
-export const FOOD_SELL_PRICE = 7;
+export const FOOD_SELL_PRICE = 5;
 export const ARMS_BUY_PRICE = 15;
-export const ARMS_SELL_PRICE = 11;
+export const ARMS_SELL_PRICE = 10;
 // Harvest exchange, either way: EXCHANGE_FOOD 🥙 ⇄ EXCHANGE_ARMS ⚔️, whole batches only.
 export const EXCHANGE_FOOD = 3;
 export const EXCHANGE_ARMS = 2;

@@ -5,6 +5,7 @@ import { UNIT_PRICE, RIDER_UNIT_PRICE } from '../game/constants';
 import { sayInTopic } from '../utils/say';
 import { changeFame } from '../utils/fame';
 import { t } from '../i18n';
+import { roundGold } from '../game/resources';
 
 /**
  * What selling `tile` right now would refund -- the single source of truth
@@ -19,7 +20,7 @@ import { t } from '../i18n';
 export function sellRefund(tile: Tile): { gold: number; units: number } {
   const goldRefundMultiplier = tile.isYielded ? 0.4 : 1;
   return {
-    gold: Math.floor(tile.currentPrice.gold * goldRefundMultiplier),
+    gold: roundGold(tile.currentPrice.gold * goldRefundMultiplier),
     units: tile.garrisonMilitia + tile.garrisonRiders,
   };
 }

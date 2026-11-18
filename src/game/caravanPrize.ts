@@ -1,5 +1,6 @@
 import { Player } from './Player';
 import { Cost } from './resources';
+import { roundGold } from './resources';
 
 /** A caravan's cargo. Any component may be 0; gold and slaves are never
  * both 0 (see rollCaravanPrize). */
@@ -70,7 +71,7 @@ export function rollCaravanPrize(prizeUnits: number, forKnight: boolean): Carava
 export function splitCaravanGold(total: number): Cost {
   if (total <= 0) return { gold: 0, food: 0, arms: 0 };
 
-  const gold = Math.round(total * (0.3 + Math.random() * 0.3));
+  const gold = roundGold(total * (0.3 + Math.random() * 0.3));
   const rest = total - gold;
   const food = Math.round(rest * (0.1 + Math.random() * 0.6));
   const arms = rest - food;
@@ -81,7 +82,7 @@ export function splitCaravanGold(total: number): Cost {
 /** Every component quartered — what a tied raid comes away with. */
 export function quarterPrize(prize: CaravanPrize): CaravanPrize {
   return {
-    gold: Math.floor(prize.gold / 4),
+    gold: roundGold(prize.gold / 4),
     slaves: Math.floor(prize.slaves / 4),
     horses: Math.floor(prize.horses / 4),
   };

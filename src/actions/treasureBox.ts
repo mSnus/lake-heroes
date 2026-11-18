@@ -8,6 +8,7 @@ import { grantArtifact, pickRandomUnownedArtifact } from '../game/artifacts';
 import { recordStatEvent } from '../game/statistics';
 import { t } from '../i18n';
 import { playerSpanHtml } from '../utils/html';
+import { roundGold } from '../game/resources';
 
 type TreasureSize = 'small' | 'medium' | 'large';
 
@@ -97,7 +98,7 @@ export function handleTreasureBox(
         : MULTIPLIER_YEARS_START;
 
   const sizeMultiplier = TREASURE_SIZE_MULTIPLIERS[size];
-  const goldReward = Math.round(effectiveRoll * TREASURE_BOX_MULTIPLIER * yearMultiplier * sizeMultiplier);
+  const goldReward = roundGold(effectiveRoll * TREASURE_BOX_MULTIPLIER * yearMultiplier * sizeMultiplier);
 
   player.gold += goldReward;
 

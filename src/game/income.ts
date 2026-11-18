@@ -4,6 +4,7 @@ import { Tile } from './Tile';
 import { syndicateMultiplier } from './syndicate';
 import { hasYearEffect, DOUBLE_INCOME_EFFECT, NO_INCOME_EFFECT } from './yearCore';
 import { LOOT_PRICE_SHARE } from './constants';
+import { roundGold } from './resources';
 
 export interface TileIncome {
   gold: number;
@@ -125,7 +126,7 @@ export function addYearIncome(player: Player, income: Partial<TileIncome>): void
 export function lootPrize(tile: Tile, board: GameState, mult = 1): TileIncome {
   const base = tileTurnIncome(tile, 1, undefined, board);
   return {
-    gold: Math.round((base.gold + tile.currentPrice.gold * LOOT_PRICE_SHARE) * mult),
+    gold: roundGold((base.gold + tile.currentPrice.gold * LOOT_PRICE_SHARE) * mult),
     food: Math.round(base.food * mult),
     arms: Math.round(base.arms * mult),
     units: Math.round(base.units * mult),

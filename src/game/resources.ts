@@ -182,3 +182,6 @@ export function exchangeResource(
   player[from === 'food' ? 'arms' : 'food'] += done * batch.get;
   return done;
 }
+
+/** Gold amounts the game pays or charges are always multiples of 5. */
+export const roundGold = (gold: number): number => Math.round(gold / 5) * 5;

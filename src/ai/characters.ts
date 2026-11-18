@@ -59,7 +59,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 0.5,
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: false,
-    garrison: { minMilitia: 3, goldReserveFields: 2.5 },
+    garrison: { minMilitia: 3, goldReserveFields: 5 },
     claimGarrisonFraction: 0.7,
   },
   warrior: {
@@ -73,7 +73,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 2 / 3,
     buildsSyndicates: false,
     skipBuyingNearDragonGoal: true,
-    garrison: { minMilitia: 8, budgetFraction: 2 / 3, goldReserveFields: 1 },
+    garrison: { minMilitia: 8, budgetFraction: 2 / 3, goldReserveFields: 2 },
     claimGarrisonFraction: 0.3,
   },
   wizard: {
@@ -87,7 +87,7 @@ export const CHARACTERS: Record<CharacterId, CharacterConfig> = {
     kingsCastleHireFraction: 1, // unused — pickKingsCastleHireAmount special-cases wizard
     buildsSyndicates: true,
     skipBuyingNearDragonGoal: true,
-    garrison: { minMilitia: 4, budgetFraction: 1 / 2, goldReserveFields: 1.5 },
+    garrison: { minMilitia: 4, budgetFraction: 1 / 2, goldReserveFields: 3 },
     claimGarrisonFraction: 0.5,
   },
 };

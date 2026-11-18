@@ -2,10 +2,11 @@ import { GameState } from '../game/GameState';
 import { Player } from '../game/Player';
 import { Tile } from '../game/Tile';
 import { getFeeMultiplier } from '../game/artifacts';
+import { roundGold } from '../game/resources';
 
 /** Pipe of Hamelin halves fees the payer owes to other players' tiles. */
 export function getEffectiveFee(tile: Tile, payer: Player): number {
-  return Math.round(tile.fee * getFeeMultiplier(payer));
+  return roundGold(tile.fee * getFeeMultiplier(payer));
 }
 
 export interface FeeOptions {

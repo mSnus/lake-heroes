@@ -3,6 +3,7 @@ import { getOverrides } from '../utils/overridesStore';
 import groups from '../settings/groups.json';
 import { computeArmyPower, remainingCapacity, garrisonSlotCapacity, garrisonSlotsForLevel, UNIT_POWER, isBanzaiAttack } from './army';
 import { t, tOptional } from '../i18n';
+import { roundGold } from './resources';
 
 /** What a tile's own bonus pays out every turn. */
 export type TileBonusType = 'gold' | 'food' | 'arms' | 'units';
@@ -297,7 +298,7 @@ export class Tile implements TileJSON {
   /** Toll a visitor owes: the current level's own price or the tile's base
    * price, whichever is larger -- not the two summed. */
   get fee(): number {
-    return Math.round(Math.max(this.prices[this.level] || 0, this.prices[1] || 0) * FEE_MULTIPLIER);
+    return roundGold(Math.max(this.prices[this.level] || 0, this.prices[1] || 0) * FEE_MULTIPLIER);
   }
 
   isOwned(): boolean {

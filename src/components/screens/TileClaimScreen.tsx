@@ -27,6 +27,7 @@ import { planClaimGarrison } from '../../ai/botPlans';
 import Army from '../snippets/Army';
 import Tower from '../snippets/Tower';
 import Militia from '../snippets/Militia';
+import { roundGold } from '../../game/resources';
 
 interface TileInfoScreenProps {
   tile: Tile;
@@ -182,7 +183,7 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
   // The garrison itself always comes back in full on sale, yielded or not --
   // only the gold refund takes the yield penalty (see sellTile.ts).
   const sellPrice = tile.isYielded
-    ? { gold: Math.floor(tile.currentPrice.gold * 0.4), units: Math.floor(tile.currentPrice.units) }
+    ? { gold: roundGold(tile.currentPrice.gold * 0.4), units: Math.floor(tile.currentPrice.units) }
     : tile.currentPrice;
 
   const handleSell = () => {
