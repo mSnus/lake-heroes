@@ -31,6 +31,16 @@ const SEARCH_BUDGET = 3000;
 
 type Cell = { x: number; y: number };
 
+/** The dragon's lake: 2 columns by 3 rows in the middle of the map, kept free of roads. */
+export function lairBlock(cols: number, rows: number): { x: number; y: number; w: number; h: number } {
+  return { x: Math.floor((cols - 2) / 2), y: Math.floor((rows - 3) / 2), w: 2, h: 3 };
+}
+
+const inLair = (cols: number, rows: number, x: number, y: number) => {
+  const b = lairBlock(cols, rows);
+  return x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h;
+};
+
 const randInt = (n: number) => Math.floor(Math.random() * n);
 const shuffled = <T>(arr: T[]): T[] => {
   const a = [...arr];
@@ -155,15 +165,15 @@ class Builder {
   }
 
   idx = (c: Cell) => c.y * this.cols + c.x;
-  inside = (x: number, y: number) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+  inside = (x: number, y: number) =>
+    x >= 0 && y >= 0 && x < this.cols && y < this.rows && !inLair(this.cols, this.rows, x, y);
   roadCount = () => this.masks.filter((m) => m).length;
 
   link(a: Cell, b: Cell): boolean {
     const d = dirOf(a, b);
     const v = diagonalVertex(a.x, a.y, d);
-    if (d < 0 || !canAddExit(this.masks[this.idx(a)], d) || !canAddExit(this.masks[this.idx(b)], opposite(d))) {
-      return false;
-    }
+    if (d < 0 || !this.inside(a.x, a.y) || !this.inside(b.x, b.y)) return false;
+    if (!canAddExit(this.masks[this.idx(a)], d) || !canAddExit(this.masks[this.idx(b)], opposite(d))) return false;
 
     if (v && this.vertices.has(v)) return false;
     this.masks[this.idx(a)] |= 1 << d;
@@ -308,6 +318,10 @@ export function validateMap({ map, links }: GeneratedMap): string[] {
       }
     }
   });
+
+  if (cells.some((mask, i) => mask && inLair(cols, rows, i % cols, Math.floor(i / cols)))) {
+    problems.push("a road through the dragon's lake");
+  }
 
   if (slots.length !== cells.filter((m) => m).length) problems.push('slot count != road cells');
   const xs = slots.map((s) => s.x);

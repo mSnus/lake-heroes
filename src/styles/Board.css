@@ -152,6 +152,13 @@
   background-repeat: no-repeat;
 }
 
+.map-lake,
+.map-road {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* The dragon's lair square on a generated board (the art is painted): a clickable area. */
 .dragon-lair-icon {
   position: absolute;

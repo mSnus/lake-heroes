@@ -1,4 +1,4 @@
-import type { BoardMap } from '../../game/mapgen/generateMap';
+import { lairBlock, type BoardMap } from '../../game/mapgen/generateMap';
 
 /** One grid cell's side, in units of the board viewport's width (cqi): 4 cells across when zoomed in. */
 export const CELL_CQI = 25;
@@ -22,8 +22,8 @@ export function slotPosition(map: BoardMap, slot: number): { x: number; y: numbe
   return { x: pct.x, y: pct.y, textPos: null };
 }
 
-/** The scenery cell nearest the middle of the map, where the dragon lairs. */
-export function dragonCell(map: BoardMap): { x: number; y: number } {
+/** The scenery cell nearest the middle of the map -- the lair on maps saved before the lake block existed. */
+function nearestEmptyToCentre(map: BoardMap): { x: number; y: number } {
   let best = { x: 0, y: 0 };
   let bestDist = Infinity;
   map.cells.forEach((mask, i) => {
@@ -37,4 +37,17 @@ export function dragonCell(map: BoardMap): { x: number; y: number } {
     }
   });
   return best;
+}
+
+/** Where the dragon's lake lies, in cells: the reserved block, or one empty cell on an older map whose roads cross it. */
+export function dragonLair(map: BoardMap): { x: number; y: number; w: number; h: number } {
+  const block = lairBlock(map.cols, map.rows);
+  const clear = map.cells.every((mask, i) => {
+    const x = i % map.cols;
+    const y = Math.floor(i / map.cols);
+    return !mask || x < block.x || x >= block.x + block.w || y < block.y || y >= block.y + block.h;
+  });
+  if (clear) return block;
+  const cell = nearestEmptyToCentre(map);
+  return { ...cell, w: 1, h: 1 };
 }

@@ -4,7 +4,7 @@ import groupsData from '../../settings/groups.json';
 
 import { TILE_LEVEL_SCALE } from '../../game/constants';
 import type { BoardMap } from '../../game/mapgen/generateMap';
-import { cqiToPct, dragonCell, layerSizeCqi, slotPosition, CELL_CQI, TILE_CQI } from './mapGeometry';
+import { cqiToPct, dragonLair, layerSizeCqi, slotPosition, CELL_CQI, TILE_CQI } from './mapGeometry';
 import { RoadMap } from './RoadMap';
 import { getTilePosition, isMobileLayout, parseTileName } from './common';
 import { useMapEditStore, mapEditSelectTile, mapEditSelectPlayerIcon, mapEditDragTile, playerIconOffset, playerIconOffsetH } from '../../utils/mapEditStore';
@@ -63,8 +63,8 @@ function generatedIconOffset(map: BoardMap) {
 }
 
 function lairStyle(map: BoardMap): React.CSSProperties {
-  const { x, y } = dragonCell(map);
-  const pct = cqiToPct(map, (x + 0.5) * CELL_CQI, (y + 0.5) * CELL_CQI);
+  const { x, y, w, h } = dragonLair(map);
+  const pct = cqiToPct(map, (x + w / 2) * CELL_CQI, (y + h / 2) * CELL_CQI);
   return { left: pct.x + '%', top: pct.y + '%' };
 }
 

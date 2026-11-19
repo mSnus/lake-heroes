@@ -48,21 +48,26 @@ export function diagonalVertex(x: number, y: number, d: number): string | null {
   return `${Math.max(x, x + dx)},${Math.max(y, y + dy)}`;
 }
 
-/** Painted road pieces in assets/map-squares.jpg (4×4 sheet), by sprite index, with the exits each one has. */
-const ROAD_SPRITES: [number, number[]][] = [
-  [0, [0, 4]],
-  [1, [1, 5]],
-  [2, [0, 2]],
-  [3, [1, 3]],
-  [4, [0, 5]],
-  [5, [0, 2, 4]],
-  [6, [1, 3, 5]],
-  [7, [0, 2, 5]],
-  [8, [1, 3, 6]],
+/** Road images in assets/roads/, with the exits each one draws (several images may share a shape). */
+const ROAD_IMAGES: [string, number[]][] = [
+  ['N-S_1', [0, 4]],
+  ['N-S_2', [0, 4]],
+  ['N-S_3', [0, 4]],
+  ['NE-SW1', [1, 5]],
+  ['N-E', [0, 2]],
+  ['NE-SE_1', [1, 3]],
+  ['NE-SE_2', [1, 3]],
+  ['N-SW', [0, 5]],
+  ['N-E-S', [0, 2, 4]],
+  ['N-E-S_2', [0, 2, 4]],
+  ['NE-SE-SW', [1, 3, 5]],
+  ['N-E-SW', [0, 2, 5]],
+  ['N-SW-E', [0, 2, 5]],
+  ['NE-W-SE', [1, 3, 6]],
 ];
 
-export interface PieceSprite {
-  sprite: number;
+export interface RoadPiece {
+  image: string;
   /** Clockwise quarter turns, applied after the mirror. */
   quarterTurns: number;
   mirror: boolean;
@@ -70,14 +75,14 @@ export interface PieceSprite {
 
 const mirrored = (d: number) => (8 - d) % 8;
 
-/** Every legal road mask -> the painted piece that draws it once mirrored and/or rotated. */
-const PIECE_BY_MASK = (() => {
-  const table = new Map<number, PieceSprite>();
-  for (const [sprite, exits] of ROAD_SPRITES) {
+/** Every legal road mask -> all the image/turn/mirror combinations that draw it. */
+const PIECES_BY_MASK = (() => {
+  const table = new Map<number, RoadPiece[]>();
+  for (const [image, exits] of ROAD_IMAGES) {
     for (const mirror of [false, true]) {
       for (let quarterTurns = 0; quarterTurns < 4; quarterTurns++) {
         const mask = exits.reduce((m, d) => m | (1 << (((mirror ? mirrored(d) : d) + 2 * quarterTurns) % 8)), 0);
-        if (!table.has(mask)) table.set(mask, { sprite, quarterTurns, mirror });
+        table.set(mask, [...(table.get(mask) ?? []), { image, quarterTurns, mirror }]);
       }
     }
   }
@@ -85,6 +90,7 @@ const PIECE_BY_MASK = (() => {
   return table;
 })();
 
-export function pieceFor(mask: number): PieceSprite | undefined {
-  return PIECE_BY_MASK.get(mask);
+/** The ways to draw a road cell with this mask (empty for an illegal one). */
+export function piecesFor(mask: number): RoadPiece[] {
+  return PIECES_BY_MASK.get(mask) ?? [];
 }
