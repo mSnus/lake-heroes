@@ -364,11 +364,12 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         </div>
       ) : (
         (diceActive || canEndTurn) && (
-          <div style={{
+          <div
+              className={'dice-box'}
+              style={{
               ...colStyle,
-              top: isMobileLayout() ? 'calc(100vw * 5 / 4 - 25px)' : '8px' ,
-              right: isMobileLayout() ? '8px' : 'unset' ,
-              left: isMobileLayout() ? 'unset' : 'calc(100vh * var(--board-aspect-ratio) - 20px)' ,
+              top: isMobileLayout() ? 'calc(100vw * 5 / 4 - 25px)' : 'calc(100vh - 64px)' ,
+              right: isMobileLayout() ? '8px' : '20px' ,
             }}>
             {diceActive && (
               <div

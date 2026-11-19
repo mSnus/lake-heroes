@@ -12,7 +12,6 @@
   --toastify-color-light: #3b402cc4;
   --toastify-text-color-light: #abab93;
   --body-font-size: 0.85rem;
-  --body-font-family: 'Inter, sans-serif';
   --sprite-scale: 48%;
   --shield-width: 60px;
   --map-width: 1150;
@@ -26,9 +25,9 @@
   --board-aspect-ratio: var(--map-width) / var(--map-height);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 769px) {
   :root {
-    --body-font: '11px Inter, sans-serif';
+    --map-width: 1536;
   }
 }
 
@@ -184,7 +183,8 @@ body.screen-open {
   .side-pane {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
+    overflow-y: clip;
+    max-width: calc(100vw - var(--map-width));
     overscroll-behavior: contain;
   }
 }
@@ -221,7 +221,7 @@ body.screen-open {
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
-    overflow-y: auto;
+    overflow-y: clip;
     overscroll-behavior: contain;
     min-width: 0;
   }
