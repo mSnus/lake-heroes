@@ -24,7 +24,7 @@ The `max` with the claim price only matters where a level-2 upgrade costs less t
 | Farms (e.g. Pigs) | 40🟡 | 60🟡 | 120🟡 |
 | Traders (e.g. Grapes) | 50🟡 | 60🟡 | 120🟡 |
 | Mills, Mines | 60🟡 | 120🟡 | 220🟡 |
-| Camps, Technology | 80🟡 | 150🟡 | 300🟡 |
+| Camps, Crafts | 80🟡 | 150🟡 | 300🟡 |
 | Towers | 120🟡 | 150🟡 | 300🟡 |
 
 Prices come from each tile's coefficients in `src/settings/tiles.json`, times a base of 20🟡 for level 1 and 40🟡 for upgrades (`TILE_BASE_PRICE`, `TILE_BASE_UPGRADE`).

@@ -362,7 +362,7 @@
   },
   {
     "id": "lumber-factory",
-    "group": "Technology",
+    "group": "Crafts",
     "spriteImage": "assets/sprites/lumber.png",
     "isOwnable": true,
     "bonusType": "arms",
@@ -381,7 +381,7 @@
   },
   {
     "id": "pottery-workshop",
-    "group": "Technology",
+    "group": "Crafts",
     "spriteImage": "assets/sprites/pottery.png",
     "isOwnable": true,
     "bonusType": "arms",
@@ -400,7 +400,7 @@
   },
   {
     "id": "charcoal-burners",
-    "group": "Technology",
+    "group": "Crafts",
     "spriteImage": "assets/sprites/charcoal.png",
     "isOwnable": true,
     "bonusType": "arms",
@@ -419,7 +419,7 @@
   },
   {
     "id": "iron-forge",
-    "group": "Technology",
+    "group": "Crafts",
     "spriteImage": "assets/sprites/iron_forge.png",
     "isOwnable": true,
     "bonusType": "arms",
@@ -438,7 +438,7 @@
   },
   {
     "id": "gunpowder-depot",
-    "group": "Technology",
+    "group": "Crafts",
     "spriteImage": "assets/sprites/gunpowder.png",
     "isOwnable": true,
     "bonusType": "arms",

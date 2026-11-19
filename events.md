@@ -93,7 +93,7 @@ A year is 4 rounds (`TURNS_PER_YEAR`). When it ends (`src/game/year.ts`):
 
 1. **Harvest:** every tile pays its owner its income (gold, food, arms or units), unless Unjust Taxes is in force. Each player then gets a Harvest turn to buy, sell and exchange food and arms.
 2. **Karma** moves 1 step back toward 0.
-3. **Lucky groups:** each of Mills, Farms and Fields has a 25% chance of double income for the new year (at most 2 groups).
+3. **Lucky groups:** each of Mills, Farms, Fields, Mines and Crafts has a 25% chance of double income for the new year (at most 2 groups).
 4. **Yearly limits reset:** dragon, caravan, ambush, raid and Free Folk encounters.
 
 ## Passing the King's Castle

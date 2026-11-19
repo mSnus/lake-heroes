@@ -17,6 +17,7 @@ import {
 } from '../game/constants';
 import { karmaWillingness } from '../utils/karma';
 import { resourcesGoldValue, unitGoldValue } from '../game/resources';
+import { yieldRefund } from '../actions/yieldTile';
 
 export function getCharacterConfig(player: Player): CharacterConfig | null {
   return player.character ? CHARACTERS[player.character] : null;
@@ -217,6 +218,23 @@ export function sortTilesBySacrifice(board: GameState, player: Player): Tile[] {
     if (aSyn !== bSyn) return aSyn - bSyn;
     return a.getBonus(a.level) - b.getBonus(b.level);
   });
+}
+
+/** Tiles a bot yields to the King to cover `owed`, cheapest to give up first --
+ * none when yielding all of them still wouldn't cover it (it sells instead). */
+export function pickTilesToYield(board: GameState, player: Player, owed: number): Tile[] {
+  const candidates = sortTilesBySacrifice(board, player).filter((t) => !t.isYielded);
+  if (candidates.reduce((sum, t) => sum + yieldRefund(t), 0) < owed) return [];
+
+  const picks: Tile[] = [];
+  let raised = 0;
+  for (const t of candidates) {
+    if (raised >= owed) break;
+    picks.push(t);
+    raised += yieldRefund(t);
+  }
+
+  return picks;
 }
 
 /**

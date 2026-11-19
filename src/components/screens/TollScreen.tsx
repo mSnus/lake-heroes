@@ -18,7 +18,7 @@ import { chargeToll, triggerPrisonerOfWar } from '../../actions/afterMoveLogic';
 import { fightTile } from '../../actions/fightTile';
 import { sellTile, sellRefund } from '../../actions/sellTile';
 import { yieldTile, yieldRefund } from '../../actions/yieldTile';
-import { shouldSeekRevenge, sortTilesBySacrifice } from '../../ai/decisions';
+import { shouldSeekRevenge, sortTilesBySacrifice, pickTilesToYield } from '../../ai/decisions';
 import { fmtPrice } from '../board/TileCard';
 import { announce } from '../../utils/announce';
 import { closeTopic } from '../../utils/say';
@@ -133,6 +133,17 @@ export const TollScreen: React.FC<TollScreenProps> = ({
     const wait = () => new Promise<void>((resolve) => setTimeout(resolve, BOT_STEP_DELAY_MS));
 
     (async () => {
+      const toYield = player.owedToll > 0 ? pickTilesToYield(gameState, player, player.owedToll) : [];
+      if (toYield.length) {
+        announce(player, 'botController.yieldTilesToPayFee');
+        for (const target of toYield) {
+          await wait();
+          if (cancelled) return;
+          yieldTile(gameState, player, target);
+          settleAfterSale();
+        }
+      }
+
       while (!cancelled && player.owedToll > 0) {
         const target = sortTilesBySacrifice(gameState, player)[0];
         if (!target) break;

@@ -6,6 +6,7 @@ import { BOT_ARMY_FILL_FRACTION, BOT_CLAIM_GARRISON_MIN_FRACTION } from '../game
 import { getOverrides } from '../utils/overridesStore';
 import { Cost, hireMax, maxAffordable, scaleCost, unitCost, upgradeCost } from '../game/resources';
 import { getCharacterConfig, garrisonShortfall, pickKingsCastleHireAmount, pickKingsCastleHireTier } from './decisions';
+import { takeBackCost } from '../actions/yieldTile';
 
 /**
  * Bot plans that used to live inside screen components' useEffects, which made
@@ -187,6 +188,30 @@ export function planClaimGarrison(
   return Math.min(maxGarrison, Math.max(byFraction, Math.min(floor, totalMilitiaPool - keep)));
 }
 
+/** Gold a bot keeps for tiles: its personality's multiple of the Wheat Field's price. */
+export function tileGoldReserve(board: GameState, player: Player): number {
+  const wheat = board.tiles.find((t) => t?.id === 'wheat-field');
+  return Math.round((wheat?.prices[1] ?? 0) * (getCharacterConfig(player)?.garrison.goldReserveFields ?? 0));
+}
+
+/** Yielded tiles a bot buys back this turn, best income first, while its tile reserve stays covered. */
+export function pickTilesToTakeBack(board: GameState, player: Player): Tile[] {
+  let gold = player.gold - tileGoldReserve(board, player);
+  const yielded = board.tiles
+    .filter((t): t is Tile => !!t && t.owner === player.id && t.isYielded)
+    .sort((a, b) => b.getBonus(b.level) - a.getBonus(a.level));
+
+  const picks: Tile[] = [];
+  for (const tile of yielded) {
+    const cost = takeBackCost(tile);
+    if (cost > gold) continue;
+    picks.push(tile);
+    gold -= cost;
+  }
+
+  return picks;
+}
+
 /**
  * Once its army is filled, a bot hires extra militia for its garrisons with
  * the gold above its tile reserve: the army sends that many to its thinnest
@@ -198,8 +223,7 @@ export function planGarrisonRecruits(board: GameState, player: Player): { tile: 
   const militiaTarget = Math.floor(player.armyCapacity.militia * BOT_ARMY_FILL_FRACTION);
   if (player.militia < militiaTarget) return [];
 
-  const wheat = board.tiles.find((t) => t?.id === 'wheat-field');
-  const reserve = Math.round((wheat?.prices[1] ?? 0) * cfg.garrison.goldReserveFields);
+  const reserve = tileGoldReserve(board, player);
   const wallet = { gold: Math.max(0, player.gold - reserve), food: player.food, arms: player.arms };
   let budget = Math.min(maxAffordable(wallet, unitCost('militia')), player.militia - (cfg.garrison.minMilitia ?? 0));
 

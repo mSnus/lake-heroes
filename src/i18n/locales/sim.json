@@ -380,6 +380,7 @@
     "noRevenge": "forgo revenge",
     "sellTilesToFight": "sell tiles to fight",
     "sellTilesToPayFee": "sell tiles to pay the fee",
+    "yieldTilesToPayFee": "yield tiles to the King to pay the fee",
     "acceptTheLoss": "accept the loss",
     "fightTheDragon": "fight the dragon",
     "attackTheCaravan": "attack the caravan",
@@ -1180,7 +1181,9 @@
     "groupName": {
       "Mills": "Mills",
       "Farms": "Farms",
-      "Fields": "Fields"
+      "Fields": "Fields",
+      "Mines": "Mines",
+      "Crafts": "Crafts"
     }
   },
   "saveSlots": {

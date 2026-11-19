@@ -5,6 +5,7 @@ import { t } from '../i18n';
 // Decisions that only ever come up while visiting the topic's tile.
 const TILE_VISIT_DECISIONS = new Set([
   'botController.sellTilesToPayFee',
+  'botController.yieldTilesToPayFee',
   'botController.noRevenge',
   'botController.goWithPeace',
   'botController.acceptTheLoss',

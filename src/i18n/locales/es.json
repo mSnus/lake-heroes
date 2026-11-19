@@ -401,6 +401,7 @@
     "noRevenge": "renunciar a la venganza",
     "sellTilesToFight": "vender casillas para luchar",
     "sellTilesToPayFee": "vender casillas para pagar la tarifa",
+    "yieldTilesToPayFee": "ceder casillas al Rey para pagar la tarifa",
     "acceptTheLoss": "aceptar la pérdida",
     "fightTheDragon": "luchar contra el dragón",
     "attackTheCaravan": "atacar la caravana",
@@ -1219,7 +1220,9 @@
     "groupName": {
       "Mills": "los Molinos",
       "Farms": "las Granjas",
-      "Fields": "los Campos"
+      "Fields": "los Campos",
+      "Mines": "las Minas",
+      "Crafts": "los Oficios"
     }
   },
   "saveSlots": {

@@ -19,7 +19,8 @@ import { TollScreen } from '../components/screens/TollScreen';
 import { computeFeeOptions, FeeOptions } from './feeOptions';
 import { checkZombieAmbushEncounter } from './zombieAmbushEncounter';
 import { setGameMessage } from '../utils/gameMessage';
-import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget } from '../ai/decisions';
+import { getCharacterConfig, shouldSeekRevenge, sortTilesBySacrifice, pickHeroHourTarget, pickTilesToYield } from '../ai/decisions';
+import { yieldTile } from './yieldTile';
 import { showBattleScreen } from '../game/battleGrid/battleResolution';
 import { announce } from '../utils/announce';
 import { isJailed, canRazeJailedTile, razeJailedTile } from './razeJailedTile';
@@ -310,6 +311,17 @@ function resolveGuardsHeadless(
 
   let remaining = player.hasSettledTollThisTurn ? 0 : chargeToll(player, owner, tile, opts.fee);
   updateGameState(board);
+
+  const toYield = remaining > 0 ? pickTilesToYield(board, player, remaining) : [];
+  if (toYield.length) {
+    announce(player, 'botController.yieldTilesToPayFee');
+    for (const t of toYield) {
+      yieldTile(board, player, t);
+      remaining = chargeToll(player, owner, tile, opts.fee);
+    }
+
+    updateGameState(board);
+  }
 
   if (remaining > 0) {
     if (opts.hasSellableTiles && opts.sellable.gold >= remaining) {

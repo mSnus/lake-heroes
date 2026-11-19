@@ -23,7 +23,7 @@ export const GAME_START_YEAR = 1450;
 // in startNewYear, capped at DOUBLE_INCOME_MAX_GROUPS. Only gold-producing
 // groups -- doubling a Camp/Tower's unit income isn't the same kind of
 // windfall and would need its own balance pass.
-export const DOUBLE_INCOME_GROUPS = ['Mills', 'Farms', 'Fields'];
+export const DOUBLE_INCOME_GROUPS = ['Mills', 'Farms', 'Fields', 'Mines', 'Crafts'];
 export const DOUBLE_INCOME_CHANCE = 0.25;
 export const DOUBLE_INCOME_MAX_GROUPS = 2;
 // The game's first this many years count as early game (Joker's Queen's

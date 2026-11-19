@@ -398,6 +398,7 @@
     "noRevenge": "отказаться от мести",
     "sellTilesToFight": "продать клетки, чтобы сражаться",
     "sellTilesToPayFee": "продать клетки, чтобы заплатить пошлину",
+    "yieldTilesToPayFee": "уступить клетки королю, чтобы заплатить пошлину",
     "acceptTheLoss": "смириться с потерей",
     "fightTheDragon": "сразиться с Драконом",
     "attackTheCaravan": "напасть на караван",
@@ -1216,7 +1217,9 @@
     "groupName": {
       "Mills": "Мельницы",
       "Farms": "Фермы",
-      "Fields": "Поля"
+      "Fields": "Поля",
+      "Mines": "Шахты",
+      "Crafts": "Ремёсла"
     }
   },
   "saveSlots": {
