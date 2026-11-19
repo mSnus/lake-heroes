@@ -35,6 +35,8 @@ const ZOOM_SCALE = 1.33;
 // Zoom scale per fixed level; 0 means "fit the whole board".
 const CLASSIC_ZOOM_SCALES = [0, ZOOM_SCALE];
 const GENERATED_ZOOM_SCALES = [0.6, 1];
+// Desktop (wider than 768px): zoomed in is the mobile zoomed-out view, zoomed out 0.75 of it.
+const GENERATED_DESKTOP_ZOOM_SCALES = [0.45, 0.6];
 // How far two fingers must spread (or close, inverted) to step one zoom level.
 const PINCH_STEP_RATIO = 1.15;
 const ZOOM_TRANSITION_MS = 600;
@@ -102,7 +104,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const bgLayerRef = React.useRef<HTMLDivElement>(null);
   // Fixed zoom levels; a scale of 0 fits the whole board, others follow the active player.
-  const zoomScales = map ? GENERATED_ZOOM_SCALES : CLASSIC_ZOOM_SCALES;
+  const zoomScales = map ? (isMobile ? GENERATED_ZOOM_SCALES : GENERATED_DESKTOP_ZOOM_SCALES) : CLASSIC_ZOOM_SCALES;
   const maxZoom = zoomScales.length - 1;
   const [zoomLevel, setZoomLevel] = React.useState(0);
   const zoomScale = zoomScales[Math.min(zoomLevel, maxZoom)];
