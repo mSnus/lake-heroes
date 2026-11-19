@@ -19,7 +19,6 @@ import { announce } from '../utils/announce';
 import { setGameMessage } from '../utils/gameMessage';
 import { openStream } from '../online/stream';
 import { t } from '../i18n';
-import { playerSpanHtml } from '../utils/html';
 
 /**
  * Everything that belongs to the player whose turn is STARTING: their per-turn
@@ -89,13 +88,12 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
     // War's release, which already has its own separate ransom ritual right
     // after this block.
     if (player.turnsToSkip === 0 && !player.isPrisonerOfWar) {
-      const playerSpan = playerSpanHtml(player.name, player.color);
       const prisonArtifact = getPrisonProtectionArtifact(player);
       if (prisonArtifact) {
         setGameMessage(
           board,
           t('endTurn.prisonFineWaived', {
-            playerSpan,
+            playerName: player.name,
             artifactName: prisonArtifact.name,
             emoji: prisonArtifact.emoji,
           })
@@ -103,16 +101,16 @@ export function beginTurn(board: GameState, updateGameState: (board: GameState) 
         say(t('endTurn.prisonFineWaivedToast', { playerName: player.name, artifactName: prisonArtifact.name }), 'info');
       } else if (player.gold < 10) {
         changeFame(player, -1, player.isKnight ? KNIGHT_FAME : 1);
-        setGameMessage(board, t('endTurn.prisonFameFine', { playerSpan }));
+        setGameMessage(board, t('endTurn.prisonFameFine', { playerName: player.name }));
         say(t('endTurn.prisonFameFineToast', { playerName: player.name }), 'info');
       } else {
         const fine = Math.round(player.gold / 4 / 10) * 10;
         if (fine === 0) {
-          setGameMessage(board, t('endTurn.prisonConvinces', { playerSpan }));
+          setGameMessage(board, t('endTurn.prisonConvinces', { playerName: player.name }));
           say(t('endTurn.prisonConvincesToast', { playerName: player.name }), 'info');
         } else {
           player.gold -= fine;
-          setGameMessage(board, t('endTurn.prisonGoldFine', { playerSpan, fine }));
+          setGameMessage(board, t('endTurn.prisonGoldFine', { playerName: player.name, fine }));
           say(t('endTurn.prisonGoldFineToast', { playerName: player.name, fine }), 'info');
         }
       }

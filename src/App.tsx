@@ -833,7 +833,7 @@ function App() {
             {/* liveBanner mirrors whoever is on turn, so an observer sees
                 their banner change as it happens; it retires once the state
                 carrying it has been applied (online/liveFeedStore.ts). */}
-            {!screen && <GameMessage message={liveFeed.banner ?? gameState.gameMessage} />}
+            {!screen && <GameMessage message={liveFeed.banner ?? gameState.gameMessage} players={gameState.players} />}
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <CurrentPlayerCard gameState={gameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
