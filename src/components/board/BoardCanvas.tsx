@@ -385,7 +385,6 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     if (pos?.textPos === 'left') tileClass += ' tile-left';
     if (pos?.textPos === 'right') tileClass += ' tile-right';
     if (!tile.isOwnable) tileClass += ' tile-sprite-special';
-    if (tile.id === 'road') tileClass += ' tile-road';
 
     const handleTileClick = () => {
       if (!tile) return;

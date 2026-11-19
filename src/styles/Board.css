@@ -133,12 +133,6 @@
   height: 11.4cqi;
 }
 
-/* Empty road slot: just its faint ring, no shadow or fade. */
-.tile-road .tile-sprite {
-  filter: none;
-  opacity: 1;
-}
-
 /* Generated board (RoadMap.tsx): one painted square per cell, under every other layer. */
 .map-squares {
   position: absolute;

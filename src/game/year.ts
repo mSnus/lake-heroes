@@ -51,7 +51,7 @@ export type { YearEffect };
 // This year's lucky groups (if any) flash a 🟨/🟪/🟩 badge, chosen per
 // group here so income.ts's tileTurnIncome and this announcement can't
 // name a group differently.
-export const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪', Fields: '🟩', Mines: '🟦', Crafts: '⬛' };
+export const GROUP_EMOJI: Record<string, string> = { Mills: '🟨', Farms: '🟪', Fields: '🟩', Mines: '🔷', Crafts: '⬛' };
 
 /**
  * Year end, as the Harvest round begins: the year's payouts -- the Yearly
