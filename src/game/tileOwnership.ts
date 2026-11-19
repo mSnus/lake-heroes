@@ -81,7 +81,7 @@ export function claimAffordability(tile: Tile, player: Player): ClaimAffordabili
   const attackerPower = player.armyPower;
   const isBanzai = isBanzaiAttack(lvl1Defence, attackerPower);
   const unitsInsufficient = !isBanzai && attackerPower < lvl1Defence;
-  const goldLacking = player.gold < tile.currentPrice.gold;
+  const goldLacking = false;
   const fameLacking = tile.requiredFame > 0 && player.fame < tile.requiredFame;
 
   return { canClaim: !goldLacking && !unitsInsufficient && !fameLacking, goldLacking, unitsInsufficient, fameLacking };

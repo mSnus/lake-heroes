@@ -46,7 +46,7 @@ Every change is clamped to the −5…+5 range (`changeKarma` in `src/utils/karm
 | Dragon encounter chance | 1/12 | ×2 | — |
 | Dragon attacks (rather than flying over) | 1/3, or 1/2 above fame 5 | ×2.25, capped at certain | ×0.85 |
 | Zombie ambush on an abandoned tile (landing or looting) | 30% | ×2 | — |
-| Caravan encounter chance (gold, slaves or horses) | 1/12 | — | ×1.25 |
+| Caravan encounter chance (gold, slaves or horses) | 1/6 | — | ×1.25 |
 | Die quietly loaded to land on Prison, when Prison is on the picked road | — | 5% | — |
 | Portal drops the player in Prison instead of a random tile | — | 5% | — |
 

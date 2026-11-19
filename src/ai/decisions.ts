@@ -37,7 +37,6 @@ function destinationScore(player: Player, tile: Tile | undefined): number {
   if (tile.owner === player.id) return 10;
   if (tile.isOwned()) return -tile.fee / 10;
   const canTake =
-    player.gold >= tile.currentPrice.gold &&
     player.fame >= tile.requiredFame &&
     player.armyPower >= tile.getDefence(1);
   return canTake ? 30 : 5;
@@ -99,7 +98,7 @@ export function shouldClaimTile(player: Player, tile: Tile, board: GameState): b
   const lvl1Defence = tile.getDefence(1);
   if (player.armyPower < lvl1Defence) return false;
   const armyOk = lvl1Defence <= cfg.claim.armyFraction * player.armyPower;
-  const goldOk = tile.prices[1] <= cfg.claim.goldFraction * player.gold;
+  const goldOk = true;
   return armyOk && goldOk;
 }
 

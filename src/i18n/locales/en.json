@@ -487,7 +487,8 @@
       "earthquake": "🪨 <strong>Earthquake</strong> — upgraded tiles lose a level; players with no upgraded tiles lose their cheapest tile instead.",
       "meteor": "☄️ <strong>Meteor</strong> — strikes a random tile owned by the richest player, razing it.",
       "kingsGift": "👑 <strong>King's Gift</strong> — the player who rolled it receives a random artifact nobody owns yet, or 200🟡 if none are left.",
-      "rust": "🟫 <strong>Rust</strong> — every player's Riders 🐎 rust away and become Militia 🧍."
+      "rust": "🟫 <strong>Rust</strong> — every player's arms ⚔️ rust away: everyone's arms drop to 0.",
+      "locust": "🦗 <strong>Locust</strong> — swarms devour every player's food 🥙: everyone's food drops to 0."
     },
     "travel": {
       "title": "Travel 🧭",
@@ -797,7 +798,8 @@
       "earthquake": "Earthquake",
       "meteor": "Meteor",
       "kingsGift": "King's Gift",
-      "rust": "Rust"
+      "rust": "Rust",
+      "locust": "Locust"
     },
     "taxesMessage": "No tile income for 1 year, including this year's Harvest.",
     "savedByArtifact": "{playerName} is saved by the {artifactName} {emoji}",
@@ -816,7 +818,8 @@
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "{playerName} is given the {artifactName} {emoji} by the King!",
     "kingsGiftGold": "The treasury holds no more artifacts, so the King sends 200🟡 to {playerName}",
-    "rustMessage": "Rust corrodes every army's armor across the realm — all Riders are reduced to Militia."
+    "rustMessage": "Rust spreads through every armoury in the realm — all players lose their arms ⚔️.",
+    "locustMessage": "Locust swarms sweep across the realm — all players lose their food 🥙."
   },
   "battleCommon": {
     "losingUnitsPart": " losing {army}",

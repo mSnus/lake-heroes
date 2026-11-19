@@ -328,7 +328,6 @@ export class Tile implements TileJSON {
     // same way, so the two sides are compared on one scale.
     const lvl1Defence = this.getDefence(1) * (this.abandoned ? UNIT_POWER.zombies : 1);
     return (
-      playerGold >= this.prices[1] &&
       (playerUnits >= lvl1Defence || isBanzaiAttack(lvl1Defence, playerUnits)) &&
       playerFame >= this.requiredFame
     );

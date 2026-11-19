@@ -29,6 +29,7 @@ const EVENTS = [
   'Meteor',
   "King's Gift",
   'Rust',
+  'Locust',
 ] as const;
 type JokerEvent = (typeof EVENTS)[number];
 
@@ -43,6 +44,7 @@ const EVENT_EMOJI: Record<JokerEvent, string> = {
   Meteor: '☄️',
   "King's Gift": '👑',
   Rust: '🟫',
+  Locust: '🦗',
 };
 
 // EVENTS values are internal switch keys (never shown directly) — this maps
@@ -57,12 +59,13 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
   Meteor: 'joker.eventName.meteor',
   "King's Gift": 'joker.eventName.kingsGift',
   Rust: 'joker.eventName.rust',
+  Locust: 'joker.eventName.locust',
 };
 
 // Which half of the table a draw comes from, before the specific event is
 // picked within that half -- karma (if negative) skews which half, never
 // which event, so the within-half odds stay exactly as they are today.
-const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor', 'Rust'];
+const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor', 'Rust', 'Locust'];
 const GOOD_EVENTS: JokerEvent[] = ['Blessing', "Queen's Gift", "King's Gift"];
 
 export function handleJoker(
@@ -76,11 +79,10 @@ export function handleJoker(
 ) {
   const lander = board.activePlayer;
   const badChance = isCursed(lander) ? KARMA_JOKER_BAD_CHANCE : isBlessed(lander) ? KARMA_BLESSED_JOKER_BAD_CHANCE : 0.5;
-  // Rust (global rider->militia conversion) is only ever drawable when
-  // someone on the board actually has Riders to lose -- otherwise it would
-  // "fire" as a no-op, wasting a bad-event turn on nothing.
-  const anyRidersInPlay = board.players.some((p) => p.riders > 0);
-  const badPool = anyRidersInPlay ? BAD_EVENTS : BAD_EVENTS.filter((e) => e !== 'Rust');
+  // Rust and Locust only join the draw while someone actually holds arms / food to lose.
+  const anyArms = board.players.some((p) => p.arms > 0);
+  const anyFood = board.players.some((p) => p.food > 0);
+  const badPool = BAD_EVENTS.filter((e) => (e !== 'Rust' || anyArms) && (e !== 'Locust' || anyFood));
   const pool = Math.random() < badChance ? badPool : GOOD_EVENTS;
   const event: JokerEvent = pool[Math.floor(Math.random() * pool.length)];
   let message = '';
@@ -258,16 +260,20 @@ export function handleJoker(
     }
 
     case 'Rust': {
-      // Global, unlike every other event here -- every player's Riders rust
-      // away, not just the lander's. Guaranteed at least one Rider in play
-      // by the pool guard above, so this never fires as a no-op.
+      // Every player's stock of arms rusts away.
       board.players.forEach((p) => {
-        if (p.riders > 0) {
-          p.militia += p.riders;
-          p.riders = 0;
-        }
+        p.arms = 0;
       });
       message = t('joker.rustMessage');
+      break;
+    }
+
+    case 'Locust': {
+      // Every player's stock of food is devoured.
+      board.players.forEach((p) => {
+        p.food = 0;
+      });
+      message = t('joker.locustMessage');
       break;
     }
 

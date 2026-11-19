@@ -6,6 +6,8 @@ export const TRAP_IDS = ['joker', 'prison', 'sphynx', 'portal', 'ruins'];
 export const BONUS_IDS = ['treasure-chest', 'treasure-chest', 'tavern', 'stables'];
 // Added when there are more trap stretches than bonus tiles to pair them with.
 const EXTRA_BONUS_ID = 'treasure-chest';
+// Unpaired chests dropped on any free stretch of road, beyond the castle's clear steps.
+const LOOSE_TREASURES = 1;
 // Chance the ownable tiles follow the price/group rules below instead of a plain shuffle.
 const BASE_RULE_CHANCE = 0.8;
 const PAIRING_ATTEMPTS = 40;
@@ -136,6 +138,12 @@ export function placeTiles(templates: TileJSON[], links: number[][]): TileJSON[]
   shuffle(TRAP_IDS).forEach((id, k) => (placed[pairing.traps[k]] = byId(id)));
   const bonusIds = shuffle(BONUS_IDS);
   pairing.bonuses.forEach((slot, k) => (placed[slot] = byId(bonusIds[k] ?? EXTRA_BONUS_ID)));
+
+  const clear = new Set(stepsAfterCastle(links, CASTLE_CLEAR_STEPS));
+  const incoming = links.map((_, slot) => links.filter((outs) => outs.includes(slot)).length);
+  const onPlainRoad = (slot: number) => links[slot].length === 1 && incoming[slot] === 1 && !clear.has(slot);
+  const looseSlots = shuffle(placed.map((t, slot) => (!t && onPlainRoad(slot) ? slot : -1)).filter((slot) => slot >= 0));
+  looseSlots.slice(0, LOOSE_TREASURES).forEach((slot) => (placed[slot] = byId('treasure-chest')));
 
   const free = placed.map((t, slot) => (t ? -1 : slot)).filter((slot) => slot >= 0);
   const ownables = orderOwnables(templates.filter((t) => t.isOwnable)).slice(0, free.length);

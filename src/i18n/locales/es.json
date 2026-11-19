@@ -485,7 +485,8 @@
       "earthquake": "🪨 <strong>Terremoto</strong> — las casillas mejoradas pierden un nivel; los jugadores sin casillas mejoradas pierden su casilla más barata en su lugar.",
       "meteor": "☄️ <strong>Meteorito</strong> — golpea una casilla aleatoria propiedad del jugador más rico, arrasándola.",
       "kingsGift": "👑 <strong>Regalo del Rey</strong> — quien lo saca recibe un artefacto al azar que nadie tenga aún, o 200🟡 si no queda ninguno.",
-      "rust": "🟫 <strong>Óxido</strong> — los Jinetes 🐎 de todos los jugadores se oxidan y se convierten en Milicia 🧍."
+      "rust": "🟫 <strong>Óxido</strong> — las armas ⚔️ de todos los jugadores se oxidan: todos se quedan con 0 armas.",
+      "locust": "🦗 <strong>Langostas</strong> — las plagas devoran la comida 🥙 de todos los jugadores: todos se quedan con 0 comida."
     },
     "travel": {
       "title": "Viaje 🧭",
@@ -795,7 +796,8 @@
       "earthquake": "Terremoto",
       "meteor": "Meteorito",
       "kingsGift": "Regalo del Rey",
-      "rust": "Óxido"
+      "rust": "Óxido",
+      "locust": "Langostas"
     },
     "taxesMessage": "Ningún ingreso de casillas durante 1 año, incluida la Cosecha de este año.",
     "savedByArtifact": "{playerName} es salvado por el {artifactName} {emoji}",
@@ -814,7 +816,8 @@
     "eventLogLine": "{eventName}: {message}",
     "kingsGiftArtifact": "¡El Rey concede a {playerName} el artefacto {artifactName} {emoji}!",
     "kingsGiftGold": "El tesoro ya no guarda artefactos, así que el Rey envía 200🟡 a {playerName}",
-    "rustMessage": "El óxido corroe la armadura de todos los ejércitos del reino — todos los Jinetes quedan reducidos a Milicia."
+    "rustMessage": "El óxido se extiende por todas las armerías del reino — todos los jugadores pierden sus armas ⚔️.",
+    "locustMessage": "Enjambres de langostas arrasan el reino — todos los jugadores pierden su comida 🥙."
   },
   "battleCommon": {
     "losingUnitsPart": " perdiendo {army}",

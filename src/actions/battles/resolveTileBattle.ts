@@ -63,7 +63,6 @@ export function resolveTileBattle(
     const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
 
     if (claiming) {
-      attacker.gold -= tile.prices[1] ?? 0;
       grantTile(board, tile, attacker);
       changeFame(attacker, 1);
 

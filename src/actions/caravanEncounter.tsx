@@ -29,7 +29,7 @@ export function checkCaravanEncounter(
   force?: 'gold' | 'slaves' | 'horses'
 ): boolean {
   const player = board.activePlayer;
-  const ENCOUNTER_CHANCE = (1 / 12) * (isBlessed(player) ? KARMA_BLESSED_CARAVAN_MULTIPLIER : 1);
+  const ENCOUNTER_CHANCE = (1 / 6) * (isBlessed(player) ? KARMA_BLESSED_CARAVAN_MULTIPLIER : 1);
 
   if (!force) {
     // No caravans during the game's first two years
