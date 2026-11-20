@@ -56,13 +56,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     <IncomeLabel income={tileTurnIncome(tile, 1, level, gameState)} unitColor={player.image} unitKnight={player.isKnight} />
   );
 
-  // Some units-type tiles' (Camps/Towers) extra per-level toll (see
-  // game/kingsGrace.ts's computeAnnualReward) only pays out once a lap, not
-  // every turn like the rest of a tile's income -- shown as its own "per
-  // year" block alongside the per-turn one.
-  const isTower = Object.values(tile.annualUnits).some((v) => v > 0);
-  const towerYearlyLabel = (level: number) => <>+{tile.annualUnits[level] ?? 0}👬</>;
-
   // garrisonAmount is an ABSOLUTE target headcount, not a delta — so the
   // pool it's bounded by is everything this player controls, whether
   // already garrisoned here or still traveling with them, not just
@@ -432,12 +425,6 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
                 <div>{t('tileCard.perYear')}</div>
               </div>
 
-              {isTower && (
-                <div className="big-icon-hint">
-                  <div>{towerYearlyLabel(i)}</div>
-                  <div>{t('tileCard.perYear')}</div>
-                </div>
-              )}
             </div>
           ))}
         </div>

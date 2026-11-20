@@ -113,20 +113,6 @@ export const TileCard: React.FC<TileCardProps> = ({
     </>
   );
 
-  // Some units-type tiles' (Camps/Towers) extra per-level toll (see
-  // game/kingsGrace.ts's computeAnnualReward) only pays out once a lap, not
-  // every turn like the rest of a tile's income -- shown as its own "per
-  // year" block alongside the per-turn one.
-  const yearlyUnitsBonus = tile.annualUnits[tile.level] ?? 0;
-  const isTower = yearlyUnitsBonus > 0;
-  const towerYearlyLabel = taxed ? (
-    <>
-      <span className="tile-card-taxed">+{yearlyUnitsBonus}👬</span>🃏
-    </>
-  ) : (
-    <>+{yearlyUnitsBonus}👬</>
-  );
-
   const bonusType = getBonusType(tile);
 
   // Price cell for the level breakdown table. Upgrades only cost gold. On the
@@ -471,7 +457,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                         ) : (
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {hasTurnIncome && <div>{turnIncomeLabel}</div>}
-                            {isTower && <div>{towerYearlyLabel}</div>}
                           </div>
                         )}
                       </div>
@@ -498,7 +483,6 @@ export const TileCard: React.FC<TileCardProps> = ({
                     style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}
                   >
                     {hasTurnIncome && turnIncomeLabel}
-                    {isTower && <div>{towerYearlyLabel}</div>}
                   </div>
 
                   {lootAvailable && (

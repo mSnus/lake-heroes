@@ -9,13 +9,6 @@ import { hasYearEffect, NO_INCOME_EFFECT } from './yearCore';
 export interface KingsGraceReward {
   tileGold: number;
   tileUnits: number;
-  /** Towers' extra per-tile share of tileUnits (tiles.json's annualUnits),
-   * broken out for its own line in the stats panel/toast rather than
-   * blending into the flat per-tile trickle every other gold-bonus tile
-   * earns. Camps earn an annualUnits bonus too now, but fold into tileUnits
-   * without their own breakout -- the UI line this feeds is Towers-only by
-   * name ("from your Towers"). */
-  towerUnits: number;
   kingsGold: number;
   /** Grace units as headcount (kingsMilitia + kingsRiders). */
   kingsUnits: number;
@@ -153,9 +146,8 @@ function fitGraceUnits(
  * The Yearly Bonus / King's Grace reward: the King's grace, plus a flat
  * per-tile trickle from every tile the player owns -- in whichever resource
  * its own bonus ISN'T, since that own resource already pays out every turn
- * instead (see game/income.ts's collectTileTurnIncome). A units-type tile's
- * (Camps/Towers) own annualGold/annualUnits (tiles.json) can add an extra
- * per-level unit toll on top of that trickle, plus any artifact gold bonus
+ * instead (see game/income.ts's collectTileTurnIncome). A units-type tile
+ * (Camps/Towers) brings its annualGold instead, plus any artifact gold bonus
  * (Pristine Diamond).
  *
  * Paid to one player each time they cross or land on King's Castle (see
@@ -195,7 +187,6 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
 
   let tileGold = 0;
   let tileUnits = 0;
-  let towerUnits = 0;
 
   // Derive ownership from tile.owner (authoritative) rather than
   // player.ownedTiles, which can be stale after a reload.
@@ -205,9 +196,6 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
     if (taxed || !tile || tile.owner !== player.id || tile.isYielded) continue;
     if ((tile.bonusType || 'gold') === 'units') {
       tileGold += tile.annualGold;
-      const bonus = tile.annualUnits[tile.level] ?? 0;
-      if (tile.group === 'Towers') towerUnits += bonus;
-      tileUnits += bonus;
     } else {
       tileUnits += ANNUAL_DEFAULT_UNITS;
     }
@@ -229,7 +217,6 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   return {
     tileGold,
     tileUnits,
-    towerUnits,
     kingsGold,
     kingsUnits,
     kingsMilitia: grace.militia,

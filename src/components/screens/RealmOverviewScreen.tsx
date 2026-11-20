@@ -65,8 +65,7 @@ const annualBreakdown = (t: (k: string, v?: any) => string, a: KingsGraceReward)
             : t('currentPlayer.asKingsGrace')
         }`
       : null,
-    part(a.tileGold, a.tileUnits - a.towerUnits, t('currentPlayer.fromYourTiles')),
-    part(0, a.towerUnits, t('currentPlayer.fromYourTowers')),
+    part(a.tileGold, a.tileUnits, t('currentPlayer.fromYourTiles')),
     part(a.arifactGold, 0, t('currentPlayer.fromPristineDiamond')),
   ]
     .filter(Boolean)

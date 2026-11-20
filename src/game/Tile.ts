@@ -35,7 +35,6 @@ export interface TileJSON {
    * since these are small hand-tuned numbers rather than a price-derived
    * curve. Absent (or 0) means no per-level bonus, the default for every
    * tile except the ones that opt in. */
-  annualUnits?: { [level: number]: number };
   owner?: number | null;
   level?: number;
   description?: string;
@@ -87,7 +86,6 @@ export class Tile implements TileJSON {
   private _annualGoldMult?: number;
   /** Extra King's-grace units on top of annualGold, units-type tiles only --
    * see the TileJSON field for why this isn't a TILE_BASE_PRICE multiple. */
-  annualUnits: { [level: number]: number };
   owner?: number | null;
   _level?: number;
   sprite?: { x: number; y: number };
@@ -132,7 +130,6 @@ export class Tile implements TileJSON {
     }
 
     this._annualGoldMult = data.annualGoldMult;
-    this.annualUnits = Object.assign({}, data.annualUnits || {});
     this.owner = data.owner ?? null;
     this._level = typeof data.level === 'number' ? data.level : 1;
     this.sprite = data.sprite;
@@ -395,7 +392,6 @@ export class Tile implements TileJSON {
       prices: this.prices,
       bonuses: this.bonuses,
       annualGoldMult: this.annualGold,
-      annualUnits: this.annualUnits,
       owner: this.owner,
       level: this.level,
       description: this.description,

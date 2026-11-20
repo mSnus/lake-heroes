@@ -110,8 +110,7 @@ export const GOLD_TILE_INCOME_MULT = 5;
 // gold instead -- its own tiles.json entry (annualGoldMult, a multiple of
 // TILE_BASE_PRICE so it rescales with a live tile-price override the same
 // way prices/bonuses do) sets how much, defaulting to
-// ANNUAL_DEFAULT_GOLD_MULT when unset. It may also earn extra units on top
-// (tiles.json's annualUnits, per level) -- see Tile.ts's annualGold getter.
+// ANNUAL_DEFAULT_GOLD_MULT when unset -- see Tile.ts's annualGold getter.
 export const ANNUAL_DEFAULT_UNITS = 0;
 export const ANNUAL_DEFAULT_GOLD_MULT = 2.5;
 //adjustments for the King's grace reward
