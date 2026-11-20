@@ -1,5 +1,5 @@
 :root {
-  --current-tile-width: 250px;
+  --current-tile-width: 180px;
 }
 
 @media screen and (min-width: 769px) {
@@ -60,7 +60,7 @@
 }
 
 .current-tile .tile-card-bg {
-  height: 200px;
+  height: 170px;
 }
 
 .current-tile.special {
@@ -215,7 +215,6 @@
   padding-bottom: 8px;
   line-height: 1;
   color: #ffffffea;
-  font-weight: bold;
   width: 100%;
   font-family: 'HeroesTextured', serif;
   font-weight: bold;
@@ -224,7 +223,7 @@
 }
 
 .tile-base-price {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: white;
   margin-top: 0.5rem;
   font-weight: 600;

@@ -184,7 +184,7 @@ body.screen-open {
   .side-pane {
     flex: 1;
     min-height: 0;
-    overflow-y: clip;
+    overflow-y: auto;
     max-width: calc(100vw - var(--map-width));
     overscroll-behavior: contain;
   }
@@ -222,7 +222,8 @@ body.screen-open {
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
-    overflow-y: clip;
+    overflow-y: auto;
+    overflow-x: clip;
     overscroll-behavior: contain;
     min-width: 0;
   }
