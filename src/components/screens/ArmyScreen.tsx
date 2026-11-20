@@ -128,9 +128,7 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
       </div>
 
       <div className="text-message" style={{ marginTop: 0 }}>
-        <PlayerLabel player={player} bold />
-        <br />
-        <Fame amount={player.fame} /> <Gold amount={projectedGold} />
+        <PlayerLabel player={player} bold /> <Fame amount={player.fame} />
       </div>
 
       <ArmyDisplay
