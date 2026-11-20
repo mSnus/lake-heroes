@@ -1,6 +1,7 @@
 /* Wrapper & background layers (static parts) */
 .board-wrapper {
   display: block;
+  user-select: none;
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -180,7 +181,7 @@
   width: 14.8vmin;
   height: 14.8vmin;
   box-sizing: border-box;
-  border: 3px solid rgba(230, 180, 34, 0.7);
+  border: 3px dashed rgba(230, 180, 34, 0.7);
   border-radius: 50%;
   background: rgba(230, 180, 34, 0.12);
   display: flex;
@@ -192,11 +193,13 @@
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
+  scale: 0.7;
 }
 
 .route-end--selected {
-  border: 5px solid #e6b422;
-  background: rgba(230, 180, 34, 0.3);
+  border: 5px solid #e6b42282;
+  filter: drop-shadow(0 2px 4px #e6b422c7);
+  scale: 0.7;
 }
 
 @supports (container-type: inline-size) {
