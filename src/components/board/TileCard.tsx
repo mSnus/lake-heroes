@@ -355,16 +355,20 @@ export const TileCard: React.FC<TileCardProps> = ({
     startDiceRoll();
   };
 
-  const displayUpgradeMarker = ((tile.isOwnable && mode === 'owned' && canUpgrade &&  !tile.isYielded) || demoMode) && (
-    <div className="upgrade-row">
-      <div className="tile-marker">🔔</div>
+  const displayUpgradeMarker = ((tile.isOwnable &&
+    mode === 'owned' &&
+    canUpgrade &&
+    !tile.isYielded) ||
+    demoMode) && (
+    <div className="tile-marker" onClick={openUpgradesScreen}>
+      🔔
     </div>
   );
 
-  const displayYieldMarker = (tile.isOwnable && mode === 'owned' &&  tile.isYielded) && (
-    <div className="tile-card-ownable">
-    <div className="tile-marker">👑</div>
-  </div>
+  const displayYieldMarker = tile.isOwnable && mode === 'owned' && tile.isYielded && (
+    <div className="tile-marker" onClick={openUpgradesScreen}>
+      👑
+    </div>
   );
 
   return (
@@ -431,7 +435,7 @@ export const TileCard: React.FC<TileCardProps> = ({
             <div className="upgrade-row">
               <div
                 className="tile-card-upgradable"
-                style={{ backgroundColor: tile.groupColor }}
+                style={{ backgroundColor: tile.groupColor + '4F'}}
                 onClick={openUpgradesScreen}
               >
                 {t('tileCard.upgradable')}
@@ -467,14 +471,10 @@ export const TileCard: React.FC<TileCardProps> = ({
                         ) : (
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {hasTurnIncome && (
-                              <div className="big-icon-hint">
                                 <div>{turnIncomeLabel}</div>
-                              </div>
                             )}
                             {isTower && (
-                              <div className="big-icon-hint">
                                 <div>{towerYearlyLabel}</div>
-                              </div>
                             )}
                           </div>
                         )}
@@ -501,11 +501,9 @@ export const TileCard: React.FC<TileCardProps> = ({
                     className="tile-card-base-row"
                     style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}
                   >
-                    {hasTurnIncome && <div className="big-icon-hint">{turnIncomeLabel}</div>}
+                    {hasTurnIncome && turnIncomeLabel}
                     {isTower && (
-                      <div className="big-icon-hint">
-                        <div>{towerYearlyLabel}</div>
-                      </div>
+                      <div>{towerYearlyLabel}</div>
                     )}
                   </div>
 

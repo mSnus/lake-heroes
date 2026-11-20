@@ -15,7 +15,6 @@
 }
 
 .current-tile-card-wrapper .current-tile {
-  scale: calc(1vw / 1vh * 1.3);
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
 }
 
@@ -522,10 +521,5 @@
   .current-tile-card-wrapper {
     left: calc(50vh * var(--board-aspect-ratio) - var(--current-tile-width) / 2);
     top: calc(20vh * var(--board-aspect-ratio) - 40px);
-    scale: 0.4;
-  }
-
-  .current-tile-card-wrapper .current-tile {
-    scale: calc(1vw / 1vh);
   }
 }
