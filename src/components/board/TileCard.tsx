@@ -355,6 +355,18 @@ export const TileCard: React.FC<TileCardProps> = ({
     startDiceRoll();
   };
 
+  const displayUpgradeMarker = ((tile.isOwnable && mode === 'owned' && canUpgrade &&  !tile.isYielded) || demoMode) && (
+    <div className="upgrade-row">
+      <div className="tile-marker">🔔</div>
+    </div>
+  );
+
+  const displayYieldMarker = (tile.isOwnable && mode === 'owned' &&  tile.isYielded) && (
+    <div className="tile-card-ownable">
+    <div className="tile-marker">👑</div>
+  </div>
+  );
+
   return (
     <div
       className={
@@ -364,6 +376,9 @@ export const TileCard: React.FC<TileCardProps> = ({
         (tile.isYielded ? ' yielded' : '')
       }
     >
+      {displayYieldMarker}
+      {displayUpgradeMarker}
+
       {tile.spriteImage && (
         <div
           className="tile-card-bg"
@@ -383,10 +398,14 @@ export const TileCard: React.FC<TileCardProps> = ({
             {tile.name}
             <br />
             {tile.abandoned ? ' ' + t('tileCard.abandoned') : ''}
-            {tile.isOwned() && (
+            {tile.isOwnable && (
               <div>
                 <div className="tile-base-price">
-                  {tile.prices[1] ? <Gold amount={tile.prices[1]} where={'before'} /> : ''}
+                  {tile.prices[tile.level] ? (
+                    <Gold amount={tile.prices[tile.level]} where={'before'} />
+                  ) : (
+                    <Gold amount={tile.prices[1]} where={'before'} />
+                  )}
                 </div>
               </div>
             )}
@@ -408,24 +427,11 @@ export const TileCard: React.FC<TileCardProps> = ({
 
       {tile.isOwnable && (
         <div className="tile-card-ownable">
-          {/* Status banner, directly under the tile's image. A yielded tile
-              can't be upgraded at all (see canUpgrade), so these two are
-              mutually exclusive by construction. */}
-          {mode === 'owned' && tile.isYielded && (
-            <div className="upgrade-row">
-              <div
-                className="tile-card-upgradable yielded-row"
-                style={{ backgroundColor: tile.groupColor + '4f' }}
-              >
-                {t('tileCard.yielded')}
-              </div>
-            </div>
-          )}
           {((mode === 'owned' && canUpgrade) || demoMode) && (
             <div className="upgrade-row">
               <div
                 className="tile-card-upgradable"
-                style={{ backgroundColor: tile.groupColor + '4f' }}
+                style={{ backgroundColor: tile.groupColor }}
                 onClick={openUpgradesScreen}
               >
                 {t('tileCard.upgradable')}
@@ -445,7 +451,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     {tile.owner !== activePlayer?.id && (
                       <div>
                         <div className="big-icon-hint">
-                           <Gold amount={tile.fee} where={'before'}/>
+                          <Gold amount={tile.fee} where={'before'} />
                           <div>{t('tileCard.fee')}</div>
                         </div>
                       </div>
@@ -477,9 +483,13 @@ export const TileCard: React.FC<TileCardProps> = ({
 
                     <div className="tile-defence">
                       {Array.from({ length: tile.level }, (_, i) => (
-                        <Tower key={i}/>
+                        <Tower key={i} />
                       ))}
-                      <Militia amount={tile.garrison} color={ownerPlayer?.image} knight={ownerPlayer?.isKnight} />
+                      <Militia
+                        amount={tile.garrison}
+                        color={ownerPlayer?.image}
+                        knight={ownerPlayer?.isKnight}
+                      />
                     </div>
                   </div>
                 </div>
@@ -491,11 +501,7 @@ export const TileCard: React.FC<TileCardProps> = ({
                     className="tile-card-base-row"
                     style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}
                   >
-                    {hasTurnIncome && (
-                      <div className="big-icon-hint">
-                        {turnIncomeLabel}
-                      </div>
-                    )}
+                    {hasTurnIncome && <div className="big-icon-hint">{turnIncomeLabel}</div>}
                     {isTower && (
                       <div className="big-icon-hint">
                         <div>{towerYearlyLabel}</div>
@@ -663,32 +669,32 @@ export const TileCard: React.FC<TileCardProps> = ({
       {!tile.owner && (
         <div>
           {claimAvailable && (
-              <DecoratedButton
-                onClick={(e) => handleBuyClick(e)}
+            <DecoratedButton
+              onClick={(e) => handleBuyClick(e)}
+              style={{
+                width: '100%',
+                marginBottom: '0',
+                height: '80px',
+                filter: 'drop-shadow(2px 2px 3px #00000050)',
+              }}
+            >
+              <div
                 style={{
-                  width: '100%',
-                  marginBottom: '0',
-                  height: '80px',
-                  filter: 'drop-shadow(2px 2px 3px #00000050)',
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.1rem',
                 }}
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'nowrap',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.1rem',
-                  }}
-                >
-                  <div>
-                    {isBanzai
-                      ? '🩸 ' + t('tileCard.banzai')
-                      : attackEmoji + ' ' + t('tileCard.claimIt')}
-                  </div>
+                <div>
+                  {isBanzai
+                    ? '🩸 ' + t('tileCard.banzai')
+                    : attackEmoji + ' ' + t('tileCard.claimIt')}
                 </div>
-              </DecoratedButton>
-            )}
+              </div>
+            </DecoratedButton>
+          )}
 
           {lootAvailable && (
             <DecoratedButton
@@ -740,7 +746,11 @@ export const TileCard: React.FC<TileCardProps> = ({
             filter: 'drop-shadow(2px 2px 3px #00000050)',
           }}
         >
-          <div>{tile.garrison > 0 ? `⚔️ ${t('tileCard.raze')}` : `🏴 ${t('afterMoveLogic.defencelessItsMine')}`}</div>
+          <div>
+            {tile.garrison > 0
+              ? `⚔️ ${t('tileCard.raze')}`
+              : `🏴 ${t('afterMoveLogic.defencelessItsMine')}`}
+          </div>
         </DecoratedButton>
       )}
     </div>

@@ -21,6 +21,7 @@
 
 .current-tile-card-wrapper .tile-card-base-level {
   padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
   scale: 1.5;
 }
@@ -120,7 +121,15 @@
 
 .tile-card-upgradable {
   text-align: center;
-  padding: 4px;
+  padding: 0px 4px 4px 4px;
+}
+
+.tile-marker {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 /* Same banner shape as the upgradable row, but a plain status -- nothing to
@@ -509,10 +518,14 @@
   font-size: 1rem;
 }
 
-@media (min-width: 769px) {
+@media screen and (min-width: 769px) {
   .current-tile-card-wrapper {
     left: calc(50vh * var(--board-aspect-ratio) - var(--current-tile-width) / 2);
-    top: calc(40vh * var(--board-aspect-ratio) - 40px);
+    top: calc(20vh * var(--board-aspect-ratio) - 40px);
     scale: 0.4;
+  }
+
+  .current-tile-card-wrapper .current-tile {
+    scale: calc(1vw / 1vh);
   }
 }

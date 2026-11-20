@@ -28,6 +28,7 @@
 @media screen and (min-width: 769px) {
   :root {
     --map-width: 1536;
+    --body-font-size: 1.2rem;
   }
 }
 
