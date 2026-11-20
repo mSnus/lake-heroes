@@ -93,14 +93,8 @@ const TravelingTradersModal: React.FC<TravelingTradersModalProps> = ({
           buyPrice={buyPrice}
           sellPrice={sellPrice}
           exchangeBatch={tradersExchangeBatch}
+          whenIdle={<DecoratedButton onClick={onClose}>{t('travelingTraders.close')}</DecoratedButton>}
         />
-
-        <div
-          className="button-group"
-          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
-        >
-          <DecoratedButton onClick={onClose}>{t('travelingTraders.close')}</DecoratedButton>
-        </div>
       </div>
     </GameModal>
   );
