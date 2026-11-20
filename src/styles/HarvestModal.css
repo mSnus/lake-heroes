@@ -98,3 +98,11 @@
   justify-content: center;
   margin-top: 0.4rem;
 }
+
+/* Trade button: icon, label and the projected change on one line. */
+.trade-button-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+}

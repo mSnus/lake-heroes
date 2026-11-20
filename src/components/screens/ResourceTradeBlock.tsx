@@ -180,24 +180,22 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
 
       <div className="harvest-trade">
         {mode !== 'exchange' && total > 0 ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <DecoratedButton onClick={trade}>
-              <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span> {t('harvest.trade')}
-            </DecoratedButton>
-            <span className="hire-row-caption">
+          <DecoratedButton onClick={trade}>
+            <span className="trade-button-line">
+              <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
+              {t('harvest.trade')}
               <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
             </span>
-          </div>
+          </DecoratedButton>
         ) : mode === 'exchange' && exActive ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <DecoratedButton onClick={doExchange}>
-              <span className="hire-submit-icon">🔄</span> {t('harvest.trade')}
-            </DecoratedButton>
-            <span className="hire-row-caption" style={{ display: 'flex', gap: '0.5rem' }}>
+          <DecoratedButton onClick={doExchange}>
+            <span className="trade-button-line">
+              <span className="hire-submit-icon">🔄</span>
+              {t('harvest.trade')}
               <Food amount={signed(foodDelta)} />
               <Arms amount={signed(armsDelta)} />
             </span>
-          </div>
+          </DecoratedButton>
         ) : (
           whenIdle
         )}
