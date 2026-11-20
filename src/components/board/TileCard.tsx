@@ -435,7 +435,7 @@ export const TileCard: React.FC<TileCardProps> = ({
             <div className="upgrade-row">
               <div
                 className="tile-card-upgradable"
-                style={{ backgroundColor: tile.groupColor + '4F'}}
+                style={{ backgroundColor: tile.groupColor + '4F' }}
                 onClick={openUpgradesScreen}
               >
                 {t('tileCard.upgradable')}
@@ -470,12 +470,8 @@ export const TileCard: React.FC<TileCardProps> = ({
                           </div>
                         ) : (
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            {hasTurnIncome && (
-                                <div>{turnIncomeLabel}</div>
-                            )}
-                            {isTower && (
-                                <div>{towerYearlyLabel}</div>
-                            )}
+                            {hasTurnIncome && <div>{turnIncomeLabel}</div>}
+                            {isTower && <div>{towerYearlyLabel}</div>}
                           </div>
                         )}
                       </div>
@@ -502,10 +498,14 @@ export const TileCard: React.FC<TileCardProps> = ({
                     style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}
                   >
                     {hasTurnIncome && turnIncomeLabel}
-                    {isTower && (
-                      <div>{towerYearlyLabel}</div>
-                    )}
+                    {isTower && <div>{towerYearlyLabel}</div>}
                   </div>
+
+                  {lootAvailable && (
+                    <DecoratedButton onClick={(e) => handleLootClick(e)}>
+                        <div>🦇 {t('tileCard.loot')}</div>
+                    </DecoratedButton>
+                  )}
 
                   <div className="tile-card-base-row">
                     {isOnFire ? (
@@ -669,68 +669,18 @@ export const TileCard: React.FC<TileCardProps> = ({
           {claimAvailable && (
             <DecoratedButton
               onClick={(e) => handleBuyClick(e)}
-              style={{
-                width: '100%',
-                marginBottom: '0',
-                height: '80px',
-                filter: 'drop-shadow(2px 2px 3px #00000050)',
-              }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'nowrap',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.1rem',
-                }}
-              >
                 <div>
                   {isBanzai
                     ? '🩸 ' + t('tileCard.banzai')
                     : attackEmoji + ' ' + t('tileCard.claimIt')}
                 </div>
-              </div>
             </DecoratedButton>
           )}
 
-          {lootAvailable && (
-            <DecoratedButton
-              onClick={(e) => handleLootClick(e)}
-              style={{
-                width: '100%',
-                marginBottom: '0',
-                height: '80px',
-                filter: 'drop-shadow(2px 2px 3px #00000050)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'nowrap',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.1rem',
-                }}
-              >
-                <div>🦇 {t('tileCard.loot')}</div>
-              </div>
-            </DecoratedButton>
-          )}
-
-          {lootAvailable && !claimAvailable && (
-            <DecoratedButton
-              onClick={handleClose}
-              style={{
-                width: '100%',
-                marginBottom: '0',
-                height: '80px',
-                filter: 'drop-shadow(2px 2px 3px #00000050)',
-              }}
-            >
-              <div>🕊️ {t('tileCard.pass')}</div>
-            </DecoratedButton>
-          )}
+          <DecoratedButton onClick={handleClose}>
+            <div>🕊️ {t('tileCard.pass')}</div>
+          </DecoratedButton>
         </div>
       )}
 

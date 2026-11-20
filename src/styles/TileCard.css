@@ -2,6 +2,12 @@
   --current-tile-width: 250px;
 }
 
+@media screen and (min-width: 769px) {
+  :root {
+    --current-tile-width: 200px;
+  }
+}
+
 .current-tile-card-wrapper {
   position: absolute;
   left: calc(50vw - var(--current-tile-width) / 2);
@@ -22,7 +28,6 @@
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
-  scale: 1.5;
 }
 
 .tile-card {
@@ -236,8 +241,8 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 8px;
-  margin-top: 24px;
-  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
   font-weight: 600;
   align-items: center;
   gap: 12px;
@@ -264,6 +269,7 @@
   display: flex;
   gap: 12px;
   flex-direction: column;
+  width: 100%;
 }
 
 .tile-card-base-row {
@@ -296,7 +302,7 @@
 }
 
 .tile-card-body {
-  padding: 0 12px 12px 12px;
+  padding: 0;
 }
 
 .tile-card.yielded .tile-card-table-wrap,
@@ -317,6 +323,7 @@
 .tile-card-table-wrap {
   overflow-x: hidden;
   margin-top: 16px;
+  margin-left: -16px;
 }
 
 .tile-card-table {
@@ -476,7 +483,19 @@
 }
 
 .tile-card .decorated-button-content {
-  margin-top: -0.3rem;
+  margin-top: -0.2rem;
+  margin-left: -0.2rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+}
+
+.tile-card button.decorated {
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  filter: drop-shadow(2px 2px 3px #00000050);
 }
 
 
