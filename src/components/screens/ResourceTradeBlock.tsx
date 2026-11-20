@@ -14,6 +14,7 @@ import { Gold } from '../snippets/Gold';
 import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { useT } from '../../i18n';
+import { DecoratedButton } from '../ui/DecoratedButton';
 import '../../styles/HarvestModal.css';
 
 type Mode = 'buy' | 'sell' | 'exchange';
@@ -35,6 +36,8 @@ interface ResourceTradeBlockProps {
   /** Exchange batch size for `from` -- defaults to the Harvest's own 3:2
    * rate. Traveling Traders passes a flat 1:1 rate instead. */
   exchangeBatch?: (from: Resource) => { give: number; get: number };
+  /** Shown in place of the Trade button while nothing is dialled in (the Harvest's Finish button). */
+  whenIdle?: React.ReactNode;
 }
 
 /**
@@ -48,6 +51,7 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
   buyPrice = harvestBuyPrice,
   sellPrice = harvestSellPrice,
   exchangeBatch = defaultExchangeBatch,
+  whenIdle,
 }) => {
   const t = useT();
   const [mode, setMode] = useState<Mode>('sell');
@@ -175,44 +179,27 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
         })}
 
       <div className="harvest-trade">
-        {mode !== 'exchange' ? (
+        {mode !== 'exchange' && total > 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
-              <div
-                className={
-                  'big-shield-button-container' + (total > 0 ? '' : ' shield-button-container--disabled')
-                }
-              >
-                <button
-                  className="big-shield-button hire-submit"
-                  onClick={trade}
-                  disabled={total <= 0}
-                  title={t('harvest.trade')}
-                >
-                  <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
-                </button>
-              </div>
-            </div>
+            <DecoratedButton onClick={trade}>
+              <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span> {t('harvest.trade')}
+            </DecoratedButton>
             <span className="hire-row-caption">
               <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
             </span>
           </div>
-        ) : (
+        ) : mode === 'exchange' && exActive ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}>
-              <div
-                className={'big-shield-button-container' + (exActive ? '' : ' shield-button-container--disabled')}
-              >
-                <button className="big-shield-button hire-submit" onClick={doExchange} disabled={!exActive}>
-                  <span className="hire-submit-icon">🔄</span>
-                </button>
-              </div>
-            </div>
+            <DecoratedButton onClick={doExchange}>
+              <span className="hire-submit-icon">🔄</span> {t('harvest.trade')}
+            </DecoratedButton>
             <span className="hire-row-caption" style={{ display: 'flex', gap: '0.5rem' }}>
               <Food amount={signed(foodDelta)} />
               <Arms amount={signed(armsDelta)} />
             </span>
           </div>
+        ) : (
+          whenIdle
         )}
       </div>
     </>

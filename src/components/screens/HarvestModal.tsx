@@ -93,14 +93,8 @@ const HarvestModal: React.FC<HarvestModalProps> = ({ gameState, updateGameState,
             updateGameState(gameState);
             forceRerender((v) => v + 1);
           }}
+          whenIdle={<DecoratedButton onClick={onClose}>{t('harvest.finish')}</DecoratedButton>}
         />
-
-        <div
-          className="button-group"
-          style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}
-        >
-          <DecoratedButton onClick={onClose}>{t('harvest.finish')}</DecoratedButton>
-        </div>
       </div>
     </GameModal>
   );
