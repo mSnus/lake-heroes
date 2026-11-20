@@ -28,6 +28,7 @@ import { isMobileLayout } from '../board/common';
 import { removeFromStorage } from '../../utils/storage';
 import SaveSlotsScreen from '../menu/SaveSlotsScreen';
 import { openEruda } from '../../utils/eruda';
+import { YearIndicator, DIAL_TICK_MS } from '../board/YearIndicator';
 
 interface ShieldColumnProps {
   gameState: GameState;
@@ -140,6 +141,23 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
     gameEvent('displayTile', {});
     endTurn(gameState, updateGameState);
   }
+
+  // The dice waits for the season dial to finish its step after a turn change.
+  const [dialTicking, setDialTicking] = useState(false);
+  const firstDialRun = useRef(true);
+  useEffect(() => {
+    if (firstDialRun.current) {
+      firstDialRun.current = false;
+      return;
+    }
+
+    setDialTicking(true);
+    const id = setTimeout(() => setDialTicking(false), DIAL_TICK_MS);
+    return () => clearTimeout(id);
+  }, [gameState.activePlayerIndex, gameState.round, gameState.harvest]);
+
+  const showDice = !isBotTurn && diceActive && !dialTicking;
+  const showEndTurn = !isBotTurn && canEndTurn;
 
   const colStyle: React.CSSProperties = {
     position: 'absolute',
@@ -345,7 +363,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
         )}
       </div>
 
-      {isBotTurn ? (
+      {isBotTurn && (
         <div style={{ ...colStyle, bottom: '60px' }}>
           <div
             className="main-button"
@@ -362,42 +380,41 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
             🤖
           </div>
         </div>
-      ) : (
-        (diceActive || canEndTurn) && (
-          <div
-              className={'dice-box'}
-              style={{
-              ...colStyle,
-              top: isMobileLayout() ? 'calc(100vw * 5 / 4 - 25px)' : 'calc(100vh - 64px)' ,
-              right: isMobileLayout() ? '8px' : '20px' ,
-            }}>
-            {diceActive && (
-              <div
-                className="main-button-container"
-                id="rollDiceButton"
-                title={t('shieldColumn.rollDice')}
-                style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'})` }}
-              >
-                <button onClick={startDiceRoll} className="shield-button">
-                  🎲
-                </button>
-              </div>
-            )}
-            {canEndTurn && (
-              <div
-                className="main-button-container"
-                id="endTurnButton"
-                title={t('shieldColumn.endTurn')}
-                style={{ filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'})` }}
-              >
-                <button onClick={handleEndTurn} className="shield-button">
-                  ⏳
-                </button>
-              </div>
-            )}
-          </div>
-        )
       )}
+
+      <div
+        className="dice-box"
+        style={{
+          ...colStyle,
+          top: isMobileLayout() ? 'calc(100vw * 5 / 4 - 25px)' : 'calc(100vh - 64px)',
+          right: isMobileLayout() ? '8px' : '20px',
+        }}
+      >
+        <div
+          className="main-dial"
+          style={showDice || showEndTurn ? { filter: `drop-shadow(0 0 5px ${gameState.activePlayer?.color ?? '#000'})` } : undefined}
+        >
+          <YearIndicator gameState={gameState} className="year-indicator--dial" />
+          <button
+            id="rollDiceButton"
+            title={t('shieldColumn.rollDice')}
+            className={'main-dial-button' + (showDice ? ' main-dial-button--shown' : '')}
+            onClick={startDiceRoll}
+            disabled={!showDice}
+          >
+            🎲
+          </button>
+          <button
+            id="endTurnButton"
+            title={t('shieldColumn.endTurn')}
+            className={'main-dial-button' + (showEndTurn ? ' main-dial-button--shown' : '')}
+            onClick={handleEndTurn}
+            disabled={!showEndTurn}
+          >
+            ⏳
+          </button>
+        </div>
+      </div>
     </>
   );
 };

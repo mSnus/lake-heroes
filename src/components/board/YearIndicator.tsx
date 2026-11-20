@@ -12,6 +12,8 @@ const SECTORS_PER_TURN = SECTORS_PER_YEAR / TURNS_PER_YEAR;
 
 /** The sprite turns a quarter per round of the year, split evenly over the players' turns. */
 const DEG_PER_ROUND = 90;
+/** How long one step of the dial takes. */
+export const DIAL_TICK_MS = 2500;
 
 function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
   if (sectors <= 2) return 'winter';
@@ -26,7 +28,7 @@ function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
  * (never wraps back) so the disc doesn't spin backwards at rollover. The
  * dial itself is wordless (the tooltip's "year · turn/total" is the only
  * text on hover); a click announces the season as a local toast. */
-export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState }) => {
+export const YearIndicator: React.FC<{ gameState: GameState; className?: string }> = ({ gameState, className }) => {
   const t = useT();
   const turn = currentYearTurn(gameState);
   const elapsed = Math.min(turn * SECTORS_PER_TURN, SECTORS_PER_YEAR);
@@ -39,7 +41,7 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
 
   return (
     <div
-      className="year-indicator"
+      className={'year-indicator' + (className ? ' ' + className : '')}
       title={`${currentYear(gameState)} · ${turn}/${TURNS_PER_YEAR}`}
       onClick={() =>
         sayLocal(
@@ -54,7 +56,7 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
         src="assets/sprites/year_indicator.png"
         alt="year indicator"
         draggable={false}
-        style={{ transform: `rotate(${rotation}deg)` }}
+        style={{ transform: `rotate(${rotation}deg)`, transition: `transform ${DIAL_TICK_MS}ms ease-in-out` }}
       />
     </div>
   );

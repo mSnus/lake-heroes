@@ -74,7 +74,6 @@ import { getSettings } from './utils/settingsStore';
 import { resetEndTurn, setEndTurn } from './utils/endTurnStore';
 import { ActionBar } from './components/dashboard/ActionBar';
 import { ShieldColumn } from './components/ui/ShieldColumn';
-import { YearIndicator } from './components/board/YearIndicator';
 import VersionMismatchBanner from './components/board/VersionMismatchBanner';
 import FogTransition from './components/screens/FogTransition';
 import { ScreenRenderer } from './components/screens/ScreenRenderer';
@@ -837,7 +836,6 @@ function App() {
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <CurrentPlayerCard gameState={gameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
-            <YearIndicator gameState={gameState} />
           </div>
 
           <div className="side-pane">

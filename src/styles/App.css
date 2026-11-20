@@ -162,7 +162,13 @@ body.screen-open {
 .year-indicator-dial {
   position: absolute;
   inset: 0;
-  transition: transform 2.5s ease-in-out;
+}
+
+/* As the main dice button's background (see ShieldColumn). */
+.year-indicator.year-indicator--dial {
+  top: 0;
+  left: 0;
+  z-index: auto;
 }
 
 @media screen and (max-width: 768px) {

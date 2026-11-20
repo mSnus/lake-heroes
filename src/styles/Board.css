@@ -512,22 +512,32 @@
   z-index: 7000;
 }
 
-/* The roll-dice / end-turn shield button: the same shield look as
-   .shield-button-container, but its own container rather than combining
-   .shield-button-container and .main-button on one element. */
-.main-button-container {
-  width: 52px;
-  height: 52px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-image: url('/assets/shield.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
+/* The roll-dice / end-turn button: the season dial with the dice or the
+   hourglass over it, faded in and out rather than mounted and unmounted. */
+.main-dial {
   position: absolute;
   right: 0;
+  width: 52px;
+  height: 52px;
+}
+
+.main-dial-button {
+  position: absolute;
+  inset: 0;
+  border: none;
+  border-radius: 100%;
+  background: transparent;
+  font-size: 22px;
+  text-shadow: 0 0 6px #000000;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.main-dial-button--shown {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .shield-button {
