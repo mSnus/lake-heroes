@@ -10,8 +10,8 @@ import { useT } from '../../i18n';
 const SECTORS_PER_YEAR = 8;
 const SECTORS_PER_TURN = SECTORS_PER_YEAR / TURNS_PER_YEAR;
 
-/** The sprite turns a quarter per turn of the year. */
-const DEG_PER_TURN = 90;
+/** The sprite turns a quarter per round of the year, split evenly over the players' turns. */
+const DEG_PER_ROUND = 90;
 
 function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
   if (sectors <= 2) return 'winter';
@@ -22,7 +22,7 @@ function seasonKey(sectors: number): 'winter' | 'spring' | 'summer' | 'autumn' {
 
 /** Where the shared calendar stands, shown over the map's corner -- see
  * game/year.ts. A gold disc with a quarter cut out, turned a further quarter
- * clockwise each turn of the year. The rotation is cumulative across years
+ * clockwise each round of the year, a step after every player's turn. The rotation is cumulative across years
  * (never wraps back) so the disc doesn't spin backwards at rollover. The
  * dial itself is wordless (the tooltip's "year · turn/total" is the only
  * text on hover); a click announces the season as a local toast. */
@@ -30,7 +30,12 @@ export const YearIndicator: React.FC<{ gameState: GameState }> = ({ gameState })
   const t = useT();
   const turn = currentYearTurn(gameState);
   const elapsed = Math.min(turn * SECTORS_PER_TURN, SECTORS_PER_YEAR);
-  const rotation = (currentYear(gameState) * TURNS_PER_YEAR + turn) * DEG_PER_TURN;
+  const players = Math.max(1, gameState.players.length);
+  // The Harvest round already shows the next year's first round.
+  const rounds = gameState.harvest
+    ? (currentYear(gameState) + 1) * TURNS_PER_YEAR + 1
+    : currentYear(gameState) * TURNS_PER_YEAR + turn + gameState.activePlayerIndex / players;
+  const rotation = rounds * DEG_PER_ROUND;
 
   return (
     <div

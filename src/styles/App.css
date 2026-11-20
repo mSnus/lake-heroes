@@ -162,7 +162,7 @@ body.screen-open {
 .year-indicator-dial {
   position: absolute;
   inset: 0;
-  transition: transform 0.6s ease-in-out;
+  transition: transform 2.5s ease-in-out;
 }
 
 @media screen and (max-width: 768px) {
