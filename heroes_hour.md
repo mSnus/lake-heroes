@@ -6,7 +6,7 @@ When a player ends their move on a tile where another player's army stands, they
 
 All of these must hold:
 - The game is in its 5th year or later.
-- The tile is an ownable tile: not the King's Castle and not a special tile.
+- The tile is an ownable tile or an empty road: not the King's Castle and not a special tile.
 - The moving player has at least one unit.
 - At least one other player on the tile has at least one unit.
 

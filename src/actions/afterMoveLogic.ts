@@ -37,7 +37,8 @@ export function afterMoveLogic(
 
   console.log(`Action: after move logic for ${player.name} on ${tile.name}`, player, tile);
 
-  if (!tile.isOwnable) {
+  // Special tiles end the turn here; empty road still gets Hero's Hour below.
+  if (!tile.isOwnable && tile.id !== 'road') {
     setEndTurn();
     gameEvent('hideDice', true);
     return;
@@ -103,6 +104,12 @@ export function afterMoveLogic(
         },
       }),
     });
+    return;
+  }
+
+  if (!tile.isOwnable) {
+    setEndTurn();
+    gameEvent('hideDice', true);
     return;
   }
 
