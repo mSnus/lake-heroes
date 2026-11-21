@@ -35,7 +35,8 @@ export function buyUnits(
         cost: formatCost(paid),
         army: formatArmy(player.militia, player.riders),
       }),
-      'success'
+      'success',
+      { topic: 'hire', actor: player.name }
     );
     updateGameState(board);
   } else {

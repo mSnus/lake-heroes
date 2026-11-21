@@ -115,7 +115,8 @@ const incomeValue = (x: Partial<TileIncome>): number =>
  */
 export function shouldLootTile(player: Player, tile: Tile, board: GameState): boolean {
   const cfg = getCharacterConfig(player);
-  if (!cfg) return false;
+  // A smouldering (just razed) tile has nothing left to take.
+  if (!cfg || tile.isOnFire(board.round)) return false;
   if (cfg.id === 'warrior' && player.units <= LOOT_WARRIOR_MIN_ARMY) return false;
   if (cfg.id === 'wizard' && player.units <= LOOT_WIZARD_MIN_ARMY) return false;
 

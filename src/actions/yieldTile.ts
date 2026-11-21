@@ -26,7 +26,10 @@ export function yieldTile(gameState: GameState, player: Player, tile: Tile): num
   tile.isYielded = true;
   player.gold += refund;
 
-  say(t('yieldTile.yielded', { playerName: player.name, tileName: tile.name, gold: refund }), 'info');
+  say(t('yieldTile.yielded', { playerName: player.name, tileName: tile.name, gold: refund }), 'info', {
+    topic: 'yield',
+    actor: player.name,
+  });
 
   return refund;
 }
@@ -48,7 +51,10 @@ export function takeTileBack(gameState: GameState, player: Player, tile: Tile): 
   player.gold -= cost;
   tile.isYielded = false;
 
-  say(t('yieldTile.takenBack', { playerName: player.name, tileName: tile.name, gold: cost }), 'info');
+  say(t('yieldTile.takenBack', { playerName: player.name, tileName: tile.name, gold: cost }), 'info', {
+    topic: 'takeBack',
+    actor: player.name,
+  });
 
   return true;
 }

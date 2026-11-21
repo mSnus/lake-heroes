@@ -10,6 +10,12 @@ type ToastContent = ReactNode;
 
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
+/** Consecutive log lines about the same player and topic merge into one (see App.tsx's log handler). */
+export interface LogGroup {
+  topic: string;
+  actor: string;
+}
+
 /**
  * Slide the log drawer down to show a new message, without touching the console mirror or the game-log history.
  *
@@ -33,7 +39,7 @@ export function showToast(_message: ToastContent, level: SayLevel = 'info'): voi
  * - Logs the same message to the console with an appropriate severity
  * - Dispatches a 'logMessage' event for history tracking
  */
-export function say(message: ToastContent, level: SayLevel = 'info'): void {
+export function say(message: ToastContent, level: SayLevel = 'info', group?: LogGroup): void {
   // A headless sim plays thousands of turns against its own board -- toasting
   // (or console-mirroring) all of that would flood the real app and slow the
   // run down. Collect the meaningful messages into the per-circle sim log for
@@ -68,7 +74,7 @@ export function say(message: ToastContent, level: SayLevel = 'info'): void {
 
   // Dispatch event for history. A headless run never reaches this far.
   if (typeof message === 'string') {
-    gameEvent('logMessage', { message, level, timestamp: Date.now() });
+    gameEvent('logMessage', { message, level, timestamp: Date.now(), ...group });
   }
 }
 

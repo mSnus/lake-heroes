@@ -151,7 +151,8 @@ export const TileInfoScreen: React.FC<TileInfoScreenProps> = ({
     tile._level = level;
     say(
       t('tileCard.upgradedMessage', { playerName: player.name, tileName: tile.name, level }),
-      'info'
+      'info',
+      { topic: 'upgrade', actor: player.name }
     );
     updateGameState(gameState);
     forceRerender((v) => v + 1);

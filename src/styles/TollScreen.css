@@ -18,9 +18,17 @@
 
 /* The player's owned tiles, as a horizontal auto-scrolling strip of
    sprite + yield/sell blocks -- replaces the old stacked TileCard list. */
+/* Full width, so the tile strip below scrolls instead of stretching the screen. */
+.toll-sell-dialogue {
+  width: 100%;
+  min-width: 0;
+}
+
 .toll-tile-row {
   display: flex;
   flex-direction: row;
+  box-sizing: border-box;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   gap: 0.75rem;

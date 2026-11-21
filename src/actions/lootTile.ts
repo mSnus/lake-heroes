@@ -46,6 +46,7 @@ const formatIncome = (income: TileIncome): string => {
  * Militia are spared before riders either way (Player's `units` setter).
  */
 export function lootTile(board: GameState, player: Player, tile: Tile, roll: number): void {
+  if (tile.isOnFire(board.round)) return;
   lootOutcome(board, player, tile, roll);
   // Nothing more can be done with the tile, so its messages go out now.
   closeTopic();

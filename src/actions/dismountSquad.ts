@@ -39,6 +39,9 @@ export function dismountSquad(
   player.militia += dismounted;
   refund(player, returned);
 
-  say(t('dismountSquad.dismounted', { playerName: player.name, amount: dismounted, cost: formatCost(returned) }), 'info');
+  say(t('dismountSquad.dismounted', { playerName: player.name, amount: dismounted, cost: formatCost(returned) }), 'info', {
+    topic: 'dismount',
+    actor: player.name,
+  });
   updateGameState(board);
 }

@@ -83,6 +83,21 @@ import StatsScreen from './components/menu/StatsScreen';
  * thousands of messages, which would eventually blow localStorage's quota. */
 const MAX_LOG_MESSAGES = 500;
 
+const LEVEL_RANK: Record<string, number> = { debug: 0, default: 1, info: 2, success: 3, warning: 4, error: 5 };
+
+/** Appends `entry`, or folds it into the last line when both share an actor and topic:
+ * "X upgraded A, upgraded B" rather than two lines. */
+function mergeLogEntry(log: LogMessage[], entry: LogMessage): LogMessage[] {
+  const last = log[log.length - 1];
+  if (!entry.topic || !entry.actor || !last || last.topic !== entry.topic || last.actor !== entry.actor) {
+    return [...log, entry];
+  }
+
+  const part = entry.message.startsWith(`${entry.actor} `) ? entry.message.slice(entry.actor.length + 1) : entry.message;
+  const level = LEVEL_RANK[entry.level] > LEVEL_RANK[last.level] ? entry.level : last.level;
+  return [...log.slice(0, -1), { ...last, message: `${last.message}, ${part}`, level, timestamp: entry.timestamp }];
+}
+
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   // Restored up front (rather than in loadGameData's effect) so no message
@@ -146,7 +161,7 @@ function App() {
       const detail = (e as CustomEvent).detail as LogMessage;
       // Capped so a long game can't grow the log past what localStorage will
       // hold -- the oldest entries fall off the front.
-      setGameLog((prev) => [...prev, detail].slice(-MAX_LOG_MESSAGES));
+      setGameLog((prev) => mergeLogEntry(prev, detail).slice(-MAX_LOG_MESSAGES));
     };
 
     // Both names: sayLocal() dispatches its own so the online streamer can

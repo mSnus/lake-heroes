@@ -44,6 +44,9 @@ export function upgradeSquad(
   player.riders += upgraded;
   pay(player, cost);
 
-  say(t('armyDisplay.upgraded', { playerName: player.name, amount: upgraded, cost: formatCost(cost) }), 'success');
+  say(t('armyDisplay.upgraded', { playerName: player.name, amount: upgraded, cost: formatCost(cost) }), 'success', {
+    topic: 'mount',
+    actor: player.name,
+  });
   updateGameState(board);
 }

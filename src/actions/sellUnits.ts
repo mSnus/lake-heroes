@@ -27,6 +27,9 @@ export function sellUnits(
   refund(player, refunded);
 
   const tierLabel = t(tier === 'riders' ? 'common.tierRiders' : 'common.tierMilitia');
-  say(t('sellUnits.sold', { playerName: player.name, amount: sold, tier: tierLabel, cost: formatCost(refunded) }), 'info');
+  say(t('sellUnits.sold', { playerName: player.name, amount: sold, tier: tierLabel, cost: formatCost(refunded) }), 'info', {
+    topic: 'sellUnits',
+    actor: player.name,
+  });
   updateGameState(board);
 }

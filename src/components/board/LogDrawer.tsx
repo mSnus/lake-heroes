@@ -72,13 +72,23 @@ export const LogDrawer: React.FC<LogDrawerProps> = ({ entries, players }) => {
   };
 
   // A new message: show the lines that arrived since the drawer last went up.
+  // A message merged into the last line (same player and topic) adds no line.
+  const lastLength = useRef(shown.length);
   useLayoutEffect(() => {
-    if (pulses === lastPulses.current) return;
     const added = pulses - lastPulses.current;
     lastPulses.current = pulses;
+    const newRows = shown.length - lastLength.current;
+    lastLength.current = shown.length;
     if (mode === 'open' || drag.current) return;
 
-    pendingLines.current += added;
+    if (added > 0) {
+      pendingLines.current = newRows > 0 ? pendingLines.current + newRows : Math.max(pendingLines.current, 1);
+    } else if (newRows > 0 && mode === 'peek') {
+      pendingLines.current += newRows;
+    } else {
+      return;
+    }
+
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
     setMode('peek');
     setOffset(peekOffset(pendingLines.current));
