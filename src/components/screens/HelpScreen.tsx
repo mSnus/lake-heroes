@@ -137,6 +137,12 @@ const HelpScreen: React.FC = () => {
             />
           </ul>
 
+          <h3>{t('helpScreen.karma.title')}</h3>
+          <ul>
+            <HtmlLi html={t('helpScreen.karma.item1')} />
+            <HtmlLi html={t('helpScreen.karma.item2')} />
+          </ul>
+
           <h3>{t('helpScreen.tiles.title')}</h3>
           <ul>
             <li>
@@ -237,6 +243,7 @@ const HelpScreen: React.FC = () => {
             <HtmlLi html={t('helpScreen.overviewControls.kingdom')} />
             <HtmlLi html={t('helpScreen.overviewControls.garrison')} />
             <HtmlLi html={t('helpScreen.overviewControls.player')} />
+            <HtmlLi html={t('helpScreen.overviewControls.season')} />
           </ul>
 
           <h3>{t('helpScreen.contracts.title')}</h3>
@@ -358,6 +365,7 @@ const HelpScreen: React.FC = () => {
                   'undo',
                   'finishTurn',
                   'escape',
+                  'finishNow',
                   'result',
                 ] as const
               ).map((key) => (

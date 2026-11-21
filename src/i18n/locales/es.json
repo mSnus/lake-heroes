@@ -261,7 +261,6 @@
     "loot": "Saqueo",
     "pass": "Pasar",
     "raze": "Arrasar",
-    "raze": "Arrasar",
     "lootGain": "{playerName} saqueó {tileName} y ganó {reward}",
     "lootSoldiersLost": "{playerName} no logró saquear {tileName}, {amount}🧍 perdidos",
     "lootSoldiersAndFameLost": "{playerName} no logró saquear {tileName}, perdió todos sus {amount}🧍 y 1🏆",
@@ -421,7 +420,7 @@
     },
     "turnOrder": {
       "title": "Orden del turno",
-      "step1": "Tira el dado 🎲 (o agita tu teléfono 📳) y mueve a tu héroe por el tablero",
+      "step1": "Elige tu camino y tira el dado 🎲 (o agita tu teléfono 📳) para mover a tu héroe por el tablero",
       "step2": "Actúa según la casilla en la que caigas",
       "step3": "Mejora o vende tus casillas si es necesario",
       "step4": "Termina tu turno ⏳",
@@ -430,27 +429,32 @@
     "goldUnits": {
       "title": "Recursos 🟡🥙⚔️ y unidades 🧍",
       "item1": "El oro 🟡 compra casillas y mejoras. La comida 🥙 y las armas ⚔️ son la materia de un ejército: en el Castillo del Rey un 🧍 cuesta <strong>{militiaCost}</strong>, un 🐎 <strong>{riderCost}</strong>.",
-      "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno en el que todos cobran los ingresos de sus casillas. Los recursos se pueden comprar, vender o intercambiar.",
-      "itemLoot": "🦇 Las casillas sin dueño se pueden <strong>saquear</strong>: tira un dado por una parte de su ingreso anual más una cuarta parte de su precio en oro — con 4-5 te lo llevas todo, con 3 la mitad, con 6 el doble. Con 1-2 tu escuadrón es descubierto: pierdes unidades (otra tirada oculta), o Fama si ya no te quedan, o ambas cosas si la pérdida supera lo que tenías.",
-      "item3": "Los 🧍 pueden venderse para comprar 🐎 (o simplemente por el oro) — pulsa ✖️ junto a tus 🧍 mientras estés en el Castillo del Rey.",
+      "itemHarvest": "Cada año termina con una <strong>🌾 Cosecha</strong>, un turno en el que todos cobran los ingresos de sus casillas. Algunos grupos (Molinos, Granjas, Campos, Minas u Oficios) pueden tener suerte y pagar el doble ese año. La comida y las armas se pueden comprar, vender o intercambiar.",
+      "itemLoot": "🦇 Las casillas sin dueño se pueden <strong>saquear</strong>: tira un dado por una parte de su ingreso anual más una cuarta parte de su precio en oro — con 4-5 te lo llevas todo, con 3 la mitad, con 6 el doble. Con 1-2 tu escuadrón es descubierto: pierdes unidades (otra tirada oculta), o Fama si ya no te quedan, o ambas cosas si la pérdida supera lo que tenías. Saquear cuesta 1 de karma; con −5 de karma no puedes saquear hasta que vuelva a 0.",
+      "item3": "Toca tu ejército para abrir la pantalla de <strong>Ejército</strong>: contrata unidades en cualquier momento al precio de la Taberna, vende unidades por su precio completo, monta 🧍 como 🐎 (solo Caballeros) o desmóntalos.",
       "item4": "Puedes contratar unidades en el Castillo del Rey, en la Taberna🧍/Establos🐎 (pagando el doble de oro) o con la Gente Libre (solo oro, al precio del Castillo)",
       "item5": "Envía unidades a guarnecer tus casillas para liberar espacio en tu ejército, de cara a las nuevas unidades que puedan unirse en la Taberna o llegar como Gracia del Rey."
     },
     "fame": {
       "title": "Fama 🏆",
-      "item1": "Es tu reputación. Depende de cada batalla ganada o perdida y de las casillas que posees.",
+      "item1": "Es tu reputación: crece con las batallas ganadas y las casillas conquistadas, y baja con las derrotas y las casillas perdidas. La riqueza también cuenta: +1🏆 la primera vez que tu oro llega a 1000🟡, y de nuevo cada 500🟡 más.",
       "item2": "Una fama de {knightFame} o más te hace apto para el ascenso — el Rey te nombra caballero (desbloqueando el reclutamiento de Jinetes) la próxima vez que cruces su Castillo. También te hace más visible para un dragón - ¡cuidado, podría atacar!",
       "item3": "Los caballeros pueden contratar jinetes 🐎, más poderosos y mejor preparados para luchar contra dragones o zombis",
       "item4": "Una fama más alta permite un ejército mayor y poseer mejores casillas",
       "item5": "La fama 🏆 limita tu ejército: de {minMilitia}🧍 a {maxMilitia}🧍 con {maxMilitiaFame}🏆, {maxRider}🐎 con {maxRiderFame}🏆."
     },
+    "karma": {
+      "title": "Karma 🕊️",
+      "item1": "Saquear, arrasar e iniciar duelos de la Hora del Héroe bajan tu karma; marcharte en paz tras pagar un peaje, vencer a zombis y liberar esclavos lo suben. Se mantiene entre −5 y +5, se acerca 1 paso a 0 cada año y la prisión lo reinicia.",
+      "item2": "Con −3 o menos 🕷️ los peligros te encuentran más a menudo y el Comodín es casi siempre malo. Con 3 o más 🌈 te encuentran menos, las caravanas más, el Comodín es casi siempre amable y tienes un 50% de librarte de la Peste, el Terremoto, el Meteorito y el Huracán."
+    },
     "tiles": {
       "title": "Casillas 🧩",
       "discoverTitle": "Descubrir",
       "discoverBody": "nuevas casillas y ser recompensado por ello",
-      "own": "<strong> Posee casillas</strong> gastando oro 🟡 y unidades 🧍. Visitar tus propias casillas te aporta {visitGoldMult}x su ingreso, o {visitUnitsShare}x🧍🏻 de una Torre",
-      "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — la tarifa 💰 se cobra automáticamente. Tras pagarla, puedes marcharte en paz o luchar ⚔️ por venganza. Una casilla arrasada 🔥 pierde sus mejoras, queda sin dueño y no se puede reclamar hasta la siguiente ronda. Si no puedes cubrir una tarifa, vende casillas; si aún no basta, te conviertes en prisionero de guerra, pierdes un turno en prisión y después recibes el rescate del Rey para continuar.",
-      "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: el bono de ingresos y la tarifa se <strong>duplican</strong>",
+      "own": "<strong> Posee casillas</strong> derrotando a sus guardias — reclamar no cuesta oro; el precio de una casilla sigue marcando su peaje, sus mejoras y su valor de venta. Visitar tus propias casillas te aporta {visitGoldMult}x su ingreso, o {visitUnitsShare}x🧍🏻 de una Torre",
+      "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — su peaje 💰 (la mitad del precio de la casilla) se cobra automáticamente. Tras pagarlo, puedes marcharte en paz o luchar ⚔️ por venganza; una victoria arrasa 🔥 la casilla: pierde sus mejoras, queda sin dueño y no se puede reclamar hasta la siguiente ronda. Si no puedes cubrir un peaje, vende o cede casillas; si aún no basta, te conviertes en prisionero de guerra, pierdes un turno en prisión y después recibes el rescate del Rey para continuar. Si el dueño está en prisión, no hay peaje y puedes arrasar la casilla desde su tarjeta.",
+      "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: su ingreso se <strong>duplica</strong>",
       "sellAnytime": "<strong>Vender</strong> — las casillas pueden venderse en cualquier momento por el precio total de la casilla y sus mejoras. Haz clic en el encabezado de la casilla para ver los botones de Vender/Ceder.",
       "yieldToKing": "<strong>Ceder al Rey</strong> — cede una casilla ('media venta'): recibes la mitad de su precio de inmediato, pero no produce ingresos y no se puede luchar por ella. Recupérala por el 60% del precio de la casilla. Vender una casilla cedida reembolsa un 10% menos de su valor restante.",
       "clickToView": "<strong>Haz clic en el título o los datos de la casilla</strong> para ver sus bonos y defensas en cada nivel"
@@ -469,7 +473,7 @@
       "treasureChest": "🪎 <strong>Cofre del Tesoro</strong> — recompensa en oro, de tamaño pequeño/mediano/grande.",
       "tavern": "🍺 <strong>Taberna</strong> — recluta unidades",
       "sphynx": "🦁 <strong>Esfinge</strong>: <br/>Tira el dado 🎲:<br/> <b>1,2</b> - pierdes la mitad de tu 🟡<br/><b>3,4</b> - pierdes 1/3 de tus 🧍<br/> <b>5</b> - nada, exhala 🌬️<br/> <b>6</b> - ganas la mitad de tu 🟡",
-      "prison": "⛓️ <strong>Prisión</strong> — pierdes un turno. Mientras estás en prisión, nadie paga por visitar tus casillas",
+      "prison": "⛓️ <strong>Prisión</strong> — pierdes un turno y tu karma vuelve a 0. Mientras estás en prisión, nadie paga por visitar tus casillas y los demás pueden arrasarlas. El perdedor de un duelo de la Hora del Héroe también acaba aquí.",
       "joker": "🃏 <strong>Comodín</strong> — desencadena un evento global aleatorio, ver la lista completa abajo.",
       "ruins": "🏚️ <strong>Ruinas</strong> — caer aquí siempre desencadena una lucha contra sus ocupantes monstruosos, ver los detalles abajo.",
       "portal": "🌀 <strong>Portal</strong> — te teletransporta a otra casilla aleatoria, cuyo efecto se resuelve entonces.",
@@ -477,7 +481,7 @@
     },
     "joker": {
       "title": "Comodín 🃏",
-      "intro": "Caer en la casilla del Comodín desencadena un evento aleatorio, que afecta a todos (o, en algunos casos, a un solo jugador):",
+      "intro": "El Comodín actúa cuando caes en su casilla, o al azar (5% antes de moverte) cuando todos los jugadores tienen 5🏆. Desencadena un evento aleatorio que afecta a todos (o, en algunos casos, a un solo jugador). Los eventos malos y buenos son igual de probables, pero el karma cambia las probabilidades para quien lo activó, y los jugadores con karma 3 o más tienen un 50% de librarse de la Peste, el Terremoto, el Meteorito y el Huracán:",
       "taxes": "🧾 <strong>Impuestos Injustos</strong> — bloquea todo tipo de ingreso de casillas (oro, comida, armas, unidades) durante el resto del año, en todo el tablero, incluido el pago de la Cosecha de ese año. La Gracia del Rey se sigue pagando.",
       "plague": "🦠 <strong>Peste</strong> — las guarniciones de todos los jugadores pierden inmediatamente la mitad de sus defensores (nunca menos de 1), en todo el tablero. Los ejércitos de campo no se ven afectados.",
       "hurricane": "🌪️ <strong>Huracán</strong> — golpea la casilla más cara del jugador más rico, arrasándola, pero solo si es al menos 1.5 veces más rico que el segundo.",
@@ -491,15 +495,16 @@
     },
     "travel": {
       "title": "Viaje 🧭",
-      "fork": "<strong>Elegir el camino</strong> — antes de tirar, el camino de delante (6 pasos) se dibuja en dorado y sus posibles finales se marcan con un círculo; se elige uno al azar. Toca otro final para tomar el camino que lleva allí, y vuelve a tocarlo para alternar entre los caminos que llegan a él. Después avanzas por el camino dorado tantos pasos como diga el dado.",
-      "emptyRoad": "<strong>Camino vacío</strong> — no todos los tramos del camino tienen una casilla. En un camino vacío no pasa nada, salvo que solo allí se encuentran caravanas y emboscadas.",
+      "fork": "<strong>Elegir el camino</strong> — antes de tirar, el camino de delante (6 pasos) se marca con puntos de tu color y sus posibles finales se marcan con un círculo; se elige uno al azar. Toca otro final para tomar el camino que lleva allí, y vuelve a tocarlo para alternar entre los caminos que llegan a él. Después avanzas por ese camino tantos pasos como diga el dado.",
+      "emptyRoad": "<strong>Camino vacío</strong> — no todos los tramos del camino tienen una casilla. En un camino vacío no pasa nada, salvo que solo allí se encuentran caravanas y emboscadas, y también pueden darse duelos de la Hora del Héroe.",
       "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
     },
     "overviewControls": {
       "title": "Controles de vista general 🔍",
       "kingdom": "🏰 <strong>Vista del Reino</strong> — toca tu Fama u Oro en el panel de estadísticas para ver a todos los jugadores con su rango de poder ⭐ y riqueza total 🧮.",
       "garrison": "⚔️ <strong>Vista de Guarniciones</strong> — toca tu ejército para ver todas tus casillas y repartirlo en sus guarniciones. ¡Recuerda que no podrás recuperarlos de la casilla hasta que la visites!",
-      "player": "👤 <strong>Vista de Jugador</strong> — toca el icono de un jugador en el mapa para ver rápidamente sus posesiones."
+      "player": "👤 <strong>Vista de Jugador</strong> — toca el icono de un jugador en el mapa para ver rápidamente sus posesiones.",
+      "season": "🗓️ <strong>Rueda de las estaciones</strong> — detrás del botón del dado. Avanza un paso tras el turno de cada jugador, una vuelta completa por año; tócala para ver la estación."
     },
     "contracts": {
       "title": "Contratos del Rey 📜",
@@ -512,9 +517,9 @@
     },
     "dangers": {
       "title": "Peligros del camino y del reino ⚠️",
-      "ambush": "<strong>Emboscada</strong> — después de tu primera vuelta, un viajero famoso y fuerte puede ser atacado en el camino. La emboscada debe combatirse.",
-      "rogue": "<strong>Incursión de forajidos</strong> — después de tu primera vuelta, una horda errante puede atacar una de tus casillas no cedidas. Una guarnición vacía queda arrasada de inmediato; de otro modo, la guarnición la defiende.",
-      "zombies": "<strong>Casillas abandonadas</strong> — las casillas arrasadas están custodiadas por zombis, no se pueden reclamar hasta la siguiente ronda y su guarnición salvaje crece mientras siguen sin dueño. Caer en una, o saquearla, puede desencadenar una emboscada zombi."
+      "ambush": "<strong>Emboscada</strong> — desde el tercer año, un viajero famoso (8🏆 o más) y fuerte puede ser atacado en un camino vacío. La emboscada debe combatirse.",
+      "rogue": "<strong>Incursión de forajidos</strong> — desde el tercer año, una horda errante puede atacar una de tus casillas no cedidas, como mucho una vez al año. Una guarnición vacía queda arrasada de inmediato; de otro modo, la guarnición la defiende.",
+      "zombies": "<strong>Casillas abandonadas</strong> — las casillas arrasadas están custodiadas por zombis, no se pueden reclamar hasta la siguiente ronda y su guarnición salvaje crece cada año que siguen sin dueño (hasta 12, o la guarnición propia de la casilla si es mayor). Caer en una, o saquearla, puede desencadenar una emboscada zombi; rechazarla reduce los zombis a la mitad."
     },
     "ruins": {
       "title": "Ruinas Antiguas 🏚️",
@@ -525,7 +530,7 @@
     },
     "battle": {
       "title": "Batalla ⚔️",
-      "occurs": "Las batallas ocurren cuando un jugador reclama una casilla, o durante algunos encuentros aleatorios (caravanas, emboscadas, etc).",
+      "occurs": "Las batallas ocurren cuando un jugador reclama una casilla, se venga, se bate en la Hora del Héroe, o durante algunos encuentros aleatorios (caravanas, emboscadas, etc).",
       "statsIntro": "Usa tus unidades para aniquilar a los enemigos. Cada unidad tiene su fuerza (HP🩸), rango de daño 🗡️ y energía 💪:",
       "unitStatLine": "{icon} - {hp}🩸 / {dmgMin}-{dmgMax}🗡️ / {energy}💪",
       "absorption": "El daño 🎲 es absorbido por la defensa (también 🎲). La defensa suele absorber entre {min}-{max}% del daño, los afortunados pueden llegar al 100%, los desafortunados al 0%.",
@@ -533,10 +538,10 @@
       "energy": "La energía se consume con cada ataque. Una unidad completamente agotada ataca débilmente (¡solo un {pct}%!), pero se recupera por completo si no se mueve ni ataca durante un turno. Intercambiarla por una reserva fresca es una buena estrategia.",
       "unitsEquivalence": "Unidades como 👹🥷 equivalen a 🧍, y las montadas 🦬🐫 a 🐎",
       "reinforcements": "Cada bando empieza con <strong>{startUnits} unidades</strong> en su propio borde. El resto espera en reserva y entra por ese borde cuando hay una casilla libre.",
-      "controls": "Toda batalla empieza en automático. El botón ⚔️ cambia tu bando entre control automático y manual, desde su próximo movimiento. En modo manual también hay botones de Deshacer ⬅️ y Terminar turno 🚩.",
+      "controls": "Toda batalla empieza en automático. El botón ⚔️ cambia tu bando entre control automático y manual, desde su próximo movimiento. En modo manual también hay botones de Deshacer ⬅️ y Terminar turno 🚩. 🏁 termina toda la batalla de una vez, en automático.",
       "fromBehind": "Un golpe por la espalda (desde el lado del borde inicial del objetivo) tiene <strong>el doble de probabilidad</strong> de ser crítico.",
       "escape": "El jugador que inició la lucha puede 🏃 <strong>huir</strong> (pulsa dos veces): cuenta como derrota y se pierde la mitad de las unidades en el campo; el resto y la reserva se salvan.",
-      "heroHour": "La Hora del Héroe es un combate amistoso entre dos héroes y no provoca grandes bajas",
+      "heroHour": "<strong>Hora del Héroe</strong> — desde el quinto año, terminar tu movimiento donde está el ejército de otro jugador (en una casilla o en un camino vacío) te permite retarlo, a costa de 1 de karma. Ambos bandos pierden las unidades caídas; el perdedor va a prisión y pierde 1🏆, el ganador gana 1🏆. Un duelo se salta el peaje de esa casilla.",
       "phasesTitle": "Fases de la batalla",
       "phase": {
         "tactics": {
@@ -583,6 +588,11 @@
           "name": "Resultado final",
           "desc": "La batalla termina: victoria, derrota o empate",
           "icon": "—"
+        },
+        "finishNow": {
+          "name": "Terminar ya",
+          "desc": "Lucha el resto de la batalla en automático de una vez y muestra el resultado",
+          "icon": "🏁"
         }
       },
       "banzai": "Un botón 🩸 ¡Banzai! en lugar del ataque normal significa que el juego espera que pierdas esa batalla — aun así puedes atacar como una apuesta"

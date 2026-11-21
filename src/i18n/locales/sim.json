@@ -400,7 +400,7 @@
     },
     "turnOrder": {
       "title": "Turn order",
-      "step1": "Roll the dice 🎲 (or shake your phone 📳) and move your hero around the board",
+      "step1": "Pick your road and roll the dice 🎲 (or shake your phone 📳) to move your hero around the board",
       "step2": "Take action based on the tile you land on",
       "step3": "Upgrade or sell your tiles if needed",
       "step4": "End your turn ⏳",
@@ -409,27 +409,32 @@
     "goldUnits": {
       "title": "Resources 🟡🥙⚔️ and units 🧍",
       "item1": "Gold 🟡 buys tiles and upgrades. Food 🥙 and arms ⚔️ are what an army is made of: at the King's Castle a 🧍 costs <strong>{militiaCost}</strong>, a 🐎 <strong>{riderCost}</strong>.",
-      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn when everybody collects the income from owned tiles. Resources could be bought, sold or exchanged.",
-      "itemLoot": "🦇 Unowned tiles can be <strong>looted</strong>: roll a die for a share of the tile's yearly income plus a quarter of its price in gold — 4-5 takes it all, 3 half, 6 double. On a 1-2 your squad is caught: you lose units (a second hidden roll), or Fame once you have none left to lose, or both if the loss outruns what you had.",
-      "item3": "🧍 can be sold to buy 🐎 instead (or just for the gold) — press ✖️ next to your 🧍 while at the King's Castle.",
+      "itemHarvest": "Every year ends with a <strong>🌾 Harvest</strong>, a turn when everybody collects the income from owned tiles. Some groups (Mills, Farms, Fields, Mines or Crafts) may be lucky and pay double that year. Food and arms can be bought, sold or exchanged.",
+      "itemLoot": "🦇 Unowned tiles can be <strong>looted</strong>: roll a die for a share of the tile's yearly income plus a quarter of its price in gold — 4-5 takes it all, 3 half, 6 double. On a 1-2 your squad is caught: you lose units (a second hidden roll), or Fame once you have none left to lose, or both if the loss outruns what you had. Looting costs 1 karma; at −5 karma you can't loot until it climbs back to 0.",
+      "item3": "Tap your army to open the <strong>Army</strong> screen: hire units at any time at the Tavern's price, sell units back for their full price, mount 🧍 as 🐎 (Knights only) or dismount them.",
       "item4": "You can hire units at the King's Castle, at the Tavern🧍/Stables🐎 (paying double gold) or from the Free Folk (gold only, at the Castle's price)",
       "item5": "Send units to garrison your tiles to free up room in your army for new units that might be joining at the Tavern or arriving from King's Grace."
     },
     "fame": {
       "title": "Fame 🏆",
-      "item1": "It's your reputation. It depends on each battle won or lost and tiles owned.",
+      "item1": "It's your reputation: it grows with battles won and tiles claimed, and drops with defeats and lost tiles. Wealth counts too: +1🏆 the first time your gold reaches 1000🟡, and again at every further 500🟡.",
       "item2": "Fame {knightFame} or more makes you eligible for promotion — the King knights you (unlocking Rider recruiting) next time you cross his Castle. It also makes you more visible for a dragon - beware, it could attack!",
       "item3": "Knights are eligible to hire riders 🐎, more powerful and better suited to fight dragons or zombies",
       "item4": "Higher fame lets your army grow bigger and allows to own better tiles",
       "item5": "Fame 🏆 limits your army: from {minMilitia}🧍 to {maxMilitia}🧍 at {maxMilitiaFame}🏆, {maxRider}🐎 at {maxRiderFame}🏆."
     },
+    "karma": {
+      "title": "Karma 🕊️",
+      "item1": "Looting, razing and starting Hero's Hour duels lower your karma; going in peace after paying a toll, beating zombies and freeing slaves raise it. It stays between −5 and +5, moves 1 step back toward 0 every year, and Prison resets it.",
+      "item2": "At −3 or below 🕷️ dangers find you more often and the Joker turns mostly bad. At 3 or above 🌈 they find you less often, caravans more often, the Joker is mostly kind, and you have a 50% chance to escape Plague, Earthquake, Meteor and Hurricane."
+    },
     "tiles": {
       "title": "Tiles 🧩",
       "discoverTitle": "Discover",
       "discoverBody": "new tiles and get rewarded for that",
-      "own": "<strong> Own tiles</strong> by spending gold 🟡 and 🧍 units. Visiting own tiles brings you {visitGoldMult}x its own income, or {visitUnitsShare}x🧍🏻 from a Tower",
-      "landingOnOpponent": "<strong>Landing on opponent's tile</strong> — pay a fee 💰 or battle ⚔️ to raze it. Razed 🔥 tile loses all upgrades and becomes unowned, but cannot be claimed by that player after the battle. If you don't have enough gold or units, sell some of your tiles. Battle costs units to the attacker. If you can neither battle, nor pay, you become a prisoner of war: spend 2 turns in a prison, after that receive some starting bonus to continue playing.",
-      "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: income bonus and fee is <strong>doubled</strong>",
+      "own": "<strong> Own tiles</strong> by defeating their guards — claiming costs no gold; a tile's price still sets its toll, upgrades and sale value. Visiting own tiles brings you {visitGoldMult}x its own income, or {visitUnitsShare}x🧍🏻 from a Tower",
+      "landingOnOpponent": "<strong>Landing on an opponent's tile</strong> — its toll 💰 (half the tile's price) is collected automatically. Once it is paid, you may leave peacefully or fight ⚔️ for revenge; a win razes 🔥 the tile: it loses all upgrades, becomes unowned and cannot be claimed until the next round. If you cannot cover a toll, sell or yield tiles; if that is still not enough, you become a prisoner of war, skip a turn in prison, then receive the King's ransom to continue. If the owner is in prison, there's no toll, and you may raze the tile from its card.",
+      "syndicates": "<strong>Syndicates</strong> — own every tile of some group and you form a syndicate: its income is <strong>doubled</strong>",
       "sellAnytime": "<strong>Sell</strong> — tiles can be sold at any time for the full price of the tile and its upgrades. Click the tile's heading to reveal the Sell/Yield buttons.",
       "yieldToKing": "<strong>Yield to the King</strong> — yield a tile ('half-sold'): receive half its price immediately, but it produces no income and can't be fought over. Take it back for 60% of the tile's price. Selling a yielded tile refunds 10% less than its remaining value.",
       "clickToView": "<strong>Click on the tile's title or data</strong> to view its bonuses and defences on each level"
@@ -448,14 +453,14 @@
       "treasureChest": "🪎 <strong>Treasure Chest</strong> — gold reward, sized small/medium/large.",
       "tavern": "🍺 <strong>Tavern</strong> — recruit units",
       "sphynx": "🦁 <strong>Sphynx</strong>: <br/>Roll dice 🎲:<br/> <b>1,2</b> - lose half of your 🟡<br/><b>3,4</b> - lose 1/3 🧍<br/> <b>5</b> - nothing, exhale 🌬️<br/> <b>6</b> - gain half of your 🟡",
-      "prison": "⛓️ <strong>Prison</strong> — skip a turn. While you're in prison, noone pays for visiting your tiles",
+      "prison": "⛓️ <strong>Prison</strong> — skip a turn, and your karma resets to 0. While you're in prison, no one pays for visiting your tiles, and others may raze them. The loser of a Hero's Hour duel ends up here too.",
       "joker": "🃏 <strong>Joker</strong> — triggers a random global event, see below for the full list.",
       "ruins": "🏚️ <strong>Ruins</strong> — landing here always triggers a fight against monster occupants, see below for details.",
       "stables": "🐴 <strong>Stables</strong> — 3-12 free riders for knights"
     },
     "joker": {
       "title": "Joker 🃏",
-      "intro": "Landing on the Joker tile triggers one random event, affecting everyone (or, in some cases, just one player):",
+      "intro": "The Joker strikes when you land on its tile, or at random (5% before a move) once every player has 5🏆. It triggers one random event, affecting everyone (or, in some cases, just one player). Bad and good events are equally likely, but karma shifts the odds for whoever drew it, and players with karma 3+ have a 50% chance to escape Plague, Earthquake, Meteor and Hurricane:",
       "taxes": "🧾 <strong>Unjust Taxes</strong> — blocks every kind of tile income (gold, food, arms, units) for the rest of the year, board-wide, including that year's own Harvest payout. The King's Grace is still paid.",
       "plague": "🦠 <strong>Plague</strong> — every player's tile garrisons immediately lose half their defenders (never below 1), board-wide. Field armies are untouched.",
       "hurricane": "🌪️ <strong>Hurricane</strong> — strikes the richest player's most expensive tile, razing it, but only if they're at least 1.5x wealthier than whoever ranks second.",
@@ -480,7 +485,7 @@
     },
     "battle": {
       "title": "Battle ⚔️",
-      "occurs": "Battles occur when a player claims a tile, or during some random encounters (caravans, ambushes, etc).",
+      "occurs": "Battles occur when a player claims a tile, takes revenge, duels in Hero's Hour, or during some random encounters (caravans, ambushes, etc).",
       "statsIntro": "Use your units to wipe out enemies. Each unit has its strength (HP🩸), damage range 🗡️ and energy 💪:",
       "unitStatLine": "{icon} - {hp}🩸 / {dmgMin}-{dmgMax}🗡️ / {energy}💪",
       "absorption": "Damage 🎲 is absorbed by defence (also 🎲). Defence usually absorbs {min}-{max}% of the damage, rare lucky ones can reach 100%, unlucky ones 0%.",
@@ -488,10 +493,10 @@
       "energy": "Energy is consumed by each attack. A completely tired unit's attack is weak (only {pct}%!), but it recovers fully if it doesn't move or attack for a turn. Swapping it out for a fresh reserve is a good strategy.",
       "unitsEquivalence": "Units like 👹🥷 are equal to 🧍, and mounted 🦬🐫 to 🐎",
       "reinforcements": "Each side opens with <strong>{startUnits} units</strong> at its own edge. The rest wait in reserve and march in at that edge whenever a cell there is free.",
-      "controls": "Every battle starts automatic. The ⚔️ button switches your side between automatic and manual control, from its next move. In manual mode there are also Undo ⬅️ and Finish turn 🚩 buttons.",
+      "controls": "Every battle starts automatic. The ⚔️ button switches your side between automatic and manual control, from its next move. In manual mode there are also Undo ⬅️ and Finish turn 🚩 buttons. 🏁 finishes the whole battle at once, automatically.",
       "fromBehind": "A hit from behind (from the side of the target's own starting edge) is <strong>twice as likely</strong> to be critical.",
       "escape": "The player who started the fight can 🏃 <strong>escape</strong> (tap twice): it counts as a defeat and half the units on the field are lost; the rest and the reserves are saved.",
-      "heroHour": "Hero's Hour is a friendly brawl between two heroes and doesn't result in heavy casualties",
+      "heroHour": "<strong>Hero's Hour</strong> — from the fifth year, ending your move where another player's army stands (on a tile or empty road) lets you challenge them, at the cost of 1 karma. Both sides lose the units killed; the loser goes to Prison and loses 1🏆, the winner gains 1🏆. A duel skips that tile's toll.",
       "phasesTitle": "Battle phases",
       "phase": {
         "tactics": {
@@ -538,6 +543,11 @@
           "name": "Result",
           "desc": "The battle ends: victory, defeat, or a tie",
           "icon": "—"
+        },
+        "finishNow": {
+          "name": "Finish now",
+          "desc": "Fights the rest of the battle automatically at once and shows the result",
+          "icon": "🏁"
         }
       },
       "banzai": "A 🩸 Banzai! button instead of the normal attack means the game expects you to lose that battle — you can still attack as a gamble"
@@ -557,6 +567,18 @@
       "item2": "The dice-rolling animation is powered by <em>react-dice-complete</em> by Adam Tyler, used under the ISC license.",
       "item3": "Board and battle randomization use the classic <em>Fisher-Yates shuffle</em> algorithm.",
       "item4": "This game is licensed under the <a href=\"https://polyformproject.org/licenses/noncommercial/1.0.0\" target=\"_blank\" rel=\"noopener noreferrer\">PolyForm Noncommercial License 1.0.0</a> — noncommercial use and sharing only."
+    },
+    "travel": {
+      "fork": "<strong>Choosing your way</strong> — before you roll, the road ahead (6 steps) is marked with dots in your colour and its possible ends are circled; one road is picked at random. Tap another end to take the road leading there, and tap the same end again to switch between roads that reach it. You then move along that road as far as the die says.",
+      "emptyRoad": "<strong>Empty road</strong> — not every step of the road holds a tile. Nothing happens on a stretch of empty road, except that caravans and ambushes are only ever met there, and Hero's Hour duels can happen there too."
+    },
+    "overviewControls": {
+      "season": "🗓️ <strong>Season dial</strong> — behind the dice button. It turns a step after every player's turn, a full turn per year; tap it to see the season."
+    },
+    "dangers": {
+      "ambush": "<strong>Ambush</strong> — from the third year, a famous (8🏆 or more), strong traveller can be attacked on empty road. The ambush must be fought.",
+      "rogue": "<strong>Rogue raid</strong> — from the third year, a roaming horde may attack one of your non-yielded tiles, at most once a year. An empty garrison is razed immediately; otherwise its garrison defends.",
+      "zombies": "<strong>Abandoned tiles</strong> — razed tiles are zombie-guarded, cannot be claimed until the next round, and their wild garrison grows every year they stay unclaimed (up to 12, or the tile's own garrison if that is higher). Landing on one, or looting it, can trigger a zombie ambush; repelling it halves the zombies."
     }
   },
   "screenStore": {
