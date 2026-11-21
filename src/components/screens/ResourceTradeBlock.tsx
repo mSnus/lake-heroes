@@ -14,6 +14,7 @@ import { Gold } from '../snippets/Gold';
 import { Food } from '../snippets/Food';
 import { Arms } from '../snippets/Arms';
 import { useT } from '../../i18n';
+import { tJsx } from '../../i18n/tJsx';
 import { DecoratedButton } from '../ui/DecoratedButton';
 import '../../styles/HarvestModal.css';
 
@@ -166,10 +167,11 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
                 max={max}
                 value={Math.min(shownEx(key), max)}
                 disabled={max === 0}
-                onPreview={(v) => setExPreview((p) => ({ ...p, [key]: v }))}
+                onPreview={(v) => setExPreview({ [key]: v, [EX_KEY[other(from)]]: 0 })}
                 onCommit={(v) => {
-                  setExAmounts((a) => ({ ...a, [key]: v }));
-                  setExPreview((p) => ({ ...p, [key]: undefined }));
+                  // One direction at a time: moving one slider zeroes the other.
+                  setExAmounts({ foodToArms: 0, armsToFood: 0, [key]: v });
+                  setExPreview({});
                 }}
               />
               <div className="hire-row-amount-label">{resourceLabel(other(from), shownEx(key) * get)}</div>
@@ -181,18 +183,23 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
         {mode !== 'exchange' && total > 0 ? (
           <DecoratedButton onClick={trade}>
             <span className="trade-button-line">
-              <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
-              {t(mode === 'buy' ? 'harvest.buyFor' : 'harvest.sellFor')}
-              <Gold amount={Math.abs(goldDelta)} />
+              {tJsx(mode === 'buy' ? 'harvest.buyItemsFor' : 'harvest.sellItemsFor', {
+                items: (
+                  <>
+                    {shown('food') > 0 && <Food amount={shown('food')} />}
+                    {shown('arms') > 0 && <Arms amount={shown('arms')} />}
+                  </>
+                ),
+                gold: <Gold amount={Math.abs(goldDelta)} />,
+              })}
             </span>
           </DecoratedButton>
         ) : mode === 'exchange' && exActive ? (
           <DecoratedButton onClick={doExchange}>
             <span className="trade-button-line">
-              <span className="hire-submit-icon">🔄</span>
-              {t('harvest.tradeFor')}
-              {foodDelta > 0 && <Food amount={foodDelta} />}
-              {armsDelta > 0 && <Arms amount={armsDelta} />}
+              {exTotalF2A > 0
+                ? tJsx('harvest.tradeGiveFor', { give: <Food amount={-foodDelta} />, get: <Arms amount={armsDelta} /> })
+                : tJsx('harvest.tradeGiveFor', { give: <Arms amount={-armsDelta} />, get: <Food amount={foodDelta} /> })}
             </span>
           </DecoratedButton>
         ) : (

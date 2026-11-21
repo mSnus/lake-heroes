@@ -1220,9 +1220,9 @@
     "sellMode": "Sell",
     "exchangeMode": "Exchange",
     "trade": "Trade",
-    "buyFor": "Buy for",
-    "sellFor": "Sell for",
-    "tradeFor": "Trade for",
+    "buyItemsFor": "Buy {items} for {gold}",
+    "sellItemsFor": "Sell {items} for {gold}",
+    "tradeGiveFor": "Trade {give} for {get}",
     "finish": "🌾 Finish harvest",
     "botTraded": "{playerName} trades at the Harvest: {summary}"
   },

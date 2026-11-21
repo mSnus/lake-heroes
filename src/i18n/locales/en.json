@@ -740,7 +740,7 @@
     "payMoreHeader": "pay {amount} more:",
     "goToPrison": "⛓️ Go to prison, ashamed",
     "yieldFor": "Yield for {gold}",
-    "sellFor": "Sell for {gold}"
+    "sellItemsFor": "Sell {items} for {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "A terrifying dragon guards a pile of gold and jewels. Will {playerSpan} dare to challenge it?",
@@ -1286,9 +1286,9 @@
     "sellMode": "Sell",
     "exchangeMode": "Exchange",
     "trade": "Trade",
-    "buyFor": "Buy for",
+    "buyItemsFor": "Buy {items} for {gold}",
     "sellFor": "Sell for",
-    "tradeFor": "Trade for",
+    "tradeGiveFor": "Trade {give} for {get}",
     "finish": "🌾 Finish harvest",
     "botTraded": "{playerName} trades at the Harvest: {summary}"
   },

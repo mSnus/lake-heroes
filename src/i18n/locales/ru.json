@@ -735,7 +735,7 @@
     "payMoreHeader": "заплатите ещё {amount}:",
     "goToPrison": "⛓️ Отправиться в темницу, с позором",
     "yieldFor": "Уступить за {gold}",
-    "sellFor": "Продать за {gold}"
+    "sellItemsFor": "Продать {items} за {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "Ужасающий дракон охраняет груду золота и драгоценностей. Осмелится ли {playerSpan} бросить ему вызов?",
@@ -1255,10 +1255,10 @@
     "buyMode": "Купить",
     "sellMode": "Продать",
     "exchangeMode": "Обмен",
-    "trade": "Обменять",
-    "buyFor": "Купить за",
+    "trade": "Обмен",
+    "buyItemsFor": "Купить {items} за {gold}",
     "sellFor": "Продать за",
-    "tradeFor": "Обменять на",
+    "tradeGiveFor": "Обмен {give} на {get}",
     "finish": "🌾 Завершить сбор",
     "botTraded": "{playerName} торгует на сборе урожая: {summary}"
   },

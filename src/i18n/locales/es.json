@@ -738,7 +738,7 @@
     "payMoreHeader": "paga {amount} más:",
     "goToPrison": "⛓️ Ir a prisión, avergonzado",
     "yieldFor": "Ceder por {gold}",
-    "sellFor": "Vender por {gold}"
+    "sellItemsFor": "Vender {items} por {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "Un dragón aterrador custodia un montón de oro y joyas. ¿Se atreverá {playerSpan} a desafiarlo?",
@@ -1259,9 +1259,9 @@
     "sellMode": "Vender",
     "exchangeMode": "Intercambiar",
     "trade": "Comerciar",
-    "buyFor": "Comprar por",
+    "buyItemsFor": "Comprar {items} por {gold}",
     "sellFor": "Vender por",
-    "tradeFor": "Cambiar por",
+    "tradeGiveFor": "Cambiar {give} por {get}",
     "finish": "🌾 Terminar la cosecha",
     "botTraded": "{playerName} comercia en la Cosecha: {summary}"
   },
