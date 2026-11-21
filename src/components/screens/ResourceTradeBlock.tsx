@@ -81,7 +81,6 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
   const exActive = exTotalF2A > 0 || exTotalA2F > 0;
   const foodDelta = exTotalA2F * exchangeBatch('arms').get - exTotalF2A * exchangeBatch('food').give;
   const armsDelta = exTotalF2A * exchangeBatch('food').get - exTotalA2F * exchangeBatch('arms').give;
-  const signed = (n: number) => (n > 0 ? `+${n}` : n);
 
   const switchMode = (next: Mode) => {
     setMode(next);
@@ -183,17 +182,17 @@ export const ResourceTradeBlock: React.FC<ResourceTradeBlockProps> = ({
           <DecoratedButton onClick={trade}>
             <span className="trade-button-line">
               <span className="hire-submit-icon">{mode === 'buy' ? '👛' : '⚖️'}</span>
-              {t('harvest.trade')}
-              <Gold amount={goldDelta > 0 ? `+${goldDelta}` : goldDelta} />
+              {t(mode === 'buy' ? 'harvest.buyFor' : 'harvest.sellFor')}
+              <Gold amount={Math.abs(goldDelta)} />
             </span>
           </DecoratedButton>
         ) : mode === 'exchange' && exActive ? (
           <DecoratedButton onClick={doExchange}>
             <span className="trade-button-line">
               <span className="hire-submit-icon">🔄</span>
-              {t('harvest.trade')}
-              <Food amount={signed(foodDelta)} />
-              <Arms amount={signed(armsDelta)} />
+              {t('harvest.tradeFor')}
+              {foodDelta > 0 && <Food amount={foodDelta} />}
+              {armsDelta > 0 && <Arms amount={armsDelta} />}
             </span>
           </DecoratedButton>
         ) : (

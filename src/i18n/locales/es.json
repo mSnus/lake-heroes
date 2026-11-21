@@ -1259,6 +1259,9 @@
     "sellMode": "Vender",
     "exchangeMode": "Intercambiar",
     "trade": "Comerciar",
+    "buyFor": "Comprar por",
+    "sellFor": "Vender por",
+    "tradeFor": "Cambiar por",
     "finish": "🌾 Terminar la cosecha",
     "botTraded": "{playerName} comercia en la Cosecha: {summary}"
   },

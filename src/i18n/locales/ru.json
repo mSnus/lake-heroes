@@ -1256,6 +1256,9 @@
     "sellMode": "Продать",
     "exchangeMode": "Обмен",
     "trade": "Обменять",
+    "buyFor": "Купить за",
+    "sellFor": "Продать за",
+    "tradeFor": "Обменять на",
     "finish": "🌾 Завершить сбор",
     "botTraded": "{playerName} торгует на сборе урожая: {summary}"
   },
