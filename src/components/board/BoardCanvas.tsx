@@ -281,9 +281,12 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     if (mapEdit.active) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    // A fresh press: whatever click an earlier drag left pending is stale now.
+    suppressClickRef.current = false;
 
     if (pointersRef.current.size === 2) {
+      // Captured only once a gesture starts, so a plain tap still reaches its target.
+      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
       const [a, b] = Array.from(pointersRef.current.values());
       const dist = Math.hypot(a.x - b.x, a.y - b.y);
       pinchRef.current = { startDist: dist, dist };
@@ -318,6 +321,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
       if (Math.hypot(movedX, movedY) < PAN_DRAG_THRESHOLD_PX) return;
       draggingRef.current = true;
       setIsPanning(true);
+      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
     }
 
     e.preventDefault();
