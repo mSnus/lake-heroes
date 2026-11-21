@@ -8,7 +8,7 @@ import { planArmyPurchase } from '../ai/botPlans';
 import { buyUnits } from './buyUnits';
 import { sellUnits } from './sellUnits';
 import { upgradeSquad } from './upgradeSquad';
-import { tavernMilitiaPrice, tavernRiderPrice, tavernUpgradePricePerUnit } from './tavern';
+import { getOverrides } from '../utils/overridesStore';
 import { Resource } from '../game/resources';
 import WorkersModal from '../components/screens/WorkersModal';
 import TravelingTradersModal from '../components/screens/TravelingTradersModal';
@@ -28,6 +28,11 @@ const ENCOUNTER_CHANCE = 1 / 12;
  * that player, see the module doc below. */
 const LONG_TERM_ZERO_MULT = 2;
 
+/** Free Folk hire at the King's Castle gold prices (no food or arms). */
+const freeFolkMilitiaPrice = () => getOverrides().militiaPrice;
+const freeFolkRiderPrice = () => getOverrides().riderPrice;
+const freeFolkUpgradePrice = () => freeFolkRiderPrice() - freeFolkMilitiaPrice();
+
 /**
  * Workers: a free-standing hire opportunity, independent of the Tavern or
  * King's Castle. Exists to rescue a player who has lost their whole army
@@ -36,7 +41,7 @@ const LONG_TERM_ZERO_MULT = 2;
  * outplayed into irrelevance. Also just another source of units generally.
  *
  * Unlike caravans/ambushes this never fights -- it's a pure hire dialogue
- * at the Tavern's prices, but gold only (no food/arms), so there's nothing
+ * at the King's Castle prices, but gold only (no food/arms), so there's nothing
  * to force a kind of, only whether it fires at all.
  */
 export function checkWorkersEncounter(
@@ -112,12 +117,12 @@ export function checkWorkersEncounter(
 
   // Same decision WorkersModal's own self-drive effect makes.
   if (isHeadlessRun()) {
-    const steps = planArmyPurchase(player, { militiaPrice: tavernMilitiaPrice(), riderPrice: tavernRiderPrice() });
+    const steps = planArmyPurchase(player, { militiaPrice: freeFolkMilitiaPrice(), riderPrice: freeFolkRiderPrice() });
     if (steps.length > 0) announce(player, 'botController.hireWorkers');
     for (const step of steps) {
       if (step.kind === 'sell') sellUnits(board, step.count, updateGameState, step.tier);
-      else if (step.kind === 'upgrade') upgradeSquad(board, step.count, updateGameState, tavernUpgradePricePerUnit());
-      else buyUnits(board, step.count, updateGameState, step.tier, step.tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice(), true);
+      else if (step.kind === 'upgrade') upgradeSquad(board, step.count, updateGameState, freeFolkUpgradePrice());
+      else buyUnits(board, step.count, updateGameState, step.tier, step.tier === 'riders' ? freeFolkRiderPrice() : freeFolkMilitiaPrice(), true);
     }
 
     setEndTurn();
@@ -131,13 +136,13 @@ export function checkWorkersEncounter(
     content: React.createElement(WorkersModal, {
       gameState: board,
       onBuy: (amount, tier) => {
-        buyUnits(board, amount, updateGameState, tier, tier === 'riders' ? tavernRiderPrice() : tavernMilitiaPrice(), true);
+        buyUnits(board, amount, updateGameState, tier, tier === 'riders' ? freeFolkRiderPrice() : freeFolkMilitiaPrice(), true);
       },
       onSell: (tier, amount) => {
         sellUnits(board, amount, updateGameState, tier);
       },
       onUpgrade: (count) => {
-        upgradeSquad(board, count, updateGameState, tavernUpgradePricePerUnit());
+        upgradeSquad(board, count, updateGameState, freeFolkUpgradePrice());
       },
       onSkip: () => {
         clearScreen();

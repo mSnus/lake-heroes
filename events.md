@@ -64,7 +64,7 @@ Checked in this order, at most one per turn (`src/actions/rollAndMove.ts`).
 **🧑‍🌾 Free Folk / Traveling Traders** (`src/actions/workersEncounter.tsx`)
 - **When:** from year 3, at most once a year. 1/12 per turn, doubled for a player who has had no units for over a year.
 - **Either Traveling Traders (50%):** a market where one resource is in demand. The traders sell it at half the Harvest price and buy it at double; their exchange is 1:1.
-- **Or Free Folk (50%):** hire units at Tavern prices (60🟡 a militia, 120🟡 a rider), gold only, no food or arms.
+- **Or Free Folk (50%):** hire units at the King's Castle gold prices (20🟡 a militia, 40🟡 a rider), gold only, no food or arms.
 
 **🃏 Joker:** 5% per turn once everyone has fame 5 (see above).
 

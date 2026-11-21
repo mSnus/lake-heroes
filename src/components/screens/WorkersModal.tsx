@@ -11,7 +11,7 @@ import { useHireFooter } from '../ui/useHireFooter';
 import { Gold } from '../snippets/Gold';
 import { Fame } from '../snippets/Fame';
 import { formatArmy } from '../../utils/formatArmy';
-import { tavernMilitiaPrice, tavernRiderPrice } from '../../actions/tavern';
+import { getOverrides } from '../../utils/overridesStore';
 import { useT } from '../../i18n';
 import { tJsx } from '../../i18n/tJsx';
 import { planArmyPurchase } from '../../ai/botPlans';
@@ -30,16 +30,15 @@ interface WorkersModalProps {
 }
 
 /**
- * Workers' hire dialogue -- the Tavern's prices (see actions/tavern.ts's
- * tavernMilitiaPrice/tavernRiderPrice), but gold only, no food/arms. The
+ * Workers' hire dialogue -- the King's Castle gold prices, but gold only, no food/arms. The
  * footer button hires whatever the sliders show (see useHireFooter), or
  * passes by when they're at 0.
  */
 const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, onUpgrade, onSkip }) => {
   const t = useT();
   const player = gameState.activePlayer;
-  const militiaPrice = tavernMilitiaPrice();
-  const riderPrice = tavernRiderPrice();
+  const militiaPrice = getOverrides().militiaPrice;
+  const riderPrice = getOverrides().riderPrice;
 
   // onBuy/onSell mutate `player` in place but this modal is a static
   // `content:` element handed to screenStore once at mount, so nothing else
