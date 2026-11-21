@@ -16,10 +16,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  pointer-events: auto;
-  background: rgba(20, 28, 14, 0.88);
+  pointer-events: none;
   color: #fdf599;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
   /* Appearing: a fairly quick slide down. */
   transition: transform 0.45s ease-out;
 }
@@ -38,6 +36,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  pointer-events: auto;
+  background: rgba(20, 28, 14, 0.88);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
   padding: 4px 10px;
   font-size: 14px;
   line-height: 1.3;
@@ -83,7 +84,18 @@
   justify-content: center;
   cursor: grab;
   touch-action: none;
+  background: transparent;
+}
+
+/* Only the dash itself sits on a dark green pill; the rest of the strip shows the map. */
+.log-drawer-grip-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 14px;
+  border-radius: 0 0 10px 10px;
   background: rgba(20, 28, 14, 0.95);
+  pointer-events: auto;
 }
 
 .log-drawer--dragging .log-drawer-handle {

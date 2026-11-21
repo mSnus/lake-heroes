@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { Tile } from '../../game/Tile';
@@ -18,6 +18,12 @@ const groupColor = (group: string): string =>
 
 const basePrice = (tile: Tile): number => tile.prices?.[1] ?? 0;
 
+/** Same test as TileCard's own upgrade bell: not yielded, below level 3, and affordable now. */
+const isUpgradable = (tile: Tile, gold: number): boolean => {
+  const price = tile.prices?.[tile.level + 1];
+  return !tile.isYielded && tile.level < 3 && !!price && gold >= price;
+};
+
 interface Props {
   gameState: GameState;
   updateGameState: (gameState: GameState) => void;
@@ -31,7 +37,12 @@ interface Props {
 
 export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disableUpgradesScreen = false, defaultExpanded = false }) => {
   const t = useT();
+  const cardRefs = useRef(new Map<number, HTMLDivElement>());
   if (!gameState) return <div></div>;
+
+  // A square in the summary scrolls its tile's card into view.
+  const scrollToCard = (idx: number) =>
+    cardRefs.current.get(idx)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
   const activePlayer = gameState.activePlayer as Player;
 
@@ -80,13 +91,20 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disabl
       {totalOwned > 3 && (
         <div className="owned-tiles-dots">
           {grouped.flatMap((bucket) =>
-            bucket.items.map(({ tile, idx }) => (
-              <span
-                key={idx}
-                className="owned-tiles-dot"
-                style={{ backgroundColor: groupColor(bucket.group) }}
-              >{tile.name.substring(0,2)}</span>
-            ))
+            bucket.items.map(({ tile, idx }) => {
+              const badge = tile.isYielded ? '👑' : isUpgradable(tile, activePlayer.gold ?? 0) ? '🔔' : null;
+              return (
+                <span
+                  key={idx}
+                  className="owned-tiles-dot"
+                  style={{ backgroundColor: groupColor(bucket.group) }}
+                  onClick={() => scrollToCard(idx)}
+                >
+                  {tile.name.substring(0, 2)}
+                  {badge && <span className="owned-tiles-dot-badge">{badge}</span>}
+                </span>
+              );
+            })
           )}
         </div>
       )}
@@ -100,7 +118,14 @@ export const OwnedTiles: React.FC<Props> = ({ gameState, updateGameState, disabl
             className={'owned-group' + (bucket.syndicate ? ' owned-group-syndicate' : '')}
           >
             {bucket.items.map(({ tile, idx }) => (
-              <div key={idx} style={{ position: 'relative' }}>
+              <div
+                key={idx}
+                style={{ position: 'relative' }}
+                ref={(el) => {
+                  if (el) cardRefs.current.set(idx, el);
+                  else cardRefs.current.delete(idx);
+                }}
+              >
                 <TileCard
                   tile={tile}
                   mode="owned"

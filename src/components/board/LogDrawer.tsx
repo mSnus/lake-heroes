@@ -155,7 +155,9 @@ export const LogDrawer: React.FC<LogDrawerProps> = ({ entries, players }) => {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
         >
-          <span className="log-drawer-grip" />
+          <span className="log-drawer-grip-pill">
+            <span className="log-drawer-grip" />
+          </span>
         </div>
       </div>
     </div>

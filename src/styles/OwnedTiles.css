@@ -15,12 +15,17 @@
   justify-content: center;
   align-items: center;
   gap: 6px;
+  /* Room for the 👑/🔔 badges hanging below the squares. */
+  row-gap: 10px;
+  padding-bottom: 6px;
   width: 100%;
 }
 
 .owned-tiles-dot {
-  width: 1rem;
-  height: 1rem;
+  position: relative;
+  cursor: pointer;
+  width: 1.2rem;
+  height: 1.2rem;
   box-shadow: 0 0 1px 0px #0007;
   flex-shrink: 0;
   font-size: 0.5rem;
@@ -28,6 +33,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* 👑 yielded / 🔔 upgradable: hung 2/3 of the way down, so it pokes out below the square. */
+.owned-tiles-dot-badge {
+  position: absolute;
+  top: calc(1.2rem * 2 / 3);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .owned-cards {
