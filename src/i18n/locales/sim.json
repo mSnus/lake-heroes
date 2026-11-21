@@ -128,7 +128,7 @@
       "shortName": "Chickens"
     },
     "lumber-factory": {
-      "name": "Lumber factory",
+      "name": "Lumber mill",
       "shortName": "Lumber"
     },
     "pottery-workshop": {
@@ -1165,6 +1165,7 @@
     "message": "{playerSpan} encounters a group of men looking for any well-paid job. You may want to hire them.",
     "fameAndGold": "{fame}   {gold}",
     "hireButton": "Hire {army}",
+    "hireForButton": "Hire {army} for {gold}🟡",
     "passByButton": "⚜️ Pass by, proudly",
     "narrateVisit": "{playerName} came across free folk looking for a cause to join 🧑‍🌾"
   },

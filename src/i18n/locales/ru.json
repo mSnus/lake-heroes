@@ -735,7 +735,7 @@
     "payMoreHeader": "заплатите ещё {amount}:",
     "goToPrison": "⛓️ Отправиться в темницу, с позором",
     "yieldFor": "Уступить за {gold}",
-    "sellItemsFor": "Продать {items} за {gold}"
+    "sellFor": "Продать за {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "Ужасающий дракон охраняет груду золота и драгоценностей. Осмелится ли {playerSpan} бросить ему вызов?",
@@ -1201,6 +1201,7 @@
     "message": "{playerSpan} встречает группу людей, ищущих любую хорошо оплачиваемую работу. Возможно, вы захотите их нанять.",
     "fameAndGold": "{fame}   {gold}",
     "hireButton": "Нанять {army}",
+    "hireForButton": "Нанять {army} за {gold}🟡",
     "passByButton": "⚜️ Гордо пройти мимо",
     "narrateVisit": "{playerName} встретил вольный люд, ищущий, к кому присоединиться 🧑‍🌾"
   },
@@ -1257,7 +1258,7 @@
     "exchangeMode": "Обмен",
     "trade": "Обмен",
     "buyItemsFor": "Купить {items} за {gold}",
-    "sellFor": "Продать за",
+    "sellItemsFor": "Продать {items} за {gold}",
     "tradeGiveFor": "Обмен {give} на {get}",
     "finish": "🌾 Завершить сбор",
     "botTraded": "{playerName} торгует на сборе урожая: {summary}"

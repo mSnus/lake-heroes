@@ -738,7 +738,7 @@
     "payMoreHeader": "paga {amount} más:",
     "goToPrison": "⛓️ Ir a prisión, avergonzado",
     "yieldFor": "Ceder por {gold}",
-    "sellItemsFor": "Vender {items} por {gold}"
+    "sellFor": "Vender por {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "Un dragón aterrador custodia un montón de oro y joyas. ¿Se atreverá {playerSpan} a desafiarlo?",
@@ -1204,6 +1204,7 @@
     "message": "{playerSpan} se encuentra con un grupo de hombres buscando cualquier trabajo bien pagado. Puede que quieras contratarlos.",
     "fameAndGold": "{fame}   {gold}",
     "hireButton": "Contratar {army}",
+    "hireForButton": "Contratar {army} por {gold}🟡",
     "passByButton": "⚜️ Seguir de largo, con orgullo",
     "narrateVisit": "{playerName} se encontró con gente libre buscando una causa a la que unirse 🧑‍🌾"
   },
@@ -1260,7 +1261,7 @@
     "exchangeMode": "Intercambiar",
     "trade": "Comerciar",
     "buyItemsFor": "Comprar {items} por {gold}",
-    "sellFor": "Vender por",
+    "sellItemsFor": "Vender {items} por {gold}",
     "tradeGiveFor": "Cambiar {give} por {get}",
     "finish": "🌾 Terminar la cosecha",
     "botTraded": "{playerName} comercia en la Cosecha: {summary}"

@@ -110,7 +110,12 @@ const WorkersModal: React.FC<WorkersModalProps> = ({ gameState, onBuy, onSell, o
 
   const isHiring = toHire.militia + toHire.riders > 0;
   const footerLabel = isHiring
-    ? t('workersEncounter.hireButton', { army: formatArmy(toHire.militia, toHire.riders, WORKER_EMOJI) })
+    ? t('workersEncounter.hireForButton', {
+        army: formatArmy(toHire.militia, toHire.riders, WORKER_EMOJI),
+        gold:
+          scaleCost(unitCost('militia', militiaPrice, true), toHire.militia).gold +
+          scaleCost(unitCost('riders', riderPrice, true), toHire.riders).gold,
+      })
     : t('workersEncounter.passByButton');
 
   return (

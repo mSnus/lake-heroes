@@ -131,7 +131,7 @@
       "shortName": "Chickens"
     },
     "lumber-factory": {
-      "name": "Lumber factory",
+      "name": "Lumber mill",
       "shortName": "Lumber"
     },
     "pottery-workshop": {
@@ -740,7 +740,7 @@
     "payMoreHeader": "pay {amount} more:",
     "goToPrison": "⛓️ Go to prison, ashamed",
     "yieldFor": "Yield for {gold}",
-    "sellItemsFor": "Sell {items} for {gold}"
+    "sellFor": "Sell for {gold}"
   },
   "fightDragon": {
     "willDareChallenge": "A terrifying dragon guards a pile of gold and jewels. Will {playerSpan} dare to challenge it?",
@@ -1231,6 +1231,7 @@
     "message": "{playerSpan} encounters a group of men looking for any well-paid job. You may want to hire them.",
     "fameAndGold": "{fame}   {gold}",
     "hireButton": "Hire {army}",
+    "hireForButton": "Hire {army} for {gold}🟡",
     "passByButton": "⚜️ Pass by, proudly",
     "narrateVisit": "{playerName} came across free folk looking for a cause to join 🧑‍🌾"
   },
@@ -1287,7 +1288,7 @@
     "exchangeMode": "Exchange",
     "trade": "Trade",
     "buyItemsFor": "Buy {items} for {gold}",
-    "sellFor": "Sell for",
+    "sellItemsFor": "Sell {items} for {gold}",
     "tradeGiveFor": "Trade {give} for {get}",
     "finish": "🌾 Finish harvest",
     "botTraded": "{playerName} trades at the Harvest: {summary}"
