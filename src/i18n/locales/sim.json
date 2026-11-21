@@ -314,7 +314,8 @@
     "escapeConfirm": "Tap 🏃 again to escape — {units} of the units on the field will be lost",
     "escaped": "{name} fled the battle, losing {units} units on the field",
     "escapedAfterFight": "{name} fled the battle: {fought} units lost in the fighting and {fled} while fleeing",
-    "nextRound": "Next round"
+    "nextRound": "Next round",
+    "finishNow": "Finish the battle now"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decided to attack {targetName}",

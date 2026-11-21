@@ -61,6 +61,8 @@ interface BattlefieldGridProps {
    * units straight to where the twins already showed them, instead of
    * re-animating the moves the player just made. */
   instant?: boolean;
+  /** Buttons shown first in the controls row (finish-now). */
+  leadControls?: React.ReactNode;
   /** Buttons shown between Undo and Finish in the controls row (the escape
    * button). */
   midControls?: React.ReactNode;
@@ -158,6 +160,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
   manualControl = false,
   onManualComplete,
   instant = false,
+  leadControls,
   midControls,
   extraControls,
 }) => {
@@ -756,6 +759,7 @@ export const BattlefieldGrid: React.FC<BattlefieldGridProps> = ({
         manual turn) so the battlefield doesn't shift when they appear --
         hidden and disabled while it isn't the human's turn to place. */}
     <div className="bfg-manual-controls">
+      {leadControls}
       <div
         className={
           'shield-button-container' +

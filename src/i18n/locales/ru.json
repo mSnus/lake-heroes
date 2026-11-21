@@ -322,7 +322,8 @@
     "escapeConfirm": "Нажмите 🏃 ещё раз, чтобы бежать — {units} юнитов на поле будут потеряны",
     "escaped": "{name} бежит с поля боя, потеряв {units} юнитов на поле",
     "escapedAfterFight": "{name} бежит с поля боя: {fought} юнитов потеряно в бою и {fled} при бегстве",
-    "nextRound": "Следующий раунд"
+    "nextRound": "Следующий раунд",
+    "finishNow": "Завершить битву сразу"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} решил атаковать {targetName}",

@@ -325,7 +325,8 @@
     "escapeConfirm": "Pulsa 🏃 otra vez para huir — se perderán {units} de las unidades en el campo",
     "escaped": "{name} huyó de la batalla, perdiendo {units} unidades en el campo",
     "escapedAfterFight": "{name} huyó de la batalla: perdió {fought} unidades en la lucha y {fled} al huir",
-    "nextRound": "Siguiente ronda"
+    "nextRound": "Siguiente ronda",
+    "finishNow": "Terminar la batalla ya"
   },
   "heroHourScreen": {
     "decidedToAttack": "{playerName} decidió atacar a {targetName}",

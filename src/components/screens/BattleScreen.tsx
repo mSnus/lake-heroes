@@ -27,6 +27,7 @@ import {
   sideRemaining,
   energyFor,
   BrawlPlan,
+  runGridBattleToCompletion,
 } from '../../game/battleGrid/engine';
 import { realLossFromGridLoss } from '../../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../../game/battleGrid/battleSetup';
@@ -712,13 +713,38 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     finishBattle(escapeSide === 'attacker' ? 'defender' : 'attacker', atkGridKilled, defGridKilled);
   };
 
+  // 🏁: fight the rest of the battle in auto mode at once, no movement or delays.
+  // The finish effect above then resolves it exactly like a played-out fight.
+  const skippedRef = useRef(false);
+  const handleFinishNow = () => {
+    if (phase !== 'ongoing' || finishedRef.current) return;
+    escapedRef.current = true; // stands down every pending phase/animation callback
+    skippedRef.current = true;
+    roundActiveRef.current = false;
+    animatingRef.current = false;
+    setBrawlManualSide(null);
+    setAnimPhase('idle');
+    setLastEvents([]);
+    const final = runGridBattleToCompletion(battleRef.current, brawlOpts());
+    setBattle(final);
+    // Out of rounds with both sides standing: a draw, as in a headless battle.
+    if (!isBattleOver(final)) {
+      finishedRef.current = true;
+      finishBattle(
+        'tie',
+        attackerGridTotal - sideRemaining(final, 'attacker'),
+        defenderGridTotal - sideRemaining(final, 'defender')
+      );
+    }
+  };
+
   // Give the player a beat to see the final positions on the battlefield
   // itself, then clear it away — the result panel only appears once the
   // battlefield is gone (see the result-panel render below), not
   // side-by-side with it.
   useEffect(() => {
     if (phase !== 'result') return;
-    const timer = setTimeout(() => setShowBattlefield(false), 2000);
+    const timer = setTimeout(() => setShowBattlefield(false), skippedRef.current ? 0 : 2000);
     return () => clearTimeout(timer);
   }, [phase]);
 
@@ -887,6 +913,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
             manualControl={manualControl}
             onManualComplete={(plan, attacks) => handleManualCompleteRef.current(plan, attacks)}
             instant={instantMove}
+            leadControls={
+              phase === 'ongoing' && (
+                <div className="shield-button-container" title={t('battleScreen.finishNow')}>
+                  <button className="shield-button" onClick={handleFinishNow}>
+                    🏁
+                  </button>
+                </div>
+              )
+            }
             midControls={
               escapeSide &&
               phase === 'ongoing' && (
