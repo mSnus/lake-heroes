@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { LogMessage } from '../menu/GameLogModal';
+import type { LogMessage } from '../../utils/logMessage';
 import { colouredNames } from '../snippets/GameMessage';
 import { stripHtml } from '../../utils/html';
 import { useLogDrawerPulses } from '../../utils/logDrawerStore';

@@ -196,7 +196,6 @@
     "menu": "Menú",
     "newGame": "Nueva Partida",
     "help": "Ayuda",
-    "gameLog": "Registro del Juego",
     "reload": "Recargar",
     "aiTurn": "La IA está jugando su turno",
     "rollDice": "Tirar Dado",
@@ -358,9 +357,6 @@
   },
   "ownedTiles": {
     "ownsNothing": "El pobre {name} no posee nada"
-  },
-  "gameLogModal": {
-    "noMessages": "Aún no hay mensajes."
   },
   "yearIndicator": {
     "season": "Es {season}, señor.",

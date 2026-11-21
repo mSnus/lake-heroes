@@ -1,5 +1,5 @@
 import { GameState } from '../game/GameState';
-import { LogMessage } from '../components/menu/GameLogModal';
+import { LogMessage } from '../utils/logMessage';
 import { isLocallyDriven } from '../game/seats';
 import { postEvents, OutboundEvent } from './api';
 import { getOnline } from './onlineStore';

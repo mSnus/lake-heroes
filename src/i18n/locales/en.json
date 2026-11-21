@@ -196,7 +196,6 @@
     "menu": "Menu",
     "newGame": "New Game",
     "help": "Help",
-    "gameLog": "Game Log",
     "reload": "Reload",
     "aiTurn": "AI is taking its turn",
     "rollDice": "Roll Dice",
@@ -359,9 +358,6 @@
   },
   "ownedTiles": {
     "ownsNothing": "Poor {name} owns nothing"
-  },
-  "gameLogModal": {
-    "noMessages": "No messages yet."
   },
   "yearIndicator": {
     "season": "It's {season}, Sir.",

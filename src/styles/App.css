@@ -9,8 +9,6 @@
 }
 
 :root {
-  --toastify-color-light: #3b402cc4;
-  --toastify-text-color-light: #abab93;
   --body-font-size: 0.85rem;
   --sprite-scale: 48%;
   --shield-width: 60px;

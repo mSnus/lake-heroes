@@ -193,7 +193,6 @@
     "menu": "Меню",
     "newGame": "Новая игра",
     "help": "Помощь",
-    "gameLog": "Журнал игры",
     "reload": "Перезагрузить",
     "aiTurn": "Ход ИИ",
     "rollDice": "Бросить кубик",
@@ -355,9 +354,6 @@
   },
   "ownedTiles": {
     "ownsNothing": "Бедный {name} ничем не владеет"
-  },
-  "gameLogModal": {
-    "noMessages": "Сообщений пока нет."
   },
   "yearIndicator": {
     "season": "Сейчас {season}, сударь.",

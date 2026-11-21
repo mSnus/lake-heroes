@@ -33,13 +33,11 @@ import { YearIndicator, DIAL_TICK_MS } from '../board/YearIndicator';
 interface ShieldColumnProps {
   gameState: GameState;
   updateGameState: (gs: GameState) => void;
-  onOpenLog: () => void;
 }
 
 export const ShieldColumn: React.FC<ShieldColumnProps> = ({
   gameState,
   updateGameState,
-  onOpenLog,
 }) => {
   const { active: diceActive, rolling } = useModal();
   const endTurnReady = useEndTurnReady();
@@ -196,17 +194,6 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
                   className="shield-button"
                 >
                   ?
-                </button>
-              </div>
-              <div className="shield-button-container" title={t('shieldColumn.gameLog')}>
-                <button
-                  onClick={() => {
-                    closeMenu();
-                    onOpenLog();
-                  }}
-                  className="shield-button"
-                >
-                  📜
                 </button>
               </div>
               <div className="shield-button-container" title={t('shieldColumn.statistics')}>

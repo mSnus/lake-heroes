@@ -1,6 +1,6 @@
 import { GameState } from '../game/GameState';
 import { SavedGameState } from '../game/TileSet';
-import { LogMessage } from '../components/menu/GameLogModal';
+import { LogMessage } from '../utils/logMessage';
 
 /** Bumped only if the payload shape changes incompatibly. */
 export const ENVELOPE_SCHEMA = 1;

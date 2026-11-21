@@ -36,7 +36,7 @@ import { gameStart } from './actions/gameStart';
 import GameMessage from './components/snippets/GameMessage';
 import { LogDrawer } from './components/board/LogDrawer';
 import { PlayerSetup, setupFromPlayers } from './utils/playerSetup';
-import GameLogModal, { LogMessage } from './components/menu/GameLogModal';
+import { LogMessage } from './utils/logMessage';
 import { gameEvent } from './utils/events';
 import { afterMoveLogic } from './actions/afterMoveLogic';
 import { ModalRenderer } from './components/screens/ModalRenderer';
@@ -106,7 +106,6 @@ function App() {
   const [gameLog, setGameLog] = useState<LogMessage[]>(() =>
     loadFromStorage<LogMessage[]>('game-log', [])
   );
-  const [showLogModal, setShowLogModal] = useState(false);
   const screen = useScreen();
   const liveFeed = useLiveFeed();
 
@@ -699,8 +698,6 @@ function App() {
     startLocalTurn,
   });
 
-  const handleOpenLog = () => setShowLogModal(true);
-  const handleCloseLog = () => setShowLogModal(false);
 
   return (
     <div className="App">
@@ -830,7 +827,6 @@ function App() {
           <ShieldColumn
             gameState={gameState}
             updateGameState={updateGameState}
-            onOpenLog={handleOpenLog}
           />
 
           <ScreenRenderer gameState={gameState} updateGameState={updateGameState} />
@@ -849,7 +845,6 @@ function App() {
           <div className="side-pane">
             <ActionBar gameState={gameState} updateGameState={updateGameState} />
 
-            {showLogModal && <GameLogModal messages={gameLog} onClose={handleCloseLog} />}
 
             <OwnedTiles gameState={gameState} updateGameState={updateGameState} />
           </div>
