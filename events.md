@@ -21,10 +21,10 @@ It first decides between a bad and a good event, then picks one at random within
 | Event | Effect | Protection |
 |---|---|---|
 | 🧾 **Unjust Taxes** | No tile income for anyone for the rest of the year, this year's Harvest included. The King's Grace is still paid, minus its per-tile part. | — |
-| 🦠 **Plague** | Every owned, non-yielded tile's garrison loses half its defenders (each tier on its own, never below 1). Field armies are untouched. | Pipe of Hamelin; Divine Beads 50% |
-| 🌪️ **Hurricane** | Only if the strongest player is at least 1.5× the second: their most expensive tile becomes unowned (level 1) and they lose 1 fame. Otherwise nothing happens. | Divine Beads 50% |
-| 🪨 **Earthquake** | Every player except the weakest: upgraded tiles lose a level; a player with no upgraded tiles loses their cheapest tile and 1 fame. | Divine Beads 50% |
-| ☄️ **Meteor** | A random tile of the strongest player (never the weakest) becomes unowned (level 1); they lose 1 fame. | Indestructible Umbrella; Divine Beads 50% |
+| 🦠 **Plague** | Every owned, non-yielded tile's garrison loses half its defenders (each tier on its own, never below 1). Field armies are untouched. | Pipe of Hamelin; Divine Beads 50%; blessed karma 50% |
+| 🌪️ **Hurricane** | Only if the strongest player is at least 1.5× the second: their most expensive tile becomes unowned (level 1) and they lose 1 fame. Otherwise nothing happens. | Divine Beads 50%; blessed karma 50% |
+| 🪨 **Earthquake** | Every player except the weakest: upgraded tiles lose a level; a player with no upgraded tiles loses their cheapest tile and 1 fame. | Divine Beads 50%; blessed karma 50% |
+| ☄️ **Meteor** | A random tile of the strongest player (never the weakest) becomes unowned (level 1); they lose 1 fame. | Indestructible Umbrella; Divine Beads 50%; blessed karma 50% |
 | 🟫 **Rust** | Every player's arms drop to 0. Only drawn while someone holds arms. | — |
 | 🦗 **Locust** | Every player's food drops to 0. Only drawn while someone holds food. | — |
 

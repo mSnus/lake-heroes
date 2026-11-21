@@ -13,8 +13,10 @@ import {
   REAL_ADVENTURE_MIN_TURNS,
   KARMA_JOKER_BAD_CHANCE,
   KARMA_BLESSED_JOKER_BAD_CHANCE,
+  KARMA_BLESSED_EVENT_DODGE,
 } from '../game/constants';
 import { isCursed, isBlessed } from '../utils/karma';
+import { Player } from '../game/Player';
 import { currentYear, addYearEffect, NO_INCOME_EFFECT } from '../game/year';
 import { setGameMessage } from '../utils/gameMessage';
 import { t } from '../i18n';
@@ -68,6 +70,17 @@ const EVENT_NAME_KEY: Record<JokerEvent, string> = {
 const BAD_EVENTS: JokerEvent[] = ['Taxes', 'Plague', 'Hurricane', 'Earthquake', 'Meteor', 'Rust', 'Locust'];
 const GOOD_EVENTS: JokerEvent[] = ['Blessing', "Queen's Gift", "King's Gift"];
 
+/** A blessed player (karma 3+) dodges a hostile event half the time. */
+const dodgesByLuck = (p: Player): boolean => isBlessed(p) && Math.random() < KARMA_BLESSED_EVENT_DODGE;
+
+/** ", but X is lucky" / ", but X, Y are lucky" for the players luck spared, or ''. */
+const luckySuffix = (names: string[]): string =>
+  !names.length
+    ? ''
+    : names.length === 1
+      ? t('joker.earthquakeLucky', { playerName: names[0] })
+      : t('joker.luckyMany', { names: names.join(', ') });
+
 export function handleJoker(
   board: GameState,
   updateGameState: (board: GameState) => void,
@@ -107,12 +120,18 @@ export function handleJoker(
       // every other hostile event.
       const halve = (n: number) => (n > 0 ? Math.max(1, Math.floor(n / 2)) : 0);
       const immuneMsgs: string[] = [];
+      const lucky: string[] = [];
       for (const p of board.players) {
         const protection = checkArtifactProtection(p, 'plague');
         if (protection.saved) {
           immuneMsgs.push(
             t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji })
           );
+          continue;
+        }
+
+        if (dodgesByLuck(p)) {
+          lucky.push(p.name);
           continue;
         }
 
@@ -125,7 +144,7 @@ export function handleJoker(
         }
       }
 
-      message = t('joker.plagueMessage');
+      message = t('joker.plagueMessage') + luckySuffix(lucky);
       if (immuneMsgs.length > 0) message += ` ${immuneMsgs.join('; ')}`;
       break;
     }
@@ -145,6 +164,8 @@ export function handleJoker(
         const protection = checkArtifactProtection(richest, 'hurricane');
         if (protection.saved) {
           message = t('joker.savedByArtifact', { playerName: richest.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji });
+        } else if (dodgesByLuck(richest)) {
+          message = t('joker.hurricaneHeadsFor', { playerName: richest.name }) + luckySuffix([richest.name]);
         } else {
           let maxGold = -1;
           let targetIdx = -1;
@@ -182,6 +203,7 @@ export function handleJoker(
     case 'Earthquake': {
       const lostMsgs: string[] = [];
       const savedMsgs: string[] = [];
+      const luckyQuake: string[] = [];
       const poorest = weakestPlayer(board);
       for (const p of board.players) {
         if (p === poorest) continue;
@@ -190,6 +212,11 @@ export function handleJoker(
         const protection = checkArtifactProtection(p, 'earthquake');
         if (protection.saved) {
           savedMsgs.push(t('joker.savedByArtifact', { playerName: p.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji }));
+          continue;
+        }
+
+        if (dodgesByLuck(p)) {
+          luckyQuake.push(p.name);
           continue;
         }
 
@@ -228,7 +255,7 @@ export function handleJoker(
       if (lostMsgs.length) say(t('joker.earthquakeDestroys', { list: lostMsgs.join(', ') }), 'debug');
       message = t('joker.earthquakeMessage');
       if (savedMsgs.length) message += `. ${savedMsgs.join('; ')}`;
-      if (poorest) message += t('joker.earthquakeLucky', { playerName: poorest.name });
+      message += luckySuffix(poorest ? [poorest.name, ...luckyQuake] : luckyQuake);
       break;
     }
 
@@ -242,6 +269,8 @@ export function handleJoker(
         const protection = checkArtifactProtection(richest, 'meteor');
         if (protection.saved) {
           message = t('joker.meteorSaved', { playerName: richest.name, artifactName: protection.artifact!.name, emoji: protection.artifact!.emoji });
+        } else if (dodgesByLuck(richest)) {
+          message = t('joker.meteorFalls', { playerName: richest.name }) + luckySuffix([richest.name]);
         } else {
           const targetIdx = richest.ownedTiles[Math.floor(Math.random() * richest.ownedTiles.length)];
           const tile = board.tiles[targetIdx];

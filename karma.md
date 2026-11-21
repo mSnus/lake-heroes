@@ -47,6 +47,7 @@ Every change is clamped to the −5…+5 range (`changeKarma` in `src/utils/karm
 | Dragon attacks (rather than flying over) | 1/3, or 1/2 above fame 5 | ×2.25, capped at certain | ×0.85 |
 | Zombie ambush on an abandoned tile (landing or looting) | 30% | ×2 | — |
 | Caravan encounter chance (gold, slaves or horses) | 1/6 | — | ×1.25 |
+| Spared when hit by a Joker's Plague, Earthquake, Meteor or Hurricane | — | — | 50% |
 | Die quietly loaded to land on Prison, when Prison is on the picked road | — | 5% | — |
 | Portal drops the player in Prison instead of a random tile | — | 5% | — |
 
@@ -61,6 +62,7 @@ The constants live in `src/game/constants.ts`:
 | `KARMA_BLESSED_JOKER_BAD_CHANCE` | 0.15 |
 | `KARMA_BLESSED_HOSTILE_MULTIPLIER` | 0.85 |
 | `KARMA_BLESSED_CARAVAN_MULTIPLIER` | 1.25 |
+| `KARMA_BLESSED_EVENT_DODGE` | 0.5 |
 | `ZOMBIE_AMBUSH_CHANCE` | 0.3 |
 
 ## Bots and karma

@@ -67,6 +67,8 @@ export const KARMA_BLESSED = 3;
 export const KARMA_BLESSED_JOKER_BAD_CHANCE = 0.15;
 export const KARMA_BLESSED_HOSTILE_MULTIPLIER = 0.85;
 export const KARMA_BLESSED_CARAVAN_MULTIPLIER = 1.25;
+// Blessed: chance to be spared by Plague, Earthquake, Meteor or Hurricane.
+export const KARMA_BLESSED_EVENT_DODGE = 0.5;
 
 // ── Looting (see game/income.ts's lootPrize, ai/decisions.ts's shouldLootTile) ──
 // A loot also takes this share of the tile's current price in gold.
