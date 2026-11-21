@@ -126,7 +126,7 @@ export const VISIT_UNITS_SHARE = 5;
 
 // A unit costs gold, food and arms (King's Castle prices; the Tavern doubles
 // only the gold part -- see TAVERN_PRICE_MULT).
-export const UNIT_PRICE = 30; // gold per militia unit
+export const UNIT_PRICE = 20; // gold per militia unit
 export const MILITIA_FOOD = 3;
 // Each player's opening stock, enough to hire a few militia before their
 // own tiles produce any.
@@ -165,7 +165,7 @@ export const KNIGHT_FAME = 7; // fame at or above this makes a player eligible f
 export const BANZAI_THRESHOLD = 0.9; // risky banzai mode triggers when the attacker's army power is below this fraction of the tile's defence
 
 // Army composition (Riders): a second, pricier unit tier unlocked at KNIGHT_FAME.
-export const RIDER_UNIT_PRICE = 60; // gold per rider
+export const RIDER_UNIT_PRICE = 40; // gold per rider
 export const RIDER_FOOD = 6;
 export const RIDER_ARMS = 2;
 // How much one unit of each kind is worth on a single strength scale, in
