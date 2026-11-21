@@ -23,6 +23,7 @@ import { useT } from '../../i18n';
 import '../../styles/GameMenu.css';
 import '../../styles/GarrisonsScreen.css';
 import { Fade } from './Fade';
+import { formatArmy } from '../../utils/formatArmy';
 
 interface ArmyScreenProps {
   gameState: GameState;
@@ -86,6 +87,12 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
   const riderUnitCost = unitCost('riders', riderPrice);
   const pendingMilitia = footer.amountOf('militia');
   const pendingRiders = footer.amountOf('riders');
+  // Hires everything the sliders hold, both tiers at once.
+  const hirePending = () => {
+    if (pendingMilitia > 0) footer.buy('militia');
+    if (pendingRiders > 0) footer.buy('riders');
+  };
+
   const projectedGold =
     player.gold - militiaUnitCost.gold * pendingMilitia - riderUnitCost.gold * pendingRiders;
   const projectedFood =
@@ -173,8 +180,8 @@ export const ArmyScreen: React.FC<ArmyScreenProps> = ({ gameState, player, updat
       </div>
 
       <div className="game-menu pay-or-fight-grid" style={{ '--pay-or-fight-cols': 1 } as React.CSSProperties}>
-        <DecoratedButton onClick={pendingTier ? () => footer.buy(pendingTier) : () => clearScreen()}>
-          {pendingTier ? t('armyScreen.hireAmount', { amount: footer.amountOf(pendingTier) }) : t('armyScreen.close')}
+        <DecoratedButton onClick={pendingTier ? hirePending : () => clearScreen()}>
+          {pendingTier ? t('armyScreen.hireAmount', { amount: formatArmy(pendingMilitia, pendingRiders) }) : t('armyScreen.close')}
         </DecoratedButton>
       </div>
       </div>

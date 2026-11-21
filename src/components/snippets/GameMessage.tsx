@@ -30,7 +30,10 @@ const GameMessage: React.FC<{ message: string; players?: NamedColor[] }> = ({ me
   if (!message || dismissed) return <div />;
   return (
     <div className="game-message" onClick={() => setDismissed(true)}>
-      <div className="game-message-text">{colouredNames(stripHtml(message), players)}</div>
+      <div className="game-message-text">
+        {/* One inline run: the box is a flex container, so loose parts would each become a column. */}
+        <span>{colouredNames(stripHtml(message), players)}</span>
+      </div>
     </div>
   );
 };

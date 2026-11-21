@@ -85,7 +85,7 @@ Checked in this order, at most one per turn (`src/actions/rollAndMove.ts`).
 **⚔️ Hero Hour** (`src/actions/afterMoveLogic.ts`)
 - **When:** from year 5, landing on a tile (not the King's Castle) where another player with units stands.
 - **Choice:** fight one of them (−1 karma, win or lose) or greet them and pass.
-- **Result:** the loser is sent back to the King's Castle, and the winner gains 1 fame while the loser loses 1.
+- **Result:** the loser is thrown into Prison with the usual effects (karma reset to 0, a skipped turn unless a medal spares it), and the winner gains 1 fame while the loser loses 1.
 
 ## The year
 
