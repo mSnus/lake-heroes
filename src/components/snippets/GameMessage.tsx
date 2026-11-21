@@ -7,7 +7,7 @@ interface NamedColor {
 }
 
 /** The message as plain text, each player's name in their colour -- never parsed as HTML. */
-function colouredNames(message: string, players: NamedColor[]): React.ReactNode[] {
+export function colouredNames(message: string, players: NamedColor[]): React.ReactNode[] {
   const named = players.filter((p) => p.name).sort((a, b) => b.name.length - a.name.length);
   if (!named.length) return [message];
   const pattern = new RegExp(`(${named.map((p) => p.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');

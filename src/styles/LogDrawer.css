@@ -1,0 +1,105 @@
+/* The game-log drawer over the map (see components/board/LogDrawer.tsx):
+   clipped to the map so it slides in from the map's own top edge. */
+.log-drawer-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1005;
+}
+
+.log-drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  background: rgba(20, 28, 14, 0.88);
+  color: #fdf599;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  /* Appearing: a fairly quick slide down. */
+  transition: transform 0.45s ease-out;
+}
+
+/* Going back up: slower. */
+.log-drawer--hiding {
+  transition: transform 0.9s ease-in;
+}
+
+.log-drawer--dragging {
+  transition: none;
+}
+
+.log-drawer-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 4px 10px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.log-drawer-list--open {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.log-drawer-line {
+  padding: 2px 0 2px 8px;
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+  margin-bottom: 2px;
+}
+
+/* A short log sits at the bottom, by the grip; a long one still scrolls. */
+.log-drawer-line:first-child {
+  margin-top: auto;
+}
+
+.log-drawer-line--info {
+  border-left-color: #5b8fd9;
+}
+
+.log-drawer-line--success {
+  border-left-color: #59b85d;
+}
+
+.log-drawer-line--warning {
+  border-left-color: #f0a020;
+}
+
+.log-drawer-line--error {
+  border-left-color: #e05050;
+}
+
+/* The grip: always peeking over the map's top edge, drag it down to pull the log. */
+.log-drawer-handle {
+  flex: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  background: rgba(20, 28, 14, 0.95);
+}
+
+.log-drawer--dragging .log-drawer-handle {
+  cursor: grabbing;
+}
+
+.log-drawer-grip {
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(253, 245, 153, 0.6);
+}
+
+/* On phones the menu button sits over the map's top-right corner. */
+@media screen and (max-width: 768px) {
+  .log-drawer-list {
+    padding-right: 60px;
+  }
+}

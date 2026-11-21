@@ -1,14 +1,17 @@
-import { toast, ToastContent } from 'react-toastify';
+import type { ReactNode } from 'react';
+import { notifyLogDrawer } from './logDrawerStore';
 import { gameEvent } from './events';
 import { getOverrides } from './overridesStore';
 import { isHeadlessRun } from './headlessStore';
 import { recordSimLog } from './simLogStore';
 import { t } from '../i18n';
 
+type ToastContent = ReactNode;
+
 export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'debug';
 
 /**
- * Pop a toast, without touching the console mirror or the game-log history.
+ * Slide the log drawer down to show a new message, without touching the console mirror or the game-log history.
  *
  * Split out of say() so a turn's messages can be replayed on the OTHER
  * players' screens (see online/useOnlineSync): those arrive with their history
@@ -16,35 +19,17 @@ export type SayLevel = 'default' | 'info' | 'success' | 'warning' | 'error' | 'd
  *
  * 'debug' deliberately never toasts — it is per-roll chatter.
  */
-export function showToast(message: ToastContent, level: SayLevel = 'info'): void {
+export function showToast(_message: ToastContent, level: SayLevel = 'info'): void {
   // The mute override suppresses only the pop-up; say()'s console mirror and
   // game-log event still fire, so nothing is lost.
-  if (getOverrides().muteToasts) return;
-  switch (level) {
-    case 'success':
-      toast.success(message);
-      break;
-    case 'warning':
-      toast.warning(message);
-      break;
-    case 'error':
-      toast.error(message);
-      break;
-    case 'info':
-      toast.info(message);
-      break;
-    case 'debug':
-      break;
-    case 'default':
-    default:
-      toast(message);
-      break;
-  }
+  if (getOverrides().muteToasts || level === 'debug') return;
+  // The message itself reaches the drawer through the game log (see App.tsx).
+  notifyLogDrawer();
 }
 
 /**
  * say: unified user notification helper.
- * - Shows a react-toastify toast (unless toasts are muted via the ⚖️ overrides)
+ * - Slides the log drawer down to show it (unless muted via the ⚖️ overrides)
  * - Logs the same message to the console with an appropriate severity
  * - Dispatches a 'logMessage' event for history tracking
  */

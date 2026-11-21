@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import './styles/App.css';
 import './styles/GameMenu.css';
 
@@ -36,6 +34,7 @@ import { AutoEndTurnNotice } from './components/board/AutoEndTurnNotice';
 import { Gold } from './components/snippets/Gold';
 import { gameStart } from './actions/gameStart';
 import GameMessage from './components/snippets/GameMessage';
+import { LogDrawer } from './components/board/LogDrawer';
 import { PlayerSetup, setupFromPlayers } from './utils/playerSetup';
 import GameLogModal, { LogMessage } from './components/menu/GameLogModal';
 import { gameEvent } from './utils/events';
@@ -693,13 +692,6 @@ function App() {
       <VersionMismatchBanner />
       <FogTransition />
 
-      <ToastContainer
-        position={isMobileLayout() ? 'top-center' : 'top-right'}
-        autoClose={3500}
-        hideProgressBar={true}
-        closeOnClick={true}
-      />
-
       <ModalRenderer />
 
       {!gameState && screen?.content && <>{screen.content}</>}
@@ -836,6 +828,7 @@ function App() {
             <CurrentTile gameState={gameState} updateGameState={updateGameState} />
             <CurrentPlayerCard gameState={gameState} />
             <BoardCanvas board={gameState} updateGameState={updateGameState} />
+            <LogDrawer entries={gameLog} players={gameState.players} />
           </div>
 
           <div className="side-pane">
