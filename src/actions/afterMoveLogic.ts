@@ -261,8 +261,8 @@ export function showTileEncounterScreen(
     return;
   }
 
-  // A re-entry after the toll was already settled this turn (e.g. a lost
-  // revenge attack re-shows this encounter) -- TollScreen reads the live
+  // A re-entry after the toll was already settled this turn (e.g. after a
+  // reload) -- TollScreen reads the live
   // flag itself and goes straight to the peace/revenge choice, charging
   // nothing again.
   let goldBefore: number | undefined;

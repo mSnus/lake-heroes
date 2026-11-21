@@ -37,7 +37,7 @@ interface TollScreenProps {
   canFight: boolean;
   /** The payer's gold right before the very first charge, for the struck-
    * through before -> after display. Undefined on a re-entry that already
-   * settled the toll (e.g. after a lost revenge attack), which charges
+   * settled the toll (e.g. after a reload), which charges
    * nothing fresh and has no "before" to show. */
   goldBefore?: number;
   updateGameState: (board: GameState) => void;

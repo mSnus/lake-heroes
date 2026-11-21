@@ -8,7 +8,6 @@ import { resolveDragonBattle } from '../../actions/battles/resolveDragonBattle';
 import { resolvePlayerBattle } from '../../actions/battles/resolvePlayerBattle';
 import { resolveAmbush, AmbushOutcome } from '../../actions/battles/resolveAmbush';
 import { resolveRuinsBattle } from '../../actions/battles/resolveRuinsBattle';
-import { showTileEncounterScreen } from '../../actions/afterMoveLogic';
 import { showTileClaimScreen } from '../../actions/showTileClaimScreen';
 import { setEndTurn } from '../../utils/endTurnStore';
 import { showScreen, clearScreen, ScreenConfig } from '../../utils/screenStore';
@@ -120,18 +119,12 @@ function resolveBattle(
  */
 export function handleBattleClose(props: BattleScreenProps, setup: BattleSetup, outcome: BattleOutcome | null): void {
   const { attacker, gameState, updateGameState } = props;
-  const { isCaravan, isPlayerBattle, isAmbush, isRogue, isDragon, isTile, defender, tile } = setup;
+  const { isCaravan, isPlayerBattle, isAmbush, isRogue, isDragon, isTile, tile } = setup;
 
   if (isCaravan || isPlayerBattle || isAmbush || isRogue) {
     (props as { onClose: () => void }).onClose();
   } else if (isDragon) {
     if (outcome !== 'attacker') setEndTurn();
-  } else if (isTile && defender && outcome === 'defender') {
-    // Losing a banzai attack on an owned tile returns to the guards
-    // encounter instead of ending the turn -- see the identical comment on
-    // BattleScreen's own handleClose for why.
-    attacker.hasResolvedTileEncounterThisTurn = false;
-    showTileEncounterScreen(gameState, updateGameState);
   } else {
     setEndTurn();
     if (isTile && tile && outcome === 'attacker' && tile.owner === attacker.id) {

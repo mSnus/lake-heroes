@@ -109,8 +109,7 @@ export class Player {
   owedToll: number;
   /** Set once this turn's toll has been fully settled, whether paid
    * outright or via selling -- lets a later re-entry into the same
-   * encounter (e.g. after a lost revenge attack, which re-shows the
-   * screen) go straight back to the peace/revenge choice instead of
+   * encounter (e.g. after a reload) go straight back to the peace/revenge choice instead of
    * charging the toll a second time. */
   hasSettledTollThisTurn: boolean;
   /** Set once this player has looted any tile this turn -- a loot attempt
