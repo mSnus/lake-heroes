@@ -5,7 +5,7 @@ import { razeTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
 import { say } from '../../utils/say';
 import { setGameMessage } from '../../utils/gameMessage';
-import { BattleResolution, BattleOutcome, garrisonLostStr } from './common';
+import { ArmyLoss, BattleResolution, BattleOutcome, garrisonLostStr, applyGarrisonLoss } from './common';
 import { t } from '../../i18n';
 
 /**
@@ -28,7 +28,7 @@ export function resolveRogueAttack(
   board: GameState,
   player: Player,
   tile: Tile,
-  defenderUnitsKilled: number,
+  defenderUnitsKilled: ArmyLoss,
   outcome: BattleOutcome
 ): BattleResolution {
   const tileName = tile.name;
@@ -50,7 +50,7 @@ export function resolveRogueAttack(
     // (see Tile's `garrison` setter), so a headcount would misreport which
     // tier actually fell.
     const garrisonBefore = { militia: tile.garrisonMilitia, riders: tile.garrisonRiders };
-    tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    applyGarrisonLoss(tile, defenderUnitsKilled);
     const killed = garrisonLostStr(garrisonBefore, tile);
 
     // The attack is repelled: report the garrison's own losses, if any.
@@ -63,7 +63,7 @@ export function resolveRogueAttack(
     say(toast, 'success');
   } else {
     const garrisonBefore = { militia: tile.garrisonMilitia, riders: tile.garrisonRiders };
-    tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    applyGarrisonLoss(tile, defenderUnitsKilled);
     const killed = garrisonLostStr(garrisonBefore, tile);
     message = t('rogueAttack.tie', { tileName, army: killed });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleOutcome, BattleResolution } from '../../actions/battles/common';
+import { ArmyLoss, BattleOutcome, BattleResolution, lossTotal } from '../../actions/battles/common';
 import { changeKarma } from '../../utils/karma';
 import { resolveTileBattle } from '../../actions/battles/resolveTileBattle';
 import { resolveRogueAttack } from '../../actions/battles/resolveRogueAttack';
@@ -31,8 +31,8 @@ export function dispatchBattleResolution(
   props: BattleScreenProps,
   setup: BattleSetup,
   battleOutcome: BattleOutcome,
-  atkKilled: number,
-  defKilled: number
+  atkKilled: ArmyLoss,
+  defKilled: ArmyLoss
 ): BattleResolution {
   const resolution = resolveBattle(props, setup, battleOutcome, atkKilled, defKilled);
   if (resolution.victoryBg) {
@@ -52,8 +52,8 @@ function resolveBattle(
   props: BattleScreenProps,
   setup: BattleSetup,
   battleOutcome: BattleOutcome,
-  atkKilled: number,
-  defKilled: number
+  atkKilled: ArmyLoss,
+  defKilled: ArmyLoss
 ): BattleResolution {
   const { attacker, gameState } = props;
   const { isDragon, isCaravan, isPlayerBattle, isAmbush, isRuins, isRogue, isZombieAmbush, defender, tile, caravanPrize, caravanDefenceRiders, defence, battlefieldUnits, ambushAttackerUnits } = setup;
@@ -84,7 +84,7 @@ function resolveBattle(
     // BattleOutcome 'defender' means the player wins the ambush.
     const ambushOutcome: AmbushOutcome =
       battleOutcome === 'defender' ? 'win' : battleOutcome === 'attacker' ? 'defeat' : 'tie';
-    const res = resolveAmbush(gameState, attacker, ambushAttackerUnits!, defKilled, atkKilled, ambushOutcome);
+    const res = resolveAmbush(gameState, attacker, ambushAttackerUnits!, defKilled, lossTotal(atkKilled), ambushOutcome);
     // "Defeating the zombies" -- a won ambush specifically against an
     // abandoned tile's zombie guard, not an ordinary bandit ambush.
     if (isZombieAmbush && ambushOutcome === 'win') {

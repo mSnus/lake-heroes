@@ -1,5 +1,6 @@
 import { MAX_GRID_ARMY_SIZE } from '../constants';
 import { proportionalTierSplit } from '../army';
+import type { ArmyLoss } from '../../actions/battles/common';
 
 /**
  * Below the cap, 1 real militia/rider = 1 grid unit exactly — HP/damage
@@ -24,4 +25,11 @@ export function sizeArmyForGrid(
 export function realLossFromGridLoss(gridKilled: number, scale: number): number {
   if (gridKilled <= 0) return 0;
   return Math.round(gridKilled * scale);
+}
+
+/** realLossFromGridLoss split by tier: the riders that fell on the grid, the rest militia. */
+export function realArmyLoss(gridKilled: number, gridRidersKilled: number, scale: number): ArmyLoss {
+  const total = realLossFromGridLoss(gridKilled, scale);
+  const riders = Math.min(total, realLossFromGridLoss(gridRidersKilled, scale));
+  return { militia: total - riders, riders };
 }

@@ -1,5 +1,5 @@
-import { runGridBattleToCompletion, sideRemaining } from './engine';
-import { realLossFromGridLoss } from './scale';
+import { runGridBattleToCompletion, sideRemaining, sideRiders } from './engine';
+import { realArmyLoss } from './scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from './battleSetup';
 import { dispatchBattleResolution } from './battleResolution';
 import { StepTurnOptions } from './types';
@@ -32,8 +32,10 @@ export function runHeadlessBattle(props: BattleScreenProps): { setup: BattleSetu
   const defenderLeft = sideRemaining(finalState, 'defender');
   const atkGridKilled = setup.attackerGridTotal - attackerLeft;
   const defGridKilled = setup.defenderGridTotal - defenderLeft;
-  const atkKilled = realLossFromGridLoss(atkGridKilled, setup.attackerSized.scale);
-  const defKilled = realLossFromGridLoss(defGridKilled, setup.defenderSized.scale);
+  const atkRidersKilled = sideRiders(initialState, 'attacker') - sideRiders(finalState, 'attacker');
+  const defRidersKilled = sideRiders(initialState, 'defender') - sideRiders(finalState, 'defender');
+  const atkKilled = realArmyLoss(atkGridKilled, atkRidersKilled, setup.attackerSized.scale);
+  const defKilled = realArmyLoss(defGridKilled, defRidersKilled, setup.defenderSized.scale);
 
   // Same derivation BattleScreen uses when its own battle ends -- 'tie' also
   // covers the rare case of MAX_ROUNDS exhausted with neither side wiped out.

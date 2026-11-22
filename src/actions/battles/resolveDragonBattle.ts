@@ -1,7 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { DRAGON_UNITS } from '../../game/constants';
-import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
+import { ArmyLoss, BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr, applyArmyLoss } from './common';
 import { recordStatEvent } from '../../game/statistics';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
@@ -16,7 +16,7 @@ import { t } from '../../i18n';
 export function resolveDragonBattle(
   board: GameState,
   attacker: Player,
-  attackerUnitsKilled: number,
+  attackerUnitsKilled: ArmyLoss,
   outcome: BattleOutcome
 ): BattleResolution {
   const armyBefore = tallyArmy(attacker);
@@ -45,7 +45,7 @@ export function resolveDragonBattle(
     lostBg = true;
   } else {
     const beforeLoss = tallyArmy(attacker);
-    attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    applyArmyLoss(attacker, attackerUnitsKilled);
     const loss = armyLostStr(beforeLoss, attacker);
     setGameMessage(
       board,

@@ -1,4 +1,5 @@
 import { Player } from '../../game/Player';
+import { Tile } from '../../game/Tile';
 import { say, sayInTopic, closeTopic } from '../../utils/say';
 import { formatArmy } from '../../utils/formatArmy';
 import { t } from '../../i18n';
@@ -31,6 +32,36 @@ export function tallyArmy(player: Player): ArmyTally {
   return { militia: player.militia, riders: player.riders };
 }
 
+/** The militia and riders a battle actually killed on one side. */
+export type ArmyLoss = ArmyTally;
+
+export const lossTotal = (loss: ArmyLoss): number => loss.militia + loss.riders;
+
+/** `loss` clamped to what `have` holds; a rounding overshoot on one tier comes off the other. */
+function fitLoss(have: ArmyTally, loss: ArmyLoss): ArmyLoss {
+  const total = Math.min(have.militia + have.riders, lossTotal(loss));
+  const riders = Math.min(have.riders, Math.max(loss.riders, total - have.militia));
+  return { militia: total - riders, riders };
+}
+
+export function applyArmyLoss(player: Player, loss: ArmyLoss): void {
+  const fit = fitLoss(tallyArmy(player), loss);
+  player.militia -= fit.militia;
+  player.riders -= fit.riders;
+}
+
+/** applyArmyLoss for a tile's garrison; a wild (unowned) guard is a plain headcount. */
+export function applyGarrisonLoss(tile: Tile, loss: ArmyLoss): void {
+  if (!tile.owner) {
+    tile.garrison = Math.max(0, tile.garrison - lossTotal(loss));
+    return;
+  }
+
+  const fit = fitLoss({ militia: tile.garrisonMilitia, riders: tile.garrisonRiders }, loss);
+  tile.garrisonMilitia -= fit.militia;
+  tile.garrisonRiders -= fit.riders;
+}
+
 /**
  * What `player` has lost since `before`, formatted by tier ("🧍4 🐎2").
  * Losses drain militia first and riders only once militia runs out (see
@@ -60,8 +91,9 @@ export function armyGainedStr(before: ArmyTally, player: Player): string {
   return militia + riders > 0 ? formatArmy(militia, riders) : '';
 }
 
-export function lossStr(gold: number, units: number): string {
-  const parts = [...(gold > 0 ? [`${gold}🟡`] : []), ...(units > 0 ? [`${units}🧍`] : [])];
+/** "40🟡 and 🧍3 🐎1"; `army` is an armyLostStr. */
+export function lossStr(gold: number, army: string): string {
+  const parts = [...(gold > 0 ? [`${gold}🟡`] : []), ...(army ? [army] : [])];
   return parts.join(' and ');
 }
 

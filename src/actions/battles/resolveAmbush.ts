@@ -1,7 +1,7 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { say } from '../../utils/say';
-import { lossStr, tallyArmy, armyLostStr } from './common';
+import { ArmyLoss, lossStr, tallyArmy, armyLostStr, applyArmyLoss } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
@@ -24,7 +24,7 @@ export function resolveAmbush(
   board: GameState,
   player: Player,
   attackerUnits: number,
-  playerUnitsKilled: number,
+  playerUnitsKilled: ArmyLoss,
   ambusherUnitsKilled: number,
   outcome: AmbushOutcome
 ): AmbushResolution {
@@ -40,7 +40,7 @@ export function resolveAmbush(
     const ambushersDefeated = ambusherUnitsKilled > 0 ? ambusherUnitsKilled : attackerUnits;
     const reward = ambushersDefeated * GOLD_PER_KILL;
     const beforeLoss = tallyArmy(player);
-    if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
+    applyArmyLoss(player, playerUnitsKilled);
     const killed = armyLostStr(beforeLoss, player);
     player.gold += reward;
 
@@ -53,9 +53,10 @@ export function resolveAmbush(
   } else if (outcome === 'tie') {
     const unitLoss = Math.floor(attackerUnits / 4);
     const goldLoss = Math.floor(player.gold / 2 / 10) * 10;
+    const beforeLoss = tallyArmy(player);
     if (unitLoss > 0) player.units = Math.max(0, player.units - unitLoss);
     player.gold = Math.max(0, player.gold - goldLoss);
-    const loss = lossStr(goldLoss, unitLoss);
+    const loss = lossStr(goldLoss, armyLostStr(beforeLoss, player));
     setGameMessage(
       board,
       t('resolveAmbush.barelySurvivesGameMessage', {
@@ -66,9 +67,10 @@ export function resolveAmbush(
     message = t('resolveAmbush.bloodyStalemate', { lossStr: loss ? t('resolveAmbush.lostSuffix', { loss }) : '' });
   } else {
     const goldLoss = Math.floor(player.gold / 4 / 10) * 10;
-    if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
+    const beforeLoss = tallyArmy(player);
+    applyArmyLoss(player, playerUnitsKilled);
     player.gold = Math.max(0, player.gold - goldLoss);
-    const loss = lossStr(goldLoss, playerUnitsKilled);
+    const loss = lossStr(goldLoss, armyLostStr(beforeLoss, player));
     setGameMessage(
       board,
       t('resolveAmbush.overwhelmedGameMessage', {

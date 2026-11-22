@@ -1,6 +1,15 @@
 import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
-import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
+import {
+  ArmyLoss,
+  BattleResolution,
+  BattleOutcome,
+  logBattleSummary,
+  tallyArmy,
+  armyLostStr,
+  applyArmyLoss,
+  lossTotal,
+} from './common';
 import { CaravanPrize, quarterPrize, mountHorses, rollGuardsJoining, splitCaravanGold } from '../../game/caravanPrize';
 import { formatCost } from '../../game/resources';
 import { setGameMessage } from '../../utils/gameMessage';
@@ -22,7 +31,7 @@ export function resolveCaravanBattle(
   board: GameState,
   attacker: Player,
   opts: { prize: CaravanPrize; defence: number; guardMilitia: number; guardRiders: number },
-  attackerUnitsKilled: number,
+  attackerUnitsKilled: ArmyLoss,
   outcome: BattleOutcome
 ): BattleResolution {
   const armyBefore = tallyArmy(attacker);
@@ -33,9 +42,9 @@ export function resolveCaravanBattle(
   // write itself, so the report names the tiers that actually died -- the
   // haul collected further down would otherwise mask it.
   let killedStr = '';
-  if (outcome !== 'tie' && attackerUnitsKilled > 0) {
+  if (outcome !== 'tie' && lossTotal(attackerUnitsKilled) > 0) {
     const beforeLoss = tallyArmy(attacker);
-    attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    applyArmyLoss(attacker, attackerUnitsKilled);
     killedStr = armyLostStr(beforeLoss, attacker);
   }
 

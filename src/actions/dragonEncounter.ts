@@ -155,6 +155,12 @@ function dragonSkyWithSay(board: GameState, onContinue: () => void) {
   // The local flavor line above deliberately has no name in it (it's
   // written as what the acting player themself sees) -- observers need one.
   narrate(t('dragonEncounter.narrateSoarsOverhead', { playerName: player.name }));
+  // Bots just carry on: the screen would only stall their turn on a click.
+  if (player.isComputer) {
+    onContinue();
+    return;
+  }
+
   showDragonSkyScreen(onContinue, player.name, player.color);
 }
 

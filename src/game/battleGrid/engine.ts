@@ -217,6 +217,11 @@ export function deployReinforcements(state: GridBattleState): GridBattleState {
   return { ...state, units, reserves };
 }
 
+/** How many of a side's riders are still in the fight, field and reserve. */
+export function sideRiders(state: GridBattleState, side: BattleSide): number {
+  return [...state.units, ...state.reserves].filter((u) => u.side === side && u.kind === 'rider').length;
+}
+
 /** How many of a side's units are still in the fight, field and reserve. */
 export function sideRemaining(state: GridBattleState, side: BattleSide): number {
   return (

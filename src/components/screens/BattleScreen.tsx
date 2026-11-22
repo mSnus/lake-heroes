@@ -25,12 +25,14 @@ import {
   resolveBrawlCombat,
   deployReinforcements,
   sideRemaining,
+  sideRiders,
   energyFor,
   BrawlPlan,
   runGridBattleToCompletion,
 } from '../../game/battleGrid/engine';
-import { realLossFromGridLoss } from '../../game/battleGrid/scale';
+import { realArmyLoss, realLossFromGridLoss } from '../../game/battleGrid/scale';
 import { buildBattleSetup, buildInitialBattleState, BattleSetup } from '../../game/battleGrid/battleSetup';
+import type { ArmyLoss } from '../../actions/battles/common';
 import { dispatchBattleResolution, handleBattleClose } from '../../game/battleGrid/battleResolution';
 import { GridBattleState, GridUnit, TurnEvent, BattleSide } from '../../game/battleGrid/types';
 import '../../styles/BattleScreen.css';
@@ -277,6 +279,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // ── State ──
   const [battle, setBattle] = useState<GridBattleState>(() => buildInitialBattleState(setupRef.current));
+  // Riders each side started with, so losses can be reported by tier.
+  const startRiders = useRef({ attacker: sideRiders(battle, 'attacker'), defender: sideRiders(battle, 'defender') }).current;
   const [lastEvents, setLastEvents] = useState<TurnEvent[]>([]);
   const [phase, setPhase] = useState<BattlePhase>('ongoing');
   const [outcome, setOutcome] = useState<BattleOutcome | null>(null);
@@ -387,15 +391,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
 
   // ── Resolve result (fed by the grid battle's final casualty tally) ──
   const resolveResult = useCallback(
-    (battleOutcome: BattleOutcome, atkKilled: number, defKilled: number): BattleResolution =>
+    (battleOutcome: BattleOutcome, atkKilled: ArmyLoss, defKilled: ArmyLoss): BattleResolution =>
       dispatchBattleResolution(props, setupRef.current, battleOutcome, atkKilled, defKilled),
     []
   );
 
   const finishBattle = useCallback(
-    (battleOutcome: BattleOutcome, atkGridKilled: number, defGridKilled: number) => {
-      const atkKilled = realLossFromGridLoss(atkGridKilled, attackerSized.scale);
-      const defKilled = realLossFromGridLoss(defGridKilled, defenderSized.scale);
+    (
+      battleOutcome: BattleOutcome,
+      atkGridKilled: number,
+      defGridKilled: number,
+      atkRidersKilled: number,
+      defRidersKilled: number
+    ) => {
+      const atkKilled = realArmyLoss(atkGridKilled, atkRidersKilled, attackerSized.scale);
+      const defKilled = realArmyLoss(defGridKilled, defRidersKilled, defenderSized.scale);
       setTimeout(() => {
         const res = resolveResult(battleOutcome, atkKilled, defKilled);
         setOutcome(battleOutcome);
@@ -582,7 +592,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     const defGridKilled = defenderGridTotal - sideRemaining(battle, 'defender');
     const battleOutcome: BattleOutcome =
       battle.status === 'attacker-win' ? 'attacker' : battle.status === 'defender-win' ? 'defender' : 'tie';
-    finishBattle(battleOutcome, atkGridKilled, defGridKilled);
+    finishBattle(
+      battleOutcome,
+      atkGridKilled,
+      defGridKilled,
+      startRiders.attacker - sideRiders(battle, 'attacker'),
+      startRiders.defender - sideRiders(battle, 'defender')
+    );
   }, [battle, phase]);
 
   // What happens once the fight is over and the player (or bot) moves on --
@@ -697,6 +713,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
     setLastEvents([]);
     const cur = battleRef.current;
     const lost = escapeLossOf(cur.units);
+    // The fled losses take riders in their share of the escaping side's field.
+    const field = cur.units.filter((u) => u.side === escapeSide);
+    const ridersFled = field.length ? Math.round((lost * field.filter((u) => u.kind === 'rider').length) / field.length) : 0;
+    const atkRidersKilled =
+      startRiders.attacker - sideRiders(cur, 'attacker') + (escapeSide === 'attacker' ? ridersFled : 0);
+    const defRidersKilled =
+      startRiders.defender - sideRiders(cur, 'defender') + (escapeSide === 'defender' ? ridersFled : 0);
     const atkGridKilled = attackerGridTotal - sideRemaining(cur, 'attacker') + (escapeSide === 'attacker' ? lost : 0);
     const defGridKilled = defenderGridTotal - sideRemaining(cur, 'defender') + (escapeSide === 'defender' ? lost : 0);
     setBattle({ ...cur, units: cur.units.filter((u) => u.side !== escapeSide) });
@@ -710,7 +733,13 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
         : t('battleScreen.escaped', { name: attacker.name, units: fled }),
       'warning'
     );
-    finishBattle(escapeSide === 'attacker' ? 'defender' : 'attacker', atkGridKilled, defGridKilled);
+    finishBattle(
+      escapeSide === 'attacker' ? 'defender' : 'attacker',
+      atkGridKilled,
+      defGridKilled,
+      atkRidersKilled,
+      defRidersKilled
+    );
   };
 
   // 🏁: fight the rest of the battle in auto mode at once, no movement or delays.
@@ -733,7 +762,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = (props) => {
       finishBattle(
         'tie',
         attackerGridTotal - sideRemaining(final, 'attacker'),
-        defenderGridTotal - sideRemaining(final, 'defender')
+        defenderGridTotal - sideRemaining(final, 'defender'),
+        startRiders.attacker - sideRiders(final, 'attacker'),
+        startRiders.defender - sideRiders(final, 'defender')
       );
     }
   };

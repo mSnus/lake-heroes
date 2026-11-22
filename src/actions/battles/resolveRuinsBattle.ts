@@ -2,7 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { grantArtifact, pickRandomUnownedArtifact } from '../../game/artifacts';
 import { say } from '../../utils/say';
-import { BattleOutcome, BattleResolution, tallyArmy, armyLostStr } from './common';
+import { ArmyLoss, BattleOutcome, BattleResolution, tallyArmy, armyLostStr, applyArmyLoss } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 
@@ -20,11 +20,11 @@ const ARTIFACT_FIND_CHANCE = 0.8;
 export function resolveRuinsBattle(
   board: GameState,
   player: Player,
-  playerUnitsKilled: number,
+  playerUnitsKilled: ArmyLoss,
   outcome: BattleOutcome
 ): BattleResolution {
   const beforeLoss = tallyArmy(player);
-  if (playerUnitsKilled > 0) player.units = Math.max(0, player.units - playerUnitsKilled);
+  applyArmyLoss(player, playerUnitsKilled);
 
   const killed = armyLostStr(beforeLoss, player);
   const lossStr = killed ? t('ruinsEncounter.lostSuffix', { army: killed }) : '';

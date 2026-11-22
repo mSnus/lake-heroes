@@ -2,7 +2,7 @@ import { GameState } from '../../game/GameState';
 import { Player } from '../../game/Player';
 import { changeFame } from '../../utils/fame';
 import { say } from '../../utils/say';
-import { BattleResolution, BattleOutcome, tallyArmy, armyLostStr } from './common';
+import { ArmyLoss, BattleResolution, BattleOutcome, tallyArmy, armyLostStr, applyArmyLoss } from './common';
 import { setGameMessage } from '../../utils/gameMessage';
 import { t } from '../../i18n';
 import { imprison } from '../prison';
@@ -20,8 +20,8 @@ export function resolvePlayerBattle(
   attacker: Player,
   defender: Player,
   battlefieldUnits: number,
-  attackerUnitsKilled: number,
-  defenderUnitsKilled: number,
+  attackerUnitsKilled: ArmyLoss,
+  defenderUnitsKilled: ArmyLoss,
   outcome: BattleOutcome
 ): BattleResolution {
   const aUnitsBefore = attacker.units;
@@ -34,8 +34,8 @@ export function resolvePlayerBattle(
   if (outcome === 'attacker') {
     const beforeLoss = tallyArmy(attacker);
     const beforeDefLoss = tallyArmy(defender);
-    if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
-    if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
+    applyArmyLoss(attacker, attackerUnitsKilled);
+    applyArmyLoss(defender, defenderUnitsKilled);
     imprison(board, defender);
     changeFame(attacker, 1);
     changeFame(defender, -1);
@@ -74,10 +74,10 @@ export function resolvePlayerBattle(
     message = t('resolvePlayerBattle.tieMessage', { loss: quarterLoss });
   } else {
     const beforeAtkLoss = tallyArmy(attacker);
-    if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    applyArmyLoss(attacker, attackerUnitsKilled);
     imprison(board, attacker);
     const beforeDefLoss = tallyArmy(defender);
-    if (defenderUnitsKilled > 0) defender.units = Math.max(0, defender.units - defenderUnitsKilled);
+    applyArmyLoss(defender, defenderUnitsKilled);
     changeFame(attacker, -1);
     changeFame(defender, 1);
 

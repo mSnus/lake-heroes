@@ -4,7 +4,16 @@ import { Tile } from '../../game/Tile';
 import { razeTile, grantTile } from '../../game/tileOwnership';
 import { changeFame } from '../../utils/fame';
 import { changeKarma } from '../../utils/karma';
-import { BattleResolution, BattleOutcome, logBattleSummary, tallyArmy, armyLostStr } from './common';
+import {
+  ArmyLoss,
+  BattleResolution,
+  BattleOutcome,
+  logBattleSummary,
+  tallyArmy,
+  armyLostStr,
+  applyArmyLoss,
+  applyGarrisonLoss,
+} from './common';
 import { resolveKingsContractOnClaim } from '../../game/kingsContracts';
 import { recordStatEvent } from '../../game/statistics';
 import { setGameMessage } from '../../utils/gameMessage';
@@ -38,8 +47,8 @@ export function resolveTileBattle(
   attacker: Player,
   defender: Player | undefined,
   tile: Tile,
-  attackerUnitsKilled: number,
-  defenderUnitsKilled: number,
+  attackerUnitsKilled: ArmyLoss,
+  defenderUnitsKilled: ArmyLoss,
   outcome: BattleOutcome
 ): BattleResolution {
   const armyBefore = tallyArmy(attacker);
@@ -58,7 +67,7 @@ export function resolveTileBattle(
 
   if (outcome === 'attacker') {
     const beforeLoss = tallyArmy(attacker);
-    if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    applyArmyLoss(attacker, attackerUnitsKilled);
     const killed = armyLostStr(beforeLoss, attacker);
     const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
 
@@ -92,11 +101,11 @@ export function resolveTileBattle(
     }
   } else if (outcome === 'defender') {
     const beforeLoss = tallyArmy(attacker);
-    if (attackerUnitsKilled > 0) attacker.units = Math.max(0, attacker.units - attackerUnitsKilled);
+    applyArmyLoss(attacker, attackerUnitsKilled);
     // Wild guards on an unowned tile aren't a real player's army — a failed
     // claim leaves their numbers untouched. Only a real owner's garrison
     // takes real losses.
-    if (!claiming) tile.garrison = Math.max(0, tile.garrison - defenderUnitsKilled);
+    if (!claiming) applyGarrisonLoss(tile, defenderUnitsKilled);
     const killed = armyLostStr(beforeLoss, attacker);
     const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
 
@@ -110,9 +119,9 @@ export function resolveTileBattle(
     // it -- ownership stays with the defender either way. Wild guards on an
     // unowned tile aren't a real player's army, so a tied claim attempt
     // keeps the old flat-formula loss and leaves their numbers untouched.
-    const unitLoss = claiming ? Math.floor(tile.defence / 4) : attackerUnitsKilled;
     const beforeLoss = tallyArmy(attacker);
-    if (unitLoss > 0) attacker.units = Math.max(0, attacker.units - unitLoss);
+    if (claiming) attacker.units = Math.max(0, attacker.units - Math.floor(tile.defence / 4));
+    else applyArmyLoss(attacker, attackerUnitsKilled);
     if (!claiming) tile.garrison = 0;
     const killed = armyLostStr(beforeLoss, attacker);
     const lossStr = killed ? t('resolveTileBattle.losingSuffix', { army: killed }) : '';
