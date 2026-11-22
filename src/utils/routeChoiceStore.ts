@@ -14,12 +14,15 @@ function emit(): void {
 
 const keyFor = (board: GameState) => `${board.activePlayer.id}:${board.activePlayer.position}:${board.turns}`;
 
-/** The roads ahead of the active player and which one is picked -- a random one until the player chooses. */
+/** The roads from the active player and which one is picked. A player may pick a road in any
+ * direction; until they do, it's a random one of those leading forward. */
 export function routeChoice(board: GameState): { routes: Route[]; selected: number } {
-  const routes = routesAhead(board, board.activePlayer.position);
+  const routes = routesAhead(board, board.activePlayer.position, undefined, true);
   const key = keyFor(board);
   if (!choice || choice.key !== key || choice.index >= routes.length) {
-    choice = { key, index: Math.floor(Math.random() * routes.length) };
+    const forward = routes.map((r, i) => (r.forward ? i : -1)).filter((i) => i >= 0);
+    const pool = forward.length ? forward : routes.map((_, i) => i);
+    choice = { key, index: pool[Math.floor(Math.random() * pool.length)] };
   }
 
   return { routes, selected: choice.index };

@@ -493,7 +493,7 @@
     },
     "travel": {
       "title": "Viaje 🧭",
-      "fork": "<strong>Elegir el camino</strong> — antes de tirar, el camino de delante (6 pasos) se marca con puntos de tu color y sus posibles finales se marcan con un círculo; se elige uno al azar. Toca otro final para tomar el camino que lleva allí, y vuelve a tocarlo para alternar entre los caminos que llegan a él. Después avanzas por ese camino tantos pasos como diga el dado.",
+      "fork": "<strong>Elegir el camino</strong> — antes de tirar, el camino de delante (6 pasos) se marca con puntos de tu color y sus posibles finales se marcan con un círculo; se elige uno al azar. Toca otro final para tomar el camino que lleva allí, y vuelve a tocarlo para alternar entre los caminos que llegan a él. Después avanzas por ese camino tantos pasos como diga el dado. También puedes elegir un camino que vuelva hacia atrás, siempre que no dé media vuelta sobre sí mismo; la elección al azar solo va hacia delante.",
       "emptyRoad": "<strong>Camino vacío</strong> — no todos los tramos del camino tienen una casilla. En un camino vacío no pasa nada, salvo que solo allí se encuentran caravanas y emboscadas, y también pueden darse duelos de la Hora del Héroe.",
       "portal": "Un Portal puede enviarte directamente a cualquier otra casilla, incluido el Castillo del Rey; entonces se aplica el efecto normal de esa casilla."
     },

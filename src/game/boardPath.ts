@@ -18,20 +18,43 @@ export const ROUTE_STEPS = 6;
 export interface Route {
   dest: number;
   path: number[];
+  /** Every step follows the board's own direction. */
+  forward: boolean;
 }
 
-/** Every distinct road exactly `steps` moves ahead of `from` -- two roads may end on the same slot. */
-export function routesAhead(board: GameState, from: number, steps: number = ROUTE_STEPS): Route[] {
+/**
+ * Every distinct road exactly `steps` moves from `from` -- two roads may end on the same slot.
+ * With `anyDirection` a road may also run against the board's direction, but never turns
+ * straight back onto the slot it just left.
+ */
+export function routesAhead(
+  board: GameState,
+  from: number,
+  steps: number = ROUTE_STEPS,
+  anyDirection = false
+): Route[] {
   const routes: Route[] = [];
-  const walk = (pos: number, path: number[]) => {
+  const behind = (pos: number) =>
+    board.links.flatMap((next, slot) => (next.includes(pos) && !board.links[pos]?.includes(slot) ? [slot] : []));
+
+  const walk = (pos: number, path: number[], forward: boolean) => {
     if (path.length === steps) {
-      routes.push({ dest: pos, path });
+      routes.push({ dest: pos, path, forward });
       return;
     }
 
-    for (const next of board.links[pos] ?? []) walk(next, [...path, next]);
+    const left = path.length >= 2 ? path[path.length - 2] : path.length === 1 ? from : -1;
+    for (const next of board.links[pos] ?? []) {
+      if (anyDirection && next === left) continue;
+      walk(next, [...path, next], forward);
+    }
+
+    if (!anyDirection) return;
+    for (const prev of behind(pos)) {
+      if (prev !== left) walk(prev, [...path, prev], false);
+    }
   };
 
-  walk(from, []);
+  walk(from, [], true);
   return routes;
 }

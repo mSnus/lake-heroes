@@ -5,11 +5,11 @@ import { useScreen } from '../../utils/screenStore';
 import { useModal } from '../../utils/diceStore';
 import '../../styles/ThoughtBalloon.css';
 
-const THOUGHT_BEFORE_ROLL_MS = 7000;
-const THOUGHT_AFTER_ROLL_MS = 7000;
+const THOUGHT_BEFORE_ROLL_MS = 10000;
+const THOUGHT_AFTER_ROLL_MS = 10000;
 const THOUGHT_COUNT = 13;
 
-/** A random thought for a human player who idles: 7s without rolling, or 7s after the roll.
+/** A random thought for a human player who idles: 10s without rolling, or 10s after the roll.
  * One at a time; it goes with the turn, or for the rest of the turn once dismissed.
  * A battle or encounter screen clears it and holds the timer until the screen closes. */
 export function useIdleThought(board: GameState): { text: string; dismiss: () => void } | null {

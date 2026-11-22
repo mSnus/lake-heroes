@@ -567,7 +567,7 @@
       "item4": "This game is licensed under the <a href=\"https://polyformproject.org/licenses/noncommercial/1.0.0\" target=\"_blank\" rel=\"noopener noreferrer\">PolyForm Noncommercial License 1.0.0</a> — noncommercial use and sharing only."
     },
     "travel": {
-      "fork": "<strong>Choosing your way</strong> — before you roll, the road ahead (6 steps) is marked with dots in your colour and its possible ends are circled; one road is picked at random. Tap another end to take the road leading there, and tap the same end again to switch between roads that reach it. You then move along that road as far as the die says.",
+      "fork": "<strong>Choosing your way</strong> — before you roll, the road ahead (6 steps) is marked with dots in your colour and its possible ends are circled; one road is picked at random. Tap another end to take the road leading there, and tap the same end again to switch between roads that reach it. You then move along that road as far as the die says. You may also pick a road that goes back along the way, as long as it doesn't turn straight back on itself; the random pick only goes forward.",
       "emptyRoad": "<strong>Empty road</strong> — not every step of the road holds a tile. Nothing happens on a stretch of empty road, except that caravans and ambushes are only ever met there, and Hero's Hour duels can happen there too."
     },
     "overviewControls": {
