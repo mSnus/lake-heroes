@@ -7,7 +7,7 @@
   max-width: 9rem;
   padding: 0.8rem 1.3rem;
   z-index: 2;
-  pointer-events: none;
+  cursor: pointer;
   transform-origin: bottom left;
   transform: scale(calc(1 / var(--layer-scale, 1)));
   animation: thought-pop 0.35s ease-out;

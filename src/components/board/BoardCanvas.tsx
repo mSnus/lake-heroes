@@ -648,7 +648,9 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
             src={src}
             alt={player.image}
           />
-          {thinking && <ThoughtBalloon text={thinking} below={pos.y < 20} toLeft={pos.x > 65} />}
+          {thinking && (
+            <ThoughtBalloon text={thinking.text} onDismiss={thinking.dismiss} below={pos.y < 20} toLeft={pos.x > 65} />
+          )}
         </div>
       </div>
     );

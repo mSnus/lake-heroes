@@ -3,21 +3,22 @@ import { GameState } from '../../game/GameState';
 import { useT } from '../../i18n';
 import '../../styles/ThoughtBalloon.css';
 
-const THOUGHT_BEFORE_ROLL_MS = 5000;
+const THOUGHT_BEFORE_ROLL_MS = 7000;
 const THOUGHT_AFTER_ROLL_MS = 7000;
 const THOUGHT_COUNT = 13;
 
-/** A random thought for a human player who idles: 5s without rolling, or 7s after the roll.
- * One at a time; it goes with the turn. */
-export function useIdleThought(board: GameState): string | null {
+/** A random thought for a human player who idles: 7s without rolling, or 7s after the roll.
+ * One at a time; it goes with the turn, or for the rest of the turn once dismissed. */
+export function useIdleThought(board: GameState): { text: string; dismiss: () => void } | null {
   const t = useT();
   const turnKey = `${board.round}-${board.activePlayerIndex}`;
   const rolled = board.turnPhase !== 'before-move';
   const watching = board.gameStarted && !board.harvest && !board.activePlayer?.isComputer;
   const [thought, setThought] = useState<{ turnKey: string; n: number } | null>(null);
+  const [dismissedTurn, setDismissedTurn] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!watching) return;
+    if (!watching || dismissedTurn === turnKey) return;
     const id = setTimeout(
       () =>
         setThought((prev) => {
@@ -28,22 +29,30 @@ export function useIdleThought(board: GameState): string | null {
       rolled ? THOUGHT_AFTER_ROLL_MS : THOUGHT_BEFORE_ROLL_MS
     );
     return () => clearTimeout(id);
-  }, [turnKey, rolled, watching]);
+  }, [turnKey, rolled, watching, dismissedTurn]);
 
-  return thought && thought.turnKey === turnKey && watching ? t(`thoughts.t${thought.n + 1}`) : null;
+  if (!thought || thought.turnKey !== turnKey || !watching || dismissedTurn === turnKey) return null;
+  return { text: t(`thoughts.t${thought.n + 1}`), dismiss: () => setDismissedTurn(turnKey) };
 }
 
 interface Props {
   text: string;
+  onDismiss: () => void;
   /** Near the map's top edge: hang below the sprite instead of above. */
   below: boolean;
   /** Near the map's right edge: grow to the left. */
   toLeft: boolean;
 }
 
-export function ThoughtBalloon({ text, below, toLeft }: Props) {
+export function ThoughtBalloon({ text, onDismiss, below, toLeft }: Props) {
   return (
-    <div className={'thought' + (below ? ' thought--below' : '') + (toLeft ? ' thought--left' : '')}>
+    <div
+      className={'thought' + (below ? ' thought--below' : '') + (toLeft ? ' thought--left' : '')}
+      onClick={(e) => {
+        e.stopPropagation();
+        onDismiss();
+      }}
+    >
       <svg className="thought-cloud" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden>
         <ellipse cx="50" cy="30" rx="49" ry="29" />
       </svg>
