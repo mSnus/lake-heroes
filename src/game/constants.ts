@@ -117,6 +117,8 @@ export const ANNUAL_DEFAULT_UNITS = 0;
 export const ANNUAL_DEFAULT_GOLD_MULT = 2.5;
 //adjustments for the King's grace reward
 export const GRACE_TOTAL_UNITS_MULT = 0.5;
+// Once every player has at least this much fame, the King's Grace is no longer paid.
+export const GRACE_FAME_LIMIT = 15;
 export const GRACE_TOTAL_GOLD_MULT = 0.5;
 // Calling in on your own tile pays a multiple of its daily bonus -- the
 // reward for spending the turn there rather than moving on (see

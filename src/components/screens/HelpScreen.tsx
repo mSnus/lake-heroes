@@ -160,6 +160,7 @@ const HelpScreen: React.FC = () => {
             />
             <HtmlLi html={t('helpScreen.tiles.landingOnOpponent')} />
             <HtmlLi html={t('helpScreen.tiles.syndicates')} />
+            <HtmlLi html={t('helpScreen.tiles.groupEffects')} />
             <HtmlLi html={t('helpScreen.tiles.sellAnytime')} />
             <HtmlLi html={t('helpScreen.tiles.yieldToKing')} />
             <HtmlLi html={t('helpScreen.tiles.clickToView')} />

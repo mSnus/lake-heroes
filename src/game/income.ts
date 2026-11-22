@@ -1,7 +1,7 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
 import { Tile } from './Tile';
-import { syndicateMultiplier } from './syndicate';
+import { ownerIncomeMultiplier } from './groupEffects';
 import { hasYearEffect, DOUBLE_INCOME_EFFECT, NO_INCOME_EFFECT } from './yearCore';
 import { LOOT_PRICE_SHARE } from './constants';
 import { roundGold } from './resources';
@@ -44,7 +44,10 @@ export function tileTurnIncome(
   const result: TileIncome = { gold: 0, food: 0, arms: 0, units: 0 };
   if (tile.isYielded) return result;
   const groupBoost = board && hasYearEffect(board, DOUBLE_INCOME_EFFECT, tile.group) ? 2 : 1;
-  result[tile.bonusType ?? 'gold'] = (tile.bonuses[level] ?? 0) * mult * groupBoost;
+  const type = tile.bonusType ?? 'gold';
+  const amount = (tile.bonuses[level] ?? 0) * mult * groupBoost;
+  // A group effect's ×1.5 can leave a fraction; food, arms and units come whole.
+  result[type] = type === 'gold' ? amount : Math.floor(amount);
 
   if (board && !ignoreTaxes && hasYearEffect(board, NO_INCOME_EFFECT)) {
     result.gold = 0;
@@ -84,7 +87,7 @@ export function playerRawTurnIncome(board: GameState, player: Player): TileIncom
   const total: TileIncome = { gold: 0, food: 0, arms: 0, units: 0 };
   for (const tile of board.tiles) {
     if (!tile || tile.owner !== player.id) continue;
-    const income = tileTurnIncome(tile, syndicateMultiplier(board, player, tile.group), undefined, board);
+    const income = tileTurnIncome(tile, ownerIncomeMultiplier(board, player, tile), undefined, board);
     total.gold += income.gold;
     total.food += income.food;
     total.arms += income.arms;

@@ -1,6 +1,6 @@
 import { GameState } from './GameState';
 import { Player } from './Player';
-import { ANNUAL_DEFAULT_UNITS, GRACE_TOTAL_UNITS_MULT, GRACE_TOTAL_GOLD_MULT } from './constants';
+import { ANNUAL_DEFAULT_UNITS, GRACE_TOTAL_UNITS_MULT, GRACE_TOTAL_GOLD_MULT, GRACE_FAME_LIMIT } from './constants';
 import { getOverrides } from '../utils/overridesStore';
 import { getArtifactGoldBonus } from './artifacts';
 import { playerScore } from './score';
@@ -231,8 +231,18 @@ export function computeAnnualReward(board: GameState, player: Player): KingsGrac
   };
 }
 
+/** The King stops his Grace once every player has reached GRACE_FAME_LIMIT fame. */
+export function kingsGraceEnded(board: GameState): boolean {
+  return board.players.length > 0 && board.players.every((p) => (p.fame ?? 0) >= GRACE_FAME_LIMIT);
+}
+
 /** Pays `player` their King's Grace and returns what actually arrived (caps can swallow units). */
 export function grantKingsGrace(board: GameState, player: Player): { gold: number; militia: number; riders: number } {
+  if (kingsGraceEnded(board)) {
+    player.lastGrace = { gold: 0, militia: 0, riders: 0 };
+    return player.lastGrace;
+  }
+
   const reward = computeAnnualReward(board, player);
   const before = { militia: player.militia, riders: player.riders };
   player.gold += reward.totalGold;

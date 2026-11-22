@@ -271,7 +271,8 @@
     "confirmYield": "¿Ceder {tileName} al Rey por {gold}🟡?",
     "confirmTakeBack": "¿Recuperar {tileName} por {gold}🟡?",
     "yielded": "cedida",
-    "abandoned": "🏚️🧟‍♀️"
+    "abandoned": "🏚️🧟‍♀️",
+    "groupEffect": "Potenciado por tus {group}"
   },
   "tileClaimScreen": {
     "claimedBy": "{player} ahora es {fame} {gold}",
@@ -451,6 +452,7 @@
       "own": "<strong> Posee casillas</strong> derrotando a sus guardias — reclamar no cuesta oro; el precio de una casilla sigue marcando su peaje, sus mejoras y su valor de venta. Visitar tus propias casillas te aporta {visitGoldMult}x su ingreso, o {visitUnitsShare}x🧍🏻 de una Torre",
       "landingOnOpponent": "<strong>Caer en la casilla de un oponente</strong> — su peaje 💰 (la mitad del precio de la casilla) se cobra automáticamente. Tras pagarlo, puedes marcharte en paz o luchar ⚔️ por venganza; una victoria arrasa 🔥 la casilla: pierde sus mejoras, queda sin dueño y no se puede reclamar hasta la siguiente ronda. Si no puedes cubrir un peaje, vende o cede casillas; si aún no basta, te conviertes en prisionero de guerra, pierdes un turno en prisión y después recibes el rescate del Rey para continuar. Si el dueño está en prisión, no hay peaje y puedes arrasar la casilla desde su tarjeta.",
       "syndicates": "<strong>Sindicatos</strong> — posee todas las casillas de un grupo y formarás un sindicato: su ingreso se <strong>duplica</strong>",
+      "groupEffects": "<strong>Efectos de grupo</strong> — tener cualquier Molino hace que todas tus casillas de comida rindan ×1,5; cualquier casilla de Oficios hace lo mismo con las de armas, y cualquier Campamento con las de unidades (Torres)",
       "sellAnytime": "<strong>Vender</strong> — las casillas pueden venderse en cualquier momento por el precio total de la casilla y sus mejoras. Haz clic en el encabezado de la casilla para ver los botones de Vender/Ceder.",
       "yieldToKing": "<strong>Ceder al Rey</strong> — cede una casilla ('media venta'): recibes la mitad de su precio de inmediato, pero no produce ingresos y no se puede luchar por ella. Recupérala por el 60% del precio de la casilla. Vender una casilla cedida reembolsa un 10% menos de su valor restante.",
       "clickToView": "<strong>Haz clic en el título o los datos de la casilla</strong> para ver sus bonos y defensas en cada nivel"
@@ -465,7 +467,7 @@
     },
     "specialTiles": {
       "title": "Casillas especiales 🃏",
-      "kingsCastle": "🏰 <strong>Castillo del Rey</strong> — visítalo para reclutar 🧍 unidades por oro; la cantidad depende de tu fama. Pasar o caer aquí otorga la Gracia del Rey: oro y unidades, más para los más débiles.",
+      "kingsCastle": "🏰 <strong>Castillo del Rey</strong> — visítalo para reclutar 🧍 unidades por oro; la cantidad depende de tu fama. Pasar o caer aquí otorga la Gracia del Rey: oro y unidades, más para los más débiles. Cuando todos los jugadores tienen 15🏆 o más, la Gracia del Rey se acaba.",
       "treasureChest": "🪎 <strong>Cofre del Tesoro</strong> — recompensa en oro, de tamaño pequeño/mediano/grande.",
       "tavern": "🍺 <strong>Taberna</strong> — recluta unidades",
       "sphynx": "🦁 <strong>Esfinge</strong>: <br/>Tira el dado 🎲:<br/> <b>1,2</b> - pierdes la mitad de tu 🟡<br/><b>3,4</b> - pierdes 1/3 de tus 🧍<br/> <b>5</b> - nada, exhala 🌬️<br/> <b>6</b> - ganas la mitad de tu 🟡",

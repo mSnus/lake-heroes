@@ -33,6 +33,18 @@ export default defineConfig({
         // like version.txt, which should be served as-is, not the app shell.
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/version\.txt$/],
+        // Safety net for offline play: any image fetched outside the precache
+        // (e.g. requested before this build's precache finished) is kept too.
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: { maxEntries: 400, maxAgeSeconds: 60 * 24 * 60 * 60 },
+            },
+          },
+        ],
       },
     }),
   ],

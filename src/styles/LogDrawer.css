@@ -27,7 +27,8 @@
   transition: transform 0.9s ease-in;
 }
 
-.log-drawer--dragging {
+.log-drawer--dragging,
+.log-drawer--still {
   transition: none;
 }
 

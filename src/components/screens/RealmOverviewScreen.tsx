@@ -9,7 +9,7 @@ import { getArtifact } from '../../game/artifacts';
 import { totalWealth } from '../../game/wealth';
 import { STARS_TO_WIN } from '../../utils/stars';
 import { playerTurnIncome } from '../../game/income';
-import { computeAnnualReward, KingsGraceReward } from '../../game/kingsGrace';
+import { computeAnnualReward, KingsGraceReward, kingsGraceEnded } from '../../game/kingsGrace';
 import { formatArmy } from '../../utils/formatArmy';
 import { PlayerLabel } from '../snippets/PlayerLabel';
 import { Gold } from '../snippets/Gold';
@@ -94,6 +94,7 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
     <div className="realm-screen">
       <div className="realm-inner">
         {ranked.map((player) => {
+          const graceEnded = kingsGraceEnded(gameState);
           const income = playerTurnIncome(gameState, player);
           const tiles = tilesOf(player);
           const annual = computeAnnualReward(gameState, player);
@@ -127,20 +128,22 @@ const RealmOverviewScreen: React.FC<RealmOverviewScreenProps> = ({ gameState }) 
                 <span>{player.riders}🐎</span>
               </div>
 
-              <div className="realm-annual" title={annualBreakdown(t, annual)}>
-                <span className="realm-annual-label">🏰 {t('year.yearlyBonusLabel')}:</span>
-                {annual.totalGold > 0 && (
-                  <span>
-                    +<Gold amount={annual.totalGold} />
-                  </span>
-                )}
-                {hypotheticalUnits(annual) > 0 && <span>+{hypotheticalUnits(annual)}👬</span>}
-                {annual.kingsHandicap < 1 && (
-                  <span className="realm-annual-grace">
-                    {t('realmOverview.gracePct', { pct: Math.round(annual.kingsHandicap * 100) })}
-                  </span>
-                )}
-              </div>
+              {!graceEnded && (
+                <div className="realm-annual" title={annualBreakdown(t, annual)}>
+                  <span className="realm-annual-label">🏰 {t('year.yearlyBonusLabel')}:</span>
+                  {annual.totalGold > 0 && (
+                    <span>
+                      +<Gold amount={annual.totalGold} />
+                    </span>
+                  )}
+                  {hypotheticalUnits(annual) > 0 && <span>+{hypotheticalUnits(annual)}👬</span>}
+                  {annual.kingsHandicap < 1 && (
+                    <span className="realm-annual-grace">
+                      {t('realmOverview.gracePct', { pct: Math.round(annual.kingsHandicap * 100) })}
+                    </span>
+                  )}
+                </div>
+              )}
 
               {tiles.length > 0 ? (
                 <ul className="realm-tiles">

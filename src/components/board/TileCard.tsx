@@ -15,6 +15,7 @@ import { isBanzaiAttack } from '../../game/army';
 import { UNIT_POWER } from '../../game/army';
 import { claimAffordability } from '../../game/tileOwnership';
 import { syndicateMultiplier } from '../../game/syndicate';
+import { GROUP_EFFECTS, groupEffectMultiplier } from '../../game/groupEffects';
 import { tileTurnIncome } from '../../game/income';
 import { hasYearEffect, DOUBLE_INCOME_EFFECT, NO_INCOME_EFFECT } from '../../game/year';
 import DecoratedButton from '../ui/DecoratedButton';
@@ -91,6 +92,9 @@ export const TileCard: React.FC<TileCardProps> = ({
   const syndicateMult =
     gameState && ownerPlayer ? syndicateMultiplier(gameState, ownerPlayer, tile.group) : 1;
   const isSyndicate = syndicateMult > 1;
+  const effectMult =
+    gameState && ownerPlayer ? groupEffectMultiplier(gameState, ownerPlayer, tile.bonusType ?? 'gold') : 1;
+  const effectGroup = GROUP_EFFECTS.find((e) => e.bonusType === tile.bonusType)?.group;
 
   // Per-turn payout at the tile's current level (see game/income.ts's
   // tileTurnIncome) -- only the tile's own bonus type is nonzero. The figure below is already doubled when
@@ -99,7 +103,7 @@ export const TileCard: React.FC<TileCardProps> = ({
   // multiplier applied here.
   // Under Unjust Taxes the usual income is shown struck through.
   const taxed = !!gameState && hasYearEffect(gameState, NO_INCOME_EFFECT);
-  const turnIncome = tileTurnIncome(tile, syndicateMult, undefined, gameState, true);
+  const turnIncome = tileTurnIncome(tile, syndicateMult * effectMult, undefined, gameState, true);
   const doubleIncomeActive =
     !!gameState && hasYearEffect(gameState, DOUBLE_INCOME_EFFECT, tile.group);
   const hasTurnIncome = hasIncome(turnIncome);
@@ -109,6 +113,11 @@ export const TileCard: React.FC<TileCardProps> = ({
         <IncomeLabel income={turnIncome} unitColor={ownerPlayer?.image} unitKnight={ownerPlayer?.isKnight} />
       </span>
       {doubleIncomeActive && <span className="tile-card-double-income">×2</span>}
+      {effectMult > 1 && (
+        <span className="tile-card-double-income" title={t('tileCard.groupEffect', { group: t(`year.groupName.${effectGroup}`) })}>
+          ×1.5
+        </span>
+      )}
       {taxed && '🃏'}
     </>
   );
@@ -141,7 +150,11 @@ export const TileCard: React.FC<TileCardProps> = ({
     );
   };
 
-  const bonus = (level: number) => (tile.bonuses[level] ?? 0) * syndicateMult;
+  const bonus = (level: number) => {
+    const amount = (tile.bonuses[level] ?? 0) * syndicateMult * effectMult;
+    return bonusType === 'gold' ? amount : Math.floor(amount);
+  };
+
   const defence = (level: number) => tile.getDefence(level);
 
   const bonusAmount = (level: number) =>

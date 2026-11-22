@@ -12,6 +12,8 @@ const HOLD_MS_PER_LINE = 700;
 const PIN_SHARE = 2 / 3;
 /** A peek never covers more than this share of the map, however many lines arrived. */
 const MAX_PEEK_SHARE = 0.45;
+/** Messages posted while the game is loading don't pull the drawer down. */
+const LOAD_QUIET_MS = 2000;
 
 type Mode = 'hidden' | 'peek' | 'open';
 
@@ -41,12 +43,22 @@ export const LogDrawer: React.FC<LogDrawerProps> = ({ entries, players }) => {
   const drag = useRef<{ startY: number; startOffset: number } | null>(null);
   const lastPulses = useRef(pulses);
 
-  // The map's height, kept current as the board resizes.
+  // The map's height, kept current as the board resizes. A resize moves the drawer
+  // without its slide animation, so it never shows while the page settles.
   const [mapHeight, setMapHeight] = useState(0);
+  const [resizing, setResizing] = useState(true);
+  const resizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadedAt = useRef(Date.now());
   useLayoutEffect(() => {
     const el = clipRef.current;
     if (!el) return;
-    const measure = () => setMapHeight(el.clientHeight);
+    const measure = () => {
+      setResizing(true);
+      setMapHeight(el.clientHeight);
+      if (resizeTimer.current) clearTimeout(resizeTimer.current);
+      resizeTimer.current = setTimeout(() => setResizing(false), 100);
+    };
+
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);
@@ -79,7 +91,7 @@ export const LogDrawer: React.FC<LogDrawerProps> = ({ entries, players }) => {
     lastPulses.current = pulses;
     const newRows = shown.length - lastLength.current;
     lastLength.current = shown.length;
-    if (mode === 'open' || drag.current) return;
+    if (mode === 'open' || drag.current || Date.now() - loadedAt.current < LOAD_QUIET_MS) return;
 
     if (added > 0) {
       pendingLines.current = newRows > 0 ? pendingLines.current + newRows : Math.max(pendingLines.current, 1);
@@ -103,6 +115,7 @@ export const LogDrawer: React.FC<LogDrawerProps> = ({ entries, players }) => {
 
   useEffect(() => () => {
     if (holdTimer.current) clearTimeout(holdTimer.current);
+    if (resizeTimer.current) clearTimeout(resizeTimer.current);
   }, []);
 
   const onPointerDown = (e: React.PointerEvent) => {
@@ -135,7 +148,12 @@ export const LogDrawer: React.FC<LogDrawerProps> = ({ entries, players }) => {
   return (
     <div className="log-drawer-clip" ref={clipRef}>
       <div
-        className={'log-drawer' + (dragging ? ' log-drawer--dragging' : '') + (mode === 'hidden' ? ' log-drawer--hiding' : '')}
+        className={
+          'log-drawer' +
+          (dragging ? ' log-drawer--dragging' : '') +
+          (resizing ? ' log-drawer--still' : '') +
+          (mode === 'hidden' ? ' log-drawer--hiding' : '')
+        }
         style={{
           transform: `translateY(${(mode === 'open' && !dragging ? mapHeight : offset) - mapHeight}px)`,
           visibility: mapHeight ? 'visible' : 'hidden',

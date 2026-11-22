@@ -2,6 +2,7 @@ import { GameState } from '../game/GameState';
 import { say } from '../utils/say';
 import { setEndTurn } from '../utils/endTurnStore';
 import { syndicateMultiplier } from '../game/syndicate';
+import { groupEffectMultiplier } from '../game/groupEffects';
 import { setGameMessage } from '../utils/gameMessage';
 import { VISIT_GOLD_MULT, VISIT_UNITS_SHARE } from '../game/constants';
 import { t } from '../i18n';
@@ -27,16 +28,17 @@ export function handleVisitOwnTile(
 
   const mult = syndicateMultiplier(board, player, tile.group);
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
+  const effectMult = groupEffectMultiplier(board, player, tile.bonusType);
 
   const rewards = [];
   if (tile.bonusType === 'gold' || tile.bonusType === 'food' || tile.bonusType === 'arms') {
-    const reward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_GOLD_MULT);
+    const reward = Math.round((tile.bonuses[tile.level] || 0) * mult * effectMult * VISIT_GOLD_MULT);
     rewards.push(`${reward}${RESOURCE_EMOJI[tile.bonusType]}`);
     player[tile.bonusType] += reward;
   }
 
   if (tile.bonusType === 'units') {
-    const unitsReward = Math.round((tile.bonuses[tile.level] || 0) * mult * VISIT_UNITS_SHARE);
+    const unitsReward = Math.round((tile.bonuses[tile.level] || 0) * mult * effectMult * VISIT_UNITS_SHARE);
     rewards.push(`${unitsReward}🧍`);
     player.units += unitsReward;
   }

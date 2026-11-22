@@ -4,7 +4,7 @@ import { Tile } from '../game/Tile';
 import { CHARACTERS, CharacterConfig, CharacterId } from './characters';
 import { getOverrides } from '../utils/overridesStore';
 import { DRAGON_UNITS_THRESHOLD } from '../actions/fightDragon';
-import { computeAnnualReward } from '../game/kingsGrace';
+import { computeAnnualReward, kingsGraceEnded } from '../game/kingsGrace';
 import { playerRawTurnIncome, lootPrize, TileIncome } from '../game/income';
 import { UnitTier, remainingCapacity, garrisonSlotCapacity, garrisonCapacityForLevel } from '../game/army';
 import type { Route } from '../game/boardPath';
@@ -62,7 +62,7 @@ function wouldFormSyndicate(board: GameState, tile: Tile): boolean {
 // "current income" = units gained per lap of the board (the King's grace
 // reward), since that's the only recurring unit income most players have.
 function closeToDragonGoalWithoutBuying(board: GameState, player: Player): boolean {
-  const perLapUnits = computeAnnualReward(board, player).totalUnits;
+  const perLapUnits = kingsGraceEnded(board) ? 0 : computeAnnualReward(board, player).totalUnits;
   return player.armyPower + perLapUnits * 3 >= DRAGON_UNITS_THRESHOLD;
 }
 
