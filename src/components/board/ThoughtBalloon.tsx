@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GameState } from '../../game/GameState';
 import { useT } from '../../i18n';
+import { useScreen } from '../../utils/screenStore';
 import '../../styles/ThoughtBalloon.css';
 
 const THOUGHT_BEFORE_ROLL_MS = 7000;
@@ -8,17 +9,24 @@ const THOUGHT_AFTER_ROLL_MS = 7000;
 const THOUGHT_COUNT = 13;
 
 /** A random thought for a human player who idles: 7s without rolling, or 7s after the roll.
- * One at a time; it goes with the turn, or for the rest of the turn once dismissed. */
+ * One at a time; it goes with the turn, or for the rest of the turn once dismissed.
+ * A battle or encounter screen clears it and holds the timer until the screen closes. */
 export function useIdleThought(board: GameState): { text: string; dismiss: () => void } | null {
   const t = useT();
   const turnKey = `${board.round}-${board.activePlayerIndex}`;
   const rolled = board.turnPhase !== 'before-move';
-  const watching = board.gameStarted && !board.harvest && !board.activePlayer?.isComputer;
+  const screenOpen = useScreen() !== null;
+  const watching = board.gameStarted && !board.harvest && !board.activePlayer?.isComputer && !screenOpen;
   const [thought, setThought] = useState<{ turnKey: string; n: number } | null>(null);
   const [dismissedTurn, setDismissedTurn] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!watching || dismissedTurn === turnKey) return;
+    if (!watching) {
+      setThought(null);
+      return;
+    }
+
+    if (dismissedTurn === turnKey) return;
     const id = setTimeout(
       () =>
         setThought((prev) => {

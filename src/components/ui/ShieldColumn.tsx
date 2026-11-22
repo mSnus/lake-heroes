@@ -137,6 +137,7 @@ export const ShieldColumn: React.FC<ShieldColumnProps> = ({
     if (!canEndTurn) return;
     gameEvent('setPhase', 'before-move');
     gameEvent('displayTile', {});
+    document.querySelector('.side-pane')?.scrollTo({ top: 0, behavior: 'smooth' });
     endTurn(gameState, updateGameState);
   }
 
