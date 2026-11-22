@@ -1,0 +1,92 @@
+/* Anchored at the sprite's top-right; --layer-scale undoes the board zoom so the text stays 0.9rem. */
+.thought {
+  position: absolute;
+  bottom: 95%;
+  left: 60%;
+  width: max-content;
+  max-width: 9rem;
+  padding: 0.8rem 1.3rem;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: bottom left;
+  transform: scale(calc(1 / var(--layer-scale, 1)));
+  animation: thought-pop 0.35s ease-out;
+}
+
+.thought--left {
+  left: auto;
+  right: 60%;
+  transform-origin: bottom right;
+}
+
+.thought--below {
+  bottom: auto;
+  top: 95%;
+  transform-origin: top left;
+}
+
+.thought--below.thought--left {
+  transform-origin: top right;
+}
+
+.thought-cloud {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.thought-cloud ellipse,
+.thought-tail circle {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.thought-tail {
+  position: absolute;
+  top: 100%;
+  left: -0.4rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: -0.35rem;
+  overflow: visible;
+}
+
+.thought--left .thought-tail {
+  left: auto;
+  right: -0.4rem;
+  transform: scaleX(-1);
+}
+
+.thought--below .thought-tail {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: -0.35rem;
+  transform: scaleY(-1);
+}
+
+.thought--below.thought--left .thought-tail {
+  transform: scale(-1, -1);
+}
+
+.thought-text {
+  position: relative;
+  display: block;
+  color: #000;
+  font-size: 0.9rem;
+  line-height: 1.15;
+  text-align: center;
+}
+
+@keyframes thought-pop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1303,5 +1303,20 @@
   },
   "goldFame": {
     "reached": "La riqueza de {playerName} alcanza {gold}🟡: +{fame}🏆"
+  },
+  "thoughts": {
+    "t1": "Estoy harto de todo",
+    "t2": "Pintaré el techo de rosa",
+    "t3": "Ahora me comería un buen trozo de carne chisporroteando",
+    "t4": "Y encima ese dragón chiflado",
+    "t5": "Soy caballero, no mercader",
+    "t6": "Mi caballo apenas mueve los cascos",
+    "t7": "¿Nos vamos ya o qué?",
+    "t8": "Estos zombis me ponen la piel de gallina",
+    "t9": "Quedémonos aquí un rato más, a esperar",
+    "t10": "¿Para qué correr con este calor?",
+    "t11": "¡Ojalá estar en el banquete del rey!",
+    "t12": "Me pica debajo de la armadura",
+    "t13": "¡El caballo al establo y el alma al cielo!"
   }
 }

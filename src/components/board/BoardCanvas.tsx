@@ -22,6 +22,7 @@ import { openStablesHireOnly } from '../../actions/stables';
 import { challengeDragonFromBoard } from '../../actions/fightDragon';
 import { useT } from '../../i18n';
 import { useSettings } from '../../utils/settingsStore';
+import { ThoughtBalloon, useIdleThought } from './ThoughtBalloon';
 
 interface BoardCanvasProps {
   board: GameState;
@@ -75,6 +76,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
   const isMobile = isMobileLayout();
   const mapEdit = useMapEditStore();
   useRouteChoiceVersion();
+  const thought = useIdleThought(board);
   const { active: diceActive, rolling } = useModal();
   const remoteMove = useRemoteMove();
 
@@ -251,6 +253,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const v = view();
     return v ? `translate(${v.tx}px, ${v.ty}px) scale(${v.s})` : 'none';
   }, [zoomLevel, board.activePlayer.position, resizeTick, mapReady, panOffset]);
+  const layerScale = view()?.s ?? 1;
 
   // Steps to another fixed level, keeping the board point under (clientX, clientY) in place.
   const zoomTo = (level: number, clientX: number, clientY: number) => {
@@ -613,6 +616,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
     const { dx, dy } = clusterOffset(indexInCluster, sameTilePlayers.length, offset.clusterStepPct);
 
     const isPlayerIconEditSelected = mapEdit.active && mapEdit.target?.kind === 'player-icon';
+    const thinking = thought && player.name == board.activePlayer.name ? thought : null;
 
     return (
       <div
@@ -621,6 +625,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
         style={{
           top: pos.y + offset.anchorYPct + dy + '%',
           left: pos.x + offset.anchorXPct + dx + '%',
+          ...(thinking ? { zIndex: 4 } : {}),
           ...(isPlayerIconEditSelected
             ? { outline: '3px solid yellow', outlineOffset: '2px', zIndex: 999 }
             : {}),
@@ -643,6 +648,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
             src={src}
             alt={player.image}
           />
+          {thinking && <ThoughtBalloon text={thinking} below={pos.y < 20} toLeft={pos.x > 65} />}
         </div>
       </div>
     );
@@ -720,6 +726,7 @@ export const BoardCanvas: React.FC<BoardCanvasProps> = ({ board, updateGameState
           ...(map ? { width: `${layerSizeCqi(map).w}cqi`, height: `${layerSizeCqi(map).h}cqi` } : {}),
           transform: zoomTransform,
           transformOrigin: '0 0',
+          ['--layer-scale' as string]: layerScale,
           // No eased transition while actively panning -- the view should
           // track the pointer 1:1, not visibly lag a step behind it.
           transition: isPanning ? 'none' : `transform ${ZOOM_TRANSITION_MS}ms ease`,

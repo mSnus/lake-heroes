@@ -1330,5 +1330,20 @@
   },
   "goldFame": {
     "reached": "{playerName}'s wealth reaches {gold}🟡: +{fame}🏆"
+  },
+  "thoughts": {
+    "t1": "I'm so sick of all this",
+    "t2": "I'll paint the ceiling pink",
+    "t3": "Could do with a sizzling slab of meat right now",
+    "t4": "And that mad dragon on top of it all",
+    "t5": "I'm a knight, not a merchant",
+    "t6": "My horse can barely lift its hooves",
+    "t7": "Can we get going already?",
+    "t8": "These zombies give me the creeps",
+    "t9": "Let's just stand here a bit longer and wait",
+    "t10": "Why hurry in this heat",
+    "t11": "Oh, to be at the King's feast!",
+    "t12": "It itches under my armour",
+    "t13": "Horse to the stable, soul to heaven!"
   }
 }

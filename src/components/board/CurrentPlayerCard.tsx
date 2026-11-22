@@ -20,12 +20,21 @@ interface CurrentPlayerCardProps {
 export const CurrentPlayerCard: React.FC<CurrentPlayerCardProps> = ({ gameState }) => {
   const t = useT();
   const [player, setPlayer] = useState<Player | null>(null);
-  const { active: diceActive } = useModal();
+  const { active: diceActive, rolling } = useModal();
+  const turnKey = `${gameState.round}-${gameState.activePlayerIndex}`;
+  const rolled = gameState.turnPhase !== 'before-move';
 
   // A dice roll display takes over the screen — dismiss the player card.
   useEffect(() => {
     if (diceActive) setPlayer(null);
   }, [diceActive]);
+
+  // So does throwing the dice or ending the turn.
+  useEffect(() => {
+    if (rolling || rolled) setPlayer(null);
+  }, [rolling, rolled]);
+
+  useEffect(() => setPlayer(null), [turnKey]);
 
   useEffect(() => {
     function onDisplayPlayer(e: Event) {
