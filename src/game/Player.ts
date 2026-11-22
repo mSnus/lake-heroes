@@ -61,6 +61,10 @@ export class Player {
    * reaching STARS_TO_WIN ends the game, same as slaying the Dragon. */
   stars: number;
   circles: number;
+  /** Tiles the last move passed over, its start included; road picking avoids them. */
+  lastPath: number[];
+  /** Where that move ended -- the memory only counts while the player still stands there. */
+  lastPathEnd: number;
   dragonEncounters: number;
   dragonEncounteredLastTurn: boolean;
   caravanEncounters: number;
@@ -143,6 +147,8 @@ export class Player {
     this.nextGoldMilestone = GOLD_FAME_FIRST;
     this.stars = 0;
     this.circles = 0;
+    this.lastPath = [];
+    this.lastPathEnd = -1;
     this.dragonEncounters = 0;
     this.dragonEncounteredLastTurn = false;
     this.caravanEncounters = 0;

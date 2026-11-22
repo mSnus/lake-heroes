@@ -32,6 +32,7 @@ export function handlePortal(
   }
 
   player.position = newPos;
+  player.lastPath = [];
   narrateMove(newPos);
 
   const landedTile = board.tiles[newPos];

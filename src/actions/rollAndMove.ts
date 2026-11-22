@@ -100,6 +100,8 @@ export async function rollAndMove(
     if (isHalted()) return;
     const willCrossStart = route.path.includes(0);
     const arrivalMessage = announceDestination(route.dest);
+    player.lastPath = [player.position, ...route.path.slice(0, -1)];
+    player.lastPathEnd = route.dest;
 
     // Step-by-step move with 0.2s delay per tile
     for (let step = 1; step <= route.path.length; step++) {

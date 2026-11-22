@@ -14,10 +14,25 @@ function emit(): void {
 
 const keyFor = (board: GameState) => `${board.activePlayer.id}:${board.activePlayer.position}:${board.turns}`;
 
+/** Roads from the player's position that cross none of the tiles their last move passed. Failing
+ * that, those that at least don't step straight back onto the tile they came from; failing that, all. */
+function openRoutes(board: GameState): Route[] {
+  const player = board.activePlayer;
+  const all = routesAhead(board, player.position, undefined, true);
+  const passed = player.lastPathEnd === player.position ? (player.lastPath ?? []) : [];
+  if (!passed.length) return all;
+
+  const fresh = all.filter((r) => !r.path.some((slot) => passed.includes(slot)));
+  if (fresh.length) return fresh;
+  const cameFrom = passed[passed.length - 1];
+  const notBack = all.filter((r) => !r.path.includes(cameFrom));
+  return notBack.length ? notBack : all;
+}
+
 /** The roads from the active player and which one is picked. A player may pick a road in any
  * direction; until they do, it's a random one of those leading forward. */
 export function routeChoice(board: GameState): { routes: Route[]; selected: number } {
-  const routes = routesAhead(board, board.activePlayer.position, undefined, true);
+  const routes = openRoutes(board);
   const key = keyFor(board);
   if (!choice || choice.key !== key || choice.index >= routes.length) {
     const forward = routes.map((r, i) => (r.forward ? i : -1)).filter((i) => i >= 0);
