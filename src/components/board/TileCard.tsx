@@ -93,7 +93,7 @@ export const TileCard: React.FC<TileCardProps> = ({
     gameState && ownerPlayer ? syndicateMultiplier(gameState, ownerPlayer, tile.group) : 1;
   const isSyndicate = syndicateMult > 1;
   const effectMult =
-    gameState && ownerPlayer ? groupEffectMultiplier(gameState, ownerPlayer, tile.bonusType ?? 'gold') : 1;
+    gameState && ownerPlayer ? groupEffectMultiplier(gameState, ownerPlayer, tile) : 1;
   const effectGroup = GROUP_EFFECTS.find((e) => e.bonusType === tile.bonusType)?.group;
 
   // Per-turn payout at the tile's current level (see game/income.ts's

@@ -28,7 +28,7 @@ export function handleVisitOwnTile(
 
   const mult = syndicateMultiplier(board, player, tile.group);
   const syndicateTag = mult > 1 ? ' (💰×2)' : '';
-  const effectMult = groupEffectMultiplier(board, player, tile.bonusType);
+  const effectMult = groupEffectMultiplier(board, player, tile);
 
   const rewards = [];
   if (tile.bonusType === 'gold' || tile.bonusType === 'food' || tile.bonusType === 'arms') {
