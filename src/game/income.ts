@@ -15,10 +15,10 @@ export interface TileIncome {
 
 /**
  * A single owned tile's per-turn income: its own bonus at its current level
- * -- gold (Traders), food (Fields/Farms), arms (Camps/Mills) or units
- * (Towers). A yielded tile earns nothing. `mult` is the syndicate
- * multiplier already resolved by the caller (board/player-aware for a real
- * owner; 1 for an unowned tile's preview). Shared by the
+ * -- gold, food, arms or units, by its bonusType. A yielded tile earns
+ * nothing. `mult` is the syndicate multiplier already resolved by the
+ * caller (board/player-aware for a real owner; 1 for an unowned tile's
+ * preview). Shared by the
  * actual per-turn payout (collectTileTurnIncome) and TileCard's preview, so
  * they can't drift apart. `level` defaults to the tile's current level, but
  * can be overridden to preview a not-yet-reached upgrade level (see
