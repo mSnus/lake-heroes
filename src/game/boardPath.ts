@@ -25,13 +25,15 @@ export interface Route {
 /**
  * Every distinct road exactly `steps` moves from `from` -- two roads may end on the same slot.
  * With `anyDirection` a road may also run against the board's direction, but never turns
- * straight back onto the slot it just left.
+ * straight back onto the slot it just left, and never runs back down a fork's stem after
+ * arriving along one of its branches. `cameFrom` is the slot the player stepped from onto `from`.
  */
 export function routesAhead(
   board: GameState,
   from: number,
   steps: number = ROUTE_STEPS,
-  anyDirection = false
+  anyDirection = false,
+  cameFrom = -1
 ): Route[] {
   const routes: Route[] = [];
   const behind = (pos: number) =>
@@ -43,13 +45,16 @@ export function routesAhead(
       return;
     }
 
-    const left = path.length >= 2 ? path[path.length - 2] : path.length === 1 ? from : -1;
-    for (const next of board.links[pos] ?? []) {
+    const left = path.length >= 2 ? path[path.length - 2] : path.length === 1 ? from : cameFrom;
+    const ahead = board.links[pos] ?? [];
+    for (const next of ahead) {
       if (anyDirection && next === left) continue;
       walk(next, [...path, next], forward);
     }
 
     if (!anyDirection) return;
+    const offBranch = ahead.length >= 2 && ahead.includes(left);
+    if (offBranch) return;
     for (const prev of behind(pos)) {
       if (prev !== left) walk(prev, [...path, prev], false);
     }

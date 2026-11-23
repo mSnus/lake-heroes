@@ -18,8 +18,8 @@ const keyFor = (board: GameState) => `${board.activePlayer.id}:${board.activePla
  * that, those that at least don't step straight back onto the tile they came from; failing that, all. */
 function openRoutes(board: GameState): Route[] {
   const player = board.activePlayer;
-  const all = routesAhead(board, player.position, undefined, true);
   const passed = player.lastPathEnd === player.position ? (player.lastPath ?? []) : [];
+  const all = routesAhead(board, player.position, undefined, true, passed[passed.length - 1] ?? -1);
   if (!passed.length) return all;
 
   const fresh = all.filter((r) => !r.path.some((slot) => passed.includes(slot)));
