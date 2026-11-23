@@ -63,3 +63,36 @@ export function routesAhead(
   walk(from, [], true);
   return routes;
 }
+
+/**
+ * The road between junctions each slot lies on: the stretches left once every junction (a slot
+ * with three or more neighbours) is taken out. -1 for a junction itself.
+ */
+export function roadStretches(board: GameState): number[] {
+  const near: number[][] = board.links.map(() => []);
+  board.links.forEach((next, slot) =>
+    next.forEach((n) => {
+      if (!near[slot].includes(n)) near[slot].push(n);
+      if (near[n] && !near[n].includes(slot)) near[n].push(slot);
+    })
+  );
+
+  const stretch: number[] = near.map((n) => (n.length >= 3 ? -1 : -2));
+  let id = 0;
+  stretch.forEach((s, start) => {
+    if (s !== -2) return;
+    const queue = [start];
+    stretch[start] = id;
+    while (queue.length) {
+      for (const n of near[queue.pop()!]) {
+        if (stretch[n] === -2) {
+          stretch[n] = id;
+          queue.push(n);
+        }
+      }
+    }
+
+    id++;
+  });
+  return stretch;
+}

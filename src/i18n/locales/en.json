@@ -495,7 +495,7 @@
     },
     "travel": {
       "title": "Travel 🧭",
-      "fork": "<strong>Choosing your way</strong> — before you roll, the road ahead (6 steps) is marked with dots in your colour and its possible ends are circled; one road is picked at random. Tap another end to take the road leading there, and tap the same end again to switch between roads that reach it. You then move along that road as far as the die says. Roads may also run against the board's direction, but none are offered over the tiles your last move passed (a Portal clears that) or back down the stem of a fork you reached along one of its branches; the random pick only goes forward.",
+      "fork": "<strong>Choosing your way</strong> — before you roll, the road ahead (6 steps) is marked with dots in your colour and its possible ends are circled; one road is picked at random. Tap another end to take the road leading there, and tap the same end again to switch between roads that reach it. You then move along that road as far as the die says. Roads may also run against the board's direction, but none are offered over the tiles your last move passed or onto any other stretch of road it went along (a Portal clears that), or back down the stem of a fork you reached along one of its branches; the random pick only goes forward.",
       "emptyRoad": "<strong>Empty road</strong> — not every step of the road holds a tile. Nothing happens on a stretch of empty road, except that caravans and ambushes are only ever met there, and Hero's Hour duels can happen there too.",
       "portal": "A Portal can send you directly to any other tile, including the King's Castle; that tile's normal effect then applies."
     },

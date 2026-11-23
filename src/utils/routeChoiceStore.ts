@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import type { GameState } from '../game/GameState';
-import { Route, routesAhead } from '../game/boardPath';
+import { Route, roadStretches, routesAhead } from '../game/boardPath';
 
 /** The road picked for the coming roll, remembered per turn and starting square. */
 let choice: { key: string; index: number } | null = null;
@@ -14,16 +14,22 @@ function emit(): void {
 
 const keyFor = (board: GameState) => `${board.activePlayer.id}:${board.activePlayer.position}:${board.turns}`;
 
-/** Roads from the player's position that cross none of the tiles their last move passed. Failing
- * that, those that at least don't step straight back onto the tile they came from; failing that, all. */
+/** Roads from the player's position that cross neither the tiles their last move passed nor any
+ * other stretch of road it touched, so a small loop can't be ridden round and round. Failing that,
+ * roads that only avoid the passed tiles; then those that don't step straight back; then all. */
 function openRoutes(board: GameState): Route[] {
   const player = board.activePlayer;
   const passed = player.lastPathEnd === player.position ? (player.lastPath ?? []) : [];
   const all = routesAhead(board, player.position, undefined, true, passed[passed.length - 1] ?? -1);
   if (!passed.length) return all;
 
-  const fresh = all.filter((r) => !r.path.some((slot) => passed.includes(slot)));
+  const stretch = roadStretches(board);
+  const here = stretch[player.position];
+  const used = new Set(passed.map((slot) => stretch[slot]).filter((s) => s >= 0 && s !== here));
+  const clear = all.filter((r) => !r.path.some((slot) => passed.includes(slot)));
+  const fresh = clear.filter((r) => !r.path.some((slot) => used.has(stretch[slot])));
   if (fresh.length) return fresh;
+  if (clear.length) return clear;
   const cameFrom = passed[passed.length - 1];
   const notBack = all.filter((r) => !r.path.includes(cameFrom));
   return notBack.length ? notBack : all;
